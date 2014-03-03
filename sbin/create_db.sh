@@ -6,7 +6,7 @@ DB_OWNER_PASSWORD=irmis
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_ADMIN_USER=root
-DB_ADMIN_PASSWORD=$1
+DB_ADMIN_PASSWORD=
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 if [ -z "${CMS_ROOT_DIR}" ]; then
@@ -18,6 +18,9 @@ if [ ! -f ${CMS_ENV_FILE} ]; then
     exit 2
 fi
 . ${CMS_ENV_FILE} > /dev/null 
+
+# Read password
+read -p "Enter MySQL root password: " DB_ADMIN_PASSWORD
 
 mysqlCmd="mysql --port=$DB_PORT --host=$DB_HOST -u $DB_ADMIN_USER"
 if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
