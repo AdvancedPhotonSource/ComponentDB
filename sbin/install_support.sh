@@ -15,7 +15,7 @@ execute() {
 
 if [ ! -d $CMS_SUPPORT ]; then
     echo "Creating new CMS support directory $CMS_SUPPORT."
-    cd $CMS_SUPPORT/..
+    cd `dirname $CMS_SUPPORT`
     execute svn co $CMS_SVN_URL/support support
 fi
 cd $CMS_SUPPORT
