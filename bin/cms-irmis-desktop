@@ -2,7 +2,7 @@
 
 if [ -z $DAQ_ROOT_DIR ]; then
     cd `dirname $0` && myDir=`pwd`
-    setupFile=$myDir/../../setup.sh
+    setupFile=$myDir/../setup.sh
     if [ ! -f $setupFile ]; then
         echo "Cannot find setup file: $setupFile"
 		exit 1
@@ -10,7 +10,7 @@ if [ -z $DAQ_ROOT_DIR ]; then
     source $setupFile
 fi
 
-uiJar=$CMS_ROOT_DIR/irmis/irmisBase/apps/deploy/irmisDeploy.jar
+uiJar=$CMS_ROOT_DIR/irmis/irmisBase/apps/deploy/irmisDeploy.tar
 if [ ! -f $uiJar ]; then
     echo "Cannot file IRMIS jar file $uiJar."
     exit 1
