@@ -58,7 +58,7 @@ prependPathIfDirExists() {
 
 prependPathIfDirExists $CMS_SUPPORT/java/$CMS_HOST_ARCH/bin
 prependPathIfDirExists $CMS_SUPPORT/ant/bin
-
+prependPathIfDirExists $CMS_ROOT_DIR/bin
 
 # Done
 cd $currentDir
