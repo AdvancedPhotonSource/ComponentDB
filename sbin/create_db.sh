@@ -20,7 +20,12 @@ fi
 . ${CMS_ENV_FILE} > /dev/null 
 
 # Read password
+
+
+sttyOrig=`stty -g`
+stty -echo
 read -p "Enter MySQL root password: " DB_ADMIN_PASSWORD
+stty $sttyOrig
 
 mysqlCmd="mysql --port=$DB_PORT --host=$DB_HOST -u $DB_ADMIN_USER"
 if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
@@ -28,7 +33,7 @@ if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
 fi
 
 execute() {
-    msg="echo $@ | sed 's?$DB_ADMIN_PASSWORD?xxx?g'"
+    msg="echo $@ | sed 's?$DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g'"
     msg=`eval $msg`
     echo "Executing: $msg"
     eval "$@"
