@@ -27,6 +27,8 @@ if [ -z $CMS_VAR_DIR ]; then
     if [ -d $CMS_VAR_DIR ]; then
         cd $CMS_VAR_DIR
         export CMS_VAR_DIR=`pwd`
+    else
+    	unset CMS_VAR_DIR
     fi
 fi
 
@@ -39,8 +41,8 @@ if [ -z $CMS_SUPPORT ]; then
     fi
 fi
 if [ ! -d $CMS_SUPPORT ]; then
-    echo "ERROR: $CMS_SUPPORT directory does not exist. Developers should point CMS_SUPPORT to the desired area." 
-    return 1
+    echo "Warning: $CMS_SUPPORT directory does not exist. Developers should point CMS_SUPPORT to the desired area." 
+    unset CMS_SUPPORT
 fi
 
 # Establish machine architecture
@@ -55,7 +57,7 @@ prependPathIfDirExists() {
 }
 
 prependPathIfDirExists $CMS_SUPPORT/java/$CMS_HOST_ARCH/bin
-prependPathIfDirExists $CMS_SUPPORT/ant/$CMS_HOST_ARCH/bin
+prependPathIfDirExists $CMS_SUPPORT/ant/bin
 
 
 # Done
