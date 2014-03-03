@@ -10,11 +10,13 @@ if [ -z $DAQ_ROOT_DIR ]; then
     source $setupFile
 fi
 
-uiJar=$CMS_ROOT_DIR/irmis/irmisBase/apps/deploy/irmisDeploy.tar
-if [ ! -f $uiJar ]; then
-    echo "Cannot file IRMIS jar file $uiJar."
+irmisDeployDir=$CMS_ROOT_DIR/irmis/irmisBase/apps/deploy
+irmisDeployTar=$irmisDeployDir/irmisDeploy.tar
+irmisJar=$irmisDeployDir/irmis.jar
+if [ ! -f $irmisJar ]; then
+    echo "Cannot file IRMIS jar file $irmisJar."
     exit 1
 fi
-java -jar $uiJar
+java -jar $irmisJar
 
 
