@@ -21,11 +21,13 @@ fi
 
 mysqlCmd="mysql --port=$DB_PORT --host=$DB_HOST -u $DB_ADMIN_USER"
 if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
-    mysqlCmd="$mysqlCmd -p$DBADMIN_PASSWORD"
+    mysqlCmd="$mysqlCmd -p$DB_ADMIN_PASSWORD"
 fi
 
 execute() {
-    echo "Executing: $@"
+    msg="echo $@ | sed 's?$DB_ADMIN_PASSWORD?xxx?g'"
+    msg=`eval $msg`
+    echo "Executing: $msg"
     eval "$@"
 }
 
