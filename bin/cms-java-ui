@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ -z $DAQ_ROOT_DIR ]; then
+    cd `dirname $0` && myDir=`pwd`
+    setupFile=$myDir/../../setup.sh
+    if [ ! -f $setupFile ]; then
+	echo "Cannot find setup file: $setupFile"
+		            exit 1
+			        fi
+				    source $setupFile
+				    fi
+
