@@ -18,7 +18,7 @@ if [ -z $CMS_DATA_DIR ]; then
     fi
 fi
 if [ ! -d $CMS_DATA_DIR ]; then
-    echo "WARNING: $CMS_DATA_DIR directory does not exist. Developers should point CMS_DATA_DIR to the desired area." 
+    #echo "WARNING: $CMS_DATA_DIR directory does not exist. Developers should point CMS_DATA_DIR to the desired area." 
     unset CMS_DATA_DIR
 fi
 

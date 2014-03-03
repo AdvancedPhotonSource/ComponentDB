@@ -20,8 +20,8 @@ if [ ! -d $CMS_SUPPORT ]; then
 fi
 cd $CMS_SUPPORT
 execute svn update
-execute $CMS_SUPPORT_DIR/bin/clean_all.sh
-execute $CMS_SUPPORT_DIR/bin/install_all.sh
+execute $CMS_SUPPORT/bin/clean_all.sh
+execute $CMS_SUPPORT/bin/install_all.sh
 
 
 
