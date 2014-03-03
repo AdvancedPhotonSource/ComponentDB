@@ -43,6 +43,9 @@ if [ ! -d $CMS_SUPPORT ]; then
     return 1
 fi
 
+# Establish machine architecture
+CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
+
 # Add to path only if directory exists.
 prependPathIfDirExists() {
     _dir=$1
@@ -50,6 +53,10 @@ prependPathIfDirExists() {
         PATH=${_dir}:$PATH
     fi
 }
+
+prependPathIfDirExists $CMS_SUPPORT/java/$CMS_HOST_ARCH/bin
+prependPathIfDirExists $CMS_SUPPORT/ant/$CMS_HOST_ARCH/bin
+
 
 # Done
 cd $currentDir
