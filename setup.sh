@@ -51,5 +51,6 @@ prependPathIfDirExists() {
     fi
 }
 
-
+# Done
+cd $currentDir
 
