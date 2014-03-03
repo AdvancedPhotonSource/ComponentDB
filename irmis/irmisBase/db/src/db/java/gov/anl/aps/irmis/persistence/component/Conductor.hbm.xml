@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.Conductor" 
+         table="conductor" mutable="true">
+    
+    <id name="id" column="conductor_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_conductor</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="cable" column="cable_id" 
+                 class="gov.anl.aps.irmis.persistence.component.Cable" />
+
+    <many-to-one name="portPinA" column="port_pin_a_id" 
+                 class="gov.anl.aps.irmis.persistence.component.PortPin" 
+                 not-null="true"/>
+
+    <many-to-one name="portPinB" column="port_pin_b_id" 
+                 class="gov.anl.aps.irmis.persistence.component.PortPin" 
+                 not-null="true"/>
+
+    <property name="markForDelete" column="mark_for_delete" type="boolean"/>
+  </class>
+  
+</hibernate-mapping>

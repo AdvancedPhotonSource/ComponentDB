@@ -1,0 +1,6 @@
+# Set your local db connection parameters here
+db.host=@db.connection.host@
+db.database=@db.connection.database@
+db.user=@db.trust-read-write.username@
+db.password=@db.trust-read-write.password@
+db.vendor=@db.vendor@

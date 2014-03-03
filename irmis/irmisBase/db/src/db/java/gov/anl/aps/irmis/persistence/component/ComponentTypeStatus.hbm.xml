@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.ComponentTypeStatus" 
+         table="component_type_status" mutable="true">
+    
+    <id name="id" column="component_type_status_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component_type_status</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="componentType" column="component_type_id" 
+                 class="gov.anl.aps.irmis.persistence.component.ComponentType" 
+                 unique="true" not-null="true"/>
+
+    <property name="spareQuantity" column="spare_qty" type="integer"/>
+    <property name="stockQuantity" column="stock_qty" type="integer"/>
+    <property name="spareLocation" column="spare_loc" type="string"/>
+    <property name="instantiated" column="instantiated" type="boolean"/>
+    <property name="nrtlStatus" column="nrtl_status" type="string"/>
+    <property name="nrtlAgency" column="nrtl_agency" type="string"/>
+    <property name="markForDelete" column="mark_for_delete" type="boolean"/>
+  </class>
+  
+</hibernate-mapping>

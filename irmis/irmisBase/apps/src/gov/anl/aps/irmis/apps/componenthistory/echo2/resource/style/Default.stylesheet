@@ -1,0 +1,249 @@
+<stylesheet>
+
+ <style name="Default" type="nextapp.echo2.app.SplitPane">
+   <properties>
+     <property name="background" value="#DDDDDD"/>
+   </properties>
+ </style>
+
+ <style name="IRMIS.Button" type="nextapp.echo2.app.Button">
+   <properties>
+     <property name="layoutData">
+       <layout-data type="nextapp.echo2.app.layout.RowLayoutData">
+         <properties>
+           <property name="alignment">
+             <alignment horizontal="left"/>
+           </property>
+           <property name="insets" value="4px 4px"/>
+         </properties>
+       </layout-data>
+     </property>     
+   </properties>
+ </style>
+ <style name="Title.Main" type="nextapp.echo2.app.Label">
+  <properties>
+   <property name="font">
+    <font size="16px" bold="true" underline="false"/>
+   </property>
+   
+   <property name="layoutData">
+     <layout-data type="nextapp.echo2.app.layout.RowLayoutData">
+       <properties>
+         <property name="alignment">
+           <alignment horizontal="left"/>
+         </property>
+         <property name="insets" value="4px 4px"/>
+       </properties>
+     </layout-data>
+   </property>
+  </properties>
+ </style>
+ 
+ <style name="Section.Title" type="nextapp.echo2.app.Label">
+  <properties>
+   <property name="font">
+    <font size="12px" bold="true" underline="false"/>
+   </property>
+  </properties>
+ </style>
+
+ <style name="Section.Column" type="nextapp.echo2.app.Column">
+  <properties>
+   <property name="border">
+    <border size="2px" style="groove" color="#999999"/>
+   </property>
+   <property name="insets" value="2px 2px"/>
+  </properties>
+ </style>
+
+ <style name="Tab.Column" type="nextapp.echo2.app.Column">
+  <properties>
+   <property name="insets" value="5px 5px"/>
+  </properties>
+ </style>
+
+ <style name="Default.Row" type="nextapp.echo2.app.Row">
+  <properties>
+   <property name="insets" value="2px 2px"/>
+   <property name="background" value="#DDDDDD"/>
+  </properties>
+ </style>
+
+ <style name="Default.Column" type="nextapp.echo2.app.Column">
+  <properties>
+   <property name="insets" value="2px 2px"/>
+   <property name="background" value="#DDDDDD"/>
+  </properties>
+ </style>
+
+ <style name="Default.ContainerEx" type="echopointng.ContainerEx">
+  <properties>
+   <property name="background" value="#DDDDDD"/>
+  </properties>
+ </style>
+ 
+ <style name="Default.TabbedPane" type="echopointng.TabbedPane">
+   <properties>
+     <property name="height" value="200px"/>
+     <property name="background" value="#DDDDDD"/>
+   </properties>
+ </style>
+
+ <style name="Default.Dialog" type="nextapp.echo2.app.WindowPane">
+   <properties>
+     <property name="titleFont">
+       <font size="12px" bold="true" underline="false"/>
+     </property>
+     <property name="titleBackground" value="#999999"/>
+     <property name="titleForeground" value="#000000"/>
+     <property name="background" value="#DDDDDD"/>
+   </properties>
+ </style>
+ 
+ <style name="Title.Row" type="nextapp.echo2.app.Row">
+  <properties>
+   <property name="insets" value="3px 3px"/>
+   <property name="background" value="#999999"/>
+  </properties>
+ </style>
+
+ <style name="Button.Row" type="nextapp.echo2.app.Row">
+  <properties>
+   <property name="border">
+    <border size="1px" style="solid" color="#999999"/>
+   </property>
+   <property name="insets" value="2px 4px"/>
+   <property name="background" value="#DDDDDD"/>
+   <property name="cellSpacing" value="2px"/>
+  </properties>
+ </style>
+
+ <style name="RadioButton.Row" type="nextapp.echo2.app.Row">
+  <properties>
+   <property name="insets" value="2px 4px"/>
+   <property name="background" value="#DDDDDD"/>
+   <property name="cellSpacing" value="2px"/>
+  </properties>
+ </style>
+
+ <style name="Default.Table" type="nextapp.echo2.app.Table">
+  <properties>
+   <property name="insets" value="2px 2px"/>
+   <property name="selectionBackground" value="#76BDFF"/>
+  </properties>
+ </style>
+
+ <style name="Default.TableEx" type="echopointng.TableEx">
+  <properties>
+   <property name="selectionBackground" value="#76BDFF"/>
+   <property name="headerBackground" value="#DDDDDD"/>
+   <property name="foreground" value="#222222"/>
+   <property name="background" value="#FFFFFF"/>
+  </properties>
+ </style>
+
+ <style name="Default.TableEx.Label" type="nextapp.echo2.app.Label">
+   <properties>
+     <property name="layoutData">
+       <layout-data type="nextapp.echo2.app.layout.TableLayoutData">
+         <properties>
+           <property name="insets" value="2px 0px"/>
+         </properties>
+       </layout-data>
+     </property>   
+   </properties>
+ </style>
+
+ <style name="Default.Tree" type="echopointng.Tree">
+  <properties>
+   <property name="foreground" value="#222222"/>
+   <property name="background" value="#FFFFFF"/>
+  </properties>
+ </style>
+
+ <style name="Default.ComponentTreeCellRenderer" type="gov.anl.aps.irmis.apps.componenthistory.echo2.ComponentTreeCellRenderer">
+  <properties>
+   <property name="foreground" value="#222222"/>
+   <property name="background" value="#FFFFFF"/>
+   <property name="selectedBackground" value="#76BDFF"/>
+  </properties>
+ </style>
+
+ <style name="Button.Primary" type="nextapp.echo2.app.Button">
+  <properties>
+   <property name="border">
+    <border size="2px" style="outset" color="#FFFF30"/>
+   </property>
+   <property name="font">
+    <font size="12px" bold="false" underline="false"/>
+   </property>
+   <property name="insets" value="4px 3px"/>
+   <property name="background" value="#FFFF30"/>
+   <property name="pressedEnabled" value="true"/>
+   <property name="rolloverEnabled" value="true"/>
+   <property name="pressedBorder">
+     <border size="2px" style="inset" color="#FFFF30"/>
+   </property>
+  </properties>
+ </style>
+
+ <style name="Button.Dialog" type="nextapp.echo2.app.Button">
+  <properties>
+   <property name="border">
+    <border size="2px" style="outset" color="#DDDDDD"/>
+   </property>
+   <property name="font">
+    <font size="12px" bold="false" underline="false"/>
+   </property>
+   <property name="insets" value="4px 3px"/>
+   <property name="background" value="#DDDDDD"/>
+   <property name="pressedEnabled" value="true"/>
+   <property name="rolloverEnabled" value="true"/>
+   <property name="pressedBorder">
+     <border size="2px" style="inset" color="#DDDDDD"/>
+   </property>
+  </properties>
+ </style>
+
+ <style name="Login.Button" type="nextapp.echo2.app.Button">
+  <properties>
+   <property name="font">
+    <font size="12px" bold="false" underline="false"/>
+   </property>
+   <property name="rolloverEnabled" value="true"/>
+   <property name="foreground" value="#0000FF"/>
+   <property name="rolloverForeground" value="#000000"/>
+   <property name="pressedForeground" value="#000000"/>
+
+   <property name="layoutData">
+    <layout-data type="nextapp.echo2.app.layout.RowLayoutData">
+     <properties>
+<!--       <property name="alignment">
+         <alignment horizontal="right"/>
+       </property>-->
+       <property name="insets" value="0px 4px"/>
+     </properties>
+    </layout-data>
+   </property>
+  </properties>
+ </style>
+
+ <style name="Button.Mini" type="nextapp.echo2.app.Button">
+  <properties>
+   <property name="border">
+    <border size="2px" style="outset" color="#DDDDDD"/>
+   </property>
+   <property name="font">
+    <font size="8px" bold="false" underline="false"/>
+   </property>
+   <property name="insets" value="1px 1px"/>
+   <property name="background" value="#DDDDDD"/>
+   <property name="pressedEnabled" value="true"/>
+   <property name="rolloverEnabled" value="true"/>
+   <property name="pressedBorder">
+     <border size="2px" style="inset" color="#DDDDDD"/>
+   </property>
+  </properties>
+ </style>
+
+</stylesheet>

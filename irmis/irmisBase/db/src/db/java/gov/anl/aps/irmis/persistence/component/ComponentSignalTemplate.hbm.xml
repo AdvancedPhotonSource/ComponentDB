@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.ComponentSignalTemplate" 
+         table="component_signal_template" mutable="true">
+    
+    <id name="id" column="component_signal_template_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component_signal_template</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="componentType" column="component_type_id" 
+                 class="gov.anl.aps.irmis.persistence.component.ComponentType" 
+                 not-null="true"/>
+
+    <many-to-one name="primaryPortPinTemplate" column="primary_port_pin_template_id" 
+                 class="gov.anl.aps.irmis.persistence.component.PortPinTemplate" />
+
+    <many-to-one name="secondaryPortPinTemplate" column="secondary_port_pin_template_id" 
+                 class="gov.anl.aps.irmis.persistence.component.PortPinTemplate" />
+
+    <property name="signalName" column="signal_name" type="string"/>
+    <property name="markForDelete" column="mark_for_delete" type="boolean"/>
+  </class>
+  
+</hibernate-mapping>

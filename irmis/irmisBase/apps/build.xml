@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: build.xml,v 1.27 2012/06/28 19:52:54 saunders Exp $ -->
+<project basedir="." default="all" name="apps">
+
+  <target name="init">
+    <tstamp/>
+    <property name="deployroot" value="deploy"/>
+    <mkdir dir="${deployroot}"/>
+
+    <property name="name" value="irmis"/>
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="../lib/java"/>
+    <property name="db.dir" value="../db"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="doc.api.dir" value="${build.dir}/docs"/>
+    <property name="test.dir" value="test"/>
+    <!-- added to support Echo2 AJAX applications -->
+    <property name="war.dir" value="${build.dir}/war"/>
+    <mkdir dir="${war.dir}"/>
+    <mkdir dir="${war.dir}/WEB-INF"/>
+    <mkdir dir="${war.dir}/WEB-INF/lib"/>
+    <mkdir dir="${war.dir}/WEB-INF/classes"/>
+  </target>
+
+  <path id="project.class.path">
+    <pathelement path="build/classes"/>
+    <fileset dir="../db/build">
+      <include name="irmisDb.jar"/>
+    </fileset>
+    <fileset dir="../lib/java">
+      <include name="cfw.jar"/>
+      <include name="cfw-ext.jar"/>
+      <include name="concurrent.jar"/>
+      <include name="jwizz-0.1.3.jar"/>
+      <include name="jnlp.jar"/>
+      <!-- added to support Echo2 AJAX applications -->
+      <include name="Echo2_App.jar"/>
+      <include name="Echo2_WebContainer.jar"/>
+      <include name="Echo2_WebRender.jar"/>      
+      <include name="Echo2_Extras_App.jar"/>
+      <include name="Echo2_Extras_WebContainer.jar"/>
+      <include name="echopointng-2.1.0rc8.jar"/>
+      <include name="servlet-api-2.5-6.1.8.jar"/>
+    </fileset>
+  </path>
+
+  <target name="prepare" depends="init">
+    <mkdir dir="${classes.dir}"/>
+    <!-- make sure irmisDb jarfile is built -->
+    <ant dir="../db" antfile="build.xml" inheritall="false" target="jarfile"/>
+    <!-- instantiate templates using properties in site.build.properties -->
+    <dependset>
+      <srcfilelist dir=".." files="site.build.properties"/>
+      <targetfileset dir="jws">
+        <include name="irmis.jnlp"/>
+        <include name="irmis-pv.jnlp"/>
+        <include name="irmis-component.jnlp"/>
+        <include name="irmis-componenttype.jnlp"/>
+        <include name="irmis-ioc.jnlp"/>
+        <include name="irmis-cable.jnlp"/>
+      </targetfileset>
+      <targetfileset dir="${src.dir}">
+        <include name="irmis_jaas.config"/>
+      </targetfileset>
+      <targetfileset dir="${src.dir}/gov/anl/aps/irmis/apps/irmis/cfw/resources">
+        <include name="About.properties"/>
+      </targetfileset>
+    </dependset>
+    <filter filtersfile="../site.build.properties"/>
+    <copy file="jws/irmis.jnlp.template"
+          tofile="jws/irmis.jnlp" filtering="true">
+      <filterset>
+        <filter token="idt.app" value="idt::pv"/>
+      </filterset>
+    </copy>
+    <copy file="jws/irmis.jnlp.template"
+          tofile="jws/irmis-pv.jnlp" filtering="true">
+      <filterset>
+        <filter token="idt.app" value="idt::pv"/>
+      </filterset>
+    </copy>
+    <copy file="jws/irmis.jnlp.template"
+          tofile="jws/irmis-component.jnlp" filtering="true">
+      <filterset>
+        <filter token="idt.app" value="idt::component"/>
+      </filterset>
+    </copy>
+    <copy file="jws/irmis.jnlp.template"
+          tofile="jws/irmis-componenttype.jnlp" filtering="true">
+      <filterset>
+        <filter token="idt.app" value="idt::component-type"/>
+      </filterset>
+    </copy>
+    <copy file="jws/irmis.jnlp.template"
+          tofile="jws/irmis-ioc.jnlp" filtering="true">
+      <filterset>
+        <filter token="idt.app" value="idt::ioc"/>
+      </filterset>
+    </copy>
+    <copy file="jws/irmis.jnlp.template"
+          tofile="jws/irmis-cable.jnlp" filtering="true">
+      <filterset>
+        <filter token="idt.app" value="idt::cable"/>
+      </filterset>
+    </copy>
+    <copy file="${src.dir}/irmis_jaas.config.template"
+          tofile="${src.dir}/irmis_jaas.config" filtering="true"/>
+    <copy file="${src.dir}/gov/anl/aps/irmis/apps/irmis/cfw/resources/About.properties.template"
+          tofile="${src.dir}/gov/anl/aps/irmis/apps/irmis/cfw/resources/About.properties" filtering="true">
+      <filterset>
+        <filter token="build-date" value="${TODAY}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <target name="compile" depends="prepare">
+    <javac destdir="${classes.dir}"
+           debug="true"
+           deprecation="true"
+           optimize="false">
+      <!--<compilerarg value="-Xlint:unchecked"/>-->
+      <src path="${src.dir}"/>
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+  <target name="jarfile" depends="compile">
+    <copy todir="${classes.dir}"
+          overwrite="true">
+      <fileset dir="${src.dir}">
+        <include name="gov/anl/aps/irmis/apps/irmis/cfw/resources/*"/>
+        <include name="gov/anl/aps/irmis/apps/resources/*"/>
+        <include name="irmis_jaas.config"/>
+      </fileset>
+    </copy>
+    <jar destfile="${build.dir}/${name}.jar"
+         basedir="${classes.dir}">
+      <include name="gov/**/*"/>
+      <include name="irmis_jaas.config"/>
+      <manifest>
+        <attribute name="Manifest-Version" value="1.0"/>
+        <attribute name="Class-Path" value="cfw.jar cfw-ext.jar concurrent.jar jnlp.jar irmisDb.jar jwizz-0.1.3.jar"/>
+        <attribute name="Main-Class" value="gov.anl.aps.irmis.apps.irmis.cfw.Main"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- target for building Echo2 AJAX application as a WAR file -->
+  <target name="warfile" depends="compile">
+    <copy todir="${war.dir}/WEB-INF/lib"
+          overwrite="true">
+      <fileset dir="${lib.dir}">
+        <include name="Echo2_App.jar"/>
+        <include name="Echo2_Extras_App.jar"/>
+        <include name="Echo2_Extras_WebContainer.jar"/>
+        <include name="Echo2_WebContainer.jar"/>
+        <include name="Echo2_WebRender.jar"/>
+        <include name="Echo2_App.jar"/>
+        <include name="echopointng-2.1.0rc8.jar"/>
+      </fileset>
+      <fileset dir="${db.dir}/build">
+        <include name="irmisDb.jar"/>
+      </fileset>
+    </copy>
+    <copy file="${src.dir}/gov/anl/aps/irmis/apps/componenthistory/echo2/web.xml" 
+          todir="${war.dir}/WEB-INF" overwrite="true"/>
+    <copy todir="${war.dir}/WEB-INF/classes"
+          overwrite="true">
+      <fileset dir="${src.dir}">
+        <include name="irmis_jaas.config"/>
+        <include name="gov/anl/aps/irmis/apps/componenthistory/echo2/resource/style/Default.stylesheet"/>
+        <include name="gov/anl/aps/irmis/apps/componenthistory/echo2/resource/image/*"/>
+      </fileset>
+    </copy>
+    <copy todir="${war.dir}"
+          overwrite="true">
+      <fileset dir="${src.dir}/gov/anl/aps/irmis/apps/componenthistory/echo2/html">
+        <include name="*"/>
+      </fileset>
+    </copy>
+    <copy todir="${war.dir}/WEB-INF/classes"
+          overwrite="true">
+      <fileset dir="${classes.dir}">
+        <include name="gov/anl/aps/irmis/apps/componenthistory/echo2/*.class"/>
+        <include name="gov/anl/aps/irmis/apps/echo2support/*.class"/>
+        <include name="gov/anl/aps/irmis/login/*.class"/>
+        <include name="gov/anl/aps/irmis/login/echo2support/*.class"/>
+        <include name="gov/anl/aps/irmis/apps/componenthistory/echo2/resource/style/Default.stylesheet"/>
+        <include name="gov/anl/aps/irmis/apps/Echo2ThreadWork*.class"/>
+      </fileset>
+    </copy>
+    <jar destfile="${build.dir}/component_history.war"
+         basedir="${war.dir}">
+    </jar>
+  </target>
+
+  <target name="demojarfile" depends="compile">
+    <copy todir="${classes.dir}"
+          overwrite="true">
+      <fileset dir="${src.dir}">
+        <include name="CFWDemo/resources/*"/>
+      </fileset>
+    </copy>
+    <jar destfile="${build.dir}/demo.jar"
+         basedir="${classes.dir}">
+      <include name="CFWDemo/**/*"/>
+      <include name="gov/anl/aps/irmis/apps/*.class"/>
+      <manifest>
+        <attribute name="Manifest-Version" value="1.0"/>
+        <attribute name="Class-Path" value="cfw.jar cfw-ext.jar concurrent.jar jnlp.jar irmisDb.jar jwizz-0.1.3.jar"/>
+        <attribute name="Main-Class" value="CFWDemo.Main"/>
+      </manifest>
+    </jar>
+  </target>  
+
+  <target name="all" depends="jarfile,warfile">
+  </target>
+
+  <target name="deploy" depends="all" description="Build tarball for deployment">
+    <delete file="${deployroot}/irmisDeploy.tar"/>
+    <tar destfile="${deployroot}/irmisDeploy.tar">
+      <tarfileset dir="build" mode="644" >
+        <include name="irmis.jar"/>
+      </tarfileset>
+      <tarfileset dir="../db/build" mode="644">
+        <include name="irmisDb.jar"/>
+      </tarfileset>
+      <tarfileset dir="../lib/java" mode="644">
+        <include name="cfw.jar"/>
+        <include name="cfw-ext.jar"/>
+        <include name="concurrent.jar"/>
+        <include name="jwizz-0.1.3.jar"/>
+        <include name="jnlp.jar"/>
+      </tarfileset>
+      <tarfileset dir="jws" mode="644">
+        <include name="irmis.jnlp"/>
+        <include name="irmis-pv.jnlp"/>
+        <include name="irmis-component.jnlp"/>
+        <include name="irmis-componenttype.jnlp"/>
+        <include name="irmis-ioc.jnlp"/>
+        <include name="irmis-cable.jnlp"/>
+        <include name="irmis2LogoSmall.png"/>
+        <include name="irmis2Logo.png"/>
+        <include name="index.html"/>
+      </tarfileset>
+    </tar>
+    <echo message="irmisDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- for echo2 AJAX component history app, just copy war file to deploy directory  -->
+    <delete file="${deployroot}/component_history.war"/>
+    <copy file="${build.dir}/component_history.war" todir="${deployroot}" overwrite="true"/>    
+    <echo message="component_history.war is available in ${deployroot} dir. "/>
+  </target>
+
+  <target name="deploydemo" depends="demojarfile" description="Deploy demo code">
+    <mkdir dir="${deployroot}/demo"/>
+    <copy file="${build.dir}/demo.jar" todir="${deployroot}/demo" overwrite="true"/>
+    <copy file="../db/build/irmisDb.jar" todir="${deployroot}/demo" overwrite="true"/>
+    <copy file="../lib/java/cfw.jar" todir="${deployroot}/demo" overwrite="true"/>
+    <copy file="../lib/java/cfw-ext.jar" todir="${deployroot}/demo" overwrite="true"/>
+    <copy file="../lib/java/concurrent.jar" todir="${deployroot}/demo" overwrite="true"/>
+    <copy file="../lib/java/jnlp.jar" todir="${deployroot}/demo" overwrite="true"/>
+    <echo message="demo is available in ${deployroot}/demo dir. "/>
+  </target>
+
+  <target name="clean" depends="init" description="Clean all build products." >
+    <delete dir="${build.dir}"/>
+    <delete dir="${deployroot}"/>
+    <delete file="jws/irmis.jnlp"/>
+    <delete file="jws/irmis-pv.jnlp"/>
+    <delete file="jws/irmis-component.jnlp"/>
+    <delete file="jws/irmis-componenttype.jnlp"/>
+    <delete file="jws/irmis-ioc.jnlp"/>
+    <delete file="jws/irmis-cable.jnlp"/>
+    <delete file="${src.dir}/irmis_jaas.config"/>
+    <delete file="${src.dir}/gov/anl/aps/irmis/apps/irmis/cfw/resources/About.properties"/>
+    <delete file="${deployroot}/irmisDeploy.tar"/>
+    <delete file="${deployroot}/component_history.war"/>
+  </target>
+
+</project>
+

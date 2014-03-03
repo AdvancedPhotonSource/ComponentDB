@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.login.Role" 
+         table="role" lazy="false" mutable="true">
+    
+    <id name="id" column="role_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_role</param>
+      </generator>
+    </id>
+
+    <many-to-one name="person" column="person_id" 
+                 class="gov.anl.aps.irmis.persistence.login.Person" 
+                 not-null="true"/>
+
+    <many-to-one name="roleName" column="role_name_id" 
+                 class="gov.anl.aps.irmis.persistence.login.RoleName" 
+                 not-null="true"/>
+
+  </class>
+  
+</hibernate-mapping>

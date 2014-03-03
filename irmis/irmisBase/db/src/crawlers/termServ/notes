@@ -1,0 +1,36 @@
+
+Terminal Server algorithms
+--------------------------
+
+termServ{"10.4.1.0"}  ="CTSINJB";
+termServ{"10.4.1.100"}="CTSINJA";
+termServ{"10.4.1.150"}="CTSMCR";
+termServ{"10.4.1.200"}="CTSSR02A";
+termServ{"10.4.2.0"}  ="CTSSR02B";
+termServ{"10.4.2.50"} ="CTSSR12A";
+termServ{"10.4.2.100"}="CTSRFA";
+termServ{"10.4.2.150"}="CTSSR12B";
+termServ{"10.4.2.200"}="CTSSR22A";
+termServ{"10.4.3.0"}  ="CTSSR22B";
+termServ{"10.4.3.50"} ="CTSSR32A";
+termServ{"10.4.3.100"}="CTSSR32B";
+
+fiberConvCh{0}="A";
+fiberConvCh{1}="B";
+fiberConvCh{2}="C";
+fiberConvCh{3}="D";
+
+consoleIP = ip1.ip2.ip3.ip4
+base = 50;
+termServPort = int(ip4)%base;
+floor = int(ip4/base)*base;
+termServIP = "ip1.ip2.ip3.floor";
+termServName = $termServ{$termServIP};
+
+base = 12;
+floor = int((termServPort-1)/base);
+termServFiberConvPort = termServPort - floor*base;
+termServFiberConvCh = fiberConvCh{floor};
+
+
+

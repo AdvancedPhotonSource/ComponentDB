@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id: build.xml,v 1.22 2012/06/28 19:45:02 saunders Exp $ -->
+<project basedir="." default="all" name="irmisDb">
+  
+  <target name="init">
+    <property name="deployroot" value="deploy"/>
+    <mkdir dir="${deployroot}"/>
+    <property name="name" value="irmisDb"/>
+    <property name="src.dir" value="src"/>
+    <property name="lib.dir" value="lib/java"/>
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="doc.api.dir" value="${build.dir}/docs"/>
+    <property name="test.dir" value="test"/>
+  </target>
+  
+  <path id="project.class.path">
+    <pathelement path="build/classes"/>
+    <!-- below fileset is subset of hibernate 3.1.3 with mysql connector -->
+    <fileset dir="lib/java">
+      <include name="asm.jar"/>
+      <include name="asm-attrs.jar"/>
+      <include name="antlr-2.7.6rc1.jar"/>
+      <include name="cglib-2.1.3.jar"/>
+      <include name="commons-collections-2.1.1.jar"/>
+      <include name="commons-logging-1.0.4.jar"/>
+      <include name="dom4j-1.6.1.jar"/>
+      <include name="hibernate3.jar"/>
+      <include name="jdom.jar"/>
+      <include name="jta.jar"/>
+      <include name="c3p0-0.9.0.jar"/>
+      <include name="mysql-connector-java-3.0.15-ga-bin.jar"/>
+      <include name="ojdbc14.jar"/>
+      <include name="servlet-api-2.5-6.1.8.jar"/>
+    </fileset>
+  </path>
+  
+  <target name="prepare" depends="init">
+    <mkdir dir="${classes.dir}"/>
+    <!-- instantiate templates using properties in site.build.properties -->
+    <dependset>
+      <srcfilelist dir=".." files="site.build.properties"/>
+      <targetfileset dir="${src.dir}">
+        <include name="db/java/hibernate.cfg.xml"/>
+        <include name="db/java/gov/anl/aps/irmis/persistence/HibernateUtil.java"/>
+        <include name="crawlers/pv/db.properties"/>
+        <include name="crawlers/adl/db.properties"/>
+        <include name="crawlers/alh/db.properties"/>
+        <include name="crawlers/sdds/db.properties"/>
+        <include name="crawlers/iocsr/db.properties"/>
+        <include name="crawlers/network/db.properties"/>
+        <include name="crawlers/aoi/db.properties"/>
+        <include name="crawlers/termServ/db.properties"/>
+        <include name="maintenance/rec_client/db.properties"/>
+      </targetfileset>
+    </dependset>
+    <filter filtersfile="../site.build.properties"/>
+    <copy file="${src.dir}/db/java/hibernate.cfg.xml.template"
+          tofile="${src.dir}/db/java/hibernate.cfg.xml" filtering="true"/>
+    <copy file="${src.dir}/db/java/gov/anl/aps/irmis/persistence/HibernateUtil.java.template"
+          tofile="${src.dir}/db/java/gov/anl/aps/irmis/persistence/HibernateUtil.java" filtering="true"/>
+    <copy file="${src.dir}/crawlers/pv/db.properties.template"
+          tofile="${src.dir}/crawlers/pv/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/adl/db.properties.template"
+          tofile="${src.dir}/crawlers/adl/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/alh/db.properties.template"
+          tofile="${src.dir}/crawlers/alh/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/sdds/db.properties.template"
+          tofile="${src.dir}/crawlers/sdds/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/iocsr/db.properties.template"
+          tofile="${src.dir}/crawlers/iocsr/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/network/db.properties.template"
+          tofile="${src.dir}/crawlers/network/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/aoi/db.properties.template"
+          tofile="${src.dir}/crawlers/aoi/db.properties" filtering="true"/>
+    <copy file="${src.dir}/crawlers/termServ/db.properties.template"
+          tofile="${src.dir}/crawlers/termServ/db.properties" filtering="true"/>
+    <copy file="${src.dir}/maintenance/rec_client/db.properties.template"
+          tofile="${src.dir}/maintenance/rec_client/db.properties" filtering="true"/>
+  </target>
+  
+  <target name="compile" depends="prepare">
+    <javac destdir="${classes.dir}"
+           debug="true"
+           deprecation="true"
+           optimize="false">
+      <src path="${src.dir}/db/java"/>
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target>
+
+  <target name="jarfile" depends="compile">
+    <copy todir="${classes.dir}"
+          overwrite="true">
+      <fileset dir="${src.dir}/db/java">
+        <exclude name="**/build.xml"/>
+        <include name="**/*.xml"/>
+      </fileset>
+    </copy>
+    <jar destfile="${build.dir}/${name}.jar"
+         basedir="${classes.dir}" duplicate="preserve">
+      <manifest>
+        <attribute name="Manifest-Version" value="1.0"/>
+        <attribute name="Class-Path" value=""/>
+      </manifest>
+      <!-- repack hibernate jars into this jar -->
+      <zipgroupfileset dir="${lib.dir}">
+        <patternset>
+          <include name="asm.jar"/>
+          <include name="asm-attrs.jar"/>
+          <include name="antlr-2.7.6rc1.jar"/>
+          <include name="cglib-2.1.3.jar"/>
+          <include name="commons-collections-2.1.1.jar"/>
+          <include name="commons-logging-1.0.4.jar"/>
+          <include name="dom4j-1.6.1.jar"/>
+          <include name="hibernate3.jar"/>
+          <include name="jdom.jar"/>
+          <include name="jdbc2_0-stdext.jar"/>
+          <include name="jta.jar"/>
+          <include name="c3p0-0.9.0.jar"/>
+          <include name="mysql-connector-java-3.0.15-ga-bin.jar"/>
+          <include name="ojdbc14.jar"/>
+        </patternset>
+      </zipgroupfileset>
+    </jar>
+  </target>
+
+  <target name="docs" depends="jarfile" >
+    <javadoc sourcepath="${src.dir}/db/java"
+             destdir="${doc.api.dir}" author="true" version="true" use="true"
+             windowtitle="IRMIS Persistence and Service Layer Documentation">
+      <classpath refid="project.class.path"/>
+      <packageset dir="${src.dir}/db/java">
+        <include name="gov/anl/aps/irmis/persistence/**"/>
+        <include name="gov/anl/aps/irmis/service/**"/>
+      </packageset>
+    </javadoc>
+  </target>
+
+  <target name="all" depends="jarfile">
+  </target>
+  
+  <target name="deploy" depends="all" description="Build tarballs for crawler deployment">
+    <!-- create the pvCrawlerDeploy tarball -->
+    <delete file="${deployroot}/pvCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/pvCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/pv" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+        <include name="path.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="pvCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+    <!-- create the adlCrawlerDeploy tarball -->
+    <delete file="${deployroot}/adlCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/adlCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/adl" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+        <include name="APSAdlDirectoryFile"/>
+        <include name="APSEdpDirectoryFile"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="adlCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+    <!-- create the alhCrawlerDeploy tarball -->
+    <delete file="${deployroot}/alhCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/alhCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/alh" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+        <include name="APSAlhDirectoryFile"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="alhCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- create the sddsCrawlerDeploy tarball -->
+    <delete file="${deployroot}/sddsCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/sddsCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/sdds" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="sddsCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- create the iocsrCrawlerDeploy tarball -->
+    <delete file="${deployroot}/iocsrCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/iocsrCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/iocsr" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="iocsrCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- create the networkCrawlerDeploy tarball -->
+    <delete file="${deployroot}/networkCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/networkCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/network" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="networkCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- create the aoiCrawlerDeploy tarball -->
+    <delete file="${deployroot}/aoiCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/aoiCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/aoi" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="aoiCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- create the termServCrawlerDeploy tarball -->
+    <delete file="${deployroot}/termServCrawlerDeploy.tar"/>
+    <tar destfile="${deployroot}/termServCrawlerDeploy.tar">
+      <tarfileset dir="${src.dir}/crawlers/termServ" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+        <include name="MySQLDBFunctions.pm"/>
+        <include name="OracleDBFunctions.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="termServCrawlerDeploy.tar is available in ${deployroot} dir. "/>
+
+    <!-- create the recClientDeploy tarball -->
+    <delete file="${deployroot}/recClientDeploy.tar"/>
+    <tar destfile="${deployroot}/recClientDeploy.tar">
+      <tarfileset dir="${src.dir}/maintenance/rec_client" mode="644" >
+        <include name="*.pm"/>
+        <include name="*.pl"/>
+        <include name="db.properties"/>
+      </tarfileset>
+      <tarfileset dir="${src.dir}/util/perl" mode="644">
+        <include name="Blowfish_PP.pm"/>
+        <include name="LogUtil.pm"/>
+      </tarfileset>
+    </tar>
+    <echo message="recClientDeploy.tar is available in ${deployroot} dir. "/>
+  </target>
+
+  <target name="clean" depends="init">
+    <delete file="${build.dir}/irmisDb.jar"/>
+    <delete dir="${classes.dir}"/>
+    <delete dir="${deployroot}"/>
+    <delete file="${src.dir}/db/java/hibernate.cfg.xml"/>
+    <delete file="${src.dir}/db/java/gov/anl/aps/irmis/persistence/HibernateUtil.java"/>
+    <delete file="${src.dir}/crawlers/pv/db.properties"/>
+    <delete file="${src.dir}/crawlers/adl/db.properties"/>
+    <delete file="${src.dir}/crawlers/alh/db.properties"/>
+    <delete file="${src.dir}/crawlers/iocsr/db.properties"/>
+    <delete file="${src.dir}/crawlers/network/db.properties"/>
+    <delete file="${src.dir}/maintenance/rec_client/db.properties"/>
+  </target>
+
+</project>

@@ -1,0 +1,3 @@
+# EPICS_DISPLAY_PATH directories
+/usr/local/iocapps/adlsys
+/home/helios2/xfdsys/op/adl

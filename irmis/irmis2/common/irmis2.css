@@ -1,0 +1,831 @@
+/* Table Tag Selectors */
+th {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	background-color: #9999CC;
+	text-align: center;
+  }
+
+td {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-style: normal;
+	font-weight: normal;
+  }
+
+/* Header Tag Selectors */
+h3 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	color: #000000;
+	font-style: normal;
+	text-transform: none;
+	text-align: left;
+	vertical-align: top;
+  }
+
+h4 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	font-style: normal;
+	text-transform: none;
+	text-align: left;
+	vertical-align: top;
+  }
+
+h5 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-style: normal;
+	font-weight: bold;
+	text-transform: none;
+	color: #000000;
+	text-align: left;
+	vertical-align: top;
+  }
+
+/* Form Tag Selectors */
+.reportbuttons {
+	width: 130px;
+	background-color: #FFFF00;
+	color: #000000;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 12px;
+  }
+
+.buttons {
+	background-color:#FFFF00;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size:12px;
+	font-weight: bold;
+	width: 64px;
+  }
+
+.textentry {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background-color: #EEEEEE;
+	width: 170px;
+  }
+
+.textbox {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	white-space: normal;
+	background-color: #EEEEEE;
+  }
+
+.pulldown {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	width: 172px;
+	background-color: #EEEEEE;
+	color: #000000;
+  }
+
+.gstbutton {
+	background-color:#FFFF00;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size:12px;
+	font-weight: bold;
+	width: 64px;
+	height: 22px;
+  }
+
+.info_button {
+	width: 160px;
+	background-color: #ccccff;
+  }
+
+.buttonposition {
+	position: absolute;
+	left: 26px;
+  }
+
+.buttonswide {
+	background-color:#FFFF00;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size:12px;
+	width: 172px;
+  }
+
+/* Hyperlink Class Selectors */
+.hyper:link, .hyper:visited {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #0000FF;
+  }
+
+.hyper:hover {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #9900ff;
+  }
+  
+.middle {
+	vertical-align:middle;
+  }
+  
+/* Image pop ups and links */  
+.imagepopup {
+	position:relative;
+	z-index:0;
+}
+ 
+.imagepopup:hover {
+	background-color: transparent;
+	z-index:50;
+  }
+  
+.imagepopup span {
+	position:absolute;
+	background-color: #CCC;
+	padding:3px;
+	left:-1000px;
+	visibility: hidden;
+	z-index:2;
+	text-align:center;
+	color:#00F;
+	border:outset;
+	border-color:#000;
+	border-width:1px;
+  }
+  
+.imagepopup span img {
+	border-width:0;
+	padding:2px;
+	width:200px;
+}
+
+.imagepopup:hover span {
+	visibility:visible;
+	top:0;
+	left:100px;
+}
+
+/* IRMIS Main Page Image Placement ID Selectors */
+#container {
+	background-color: #DDDDDD;
+	height: 687px;
+	width: 100%;
+	margin-top: 93px;
+	margin-left: 178px;
+	z-index: 0;
+  }  
+
+#container1 {
+	z-index:2;
+	position: absolute;
+	left: 178px;
+	top: 110px;
+  }
+
+#container2 {
+	z-index:2;
+	position: absolute;
+	left: 178px;
+	top: 90px;
+  }
+
+#container3 {
+	z-index:2;
+	position: absolute;
+	left: 178px;
+	top: 580px;
+  }
+
+#container4 {
+	z-index:2;
+	position: absolute;
+	left: 946px;
+	top: 570px;
+  }
+
+#container5 {
+	z-index:2;
+	position: absolute;
+	left: 946px;
+	top: 90px;
+  }
+
+/* Web Desktop Help Tag Selectors and Class Selectors */
+#help {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	z-index:2;
+	position: absolute;
+	left: 0px;
+	top: 576px;
+	font-weight: bold;
+	background: #CCCCCC;
+	width: 182px;
+  }
+
+.helptext {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	position: absolute;
+	margin: 15px;
+  }
+	  
+.helplist {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	list-style-type: square;
+  }
+
+.helplist1 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	list-style-type: circle;
+  }
+  
+.helplist2 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	list-style-type: disc;
+  }  
+	  
+.helpparagraph {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-indent: 15px;
+	margin: 20px;
+  }
+
+.helpparagraph:first-letter {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #06C;
+	font-weight: bold;
+	font-size: 18px;
+	font-style: oblique;
+  }
+	  
+.title {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	margin-top: 70px;
+	color: #06C;
+  }
+
+.titlesmall {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	font-size: 16px;
+  }
+
+.maintitle {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size:36px;
+	text-align: center;
+	margin: 50px;
+  }
+
+.author {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size:14px;
+	margin-top: 70px;
+	margin-bottom: 70px;
+	color: #06F;
+	font-weight: bold;
+  }
+
+/* IRMIS Main Page Menu ID Selectors for Criteria Placement */
+#main_criteria_1 {
+	z-index:2;
+	position: absolute;
+	left: 5px;
+	top: 20px;
+  }
+
+#main_criteria_2 {
+	z-index:2;
+	position: absolute;
+	left: 5px;
+	top: 350px;
+  }
+
+#main_criteria_3 {
+	z-index:2;
+	position: absolute;
+	left: 0px;
+	top: 552px;
+	background-color: #CCCCCC;
+	width: 182px;
+	height: 48px;
+  }
+  
+#servers {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	z-index:2;
+	position: absolute;
+	left: 0px;
+	top: 600px;
+	width: 184px;
+  }  
+
+.criteria {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	margin-left: 3px;
+	color: #039;
+  }
+
+.menu {
+	  display:block;
+	  height:15px;
+	  padding: 3px;
+	  padding-left:5px;
+	  margin: 1px;
+	  margin-left:2px;
+	  width:154px;
+	  font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	  font-size:14px;
+	  color:#fff;
+	  
+  }
+  
+.menu:link,.menu:visited {
+	  background: #666666;
+	  font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	  border-bottom:2px outset#000;
+	  border-right:2px outset#000;
+	  text-decoration:none;  
+  }
+  
+.menu:hover,.menu:focus {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	color:#000;
+	font-weight:600;
+	border-bottom:2px outset#8888bb;
+	border-right:2px outset#8888bb;
+	text-decoration:none;
+	background-color: #96C;
+	font-size:13px;
+  }
+  
+.menu:active {
+	  background:#888888;
+	  border-bottom:2px outset#000;
+	  border-right:2px outset#000;
+  }
+  
+  
+  
+  
+  
+.primwarning {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #FF0000;
+	margin-left: 9px;
+	width: 640px;
+	margin-top: 164px;
+	text-align: center;
+	position: absolute;
+	padding: 4px;	
+}
+
+.secwarning {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #FF0000;
+	margin-left: 670px;
+	width: 640px;
+	margin-top: 164px;
+	text-align: center;
+	position: absolute;
+	padding: 4px;
+}
+  
+.netHeader {
+	z-index: 2;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: large;
+	font-weight: bold;
+	text-align: center;
+	background-color: #7777bb;
+}
+
+.netCon {
+	z-index: 2;
+	top: 98px;
+	display: block;
+	position: absolute;
+	left: 8px;
+}
+
+.iocPrim {
+	z-index: 2;
+	left: 9px;
+	top: 172px;
+	width: 660px;
+	height: 510px;
+	position: absolute;
+	display:block;
+}
+
+.iocSec {
+	z-index: 2;
+	left: 672px;
+	top: 172px;
+	width: 660px;
+	height: 510px;
+	position: absolute;
+	display:block;
+}
+
+.slot {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	background-color: #9999CC;
+	text-align: center;
+  }
+
+.cable {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	background-color: #999999;
+	text-align: center;
+  }
+
+.results {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	padding-left: 10px;
+  }
+
+.resulttitle {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	text-align: left;
+	text-indent: 5px;
+  }
+
+.value {
+	background-color: #CCCCFF;
+	color: #000000;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	text-align: center;
+  }
+
+.valuebold {
+	background-color: #CCCCFF;
+	color: #000000;
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  }
+
+.bold {
+	font-weight: bold;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	padding-left: 10px;
+  }
+
+.dim {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #CCC;	
+	font-size: 14px;
+	text-align: left;
+	font-weight: normal;
+	padding-left: 8px;
+	padding-right: 8px;
+  }
+
+.center {
+	text-align: center;
+  }
+  
+.background {
+	vertical-align: middle;
+	margin-top: 4%;
+	margin-left: 6%;
+	width: auto;
+	height: auto;
+  }
+
+.terminal {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #7777bb;
+	text-align: left;
+	text-indent: 5px;
+	font-weight: bold;
+  }
+
+.primary {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #889988;
+	text-align: left;
+	padding-left: 8px;
+	padding-right: 8px;
+	font-weight: bold;
+  }
+
+.primarynormal {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #889988;
+	text-align: left;
+	text-indent: 5px;
+	font-weight: normal;
+  }
+
+.primarynormalsmall {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #889988;
+	text-align: left;
+	text-indent: 5px;
+	font-weight: normal;
+	font-size: 12px;
+  }
+
+.cableboldsmallcenter {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #dddddd;
+	text-align: center;
+	font-weight: bold;
+	font-size: 12px;
+  }
+
+.cableboldsmall {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #dddddd;
+	text-align: left;
+	font-weight: bold;
+	text-indent: 5px;
+	font-size: 12px;
+  }
+
+.port {
+	background-color: #FC9;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	text-align: left;
+	font-weight: normal;
+	text-indent: 5px;
+  }
+
+.secondary {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #669988;
+	text-align: left;
+	text-indent: 5px;
+	font-weight: bold;
+  }
+
+.chc {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #778877;
+	text-align: left;
+	text-indent: 5px;
+	font-weight: bold;
+  }
+
+.params {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	background-color: #9966CC;
+	text-align: left;
+	text-indent: 5px;
+  }
+
+.warning {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	background-color: #FF0000;
+  }
+
+.searchCriteria {
+	background-color: #dddddd;
+	position: absolute;
+	z-index: 1;
+	height: 683px;
+	width: 185px;
+	left: 0px;
+	top: 96px;
+	border-top: none;
+	border-right: 3px ridge;
+	border-bottom: 3px ridge;
+	border-left: none;
+  }
+
+.searchResults {
+	overflow: auto;
+	z-index: 1;
+	height: 683px;
+	width: auto;
+	border-top: 3px ridge;
+	border-right: 3px ridge;
+	border-bottom: 3px ridge;
+	border-left: none;
+	background-color: #FFFFFF;
+	margin-left: 178px;
+	margin-top: 93px;
+	min-width: 896px;
+  }
+
+.divider {
+	color: #06F;
+	font-weight: bolder;
+	font-size: 18px;
+  }
+
+.header {
+	position: absolute;
+	z-index: 1;
+	height: 90px;
+	width: 100%;
+	left: 0px;
+	top: 6px;
+	vertical-align: middle;
+	background-image: url(images/header_bkgnd.png);
+	background-repeat: repeat-x;
+  }
+
+.irmis2ReportSelection {
+	background-color: #dddddd;
+	position: absolute;
+	z-index: 2;
+	height: 683px;
+	width: 185px;
+	left: 0px;
+	top: 96px;
+	border-top: none;
+	border-right: 3px ridge;
+	border-bottom: 3px ridge;
+	border-left: none;
+  }
+
+.irmis2Main {
+	position: absolute;
+	z-index: 2;
+	height: 460px;
+	width: 200px;
+	left: 186px;
+	top: 96px;
+	border: 1px none #000000;
+	background-color:#FFFFFF;
+  }
+
+.serverbackground {
+	background-color:#CCCCCC;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size:12px;
+	width: 210px;
+  }
+
+.titlecenter {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	text-align: center;
+  }
+
+.titlelink {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	text-align: center;
+  }
+
+img {
+	border: 0px none;
+  }
+
+.valuedim {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #555555;
+	font-weight: bold;
+	background-color: #778877;
+	text-align: left;
+	text-indent: 5px;
+  }
+
+.titleleft {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	text-align: left;
+	text-indent: 5px;
+  }
+
+.titleheading {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	color: #039;
+	text-align: left;
+	text-indent: 5px;
+  }
+
+.resulttext {
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	color: #000000;
+	text-align: left;
+	font-weight: normal;
+	padding-left: 8px;
+	padding-right: 8px;
+  }
+
+.resulttextsmallcontrast {
+	background-color: #ccddcc;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	text-align: left;
+	font-weight: normal;
+	text-indent: 5px;
+  }
+
+.resulttextsmall {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	color: #000000;
+	text-align: left;
+	font-weight: normal;
+	text-indent: 5px;
+  }
+
+.resulttextbold {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #000000;
+	text-align: left;
+	text-indent: 5px;
+  }
+
+
+.NetResultsLeft {
+	background-color: #ffffff;
+	border-right-width: 3px;
+	border-bottom-width: 3px;
+	border-top-style: none;
+	border-right-style: ridge;
+	border-bottom-style: ridge;
+	border-left-style: none;
+	overflow: auto;
+	position: absolute;
+	z-index: 1;
+	height: 683px;
+	width: 500px;
+	left: 186px;
+	top: 96px;
+	display:block;
+  }
+
+.NetResultsRight {
+	background-color: #FFFFFF;
+	overflow: auto;
+	position: absolute;
+	/*margin-right: 5px;*/
+	/*z-index: 1;*/
+	height: 683px;
+    width: auto;
+	min-width: 440px;
+	left: 684px;
+	top: 96px;
+	border-right-width: 3px;
+	border-bottom-width: 3px;
+	border-left-width: 3px;
+	border-right-style: ridge;
+	border-bottom-style: ridge;
+	border-left-style: ridge;
+  }
+
+.pri {
+	font-weight: bold;
+	color: #9900FF;
+	text-indent: 5px;
+  }
+
+.sec {
+	font-weight: bold;
+	color: #336600;
+	text-indent: 5px;
+  }
+
+.valueright {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: #000000;
+	background-color: #CCCCFF;
+	text-align: right;
+	font-size: small;
+	vertical-align: middle;
+  }
+
+.reporttextentry {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background-color: #EEEEEE;
+	width: 360px;
+	height: 70px;
+  }
+.textwarning {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	color: #FF0000;
+	padding-left: 10px;
+  }

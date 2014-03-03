@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.RecordType" 
+         table="rec_type" lazy="true" mutable="false">
+    
+    <id name="id" column="rec_type_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_rec_type</param>
+      </generator>
+    </id>
+
+    <many-to-one name="iocBoot" column="ioc_boot_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.IOCBoot" 
+                 not-null="true"/>
+
+    <many-to-one name="iocResource" column="ioc_resource_id"
+                 class="gov.anl.aps.irmis.persistence.pv.IOCResource"
+                 not-null="true"/>
+
+    <set name="fieldTypes" sort="gov.anl.aps.irmis.persistence.IRMISDataObjectIdComparator" 
+         inverse="true" cascade="all" lazy="true">
+      <key column="rec_type_id"/>
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.pv.FieldType"/>
+    </set>
+
+    <property name="recordType" type="string" column="rec_type"/>
+  </class>
+  
+</hibernate-mapping>

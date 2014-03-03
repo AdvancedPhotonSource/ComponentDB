@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.RecordClient" 
+         table="rec_client" lazy="true" mutable="false">
+    
+    <id name="id" column="rec_client_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_rec_client</param>
+      </generator>
+    </id>
+
+    <many-to-one name="vuri" column="vuri_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.VURI" 
+                 not-null="true"/>
+
+    <property name="clientTypeId" type="long" column="rec_client_type_id"/>
+    <property name="recordName" type="string" column="rec_nm"/>
+    <property name="fieldType" type="string" column="fld_type"/>
+    <property name="currentLoad" type="boolean" column="current_load"/>
+  </class>
+  
+</hibernate-mapping>

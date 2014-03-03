@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.ComponentType" 
+         table="component_type" mutable="true">
+    
+    <id name="id" column="component_type_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component_type</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="formFactor" column="form_factor_id" 
+                 class="gov.anl.aps.irmis.persistence.component.FormFactor" />
+
+    <many-to-one name="manufacturer" column="mfg_id" 
+                 class="gov.anl.aps.irmis.persistence.component.Manufacturer" />
+
+    <many-to-one name="beamlineInterest" column="chc_beamline_interest_id"
+                 class="gov.anl.aps.irmis.persistence.component.BeamlineInterest" />
+
+    <many-to-one name="chcContact" column="chc_contact_id"
+                 class="gov.anl.aps.irmis.persistence.login.Person" />
+
+    <one-to-one name="componentTypeStatus"
+                class="gov.anl.aps.irmis.persistence.component.ComponentTypeStatus"
+                cascade="all" lazy="false"
+                property-ref="componentType"/>
+
+    <list name="componentPortTemplates" inverse="true" cascade="all" lazy="true">
+      <key column="component_type_id"/>
+      <index column="component_port_order"/>      
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentPortTemplate"/>
+    </list>
+
+    <set name="componentTypeFunctions" inverse="true" cascade="all-delete-orphan" lazy="true">
+      <key column="component_type_id"/>
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentTypeFunction"/>
+    </set>
+
+    <set name="componentTypeInterfaces" inverse="true" cascade="all" lazy="true">
+      <key column="component_type_id"/>
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentTypeInterface"/>
+    </set>
+
+    <set name="componentTypePersons" inverse="true" cascade="all-delete-orphan" lazy="true">
+      <key column="component_type_id"/>
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentTypePerson"/>
+    </set>
+
+    <set name="componentTypeDocuments" inverse="true" cascade="all-delete-orphan" lazy="true">
+      <key column="component_type_id"/>
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentTypeDocument"/>
+    </set>
+
+    <property name="componentTypeName" column="component_type_name" type="string"/>
+    <property name="description" column="description" type="string"/>
+    <property name="verboseDescription" column="vdescription" type="string"/>
+    <property name="markForDelete" column="mark_for_delete" type="boolean"/>
+  </class>
+  
+</hibernate-mapping>

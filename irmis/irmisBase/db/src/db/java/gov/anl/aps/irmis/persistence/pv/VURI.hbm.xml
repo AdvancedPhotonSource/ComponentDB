@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.VURI" 
+         table="vuri" lazy="true" mutable="false">
+    
+    <id name="id" column="vuri_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_vuri</param>
+      </generator>
+    </id>
+
+    <set name="edges" cascade="none" lazy="true">
+      <key column="child_vuri_id"/>
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.pv.VURIRelationship"/>
+    </set>
+
+    <many-to-one name="uri" column="uri_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.URI" 
+                 not-null="true"/>
+
+  </class>
+  
+</hibernate-mapping>

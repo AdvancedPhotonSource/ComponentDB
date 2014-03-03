@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+
+Copyright (c) 2004-2005 The University of Chicago, as Operator
+of Argonne National Laboratory.
+
+-->
+</head>
+<body bgcolor="white">
+
+Provides java transactional service layer for IRMIS. This is the primary public-facing
+API for developing applications based on an IRMIS database. Each method is static and
+transactional. This service layer maintains no state from method to method, although the
+object graphs produced and used as subsequent arguments to other methods may.
+The classes in this package support the IRMIS business-specific sub-packages, such as "pv"
+and "component".
+The base classes for IRMISService and IRMISException reside here.
+
+<h2>Related Documentation</h2>
+
+The IRMIS service layer is based on an underlying DAO (Data Access Object) persistence layer 
+implemented via the open-source ORM (Object-Relational Mapping) tool Hibernate. We are using 
+verson 3.1.3 of Hibernate.
+<ul>
+  <li><a href="../persistence/package-summary.html">IRMIS Persistence Layer</a>
+  <li><a href="http://www.hibernate.org">Hibernate ORM (Object-Relational Mapping)</a>
+</ul>
+<p>
+For overview of IRMIS, please see:
+<ul>
+  <li><a href="http://www.aps.anl.gov/epics/irmis/">IRMIS Site</a>
+  <li><a href="http://www.aps.anl.gov/epics/irmis/Primer.pdf">IRMIS Primer (pdf)</a>
+</ul>
+
+<!-- Put @see and @since tags down here. -->
+
+</body>
+</html>

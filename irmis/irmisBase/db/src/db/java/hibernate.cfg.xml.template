@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+ "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<!-- Hibernate configuration file for IRMIS Java DB Access layer -->
+<!--   author: Claude Saunders (saunders@aps.anl.gov) -->
+<hibernate-configuration>
+  <session-factory>
+    <property name="show_sql">@hibernate.show_sql@</property>
+    <property name="max_fetch_depth">1</property>
+    <property name="connection.username">@db.trust-read-write.username@</property>
+    <property name="connection.password">@db.trust-read-write.password@</property>
+    <property name="dialect">@hibernate.dialect@</property>
+    <property name="current_session_context_class">jta</property>
+    <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+    <property name="connection.url">@db.connection.url@</property>
+    <property name="connection.driver_class">@db.connection.driver@</property>
+    <property name="connection.release_mode">after_transaction</property>
+    <!-- configuration pool via c3p0--> 
+    <property name="c3p0.acquire_increment">1</property> 
+    <property name="c3p0.idle_test_period">120</property> <!-- seconds --> 
+    <property name="c3p0.max_size">5</property> 
+    <property name="c3p0.max_statements">0</property> 
+    <property name="c3p0.min_size">1</property> 
+    <property name="c3p0.timeout">240</property> <!-- seconds --> 
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/IOC.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/IOCStatus.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/APSIOC.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/IOCBoot.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/IOCResource.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/URI.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/RecordType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/FieldType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/Record.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/Field.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/RecordClient.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/VURI.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/pv/VURIRelationship.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/login/Person.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/login/Role.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/login/RoleName.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/login/GroupName.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentPortTemplate.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentPortType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentRelationshipType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentTypePerson.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentTypeDocument.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentTypeFunction.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/BaseComponentType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentTypeInterface.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentTypeInterfaceType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentTypeStatus.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/FormFactor.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/Function.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/Manufacturer.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/PortPinDesignator.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/PortPinTemplate.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/PortPinType.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/Component.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/APSComponent.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentPort.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/PortPin.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/Conductor.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/Cable.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/ComponentRelationship.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/component/BeamlineInterest.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/componenthistory/ComponentInstance.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/componenthistory/ComponentInstanceState.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/componenthistory/ComponentState.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/componenthistory/ComponentStateCategory.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/audit/AuditAction.hbm.xml"/>
+    <mapping resource="gov/anl/aps/irmis/persistence/audit/AuditActionType.hbm.xml"/>
+  </session-factory>
+</hibernate-configuration>
+              
+

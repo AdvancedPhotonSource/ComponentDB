@@ -1,0 +1,5 @@
+SHELL=/bin/sh
+MAILTO=saunders@aps.anl.gov
+
+0,30,47 * * * * /local/home/IRMIS/pvcrawler/run_crawler.sh
+

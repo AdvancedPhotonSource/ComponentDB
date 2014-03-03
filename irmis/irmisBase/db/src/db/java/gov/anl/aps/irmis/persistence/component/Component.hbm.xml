@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.Component" 
+         table="component" mutable="true">
+    
+    <id name="id" column="component_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="componentType" column="component_type_id" 
+                 class="gov.anl.aps.irmis.persistence.component.ComponentType" 
+                 not-null="true" />
+
+    <one-to-one name="apsComponent"
+                class="gov.anl.aps.irmis.persistence.component.APSComponent"
+                cascade="all" lazy="false"
+                property-ref="component"/>
+
+    <list name="componentPorts" inverse="true" cascade="all" lazy="true">
+      <key column="component_id"/>
+      <index column="component_port_order"/>      
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentPort"/>
+    </list>
+
+    <!-- we get these all in one query here, but break them out by type in java class -->
+    <bag name="parentRelationships" inverse="true" cascade="all" lazy="true"
+         where="mark_for_delete=0">
+      <key column="child_component_id"/>
+      <one-to-many
+          class="gov.anl.aps.irmis.persistence.component.ComponentRelationship"/>
+    </bag>
+
+    <list name="controlChildRelationships" inverse="true" cascade="all" lazy="true"
+          where="mark_for_delete=0 and component_rel_type_id=1">
+      <key column="parent_component_id" not-null="true"/>
+      <index column="logical_order"/>      
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentRelationship"/>
+    </list>
+
+    <list name="housingChildRelationships" inverse="true" cascade="all" lazy="true"
+          where="mark_for_delete=0 and component_rel_type_id=2"> 
+      <key column="parent_component_id" not-null="true"/>
+      <index column="logical_order"/>      
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentRelationship"/>
+    </list>
+
+    <list name="powerChildRelationships" inverse="true" cascade="all" lazy="true"
+          where="mark_for_delete=0 and component_rel_type_id=3">
+      <key column="parent_component_id" not-null="true"/>
+      <index column="logical_order"/>      
+      <one-to-many 
+          class="gov.anl.aps.irmis.persistence.component.ComponentRelationship"/>
+    </list>
+    
+    <property name="componentName" column="component_instance_name" type="string" />
+    <property name="imageURI" column="image_uri" type="string" />
+    <property name="markForDelete" column="mark_for_delete" type="boolean"/>
+  </class>
+  
+</hibernate-mapping>

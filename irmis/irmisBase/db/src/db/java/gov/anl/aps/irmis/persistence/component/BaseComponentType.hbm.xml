@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.BaseComponentType" 
+         table="base_component_type" mutable="true">
+    
+    <id name="id" column="base_component_type_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_base_component_type</param>
+      </generator>
+    </id>
+
+    <property name="componentTypeName" column="component_type_name" type="string"/>
+  </class>
+  
+</hibernate-mapping>

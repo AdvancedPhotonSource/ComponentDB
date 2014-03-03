@@ -1,0 +1,1 @@
+<form id="reportResults" Method ="Post" action ="../report/action_report_form.php">

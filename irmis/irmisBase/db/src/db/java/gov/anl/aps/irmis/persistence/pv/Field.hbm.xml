@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.Field" 
+         table="fld" lazy="true" mutable="false">
+    
+    <id name="id" column="fld_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_fld</param>
+      </generator>
+    </id>
+
+    <many-to-one name="fieldType" column="fld_type_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.FieldType"
+                 not-null="true"/>
+
+    <many-to-one name="record" column="rec_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.Record" 
+                 not-null="true"/>
+
+    <many-to-one name="iocResource" column="ioc_resource_id"
+                 class="gov.anl.aps.irmis.persistence.pv.IOCResource"/>
+
+    <property name="fieldValue" type="string" column="fld_val"/>
+  </class>
+  
+</hibernate-mapping>

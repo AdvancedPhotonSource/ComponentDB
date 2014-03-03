@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.ComponentRelationshipType" 
+         table="component_rel_type" mutable="true" lazy="true">
+    
+    <id name="id" column="component_rel_type_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component_rel_type</param>
+      </generator>
+    </id>
+
+    <property name="relationshipType" column="rel_name" type="string"/>
+
+  </class>
+  
+</hibernate-mapping>

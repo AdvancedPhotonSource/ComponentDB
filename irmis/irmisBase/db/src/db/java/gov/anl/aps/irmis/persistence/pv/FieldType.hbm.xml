@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.FieldType" 
+         table="fld_type" mutable="false">
+    
+    <id name="id" column="fld_type_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_fld_type</param>
+      </generator>
+    </id>
+
+    <many-to-one name="recordType" column="rec_type_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.RecordType" 
+                 not-null="true"/>
+
+    <property name="fieldType" type="string" column="fld_type"/>
+    <property name="dbdType" type="string" column="dbd_type"/>
+    <property name="defaultFieldValue" type="string" column="def_fld_val"/>
+  </class>
+  
+</hibernate-mapping>

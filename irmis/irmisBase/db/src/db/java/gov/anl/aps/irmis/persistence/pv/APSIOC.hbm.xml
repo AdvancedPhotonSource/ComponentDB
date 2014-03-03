@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<!-- Note that this mapping is not required for the base configuration of 
+IRMIS, although we supply it as an example. There is a corresponding plug-in
+for the Java IRMIS desktop which uses this mapping. You may implement your own
+table, mapping, and plug-in as needed. -->
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.APSIOC" 
+         table="aps_ioc" lazy="true" mutable="true">
+    
+    <id name="id" column="aps_ioc_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_aps_ioc</param>
+      </generator>
+    </id>
+
+    <many-to-one name="ioc" column="ioc_id" 
+                 class="gov.anl.aps.irmis.persistence.pv.IOC" 
+                 not-null="true"/>
+
+    <many-to-one name="cogDeveloper" column="cog_developer_id" 
+                 class="gov.anl.aps.irmis.persistence.login.Person" />
+
+    <many-to-one name="cogTechnician" column="cog_technician_id" 
+                 class="gov.anl.aps.irmis.persistence.login.Person" />
+
+    <property name="location" type="string" column="location"/>
+    <property name="termServRackNo" type="string" column="TermServRackNo"/>
+    <property name="termServName" type="string" column="TermServName"/>
+    <property name="termServPort" type="int" column="TermServPort"/>
+    <property name="termServFiberConvCh" type="string" column="TermServFiberConvCh"/>
+    <property name="termServFiberConvPort" type="int" column="TermServFiberConvPort"/>
+    <property name="primEnetSwRackNo" type="string" column="PrimEnetSwRackNo"/>
+    <property name="primEnetSwitch" type="string" column="PrimEnetSwitch"/>
+    <property name="primEnetBlade" type="string" column="PrimEnetBlade"/>
+    <property name="primEnetPort" type="int" column="PrimEnetPort"/>
+    <property name="primEnetMedConvCh" type="string" column="PrimEnetMedConvCh"/>
+    <property name="primMediaConvPort" type="int" column="PrimMediaConvPort"/>
+    <property name="secEnetSwRackNo" type="string" column="SecEnetSwRackNo"/>
+    <property name="secEnetSwitch" type="string" column="SecEnetSwitch"/>
+    <property name="secEnetBlade" type="string" column="SecEnetBlade"/>
+    <property name="secEnetPort" type="int" column="SecEnetPort"/>
+    <property name="secEnetMedConvCh" type="string" column="SecEnetMedConvCh"/>
+    <property name="secMedConvPort" type="int" column="SecMedConvPort"/>
+    <property name="generalFunctions" type="string" column="general_functions"/>
+    <property name="preBootInstr" type="string" column="pre_boot_instr"/>
+    <property name="postBootInstr" type="string" column="post_boot_instr"/>
+    <property name="powerCycleCaution" type="string" column="power_cycle_caution"/>
+    <property name="sysResetRequired" type="boolean" column="sysreset_reqd"/>
+    <property name="inhibitAutoReboot" type="boolean" column="inhibit_auto_reboot"/>
+  </class>
+  
+</hibernate-mapping>

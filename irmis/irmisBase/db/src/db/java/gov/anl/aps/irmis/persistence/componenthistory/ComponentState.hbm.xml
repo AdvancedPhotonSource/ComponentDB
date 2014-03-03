@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.componenthistory.ComponentState" 
+         table="component_state" lazy="true" mutable="false">
+    
+    <id name="id" column="component_state_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component_state</param>
+      </generator>
+    </id>
+
+    <many-to-one name="componentStateCategory" column="component_state_category_id" 
+                 class="gov.anl.aps.irmis.persistence.componenthistory.ComponentStateCategory" 
+                 not-null="true" />
+
+    <property name="state" type="string" column="state"/>
+
+  </class>
+  
+</hibernate-mapping>

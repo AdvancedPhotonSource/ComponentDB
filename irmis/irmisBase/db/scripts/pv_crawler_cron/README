@@ -1,0 +1,11 @@
+This directory contains a script and cron entry which can be used to
+establish a periodic run of the pv_crawler script.
+
+You paste the text in cron.entry into an appropriate crontab, which
+then runs the high level run_crawler.sh script. 
+
+All this is not as-of-yet packaged up into a deployment tarball, as
+this mechanism is still preliminary.
+
+Questions to: saunders@aps.anl.gov, dohan@aps.anl.gov
+

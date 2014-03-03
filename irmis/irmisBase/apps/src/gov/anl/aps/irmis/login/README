@@ -1,0 +1,51 @@
+IRMIS Desktop authentication and authorization
+   - Claude Saunders
+
+Implemented using a Sun Java JAAS compliant solution. 
+There are quite a few files in this directory, so I
+hope to explain what is what here.
+
+LoginUtil.java
+---------------
+This is the entry point for the whole login mechanism.
+The login/logout methods do just that. These can be 
+directly called from the menu actions of the application.
+The login method pops up a dialog (LoginDialog.java)
+requesting username and password, after which it 
+invokes the JAAS login module that has been configured 
+(see the irmis.login property of site.build.properties). 
+
+The registerProtectedComponent method is used to
+register Java Swing components along with a set of
+roles that are required for that component to be used.
+When a user logs in, those components will be enabled.
+if the user possesses those roles (more later).
+
+The isPermitted method can be used to programatically
+decide whether a block of code should be executed or not.
+
+APSLoginModule.java and DoNothingLoginModule.java
+--------------------------------------------------
+These are two JAAS LoginModule provided with irmisBase.
+The APSLoginModule uses LDAP to authenticate the user,
+and the irmis database to retrieve the set of roles
+for that user. The DoNothingLoginModule always
+authenticates the user, and adds all known roles
+(ie. it does no access to external resources).
+
+DummyTrustManager.java and DummySSLSocketFactory.java
+-----------------------------------------------------
+These files are used by APSLoginModule to circumvent
+java's somewhat annoying server certificate check when
+accessing LDAP via SSL.
+
+UserPrincipal.java and RolePrincipal.java
+-----------------------------------------
+These are JAAS concepts which are used to hold
+a user's userid and set of allowed roles.
+
+SimpleCallbackHandler.java
+--------------------------
+A trivial implementation of a userid/password container
+required by JAAS.
+

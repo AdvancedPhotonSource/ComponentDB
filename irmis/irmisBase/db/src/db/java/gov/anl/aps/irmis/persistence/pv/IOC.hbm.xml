@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.pv.IOC" 
+         table="ioc" mutable="true">
+    
+    <id name="id" column="ioc_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_ioc</param>
+      </generator>
+    </id>
+
+    <many-to-one name="component"
+                 class="gov.anl.aps.irmis.persistence.component.Component"
+                 column="component_id"
+                 not-null = "false"
+                 cascade="save-update"/>
+
+    <many-to-one name="status"
+                 class="gov.anl.aps.irmis.persistence.pv.IOCStatus"
+                 column="ioc_status_id"
+                 not-null = "true"
+                 cascade="save-update"/>
+
+    <property name="iocName" column="ioc_nm" type="string"/>
+    <property name="system" column="system" type="string"/>
+    <property name="active" column="active" type="boolean"/>
+    <property name="modifiedDate" type="timestamp" column="modified_date"/>
+    <property name="modifiedBy" type="string" column="modified_by"/>
+  </class>
+  
+</hibernate-mapping>

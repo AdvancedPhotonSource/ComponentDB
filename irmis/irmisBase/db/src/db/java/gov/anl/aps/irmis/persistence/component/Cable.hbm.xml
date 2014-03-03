@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.component.Cable" 
+         table="cable" mutable="true">
+    
+    <id name="id" column="cable_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_cable</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="componentPortA" column="component_port_a_id" 
+                 class="gov.anl.aps.irmis.persistence.component.ComponentPort" 
+                 not-null="false" cascade="none"/>
+
+    <many-to-one name="componentPortB" column="component_port_b_id" 
+                 class="gov.anl.aps.irmis.persistence.component.ComponentPort" 
+                 not-null="false" cascade="none"/>
+
+    <property name="label" column="label" type="string"/>
+    <property name="color" column="color" type="string"/>
+    <property name="pinDetail" column="pin_detail" type="boolean"/>
+    <property name="virtual" column="virtual" type="boolean"/>
+    <property name="destinationDescription" column="dest_desc" type="string"/>
+    <property name="markForDelete" column="mark_for_delete" type="boolean"/>
+  </class>
+  
+</hibernate-mapping>

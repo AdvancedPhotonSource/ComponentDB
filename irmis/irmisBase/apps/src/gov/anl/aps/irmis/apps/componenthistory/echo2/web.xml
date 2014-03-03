@@ -1,0 +1,32 @@
+<!DOCTYPE web-app 
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+    <display-name>IRMIS Component History Application</display-name>
+    <description>
+        Application for searching and entering component instance history.
+    </description>
+
+    <servlet>
+      <servlet-name>ComponentHistoryServlet</servlet-name>
+      <servlet-class>gov.anl.aps.irmis.apps.componenthistory.echo2.ComponentHistoryServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+      <servlet-name>ComponentHistoryServlet</servlet-name>
+      <url-pattern>/app</url-pattern>
+    </servlet-mapping>
+
+    <filter>
+      <filter-name>HibernateServletFilter</filter-name>
+      <filter-class>gov.anl.aps.irmis.persistence.HibernateServletFilter</filter-class>
+    </filter>
+    
+    <filter-mapping>
+      <filter-name>HibernateServletFilter</filter-name>
+      <url-pattern>/app</url-pattern>
+    </filter-mapping>
+    
+</web-app>

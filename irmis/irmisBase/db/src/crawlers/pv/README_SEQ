@@ -1,0 +1,255 @@
+A README FILE FOR THE SEQUENCE CRAWLER.                     3/1/06
+---------------------------------------
+
+The code to crawl sequence files was added in a modular fashion to the pv
+crawler main loop.  However, it was also necessary to put 2 new subroutine
+calls into PVCrawlerParser::parse_startup_command to parse sequence and
+load (ld) commands because that's where the case statement is for
+handling individual lines in the startup files.
+
+
+GENERAL DESCRIPTION
+-------------------
+
+The main loop in pv_crawler.pl iterates over the IOC's one at a time. The
+way the sequence crawling logic works is that it sets
+rec_client::current_load=0 for each PV previously associated with a
+sequence for the IOC.  Then, it adds new records to rec_client, vuri_rel,
+and vuri for the current ioc.  No effort is made to check sequence file
+dates or sizes to see if they have changed.  Instead, new records are
+written at each crawl and old records are marked as old for the given    
+IOC.  No effort is made to delete old records.  That can be done
+administratively apart from the crawler.
+
+A command line option was added to the pv_crawler to turn off sequence
+crawling.
+
+
+---------------------------
+Deliverables as of Feb 2006
+---------------------------
+
+The following files were modified or created for the SEQ crawler.
+See the comments in the files as to what was done
+  src/crawlers/pv/README_SEQ           - This file
+  src/crawlers/pv/pv_crawler.pl        - Modified.  Added SEQ logic
+  src/crawlers/pv/PVCrawlerParser.pm   - Modified.  Added SEQ logic
+  src/crawlers/pv/SEQCrawlerDBLayer.pm - New module. 
+
+--------------------------
+SLAC Development Procedure
+--------------------------
+
+ cd to your work area
+
+ setenv CVSROOT /afs/slac/package/epics/slaconly/cvs
+
+ cvs checkout tools/irmis/db/src/crawlers/pv
+
+ ./runSLACPVCrawler.csh
+
+----------------------
+Per-Site Customization
+----------------------
+1) Each epics site has a different PV format.  So, you'll need to modify the
+   regular expression used to detect PV's to uniquely identify
+   your site's PV's in the UNIX strings output done on the sequence.o file.
+   That regex is in pvCrawlerParser.pm (search for the word "SITE").
+
+--------------------
+Database description
+--------------------
+
+The tables in the IRMIS database are used as follows.
+Sequence files go in the URI table (one file per row).
+For each occurrence of each sequence file in each startup file, a new row is written to the
+URI, VURI and VURI_REL tables.  For each row in URI (which is for one occurrence of a sequence),
+the sequence file is searched for PV occurrences using the UNIX strings command.
+All the PV's that are found are written to rows in REC_CLIENT (one per row).
+
+URI table
+---------
+This table holds sequence file names including path.
+I create a new URI row for each reference to a given file.  There is no attempt to 
+  eliminate duplicates.  As Claude says, trying to "share" a single URI row would make
+  subsequent cleanup of old, archival data considerably more difficult.
+
+So, for example, if a given IOC runs a given sequence file (perhaps using different entry points),
+then, each run of that file causes one new row in URI.
+
+At each new crawl, new URI rows are written.  No attempt is made to clean up old records.
+
+VURI table
+----------
+Points to URI table.
+
+VURI_REL table
+--------------
+This table holds IOC name.
+At each new crawl, new VURI_REL records are written.  No attempt is made to clean up old records.
+A VURI_REL row is written for each URI row (so, the same ioc will in multiple rows).  This is used
+to indicate for a given sequence file instance, what ioc it is running on.
+.rel_info      holds the IOC name.
+.child_vuri_id points to the VURI which in turn points to the filename in the URI.
+
+REC_CLIENT table
+----------------
+This table holds PV names (with macro value subsitution done on them).
+.current_load is set to zero for old data (from previous crawls).
+.current_load is set to one for the most recent crawl.
+.vuri_id      points to the VURI which in turn points to the filename in the URI.
+
+----------------------------------------
+USE CASES and Hints on writing a browser
+----------------------------------------
+
+Eventually, someone will want to write a browser/viewer to fetch the data from the database
+and view which sequence programs on which ioc's use which pv's.
+
+The published use cases for such a browser/viewer are in this same directory in a 
+file called README_USE_CASES.
+
+Here is a first cut at steps that the browser/viewer could take (these steps have not been 
+tested) and they are NOT WRITTEN IN SQL (instead, they're just my notes).
+
+USE CASE 1
+----------
+
+These steps correspond to the steps in README_USE_CASES.
+
+1) Find the list of IOC's which have sequences running on them by doing this:
+a) First, get a list of vuri_id's for all PV's loaded by all sequence programs on all ioc's.
+(there will likely be many duplicates)
+Select REC_CLIENT.vuri_id where 
+REC_CLIENT.current_load = 1 
+REC_CLIENT.rec_client_type_id = $SEQ (4)
+
+b) Select VURI_REL.rel_info (which is the ioc names) where VURI_REL.child_vuri_id is in the 
+result list of a).  Save the results for use below.
+
+c) Eliminate duplicates (there may be many) in the result of 1a).  Now, you've got the list of IOC's.
+
+
+2) Find the list of sequence files running on a given IOC by doing this:
+a) From the results of 1a) and 1b) you have the IOC children of each sequence filename.
+b) Select URI.uri where URI.uri_id is in that result list.
+
+3) Find the list of PV's used by a given sequence file by doing this:
+Select REC_CLIENT.rec_nm   where 
+URI.uri is the requested sequence file name.
+URI.modified_by = seqcrawler
+REC_CLIENT.current_load = 1
+REC_CLIENT.type_id = $SEQ (4)
+REC_CLIENT.vuri_id points to the vuri for URI.uri_id
+
+
+USE_CASE 2
+----------
+
+For a given pv, display a list the IOC's and Sequences which use it.
+
+1) First find the list of IOC's which use a given PV.
+a)
+Select VURI_REL.rel_info where
+REC_CLIENT.rec_nm (and fld_type?) are the requested PV.
+REC_CLIENT.current_load = 1 
+REC_CLIENT.rec_client_type_id = $SEQ (4)
+REC_CLIENT.vuri_id = VURI_REL.child_vuri_id
+
+2) Find the list of sequence files running on a given IOC by doing this:
+a) From the results of 1a) you have the IOC children of each sequence filename.
+b) Select URI.uri where URI.uri_id is in that result list
+c) Eliminate duplicates.
+
+
+
+----------------------------------------------------------------------------
+Support and implementation notes.
+----------------------------------------------------------------------------
+
+Multi Line commands not supported
+In startup files, mulit-line commands are not supported (seq and ld must
+all be one line commands).
+
+The setting of PV values on the fly in .st files is not supported.
+If the .st file has something like this, then, that's what gets stored
+in the database as the PV.
+sprintf(pvName,"TR06:ASENS:C%d:SUB%02d.G",mod,ch);
+
+Location of ld'd sequence files
+It is assumed that the files are in /bin/ and that /bin/ is here:
+$ioc_boot_base_dir/$ioc_name/bin
+If this is not a valid assumption for all labs, then, one approach is to put
+code that figures out where the files are into SLACBootScan.pm for example.
+That code would set a variable (say, $ld_file_dir) and that variable
+would be passed to parse_startup_command.
+
+There is a chance that an entry point (After the "&" on the seq command)
+might match the output of the strings command on the loaded files
+incorrectly.  There are several approaches to this (including polling
+the IRMIS community.  See RonC email of 16-Nov).  Here's an example of the problem:
+1) rf_states.o contains the string FOO but it's not an entry point.
+2) ld < /bin/rf_states.o
+3) seq &FOO
+4) The FOO entry point is really in a different .o file called FOObar.o
+
+This type of thing is done in startup files.  SEQ crawler does support it:
+The QENV environment variable is reset between calls.
+ld<x.o
+...
+setenv QENV "Q=HB60"
+seq &X QENV
+setnev QENV "Q=LB60"
+seq &X QENV
+
+Multiple settings in an env variable is supported.  For example:
+setenv SEQ_MACROS "X=HR20, Y=HB30"
+seq &x SEQ_MACROS
+
+The SEQ crawler supports this:  
+(Many startup files have ld and seq done in lower level scripts)
+< /cmd/userCode.cmd
+< /cmd/seq.2cv.cmd
+A given sequence is loaded with the userCode file. Then, run with seq.2cv.
+The existing PV crawler, which I'm putting code into already traverses the 
+tree of directories/files.
+
+The existing PV crawler finds for us the putenv environment variable
+settings (and other variable settings) and puts them in a hash (see emails
+from Claude and Judy).
+We'll use these, but these are not all there is to macro subsitution.
+The SEQ crawler parses the env varb settings on the SEQ line and uses
+those.  The SEQ crawler can handle a getenv(VARB) on the seq line.
+It looks into the hash for the value.
+
+Speaking of macro substitutions, there are these rules:
+1) Macros are only used for PV field names (i.e. any of the things between the colons at SLAC X: Y:Z.A).  Not the whole PV
+2) Macro names can not be the same as valid PV field names (if they are
+the same, then, the crawler does the subsitution anyway).
+
+The following is supported after all by looking at the strings output when
+a given setting (like STN=LB60) is not found in global vars or on seq line.
+---------------------
+The SEQ crawler doesn't handle the setting of environment variables in the
+first line of the sequence source (I've heard that called "the default macro
+substitution in the sequence PROGRAM statement").  The rule is that
+people must set env varbs in startup or setup files (per Ronc). It's more
+visible that way.
+
+The SEQ crawler doesn't support run time setting of PV names:
+For example, a  SNL program can initialize a pave with 
+sprintf(pvName, "Motor_%s_%d", snum, mnum).
+
+We don't search Soft IOC's.
+Ronc said that some day we might use markers in softioc source files
+to delimit PV definitions.
+
+For the initial release, Libs are not searched (only loaded object files are).
+Sequence files must be standalone .o files, not contained within libs.
+# This is an example of a lib being loaded.
+ld < /bin/packLib
+But, later we could  search libs if that is appropriate.
+The rule is that sequences can't be in Libs even though
+libraries are just collections of .o's.
+For example, a sequence must be loaded like this:
+ld < /bin/pack_dacControl.o

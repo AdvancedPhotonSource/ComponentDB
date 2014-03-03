@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class name="gov.anl.aps.irmis.persistence.componenthistory.ComponentInstanceState" 
+         table="component_instance_state" lazy="true" mutable="true">
+    
+    <id name="id" column="component_instance_state_id" type="long">
+      <generator class="native">
+        <param name="sequence">seq_component_instance_state</param>
+      </generator>
+    </id>
+
+    <version name="version" column="version"/>
+
+    <many-to-one name="componentInstance" column="component_instance_id" 
+                 class="gov.anl.aps.irmis.persistence.componenthistory.ComponentInstance" 
+                 not-null="true" />
+
+    <many-to-one name="componentState" column="component_state_id" 
+                 class="gov.anl.aps.irmis.persistence.componenthistory.ComponentState" 
+                 not-null="true"/>
+
+    <many-to-one name="person" column="person_id" 
+                 class="gov.anl.aps.irmis.persistence.login.Person" 
+                 not-null="true"/>
+
+    <property name="enteredDate" type="timestamp" column="entered_date"/>
+    <property name="comment" type="string" column="comment"/>
+    <property name="referenceData1" type="string" column="reference_data_1"/>
+    <property name="referenceData2" type="timestamp" column="reference_data_2"/>
+
+  </class>
+  
+</hibernate-mapping>

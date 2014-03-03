@@ -1,0 +1,234 @@
+***************************************************************
+* IRMIS 2 (Integrated Relational Model of Installed Systems)  *
+***************************************************************
+
+Argonne National Lab - Advanced Photon Source
+Spallation Neutron Source, Oak Ridge National Lab
+Stanford Linear Accelerator Center
+and others...
+
+Comments to: 
+  Claude Saunders (saunders@aps.anl.gov)
+  Debby Quock (quock@aps.anl.gov)
+
+--------------------------------------
+Contents:
+--------------------------------------
+1. OVERVIEW
+2. BUILDING
+3. DEPLOYING
+4. FOR DEVELOPERS ONLY
+APPENDIX A: Signing Jar Files
+--------------------------------------
+
+1. OVERVIEW
+   ----------
+
+IRMIS 2 is designed as a complement to an EPICS installation, permitting the creation,
+maintenance, and querying of a relational model containing an exhaustive inventory of
+process variables, components, and cables. It is effectively a documentation tool, and
+does not explicitly support creating an EPICS installation FROM a relational model.
+The component and cable portion of IRMIS may also be used by a non-EPICS facility.
+
+IRMISBase consists of the set of site neutral database schema, database access layer(s), 
+data crawlers, and applications. If you have a "standard" EPICS installation, this set
+of code should be usable with only some site-specific tweaks. Our goal is to also be
+database neutral. Our primary development environment is MySQL, although we have
+coded for Oracle as well. Most scripts and applications have been tested against Oracle.
+Basically, we use the auto-increment feature for MySQL, and sequences for
+Oracle, necessitating different DDL scripts, and some db access layer abstractions.
+
+IRMISBase has been broken up into two primary subtrees: apps and db.
+
+  apps
+  -----
+Contains many of the various applications of IRMIS, both thin (Echo Web Framework),
+as well as thick (Java Swing w/ WebStart). These are the "end-user" applications for
+querying and editing data in the database. Note that PHP applications are maintained
+in a different codebase, not here in irmisBase.
+As of the moment, the primary application is a single Java Swing application
+that acts as a "desktop" for many sub-applications, such as: process variable
+viewer, component viewer/editor, component type viewer/editor, cable viewer/editor,
+ioc viewer/editor, irmis user administration, etc.
+
+A thin client application called component history, implemented using the Echo
+Web Framework, is also in apps.
+
+Note that there is a simple demo application with lots of descriptive comments
+under src/CFWDemo, with ant build targets demojarfile and deploydemo. This is
+designed to show how we are using the underlying XAL Java application framework
+from the Spallation Neutron Source.
+
+  db
+  -----
+Contains sql scripts for creating/populating core IRMIS schema, perl crawler 
+scripts for populating the database, and a database access API for both PHP and 
+Java. The apps above depend on the database access API's here. Note that PHP 
+code was an early exercise, and has not been maintained, but serves as an example 
+if needed. Please see the PHP repository for current PHP code.
+
+
+2. BUILDING
+   --------
+Note: You will need Java (1.5 or above), and ant (1.6 or above) installed to
+conduct builds. Java is available at java.sun.com, and ant is at ant.apache.org.
+
+In the same directory as this README file, there is a site.build.properties.
+You will need to edit this for your site prior to conducting a build. This is
+where things like database connection parameters are established. There are
+comments within to guide you. The properties in this file are used to substitute
+strings of the form @property@ in various .template files in the codebase.
+
+The ".sql" scripts for building the database schema are in the ddl subdirectory. 
+There is a subdirectory for mysql and one for oracle. We assume you have created
+an initial database and account, and have a favorite utility for running the
+scripts we provide.
+
+cd db/ddl/mysql  - or oracle subdir if using oracle
+<sql utility> create_aps_ioc_table.sql
+<sql utility> create_component_enum_tables.sql
+<sql utility> create_component_tables.sql
+<sql utility> create_pv_client_enum_tables.sql
+<sql utility> create_pv_client_tables.sql
+<sql utility> create_pv_enum_tables.sql
+<sql utility> create_pv_tables.sql
+<sql utility> create_shared_enum_tables.sql
+<sql utility> create_shared_tables.sql
+<sql utility> create_component_history_tables.sql
+
+<sql utility> alter_aps_ioc_table.sql
+<sql utility> alter_component_tables.sql
+<sql utility> alter_pv_client_tables.sql
+<sql utility> alter_pv_tables.sql
+<sql utility> alter_shared_tables.sql
+<sql utility> alter_component_history_tables.sql
+
+<sql utility> populate_form_factor.sql
+<sql utility> populate_function.sql
+<sql utility> populate_mfg.sql
+<sql utility> populate_component_type_if_type.sql
+<sql utility> populate_base_component_types.sql
+<sql utility> populate_core_components.sql
+<sql utility> populate_component_history.sql
+
+Note that there are a set of "drop" scripts as well if you want to start again.
+
+A build of both apps and db is accomplished with:
+
+cd db
+ant deploy
+cd apps
+ant deploy
+
+This will build the Java Swing irmis desktop, and also the java db access jar file
+irmisDb.jar, along with the various perl crawlers. 
+
+Additionally, type:
+
+cd apps
+ant warfile
+
+This will build the component_history.war file which can be deployed to any
+standard Servlet engine, like Tomcat or Jetty.
+
+Note that there are other "targets" specified in the various build.xml, so you can also 
+type: "ant clean" to start over again. This is pretty much identical to how "make"
+works. HTML documentation for the Java database access layer can be generated by
+typing "ant docs" in the db directory. Don't worry about the warnings you see there.
+
+3. DEPLOYING
+   ---------
+This is a bit more complex and site dependent. We begin by showing you how to fire
+up the Java IRMIS desktop application, which should then connect to the database
+you specified in the site.build.properties file.
+
+cd apps/deploy
+tar xvf irmisDeploy.tar
+java -jar irmis.jar 
+
+That's it! The application has a help menu which should give you guidance there.
+You will not see any process variable data until you run the pv crawler, but you
+can go ahead and create components, component types, and cables.
+
+The Java Swing IRMIS desktop application is in irmisDeploy.tar, and is packaged
+with the Java WebStart files needed to deploy on a web server. Note that the jar files
+in this tarball must be digitally signed before java web start will allow someone to
+access them via a web server. If you are manually deploying the irmis application,
+don't worry about all this jar signing stuff. See below appendix A for what it means
+to "sign" a jar file.
+
+The Echo Web Framework based Component History Tool is in component_history.war.
+This is a standard J2EE WAR file and can be deployed to the webapps directory of
+any servlet engine like Tomcat or Jetty.
+
+The various crawlers are deployed in db/deploy/xxxCrawlerDeploy.tar, ready to be 
+copied to whatever machine you intend to deploy them on. The primary crawler is
+the process variable crawler in pvCrawlerDeploy.tar. See the README file in that
+for an explanation, as the crawler is a whole topic of its own. 
+
+4. FOR DEVELOPERS ONLY
+   -------------------
+So, you're interested in creating/enhancing irmis applications? Here's some general
+info on how to add new schema, database access, and an application.
+
+Database stuff (ddl, hibernate xml, data object classes, data access objects, services,
+and perl crawler code) go in irmisBase/db. Applications go in irmisBase/apps.
+
+Add ddl to db/ddl/mysql with "create", "alter", and "drop" scripts. If you are doing
+this in oracle, or porting existing stuff to oracle, look in db/ddl/oracle instead
+
+Add xml, data object classes, and data access objects to 
+db/src/db/java/gov/anl/aps/irmis/persistence. Under there you'll find the base classes, 
+and subdirectories like pv, login, component, audit. You'll probabaly add a "newapp" 
+directory and put all your stuff in there. You can build the master "irmisDb.jar" 
+in irmisBase/db by typing "ant jarfile". Also, for each xml mapping file you create, 
+you'll want to add that to db/src/db/java/hibernate.cfg.xml.template. Your new stuff 
+will automatically get picked up and included in irmisDb.jar.
+
+You add a new application in apps/src/gov/anl/aps/irmis/apps using a new 
+subdirectory. In there you'll see pv, ioc, component, componenttype, cable. 
+Each of those is an irmis desktop "sub-application". You can run your application 
+using the irmis desktop shell. The code for that is in 
+apps/src/gov/anl/aps/irmis/apps/irmis/cfw/Main.java. You just have to add 
+in a app.produceDocument(new NewAppDocument()) line near the bottom to get your 
+app to pop up on the desktop. Later on it can become part of the menu system, etc...
+
+To build an application, go to irmisBase/apps and type "ant deploy". This will 
+build the db side, and then the apps side, depositing everything into 
+irmisBase/apps/deploy/irmisDeploy.tar. You can then just untar irmisDeploy.tar 
+and run the application with "java -jar irmis.jar". 
+
+
+
+    APPENDIX A : Signing Jar Files
+    -------------------------------
+As part of the Java "security sandbox" mechanism, code distributed as jar files over
+the web must be digitally signed. 
+
+First you must create your digital signature using the "keytool" utility that comes with
+Java. To do this, type:
+
+    keytool -genkey -alias somename -keypass somepassword
+
+If this is the first time you have run keytool, you will be asked to provide a
+password for the newly created keystore. If you are attempting to renew a certificate
+that you already created, the above genkey will produce an error. In this case,
+type "keytool -delete -alias somename" to delete the expired certificate first, then
+re-execute the genkey. You can print out the contents of a certificate to check
+its expiration date by typing "keytool -list -v -alias somename".
+
+Then there are a variety of fields you will have to fill out. What is happening here
+is that you are creating a "self-signed" digital certificate. If your site already has
+a web site "server certificate", you can actually import that using keytool, and use
+that as your certificate. But that's beyond our scope here.
+
+The keytool finally stores a private/public key pair on your local machine that is 
+later referenced simply by the alias "somename".
+
+Secondly, you sign each jar file by typing the following:
+
+    jarsigner whatever.jar somename
+
+You will then be prompted for both the keystore password, and they key password.
+That's it, you're done!
+

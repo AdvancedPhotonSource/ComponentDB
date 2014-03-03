@@ -1,0 +1,18 @@
+
+We don't have enough people to do regular regression testing across
+the many possible platforms, java versions, and database engines,
+but the following I do know:
+
+You need to use JDK 1.4.2 or later. Works fine on JDK 5 and JDK 6.
+
+The database schema is only current for mysql. We use MySQL 5.x. There
+is a partial port of the schema for Oracle, and it was tested a while back.
+There have been a few changes to the schema, though, that have not been
+kept up-to-date for Oracle. Regardless, the porting is simple, and should
+be easy for anyone to compare the mysql and Oracle sql scripts, and bring
+the Oracle side up-to-date.
+
+The use of Hibernate means that switching between MySQL and Oracle from the
+application perspective is just a configuration property change.
+
+
