@@ -13,6 +13,6 @@ ant-clean:
 deploy: site.build.properties
 	cd db && ant deploy && cd -
 	cd apps && ant deploy && cd -
-	cd apps/deploy && tar xvf irmisDeploy.tar && cd -
+	cd apps/deploy && tar xf irmisDeploy.tar && cd -
 
 
