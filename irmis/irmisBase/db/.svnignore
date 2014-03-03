@@ -1,2 +1,5 @@
 deploy
 build
+build/irmisDb.jar
+build/classes
+
