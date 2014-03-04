@@ -13,9 +13,10 @@
         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
         <c:set var="selected" value="#{personController.selected}"/>
 
-        <h:panelGrid columns="2">
+        <p:panelGrid columns="2">
             <h:outputLabel  for="personId" value="Id"/>
             <h:outputText id="personId" value="#{selected.personId}" title="Id"/>
+            
             <h:outputLabel value="Last Name" for="lastNm" />
             <h:inputText id="lastNm" value="#{selected.lastNm}" title="Last Name"/>
 
@@ -27,7 +28,7 @@
 
             <h:outputLabel value="Username" for="userid" />
             <h:inputText id="userid" value="#{selected.userid}" title="Username"/>
-        </h:panelGrid>
+        </p:panelGrid>
 
         <div class="actionButton">
             <p:commandButton action="#{personController.update()}" value="Save" alt="Save" icon="ui-icon-check"/>
