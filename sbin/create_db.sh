@@ -35,10 +35,12 @@ fi
 execute() {
     msg="$@"
     if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
-        msg="echo $@ | sed 's?$DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g'"
-        msg=`eval $msg`
+        sedCmd="s?$DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g"
+        echo $sedCmd
+        echo "Executing: $@" | sed -e $sedCmd
+    else
+        echo "Executing: $@"
     fi
-    echo "Executing: $msg"
     eval "$@"
 }
 
