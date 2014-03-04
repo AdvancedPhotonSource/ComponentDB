@@ -33,8 +33,11 @@ if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
 fi
 
 execute() {
-    msg="echo $@ | sed 's?$DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g'"
-    msg=`eval $msg`
+    msg="$@"
+    if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
+        msg="echo $@ | sed 's?$DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g'"
+        msg=`eval $msg`
+    fi
     echo "Executing: $msg"
     eval "$@"
 }
@@ -71,6 +74,7 @@ execute $mysqlCmd populate_form_factor.sql
 execute $mysqlCmd populate_function.sql
 execute $mysqlCmd populate_mfg.sql
 execute $mysqlCmd populate_person.sql
+execute $mysqlCmd populate_doc_type.sql
 
 execute $mysqlCmd populate_component_rel_type.sql
 execute $mysqlCmd populate_component_type_if_type.sql
@@ -78,6 +82,7 @@ execute $mysqlCmd populate_component_type.sql
 execute $mysqlCmd populate_component_type_if.sql
 execute $mysqlCmd populate_component_type_function.sql
 execute $mysqlCmd populate_component_type_status.sql
+execute $mysqlCmd populate_component_type_person.sql
 execute $mysqlCmd populate_component_port_type.sql
 execute $mysqlCmd populate_component_port_template.sql
 execute $mysqlCmd populate_component_semaphore.sql
@@ -89,7 +94,18 @@ execute $mysqlCmd populate_port_pin_template.sql
 execute $mysqlCmd populate_component.sql
 execute $mysqlCmd populate_aps_component.sql
 
+execute $mysqlCmd populate_component_state_category.sql
+execute $mysqlCmd populate_component_state.sql
+execute $mysqlCmd populate_component_rel.sql
+execute $mysqlCmd populate_component_port.sql
+
 execute $mysqlCmd populate_component_history.sql
+
+execute $mysqlCmd populate_component_instance.sql
+execute $mysqlCmd populate_component_instance_state.sql
+
+execute $mysqlCmd populate_cable.sql
+execute $mysqlCmd populate_port_pin.sql
 
 # Add development rows
 execute $mysqlCmd add_development_entries.sql

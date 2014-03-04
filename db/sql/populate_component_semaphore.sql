@@ -1,1 +1,1 @@
-INSERT INTO `component_semaphore` VALUES (1, 1, 'initial', 0);
+INSERT INTO `component_semaphore` VALUES (65859,1,'benes',1391717454294);
