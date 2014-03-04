@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditComponentTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_componentTypeId}" for="componentTypeId" />
+                    <h:inputText id="componentTypeId" value="#{componentTypeController.selected.componentTypeId}" title="#{resources.EditComponentTypeTitle_componentTypeId}" required="true" requiredMessage="#{resources.EditComponentTypeRequiredMessage_componentTypeId}"/>
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_componentTypeName}" for="componentTypeName" />
+                    <h:inputText id="componentTypeName" value="#{componentTypeController.selected.componentTypeName}" title="#{resources.EditComponentTypeTitle_componentTypeName}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{componentTypeController.selected.description}" title="#{resources.EditComponentTypeTitle_description}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{componentTypeController.selected.markForDelete}" title="#{resources.EditComponentTypeTitle_markForDelete}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{componentTypeController.selected.version}" title="#{resources.EditComponentTypeTitle_version}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_vdescription}" for="vdescription" />
+                    <h:inputTextarea rows="4" cols="30" id="vdescription" value="#{componentTypeController.selected.vdescription}" title="#{resources.EditComponentTypeTitle_vdescription}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_chcContactId}" for="chcContactId" />
+                    <h:selectOneMenu id="chcContactId" value="#{componentTypeController.selected.chcContactId}" title="#{resources.EditComponentTypeTitle_chcContactId}" >
+                        <f:selectItems value="#{personController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_chcBeamlineInterestId}" for="chcBeamlineInterestId" />
+                    <h:selectOneMenu id="chcBeamlineInterestId" value="#{componentTypeController.selected.chcBeamlineInterestId}" title="#{resources.EditComponentTypeTitle_chcBeamlineInterestId}" >
+                        <f:selectItems value="#{chcBeamlineInterestController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_mfgId}" for="mfgId" />
+                    <h:selectOneMenu id="mfgId" value="#{componentTypeController.selected.mfgId}" title="#{resources.EditComponentTypeTitle_mfgId}" >
+                        <f:selectItems value="#{mfgController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditComponentTypeLabel_formFactorId}" for="formFactorId" />
+                    <h:selectOneMenu id="formFactorId" value="#{componentTypeController.selected.formFactorId}" title="#{resources.EditComponentTypeTitle_formFactorId}" >
+                        <f:selectItems value="#{formFactorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{componentTypeController.update}" value="#{resources.EditComponentTypeSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditComponentTypeViewLink}"/>
+                <br />
+                <h:commandLink action="#{componentTypeController.prepareList}" value="#{resources.EditComponentTypeShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditComponentTypeIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

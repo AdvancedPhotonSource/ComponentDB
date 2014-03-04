@@ -1,0 +1,256 @@
+
+#top {
+    position: relative;
+    color: white;
+
+    /* IE10 */
+    background-image: -ms-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Mozilla Firefox */
+    background-image: -moz-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Opera */
+    background-image: -o-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Webkit (Safari/Chrome 10) */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #4e80b6), color-stop(1, #6da5d8));
+    /* Webkit (Chrome 11+) */
+    background-image: -webkit-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Proposed W3C Markup */
+    background-image: linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* IE6-9 */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#4e80b6', endColorstr='#6da5d8');
+
+    padding: 15px;
+    margin: 0px 0px 0px 0px;
+    height: 75px;
+}
+
+#menu {
+   background-color: #6da5d8;
+}
+
+#middle {
+}
+
+#bottom {
+    position: relative;
+    background-color: #6da5d8;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    height: 100%
+}
+
+.topLeftContent {
+    float: left;
+    width: 150px;
+    vertical-align: central;
+    text-align: center;
+    margin-left: 35px;
+}
+
+.topCenterContent {
+    position: relative;
+    vertical-align: central;
+    text-align: center;
+    margin: 0px 170px 0px 170px;
+}
+
+.topRightContent {
+    float: right;
+    width: 170px;
+    vertical-align: central;
+    text-align: left;
+    font-size: 10px;
+}
+
+.menubar {
+    background: #6da5d8;
+}
+
+.menuContent {
+    position: relative;
+    vertical-align: central;
+    text-align: left;
+    margin: 0px 0px 0px 0px;
+    color: white;
+    background-color: #6da5d8;
+}
+
+.menuLeftContent {
+    float: left;
+    width: 50px;
+    height: fit-content;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.menuCenterContent {
+    position: relative;
+    vertical-align: central;
+    text-align: left;
+    margin: 0px 0px 0px 0px;
+    color: white;
+    background-color: #6da5d8;
+}
+
+.menuRightContent {
+    float: right;
+    width: 50px;
+    vertical-align: central;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.middleLeftContent {
+    float: left;
+    width: 50px;
+    height: fit-content;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.middleCenterContent {
+    position: relative;
+    vertical-align: central;
+    text-align: left;
+    margin: 50px;
+    color: white;
+}
+
+.middleRightContent {
+    float: right;
+    width: 50px;
+    vertical-align: central;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.actionButton {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 0px;
+}
+
+.actionLink {
+    display: none;
+}
+
+.commandLink {
+    
+}
+
+tr:hover .actionLink {
+    display: inline-block;
+}
+
+.objectPanel {
+    display: inline-block;
+}
+
+.statusPanel {
+    display: inline-block;
+    white-space: pre;
+}
+
+.queryPanel {
+    width: 100%;
+}
+
+.queryInput {
+    width: 200px;
+}
+
+.queryColumn {
+    text-align: center;
+}
+
+.loginDialog {
+    background: #6da5d8;
+    box-shadow: 0px 3px 5px #d5d5d5;    
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.htmlPreserve {
+    white-space: pre;
+}
+
+input, textarea {
+    background: #f2f4f7;
+    box-shadow: 0px 3px 5px #d5d5d5;
+    width: 250px;
+}
+
+select {
+    width: 250px;
+}
+
+h1 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  24px;
+    font-weight: bold;
+    margin: 20px;
+    padding-bottom: 0px;
+    color: #f2f4f7;
+    vertical-align: middle;
+}
+
+.pageTitle h1 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  20px;
+    font-weight: bold;
+    margin: 0px;
+    padding-bottom: 40px;
+    color: #4e80b6;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.sectionTitle h2 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  16px;
+    font-weight: bold;
+    margin: 0px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: #4e80b6;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.sectionText {
+    font-size: 14px;
+    font-weight: normal;
+    color: #4e80b6;
+}
+
+h2 {
+    font-size:  20px;
+    font-weight: bold;
+    color: #4e80b6;
+}
+
+.ui-menu, .ui-menuitem, .ui-menu .ui-menu-child {
+    background: #6da5d8;
+    color: white;
+    margin-top: 0px;
+}
+
+.ui-menuitem-text {
+    color: white;
+    font-weight: bold;
+}
+
+.ui-growl-item-container {
+    vertical-align: middle;
+}
+
+.ui-tooltip {
+    text-wrap: normal;
+}
+
+.ui-icon {
+    display: inline-block;
+}

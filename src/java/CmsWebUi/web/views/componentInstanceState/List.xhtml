@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListComponentInstanceStateTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListComponentInstanceStateEmpty}" rendered="#{componentInstanceStateController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{componentInstanceStateController.items.rowCount > 0}">
+                    <h:outputText value="#{componentInstanceStateController.pagination.pageFirstItem + 1}..#{componentInstanceStateController.pagination.pageLastItem + 1}/#{componentInstanceStateController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{componentInstanceStateController.previous}" value="#{resources.Previous} #{componentInstanceStateController.pagination.pageSize}" rendered="#{componentInstanceStateController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{componentInstanceStateController.next}" value="#{resources.Next} #{componentInstanceStateController.pagination.pageSize}" rendered="#{componentInstanceStateController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{componentInstanceStateController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_componentInstanceStateId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.componentInstanceStateId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_personId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.personId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_enteredDate}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.enteredDate}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_comment}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.comment}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_referenceData1}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.referenceData1}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_referenceData2}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.referenceData2}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_version}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.version}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_componentStateId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.componentStateId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceStateTitle_componentInstanceId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.componentInstanceId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{componentInstanceStateController.prepareView}" value="#{resources.ListComponentInstanceStateViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{componentInstanceStateController.prepareEdit}" value="#{resources.ListComponentInstanceStateEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{componentInstanceStateController.destroy}" value="#{resources.ListComponentInstanceStateDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{componentInstanceStateController.prepareCreate}" value="#{resources.ListComponentInstanceStateCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListComponentInstanceStateIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

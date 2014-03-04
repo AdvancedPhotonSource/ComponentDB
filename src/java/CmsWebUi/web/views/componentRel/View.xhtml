@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentRelTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentRelLabel_componentRelId}"/>
+                    <h:outputText value="#{componentRelController.selected.componentRelId}" title="#{resources.ViewComponentRelTitle_componentRelId}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_logicalOrder}"/>
+                    <h:outputText value="#{componentRelController.selected.logicalOrder}" title="#{resources.ViewComponentRelTitle_logicalOrder}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_logicalDesc}"/>
+                    <h:outputText value="#{componentRelController.selected.logicalDesc}" title="#{resources.ViewComponentRelTitle_logicalDesc}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_markForDelete}"/>
+                    <h:outputText value="#{componentRelController.selected.markForDelete}" title="#{resources.ViewComponentRelTitle_markForDelete}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_version}"/>
+                    <h:outputText value="#{componentRelController.selected.version}" title="#{resources.ViewComponentRelTitle_version}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_verifiedPersonId}"/>
+                    <h:outputText value="#{componentRelController.selected.verifiedPersonId}" title="#{resources.ViewComponentRelTitle_verifiedPersonId}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_componentRelTypeId}"/>
+                    <h:outputText value="#{componentRelController.selected.componentRelTypeId}" title="#{resources.ViewComponentRelTitle_componentRelTypeId}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_childComponentId}"/>
+                    <h:outputText value="#{componentRelController.selected.childComponentId}" title="#{resources.ViewComponentRelTitle_childComponentId}"/>
+                    <h:outputText value="#{resources.ViewComponentRelLabel_parentComponentId}"/>
+                    <h:outputText value="#{componentRelController.selected.parentComponentId}" title="#{resources.ViewComponentRelTitle_parentComponentId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentRelController.destroyAndView}" value="#{resources.ViewComponentRelDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentRelEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentRelController.prepareCreate}" value="#{resources.ViewComponentRelCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentRelController.prepareList}" value="#{resources.ViewComponentRelShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentRelIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

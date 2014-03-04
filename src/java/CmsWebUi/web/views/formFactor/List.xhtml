@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListFormFactorTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListFormFactorEmpty}" rendered="#{formFactorController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{formFactorController.items.rowCount > 0}">
+                    <h:outputText value="#{formFactorController.pagination.pageFirstItem + 1}..#{formFactorController.pagination.pageLastItem + 1}/#{formFactorController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{formFactorController.previous}" value="#{resources.Previous} #{formFactorController.pagination.pageSize}" rendered="#{formFactorController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{formFactorController.next}" value="#{resources.Next} #{formFactorController.pagination.pageSize}" rendered="#{formFactorController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{formFactorController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListFormFactorTitle_formFactorId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.formFactorId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListFormFactorTitle_formFactor}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.formFactor}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListFormFactorTitle_markForDelete}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.markForDelete}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListFormFactorTitle_version}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.version}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{formFactorController.prepareView}" value="#{resources.ListFormFactorViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{formFactorController.prepareEdit}" value="#{resources.ListFormFactorEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{formFactorController.destroy}" value="#{resources.ListFormFactorDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{formFactorController.prepareCreate}" value="#{resources.ListFormFactorCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListFormFactorIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateMfgTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateMfgLabel_mfgId}" for="mfgId" />
+                    <h:inputText id="mfgId" value="#{mfgController.selected.mfgId}" title="#{resources.CreateMfgTitle_mfgId}" required="true" requiredMessage="#{resources.CreateMfgRequiredMessage_mfgId}"/>
+                    <h:outputLabel value="#{resources.CreateMfgLabel_mfgName}" for="mfgName" />
+                    <h:inputText id="mfgName" value="#{mfgController.selected.mfgName}" title="#{resources.CreateMfgTitle_mfgName}" />
+                    <h:outputLabel value="#{resources.CreateMfgLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{mfgController.selected.version}" title="#{resources.CreateMfgTitle_version}" />
+                    <h:outputLabel value="#{resources.CreateMfgLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{mfgController.selected.markForDelete}" title="#{resources.CreateMfgTitle_markForDelete}" />
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{mfgController.create}" value="#{resources.CreateMfgSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{mfgController.prepareList}" value="#{resources.CreateMfgShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateMfgIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

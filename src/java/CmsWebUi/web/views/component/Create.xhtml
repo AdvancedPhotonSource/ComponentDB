@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentLabel_componentId}" for="componentId" />
+                    <h:inputText id="componentId" value="#{componentController.selected.componentId}" title="#{resources.CreateComponentTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentRequiredMessage_componentId}"/>
+                    <h:outputLabel value="#{resources.CreateComponentLabel_componentInstanceName}" for="componentInstanceName" />
+                    <h:inputText id="componentInstanceName" value="#{componentController.selected.componentInstanceName}" title="#{resources.CreateComponentTitle_componentInstanceName}" />
+                    <h:outputLabel value="#{resources.CreateComponentLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{componentController.selected.markForDelete}" title="#{resources.CreateComponentTitle_markForDelete}" />
+                    <h:outputLabel value="#{resources.CreateComponentLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{componentController.selected.version}" title="#{resources.CreateComponentTitle_version}" />
+                    <h:outputLabel value="#{resources.CreateComponentLabel_imageUri}" for="imageUri" />
+                    <h:inputText id="imageUri" value="#{componentController.selected.imageUri}" title="#{resources.CreateComponentTitle_imageUri}" />
+                    <h:outputLabel value="#{resources.CreateComponentLabel_componentTypeId}" for="componentTypeId" />
+                    <h:selectOneMenu id="componentTypeId" value="#{componentController.selected.componentTypeId}" title="#{resources.CreateComponentTitle_componentTypeId}" required="true" requiredMessage="#{resources.CreateComponentRequiredMessage_componentTypeId}">
+                        <f:selectItems value="#{componentTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentController.create}" value="#{resources.CreateComponentSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentController.prepareList}" value="#{resources.CreateComponentShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

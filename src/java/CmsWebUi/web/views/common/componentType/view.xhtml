@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <div class="pageTitle">
+        <h1>View Component Type</h1>
+    </div>
+
+    <h:form id="viewComponentTypeForm">
+        <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+        <c:set var="selected" value="#{componentTypeController.selected}"/>
+
+        <p:panelGrid columns="2">
+            <h:outputLabel for="id" value="Id"/>
+            <h:outputText id="id" value="#{selected.componentTypeId}" title="Id"/>
+
+            <h:outputLabel for="name" value="Name"/>
+            <h:outputText id="name" value="#{selected.componentTypeName}" title="Name"/>
+
+            <h:outputLabel for="version" value="Version"/>
+            <h:outputText id="version" value="#{selected.version}" title="Version"/>
+
+            <h:outputLabel for="description" value="Description"/>
+            <h:outputText id="description" value="#{selected.description}" title="Description"/>
+
+            <h:outputLabel for="detailedDescription" value="Detailed Description"/>
+            <h:outputText id="detailedDescription" value="#{selected.vdescription}" title="Detailed Description"/>
+
+            <h:outputLabel for="manufacturer" value="Manufacturer"/>
+            <h:outputText id="manufacturer" value="#{selected.mfg.mfgName}" title="Manufacturer"/>
+
+            <h:outputLabel for="formFactor" value="Form Factor"/>
+            <h:outputText id="formFactor" value="#{selected.formFactor.formFactor}" title="Form Factor"/>
+
+            <h:outputLabel for="contact" value="Contact"/>
+            <h:outputText id="contact" value="#{selected.contact.fullName}" title="Contact"/>
+
+            <h:outputLabel for="beamlineInterest" value="Beamline Interest"/>
+            <h:outputText id="beamlineInterest" value="#{selected.beamlineInterest.interest}" title="Beamline Interest"/>
+
+            <h:outputLabel for="markForDelete" value="Mark For Delete"/>
+            <h:outputText id="markForDelete" value="#{selected.markForDelete}" title="Mark For Delete"/>
+        </p:panelGrid>
+        
+        <div class="actionButton">
+            <p:commandButton action="#{componentTypeController.edit()}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
+            <p:commandButton action="#{componentTypeController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+        </div>
+        
+    </h:form>
+</ui:composition>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentInstanceStateTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_componentInstanceStateId}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.componentInstanceStateId}" title="#{resources.ViewComponentInstanceStateTitle_componentInstanceStateId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_personId}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.personId}" title="#{resources.ViewComponentInstanceStateTitle_personId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_enteredDate}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.enteredDate}" title="#{resources.ViewComponentInstanceStateTitle_enteredDate}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:outputText>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_comment}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.comment}" title="#{resources.ViewComponentInstanceStateTitle_comment}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_referenceData1}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.referenceData1}" title="#{resources.ViewComponentInstanceStateTitle_referenceData1}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_referenceData2}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.referenceData2}" title="#{resources.ViewComponentInstanceStateTitle_referenceData2}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:outputText>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_version}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.version}" title="#{resources.ViewComponentInstanceStateTitle_version}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_componentStateId}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.componentStateId}" title="#{resources.ViewComponentInstanceStateTitle_componentStateId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceStateLabel_componentInstanceId}"/>
+                    <h:outputText value="#{componentInstanceStateController.selected.componentInstanceId}" title="#{resources.ViewComponentInstanceStateTitle_componentInstanceId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentInstanceStateController.destroyAndView}" value="#{resources.ViewComponentInstanceStateDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentInstanceStateEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentInstanceStateController.prepareCreate}" value="#{resources.ViewComponentInstanceStateCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentInstanceStateController.prepareList}" value="#{resources.ViewComponentInstanceStateShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentInstanceStateIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

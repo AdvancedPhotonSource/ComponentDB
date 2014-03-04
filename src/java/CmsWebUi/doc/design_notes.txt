@@ -1,0 +1,6 @@
+- filters on data columns
+- delete/edit/view icons on datatable rows
+- lazy loading
+- controllers request scoped
+- custom number of items in datatable
+- autocomplete instead drop down menu

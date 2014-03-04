@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentTypePersonTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentTypePersonLabel_componentTypePersonId}" for="componentTypePersonId" />
+                    <h:inputText id="componentTypePersonId" value="#{componentTypePersonController.selected.componentTypePersonId}" title="#{resources.CreateComponentTypePersonTitle_componentTypePersonId}" required="true" requiredMessage="#{resources.CreateComponentTypePersonRequiredMessage_componentTypePersonId}"/>
+                    <h:outputLabel value="#{resources.CreateComponentTypePersonLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{componentTypePersonController.selected.markForDelete}" title="#{resources.CreateComponentTypePersonTitle_markForDelete}" />
+                    <h:outputLabel value="#{resources.CreateComponentTypePersonLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{componentTypePersonController.selected.version}" title="#{resources.CreateComponentTypePersonTitle_version}" />
+                    <h:outputLabel value="#{resources.CreateComponentTypePersonLabel_roleNameId}" for="roleNameId" />
+                    <h:selectOneMenu id="roleNameId" value="#{componentTypePersonController.selected.roleNameId}" title="#{resources.CreateComponentTypePersonTitle_roleNameId}" >
+                        <f:selectItems value="#{roleNameController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentTypePersonLabel_personId}" for="personId" />
+                    <h:selectOneMenu id="personId" value="#{componentTypePersonController.selected.personId}" title="#{resources.CreateComponentTypePersonTitle_personId}" >
+                        <f:selectItems value="#{personController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentTypePersonLabel_componentTypeId}" for="componentTypeId" />
+                    <h:selectOneMenu id="componentTypeId" value="#{componentTypePersonController.selected.componentTypeId}" title="#{resources.CreateComponentTypePersonTitle_componentTypeId}" >
+                        <f:selectItems value="#{componentTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentTypePersonController.create}" value="#{resources.CreateComponentTypePersonSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentTypePersonController.prepareList}" value="#{resources.CreateComponentTypePersonShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentTypePersonIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

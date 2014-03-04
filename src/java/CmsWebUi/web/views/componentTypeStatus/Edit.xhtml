@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditComponentTypeStatusTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_componentTypeStatusId}" for="componentTypeStatusId" />
+                    <h:inputText id="componentTypeStatusId" value="#{componentTypeStatusController.selected.componentTypeStatusId}" title="#{resources.EditComponentTypeStatusTitle_componentTypeStatusId}" required="true" requiredMessage="#{resources.EditComponentTypeStatusRequiredMessage_componentTypeStatusId}"/>
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_spareQty}" for="spareQty" />
+                    <h:inputText id="spareQty" value="#{componentTypeStatusController.selected.spareQty}" title="#{resources.EditComponentTypeStatusTitle_spareQty}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_stockQty}" for="stockQty" />
+                    <h:inputText id="stockQty" value="#{componentTypeStatusController.selected.stockQty}" title="#{resources.EditComponentTypeStatusTitle_stockQty}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_spareLoc}" for="spareLoc" />
+                    <h:inputText id="spareLoc" value="#{componentTypeStatusController.selected.spareLoc}" title="#{resources.EditComponentTypeStatusTitle_spareLoc}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_instantiated}" for="instantiated" />
+                    <h:inputText id="instantiated" value="#{componentTypeStatusController.selected.instantiated}" title="#{resources.EditComponentTypeStatusTitle_instantiated}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{componentTypeStatusController.selected.markForDelete}" title="#{resources.EditComponentTypeStatusTitle_markForDelete}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{componentTypeStatusController.selected.version}" title="#{resources.EditComponentTypeStatusTitle_version}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_nrtlStatus}" for="nrtlStatus" />
+                    <h:inputText id="nrtlStatus" value="#{componentTypeStatusController.selected.nrtlStatus}" title="#{resources.EditComponentTypeStatusTitle_nrtlStatus}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_nrtlAgency}" for="nrtlAgency" />
+                    <h:inputText id="nrtlAgency" value="#{componentTypeStatusController.selected.nrtlAgency}" title="#{resources.EditComponentTypeStatusTitle_nrtlAgency}" />
+                    <h:outputLabel value="#{resources.EditComponentTypeStatusLabel_componentTypeId}" for="componentTypeId" />
+                    <h:selectOneMenu id="componentTypeId" value="#{componentTypeStatusController.selected.componentTypeId}" title="#{resources.EditComponentTypeStatusTitle_componentTypeId}" >
+                        <f:selectItems value="#{componentTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{componentTypeStatusController.update}" value="#{resources.EditComponentTypeStatusSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditComponentTypeStatusViewLink}"/>
+                <br />
+                <h:commandLink action="#{componentTypeStatusController.prepareList}" value="#{resources.EditComponentTypeStatusShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditComponentTypeStatusIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

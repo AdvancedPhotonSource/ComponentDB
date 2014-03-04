@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentLabel_componentId}"/>
+                    <h:outputText value="#{componentController.selected.componentId}" title="#{resources.ViewComponentTitle_componentId}"/>
+                    <h:outputText value="#{resources.ViewComponentLabel_componentInstanceName}"/>
+                    <h:outputText value="#{componentController.selected.componentInstanceName}" title="#{resources.ViewComponentTitle_componentInstanceName}"/>
+                    <h:outputText value="#{resources.ViewComponentLabel_markForDelete}"/>
+                    <h:outputText value="#{componentController.selected.markForDelete}" title="#{resources.ViewComponentTitle_markForDelete}"/>
+                    <h:outputText value="#{resources.ViewComponentLabel_version}"/>
+                    <h:outputText value="#{componentController.selected.version}" title="#{resources.ViewComponentTitle_version}"/>
+                    <h:outputText value="#{resources.ViewComponentLabel_imageUri}"/>
+                    <h:outputText value="#{componentController.selected.imageUri}" title="#{resources.ViewComponentTitle_imageUri}"/>
+                    <h:outputText value="#{resources.ViewComponentLabel_componentTypeId}"/>
+                    <h:outputText value="#{componentController.selected.componentTypeId}" title="#{resources.ViewComponentTitle_componentTypeId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentController.destroyAndView}" value="#{resources.ViewComponentDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentController.prepareCreate}" value="#{resources.ViewComponentCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentController.prepareList}" value="#{resources.ViewComponentShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

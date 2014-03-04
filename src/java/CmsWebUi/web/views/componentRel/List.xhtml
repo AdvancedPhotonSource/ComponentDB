@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListComponentRelTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListComponentRelEmpty}" rendered="#{componentRelController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{componentRelController.items.rowCount > 0}">
+                    <h:outputText value="#{componentRelController.pagination.pageFirstItem + 1}..#{componentRelController.pagination.pageLastItem + 1}/#{componentRelController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{componentRelController.previous}" value="#{resources.Previous} #{componentRelController.pagination.pageSize}" rendered="#{componentRelController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{componentRelController.next}" value="#{resources.Next} #{componentRelController.pagination.pageSize}" rendered="#{componentRelController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{componentRelController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_componentRelId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.componentRelId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_logicalOrder}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.logicalOrder}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_logicalDesc}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.logicalDesc}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_markForDelete}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.markForDelete}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_version}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.version}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_verifiedPersonId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.verifiedPersonId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_componentRelTypeId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.componentRelTypeId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_childComponentId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.childComponentId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentRelTitle_parentComponentId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.parentComponentId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{componentRelController.prepareView}" value="#{resources.ListComponentRelViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{componentRelController.prepareEdit}" value="#{resources.ListComponentRelEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{componentRelController.destroy}" value="#{resources.ListComponentRelDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{componentRelController.prepareCreate}" value="#{resources.ListComponentRelCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListComponentRelIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

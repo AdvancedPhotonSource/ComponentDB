@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListMfgTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListMfgEmpty}" rendered="#{mfgController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{mfgController.items.rowCount > 0}">
+                    <h:outputText value="#{mfgController.pagination.pageFirstItem + 1}..#{mfgController.pagination.pageLastItem + 1}/#{mfgController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{mfgController.previous}" value="#{resources.Previous} #{mfgController.pagination.pageSize}" rendered="#{mfgController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{mfgController.next}" value="#{resources.Next} #{mfgController.pagination.pageSize}" rendered="#{mfgController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{mfgController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListMfgTitle_mfgId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.mfgId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListMfgTitle_mfgName}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.mfgName}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListMfgTitle_version}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.version}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListMfgTitle_markForDelete}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.markForDelete}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{mfgController.prepareView}" value="#{resources.ListMfgViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{mfgController.prepareEdit}" value="#{resources.ListMfgEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{mfgController.destroy}" value="#{resources.ListMfgDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{mfgController.prepareCreate}" value="#{resources.ListMfgCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListMfgIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

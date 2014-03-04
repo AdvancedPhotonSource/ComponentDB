@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditPersonTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditPersonLabel_personId}" for="personId" />
+                    <h:inputText id="personId" value="#{personController.selected.personId}" title="#{resources.EditPersonTitle_personId}" required="true" requiredMessage="#{resources.EditPersonRequiredMessage_personId}"/>
+                    <h:outputLabel value="#{resources.EditPersonLabel_firstNm}" for="firstNm" />
+                    <h:inputText id="firstNm" value="#{personController.selected.firstNm}" title="#{resources.EditPersonTitle_firstNm}" />
+                    <h:outputLabel value="#{resources.EditPersonLabel_middleNm}" for="middleNm" />
+                    <h:inputText id="middleNm" value="#{personController.selected.middleNm}" title="#{resources.EditPersonTitle_middleNm}" />
+                    <h:outputLabel value="#{resources.EditPersonLabel_lastNm}" for="lastNm" />
+                    <h:inputText id="lastNm" value="#{personController.selected.lastNm}" title="#{resources.EditPersonTitle_lastNm}" />
+                    <h:outputLabel value="#{resources.EditPersonLabel_userid}" for="userid" />
+                    <h:inputText id="userid" value="#{personController.selected.userid}" title="#{resources.EditPersonTitle_userid}" />
+                </h:panelGrid>
+                <h:commandLink action="#{personController.update}" value="#{resources.EditPersonSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditPersonViewLink}"/>
+                <br />
+                <h:commandLink action="#{personController.prepareList}" value="#{resources.EditPersonShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditPersonIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

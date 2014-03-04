@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateFormFactorTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateFormFactorLabel_formFactorId}" for="formFactorId" />
+                    <h:inputText id="formFactorId" value="#{formFactorController.selected.formFactorId}" title="#{resources.CreateFormFactorTitle_formFactorId}" required="true" requiredMessage="#{resources.CreateFormFactorRequiredMessage_formFactorId}"/>
+                    <h:outputLabel value="#{resources.CreateFormFactorLabel_formFactor}" for="formFactor" />
+                    <h:inputText id="formFactor" value="#{formFactorController.selected.formFactor}" title="#{resources.CreateFormFactorTitle_formFactor}" />
+                    <h:outputLabel value="#{resources.CreateFormFactorLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{formFactorController.selected.markForDelete}" title="#{resources.CreateFormFactorTitle_markForDelete}" />
+                    <h:outputLabel value="#{resources.CreateFormFactorLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{formFactorController.selected.version}" title="#{resources.CreateFormFactorTitle_version}" />
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{formFactorController.create}" value="#{resources.CreateFormFactorSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{formFactorController.prepareList}" value="#{resources.CreateFormFactorShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateFormFactorIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

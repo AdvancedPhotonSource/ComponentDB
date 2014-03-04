@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentRelTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_componentRelId}" for="componentRelId" />
+                    <h:inputText id="componentRelId" value="#{componentRelController.selected.componentRelId}" title="#{resources.CreateComponentRelTitle_componentRelId}" required="true" requiredMessage="#{resources.CreateComponentRelRequiredMessage_componentRelId}"/>
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_logicalOrder}" for="logicalOrder" />
+                    <h:inputText id="logicalOrder" value="#{componentRelController.selected.logicalOrder}" title="#{resources.CreateComponentRelTitle_logicalOrder}" />
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_logicalDesc}" for="logicalDesc" />
+                    <h:inputText id="logicalDesc" value="#{componentRelController.selected.logicalDesc}" title="#{resources.CreateComponentRelTitle_logicalDesc}" />
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_markForDelete}" for="markForDelete" />
+                    <h:inputText id="markForDelete" value="#{componentRelController.selected.markForDelete}" title="#{resources.CreateComponentRelTitle_markForDelete}" />
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_version}" for="version" />
+                    <h:inputText id="version" value="#{componentRelController.selected.version}" title="#{resources.CreateComponentRelTitle_version}" />
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_verifiedPersonId}" for="verifiedPersonId" />
+                    <h:inputText id="verifiedPersonId" value="#{componentRelController.selected.verifiedPersonId}" title="#{resources.CreateComponentRelTitle_verifiedPersonId}" />
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_componentRelTypeId}" for="componentRelTypeId" />
+                    <h:selectOneMenu id="componentRelTypeId" value="#{componentRelController.selected.componentRelTypeId}" title="#{resources.CreateComponentRelTitle_componentRelTypeId}" >
+                        <f:selectItems value="#{componentRelTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_childComponentId}" for="childComponentId" />
+                    <h:selectOneMenu id="childComponentId" value="#{componentRelController.selected.childComponentId}" title="#{resources.CreateComponentRelTitle_childComponentId}" >
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentRelLabel_parentComponentId}" for="parentComponentId" />
+                    <h:selectOneMenu id="parentComponentId" value="#{componentRelController.selected.parentComponentId}" title="#{resources.CreateComponentRelTitle_parentComponentId}" >
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentRelController.create}" value="#{resources.CreateComponentRelSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentRelController.prepareList}" value="#{resources.CreateComponentRelShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentRelIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
