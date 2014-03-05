@@ -24,7 +24,7 @@
 }
 
 #menu {
-   background-color: #6da5d8;
+    background-color: #6da5d8;
 }
 
 #middle {
@@ -195,6 +195,13 @@ h1 {
     padding-bottom: 0px;
     color: #f2f4f7;
     vertical-align: middle;
+}
+
+.homePage {
+    background-image: url(../../resources/images/ApsStorageRing.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 100%;
 }
 
 .pageTitle h1 {

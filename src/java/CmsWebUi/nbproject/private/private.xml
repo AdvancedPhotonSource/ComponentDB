@@ -3,21 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/common/person/create.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/admin/person/list.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/common/person/view.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/admin/person/edit.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/admin/person/view.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/WEB-INF/web.xml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/src/conf/persistence.xml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/admin/componentType/view.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/common/person/list.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/common/componentType/edit.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/src/java/gov/anl/aps/cms/portal/controllers/PersonController.java</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/admin/componentType/edit.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/common/person/edit.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/web/views/common/componentType/view.xhtml</file>
-            <file>file:/local/sveseli/CMS/dev/src/java/CmsWebUi/src/java/gov/anl/aps/cms/portal/controllers/LoginController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/src/conf/persistence.xml</file>
         </group>
     </open-files>
 </project-private>
