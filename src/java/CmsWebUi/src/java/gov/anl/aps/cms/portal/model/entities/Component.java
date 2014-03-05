@@ -58,7 +58,7 @@ public class Component implements Serializable {
     private String imageUri;
     @JoinColumn(name = "component_type_id", referencedColumnName = "component_type_id")
     @ManyToOne(optional = false)
-    private ComponentType componentTypeId;
+    private ComponentType componentType;
     @OneToMany(mappedBy = "childComponentId")
     private List<ComponentRel> componentRelList;
     @OneToMany(mappedBy = "parentComponentId")
@@ -119,12 +119,12 @@ public class Component implements Serializable {
         this.imageUri = imageUri;
     }
 
-    public ComponentType getComponentTypeId() {
-        return componentTypeId;
+    public ComponentType getComponentType() {
+        return componentType;
     }
 
-    public void setComponentTypeId(ComponentType componentTypeId) {
-        this.componentTypeId = componentTypeId;
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
     }
 
     @XmlTransient

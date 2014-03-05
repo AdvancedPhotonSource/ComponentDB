@@ -4,6 +4,7 @@ import gov.anl.aps.cms.portal.model.entities.ComponentType;
 import gov.anl.aps.cms.portal.model.beans.ComponentTypeFacade;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -45,6 +46,11 @@ public class ComponentTypeController extends EntityController<ComponentType, Com
         }
         return "";
     }
+
+    @Override
+    public List<ComponentType> getAvailableItems() {
+        return super.getAvailableItems();
+    }  
     
     @FacesConverter(forClass = ComponentType.class)
     public static class ComponentTypeControllerConverter implements Converter {

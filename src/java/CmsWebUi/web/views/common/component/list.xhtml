@@ -4,7 +4,8 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <div class="pageTitle">
         <h1>Components</h1>
@@ -16,42 +17,21 @@
             <p:commandButton action="#{componentController.prepareCreate()}" value="Add" alt="Add Component" icon="ui-icon-plus"/>
         </div>
         <p:dataTable id="componentListDataTable" var="item" value="#{componentController.items}" paginator="true" rows="10">
+        <c:set var="itemComponentType" value="#{item.componentType}"/>
 
             <f:facet name="header">
             </f:facet>
 
-
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{resources.ListComponentTitle_markForDelete}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.markForDelete}"/>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{resources.ListComponentTitle_version}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.version}"/>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{resources.ListComponentTitle_imageUri}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.imageUri}"/>
-                        </h:column>
-                        <h:column>
-                            <f:facet name="header">
-                                <h:outputText value="#{resources.ListComponentTitle_componentTypeId}"/>
-                            </f:facet>
-                            <h:outputText value="#{item.componentTypeId}"/>
-                        </h:column>
-            
             <p:column sortBy="#{item.componentId}" headerText="Id">
                 <h:outputText value="#{item.componentId}"/>
             </p:column>
 
             <p:column sortBy="#{item.componentInstanceName}" headerText="Name">
                 <h:outputText value="#{item.componentInstanceName}"/>
+            </p:column>
+
+            <p:column sortBy="#{item.componentType}" headerText="Type">
+                <h:outputText value="#{itemComponentType.componentTypeName}"/>
             </p:column>
             
             <p:column headerText="Version">
@@ -68,7 +48,7 @@
                 </div>
             </p:column>                
         </p:dataTable>
-        
+
         <p:confirmDialog id="destroyComponentDialog" message="Destroy component #{componentController.getCurrentEntityInstanceName()}?"
                          header="Destroy Component" severity="alert" widgetVar="confirmation">
             <p:commandButton value="Yes" oncomplete="confirmation.hide()"

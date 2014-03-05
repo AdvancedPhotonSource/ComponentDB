@@ -8,61 +8,40 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <div class="pageTitle">
-        <h1>Update Component Type</h1>
+        <h1>Update Component</h1>
     </div>
 
-    <h:form id="editComponentTypeForm">
+    <h:form id="editComponentForm">
         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
-        <c:set var="selected" value="#{componentTypeController.selected}"/>
+        <c:set var="selected" value="#{componentController.selected}"/>
 
         <p:panelGrid columns="2">
-            <h:outputLabel for="componentTypeId" value="Id"/>
-            <h:outputText id="componentTypeId" value="#{selected.componentTypeId}" title="Id"/>
+            <h:outputLabel for="componentId" value="Id"/>
+            <h:outputText id="componentId" value="#{selected.componentId}" title="Id"/>
 
-            <h:outputLabel for="componentTypeName" value="Name"/>
-            <h:inputText id="componentTypeName" value="#{selected.componentTypeName}" title="Name"/>
+            <h:outputLabel for="componentName" value="Name"/>
+            <h:inputText id="componentName" value="#{selected.componentInstanceName}" title="Name"/>
 
             <h:outputLabel for="version" value="Version"/>
             <h:inputText id="version" value="#{selected.version}" title="Version"/>
 
-            <h:outputLabel for="description" value="Description"/>
-            <h:inputText id="description" value="#{selected.description}" title="Description"/>
-
-            <h:outputLabel for="vdescription" value="Verbose Description"/>
-            <h:inputTextarea id="vdescription" rows="4" cols="30" value="#{selected.vdescription}" title="Verbose Description"/>
-
-            <h:outputLabel  for="mfg" value="Manufacturer"/>
-            <h:selectOneMenu id="mfg" value="#{selected.mfg}" title="Manufacturer">
+            <h:outputLabel for="componentType" value="Type"/>
+            <h:selectOneMenu id="componentType" value="#{selected.componentType}" title="Type">
                 <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                <f:selectItems var="mfg" value="#{mfgController.availableItems}" itemLabel="#{mfg.mfgName}" itemValue="#{mfg}"/>
+                <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.componentTypeName}" itemValue="#{componentType}"/>
             </h:selectOneMenu>
 
-            <h:outputLabel for="formFactor" value="Form Factor"/>
-            <h:selectOneMenu id="formFactor" value="#{selected.formFactor}" title="Form Factor">
-                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                <f:selectItems var="formFactor" value="#{formFactorController.availableItems}" itemLabel="#{formFactor.formFactor}" itemValue="#{formFactor}"/>
-            </h:selectOneMenu>
-
-            <h:outputLabel for="chcContact" value="Contact"/>                
-            <h:selectOneMenu id="chcContact" value="#{selected.contact}" title="Contact">
-                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                <f:selectItems var="person" value="#{personController.availableItems}" itemLabel="#{person.fullName}" itemValue="#{person}"/>
-            </h:selectOneMenu>
-
-            <h:outputLabel for="chcBeamlineInterest" value="Beamline Interest"/>
-            <h:selectOneMenu id="chcBeamlineInterest" value="#{selected.beamlineInterest}" title="Beamline Interest">
-                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                <f:selectItems var="beamlineInterest" value="#{chcBeamlineInterestController.availableItems}" itemLabel="#{beamlineInterest.interest}" itemValue="#{beamlineInterest}"/>
-            </h:selectOneMenu>
+            <h:outputLabel for="imageUri" value="Image URI"/>
+            <h:inputText id="imageUri" value="#{selected.imageUri}" title="Image URI" />
 
             <h:outputLabel for="markForDelete" value="Mark For Delete"/>
             <h:inputText id="markForDelete" value="#{selected.markForDelete}" title="Mark For Delete"/>
         </p:panelGrid>
-        
+
         <div class="actionButton">
-            <p:commandButton action="#{componentTypeController.update()}" value="Save" alt="Save" icon="ui-icon-check"/>
-            <p:commandButton action="#{componentTypeController.prepareList()}" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+            <p:commandButton action="#{componentController.update()}" value="Save" alt="Save" icon="ui-icon-check"/>
+            <p:commandButton action="#{componentController.prepareList()}" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
         </div>
-        
+
     </h:form>
 </ui:composition>

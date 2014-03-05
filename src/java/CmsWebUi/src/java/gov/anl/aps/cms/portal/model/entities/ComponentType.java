@@ -61,7 +61,7 @@ public class ComponentType implements Serializable {
     @Size(max = 65535)
     @Column(name = "vdescription")
     private String vdescription;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentTypeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Component> componentList;
     @OneToMany(mappedBy = "componentTypeId")
     private List<ComponentTypeDocument> componentTypeDocumentList;
