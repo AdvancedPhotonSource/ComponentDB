@@ -6,6 +6,8 @@ DB_OWNER_PASSWORD=irmis
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_ADMIN_USER=root
+DB_ADMIN_HOSTS="127.0.0.1 bluegill1.aps.anl.gov gaeaimac.aps.anl.gov
+visa%.aps.anl.gov"
 DB_ADMIN_PASSWORD=
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
@@ -49,11 +51,13 @@ SQL_DIR=$CMS_ROOT_DIR/db/sql
 cd $SQL_DIR
 
 # drop old db
-sqlFile=/tmp/create_cms_db.`id -u`.sql
+sqlFile=/tmp/create_irmis_db.`id -u`.sql
 rm -f $sqlFile
-echo "drop database if exists $DB_NAME;" >> $sqlFile
-echo "create database $DB_NAME;" >> $sqlFile
-echo "grant all privileges on $DB_NAME.* to '$DB_OWNER'@'$DB_HOST' identified by '$DB_OWNER_PASSWORD';" >> $sqlFile
+echo "DROP DATABASE IF EXISTS $DB_NAME;" >> $sqlFile
+echo "CREATE DATABASE $DB_NAME;" >> $sqlFile
+for host in $DB_ADMIN_HOSTS; do
+    echo "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_OWNER'@'$host' IDENTIFIED BY '$DB_OWNER_PASSWORD';" >> $sqlFile
+done
 execute "$mysqlCmd < $sqlFile"
 
 # create db

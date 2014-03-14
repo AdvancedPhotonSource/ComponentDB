@@ -6,7 +6,10 @@ DB_OWNER_PASSWORD=cms
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_ADMIN_USER=root
+DB_ADMIN_HOSTS="127.0.0.1 bluegill1.aps.anl.gov gaeaimac.aps.anl.gov visa%.aps.anl.gov"
 DB_ADMIN_PASSWORD=
+DB_CHARACTER_SET=utf8
+
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 if [ -z "${CMS_ROOT_DIR}" ]; then
@@ -48,22 +51,25 @@ execute() {
 SQL_DIR=$CMS_ROOT_DIR/db/sql
 cd $SQL_DIR
 
-# drop old db
+# recreate db
 sqlFile=/tmp/create_cms_db.`id -u`.sql
 rm -f $sqlFile
-echo "drop database if exists $DB_NAME;" >> $sqlFile
-echo "create database $DB_NAME;" >> $sqlFile
-echo "grant all privileges on $DB_NAME.* to '$DB_OWNER'@'$DB_HOST' identified by '$DB_OWNER_PASSWORD';" >> $sqlFile
+echo "DROP DATABASE IF EXISTS $DB_NAME;" >> $sqlFile
+echo "CREATE DATABASE $DB_NAME CHARACTER SET $DB_CHARACTER_SET;" >> $sqlFile
+for host in $DB_ADMIN_HOSTS; do
+    echo "GRANT ALL PRIVILEGES ON $DB_NAME.* TO '$DB_OWNER'@'$host'
+    IDENTIFIED BY '$DB_OWNER_PASSWORD';" >> $sqlFile
+done
 execute "$mysqlCmd < $sqlFile"
 
-# create db
+# create db tables
 mysqlCmd="$mysqlCmd -D $DB_NAME <"
-execute $mysqlCmd create_all_tables.sql
+#execute $mysqlCmd create_cms_tables.sql
 
 # populate db
 
 # Add development rows
-execute $mysqlCmd add_development_entries.sql
+execute $mysqlCmd add_cms_development_entries.sql
 
 # cleanup
 execute rm -f $sqlFile
