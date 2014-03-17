@@ -83,7 +83,7 @@ CREATE TABLE `resource_type` (
   `description` varchar(256) DEFAULT NULL,
   `resource_category_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `resource_type_name_ukey` (`name`)
-  KEY `resource_type_category_id_fkey` (`resource_category_id`),
-  CONSTRAINT `resource_type_category_id_fkey` FOREIGN KEY (`resource_category_id`) REFERENCES `resource_category` (`id`) ON UPDATE CASCADE 
+  UNIQUE KEY `resource_type_name_ukey` (`name`),
+  KEY `resource_type_resource_category_id_fkey` (`resource_category_id`),
+  CONSTRAINT `resource_type_resource_category_id_fkey` FOREIGN KEY (`resource_category_id`) REFERENCES `resource_category` (`id`) ON UPDATE CASCADE 
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
