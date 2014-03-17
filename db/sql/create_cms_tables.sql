@@ -159,7 +159,7 @@ CREATE TABLE `location_type` (
 -- Table `location`
 --
 
---CREATE TABLE `location` (
+-- CREATE TABLE `location` (
 --  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 --  `name` varchar(64) NOT NULL,
 --  `description` varchar(256) DEFAULT NULL,
@@ -168,7 +168,7 @@ CREATE TABLE `location_type` (
 --  UNIQUE KEY `location_u1` (`name`),
 --  KEY `location_k1` (`location_type_id`),
 --  CONSTRAINT `location_fk1` FOREIGN KEY (`location_type_id`) REFERENCES `locatio_type` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
---) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+-- ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 --
