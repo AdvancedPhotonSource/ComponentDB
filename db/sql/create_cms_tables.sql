@@ -4,7 +4,7 @@
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `username` varchar(16) NOT NULL,
   `first_name` varchar(16) NOT NULL,
   `last_name` varchar(16) NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `user` (
 
 DROP TABLE IF EXISTS `group`;
 CREATE TABLE `group` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -33,9 +33,9 @@ CREATE TABLE `group` (
 
 DROP TABLE IF EXISTS `user_group`;
 CREATE TABLE `user_group` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `group_id` int(11) NOT NULL,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `group_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_group_u1` (`user_id`, `group_id`),
   KEY `user_group_k1` (`user_id`),
@@ -53,7 +53,7 @@ CREATE TABLE `log` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `text` text NOT NULL,
   `created_on_date_time` datetime NOT NULL,
-  `created_by_user_id` int(11) NOT NULL,
+  `created_by_user_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `log_k1` (`created_by_user_id`),
   CONSTRAINT `log_fk1` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE 
@@ -85,5 +85,74 @@ CREATE TABLE `resource_type` (
   UNIQUE KEY `resource_type_u1` (`name`),
   KEY `resource_type_k1` (`resource_category_id`),
   CONSTRAINT `resource_type_fk1` FOREIGN KEY (`resource_category_id`) REFERENCES `resource_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `property_category`
+--
+
+DROP TABLE IF EXISTS `property_category`;
+CREATE TABLE `property_category` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `property_category_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `property_type`
+--
+
+CREATE TABLE `property_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(256) DEFAULT NULL,
+  `property_category_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `property_type_u1` (`name`),
+  KEY `property_type_k1` (`property_category_id`),
+  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_category_id`) REFERENCES `property_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `connector_category`
+--
+
+DROP TABLE IF EXISTS `connector_category`;
+CREATE TABLE `connector_category` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `connector_category_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `connector_type`
+--
+
+CREATE TABLE `connector_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(256) DEFAULT NULL,
+  `connector_category_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `connector_type_u1` (`name`),
+  KEY `connector_type_k1` (`connector_category_id`),
+  CONSTRAINT `connector_type_fk1` FOREIGN KEY (`connector_category_id`) REFERENCES `connector_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `manufacturer`
+--
+
+DROP TABLE IF EXISTS `manufacturer`;
+CREATE TABLE `manufacturer` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `manufacturer_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
