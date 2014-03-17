@@ -156,3 +156,47 @@ CREATE TABLE `manufacturer` (
   UNIQUE KEY `manufacturer_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+--
+-- Table `component_state`
+--
+
+DROP TABLE IF EXISTS `component_state`;
+CREATE TABLE `component_state` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_state_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component`
+--
+
+DROP TABLE IF EXISTS `component`;
+CREATE TABLE `component` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `owner_user_id` int(11) unsigned NOT NULL,
+  `owner_group_id` int(11) unsigned NOT NULL,
+  `component_state_id` int(11) unsigned NOT NULL,
+  `estimated_cost` float(10,2) DEFAULT NULL,
+  `created_on_date_time` datetime NOT NULL,
+  `created_by_user_id` int(11) unsigned NOT NULL,
+  `modified_on_date_time` datetime NOT NULL,
+  `modified_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_u1` (`name`),
+  KEY `component_k1` (`component_state_id`),
+  CONSTRAINT `component_fk1` FOREIGN KEY (`component_state_id`) REFERENCES `component_state` (`id`) ON UPDATE CASCADE,
+  KEY `component_k2` (`owner_user_id`),
+  CONSTRAINT `component_fk2` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `component_k3` (`owner_group_id`),
+  CONSTRAINT `component_fk3` FOREIGN KEY (`owner_group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE,
+  KEY `component_k4` (`created_by_user_id`),
+  CONSTRAINT `component_fk4` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `component_k5` (`modified_by_user_id`),
+  CONSTRAINT `component_fk5` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
