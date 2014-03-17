@@ -209,6 +209,7 @@ CREATE TABLE `component` (
   `owner_user_id` int(11) unsigned NOT NULL,
   `owner_group_id` int(11) unsigned NOT NULL,
   `component_state_id` int(11) unsigned NOT NULL,
+  `documentation_uri` varchar(256) DEFAULT NULL,
   `estimated_cost` float(10,2) DEFAULT NULL,
   `created_on_date_time` datetime NOT NULL,
   `created_by_user_id` int(11) unsigned NOT NULL,
