@@ -144,6 +144,34 @@ CREATE TABLE `connector_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table `location_type`
+--
+
+CREATE TABLE `location_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `location_type_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `location`
+--
+
+CREATE TABLE `location` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL DEFAULT '',
+  `description` varchar(256) DEFAULT NULL,
+  `location_type_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `location_u1` (`name`),
+  KEY `location_k1` (`location_type_id`),
+  CONSTRAINT `location_fk1` FOREIGN KEY (`location_type_id`) REFERENCES `locatio_type` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+--
 -- Table `manufacturer`
 --
 
