@@ -10,8 +10,8 @@ CREATE TABLE `user` (
   `last_name` varchar(16) NOT NULL,
   `middle_name` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_username_ukey` (`username`),
-  UNIQUE KEY `user_name_ukey` (`first_name`, `last_name`, `middle_name`)
+  UNIQUE KEY `user_u1` (`username`),
+  UNIQUE KEY `user_u2` (`first_name`, `last_name`, `middle_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -24,7 +24,7 @@ CREATE TABLE `group` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `group_name_ukey` (`name`)
+  UNIQUE KEY `group_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -37,11 +37,11 @@ CREATE TABLE `user_group` (
   `user_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_group_ukey` (`user_id`, `group_id`),
-  KEY `user_group_user_id_fkey` (`user_id`),
-  CONSTRAINT `user_group_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `user_group_group_id_fkey` (`group_id`),
-  CONSTRAINT `user_group_group_id_fkey` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  UNIQUE KEY `user_group_u1` (`user_id`, `group_id`),
+  KEY `user_group_k1` (`user_id`),
+  CONSTRAINT `user_group_fk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `user_group_k2` (`group_id`),
+  CONSTRAINT `user_group_group_fk2` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -55,8 +55,8 @@ CREATE TABLE `log` (
   `created_on_date_time` datetime NOT NULL,
   `created_by_user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `log_created_by_user_id_fkey` (`created_by_user_id`),
-  CONSTRAINT `log_created_by_user_id_fkey` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE 
+  KEY `log_k1` (`created_by_user_id`),
+  CONSTRAINT `log_fk1` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE 
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -69,21 +69,21 @@ CREATE TABLE `resource_category` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `resource_category_name_ukey` (`name`)
+  UNIQUE KEY `resource_category_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table `resource_type`
 --
 
-DROP TABLE IF EXISTS `resource_type`;
 CREATE TABLE `resource_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
+  `name` varchar(64) NOT NULL DEFAULT '',
   `description` varchar(256) DEFAULT NULL,
-  `resource_category_id` int(11) DEFAULT NULL,
+  `resource_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `resource_type_name_ukey` (`name`),
-  KEY `resource_type_category_id_fkey` (`resource_category_id`),
-  CONSTRAINT `resource_type_category_id_fkey` FOREIGN KEY (`resource_category_id`) REFERENCES `resource_category` (`id`) ON UPDATE CASCADE 
+  UNIQUE KEY `resource_type_u1` (`name`),
+  KEY `resource_type_k1` (`resource_category_id`),
+  CONSTRAINT `resource_type_fk1` FOREIGN KEY (`resource_category_id`) REFERENCES `resource_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
