@@ -39,7 +39,6 @@ execute() {
     msg="$@"
     if [ ! -z "$DB_ADMIN_PASSWORD" ]; then
         sedCmd="s?$DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g"
-        echo $sedCmd
         echo "Executing: $@" | sed -e $sedCmd
     else
         echo "Executing: $@"
@@ -64,12 +63,12 @@ execute "$mysqlCmd < $sqlFile"
 
 # create db tables
 mysqlCmd="$mysqlCmd -D $DB_NAME <"
-#execute $mysqlCmd create_cms_tables.sql
+execute $mysqlCmd create_cms_tables.sql
 
 # populate db
 
 # Add development rows
-execute $mysqlCmd add_cms_development_entries.sql
+#execute $mysqlCmd add_cms_development_entries.sql
 
 # cleanup
 execute rm -f $sqlFile
