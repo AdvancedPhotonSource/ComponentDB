@@ -38,7 +38,9 @@ CREATE TABLE `user_group` (
   `group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_group_ukey` (`user_id`, `group_id`),
+  KEY `user_group_user_id_fkey` (`user_id`),
   CONSTRAINT `user_group_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`),
+  KEY `user_group_group_id_fkey` (`group_id`),
   CONSTRAINT `user_group_group_id_fkey` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
