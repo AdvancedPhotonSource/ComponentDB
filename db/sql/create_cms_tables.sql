@@ -78,7 +78,7 @@ CREATE TABLE `resource_category` (
 
 CREATE TABLE `resource_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `resource_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -106,7 +106,7 @@ CREATE TABLE `property_category` (
 
 CREATE TABLE `property_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `property_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -134,7 +134,7 @@ CREATE TABLE `connector_category` (
 
 CREATE TABLE `connector_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `connector_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -149,7 +149,7 @@ CREATE TABLE `connector_type` (
 
 CREATE TABLE `location_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `location_type_u1` (`name`)
@@ -161,9 +161,9 @@ CREATE TABLE `location_type` (
 
 CREATE TABLE `location` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL DEFAULT '',
+  `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `location_type_id` int(11) DEFAULT NULL,
+  `location_type_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `location_u1` (`name`),
   KEY `location_k1` (`location_type_id`),
