@@ -51,8 +51,8 @@ CREATE TABLE `user_group` (
 CREATE TABLE `log` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `text` text NOT NULL,
-  `created_on_date_time` datetime DEFAULT NOT NULL,
-  `created_by_user_id` int(11) DEFAULT NOT NULL,
+  `created_on_date_time` datetime NOT NULL,
+  `created_by_user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `log_created_by_user_id_fkey` (`created_by_user_id`),
   CONSTRAINT `log_created_by_user_id_fkey` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE RESTRICT
