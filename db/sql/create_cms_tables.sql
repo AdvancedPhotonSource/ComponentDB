@@ -229,3 +229,164 @@ CREATE TABLE `component` (
   CONSTRAINT `component_fk5` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+--
+-- Table `collection`
+--
+
+DROP TABLE IF EXISTS `collection`;
+CREATE TABLE `collection` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `owner_user_id` int(11) unsigned NOT NULL,
+  `owner_group_id` int(11) unsigned NOT NULL,
+  `created_on_date_time` datetime NOT NULL,
+  `created_by_user_id` int(11) unsigned NOT NULL,
+  `modified_on_date_time` datetime NOT NULL,
+  `modified_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `collection_u1` (`name`),
+  KEY `collection_k1` (`owner_user_id`),
+  CONSTRAINT `collection_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `collection_k2` (`owner_group_id`),
+  CONSTRAINT `collection_fk2` FOREIGN KEY (`owner_group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE,
+  KEY `collection_k3` (`created_by_user_id`),
+  CONSTRAINT `collection_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `collection_k4` (`modified_by_user_id`),
+  CONSTRAINT `collection_fk4` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `collection_component`
+--
+
+DROP TABLE IF EXISTS `collection_component`;
+CREATE TABLE `collection_component` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `collection_id` int(11) unsigned NOT NULL,
+  `component_id` int(11) unsigned NOT NULL,
+  `quantity` int(11) unsigned DEFAULT 1,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `collection_component_u1` (`collection_id`, `component_id`),
+  KEY `collection_component_k1` (`collection_id`),
+  CONSTRAINT `collection_component_fk1` FOREIGN KEY (`collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `collection_component_k2` (`component_id`),
+  CONSTRAINT `collection_component_fk2` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_manufacturer`
+--
+
+DROP TABLE IF EXISTS `component_manufacturer`;
+CREATE TABLE `component_manufacturer` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `component_id` int(11) unsigned NOT NULL,
+  `manufacturer_id` int(11) unsigned NOT NULL,
+  `part_number` varchar(64) DEFAULT NULL,
+  `cost` float(10,2) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_manufacturer_u1` (`component_id`, `manufacturer_id`),
+  KEY `component_manufacturer_k1` (`component_id`),
+  CONSTRAINT `component_manufacturer_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `component_manufacturer_k2` (`manufacturer_id`),
+  CONSTRAINT `component_manufacturer_fk2` FOREIGN KEY (`manufacturer_id`) REFERENCES `manufacturer` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_property`
+--
+
+DROP TABLE IF EXISTS `component_property`;
+CREATE TABLE `component_property` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `component_id` int(11) unsigned NOT NULL,
+  `property_type_id` int(11) unsigned NOT NULL,
+  `value` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_property_u1` (`component_id`, `property_type_id`),
+  KEY `component_property_k1` (`component_id`),
+  CONSTRAINT `component_property_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `component_property_k2` (`property_type_id`),
+  CONSTRAINT `component_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_log`
+--
+
+DROP TABLE IF EXISTS `component_log`;
+CREATE TABLE `component_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `component_id` int(11) unsigned NOT NULL,
+  `log_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_log_u1` (`component_id`, `log_id`),
+  KEY `component_log_k1` (`component_id`),
+  CONSTRAINT `component_log_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `component_log_k2` (`log_id`),
+  CONSTRAINT `component_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `collection_log`
+--
+
+DROP TABLE IF EXISTS `collection_log`;
+CREATE TABLE `collection_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `collection_id` int(11) unsigned NOT NULL,
+  `log_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `collection_log_u1` (`collection_id`, `log_id`),
+  KEY `collection_log_k1` (`collection_id`),
+  CONSTRAINT `collection_log_fk1` FOREIGN KEY (`collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `collection_log_k2` (`log_id`),
+  CONSTRAINT `collection_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_instance`
+--
+
+DROP TABLE IF EXISTS `component_instance`;
+CREATE TABLE `component_instance` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `component_id` int(11) unsigned NOT NULL,
+  `location_id` int(11) unsigned NOT NULL,
+  `serial_number` varchar(16) DEFAULT NULL,
+  `quantity` int(11) unsigned DEFAULT NULL,
+  `created_on_date_time` datetime NOT NULL,
+  `created_by_user_id` int(11) unsigned NOT NULL,
+  `modified_on_date_time` datetime NOT NULL,
+  `modified_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_instance_u1` (`component_id`, `location_id`),
+  KEY `component_instance_k1` (`component_id`),
+  CONSTRAINT `component_instance_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
+  KEY `component_instance_k2` (`location_id`),
+  CONSTRAINT `component_instance_fk2` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
+  KEY `component_instance_k3` (`created_by_user_id`),
+  CONSTRAINT `component_instance_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `component_instance_k4` (`modified_by_user_id`),
+  CONSTRAINT `component_instance_fk4` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_instance_log`
+--
+
+DROP TABLE IF EXISTS `component_instance_log`;
+CREATE TABLE `component_instance_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `component_instance_id` int(11) unsigned NOT NULL,
+  `log_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_instance_log_u1` (`component_instance_id`, `log_id`),
+  KEY `component_instance_log_k1` (`component_instance_id`),
+  CONSTRAINT `component_instance_log_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `component_instance_log_k2` (`log_id`),
+  CONSTRAINT `component_instance_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
