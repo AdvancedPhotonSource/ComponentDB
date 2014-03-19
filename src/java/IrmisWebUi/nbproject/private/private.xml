@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/src/conf/persistence.xml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/templates/adminTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/templates/userTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/resources/css/portal.css</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/home.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/admin/home.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/user/home.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/component/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/component/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/componentType/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/src/java/gov/anl/aps/cms/portal/controllers/PersonController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/src/java/gov/anl/aps/cms/portal/controllers/ComponentTypeController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/component/create.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/src/java/gov/anl/aps/cms/portal/model/entities/Component.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/componentType/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/componentType/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/src/java/gov/anl/aps/cms/portal/model/entities/ComponentType.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebUi/web/views/common/component/view.xhtml</file>
+        </group>
+    </open-files>
+</project-private>
