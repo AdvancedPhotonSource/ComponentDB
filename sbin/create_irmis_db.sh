@@ -14,6 +14,7 @@ MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 if [ -z "${CMS_ROOT_DIR}" ]; then
     CMS_ROOT_DIR=$MY_DIR/..
 fi
+CMS_SQL_DIR=$CMS_ROOT_DIR/db/sql/irmis
 CMS_ENV_FILE=${CMS_ROOT_DIR}/setup.sh
 if [ ! -f ${CMS_ENV_FILE} ]; then
     echo "Environment file ${CMS_ENV_FILE} does not exist." 
@@ -22,8 +23,6 @@ fi
 . ${CMS_ENV_FILE} > /dev/null 
 
 # Read password
-
-
 sttyOrig=`stty -g`
 stty -echo
 read -p "Enter MySQL root password: " DB_ADMIN_PASSWORD
@@ -47,10 +46,9 @@ execute() {
 }
 
 
-SQL_DIR=$CMS_ROOT_DIR/db/sql
-cd $SQL_DIR
 
 # drop old db
+cd $CMS_SQL_DIR
 sqlFile=/tmp/create_irmis_db.`id -u`.sql
 rm -f $sqlFile
 echo "DROP DATABASE IF EXISTS $DB_NAME;" >> $sqlFile
@@ -62,7 +60,7 @@ execute "$mysqlCmd < $sqlFile"
 
 # create db
 mysqlCmd="$mysqlCmd -D $DB_NAME <"
-execute $mysqlCmd create_all_tables.sql
+execute $mysqlCmd create_irmis_tables.sql
 
 # populate db
 execute $mysqlCmd populate_chc_beamline_interest.sql
