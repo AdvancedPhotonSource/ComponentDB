@@ -17,33 +17,33 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `group`
---
-
-DROP TABLE IF EXISTS `group`;
-CREATE TABLE `group` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `group_u1` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
 -- Table `user_group`
 --
 
 DROP TABLE IF EXISTS `user_group`;
 CREATE TABLE `user_group` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) unsigned NOT NULL,
-  `group_id` int(11) unsigned NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_group_u1` (`user_id`, `group_id`),
-  KEY `user_group_k1` (`user_id`),
-  CONSTRAINT `user_group_fk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `user_group_k2` (`group_id`),
-  CONSTRAINT `user_group_group_fk2` FOREIGN KEY (`group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  UNIQUE KEY `user_group_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `user_user_group`
+--
+
+DROP TABLE IF EXISTS `user_user_group`;
+CREATE TABLE `user_user_group` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `user_group_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_user_group_u1` (`user_id`, `user_group_id`),
+  KEY `user_user_group_k1` (`user_id`),
+  CONSTRAINT `user_user_group_fk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `user_user_group_k2` (`user_group_id`),
+  CONSTRAINT `user_user_group_user_group_fk2` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -254,7 +254,7 @@ CREATE TABLE `component` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `owner_user_id` int(11) unsigned DEFAULT NULL,
-  `owner_group_id` int(11) unsigned DEFAULT NULL,
+  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
   `component_state_id` int(11) unsigned NOT NULL,
   `documentation_uri` varchar(256) DEFAULT NULL,
   `estimated_cost` float(10,2) DEFAULT NULL,
@@ -268,8 +268,8 @@ CREATE TABLE `component` (
   CONSTRAINT `component_fk1` FOREIGN KEY (`component_state_id`) REFERENCES `component_state` (`id`) ON UPDATE CASCADE,
   KEY `component_k2` (`owner_user_id`),
   CONSTRAINT `component_fk2` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `component_k3` (`owner_group_id`),
-  CONSTRAINT `component_fk3` FOREIGN KEY (`owner_group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE,
+  KEY `component_k3` (`owner_user_group_id`),
+  CONSTRAINT `component_fk3` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
   KEY `component_k4` (`created_by_user_id`),
   CONSTRAINT `component_fk4` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   KEY `component_k5` (`modified_by_user_id`),
@@ -303,7 +303,7 @@ CREATE TABLE `collection` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `owner_user_id` int(11) unsigned DEFAULT NULL,
-  `owner_group_id` int(11) unsigned DEFAULT NULL,
+  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
   `created_on_date_time` datetime NOT NULL,
   `created_by_user_id` int(11) unsigned NOT NULL,
   `modified_on_date_time` datetime NOT NULL,
@@ -312,8 +312,8 @@ CREATE TABLE `collection` (
   UNIQUE KEY `collection_u1` (`name`),
   KEY `collection_k1` (`owner_user_id`),
   CONSTRAINT `collection_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `collection_k2` (`owner_group_id`),
-  CONSTRAINT `collection_fk2` FOREIGN KEY (`owner_group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE,
+  KEY `collection_k2` (`owner_user_group_id`),
+  CONSTRAINT `collection_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
   KEY `collection_k3` (`created_by_user_id`),
   CONSTRAINT `collection_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   KEY `collection_k4` (`modified_by_user_id`),
@@ -550,7 +550,7 @@ CREATE TABLE `design` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `owner_user_id` int(11) unsigned DEFAULT NULL,
-  `owner_group_id` int(11) unsigned DEFAULT NULL,
+  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
   `created_on_date_time` datetime NOT NULL,
   `created_by_user_id` int(11) unsigned NOT NULL,
   `modified_on_date_time` datetime NOT NULL,
@@ -559,8 +559,8 @@ CREATE TABLE `design` (
   UNIQUE KEY `design_u1` (`name`),
   KEY `design_k1` (`owner_user_id`),
   CONSTRAINT `design_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `design_k2` (`owner_group_id`),
-  CONSTRAINT `design_fk2` FOREIGN KEY (`owner_group_id`) REFERENCES `group` (`id`) ON UPDATE CASCADE,
+  KEY `design_k2` (`owner_user_group_id`),
+  CONSTRAINT `design_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
   KEY `design_k3` (`created_by_user_id`),
   CONSTRAINT `design_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   KEY `design_k4` (`modified_by_user_id`),

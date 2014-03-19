@@ -26,7 +26,7 @@
 LOCK TABLES `component` WRITE;
 /*!40000 ALTER TABLE `component` DISABLE KEYS */;
 
-INSERT INTO `component` (`id`, `name`, `description`, `owner_user_id`, `owner_group_id`, `component_state_id`, `documentation_uri`, `estimated_cost`, `created_on_date_time`, `created_by_user_id`, `modified_on_date_time`, `modified_by_user_id`)
+INSERT INTO `component` (`id`, `name`, `description`, `owner_user_id`, `owner_user_group_id`, `component_state_id`, `documentation_uri`, `estimated_cost`, `created_on_date_time`, `created_by_user_id`, `modified_on_date_time`, `modified_by_user_id`)
 VALUES
 	(1,'GateValve1','Ag-coated SST liner, 22 mm ID, standard SST 2 3/8\" CF flanges',1,1,3,NULL,NULL,'0000-00-00 00:00:00',2,'0000-00-00 00:00:00',2),
 	(2,'GateValve2','Ag-coated SST liner, 22 mm ID with pocket for x-ray extraction, standard 2 3/8\" SST CF flanges',1,1,3,NULL,NULL,'0000-00-00 00:00:00',2,'0000-00-00 00:00:00',2),

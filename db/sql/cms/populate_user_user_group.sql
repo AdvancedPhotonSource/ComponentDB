@@ -7,7 +7,7 @@
 #
 # Host: ctlappsdev (MySQL 5.1.73)
 # Database: cms
-# Generation Time: 2014-03-18 15:12:18 -0500
+# Generation Time: 2014-03-18 15:21:47 -0500
 # ************************************************************
 
 
@@ -20,24 +20,23 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table group
+# Dump of table user_user_group
 # ------------------------------------------------------------
 
-LOCK TABLES `group` WRITE;
-/*!40000 ALTER TABLE `group` DISABLE KEYS */;
+LOCK TABLES `user_user_group` WRITE;
+/*!40000 ALTER TABLE `user_user_group` DISABLE KEYS */;
 
-INSERT INTO `group` (`id`, `name`, `description`)
+INSERT INTO `user_user_group` (`id`, `user_id`, `user_group_id`)
 VALUES
-	(1,'MED',NULL),
-	(2,'CS',NULL),
-	(3,'SSG',NULL),
-	(4,'CTL',NULL),
-	(5,'CMS_ADMIN',NULL),
-	(6,'VAC',NULL),
-	(7,'RF',NULL),
-	(8,'PS',NULL);
+	(8,1,1),
+	(9,2,2),
+	(12,2,5),
+	(10,3,3),
+	(13,3,5),
+	(11,4,4),
+	(14,4,5);
 
-/*!40000 ALTER TABLE `group` ENABLE KEYS */;
+/*!40000 ALTER TABLE `user_user_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

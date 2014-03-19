@@ -65,8 +65,8 @@ execute $mysqlCmd create_cms_tables.sql
 
 # populate db
 execute $mysqlCmd populate_user.sql
-execute $mysqlCmd populate_group.sql
 execute $mysqlCmd populate_user_group.sql
+execute $mysqlCmd populate_user_user_group.sql
 execute $mysqlCmd populate_component_state.sql
 execute $mysqlCmd populate_source.sql
 execute $mysqlCmd populate_property_type.sql

@@ -7,7 +7,7 @@
 #
 # Host: ctlappsdev (MySQL 5.1.73)
 # Database: cms
-# Generation Time: 2014-03-18 15:21:47 -0500
+# Generation Time: 2014-03-18 15:12:18 -0500
 # ************************************************************
 
 
@@ -26,15 +26,16 @@
 LOCK TABLES `user_group` WRITE;
 /*!40000 ALTER TABLE `user_group` DISABLE KEYS */;
 
-INSERT INTO `user_group` (`id`, `user_id`, `group_id`)
+INSERT INTO `user_group` (`id`, `name`, `description`)
 VALUES
-	(8,1,1),
-	(9,2,2),
-	(12,2,5),
-	(10,3,3),
-	(13,3,5),
-	(11,4,4),
-	(14,4,5);
+	(1,'MED',NULL),
+	(2,'CS',NULL),
+	(3,'SSG',NULL),
+	(4,'CTL',NULL),
+	(5,'CMS_ADMIN',NULL),
+	(6,'VAC',NULL),
+	(7,'RF',NULL),
+	(8,'PS',NULL);
 
 /*!40000 ALTER TABLE `user_group` ENABLE KEYS */;
 UNLOCK TABLES;
