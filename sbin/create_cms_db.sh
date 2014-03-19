@@ -64,6 +64,26 @@ mysqlCmd="$mysqlCmd -D $DB_NAME <"
 execute $mysqlCmd create_cms_tables.sql
 
 # populate db
+execute $mysqlCmd populate_user.sql
+execute $mysqlCmd populate_group.sql
+execute $mysqlCmd populate_user_group.sql
+execute $mysqlCmd populate_component_state.sql
+execute $mysqlCmd populate_source.sql
+execute $mysqlCmd populate_property_type.sql
+execute $mysqlCmd populate_resource_category.sql
+execute $mysqlCmd populate_connector_category.sql
+execute $mysqlCmd populate_connector_type.sql
+
+execute $mysqlCmd populate_component_category.sql
+execute $mysqlCmd populate_component_type.sql
+execute $mysqlCmd populate_resource_type.sql
+
+execute $mysqlCmd populate_component.sql
+execute $mysqlCmd populate_component_source.sql
+execute $mysqlCmd populate_component_property.sql
+execute $mysqlCmd populate_component_component_type.sql
+execute $mysqlCmd populate_component_connector.sql
+execute $mysqlCmd populate_component_connector_resource.sql
 
 # Add development rows
 #execute $mysqlCmd add_cms_development_entries.sql
