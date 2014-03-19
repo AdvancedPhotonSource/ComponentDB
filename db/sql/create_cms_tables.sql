@@ -89,6 +89,34 @@ CREATE TABLE `resource_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table `component_category`
+--
+
+DROP TABLE IF EXISTS `component_category`;
+CREATE TABLE `component_category` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_category_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_type`
+--
+
+CREATE TABLE `component_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `component_category_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_type_u1` (`name`),
+  KEY `component_type_k1` (`component_category_id`),
+  CONSTRAINT `component_type_fk1` FOREIGN KEY (`component_category_id`) REFERENCES `component_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
 -- Table `property_category`
 --
 
@@ -142,6 +170,23 @@ CREATE TABLE `connector_type` (
   UNIQUE KEY `connector_type_u1` (`name`),
   KEY `connector_type_k1` (`connector_category_id`),
   CONSTRAINT `connector_type_fk1` FOREIGN KEY (`connector_category_id`) REFERENCES `connector_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `connector_type_property`
+--
+
+CREATE TABLE `connector_type_property` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `connector_type_id` int(11) unsigned NOT NULL,
+  `property_type_id` int(11) unsigned NOT NULL,
+  `value` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `connector_type_property_u1` (`connector_type_id`, `property_type_id`, `value`),
+  KEY `connector_type_property_k1` (`connector_type_id`),
+  CONSTRAINT `connector_type_property_fk1` FOREIGN KEY (`connector_type_id`) REFERENCES `connector_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `connector_type_property_k2` (`property_type_id`),
+  CONSTRAINT `connector_type_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -310,6 +355,23 @@ CREATE TABLE `component_source` (
   CONSTRAINT `component_source_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_source_k2` (`source_id`),
   CONSTRAINT `component_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `component_component_type`
+--
+
+DROP TABLE IF EXISTS `component_component_type`;
+CREATE TABLE `component_component_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `component_id` int(11) unsigned NOT NULL,
+  `component_type_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `component_component_type_u1` (`component_id`, `component_type_id`),
+  KEY `component_component_type_k1` (`component_id`),
+  CONSTRAINT `component_component_type_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `component_component_type_k2` (`component_type_id`),
+  CONSTRAINT `component_component_type_fk2` FOREIGN KEY (`component_type_id`) REFERENCES `component_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -521,3 +583,119 @@ CREATE TABLE `design_log` (
   CONSTRAINT `design_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+--
+-- Table `design_component`
+--
+
+DROP TABLE IF EXISTS `design_component`;
+CREATE TABLE `design_component` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `design_id` int(11) unsigned NOT NULL,
+  `component_id` int(11) unsigned NOT NULL,
+  `location_id` int(11) unsigned NOT NULL,
+  `created_on_date_time` datetime NOT NULL,
+  `created_by_user_id` int(11) unsigned NOT NULL,
+  `modified_on_date_time` datetime NOT NULL,
+  `modified_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `design_component_u1` (`name`, `design_id`),
+  KEY `design_component_k1` (`design_id`),
+  CONSTRAINT `design_component_fk1` FOREIGN KEY (`design_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_k2` (`component_id`),
+  CONSTRAINT `design_component_fk2` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
+  KEY `design_component_k3` (`location_id`),
+  CONSTRAINT `design_component_fk3` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
+  KEY `design_component_k4` (`created_by_user_id`),
+  CONSTRAINT `design_component_fk4` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `design_component_k5` (`modified_by_user_id`),
+  CONSTRAINT `design_component_fk5` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `design_component_log`
+--
+
+DROP TABLE IF EXISTS `design_component_log`;
+CREATE TABLE `design_component_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `design_component_id` int(11) unsigned NOT NULL,
+  `log_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `design_component_log_u1` (`design_component_id`, `log_id`),
+  KEY `design_component_log_k1` (`design_component_id`),
+  CONSTRAINT `design_component_log_fk1` FOREIGN KEY (`design_component_id`) REFERENCES `design_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_log_k2` (`log_id`),
+  CONSTRAINT `design_component_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `design_component_connection`
+--
+
+DROP TABLE IF EXISTS `design_component_connection`;
+CREATE TABLE `design_component_connection` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `first_design_component_id` int(11) unsigned NOT NULL,
+  `first_component_connector_id` int(11) unsigned NOT NULL,
+  `second_design_component_id` int(11) unsigned NOT NULL,
+  `second_component_connector_id` int(11) unsigned NOT NULL,
+  `link_design_component_id` int(11) unsigned DEFAULT NULL,
+  `link_design_component_quantity` int(11) unsigned DEFAULT NULL,
+  `label` varchar(64) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `parent_design_component_connection_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `design_component_connection_k1` (`first_design_component_id`),
+  CONSTRAINT `design_component_connection_fk1` FOREIGN KEY (`first_design_component_id`) REFERENCES `design_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_connection_k2` (`first_component_connector_id`),
+  CONSTRAINT `design_component_connection_fk2` FOREIGN KEY (`first_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_connection_k3` (`second_design_component_id`),
+  CONSTRAINT `design_component_connection_fk3` FOREIGN KEY (`second_design_component_id`) REFERENCES `design_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_connection_k4` (`second_component_connector_id`),
+  CONSTRAINT `design_component_connection_fk4` FOREIGN KEY (`second_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_connection_k5` (`link_design_component_id`),
+  CONSTRAINT `design_component_connection_fk5` FOREIGN KEY (`link_design_component_id`) REFERENCES `design_component` (`id`) ON UPDATE CASCADE,
+  KEY `design_component_connection_k6` (`parent_design_component_connection_id`),
+  CONSTRAINT `design_component_connection_fk6` FOREIGN KEY (`parent_design_component_connection_id`) REFERENCES `design_component_connection` (`id`) ON UPDATE CASCADE 
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- We need triggers to verify that all design components belong to the
+-- same design, and that connectors/design components belong to the
+-- same component 
+--
+
+--
+-- Table `assembly_component_connection`
+--
+
+DROP TABLE IF EXISTS `assembly_component_connection`;
+CREATE TABLE `assembly_component_connection` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `first_assembly_component_id` int(11) unsigned NOT NULL,
+  `first_component_connector_id` int(11) unsigned NOT NULL,
+  `second_assembly_component_id` int(11) unsigned NOT NULL,
+  `second_component_connector_id` int(11) unsigned NOT NULL,
+  `link_assembly_component_id` int(11) unsigned DEFAULT NULL,
+  `link_assembly_component_quantity` int(11) unsigned DEFAULT NULL,
+  `label` varchar(64) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `assembly_component_connection_k1` (`first_assembly_component_id`),
+  CONSTRAINT `assembly_component_connection_fk1` FOREIGN KEY (`first_assembly_component_id`) REFERENCES `assembly_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `assembly_component_connection_k2` (`first_component_connector_id`),
+  CONSTRAINT `assembly_component_connection_fk2` FOREIGN KEY (`first_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `assembly_component_connection_k3` (`second_assembly_component_id`),
+  CONSTRAINT `assembly_component_connection_fk3` FOREIGN KEY (`second_assembly_component_id`) REFERENCES `assembly_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `assembly_component_connection_k4` (`second_component_connector_id`),
+  CONSTRAINT `assembly_component_connection_fk4` FOREIGN KEY (`second_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `assembly_component_connection_k5` (`link_assembly_component_id`),
+  CONSTRAINT `assembly_component_connection_fk5` FOREIGN KEY (`link_assembly_component_id`) REFERENCES `assembly_component` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- We need triggers to verify that all assembly components belong to the
+-- same assembly, and that connectors/assembly components belong to the
+-- same component 
+--
