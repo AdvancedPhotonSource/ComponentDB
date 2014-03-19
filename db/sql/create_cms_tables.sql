@@ -10,6 +10,7 @@ CREATE TABLE `user` (
   `last_name` varchar(16) NOT NULL,
   `middle_name` varchar(16) DEFAULT NULL,
   `email` varchar(16) DEFAULT NULL,
+  `password` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_u1` (`username`),
   UNIQUE KEY `user_u2` (`first_name`, `last_name`, `middle_name`)
