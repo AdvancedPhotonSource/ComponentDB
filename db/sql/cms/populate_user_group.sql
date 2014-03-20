@@ -28,11 +28,11 @@ LOCK TABLES `user_group` WRITE;
 
 INSERT INTO `user_group` (`id`, `name`, `description`)
 VALUES
-	(1,'MED',NULL),
+	(1,'CMS_ADMIN',NULL),
 	(2,'CS',NULL),
 	(3,'SSG',NULL),
 	(4,'CTL',NULL),
-	(5,'CMS_ADMIN',NULL),
+	(5,'MED',NULL),
 	(6,'VAC',NULL),
 	(7,'RF',NULL),
 	(8,'PS',NULL);

@@ -28,10 +28,11 @@ LOCK TABLES `user` WRITE;
 
 INSERT INTO `user` (`id`, `username`, `first_name`, `last_name`, `middle_name`)
 VALUES
-	(1,'bstill','Ben','Stillwell',NULL),
-	(2,'nda','Ned','Arnold',NULL),
-	(3,'sveseli','Sinisa','Veseli',NULL),
-	(4,'benes','Scott','Benes',NULL);
+	(1,'cms','CMS','System Account',NULL),
+	(2,'bstill','Ben','Stillwell',NULL),
+	(3,'nda','Ned','Arnold',NULL),
+	(4,'sveseli','Sinisa','Veseli',NULL),
+	(5,'benes','Scott','Benes',NULL);
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

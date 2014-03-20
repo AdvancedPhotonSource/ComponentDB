@@ -47,6 +47,32 @@ CREATE TABLE `user_user_group` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table `entity_info`
+--
+
+DROP TABLE IF EXISTS `entity_info`;
+CREATE TABLE `entity_info` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `owner_user_id` int(11) unsigned DEFAULT NULL,
+  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
+  `is_group_writeable` bool DEFAULT NULL,
+  `created_on_date_time` datetime NOT NULL,
+  `created_by_user_id` int(11) unsigned NOT NULL,
+  `last_modified_on_date_time` datetime NOT NULL,
+  `last_modified_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `entity_info_k1` (`owner_user_id`),
+  CONSTRAINT `entity_info_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `entity_info_k2` (`owner_user_group_id`),
+  CONSTRAINT `entity_info_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
+  KEY `entity_info_k3` (`created_by_user_id`),
+  CONSTRAINT `entity_info_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `entity_info_k4` (`last_modified_by_user_id`),
+  CONSTRAINT `entity_info_fk4` FOREIGN KEY (`last_modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+--
 -- Table `log`
 --
 
@@ -253,28 +279,21 @@ CREATE TABLE `component` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `owner_user_id` int(11) unsigned DEFAULT NULL,
-  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
   `component_state_id` int(11) unsigned NOT NULL,
   `documentation_uri` varchar(256) DEFAULT NULL,
   `estimated_cost` float(10,2) DEFAULT NULL,
-  `created_on_date_time` datetime NOT NULL,
-  `created_by_user_id` int(11) unsigned NOT NULL,
-  `modified_on_date_time` datetime NOT NULL,
-  `modified_by_user_id` int(11) unsigned NOT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `component_u1` (`name`),
   KEY `component_k1` (`component_state_id`),
   CONSTRAINT `component_fk1` FOREIGN KEY (`component_state_id`) REFERENCES `component_state` (`id`) ON UPDATE CASCADE,
-  KEY `component_k2` (`owner_user_id`),
-  CONSTRAINT `component_fk2` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `component_k3` (`owner_user_group_id`),
-  CONSTRAINT `component_fk3` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
-  KEY `component_k4` (`created_by_user_id`),
-  CONSTRAINT `component_fk4` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `component_k5` (`modified_by_user_id`),
-  CONSTRAINT `component_fk5` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  KEY `component_k2` (`entity_info_id`),
+  CONSTRAINT `component_fk2` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Note: Need trigger to prevent changing entity_info_id
+--
 
 --
 -- Table `assembly_component`
@@ -302,23 +321,19 @@ CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `owner_user_id` int(11) unsigned DEFAULT NULL,
-  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
-  `created_on_date_time` datetime NOT NULL,
-  `created_by_user_id` int(11) unsigned NOT NULL,
-  `modified_on_date_time` datetime NOT NULL,
-  `modified_by_user_id` int(11) unsigned NOT NULL,
+  `parent_collection_id` int(11) unsigned DEFAULT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `collection_u1` (`name`),
-  KEY `collection_k1` (`owner_user_id`),
-  CONSTRAINT `collection_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `collection_k2` (`owner_user_group_id`),
-  CONSTRAINT `collection_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
-  KEY `collection_k3` (`created_by_user_id`),
-  CONSTRAINT `collection_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `collection_k4` (`modified_by_user_id`),
-  CONSTRAINT `collection_fk4` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  KEY `collection_k1` (`parent_collection_id`),
+  CONSTRAINT `collection_fk1` FOREIGN KEY (`parent_collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE,
+  KEY `collection_k2` (`entity_info_id`),
+  CONSTRAINT `collection_fk2` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Note: Need trigger to prevent changing entity_info_id
+--
 
 --
 -- Table `collection_component`
@@ -452,7 +467,7 @@ CREATE TABLE `component_connector_resource` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Note that CHECK constraint is not supported in MySQL.
+-- Note: CHECK constraint is not supported in MySQL.
 -- Hence, we need triggers to verify that at least one of 
 -- is_used_required/optional is NULL
 --
@@ -507,21 +522,21 @@ CREATE TABLE `component_instance` (
   `location_id` int(11) unsigned NOT NULL,
   `serial_number` varchar(16) DEFAULT NULL,
   `quantity` int(11) unsigned DEFAULT NULL,
-  `created_on_date_time` datetime NOT NULL,
-  `created_by_user_id` int(11) unsigned NOT NULL,
-  `modified_on_date_time` datetime NOT NULL,
-  `modified_by_user_id` int(11) unsigned NOT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `component_instance_u1` (`component_id`, `location_id`),
   KEY `component_instance_k1` (`component_id`),
   CONSTRAINT `component_instance_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
   KEY `component_instance_k2` (`location_id`),
   CONSTRAINT `component_instance_fk2` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
-  KEY `component_instance_k3` (`created_by_user_id`),
-  CONSTRAINT `component_instance_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `component_instance_k4` (`modified_by_user_id`),
-  CONSTRAINT `component_instance_fk4` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  KEY `component_instance_k3` (`entity_info_id`),
+  CONSTRAINT `component_instance_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Note: Need trigger to prevent changing entity_info_id; use
+-- stored procedure for common code
+--
 
 --
 -- Table `component_instance_log`
@@ -549,23 +564,19 @@ CREATE TABLE `design` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `owner_user_id` int(11) unsigned DEFAULT NULL,
-  `owner_user_group_id` int(11) unsigned DEFAULT NULL,
-  `created_on_date_time` datetime NOT NULL,
-  `created_by_user_id` int(11) unsigned NOT NULL,
-  `modified_on_date_time` datetime NOT NULL,
-  `modified_by_user_id` int(11) unsigned NOT NULL,
+  `parent_design_id` int(11) unsigned DEFAULT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `design_u1` (`name`),
-  KEY `design_k1` (`owner_user_id`),
-  CONSTRAINT `design_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `design_k2` (`owner_user_group_id`),
-  CONSTRAINT `design_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
-  KEY `design_k3` (`created_by_user_id`),
-  CONSTRAINT `design_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `design_k4` (`modified_by_user_id`),
-  CONSTRAINT `design_fk4` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  KEY `design_k1` (`parent_design_id`),
+  CONSTRAINT `design_fk1` FOREIGN KEY (`parent_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE,
+  KEY `design_k2` (`entity_info_id`),
+  CONSTRAINT `design_fk2` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Note: Need trigger to prevent changing entity_info_id
+--
 
 --
 -- Table `design_log`
@@ -595,10 +606,7 @@ CREATE TABLE `design_component` (
   `design_id` int(11) unsigned NOT NULL,
   `component_id` int(11) unsigned NOT NULL,
   `location_id` int(11) unsigned NOT NULL,
-  `created_on_date_time` datetime NOT NULL,
-  `created_by_user_id` int(11) unsigned NOT NULL,
-  `modified_on_date_time` datetime NOT NULL,
-  `modified_by_user_id` int(11) unsigned NOT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `design_component_u1` (`name`, `design_id`),
   KEY `design_component_k1` (`design_id`),
@@ -607,11 +615,13 @@ CREATE TABLE `design_component` (
   CONSTRAINT `design_component_fk2` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
   KEY `design_component_k3` (`location_id`),
   CONSTRAINT `design_component_fk3` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
-  KEY `design_component_k4` (`created_by_user_id`),
-  CONSTRAINT `design_component_fk4` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
-  KEY `design_component_k5` (`modified_by_user_id`),
-  CONSTRAINT `design_component_fk5` FOREIGN KEY (`modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  KEY `design_component_k4` (`entity_info_id`),
+  CONSTRAINT `design_component_fk4` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Note: Need trigger to prevent changing entity_info_id
+--
 
 --
 -- Table `design_component_log`
@@ -662,7 +672,7 @@ CREATE TABLE `design_component_connection` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- We need triggers to verify that all design components belong to the
+-- Note: We need triggers to verify that all design components belong to the
 -- same design, and that connectors/design components belong to the
 -- same component 
 --
@@ -696,7 +706,7 @@ CREATE TABLE `assembly_component_connection` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- We need triggers to verify that all assembly components belong to the
+-- Note: We need triggers to verify that all assembly components belong to the
 -- same assembly, and that connectors/assembly components belong to the
 -- same component 
 --
