@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewConnectorTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewConnectorTypeLabel_id}"/>
+                    <h:outputText value="#{connectorTypeController.selected.id}" title="#{resources.ViewConnectorTypeTitle_id}"/>
+                    <h:outputText value="#{resources.ViewConnectorTypeLabel_name}"/>
+                    <h:outputText value="#{connectorTypeController.selected.name}" title="#{resources.ViewConnectorTypeTitle_name}"/>
+                    <h:outputText value="#{resources.ViewConnectorTypeLabel_description}"/>
+                    <h:outputText value="#{connectorTypeController.selected.description}" title="#{resources.ViewConnectorTypeTitle_description}"/>
+                    <h:outputText value="#{resources.ViewConnectorTypeLabel_connectorCategoryId}"/>
+                    <h:outputText value="#{connectorTypeController.selected.connectorCategoryId}" title="#{resources.ViewConnectorTypeTitle_connectorCategoryId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{connectorTypeController.destroyAndView}" value="#{resources.ViewConnectorTypeDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewConnectorTypeEditLink}"/>
+                <br />
+                <h:commandLink action="#{connectorTypeController.prepareCreate}" value="#{resources.ViewConnectorTypeCreateLink}" />
+                <br />
+                <h:commandLink action="#{connectorTypeController.prepareList}" value="#{resources.ViewConnectorTypeShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewConnectorTypeIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

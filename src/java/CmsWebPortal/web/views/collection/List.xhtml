@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListCollectionTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListCollectionEmpty}" rendered="#{collectionController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{collectionController.items.rowCount > 0}">
+                    <h:outputText value="#{collectionController.pagination.pageFirstItem + 1}..#{collectionController.pagination.pageLastItem + 1}/#{collectionController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{collectionController.previous}" value="#{resources.Previous} #{collectionController.pagination.pageSize}" rendered="#{collectionController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{collectionController.next}" value="#{resources.Next} #{collectionController.pagination.pageSize}" rendered="#{collectionController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{collectionController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListCollectionTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListCollectionTitle_name}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListCollectionTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListCollectionTitle_entityInfoId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.entityInfoId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListCollectionTitle_parentCollectionId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.parentCollectionId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{collectionController.prepareView}" value="#{resources.ListCollectionViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{collectionController.prepareEdit}" value="#{resources.ListCollectionEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{collectionController.destroy}" value="#{resources.ListCollectionDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{collectionController.prepareCreate}" value="#{resources.ListCollectionCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListCollectionIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

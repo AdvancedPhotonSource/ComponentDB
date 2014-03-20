@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditDesignComponentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditDesignComponentLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{designComponentController.selected.id}" title="#{resources.EditDesignComponentTitle_id}" required="true" requiredMessage="#{resources.EditDesignComponentRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditDesignComponentLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{designComponentController.selected.name}" title="#{resources.EditDesignComponentTitle_name}" required="true" requiredMessage="#{resources.EditDesignComponentRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.EditDesignComponentLabel_entityInfoId}" for="entityInfoId" />
+                    <h:selectOneMenu id="entityInfoId" value="#{designComponentController.selected.entityInfoId}" title="#{resources.EditDesignComponentTitle_entityInfoId}" required="true" requiredMessage="#{resources.EditDesignComponentRequiredMessage_entityInfoId}">
+                        <f:selectItems value="#{entityInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignComponentLabel_locationId}" for="locationId" />
+                    <h:selectOneMenu id="locationId" value="#{designComponentController.selected.locationId}" title="#{resources.EditDesignComponentTitle_locationId}" required="true" requiredMessage="#{resources.EditDesignComponentRequiredMessage_locationId}">
+                        <f:selectItems value="#{locationController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignComponentLabel_componentId}" for="componentId" />
+                    <h:selectOneMenu id="componentId" value="#{designComponentController.selected.componentId}" title="#{resources.EditDesignComponentTitle_componentId}" required="true" requiredMessage="#{resources.EditDesignComponentRequiredMessage_componentId}">
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignComponentLabel_designId}" for="designId" />
+                    <h:selectOneMenu id="designId" value="#{designComponentController.selected.designId}" title="#{resources.EditDesignComponentTitle_designId}" required="true" requiredMessage="#{resources.EditDesignComponentRequiredMessage_designId}">
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{designComponentController.update}" value="#{resources.EditDesignComponentSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditDesignComponentViewLink}"/>
+                <br />
+                <h:commandLink action="#{designComponentController.prepareList}" value="#{resources.EditDesignComponentShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditDesignComponentIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

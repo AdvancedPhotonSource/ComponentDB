@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentPropertyTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentPropertyLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{componentPropertyController.selected.id}" title="#{resources.CreateComponentPropertyTitle_id}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateComponentPropertyLabel_value}" for="value" />
+                    <h:inputText id="value" value="#{componentPropertyController.selected.value}" title="#{resources.CreateComponentPropertyTitle_value}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_value}"/>
+                    <h:outputLabel value="#{resources.CreateComponentPropertyLabel_propertyTypeId}" for="propertyTypeId" />
+                    <h:selectOneMenu id="propertyTypeId" value="#{componentPropertyController.selected.propertyTypeId}" title="#{resources.CreateComponentPropertyTitle_propertyTypeId}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_propertyTypeId}">
+                        <f:selectItems value="#{propertyTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentPropertyLabel_componentId}" for="componentId" />
+                    <h:selectOneMenu id="componentId" value="#{componentPropertyController.selected.componentId}" title="#{resources.CreateComponentPropertyTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_componentId}">
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentPropertyController.create}" value="#{resources.CreateComponentPropertySaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentPropertyController.prepareList}" value="#{resources.CreateComponentPropertyShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentPropertyIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

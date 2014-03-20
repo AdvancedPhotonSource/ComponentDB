@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewCollectionComponentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewCollectionComponentLabel_id}"/>
+                    <h:outputText value="#{collectionComponentController.selected.id}" title="#{resources.ViewCollectionComponentTitle_id}"/>
+                    <h:outputText value="#{resources.ViewCollectionComponentLabel_quantity}"/>
+                    <h:outputText value="#{collectionComponentController.selected.quantity}" title="#{resources.ViewCollectionComponentTitle_quantity}"/>
+                    <h:outputText value="#{resources.ViewCollectionComponentLabel_description}"/>
+                    <h:outputText value="#{collectionComponentController.selected.description}" title="#{resources.ViewCollectionComponentTitle_description}"/>
+                    <h:outputText value="#{resources.ViewCollectionComponentLabel_componentId}"/>
+                    <h:outputText value="#{collectionComponentController.selected.componentId}" title="#{resources.ViewCollectionComponentTitle_componentId}"/>
+                    <h:outputText value="#{resources.ViewCollectionComponentLabel_collectionId}"/>
+                    <h:outputText value="#{collectionComponentController.selected.collectionId}" title="#{resources.ViewCollectionComponentTitle_collectionId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{collectionComponentController.destroyAndView}" value="#{resources.ViewCollectionComponentDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewCollectionComponentEditLink}"/>
+                <br />
+                <h:commandLink action="#{collectionComponentController.prepareCreate}" value="#{resources.ViewCollectionComponentCreateLink}" />
+                <br />
+                <h:commandLink action="#{collectionComponentController.prepareList}" value="#{resources.ViewCollectionComponentShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewCollectionComponentIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewDesignComponentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewDesignComponentLabel_id}"/>
+                    <h:outputText value="#{designComponentController.selected.id}" title="#{resources.ViewDesignComponentTitle_id}"/>
+                    <h:outputText value="#{resources.ViewDesignComponentLabel_name}"/>
+                    <h:outputText value="#{designComponentController.selected.name}" title="#{resources.ViewDesignComponentTitle_name}"/>
+                    <h:outputText value="#{resources.ViewDesignComponentLabel_entityInfoId}"/>
+                    <h:outputText value="#{designComponentController.selected.entityInfoId}" title="#{resources.ViewDesignComponentTitle_entityInfoId}"/>
+                    <h:outputText value="#{resources.ViewDesignComponentLabel_locationId}"/>
+                    <h:outputText value="#{designComponentController.selected.locationId}" title="#{resources.ViewDesignComponentTitle_locationId}"/>
+                    <h:outputText value="#{resources.ViewDesignComponentLabel_componentId}"/>
+                    <h:outputText value="#{designComponentController.selected.componentId}" title="#{resources.ViewDesignComponentTitle_componentId}"/>
+                    <h:outputText value="#{resources.ViewDesignComponentLabel_designId}"/>
+                    <h:outputText value="#{designComponentController.selected.designId}" title="#{resources.ViewDesignComponentTitle_designId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{designComponentController.destroyAndView}" value="#{resources.ViewDesignComponentDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewDesignComponentEditLink}"/>
+                <br />
+                <h:commandLink action="#{designComponentController.prepareCreate}" value="#{resources.ViewDesignComponentCreateLink}" />
+                <br />
+                <h:commandLink action="#{designComponentController.prepareList}" value="#{resources.ViewDesignComponentShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewDesignComponentIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

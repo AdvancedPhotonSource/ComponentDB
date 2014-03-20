@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateCollectionTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateCollectionLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{collectionController.selected.id}" title="#{resources.CreateCollectionTitle_id}" required="true" requiredMessage="#{resources.CreateCollectionRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateCollectionLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{collectionController.selected.name}" title="#{resources.CreateCollectionTitle_name}" required="true" requiredMessage="#{resources.CreateCollectionRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.CreateCollectionLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{collectionController.selected.description}" title="#{resources.CreateCollectionTitle_description}" />
+                    <h:outputLabel value="#{resources.CreateCollectionLabel_entityInfoId}" for="entityInfoId" />
+                    <h:selectOneMenu id="entityInfoId" value="#{collectionController.selected.entityInfoId}" title="#{resources.CreateCollectionTitle_entityInfoId}" required="true" requiredMessage="#{resources.CreateCollectionRequiredMessage_entityInfoId}">
+                        <f:selectItems value="#{entityInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateCollectionLabel_parentCollectionId}" for="parentCollectionId" />
+                    <h:selectOneMenu id="parentCollectionId" value="#{collectionController.selected.parentCollectionId}" title="#{resources.CreateCollectionTitle_parentCollectionId}" >
+                        <f:selectItems value="#{collectionController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{collectionController.create}" value="#{resources.CreateCollectionSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{collectionController.prepareList}" value="#{resources.CreateCollectionShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateCollectionIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

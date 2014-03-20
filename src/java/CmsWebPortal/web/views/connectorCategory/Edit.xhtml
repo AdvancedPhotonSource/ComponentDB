@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditConnectorCategoryTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditConnectorCategoryLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{connectorCategoryController.selected.id}" title="#{resources.EditConnectorCategoryTitle_id}" required="true" requiredMessage="#{resources.EditConnectorCategoryRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditConnectorCategoryLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{connectorCategoryController.selected.name}" title="#{resources.EditConnectorCategoryTitle_name}" required="true" requiredMessage="#{resources.EditConnectorCategoryRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.EditConnectorCategoryLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{connectorCategoryController.selected.description}" title="#{resources.EditConnectorCategoryTitle_description}" />
+                </h:panelGrid>
+                <h:commandLink action="#{connectorCategoryController.update}" value="#{resources.EditConnectorCategorySaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditConnectorCategoryViewLink}"/>
+                <br />
+                <h:commandLink action="#{connectorCategoryController.prepareList}" value="#{resources.EditConnectorCategoryShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditConnectorCategoryIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

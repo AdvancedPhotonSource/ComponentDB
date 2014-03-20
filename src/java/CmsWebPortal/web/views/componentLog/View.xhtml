@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentLogTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentLogLabel_id}"/>
+                    <h:outputText value="#{componentLogController.selected.id}" title="#{resources.ViewComponentLogTitle_id}"/>
+                    <h:outputText value="#{resources.ViewComponentLogLabel_logId}"/>
+                    <h:outputText value="#{componentLogController.selected.logId}" title="#{resources.ViewComponentLogTitle_logId}"/>
+                    <h:outputText value="#{resources.ViewComponentLogLabel_componentId}"/>
+                    <h:outputText value="#{componentLogController.selected.componentId}" title="#{resources.ViewComponentLogTitle_componentId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentLogController.destroyAndView}" value="#{resources.ViewComponentLogDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentLogEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentLogController.prepareCreate}" value="#{resources.ViewComponentLogCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentLogController.prepareList}" value="#{resources.ViewComponentLogShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentLogIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

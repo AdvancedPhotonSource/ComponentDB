@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditLogTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditLogLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{logController.selected.id}" title="#{resources.EditLogTitle_id}" required="true" requiredMessage="#{resources.EditLogRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditLogLabel_text}" for="text" />
+                    <h:inputTextarea rows="4" cols="30" id="text" value="#{logController.selected.text}" title="#{resources.EditLogTitle_text}" required="true" requiredMessage="#{resources.EditLogRequiredMessage_text}"/>
+                    <h:outputLabel value="#{resources.EditLogLabel_createdOnDateTime}" for="createdOnDateTime" />
+                    <h:inputText id="createdOnDateTime" value="#{logController.selected.createdOnDateTime}" title="#{resources.EditLogTitle_createdOnDateTime}" required="true" requiredMessage="#{resources.EditLogRequiredMessage_createdOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{resources.EditLogLabel_createdByUserId}" for="createdByUserId" />
+                    <h:selectOneMenu id="createdByUserId" value="#{logController.selected.createdByUserId}" title="#{resources.EditLogTitle_createdByUserId}" required="true" requiredMessage="#{resources.EditLogRequiredMessage_createdByUserId}">
+                        <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{logController.update}" value="#{resources.EditLogSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditLogViewLink}"/>
+                <br />
+                <h:commandLink action="#{logController.prepareList}" value="#{resources.EditLogShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditLogIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

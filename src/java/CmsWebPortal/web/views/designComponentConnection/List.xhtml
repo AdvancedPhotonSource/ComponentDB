@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListDesignComponentConnectionTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListDesignComponentConnectionEmpty}" rendered="#{designComponentConnectionController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{designComponentConnectionController.items.rowCount > 0}">
+                    <h:outputText value="#{designComponentConnectionController.pagination.pageFirstItem + 1}..#{designComponentConnectionController.pagination.pageLastItem + 1}/#{designComponentConnectionController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{designComponentConnectionController.previous}" value="#{resources.Previous} #{designComponentConnectionController.pagination.pageSize}" rendered="#{designComponentConnectionController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{designComponentConnectionController.next}" value="#{resources.Next} #{designComponentConnectionController.pagination.pageSize}" rendered="#{designComponentConnectionController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{designComponentConnectionController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_linkDesignComponentQuantity}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.linkDesignComponentQuantity}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_label}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.label}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_parentDesignComponentConnectionId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.parentDesignComponentConnectionId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_linkDesignComponentId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.linkDesignComponentId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_secondComponentConnectorId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.secondComponentConnectorId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_secondDesignComponentId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.secondDesignComponentId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_firstComponentConnectorId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.firstComponentConnectorId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListDesignComponentConnectionTitle_firstDesignComponentId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.firstDesignComponentId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{designComponentConnectionController.prepareView}" value="#{resources.ListDesignComponentConnectionViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{designComponentConnectionController.prepareEdit}" value="#{resources.ListDesignComponentConnectionEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{designComponentConnectionController.destroy}" value="#{resources.ListDesignComponentConnectionDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{designComponentConnectionController.prepareCreate}" value="#{resources.ListDesignComponentConnectionCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListDesignComponentConnectionIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
