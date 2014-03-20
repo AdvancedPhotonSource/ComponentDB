@@ -60,6 +60,8 @@ CREATE TABLE `entity_info` (
   `created_by_user_id` int(11) unsigned NOT NULL,
   `last_modified_on_date_time` datetime NOT NULL,
   `last_modified_by_user_id` int(11) unsigned NOT NULL,
+  `obsoleted_on_date_time` datetime DEFAULT NULL,
+  `obsoleted_by_user_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `entity_info_k1` (`owner_user_id`),
   CONSTRAINT `entity_info_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
@@ -68,7 +70,9 @@ CREATE TABLE `entity_info` (
   KEY `entity_info_k3` (`created_by_user_id`),
   CONSTRAINT `entity_info_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   KEY `entity_info_k4` (`last_modified_by_user_id`),
-  CONSTRAINT `entity_info_fk4` FOREIGN KEY (`last_modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `entity_info_fk4` FOREIGN KEY (`last_modified_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
+  KEY `entity_info_k5` (`obsoleted_by_user_id`),
+  CONSTRAINT `entity_info_fk5` FOREIGN KEY (`obsoleted_by_user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
