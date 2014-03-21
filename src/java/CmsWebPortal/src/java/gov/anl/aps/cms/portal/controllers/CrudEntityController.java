@@ -1,12 +1,14 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.model.beans.AbstractFacade;
+import gov.anl.aps.cms.portal.utility.CollectionUtility;
 import gov.anl.aps.cms.portal.utility.SessionUtility;
 
 import java.io.Serializable;
 import java.util.List;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 
 public abstract class CrudEntityController<EntityType, FacadeType extends AbstractFacade<EntityType> > implements Serializable {
 
@@ -126,4 +128,11 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return getFacade().find(id);
     }
 
+    public SelectItem[] getAvailableItemsForSelectMany() {
+        return CollectionUtility.getSelectItems(getFacade().findAll(), false);
+    }
+
+    public SelectItem[] getAvailableItemsForSelectOne() {
+        return CollectionUtility.getSelectItems(getFacade().findAll(), true);
+    }
 }

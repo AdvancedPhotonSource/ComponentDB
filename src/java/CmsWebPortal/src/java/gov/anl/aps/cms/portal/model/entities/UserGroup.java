@@ -51,7 +51,7 @@ public class UserGroup implements Serializable {
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "ownerUserGroupId")
+    @OneToMany(mappedBy = "ownerUserGroup")
     private List<EntityInfo> entityInfoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroupId")
     private List<UserUserGroup> userUserGroupList;

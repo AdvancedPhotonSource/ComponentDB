@@ -51,7 +51,7 @@ public class ComponentState implements Serializable {
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentStateId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentState")
     private List<Component> componentList;
 
     public ComponentState() {
@@ -113,15 +113,12 @@ public class ComponentState implements Serializable {
             return false;
         }
         ComponentState other = (ComponentState) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentState[ id=" + id + " ]";
+        return name;
     }
     
 }

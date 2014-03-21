@@ -67,10 +67,10 @@ public class Component implements Serializable {
     private List<ComponentLog> componentLogList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private EntityInfo entityInfoId;
+    private EntityInfo entityInfo;
     @JoinColumn(name = "component_state_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private ComponentState componentStateId;
+    private ComponentState componentState;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<DesignComponent> designComponentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "designId")
@@ -160,20 +160,20 @@ public class Component implements Serializable {
         this.componentLogList = componentLogList;
     }
 
-    public EntityInfo getEntityInfoId() {
-        return entityInfoId;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
-    public void setEntityInfoId(EntityInfo entityInfoId) {
-        this.entityInfoId = entityInfoId;
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
-    public ComponentState getComponentStateId() {
-        return componentStateId;
+    public ComponentState getComponentState() {
+        return componentState;
     }
 
-    public void setComponentStateId(ComponentState componentStateId) {
-        this.componentStateId = componentStateId;
+    public void setComponentState(ComponentState componentState) {
+        this.componentState = componentState;
     }
 
     @XmlTransient

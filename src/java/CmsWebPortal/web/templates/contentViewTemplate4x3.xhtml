@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://java.sun.com/jsf/html">
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -55,8 +56,8 @@
                                 <p:menubar>
                                     <p:menuitem value="Home" url="/faces/views/home.xhtml" icon="ui-icon-home"/>
                                     <p:menuitem value="Components" url="/faces/views/component/list.xhtml"/>
-                                    <p:menuitem value="Logout" action="#{loginController.logout()}" icon="ui-icon-close"/>
-                                </p:menubar>
+                                    <p:menuitem value="Login" onclick="loginDialog.show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
+                                    <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>                                </p:menubar>
                             </h:form>
                         </ui:insert>
                     </div>
@@ -90,6 +91,25 @@
                 </ui:insert>
             </div>
         </ui:fragment>
+
+        <h:form id="loginForm">
+            <p:dialog id="loginDialog" styleClass="loginDialog" header="Login" widgetVar="loginDialog">
+                <h:panelGrid>
+                    <div class="loginDialog">
+                        <div>
+                            <p:inputText id="username" value="#{loginController.username}" title="Username"/>
+                            <p:watermark for="username" value="Username"/>
+                            <p:password id="password" value="#{loginController.password}" title="Password"/>
+                            <p:watermark for="password" value="Password"/>
+                        </div>
+
+                        <f:facet name="footer">
+                            <p:commandButton id="loginButton" value="Login" action="#{loginController.login}"/>
+                        </f:facet>
+                    </div>
+                </h:panelGrid>
+            </p:dialog>
+        </h:form>
 
 
     </h:body>

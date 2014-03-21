@@ -66,22 +66,22 @@ public class EntityInfo implements Serializable {
     private Date obsoletedOnDateTime;
     @JoinColumn(name = "obsoleted_by_user_id", referencedColumnName = "id")
     @ManyToOne
-    private User obsoletedByUserId;
+    private User obsoletedByUser;
     @JoinColumn(name = "last_modified_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User lastModifiedByUserId;
+    private User lastModifiedByUser;
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User createdByUserId;
+    private User createdByUser;
     @JoinColumn(name = "owner_user_group_id", referencedColumnName = "id")
     @ManyToOne
-    private UserGroup ownerUserGroupId;
+    private UserGroup ownerUserGroup;
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
-    private User ownerUserId;
+    private User ownerUser;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<Collection> collectionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Component> componentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<DesignComponent> designComponentList;
@@ -143,44 +143,44 @@ public class EntityInfo implements Serializable {
         this.obsoletedOnDateTime = obsoletedOnDateTime;
     }
 
-    public User getObsoletedByUserId() {
-        return obsoletedByUserId;
+    public User getObsoletedByUser() {
+        return obsoletedByUser;
     }
 
-    public void setObsoletedByUserId(User obsoletedByUserId) {
-        this.obsoletedByUserId = obsoletedByUserId;
+    public void setObsoletedByUser(User obsoletedByUser) {
+        this.obsoletedByUser = obsoletedByUser;
     }
 
-    public User getLastModifiedByUserId() {
-        return lastModifiedByUserId;
+    public User getLastModifiedByUser() {
+        return lastModifiedByUser;
     }
 
-    public void setLastModifiedByUserId(User lastModifiedByUserId) {
-        this.lastModifiedByUserId = lastModifiedByUserId;
+    public void setLastModifiedByUser(User lastModifiedByUser) {
+        this.lastModifiedByUser = lastModifiedByUser;
     }
 
-    public User getCreatedByUserId() {
-        return createdByUserId;
+    public User getCreatedByUser() {
+        return createdByUser;
     }
 
-    public void setCreatedByUserId(User createdByUserId) {
-        this.createdByUserId = createdByUserId;
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
-    public UserGroup getOwnerUserGroupId() {
-        return ownerUserGroupId;
+    public UserGroup getOwnerUserGroup() {
+        return ownerUserGroup;
     }
 
-    public void setOwnerUserGroupId(UserGroup ownerUserGroupId) {
-        this.ownerUserGroupId = ownerUserGroupId;
+    public void setOwnerUserGroup(UserGroup ownerUserGroup) {
+        this.ownerUserGroup = ownerUserGroup;
     }
 
-    public User getOwnerUserId() {
-        return ownerUserId;
+    public User getOwnerUser() {
+        return ownerUser;
     }
 
-    public void setOwnerUserId(User ownerUserId) {
-        this.ownerUserId = ownerUserId;
+    public void setOwnerUser(User ownerUser) {
+        this.ownerUser = ownerUser;
     }
 
     @XmlTransient

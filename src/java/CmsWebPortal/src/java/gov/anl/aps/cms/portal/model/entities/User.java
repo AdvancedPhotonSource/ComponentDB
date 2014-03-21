@@ -72,13 +72,13 @@ public class User implements Serializable {
     @Size(max = 16)
     @Column(name = "password")
     private String password;
-    @OneToMany(mappedBy = "obsoletedByUserId")
+    @OneToMany(mappedBy = "obsoletedByUser")
     private List<EntityInfo> entityInfoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUserId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUser")
     private List<EntityInfo> entityInfoList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUserId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
     private List<EntityInfo> entityInfoList2;
-    @OneToMany(mappedBy = "ownerUserId")
+    @OneToMany(mappedBy = "ownerUser")
     private List<EntityInfo> entityInfoList3;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private List<UserUserGroup> userUserGroupList;

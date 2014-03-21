@@ -32,15 +32,15 @@
                         <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
                     </h:outputText>
                     <h:outputText value="#{resources.ViewEntityInfoLabel_obsoletedByUserId}"/>
-                    <h:outputText value="#{entityInfoController.selected.obsoletedByUserId}" title="#{resources.ViewEntityInfoTitle_obsoletedByUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.obsoletedByUser}" title="#{resources.ViewEntityInfoTitle_obsoletedByUserId}"/>
                     <h:outputText value="#{resources.ViewEntityInfoLabel_lastModifiedByUserId}"/>
-                    <h:outputText value="#{entityInfoController.selected.lastModifiedByUserId}" title="#{resources.ViewEntityInfoTitle_lastModifiedByUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.lastModifiedByUser}" title="#{resources.ViewEntityInfoTitle_lastModifiedByUserId}"/>
                     <h:outputText value="#{resources.ViewEntityInfoLabel_createdByUserId}"/>
-                    <h:outputText value="#{entityInfoController.selected.createdByUserId}" title="#{resources.ViewEntityInfoTitle_createdByUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.createdByUser}" title="#{resources.ViewEntityInfoTitle_createdByUserId}"/>
                     <h:outputText value="#{resources.ViewEntityInfoLabel_ownerUserGroupId}"/>
-                    <h:outputText value="#{entityInfoController.selected.ownerUserGroupId}" title="#{resources.ViewEntityInfoTitle_ownerUserGroupId}"/>
+                    <h:outputText value="#{entityInfoController.selected.ownerUserGroup}" title="#{resources.ViewEntityInfoTitle_ownerUserGroupId}"/>
                     <h:outputText value="#{resources.ViewEntityInfoLabel_ownerUserId}"/>
-                    <h:outputText value="#{entityInfoController.selected.ownerUserId}" title="#{resources.ViewEntityInfoTitle_ownerUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.ownerUser}" title="#{resources.ViewEntityInfoTitle_ownerUserId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{entityInfoController.destroyAndView}" value="#{resources.ViewEntityInfoDestroyLink}"/>

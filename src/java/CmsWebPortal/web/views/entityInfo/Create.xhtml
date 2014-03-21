@@ -32,23 +32,23 @@
                         <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
                     </h:inputText>
                     <h:outputLabel value="#{resources.CreateEntityInfoLabel_obsoletedByUserId}" for="obsoletedByUserId" />
-                    <h:selectOneMenu id="obsoletedByUserId" value="#{entityInfoController.selected.obsoletedByUserId}" title="#{resources.CreateEntityInfoTitle_obsoletedByUserId}" >
+                    <h:selectOneMenu id="obsoletedByUserId" value="#{entityInfoController.selected.obsoletedByUser}" title="#{resources.CreateEntityInfoTitle_obsoletedByUserId}" >
                         <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateEntityInfoLabel_lastModifiedByUserId}" for="lastModifiedByUserId" />
-                    <h:selectOneMenu id="lastModifiedByUserId" value="#{entityInfoController.selected.lastModifiedByUserId}" title="#{resources.CreateEntityInfoTitle_lastModifiedByUserId}" required="true" requiredMessage="#{resources.CreateEntityInfoRequiredMessage_lastModifiedByUserId}">
+                    <h:selectOneMenu id="lastModifiedByUserId" value="#{entityInfoController.selected.lastModifiedByUser}" title="#{resources.CreateEntityInfoTitle_lastModifiedByUserId}" required="true" requiredMessage="#{resources.CreateEntityInfoRequiredMessage_lastModifiedByUserId}">
                         <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateEntityInfoLabel_createdByUserId}" for="createdByUserId" />
-                    <h:selectOneMenu id="createdByUserId" value="#{entityInfoController.selected.createdByUserId}" title="#{resources.CreateEntityInfoTitle_createdByUserId}" required="true" requiredMessage="#{resources.CreateEntityInfoRequiredMessage_createdByUserId}">
+                    <h:selectOneMenu id="createdByUserId" value="#{entityInfoController.selected.createdByUser}" title="#{resources.CreateEntityInfoTitle_createdByUserId}" required="true" requiredMessage="#{resources.CreateEntityInfoRequiredMessage_createdByUserId}">
                         <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateEntityInfoLabel_ownerUserGroupId}" for="ownerUserGroupId" />
-                    <h:selectOneMenu id="ownerUserGroupId" value="#{entityInfoController.selected.ownerUserGroupId}" title="#{resources.CreateEntityInfoTitle_ownerUserGroupId}" >
+                    <h:selectOneMenu id="ownerUserGroupId" value="#{entityInfoController.selected.ownerUserGroup}" title="#{resources.CreateEntityInfoTitle_ownerUserGroupId}" >
                         <f:selectItems value="#{userGroupController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateEntityInfoLabel_ownerUserId}" for="ownerUserId" />
-                    <h:selectOneMenu id="ownerUserId" value="#{entityInfoController.selected.ownerUserId}" title="#{resources.CreateEntityInfoTitle_ownerUserId}" >
+                    <h:selectOneMenu id="ownerUserId" value="#{entityInfoController.selected.ownerUser}" title="#{resources.CreateEntityInfoTitle_ownerUserId}" >
                         <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>
