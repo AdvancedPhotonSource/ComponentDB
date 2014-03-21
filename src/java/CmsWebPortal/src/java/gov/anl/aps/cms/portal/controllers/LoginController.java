@@ -6,14 +6,18 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.entities.User;
+import gov.anl.aps.cms.portal.utility.ConfigurationUtility;
 import gov.anl.aps.cms.portal.utility.LdapUtility;
 import gov.anl.aps.cms.portal.utility.SessionUtility;
 import java.io.Serializable;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import org.apache.log4j.Logger;
 
 /**
  * Login controller.
@@ -21,7 +25,7 @@ import javax.inject.Named;
 @Named("loginController")
 @SessionScoped
 public class LoginController implements Serializable {
-
+    
     @EJB
     private UserFacade userFacade;
 
@@ -29,6 +33,10 @@ public class LoginController implements Serializable {
     private String password = null;
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
+    
+    private static final String AdminGroupListPropertyName = "csm.portal.adminGroupList";
+    private static final List<String> adminGroupList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
+    private static final Logger logger = Logger.getLogger(LoginController.class.getName());
 
     /**
      * Constructor.
@@ -127,6 +135,8 @@ public class LoginController implements Serializable {
         loggedInAsAdmin = false;
         loggedInAsUser = false;
         if (username != null && password != null && !username.isEmpty() && !password.isEmpty()) {
+            User user = userFacade.findByUsername(username);
+            logger.debug("Got user " + user + " for username " + username);
             if (username.equals("cms")) {
                 loggedInAsAdmin = true;
             } else if (LdapUtility.validateCredentials(username, password)) {
