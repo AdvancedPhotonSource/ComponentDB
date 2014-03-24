@@ -35,7 +35,8 @@ VALUES
 	(5,4,3),
 	(6,4,1),
 	(7,5,4),
-	(8,5,1);
+	(8,5,1),
+	(9,6,3);
 
 /*!40000 ALTER TABLE `user_user_group` ENABLE KEYS */;
 UNLOCK TABLES;
