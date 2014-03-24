@@ -36,11 +36,11 @@
                 <h:form id="systemSummaryForm">
                     <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                     <p:panelGrid columns="2">
-                        <h:outputText value="Number of Registered Users"/>
-                        <h:outputText value="#{userController.items.getRowCount()}" title=""/>
+                        <h:outputLabel for="nRegisteredUsers" value="Number of Registered Users" styleClass="entityDataLabel"/>
+                        <h:outputText id="nRegisteredUsers" value="#{userController.items.getRowCount()}" title="Number of Registered Users" styleClass="entityDataText"/>
 
-                        <h:outputText value="Number of Cataloged Components"/>
-                        <h:outputText value="#{componentController.items.getRowCount()}" title=""/>
+                        <h:outputLabel for="nCatalogedComponents" value="Number of Cataloged Components" styleClass="entityDataLabel"/>
+                        <h:outputText id="nCatalogedComponents" value="#{componentController.items.getRowCount()}" title="Number of Cataloged Components" styleClass="entityDataText"/>
                     </p:panelGrid>
                 </h:form>
             </div>

@@ -53,7 +53,7 @@ public class UserGroup implements Serializable {
     private String description;
     @OneToMany(mappedBy = "ownerUserGroup")
     private List<EntityInfo> entityInfoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroupId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
     private List<UserUserGroup> userUserGroupList;
 
     public UserGroup() {
@@ -119,20 +119,16 @@ public class UserGroup implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof UserGroup)) {
             return false;
         }
         UserGroup other = (UserGroup) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.UserGroup[ id=" + id + " ]";
+        return name;
     }
     
 }

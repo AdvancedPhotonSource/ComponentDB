@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cms.portal.model.entities;
 
 import java.io.Serializable;
@@ -42,51 +41,68 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "EntityInfo.findByCreatedOnDateTime", query = "SELECT e FROM EntityInfo e WHERE e.createdOnDateTime = :createdOnDateTime"),
     @NamedQuery(name = "EntityInfo.findByLastModifiedOnDateTime", query = "SELECT e FROM EntityInfo e WHERE e.lastModifiedOnDateTime = :lastModifiedOnDateTime"),
     @NamedQuery(name = "EntityInfo.findByObsoletedOnDateTime", query = "SELECT e FROM EntityInfo e WHERE e.obsoletedOnDateTime = :obsoletedOnDateTime")})
-public class EntityInfo implements Serializable {
+public class EntityInfo implements Serializable
+{
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @Column(name = "is_group_writeable")
-    private Boolean isGroupWriteable;
+    private Boolean isGroupWriteable = true;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "created_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOnDateTime;
+
     @Basic(optional = false)
     @NotNull
     @Column(name = "last_modified_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date lastModifiedOnDateTime;
+
     @Column(name = "obsoleted_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date obsoletedOnDateTime;
+
     @JoinColumn(name = "obsoleted_by_user_id", referencedColumnName = "id")
     @ManyToOne
     private User obsoletedByUser;
+
     @JoinColumn(name = "last_modified_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User lastModifiedByUser;
+
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User createdByUser;
+
     @JoinColumn(name = "owner_user_group_id", referencedColumnName = "id")
     @ManyToOne
-    private UserGroup ownerUserGroup;
+    private UserGroup ownerUserGroup = new UserGroup();
+
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
-    private User ownerUser;
+    private User ownerUser = new User();
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<Collection> collectionList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Component> componentList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<DesignComponent> designComponentList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<ComponentInstance> componentInstanceList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<Design> designList;
 
@@ -252,5 +268,5 @@ public class EntityInfo implements Serializable {
     public String toString() {
         return "gov.anl.aps.cms.portal.model.entities.EntityInfo[ id=" + id + " ]";
     }
-    
+
 }

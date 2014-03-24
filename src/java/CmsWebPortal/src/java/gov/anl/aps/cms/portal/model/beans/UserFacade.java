@@ -9,6 +9,7 @@ package gov.anl.aps.cms.portal.model.beans;
 import gov.anl.aps.cms.portal.model.entities.User;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -30,8 +31,17 @@ public class UserFacade extends AbstractFacade<User> {
     }
     
     public User findByUsername(String username) {
-        return (User)em.createNamedQuery("User.findByUsername")
-            .setParameter("username", username)
-            .getSingleResult();   
+        try {
+            return (User)em.createNamedQuery("User.findByUsername")
+                .setParameter("username", username)
+                .getSingleResult();
+        }
+        catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+    public boolean checkIfUsernameExists(String username) {
+        return findByUsername(username) != null;
     }
 }

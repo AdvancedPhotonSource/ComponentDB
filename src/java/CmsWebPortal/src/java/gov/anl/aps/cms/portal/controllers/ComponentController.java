@@ -1,9 +1,15 @@
 package gov.anl.aps.cms.portal.controllers;
 
+import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.beans.ComponentFacade;
+import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.entities.EntityInfo;
+import gov.anl.aps.cms.portal.model.entities.User;
+import gov.anl.aps.cms.portal.utility.SessionUtility;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -12,14 +18,19 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.apache.log4j.Logger;
 
 @Named("componentController")
 @SessionScoped
-public class ComponentController extends CrudEntityController<Component, ComponentFacade> implements Serializable {
+public class ComponentController extends CrudEntityController<Component, ComponentFacade> implements Serializable
+{
+
+    private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
-    private ComponentFacade ejbFacade;
-
+    private ComponentFacade componentFacade;
+    @EJB
+    private UserFacade userFacade;
 
     public ComponentController() {
         super();
@@ -27,12 +38,17 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @Override
     protected ComponentFacade getFacade() {
-        return ejbFacade;
+        return componentFacade;
     }
 
     @Override
     protected Component createEntityInstance() {
-        return new Component();
+        Component component = new Component();
+        Integer userId = SessionUtility.getUserId();
+        EntityInfo entityInfo = component.getEntityInfo();
+        User ownerUser = userFacade.find(userId);
+        entityInfo.setOwnerUser(ownerUser);
+        return component;
     }
 
     @Override
@@ -53,8 +69,37 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return super.getAvailableItems();
     }
 
+    @Override
+    public void prepareEntityInsert(Component component) throws ObjectAlreadyExists {
+        Component existingComponent = componentFacade.findByName(component.getName());
+        if (existingComponent != null) {
+            throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
+        }
+        Integer userId = SessionUtility.getUserId();
+        EntityInfo entityInfo = component.getEntityInfo();
+        User createdByUser = userFacade.find(userId);
+        Date createdOnDateTime = new Date();
+        entityInfo.setCreatedOnDateTime(createdOnDateTime);
+        entityInfo.setCreatedByUser(createdByUser);
+        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
+        entityInfo.setLastModifiedByUser(createdByUser);
+        logger.debug("Inserting new component " + component.getName() + " (user: " + createdByUser.getUsername() + ")");
+    }
+
+    @Override
+    public void prepareEntityUpdate(Component component) throws ObjectAlreadyExists {
+        Integer userId = SessionUtility.getUserId();
+        EntityInfo entityInfo = component.getEntityInfo();
+        User lastModifiedByUser = userFacade.find(userId);
+        Date lastModifiedOnDateTime = new Date();
+        entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
+        entityInfo.setLastModifiedByUser(lastModifiedByUser);
+        logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
+    }
+    
     @FacesConverter(forClass = Component.class)
-    public static class ComponentControllerConverter implements Converter {
+    public static class ComponentControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -86,7 +131,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
             if (object instanceof Component) {
                 Component o = (Component) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Component.class.getName());
             }
         }

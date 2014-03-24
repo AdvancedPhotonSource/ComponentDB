@@ -4,19 +4,35 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentState.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/ComponentConnectorController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/home.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/log4j.properties</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/UserFacade.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/LoginController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/index.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/utility/CollectionUtility.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/templates/contentViewTemplate4x3.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/User.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/constants/CmsStatus.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/utility/ConfigurationUtility.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/AbstractFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/utility/SessionUtility.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/ComponentController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/templates/loginViewTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/UserGroupController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/UserUserGroup.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/exceptions/ObjectAlreadyExists.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/CollectionFacade.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/EntityInfo.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/utility/DateUtility.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/UserController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/Component.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/home.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/UserGroup.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/UserFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/templates/contentViewTemplate4x3.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/exceptions/CmsPortalException.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/UserUserGroupFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/AbstractFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/CrudEntityController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/create.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/LoginController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/User.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/ComponentFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/resources/css/portal.css</file>
         </group>
     </open-files>
 </project-private>

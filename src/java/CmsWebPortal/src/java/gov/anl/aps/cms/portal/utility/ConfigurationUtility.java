@@ -29,10 +29,15 @@ public class ConfigurationUtility {
     
     public static List<String> getPortalPropertyList(String propertyName, String defaultValue) {
         String[] propertyArray = portalProperties.getProperty(propertyName, defaultValue).split(PropertiesDelimiter);
+        logger.debug("Looking for property " + propertyName);
         ArrayList propertyList = new ArrayList();
         for (String property : propertyArray) {
-            propertyList.add(property.trim());
+            String p = property.trim();
+            if (p.length() > 0) {
+                propertyList.add(property.trim());
+            }
         }
+        logger.debug("Resulting property list: " + propertyList);
         return propertyList;
     }    
     

@@ -29,7 +29,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "UserUserGroup.findAll", query = "SELECT u FROM UserUserGroup u"),
-    @NamedQuery(name = "UserUserGroup.findById", query = "SELECT u FROM UserUserGroup u WHERE u.id = :id")})
+    @NamedQuery(name = "UserUserGroup.findById", query = "SELECT u FROM UserUserGroup u WHERE u.id = :id"),
+    @NamedQuery(name = "UserUserGroup.findByUserIdAndUserGroupId", query = "SELECT u FROM UserUserGroup u WHERE u.user.id = :userId AND u.userGroup.id = :userGroupId"),
+    @NamedQuery(name = "UserUserGroup.findByUserIdAndUserGroupName", query = "SELECT u FROM UserUserGroup u JOIN u.userGroup ug WHERE u.user.id = :userId AND u.userGroup.name = :userGroupName"),
+    @NamedQuery(name = "UserUserGroup.findByUserUsernameAndUserGroupName", query = "SELECT u FROM UserUserGroup u JOIN u.user uu,u.userGroup ug WHERE uu.username = :userUsername AND ug.name = :userGroupName")})
+
+
 public class UserUserGroup implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
@@ -39,10 +44,10 @@ public class UserUserGroup implements Serializable {
     private Integer id;
     @JoinColumn(name = "user_group_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserGroup userGroupId;
+    private UserGroup userGroup;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User userId;
+    private User user;
 
     public UserUserGroup() {
     }
@@ -59,20 +64,20 @@ public class UserUserGroup implements Serializable {
         this.id = id;
     }
 
-    public UserGroup getUserGroupId() {
-        return userGroupId;
+    public UserGroup getUserGroup() {
+        return userGroup;
     }
 
-    public void setUserGroupId(UserGroup userGroupId) {
-        this.userGroupId = userGroupId;
+    public void setUserGroup(UserGroup userGroup) {
+        this.userGroup = userGroup;
     }
 
-    public User getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -89,10 +94,7 @@ public class UserUserGroup implements Serializable {
             return false;
         }
         UserUserGroup other = (UserUserGroup) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

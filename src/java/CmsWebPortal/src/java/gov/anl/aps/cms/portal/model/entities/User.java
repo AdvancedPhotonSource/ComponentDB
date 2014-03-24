@@ -80,7 +80,7 @@ public class User implements Serializable {
     private List<EntityInfo> entityInfoList2;
     @OneToMany(mappedBy = "ownerUser")
     private List<EntityInfo> entityInfoList3;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserUserGroup> userUserGroupList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUserId")
     private List<Log> logList;
@@ -227,7 +227,7 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.User[ id=" + id + " ]";
+        return username;
     }
     
 }

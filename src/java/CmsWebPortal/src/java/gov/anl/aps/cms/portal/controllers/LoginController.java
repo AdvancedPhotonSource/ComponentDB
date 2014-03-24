@@ -6,7 +6,11 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.beans.UserUserGroupFacade;
+import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.User;
+import gov.anl.aps.cms.portal.model.entities.UserGroup;
+import gov.anl.aps.cms.portal.model.entities.UserUserGroup;
 import gov.anl.aps.cms.portal.utility.ConfigurationUtility;
 import gov.anl.aps.cms.portal.utility.LdapUtility;
 import gov.anl.aps.cms.portal.utility.SessionUtility;
@@ -25,17 +29,20 @@ import org.apache.log4j.Logger;
 @Named("loginController")
 @SessionScoped
 public class LoginController implements Serializable {
-    
+
     @EJB
     private UserFacade userFacade;
+    @EJB
+    private UserUserGroupFacade userUserGroupFacade;
 
     private String username = null;
     private String password = null;
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
-    
-    private static final String AdminGroupListPropertyName = "csm.portal.adminGroupList";
-    private static final List<String> adminGroupList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
+    private User user = null;
+
+    private static final String AdminGroupListPropertyName = "cms.portal.adminGroupList";
+    private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
 
     /**
@@ -125,6 +132,15 @@ public class LoginController implements Serializable {
         this.loggedInAsUser = loggedInAsUser;
     }
 
+    private boolean isAdmin(String username) {
+        for (String adminGroupName : adminGroupNameList) {
+            if (userUserGroupFacade.isUserMemberOfUserGroup(username, adminGroupName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Login action.
      *
@@ -134,30 +150,44 @@ public class LoginController implements Serializable {
     public String login() {
         loggedInAsAdmin = false;
         loggedInAsUser = false;
-        if (username != null && password != null && !username.isEmpty() && !password.isEmpty()) {
-            User user = userFacade.findByUsername(username);
-            logger.debug("Got user " + user + " for username " + username);
-            if (username.equals("cms")) {
-                loggedInAsAdmin = true;
-            } else if (LdapUtility.validateCredentials(username, password)) {
-                loggedInAsAdmin = true;
-            } else {
-                SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");
-            }
-        } else {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
             SessionUtility.addWarningMessage("Incomplete Input", "Please enter both username and password.");
+            return (username = password = null);
         }
 
-        if (loggedInAsAdmin) {
-            SessionUtility.addInfoMessage("Successful Login", "Administrator " + username + " is logged in.");
-            return "/views/home?faces-redirect=true";
+        user = userFacade.findByUsername(username);
+        if (user == null) {
+            SessionUtility.addErrorMessage("Unknown User", "Username " + username + " is not registered.");
+            return (username = password = null);
+        }
 
-        } else if (loggedInAsUser) {
-            SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
+        boolean isAdminUser = isAdmin(username);
+        logger.debug("User " + username + " is admin: " + isAdminUser);
+        boolean validCredentials = false;
+        if (user.getPassword() != null && user.getPassword().equals(password)) {
+            logger.debug("User " + username + " is authorized by CMS");
+            validCredentials = true;
+        } else if (LdapUtility.validateCredentials(username, password)) {
+            logger.debug("User " + username + " is authorized by LDAP");
+            validCredentials = true;
+        } else {
+            logger.debug("User " + username + " is not authorized");
+        }
+
+        if (validCredentials) {
+            SessionUtility.setUserId(user.getId());
+            if (isAdminUser) {
+                loggedInAsAdmin = true;
+                SessionUtility.addInfoMessage("Successful Login", "Administrator " + username + " is logged in.");
+
+            } else {
+                loggedInAsUser = true;
+                SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
+            }
             return "/views/home?faces-redirect=true";
         } else {
+            SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");
             return (username = password = null);
-
         }
 
     }
@@ -171,21 +201,58 @@ public class LoginController implements Serializable {
     public String displayUsername() {
         if (isLoggedIn()) {
             return username;
-        }
-        else {
-            return "not logged in";
+        } else {
+            return "Not Logged In";
         }
     }
- 
+
     public String displayRole() {
         if (isLoggedInAsAdmin()) {
             return "Administrator";
-        }
-        else {
+        } else {
             return "User";
         }
     }
     
+    public boolean isEntityWriteable(EntityInfo entityInfo) {
+        // If user is not logged in, object is not writeable
+        if (!isLoggedIn()) {
+            return false;
+        }
+        
+        // Admins can write any object.
+        if (isLoggedInAsAdmin()) {
+            return true;
+        }
+        
+        // Users can write object if entityInfo != null and:
+        // current user is owner, or the object is writeable by owner group
+        // and current user is memebr of that group
+        if (entityInfo != null) {
+            User ownerUser = entityInfo.getOwnerUser();
+            if (ownerUser != null && ownerUser.getId().equals(user.getId())) {
+                return true;
+            }
+            
+            Boolean isGroupWriteable = entityInfo.getIsGroupWriteable();
+            if (isGroupWriteable == null || !isGroupWriteable.booleanValue()) {
+                return false;
+            }
+            
+            UserGroup ownerUserGroup = entityInfo.getOwnerUserGroup();
+            if (ownerUserGroup == null) {
+                return false;
+            }
+            
+            for (UserUserGroup userGroup : user.getUserUserGroupList()) {
+                if (ownerUserGroup.getId().equals(userGroup.getUserGroup().getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Logout action.
      *
@@ -196,6 +263,7 @@ public class LoginController implements Serializable {
         context.invalidateSession();
         loggedInAsAdmin = false;
         loggedInAsUser = false;
+        user = null;
         return "/views/home?faces-redirect=true";
     }
 

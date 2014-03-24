@@ -151,6 +151,18 @@ a:link:hover, a:visited:hover  {
     display: none;
 }
 
+.entityDataLabel {
+    font-weight: bold 
+}
+
+.entityDataText {
+    font-weight: normal;
+}
+
+.entityDataError {
+    font-weight: bold;
+}
+
 .commandLink {
     
 }
@@ -254,6 +266,13 @@ h2 {
     font-size:  20px;
     font-weight: bold;
     color: #4e80b6;
+}
+
+
+.ui-panelgrid tr, .ui-panelgrid td {
+    background: #f2f4f7;
+    border: none;
+    font-weight: bold;
 }
 
 .ui-menu, .ui-menuitem, .ui-menu .ui-menu-child {

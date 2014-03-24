@@ -40,53 +40,72 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description"),
     @NamedQuery(name = "Component.findByDocumentationUri", query = "SELECT c FROM Component c WHERE c.documentationUri = :documentationUri"),
     @NamedQuery(name = "Component.findByEstimatedCost", query = "SELECT c FROM Component c WHERE c.estimatedCost = :estimatedCost")})
+
 public class Component implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
+    
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+    
     @Size(max = 256)
     @Column(name = "documentation_uri")
     private String documentationUri;
+    
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "estimated_cost")
     private Float estimatedCost;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentConnector> componentConnectorList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentLog> componentLogList;
+    
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private EntityInfo entityInfo;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    private EntityInfo entityInfo = new EntityInfo();
+    
     @JoinColumn(name = "component_state_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentState componentState;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<DesignComponent> designComponentList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "designId")
     private List<DesignComponent> designComponentList1;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<CollectionComponent> collectionComponentList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentInstance> componentInstanceList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<AssemblyComponent> assemblyComponentList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assemblyId")
     private List<AssemblyComponent> assemblyComponentList1;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentSource> componentSourceList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentProperty> componentPropertyList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentComponentType> componentComponentTypeList;
 

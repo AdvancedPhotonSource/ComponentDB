@@ -10,9 +10,10 @@ import javax.faces.context.FacesContext;
 public class SessionUtility {
 
     /**
-     * Key for UI messages.
+     * Keys.
      */
     public static final String MessagesKey = "messages";
+    public static final String UserIdKey = "userId";
 
     /**
      * Constructor.
@@ -71,5 +72,24 @@ public class SessionUtility {
         return (String) parameterMap.get(parameterName);
     }
 
+    /**
+     * Set user id.
+     *
+     * @param userId user id
+     */
+    public static void setUserId(Integer userId) {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        sessionMap.put(UserIdKey, userId);
+    }
+
+    /**
+     * Get user id.
+     *
+     * @return user id
+     */
+    public static Integer getUserId() {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        return (Integer) sessionMap.get(UserIdKey);
+    }    
 
 }

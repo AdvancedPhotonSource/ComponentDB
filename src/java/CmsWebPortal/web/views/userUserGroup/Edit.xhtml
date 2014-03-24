@@ -18,11 +18,11 @@
                     <h:outputLabel value="#{resources.EditUserUserGroupLabel_id}" for="id" />
                     <h:inputText id="id" value="#{userUserGroupController.selected.id}" title="#{resources.EditUserUserGroupTitle_id}" required="true" requiredMessage="#{resources.EditUserUserGroupRequiredMessage_id}"/>
                     <h:outputLabel value="#{resources.EditUserUserGroupLabel_userGroupId}" for="userGroupId" />
-                    <h:selectOneMenu id="userGroupId" value="#{userUserGroupController.selected.userGroupId}" title="#{resources.EditUserUserGroupTitle_userGroupId}" required="true" requiredMessage="#{resources.EditUserUserGroupRequiredMessage_userGroupId}">
+                    <h:selectOneMenu id="userGroupId" value="#{userUserGroupController.selected.userGroup}" title="#{resources.EditUserUserGroupTitle_userGroupId}" required="true" requiredMessage="#{resources.EditUserUserGroupRequiredMessage_userGroupId}">
                         <f:selectItems value="#{userGroupController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.EditUserUserGroupLabel_userId}" for="userId" />
-                    <h:selectOneMenu id="userId" value="#{userUserGroupController.selected.userId}" title="#{resources.EditUserUserGroupTitle_userId}" required="true" requiredMessage="#{resources.EditUserUserGroupRequiredMessage_userId}">
+                    <h:selectOneMenu id="userId" value="#{userUserGroupController.selected.user}" title="#{resources.EditUserUserGroupTitle_userId}" required="true" requiredMessage="#{resources.EditUserUserGroupRequiredMessage_userId}">
                         <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>
