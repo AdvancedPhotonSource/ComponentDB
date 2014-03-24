@@ -31,7 +31,7 @@ VALUES
 	(1,'cms','CMS','System Account',NULL,'cms@aps.anl.gov','cms'),
 	(2,'bstill','Ben','Stillwell',NULL,NULL,NULL),
 	(3,'nda','Ned','Arnold',NULL,'nda@anl.gov',NULL),
-	(4,'sveseli','Sinisa','Veseli',NULL,'sveseli@anl.gov',NULL),
+	(4,'sveseli','Sinisa','Veseli',NULL,'sveseli@anl.gov','sv'),
 	(5,'benes','Scott','Benes',NULL,NULL,NULL),
 	(6,'nschwarz','Nicholas','Schwarz',NULL,'nschwarz@aps.anl.gov',NULL);
 
