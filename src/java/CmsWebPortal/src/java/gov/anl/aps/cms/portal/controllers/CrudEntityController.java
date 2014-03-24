@@ -4,11 +4,9 @@ import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
 import gov.anl.aps.cms.portal.model.beans.AbstractFacade;
 import gov.anl.aps.cms.portal.utility.CollectionUtility;
 import gov.anl.aps.cms.portal.utility.SessionUtility;
-import java.io.IOException;
 
 import java.io.Serializable;
 import java.util.List;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
@@ -59,6 +57,10 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return "view?faces-redirect=true";
     }
 
+    public String view() {
+        return "view?faces-redirect=true";
+    }
+    
     public String prepareCreate() {
         current = createEntityInstance();
         return "create?faces-redirect=true";
@@ -72,7 +74,7 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
             prepareEntityInsert(current);
             getFacade().create(current);
             SessionUtility.addInfoMessage("Success", "Created " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
-            return prepareView();
+            return view();
         }
         catch (CmsPortalException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getEntityTypeName() + ": " + ex.getMessage());
@@ -97,7 +99,7 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
             prepareEntityUpdate(current);
             getFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
-            return "view?faces-redirect=true";
+            return view();
         }
         catch (CmsPortalException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getEntityTypeName() + ": " + ex.getMessage());
