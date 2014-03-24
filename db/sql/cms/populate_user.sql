@@ -26,13 +26,13 @@
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 
-INSERT INTO `user` (`id`, `username`, `first_name`, `last_name`, `middle_name`)
+INSERT INTO `user` (`id`, `username`, `first_name`, `last_name`, `middle_name`, `email`, `password`)
 VALUES
-	(1,'cms','CMS','System Account',NULL),
-	(2,'bstill','Ben','Stillwell',NULL),
-	(3,'nda','Ned','Arnold',NULL),
-	(4,'sveseli','Sinisa','Veseli',NULL),
-	(5,'benes','Scott','Benes',NULL);
+	(1,'cms','CMS','System Account',NULL,'cms@aps.anl.gov','cms'),
+	(2,'bstill','Ben','Stillwell',NULL,NULL,NULL),
+	(3,'nda','Ned','Arnold',NULL,'nda@anl.gov',NULL),
+	(4,'sveseli','Sinisa','Veseli',NULL,'sveseli@anl.gov',NULL),
+	(5,'benes','Scott','Benes',NULL,NULL,NULL);
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

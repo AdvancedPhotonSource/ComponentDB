@@ -47,6 +47,37 @@ CREATE TABLE `user_user_group` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table `setting_type`
+--
+
+DROP TABLE IF EXISTS `setting_type`;
+CREATE TABLE `setting_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting_type_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `user_setting`
+--
+
+DROP TABLE IF EXISTS `user_setting`;
+CREATE TABLE `user_setting` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) unsigned NOT NULL,
+  `setting_type_id` int(11) unsigned NOT NULL,
+  `value` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_setting_u1` (`user_id`, `setting_type_id`),
+  KEY `user_setting_k1` (`user_id`),
+  CONSTRAINT `user_setting_fk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `user_setting_k2` (`setting_type_id`),
+  CONSTRAINT `user_setting_fk2` FOREIGN KEY (`setting_type_id`) REFERENCES `setting_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
 -- Table `entity_info`
 --
 
