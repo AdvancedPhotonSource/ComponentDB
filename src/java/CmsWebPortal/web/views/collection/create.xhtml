@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+    <ui:define name="middleCenter">
+        <div class="pageTitle">
+            <h1>Add Collection</h1>
+        </div>
+
+        <h:form id="addCollectionForm">
+
+            <c:set var="selected" value="#{collectionController.selected}"/>
+
+            <p:panelGrid columns="3">
+                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
+                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
+                <p:message for="name"/> 
+
+                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
+                <p:message for="description"/>  
+
+                <h:outputLabel for="parentCollection" value="Parent" styleClass="entityDataLabel"/>
+                <h:selectOneMenu id="parentCollection" value="#{selected.parentCollection}" title="Parent" styleClass="entityDataText">
+                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                    <f:selectItems var="parentCollection" value="#{collectionController.availableItems}" itemLabel="#{parentCollection.name}" itemValue="#{parentCollection}"/>
+                </h:selectOneMenu>
+                <p:message for="parentCollection"/> 
+
+                <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
+                <h:selectOneMenu id="ownerUser" value="#{selected.entityInfo.ownerUser}" title="Owner User" styleClass="entityDataText">
+                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                    <f:selectItems var="ownerUser" value="#{userController.availableItems}" itemLabel="#{ownerUser.username}" itemValue="#{ownerUser}"/>
+                </h:selectOneMenu>
+                <p:message for="ownerUser"/> 
+
+                <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
+                <h:selectOneMenu id="ownerGroup" value="#{selected.entityInfo.ownerUserGroup}" title="Owner Group" styleClass="entityDataText">
+                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                    <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
+                </h:selectOneMenu>
+                <p:message for="ownerGroup"/> 
+
+                <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
+                <h:inputText id="groupWriteable" value="#{selected.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
+                <p:message for="groupWriteable"/> 
+
+            </p:panelGrid>
+
+            <p/>
+            <div class="actionButton">
+                <p:commandButton action="#{collectionController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
+                <p:commandButton action="#{collectionController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+            </div>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+

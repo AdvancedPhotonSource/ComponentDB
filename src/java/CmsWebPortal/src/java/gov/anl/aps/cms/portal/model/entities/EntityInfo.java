@@ -91,7 +91,7 @@ public class EntityInfo implements Serializable
     @ManyToOne
     private User ownerUser = new User();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Collection> collectionList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")

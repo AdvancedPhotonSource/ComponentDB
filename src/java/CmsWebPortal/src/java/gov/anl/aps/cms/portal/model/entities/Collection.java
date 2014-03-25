@@ -38,31 +38,40 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Collection.findById", query = "SELECT c FROM Collection c WHERE c.id = :id"),
     @NamedQuery(name = "Collection.findByName", query = "SELECT c FROM Collection c WHERE c.name = :name"),
     @NamedQuery(name = "Collection.findByDescription", query = "SELECT c FROM Collection c WHERE c.description = :description")})
+
 public class Collection implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
+    
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "collectionId")
     private List<CollectionLog> collectionLogList;
+    
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private EntityInfo entityInfoId;
-    @OneToMany(mappedBy = "parentCollectionId")
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    private EntityInfo entityInfo = new EntityInfo();
+    
+    @OneToMany(mappedBy = "parentCollection")
     private List<Collection> collectionList;
+    
     @JoinColumn(name = "parent_collection_id", referencedColumnName = "id")
     @ManyToOne
-    private Collection parentCollectionId;
+    private Collection parentCollection;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "collectionId")
     private List<CollectionComponent> collectionComponentList;
 
@@ -111,12 +120,12 @@ public class Collection implements Serializable {
         this.collectionLogList = collectionLogList;
     }
 
-    public EntityInfo getEntityInfoId() {
-        return entityInfoId;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
-    public void setEntityInfoId(EntityInfo entityInfoId) {
-        this.entityInfoId = entityInfoId;
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
     @XmlTransient
@@ -128,12 +137,12 @@ public class Collection implements Serializable {
         this.collectionList = collectionList;
     }
 
-    public Collection getParentCollectionId() {
-        return parentCollectionId;
+    public Collection getParentCollection() {
+        return parentCollection;
     }
 
-    public void setParentCollectionId(Collection parentCollectionId) {
-        this.parentCollectionId = parentCollectionId;
+    public void setParentCollection(Collection parentCollection) {
+        this.parentCollection = parentCollection;
     }
 
     @XmlTransient
