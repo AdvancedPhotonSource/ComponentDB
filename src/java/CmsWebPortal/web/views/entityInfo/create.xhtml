@@ -14,7 +14,7 @@
     <p:message for="ownerUser"/> 
 
     <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-    <h:selectOneMenu id="ownerGroup" value="#{selected.entityInfo.ownerUserGroup}" title="Owner Group" styleClass="entityDataSelectOne">
+    <h:selectOneMenu id="ownerGroup" value="#{selected.entityInfo.ownerUserGroup}" converter="userGroupConverter" title="Owner Group" styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
         <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
     </h:selectOneMenu>
