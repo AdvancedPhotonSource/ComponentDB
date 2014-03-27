@@ -159,6 +159,15 @@ a:link:hover, a:visited:hover  {
     font-weight: normal;
 }
 
+.entityDataSelectOne {
+    font-weight: normal;
+}
+
+.entityDataSelectMany {
+    font-weight: normal;
+    height: 75px;
+}
+
 .entityDataError {
     font-weight: bold;
 }

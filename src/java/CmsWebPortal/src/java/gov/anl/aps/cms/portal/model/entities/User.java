@@ -12,9 +12,13 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -40,7 +44,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByMiddleName", query = "SELECT u FROM User u WHERE u.middleName = :middleName"),
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
     @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password")})
-public class User implements Serializable {
+public class User implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,6 +77,11 @@ public class User implements Serializable {
     @Size(max = 16)
     @Column(name = "password")
     private String password;
+    @JoinTable(name = "user_user_group", joinColumns = {
+        @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<UserGroup> userGroupList;
     @OneToMany(mappedBy = "obsoletedByUser")
     private List<EntityInfo> entityInfoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUser")
@@ -81,8 +91,8 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "ownerUser")
     private List<EntityInfo> entityInfoList3;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<UserUserGroup> userUserGroupList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUserId")
+    private List<UserSetting> userSettingList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
     private List<Log> logList;
 
     public User() {
@@ -156,6 +166,15 @@ public class User implements Serializable {
     }
 
     @XmlTransient
+    public List<UserGroup> getUserGroupList() {
+        return userGroupList;
+    }
+
+    public void setUserGroupList(List<UserGroup> userGroupList) {
+        this.userGroupList = userGroupList;
+    }
+
+    @XmlTransient
     public List<EntityInfo> getEntityInfoList() {
         return entityInfoList;
     }
@@ -192,12 +211,12 @@ public class User implements Serializable {
     }
 
     @XmlTransient
-    public List<UserUserGroup> getUserUserGroupList() {
-        return userUserGroupList;
+    public List<UserSetting> getUserSettingList() {
+        return userSettingList;
     }
 
-    public void setUserUserGroupList(List<UserUserGroup> userUserGroupList) {
-        this.userUserGroupList = userUserGroupList;
+    public void setUserSettingList(List<UserSetting> userSettingList) {
+        this.userSettingList = userSettingList;
     }
 
     @XmlTransient
@@ -218,6 +237,7 @@ public class User implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof User)) {
             return false;
         }

@@ -9,17 +9,16 @@ package gov.anl.aps.cms.portal.model.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -38,7 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentType.findByDescription", query = "SELECT c FROM ComponentType c WHERE c.description = :description")})
-public class ComponentType implements Serializable {
+public class ComponentType implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,11 +53,11 @@ public class ComponentType implements Serializable {
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+    @ManyToMany(mappedBy = "componentTypeList")
+    private List<Component> componentList;
     @JoinColumn(name = "component_category_id", referencedColumnName = "id")
     @ManyToOne
-    private ComponentCategory componentCategoryId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentTypeId")
-    private List<ComponentComponentType> componentComponentTypeList;
+    private ComponentCategory componentCategory;
 
     public ComponentType() {
     }
@@ -95,21 +95,21 @@ public class ComponentType implements Serializable {
         this.description = description;
     }
 
-    public ComponentCategory getComponentCategoryId() {
-        return componentCategoryId;
-    }
-
-    public void setComponentCategoryId(ComponentCategory componentCategoryId) {
-        this.componentCategoryId = componentCategoryId;
-    }
-
     @XmlTransient
-    public List<ComponentComponentType> getComponentComponentTypeList() {
-        return componentComponentTypeList;
+    public List<Component> getComponentList() {
+        return componentList;
     }
 
-    public void setComponentComponentTypeList(List<ComponentComponentType> componentComponentTypeList) {
-        this.componentComponentTypeList = componentComponentTypeList;
+    public void setComponentList(List<Component> componentList) {
+        this.componentList = componentList;
+    }
+
+    public ComponentCategory getComponentCategory() {
+        return componentCategory;
+    }
+
+    public void setComponentCategory(ComponentCategory componentCategory) {
+        this.componentCategory = componentCategory;
     }
 
     @Override
@@ -126,15 +126,16 @@ public class ComponentType implements Serializable {
             return false;
         }
         ComponentType other = (ComponentType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentType[ id=" + id + " ]";
+        String result = name;
+        if (componentCategory != null) {
+            result += "/" + componentCategory.getName();
+        }
+        return result;
     }
     
 }

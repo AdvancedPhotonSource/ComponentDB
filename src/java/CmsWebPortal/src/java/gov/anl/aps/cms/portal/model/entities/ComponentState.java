@@ -36,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentState.findById", query = "SELECT c FROM ComponentState c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentState.findByName", query = "SELECT c FROM ComponentState c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentState.findByDescription", query = "SELECT c FROM ComponentState c WHERE c.description = :description")})
-public class ComponentState implements Serializable {
+public class ComponentState implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -113,7 +114,10 @@ public class ComponentState implements Serializable {
             return false;
         }
         ComponentState other = (ComponentState) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override

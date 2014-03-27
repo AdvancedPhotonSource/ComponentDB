@@ -24,7 +24,7 @@
                         <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
                     </h:outputText>
                     <h:outputText value="#{resources.ViewLogLabel_createdByUserId}"/>
-                    <h:outputText value="#{logController.selected.createdByUserId}" title="#{resources.ViewLogTitle_createdByUserId}"/>
+                    <h:outputText value="#{logController.selected.createdByUser}" title="#{resources.ViewLogTitle_createdByUserId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{logController.destroyAndView}" value="#{resources.ViewLogDestroyLink}"/>

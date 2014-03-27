@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorCategory.findById", query = "SELECT c FROM ConnectorCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorCategory.findByName", query = "SELECT c FROM ConnectorCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorCategory.findByDescription", query = "SELECT c FROM ConnectorCategory c WHERE c.description = :description")})
-public class ConnectorCategory implements Serializable {
+public class ConnectorCategory implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -120,7 +121,7 @@ public class ConnectorCategory implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ConnectorCategory[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ConnectorCategory[ id=" + id + " ]";
     }
     
 }

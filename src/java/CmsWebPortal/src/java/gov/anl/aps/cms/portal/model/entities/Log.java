@@ -10,7 +10,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,10 +17,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -41,7 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Log.findAll", query = "SELECT l FROM Log l"),
     @NamedQuery(name = "Log.findById", query = "SELECT l FROM Log l WHERE l.id = :id"),
     @NamedQuery(name = "Log.findByCreatedOnDateTime", query = "SELECT l FROM Log l WHERE l.createdOnDateTime = :createdOnDateTime")})
-public class Log implements Serializable {
+public class Log implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,19 +59,19 @@ public class Log implements Serializable {
     @Column(name = "created_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOnDateTime;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logId")
-    private List<CollectionLog> collectionLogList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logId")
-    private List<ComponentInstanceLog> componentInstanceLogList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logId")
-    private List<DesignComponentLog> designComponentLogList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logId")
-    private List<ComponentLog> componentLogList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "logId")
-    private List<DesignLog> designLogList;
+    @ManyToMany(mappedBy = "logList")
+    private List<Collection> collectionList;
+    @ManyToMany(mappedBy = "logList")
+    private List<ComponentInstance> componentInstanceList;
+    @ManyToMany(mappedBy = "logList")
+    private List<DesignComponent> designComponentList;
+    @ManyToMany(mappedBy = "logList")
+    private List<Component> componentList;
+    @ManyToMany(mappedBy = "logList")
+    private List<Design> designList;
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private User createdByUserId;
+    private User createdByUser;
 
     public Log() {
     }
@@ -111,56 +111,56 @@ public class Log implements Serializable {
     }
 
     @XmlTransient
-    public List<CollectionLog> getCollectionLogList() {
-        return collectionLogList;
+    public List<Collection> getCollectionList() {
+        return collectionList;
     }
 
-    public void setCollectionLogList(List<CollectionLog> collectionLogList) {
-        this.collectionLogList = collectionLogList;
-    }
-
-    @XmlTransient
-    public List<ComponentInstanceLog> getComponentInstanceLogList() {
-        return componentInstanceLogList;
-    }
-
-    public void setComponentInstanceLogList(List<ComponentInstanceLog> componentInstanceLogList) {
-        this.componentInstanceLogList = componentInstanceLogList;
+    public void setCollectionList(List<Collection> collectionList) {
+        this.collectionList = collectionList;
     }
 
     @XmlTransient
-    public List<DesignComponentLog> getDesignComponentLogList() {
-        return designComponentLogList;
+    public List<ComponentInstance> getComponentInstanceList() {
+        return componentInstanceList;
     }
 
-    public void setDesignComponentLogList(List<DesignComponentLog> designComponentLogList) {
-        this.designComponentLogList = designComponentLogList;
-    }
-
-    @XmlTransient
-    public List<ComponentLog> getComponentLogList() {
-        return componentLogList;
-    }
-
-    public void setComponentLogList(List<ComponentLog> componentLogList) {
-        this.componentLogList = componentLogList;
+    public void setComponentInstanceList(List<ComponentInstance> componentInstanceList) {
+        this.componentInstanceList = componentInstanceList;
     }
 
     @XmlTransient
-    public List<DesignLog> getDesignLogList() {
-        return designLogList;
+    public List<DesignComponent> getDesignComponentList() {
+        return designComponentList;
     }
 
-    public void setDesignLogList(List<DesignLog> designLogList) {
-        this.designLogList = designLogList;
+    public void setDesignComponentList(List<DesignComponent> designComponentList) {
+        this.designComponentList = designComponentList;
     }
 
-    public User getCreatedByUserId() {
-        return createdByUserId;
+    @XmlTransient
+    public List<Component> getComponentList() {
+        return componentList;
     }
 
-    public void setCreatedByUserId(User createdByUserId) {
-        this.createdByUserId = createdByUserId;
+    public void setComponentList(List<Component> componentList) {
+        this.componentList = componentList;
+    }
+
+    @XmlTransient
+    public List<Design> getDesignList() {
+        return designList;
+    }
+
+    public void setDesignList(List<Design> designList) {
+        this.designList = designList;
+    }
+
+    public User getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
     @Override
@@ -185,7 +185,7 @@ public class Log implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.Log[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.Log[ id=" + id + " ]";
     }
     
 }

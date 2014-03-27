@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CollectionComponent.findById", query = "SELECT c FROM CollectionComponent c WHERE c.id = :id"),
     @NamedQuery(name = "CollectionComponent.findByQuantity", query = "SELECT c FROM CollectionComponent c WHERE c.quantity = :quantity"),
     @NamedQuery(name = "CollectionComponent.findByDescription", query = "SELECT c FROM CollectionComponent c WHERE c.description = :description")})
-public class CollectionComponent implements Serializable {
+public class CollectionComponent implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,7 +122,7 @@ public class CollectionComponent implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.CollectionComponent[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.CollectionComponent[ id=" + id + " ]";
     }
     
 }

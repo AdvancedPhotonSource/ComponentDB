@@ -28,40 +28,18 @@
                 <h:outputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
 
                 <h:outputLabel for="documentationUri" value="Documentation URI" styleClass="entityDataLabel"/>
-                <h:outputText id="documentationUri" value="#{selected.documentationUri}" title="Documentation URI" styleClass="entityDataText"/>
+                <h:link id="documentationUri" value="#{selected.documentationUri}" title="Documentation URI" styleClass="entityDataText"/>
 
                 <h:outputLabel for="componentState" value="State" styleClass="entityDataLabel"/>
                 <h:outputText id="componentState" value="#{selected.componentState.name}" title="State" styleClass="entityDataText"/>
 
+                <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
+                <h:outputText id="componentTypes" value="#{componentController.displayEntityList(selected.componentTypeList)}" title="Type" styleClass="entityDataText"/>
+                
                 <h:outputLabel for="estimatedCost" value="Estimated Cost" styleClass="entityDataLabel"/>
                 <h:outputText id="estimatedCost" value="#{selected.estimatedCost}" title="Estimated Cost" styleClass="entityDataText"/>
 
-                <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-                <h:outputText id="ownerUser" value="#{selected.entityInfo.ownerUser.username}" title="Owner User" styleClass="entityDataText"/>
-
-                <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-                <h:outputText id="ownerGroup" value="#{selected.entityInfo.ownerUserGroup.name}" title="Owner Group" styleClass="entityDataText"/>
-
-                <h:outputLabel for="createdBy" value="Created By" styleClass="entityDataLabel"/>
-                <h:outputText id="createdBy" value="#{selected.entityInfo.createdByUser.username}" title="Created By" styleClass="entityDataText"/>
-
-                <h:outputLabel for="createdOn" value="Created On" styleClass="entityDataLabel"/>
-                <h:outputText id="createdOn" value="#{selected.entityInfo.createdOnDateTime}" title="Created On" styleClass="entityDataText"/>
-
-                <h:outputLabel for="modifiedBy" value="Modified By" styleClass="entityDataLabel"/>
-                <h:outputText id="modifiedBy" value="#{selected.entityInfo.lastModifiedByUser.username}" title="Modified By" styleClass="entityDataText"/>
-
-                <h:outputLabel for="modifiedOn" value="Modified On" styleClass="entityDataLabel"/>
-                <h:outputText id="modifiedOn" value="#{selected.entityInfo.lastModifiedOnDateTime}" title="Modified On" styleClass="entityDataText"/>
-
-                <h:outputLabel for="obsoletedBy" value="Obsoleted By" rendered="#{selected.entityInfo.obsoletedByUser != null}" styleClass="entityDataLabel"/>
-                <h:outputText id="obsoletedBy" value="#{selected.entityInfo.obsoletedByUser.username}" rendered="#{selected.entityInfo.obsoletedByUser != null}" title="Obsoleted By" styleClass="entityDataText"/>
-
-                <h:outputLabel for="obsoletedOn" value="Obsoleted On" rendered="#{selected.entityInfo.obsoletedByUser != null}" styleClass="entityDataLabel"/>
-                <h:outputText id="obsoletedOn" value="#{selected.entityInfo.obsoletedOnDateTime}" rendered="#{selected.entityInfo.obsoletedByUser != null}" title="Obsoleted On" styleClass="entityDataText"/>
-
-                <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-                <h:outputText id="groupWriteable" value="#{selected.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
+                <ui:include src="../entityInfo/view.xhtml"/>
 
             </p:panelGrid>
             

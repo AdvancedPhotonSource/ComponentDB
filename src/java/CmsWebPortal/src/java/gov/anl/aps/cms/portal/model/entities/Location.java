@@ -38,7 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
     @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description")})
-public class Location implements Serializable {
+public class Location implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -145,7 +146,7 @@ public class Location implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.Location[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.Location[ id=" + id + " ]";
     }
     
 }

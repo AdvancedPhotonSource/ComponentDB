@@ -9,17 +9,17 @@ package gov.anl.aps.cms.portal.model.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentInstance.findById", query = "SELECT c FROM ComponentInstance c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentInstance.findBySerialNumber", query = "SELECT c FROM ComponentInstance c WHERE c.serialNumber = :serialNumber"),
     @NamedQuery(name = "ComponentInstance.findByQuantity", query = "SELECT c FROM ComponentInstance c WHERE c.quantity = :quantity")})
-public class ComponentInstance implements Serializable {
+public class ComponentInstance implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +50,11 @@ public class ComponentInstance implements Serializable {
     private String serialNumber;
     @Column(name = "quantity")
     private Integer quantity;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstanceId")
-    private List<ComponentInstanceLog> componentInstanceLogList;
+    @JoinTable(name = "component_instance_log", joinColumns = {
+        @JoinColumn(name = "component_instance_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "log_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Log> logList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private EntityInfo entityInfoId;
@@ -93,12 +97,12 @@ public class ComponentInstance implements Serializable {
     }
 
     @XmlTransient
-    public List<ComponentInstanceLog> getComponentInstanceLogList() {
-        return componentInstanceLogList;
+    public List<Log> getLogList() {
+        return logList;
     }
 
-    public void setComponentInstanceLogList(List<ComponentInstanceLog> componentInstanceLogList) {
-        this.componentInstanceLogList = componentInstanceLogList;
+    public void setLogList(List<Log> logList) {
+        this.logList = logList;
     }
 
     public EntityInfo getEntityInfoId() {
@@ -147,7 +151,7 @@ public class ComponentInstance implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentInstance[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ComponentInstance[ id=" + id + " ]";
     }
     
 }

@@ -6,14 +6,12 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
-import gov.anl.aps.cms.portal.model.beans.UserUserGroupFacade;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
-import gov.anl.aps.cms.portal.model.entities.UserUserGroup;
-import gov.anl.aps.cms.portal.utility.ConfigurationUtility;
-import gov.anl.aps.cms.portal.utility.LdapUtility;
-import gov.anl.aps.cms.portal.utility.SessionUtility;
+import gov.anl.aps.cms.portal.utilities.ConfigurationUtility;
+import gov.anl.aps.cms.portal.utilities.LdapUtility;
+import gov.anl.aps.cms.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
@@ -28,15 +26,15 @@ import org.apache.log4j.Logger;
  */
 @Named("loginController")
 @SessionScoped
-public class LoginController implements Serializable {
+public class LoginController implements Serializable
+{
 
     @EJB
     private UserFacade userFacade;
-    @EJB
-    private UserUserGroupFacade userUserGroupFacade;
 
     private String username = null;
     private String password = null;
+    private String currentPage = null;
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
     private User user = null;
@@ -87,6 +85,14 @@ public class LoginController implements Serializable {
         this.username = username;
     }
 
+    public String getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setCurrentPage(String currentPage) {
+        this.currentPage = currentPage;
+    }
+
     /**
      * Check if user is logged in.
      *
@@ -134,7 +140,7 @@ public class LoginController implements Serializable {
 
     private boolean isAdmin(String username) {
         for (String adminGroupName : adminGroupNameList) {
-            if (userUserGroupFacade.isUserMemberOfUserGroup(username, adminGroupName)) {
+            if (userFacade.isUserMemberOfUserGroup(username, adminGroupName)) {
                 return true;
             }
         }
@@ -167,10 +173,12 @@ public class LoginController implements Serializable {
         if (user.getPassword() != null && user.getPassword().equals(password)) {
             logger.debug("User " + username + " is authorized by CMS");
             validCredentials = true;
-        } else if (LdapUtility.validateCredentials(username, password)) {
+        }
+        else if (LdapUtility.validateCredentials(username, password)) {
             logger.debug("User " + username + " is authorized by LDAP");
             validCredentials = true;
-        } else {
+        }
+        else {
             logger.debug("User " + username + " is not authorized");
         }
 
@@ -180,28 +188,41 @@ public class LoginController implements Serializable {
                 loggedInAsAdmin = true;
                 SessionUtility.addInfoMessage("Successful Login", "Administrator " + username + " is logged in.");
 
-            } else {
+            }
+            else {
                 loggedInAsUser = true;
                 SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
             }
-            return "/views/home?faces-redirect=true";
-        } else {
+
+            return getLandingPage();
+        }
+        else {
             SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");
             return (username = password = null);
         }
 
     }
 
+    public String getLandingPage() {
+        if (currentPage != null) {
+            return "/views/" + currentPage + "?faces-redirect=true";
+        }
+        else {
+            return "/views/home?faces-redirect=true";
+        }
+    }
+
     public String dropAdminRole() {
         loggedInAsAdmin = false;
         loggedInAsUser = true;
-        return "/views/home?faces-redirect=true";
+        return getLandingPage();
     }
 
     public String displayUsername() {
         if (isLoggedIn()) {
             return username;
-        } else {
+        }
+        else {
             return "Not Logged In";
         }
     }
@@ -209,22 +230,23 @@ public class LoginController implements Serializable {
     public String displayRole() {
         if (isLoggedInAsAdmin()) {
             return "Administrator";
-        } else {
+        }
+        else {
             return "User";
         }
     }
-    
+
     public boolean isEntityWriteable(EntityInfo entityInfo) {
         // If user is not logged in, object is not writeable
         if (!isLoggedIn()) {
             return false;
         }
-        
+
         // Admins can write any object.
         if (isLoggedInAsAdmin()) {
             return true;
         }
-        
+
         // Users can write object if entityInfo != null and:
         // current user is owner, or the object is writeable by owner group
         // and current user is memebr of that group
@@ -233,19 +255,19 @@ public class LoginController implements Serializable {
             if (ownerUser != null && ownerUser.getId().equals(user.getId())) {
                 return true;
             }
-            
+
             Boolean isGroupWriteable = entityInfo.getIsGroupWriteable();
             if (isGroupWriteable == null || !isGroupWriteable.booleanValue()) {
                 return false;
             }
-            
+
             UserGroup ownerUserGroup = entityInfo.getOwnerUserGroup();
             if (ownerUserGroup == null) {
                 return false;
             }
-            
-            for (UserUserGroup userGroup : user.getUserUserGroupList()) {
-                if (ownerUserGroup.getId().equals(userGroup.getUserGroup().getId())) {
+
+            for (UserGroup userGroup : user.getUserGroupList()) {
+                if (ownerUserGroup.getId().equals(userGroup.getId())) {
                     return true;
                 }
             }
@@ -264,6 +286,7 @@ public class LoginController implements Serializable {
         loggedInAsAdmin = false;
         loggedInAsUser = false;
         user = null;
+        currentPage = null;
         return "/views/home?faces-redirect=true";
     }
 

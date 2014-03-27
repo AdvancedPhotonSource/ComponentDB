@@ -1,4 +1,4 @@
-package gov.anl.aps.cms.portal.utility;
+package gov.anl.aps.cms.portal.utilities;
 
 import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;

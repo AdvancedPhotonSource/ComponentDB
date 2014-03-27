@@ -34,7 +34,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AssemblyComponentConnection.findByLinkAssemblyComponentQuantity", query = "SELECT a FROM AssemblyComponentConnection a WHERE a.linkAssemblyComponentQuantity = :linkAssemblyComponentQuantity"),
     @NamedQuery(name = "AssemblyComponentConnection.findByLabel", query = "SELECT a FROM AssemblyComponentConnection a WHERE a.label = :label"),
     @NamedQuery(name = "AssemblyComponentConnection.findByDescription", query = "SELECT a FROM AssemblyComponentConnection a WHERE a.description = :description")})
-public class AssemblyComponentConnection implements Serializable {
+public class AssemblyComponentConnection implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -166,7 +167,7 @@ public class AssemblyComponentConnection implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.AssemblyComponentConnection[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.AssemblyComponentConnection[ id=" + id + " ]";
     }
     
 }

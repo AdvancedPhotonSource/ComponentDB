@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentCategory.findById", query = "SELECT c FROM ComponentCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentCategory.findByName", query = "SELECT c FROM ComponentCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentCategory.findByDescription", query = "SELECT c FROM ComponentCategory c WHERE c.description = :description")})
-public class ComponentCategory implements Serializable {
+public class ComponentCategory implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,7 +51,7 @@ public class ComponentCategory implements Serializable {
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "componentCategoryId")
+    @OneToMany(mappedBy = "componentCategory")
     private List<ComponentType> componentTypeList;
 
     public ComponentCategory() {
@@ -120,7 +121,7 @@ public class ComponentCategory implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentCategory[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ComponentCategory[ id=" + id + " ]";
     }
     
 }

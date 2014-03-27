@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyCategory.findById", query = "SELECT p FROM PropertyCategory p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyCategory.findByName", query = "SELECT p FROM PropertyCategory p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyCategory.findByDescription", query = "SELECT p FROM PropertyCategory p WHERE p.description = :description")})
-public class PropertyCategory implements Serializable {
+public class PropertyCategory implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -120,7 +121,7 @@ public class PropertyCategory implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.PropertyCategory[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.PropertyCategory[ id=" + id + " ]";
     }
     
 }

@@ -6,7 +6,8 @@ import gov.anl.aps.cms.portal.model.beans.CollectionFacade;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.User;
-import gov.anl.aps.cms.portal.utility.SessionUtility;
+import gov.anl.aps.cms.portal.model.entities.UserGroup;
+import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -22,17 +23,17 @@ import org.apache.log4j.Logger;
 
 @Named("collectionController")
 @SessionScoped
-public class CollectionController extends CrudEntityController<Collection, CollectionFacade> implements Serializable {
+public class CollectionController extends CrudEntityController<Collection, CollectionFacade> implements Serializable
+{
 
     @EJB
     private CollectionFacade collectionFacade;
-        @EJB
+    @EJB
     private UserFacade userFacade;
     private static final Logger logger = Logger.getLogger(CollectionController.class.getName());
 
     public CollectionController() {
     }
-
 
     @Override
     protected CollectionFacade getFacade() {
@@ -43,9 +44,14 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     protected Collection createEntityInstance() {
         Collection collection = new Collection();
         Integer userId = SessionUtility.getUserId();
-        EntityInfo entityInfo = collection.getEntityInfo();
+        EntityInfo entityInfo = new EntityInfo();
         User ownerUser = userFacade.find(userId);
         entityInfo.setOwnerUser(ownerUser);
+        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        collection.setEntityInfo(entityInfo);
         return collection;
     }
 
@@ -96,7 +102,8 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     }
 
     @FacesConverter(forClass = Collection.class)
-    public static class CollectionControllerConverter implements Converter {
+    public static class CollectionControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -128,7 +135,8 @@ public class CollectionController extends CrudEntityController<Collection, Colle
             if (object instanceof Collection) {
                 Collection o = (Collection) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Collection.class.getName());
             }
         }

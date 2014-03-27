@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AssemblyComponent.findAll", query = "SELECT a FROM AssemblyComponent a"),
     @NamedQuery(name = "AssemblyComponent.findById", query = "SELECT a FROM AssemblyComponent a WHERE a.id = :id"),
     @NamedQuery(name = "AssemblyComponent.findByQuantity", query = "SELECT a FROM AssemblyComponent a WHERE a.quantity = :quantity")})
-public class AssemblyComponent implements Serializable {
+public class AssemblyComponent implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -145,7 +146,7 @@ public class AssemblyComponent implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.AssemblyComponent[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.AssemblyComponent[ id=" + id + " ]";
     }
     
 }

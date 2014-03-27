@@ -41,6 +41,10 @@
 
                         <h:outputLabel for="nCatalogedComponents" value="Number of Cataloged Components" styleClass="entityDataLabel"/>
                         <h:outputText id="nCatalogedComponents" value="#{componentController.items.getRowCount()}" title="Number of Cataloged Components" styleClass="entityDataText"/>
+
+                                                <h:outputLabel for="nCatalogedCollections" value="Number of Cataloged Collections" styleClass="entityDataLabel"/>
+                        <h:outputText id="nCatalogedCollections" value="#{collectionController.items.getRowCount()}" title="Number of Cataloged Collections" styleClass="entityDataText"/>
+
                     </p:panelGrid>
                 </h:form>
             </div>

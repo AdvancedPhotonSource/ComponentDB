@@ -3,10 +3,13 @@ package gov.anl.aps.cms.portal.controllers;
 import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.beans.ComponentFacade;
+import gov.anl.aps.cms.portal.model.beans.ComponentStateFacade;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.entities.ComponentState;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.User;
-import gov.anl.aps.cms.portal.utility.SessionUtility;
+import gov.anl.aps.cms.portal.model.entities.UserGroup;
+import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -31,6 +34,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private ComponentFacade componentFacade;
     @EJB
     private UserFacade userFacade;
+    @EJB
+    private ComponentStateFacade componentStateFacade;
 
     public ComponentController() {
         super();
@@ -45,9 +50,18 @@ public class ComponentController extends CrudEntityController<Component, Compone
     protected Component createEntityInstance() {
         Component component = new Component();
         Integer userId = SessionUtility.getUserId();
-        EntityInfo entityInfo = component.getEntityInfo();
+        List<ComponentState> componentStateList = componentStateFacade.findAll();
+        if (!componentStateList.isEmpty()) {
+            component.setComponentState(componentStateList.get(0));
+        }
+        EntityInfo entityInfo = new EntityInfo();
         User ownerUser = userFacade.find(userId);
         entityInfo.setOwnerUser(ownerUser);
+        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        component.setEntityInfo(entityInfo);
         return component;
     }
 

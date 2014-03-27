@@ -7,6 +7,7 @@
 package gov.anl.aps.cms.portal.model.beans;
 
 import gov.anl.aps.cms.portal.model.entities.User;
+import gov.anl.aps.cms.portal.model.entities.UserGroup;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -43,5 +44,18 @@ public class UserFacade extends AbstractFacade<User> {
     
     public boolean checkIfUsernameExists(String username) {
         return findByUsername(username) != null;
+    }
+    
+    public boolean isUserMemberOfUserGroup(String username, String groupName) {
+        User user = findByUsername(username);
+        if (user == null) {
+            return false;
+        }
+        for (UserGroup userGroup : user.getUserGroupList()) {
+            if (userGroup.getName().equals(groupName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

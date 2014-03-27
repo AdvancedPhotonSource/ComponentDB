@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+    <ui:define name="middleCenter">
+        <div class="pageTitle">
+            <h1>Add User</h1>
+        </div>
+
+        <h:form id="addUserForm">
+
+            <c:set var="selected" value="#{userController.selected}"/>
+
+            <p:panelGrid columns="3">
+                
+                <h:outputLabel for="username" value="Username" styleClass="entityDataLabel"/>
+                <h:inputText id="username" value="#{selected.username}" title="Username" required="true" styleClass="entityDataText"/>
+                <p:message for="username"/> 
+                
+                <h:outputLabel for="userGroups" value="Group" styleClass="entityDataLabel"/>
+                <h:selectManyMenu id="userGroups" value="#{selected.userGroupList}" converter="userGroupConverter" title="Group" styleClass="entityDataSelectMany">
+                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                    <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
+                </h:selectManyMenu>
+                <p:message for="userGroups"/>
+                
+                <h:outputLabel for="lastName" value="Last Name" styleClass="entityDataLabel"/>
+                <h:inputText id="lastName" value="#{selected.lastName}" title="Last Name" required="true" styleClass="entityDataText"/>
+                <p:message for="lastName"/>
+
+                <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
+                <h:inputText id="firstName" value="#{selected.firstName}" title="First Name" required="true" styleClass="entityDataText"/>
+                <p:message for="firstName"/> 
+
+                <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
+                <h:inputText id="middleName" value="#{selected.middleName}" title="Middle Name" styleClass="entityDataText"/>
+                <p:message for="middleName"/>
+
+                <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
+                <h:inputText id="email" value="#{selected.email}" title="Email" styleClass="entityDataText"/>
+                <p:message for="email"/>
+
+                <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
+                <h:inputSecret id="password" value="#{selected.password}" title="Password" styleClass="entityDataText"/>
+                <p:message for="password"/>
+
+            </p:panelGrid>
+
+            <p/>
+            <div class="actionButton">
+                <p:commandButton action="#{userController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
+                <p:commandButton action="#{userController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+            </div>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+

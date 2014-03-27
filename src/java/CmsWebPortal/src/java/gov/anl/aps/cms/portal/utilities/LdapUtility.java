@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package gov.anl.aps.cms.portal.utility;
+package gov.anl.aps.cms.portal.utilities;
 
 import java.util.Hashtable;
 import javax.naming.Context;

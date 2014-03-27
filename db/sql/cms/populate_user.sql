@@ -30,10 +30,10 @@ INSERT INTO `user` (`id`, `username`, `first_name`, `last_name`, `middle_name`, 
 VALUES
 	(1,'cms','CMS','System Account',NULL,'cms@aps.anl.gov','cms'),
 	(2,'bstill','Ben','Stillwell',NULL,NULL,NULL),
-	(3,'nda','Ned','Arnold',NULL,'nda@anl.gov',NULL),
+	(3,'nda','Ned','Arnold',NULL,'nda@anl.gov','nda'),
 	(4,'sveseli','Sinisa','Veseli',NULL,'sveseli@anl.gov','sv'),
 	(5,'benes','Scott','Benes',NULL,NULL,NULL),
-	(6,'nschwarz','Nicholas','Schwarz',NULL,'nschwarz@aps.anl.gov',NULL);
+	(6,'nschwarz','Nicholas','Schwarz',NULL,'nschwarz@aps.anl.gov','ns');
 
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;

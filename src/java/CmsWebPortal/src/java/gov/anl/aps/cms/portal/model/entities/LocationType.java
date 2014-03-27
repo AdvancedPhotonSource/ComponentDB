@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LocationType.findById", query = "SELECT l FROM LocationType l WHERE l.id = :id"),
     @NamedQuery(name = "LocationType.findByName", query = "SELECT l FROM LocationType l WHERE l.name = :name"),
     @NamedQuery(name = "LocationType.findByDescription", query = "SELECT l FROM LocationType l WHERE l.description = :description")})
-public class LocationType implements Serializable {
+public class LocationType implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -120,7 +121,7 @@ public class LocationType implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.LocationType[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.LocationType[ id=" + id + " ]";
     }
     
 }

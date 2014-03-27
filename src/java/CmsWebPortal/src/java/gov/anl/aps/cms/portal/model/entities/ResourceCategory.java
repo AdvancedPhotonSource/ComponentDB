@@ -35,7 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ResourceCategory.findById", query = "SELECT r FROM ResourceCategory r WHERE r.id = :id"),
     @NamedQuery(name = "ResourceCategory.findByName", query = "SELECT r FROM ResourceCategory r WHERE r.name = :name"),
     @NamedQuery(name = "ResourceCategory.findByDescription", query = "SELECT r FROM ResourceCategory r WHERE r.description = :description")})
-public class ResourceCategory implements Serializable {
+public class ResourceCategory implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -120,7 +121,7 @@ public class ResourceCategory implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ResourceCategory[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ResourceCategory[ id=" + id + " ]";
     }
     
 }

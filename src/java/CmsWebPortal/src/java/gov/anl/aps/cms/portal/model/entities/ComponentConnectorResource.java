@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentConnectorResource.findByIsProvided", query = "SELECT c FROM ComponentConnectorResource c WHERE c.isProvided = :isProvided"),
     @NamedQuery(name = "ComponentConnectorResource.findByIsUsedRequired", query = "SELECT c FROM ComponentConnectorResource c WHERE c.isUsedRequired = :isUsedRequired"),
     @NamedQuery(name = "ComponentConnectorResource.findByIsUsedOptional", query = "SELECT c FROM ComponentConnectorResource c WHERE c.isUsedOptional = :isUsedOptional")})
-public class ComponentConnectorResource implements Serializable {
+public class ComponentConnectorResource implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -171,7 +172,7 @@ public class ComponentConnectorResource implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentConnectorResource[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ComponentConnectorResource[ id=" + id + " ]";
     }
     
 }

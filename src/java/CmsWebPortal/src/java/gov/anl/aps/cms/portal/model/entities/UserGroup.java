@@ -9,12 +9,12 @@ package gov.anl.aps.cms.portal.model.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -36,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserGroup.findById", query = "SELECT u FROM UserGroup u WHERE u.id = :id"),
     @NamedQuery(name = "UserGroup.findByName", query = "SELECT u FROM UserGroup u WHERE u.name = :name"),
     @NamedQuery(name = "UserGroup.findByDescription", query = "SELECT u FROM UserGroup u WHERE u.description = :description")})
-public class UserGroup implements Serializable {
+public class UserGroup implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,10 +52,10 @@ public class UserGroup implements Serializable {
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+    @ManyToMany(mappedBy = "userGroupList")
+    private List<User> userList;
     @OneToMany(mappedBy = "ownerUserGroup")
     private List<EntityInfo> entityInfoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
-    private List<UserUserGroup> userUserGroupList;
 
     public UserGroup() {
     }
@@ -93,21 +94,21 @@ public class UserGroup implements Serializable {
     }
 
     @XmlTransient
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
+
+    @XmlTransient
     public List<EntityInfo> getEntityInfoList() {
         return entityInfoList;
     }
 
     public void setEntityInfoList(List<EntityInfo> entityInfoList) {
         this.entityInfoList = entityInfoList;
-    }
-
-    @XmlTransient
-    public List<UserUserGroup> getUserUserGroupList() {
-        return userUserGroupList;
-    }
-
-    public void setUserUserGroupList(List<UserUserGroup> userUserGroupList) {
-        this.userUserGroupList = userUserGroupList;
     }
 
     @Override
@@ -119,12 +120,14 @@ public class UserGroup implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof UserGroup)) {
             return false;
         }
         UserGroup other = (UserGroup) object;
         return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
+
 
     @Override
     public String toString() {

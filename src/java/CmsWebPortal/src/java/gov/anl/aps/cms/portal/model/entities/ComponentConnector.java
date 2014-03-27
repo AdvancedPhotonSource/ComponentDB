@@ -37,7 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentConnector.findById", query = "SELECT c FROM ComponentConnector c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentConnector.findByLabel", query = "SELECT c FROM ComponentConnector c WHERE c.label = :label"),
     @NamedQuery(name = "ComponentConnector.findByQuantity", query = "SELECT c FROM ComponentConnector c WHERE c.quantity = :quantity")})
-public class ComponentConnector implements Serializable {
+public class ComponentConnector implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -180,7 +181,7 @@ public class ComponentConnector implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentConnector[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ComponentConnector[ id=" + id + " ]";
     }
     
 }

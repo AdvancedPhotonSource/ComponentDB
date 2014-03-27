@@ -15,12 +15,12 @@
 
         <h:form id="viewComponentListForm">            
             <div class="actionButton">
-                <p:commandButton action="#{componentController.prepareCreate()}" value="Add" alt="Add Component" icon="ui-icon-plus"/>
+                <p:commandButton action="#{componentController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Component" icon="ui-icon-plus"/>
             </div>
             <h:panelGroup>
 
                 <p:dataTable id="componentListDataTable" var="item" value="#{componentController.items}" paginator="true" rows="10"
-                             emptyMessage="No components found.">
+                             emptyMessage="No components found." filteredValue="#{componentController.filteredItems}">
 
                     <f:facet name="header">
                     </f:facet>
@@ -40,35 +40,12 @@
                         <h:outputText value="#{item.componentState.name}"/>
                     </p:column>
 
-                    <p:column sortBy="#{item.entityInfo.ownerUser.username}" headerText="Owner"
-                              filterBy="#{item.entityInfo.ownerUser.username}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.ownerUser.username}"/>
+                    <p:column sortBy="#{item.componentTypeList.toString()}" headerText="Type" 
+                              filterBy="#{item.componentTypeList}" filterMatchMode="contains">
+                        <h:outputText value="#{componentController.displayEntityList(item.componentTypeList)}"/>
                     </p:column>
 
-                    <p:column sortBy="#{item.entityInfo.ownerUserGroup.name}" headerText="Group"
-                              filterBy="#{item.entityInfo.ownerUserGroup.name}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.ownerUserGroup.name}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.createdByUser.username}" headerText="Created By"
-                              filterBy="#{item.entityInfo.createdByUser.username}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.createdByUser.username}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.createdOnDateTime}" headerText="Created On"
-                              filterBy="#{item.entityInfo.createdOnDateTime}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.createdOnDateTime}"/>
-                    </p:column>
-                    
-                    <p:column sortBy="#{item.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
-                              filterBy="#{item.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.lastModifiedByUser.username}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
-                              filterBy="#{item.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.lastModifiedOnDateTime}"/>
-                    </p:column>
+                    <ui:include src="../entityInfo/list.xhtml"/>
 
                     <p:column sortBy="#{item.estimatedCost}" headerText="Estimated Cost">
                         <h:outputText value="#{item.estimatedCost}"/>
@@ -77,8 +54,8 @@
                     <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(item.entityInfo)}"/>
                     <p:column headerText="Actions">
                         <div class="actionLink">
-                            <p:commandLink action="#{componentController.prepareView()}" styleClass="ui-icon ui-icon-info" title="View"/>
-                            <p:commandLink action="#{componentController.prepareEdit()}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                            <p:commandLink action="#{componentController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                            <p:commandLink action="#{componentController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
                             <p:commandLink oncomplete="confirmation.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                                 <f:setPropertyActionListener value="#{item}" target="#{componentController.current}"/>
                             </p:commandLink>

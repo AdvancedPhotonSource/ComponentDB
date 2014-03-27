@@ -37,23 +37,7 @@
                 </h:selectOneMenu>
                 <p:message for="parentCollection"/> 
 
-                <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="ownerUser" value="#{selected.entityInfo.ownerUser}" title="Owner User" styleClass="entityDataText">
-                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                    <f:selectItems var="ownerUser" value="#{userController.availableItems}" itemLabel="#{ownerUser.username}" itemValue="#{ownerUser}"/>
-                </h:selectOneMenu>
-                <p:message for="ownerUser"/> 
-
-                <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="ownerGroup" value="#{selected.entityInfo.ownerUserGroup}" title="Owner Group" styleClass="entityDataText">
-                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                    <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
-                </h:selectOneMenu>
-                <p:message for="ownerGroup"/> 
-
-                <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-                <h:inputText id="groupWriteable" value="#{selected.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
-                <p:message for="groupWriteable"/> 
+                <ui:include src="../entityInfo/edit.xhtml"/>
 
             </p:panelGrid>
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:column sortBy="#{item.entityInfo.ownerUser.username}" headerText="Owner"
+              filterBy="#{item.entityInfo.ownerUser.username}" filterMatchMode="contains">
+        <h:outputText value="#{item.entityInfo.ownerUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{item.entityInfo.ownerUserGroup.name}" headerText="Group"
+              filterBy="#{item.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
+              filterOptions="#{userGroupController.availableItemsForSelectOne}">
+        <h:outputText value="#{item.entityInfo.ownerUserGroup.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{item.entityInfo.createdByUser.username}" headerText="Created By"
+              filterBy="#{item.entityInfo.createdByUser.username}" filterMatchMode="contains">
+        <h:outputText value="#{item.entityInfo.createdByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{item.entityInfo.createdOnDateTime}" rendered="false" headerText="Created On"
+              filterBy="#{item.entityInfo.createdOnDateTime}" filterMatchMode="contains">
+        <h:outputText value="#{item.entityInfo.createdOnDateTime}"/>
+    </p:column>
+
+    <p:column sortBy="#{item.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
+              filterBy="#{item.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains">
+        <h:outputText value="#{item.entityInfo.lastModifiedByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{item.entityInfo.lastModifiedOnDateTime}" rendered="false" headerText="Modified On"
+              filterBy="#{item.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains">
+        <h:outputText value="#{item.entityInfo.lastModifiedOnDateTime}"/>
+    </p:column>
+
+</ui:composition>
+
+

@@ -9,13 +9,14 @@ package gov.anl.aps.cms.portal.model.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -38,7 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Design.findById", query = "SELECT d FROM Design d WHERE d.id = :id"),
     @NamedQuery(name = "Design.findByName", query = "SELECT d FROM Design d WHERE d.name = :name"),
     @NamedQuery(name = "Design.findByDescription", query = "SELECT d FROM Design d WHERE d.description = :description")})
-public class Design implements Serializable {
+public class Design implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -53,8 +55,11 @@ public class Design implements Serializable {
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "designId")
-    private List<DesignLog> designLogList;
+    @JoinTable(name = "design_log", joinColumns = {
+        @JoinColumn(name = "design_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "log_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Log> logList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private EntityInfo entityInfoId;
@@ -101,12 +106,12 @@ public class Design implements Serializable {
     }
 
     @XmlTransient
-    public List<DesignLog> getDesignLogList() {
-        return designLogList;
+    public List<Log> getLogList() {
+        return logList;
     }
 
-    public void setDesignLogList(List<DesignLog> designLogList) {
-        this.designLogList = designLogList;
+    public void setLogList(List<Log> logList) {
+        this.logList = logList;
     }
 
     public EntityInfo getEntityInfoId() {
@@ -156,7 +161,7 @@ public class Design implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.Design[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.Design[ id=" + id + " ]";
     }
     
 }

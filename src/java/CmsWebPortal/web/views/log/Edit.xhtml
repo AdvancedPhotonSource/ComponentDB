@@ -24,7 +24,7 @@
                         <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
                     </h:inputText>
                     <h:outputLabel value="#{resources.EditLogLabel_createdByUserId}" for="createdByUserId" />
-                    <h:selectOneMenu id="createdByUserId" value="#{logController.selected.createdByUserId}" title="#{resources.EditLogTitle_createdByUserId}" required="true" requiredMessage="#{resources.EditLogRequiredMessage_createdByUserId}">
+                    <h:selectOneMenu id="createdByUserId" value="#{logController.selected.createdByUser}" title="#{resources.EditLogTitle_createdByUserId}" required="true" requiredMessage="#{resources.EditLogRequiredMessage_createdByUserId}">
                         <f:selectItems value="#{userController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

@@ -18,9 +18,9 @@
                     <h:outputText value="#{resources.ViewComponentComponentTypeLabel_id}"/>
                     <h:outputText value="#{componentComponentTypeController.selected.id}" title="#{resources.ViewComponentComponentTypeTitle_id}"/>
                     <h:outputText value="#{resources.ViewComponentComponentTypeLabel_componentTypeId}"/>
-                    <h:outputText value="#{componentComponentTypeController.selected.componentTypeId}" title="#{resources.ViewComponentComponentTypeTitle_componentTypeId}"/>
+                    <h:outputText value="#{componentComponentTypeController.selected.componentType}" title="#{resources.ViewComponentComponentTypeTitle_componentTypeId}"/>
                     <h:outputText value="#{resources.ViewComponentComponentTypeLabel_componentId}"/>
-                    <h:outputText value="#{componentComponentTypeController.selected.componentId}" title="#{resources.ViewComponentComponentTypeTitle_componentId}"/>
+                    <h:outputText value="#{componentComponentTypeController.selected.component}" title="#{resources.ViewComponentComponentTypeTitle_componentId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{componentComponentTypeController.destroyAndView}" value="#{resources.ViewComponentComponentTypeDestroyLink}"/>

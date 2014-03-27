@@ -1,4 +1,4 @@
-package gov.anl.aps.cms.portal.utility;
+package gov.anl.aps.cms.portal.utilities;
 
 import java.io.IOException;
 import java.net.InetAddress;

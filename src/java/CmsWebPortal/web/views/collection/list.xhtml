@@ -15,11 +15,11 @@
 
         <h:form id="viewCollectionListForm">            
             <div class="actionButton">
-                <p:commandButton action="#{collectionController.prepareCreate()}" value="Add" alt="Add Component" icon="ui-icon-plus"/>
+                <p:commandButton action="#{collectionController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
             </div>
             <h:panelGroup>  
 
-                <p:dataTable id="componentListDataTable" var="item" value="#{collectionController.items}" paginator="true" rows="10"
+                <p:dataTable id="collectionListDataTable" var="item" value="#{collectionController.items}" paginator="true" rows="10"
                              emptyMessage="No collections found.">
 
                     <f:facet name="header">
@@ -39,52 +39,23 @@
                         <h:outputText value="#{item.parentCollection.name}"/>
                     </p:column>
                     
-                    <p:column sortBy="#{item.entityInfo.ownerUser.username}" headerText="Owner"
-                              filterBy="#{item.entityInfo.ownerUser.username}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.ownerUser.username}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.ownerUserGroup.name}" headerText="Group"
-                              filterBy="#{item.entityInfo.ownerUserGroup.name}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.ownerUserGroup.name}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.createdByUser.username}" headerText="Created By"
-                              filterBy="#{item.entityInfo.createdByUser.username}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.createdByUser.username}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.createdOnDateTime}" headerText="Created On"
-                              filterBy="#{item.entityInfo.createdOnDateTime}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.createdOnDateTime}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
-                              filterBy="#{item.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.lastModifiedByUser.username}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
-                              filterBy="#{item.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains">
-                        <h:outputText value="#{item.entityInfo.lastModifiedOnDateTime}"/>
-                    </p:column>
-
+                    <ui:include src="../entityInfo/list.xhtml"/>
 
                     <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(item.entityInfo)}"/>
                     <p:column headerText="Actions">
                         <div class="actionLink">
-                            <p:commandLink action="#{componentController.prepareView()}" styleClass="ui-icon ui-icon-info" title="View"/>
-                            <p:commandLink action="#{componentController.prepareEdit()}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                            <p:commandLink action="#{collectionController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                            <p:commandLink action="#{collectionController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
                             <p:commandLink oncomplete="confirmation.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                                <f:setPropertyActionListener value="#{item}" target="#{componentController.current}"/>
+                                <f:setPropertyActionListener value="#{item}" target="#{collectionController.current}"/>
                             </p:commandLink>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:panelGroup>
-            <p:confirmDialog id="destroyComponentDialog" message="Destroy component #{componentController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Component" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{componentController.destroy()}" update="@form"/>
+            <p:confirmDialog id="destroyCollectionDialog" message="Destroy collection #{collectionController.getCurrentEntityInstanceName()}?"
+                             header="Destroy Collection" severity="alert" widgetVar="confirmation">
+                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{collectionController.destroy()}" update="@form"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
 

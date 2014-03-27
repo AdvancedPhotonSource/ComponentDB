@@ -16,6 +16,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,7 +39,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignComponent.findAll", query = "SELECT d FROM DesignComponent d"),
     @NamedQuery(name = "DesignComponent.findById", query = "SELECT d FROM DesignComponent d WHERE d.id = :id"),
     @NamedQuery(name = "DesignComponent.findByName", query = "SELECT d FROM DesignComponent d WHERE d.name = :name")})
-public class DesignComponent implements Serializable {
+public class DesignComponent implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,8 +52,11 @@ public class DesignComponent implements Serializable {
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "designComponentId")
-    private List<DesignComponentLog> designComponentLogList;
+    @JoinTable(name = "design_component_log", joinColumns = {
+        @JoinColumn(name = "design_component_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "log_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Log> logList;
     @OneToMany(mappedBy = "linkDesignComponentId")
     private List<DesignComponentConnection> designComponentConnectionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignComponentId")
@@ -99,12 +105,12 @@ public class DesignComponent implements Serializable {
     }
 
     @XmlTransient
-    public List<DesignComponentLog> getDesignComponentLogList() {
-        return designComponentLogList;
+    public List<Log> getLogList() {
+        return logList;
     }
 
-    public void setDesignComponentLogList(List<DesignComponentLog> designComponentLogList) {
-        this.designComponentLogList = designComponentLogList;
+    public void setLogList(List<Log> logList) {
+        this.logList = logList;
     }
 
     @XmlTransient
@@ -188,7 +194,7 @@ public class DesignComponent implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.DesignComponent[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.DesignComponent[ id=" + id + " ]";
     }
     
 }

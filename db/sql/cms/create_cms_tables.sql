@@ -35,11 +35,9 @@ CREATE TABLE `user_group` (
 
 DROP TABLE IF EXISTS `user_user_group`;
 CREATE TABLE `user_user_group` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) unsigned NOT NULL,
   `user_group_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_user_group_u1` (`user_id`, `user_group_id`),
+  PRIMARY KEY (`user_id`, `user_group_id`),
   KEY `user_user_group_k1` (`user_id`),
   CONSTRAINT `user_user_group_fk1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `user_user_group_k2` (`user_group_id`),
@@ -414,11 +412,9 @@ CREATE TABLE `component_source` (
 
 DROP TABLE IF EXISTS `component_component_type`;
 CREATE TABLE `component_component_type` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `component_id` int(11) unsigned NOT NULL,
   `component_type_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_component_type_u1` (`component_id`, `component_type_id`),
+  PRIMARY KEY (`component_id`, `component_type_id`),
   KEY `component_component_type_k1` (`component_id`),
   CONSTRAINT `component_component_type_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_component_type_k2` (`component_type_id`),
@@ -449,11 +445,9 @@ CREATE TABLE `component_property` (
 
 DROP TABLE IF EXISTS `component_log`;
 CREATE TABLE `component_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `component_id` int(11) unsigned NOT NULL,
   `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_log_u1` (`component_id`, `log_id`),
+  PRIMARY KEY (`component_id`, `log_id`),
   KEY `component_log_k1` (`component_id`),
   CONSTRAINT `component_log_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_log_k2` (`log_id`),
@@ -535,11 +529,9 @@ DELIMITER ;
 
 DROP TABLE IF EXISTS `collection_log`;
 CREATE TABLE `collection_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `collection_id` int(11) unsigned NOT NULL,
   `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `collection_log_u1` (`collection_id`, `log_id`),
+  PRIMARY KEY (`collection_id`, `log_id`),
   KEY `collection_log_k1` (`collection_id`),
   CONSTRAINT `collection_log_fk1` FOREIGN KEY (`collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `collection_log_k2` (`log_id`),
@@ -579,11 +571,9 @@ CREATE TABLE `component_instance` (
 
 DROP TABLE IF EXISTS `component_instance_log`;
 CREATE TABLE `component_instance_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `component_instance_id` int(11) unsigned NOT NULL,
   `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_instance_log_u1` (`component_instance_id`, `log_id`),
+  PRIMARY KEY (`component_instance_id`, `log_id`),
   KEY `component_instance_log_k1` (`component_instance_id`),
   CONSTRAINT `component_instance_log_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_instance_log_k2` (`log_id`),
@@ -619,11 +609,9 @@ CREATE TABLE `design` (
 
 DROP TABLE IF EXISTS `design_log`;
 CREATE TABLE `design_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `design_id` int(11) unsigned NOT NULL,
   `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_log_u1` (`design_id`, `log_id`),
+  PRIMARY KEY (`design_id`, `log_id`),
   KEY `design_log_k1` (`design_id`),
   CONSTRAINT `design_log_fk1` FOREIGN KEY (`design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `design_log_k2` (`log_id`),
@@ -664,11 +652,9 @@ CREATE TABLE `design_component` (
 
 DROP TABLE IF EXISTS `design_component_log`;
 CREATE TABLE `design_component_log` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `design_component_id` int(11) unsigned NOT NULL,
   `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_component_log_u1` (`design_component_id`, `log_id`),
+  PRIMARY KEY (`design_component_id`, `log_id`),
   KEY `design_component_log_k1` (`design_component_id`),
   CONSTRAINT `design_component_log_fk1` FOREIGN KEY (`design_component_id`) REFERENCES `design_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `design_component_log_k2` (`log_id`),

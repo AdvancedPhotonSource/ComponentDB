@@ -36,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Source.findById", query = "SELECT s FROM Source s WHERE s.id = :id"),
     @NamedQuery(name = "Source.findByName", query = "SELECT s FROM Source s WHERE s.name = :name"),
     @NamedQuery(name = "Source.findByDescription", query = "SELECT s FROM Source s WHERE s.description = :description")})
-public class Source implements Serializable {
+public class Source implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -121,7 +122,7 @@ public class Source implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.Source[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.Source[ id=" + id + " ]";
     }
     
 }

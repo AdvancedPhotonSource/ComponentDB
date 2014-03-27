@@ -2,8 +2,8 @@ package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
 import gov.anl.aps.cms.portal.model.beans.AbstractFacade;
-import gov.anl.aps.cms.portal.utility.CollectionUtility;
-import gov.anl.aps.cms.portal.utility.SessionUtility;
+import gov.anl.aps.cms.portal.utilities.CollectionUtility;
+import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -15,7 +15,8 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 {
 
     private EntityType current = null;
-    private DataModel items = null;
+    private DataModel dataModel = null;
+    private List<EntityType> filteredItems = null;
 
     public CrudEntityController() {
     }
@@ -48,19 +49,19 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     }
 
     public String prepareList() {
-        recreateDataModel();
+        resetDataModel();
         return "list?faces-redirect=true";
     }
 
-    public String prepareView() {
-        current = (EntityType) getItems().getRowData();
+    public String prepareView(EntityType entity) {
+        current = entity;
         return "view?faces-redirect=true";
     }
 
     public String view() {
         return "view?faces-redirect=true";
     }
-    
+
     public String prepareCreate() {
         current = createEntityInstance();
         return "create?faces-redirect=true";
@@ -82,18 +83,18 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         }
     }
 
-    public String prepareEdit() {
-        current = (EntityType) getItems().getRowData();
+    public String prepareEdit(EntityType entity) {
+        current = entity;
         return "edit?faces-redirect=true";
     }
-    
+
     public String edit() {
         return "edit?faces-redirect=true";
     }
 
     protected void prepareEntityUpdate(EntityType entity) throws CmsPortalException {
     }
-    
+
     public String update() {
         try {
             prepareEntityUpdate(current);
@@ -120,14 +121,23 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     }
 
     public DataModel getItems() {
-        if (items == null) {
-            items = createDataModel();
+        if (dataModel == null) {
+            dataModel = createDataModel();
         }
-        return items;
+        return dataModel;
     }
 
-    private void recreateDataModel() {
-        items = null;
+    public List<EntityType> getFilteredItems() {
+        return filteredItems;
+    }
+
+    public void setFilteredItems(List<EntityType> filteredItems) {
+        this.filteredItems = filteredItems;
+    }
+
+    private void resetDataModel() {
+        dataModel = null;
+        filteredItems = null;
     }
 
     public List<EntityType> getAvailableItems() {
@@ -144,5 +154,10 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public SelectItem[] getAvailableItemsForSelectOne() {
         return CollectionUtility.getSelectItems(getFacade().findAll(), true);
+    }
+
+    public static String displayEntityList(List<?> entityList) {
+        String itemDelimiter = ", ";
+        return CollectionUtility.displayItemListWithoutOutsideDelimiters(entityList, itemDelimiter);
     }
 }

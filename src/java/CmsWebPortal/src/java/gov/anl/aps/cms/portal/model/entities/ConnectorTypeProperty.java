@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ConnectorTypeProperty.findAll", query = "SELECT c FROM ConnectorTypeProperty c"),
     @NamedQuery(name = "ConnectorTypeProperty.findById", query = "SELECT c FROM ConnectorTypeProperty c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorTypeProperty.findByValue", query = "SELECT c FROM ConnectorTypeProperty c WHERE c.value = :value")})
-public class ConnectorTypeProperty implements Serializable {
+public class ConnectorTypeProperty implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -118,7 +119,7 @@ public class ConnectorTypeProperty implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ConnectorTypeProperty[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ConnectorTypeProperty[ id=" + id + " ]";
     }
     
 }

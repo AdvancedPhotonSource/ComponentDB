@@ -53,7 +53,7 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
     }
 
 
-    @FacesConverter(forClass = UserGroup.class)
+    @FacesConverter(value = "userGroupConverter", forClass = UserGroup.class)
     public static class UserGroupControllerConverter implements Converter {
 
         @Override

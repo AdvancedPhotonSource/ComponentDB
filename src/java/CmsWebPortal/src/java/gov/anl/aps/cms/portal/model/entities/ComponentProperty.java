@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentProperty.findAll", query = "SELECT c FROM ComponentProperty c"),
     @NamedQuery(name = "ComponentProperty.findById", query = "SELECT c FROM ComponentProperty c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentProperty.findByValue", query = "SELECT c FROM ComponentProperty c WHERE c.value = :value")})
-public class ComponentProperty implements Serializable {
+public class ComponentProperty implements Serializable
+{
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -118,7 +119,7 @@ public class ComponentProperty implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.portal.model.entities.ComponentProperty[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ComponentProperty[ id=" + id + " ]";
     }
     
 }

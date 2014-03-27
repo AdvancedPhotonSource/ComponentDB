@@ -18,11 +18,11 @@
                     <h:outputLabel value="#{resources.CreateComponentComponentTypeLabel_id}" for="id" />
                     <h:inputText id="id" value="#{componentComponentTypeController.selected.id}" title="#{resources.CreateComponentComponentTypeTitle_id}" required="true" requiredMessage="#{resources.CreateComponentComponentTypeRequiredMessage_id}"/>
                     <h:outputLabel value="#{resources.CreateComponentComponentTypeLabel_componentTypeId}" for="componentTypeId" />
-                    <h:selectOneMenu id="componentTypeId" value="#{componentComponentTypeController.selected.componentTypeId}" title="#{resources.CreateComponentComponentTypeTitle_componentTypeId}" required="true" requiredMessage="#{resources.CreateComponentComponentTypeRequiredMessage_componentTypeId}">
+                    <h:selectOneMenu id="componentTypeId" value="#{componentComponentTypeController.selected.componentType}" title="#{resources.CreateComponentComponentTypeTitle_componentTypeId}" required="true" requiredMessage="#{resources.CreateComponentComponentTypeRequiredMessage_componentTypeId}">
                         <f:selectItems value="#{componentTypeController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateComponentComponentTypeLabel_componentId}" for="componentId" />
-                    <h:selectOneMenu id="componentId" value="#{componentComponentTypeController.selected.componentId}" title="#{resources.CreateComponentComponentTypeTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentComponentTypeRequiredMessage_componentId}">
+                    <h:selectOneMenu id="componentId" value="#{componentComponentTypeController.selected.component}" title="#{resources.CreateComponentComponentTypeTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentComponentTypeRequiredMessage_componentId}">
                         <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

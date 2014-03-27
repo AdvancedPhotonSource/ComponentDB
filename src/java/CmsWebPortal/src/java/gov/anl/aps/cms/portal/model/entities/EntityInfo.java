@@ -85,11 +85,11 @@ public class EntityInfo implements Serializable
 
     @JoinColumn(name = "owner_user_group_id", referencedColumnName = "id")
     @ManyToOne
-    private UserGroup ownerUserGroup = new UserGroup();
+    private UserGroup ownerUserGroup;
 
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
-    private User ownerUser = new User();
+    private User ownerUser;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Collection> collectionList;
@@ -258,10 +258,7 @@ public class EntityInfo implements Serializable
             return false;
         }
         EntityInfo other = (EntityInfo) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
