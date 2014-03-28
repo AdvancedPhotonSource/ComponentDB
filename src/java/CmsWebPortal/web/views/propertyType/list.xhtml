@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+    <ui:define name="middleCenter">
+        <div class="pageTitle">
+            <h1>Property Types</h1>
+        </div>
+
+        <h:form id="viewPropertyTypeListForm">            
+            <div class="actionButton">
+                <p:commandButton action="#{propertyTypeController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Property Type" icon="ui-icon-plus"/>
+            </div>
+            <h:panelGroup>  
+
+                <p:dataTable id="propertyTypeListDataTable" var="item" value="#{propertyTypeController.items}" paginator="true" rows="10"
+                             emptyMessage="No propertyTypes found.">
+
+                    <f:facet name="header">
+                    </f:facet>
+
+                    <p:column sortBy="#{item.id}" headerText="Id">
+                        <h:outputText value="#{item.id}"/>
+                    </p:column>
+
+                    <p:column sortBy="#{item.name}" headerText="Name" 
+                              filterBy="name" filterMatchMode="contains">
+                        <h:outputText value="#{item.name}"/>
+                    </p:column>
+
+                    <p:column sortBy="#{item.propertyCategory.name}" headerText="Category" 
+                              filterBy="#{item.propertyCategory.name}" filterMatchMode="exact"
+                              filterOptions="#{propertyCategoryController.availableItemsForSelectOne}">
+                        <h:outputText value="#{item.propertyCategory.name}"/>
+                    </p:column>
+                    
+                    <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+                    <p:column headerText="Actions">
+                        <div class="actionLink">
+                            <p:commandLink action="#{propertyTypeController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                            <p:commandLink action="#{propertyTypeController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                            <p:commandLink oncomplete="confirmation.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                                <f:setPropertyActionListener value="#{item}" target="#{propertyTypeController.current}"/>
+                            </p:commandLink>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
+            <p:confirmDialog id="destroyPropertyTypeDialog" message="Destroy property type #{propertyTypeController.getCurrentEntityInstanceName()}?"
+                             header="Destroy Property Type" severity="alert" widgetVar="confirmation">
+                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyTypeController.destroy()}" update="@form"/>
+                <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
+            </p:confirmDialog>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

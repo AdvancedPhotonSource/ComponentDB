@@ -140,6 +140,13 @@ public class Component implements Serializable
         return documentationUri;
     }
 
+    public String getDocumentationUriShortDisplay() {
+        if (documentationUri == null) {
+            return null;
+        }
+        return "EDP";
+    }
+    
     public void setDocumentationUri(String documentationUri) {
         this.documentationUri = documentationUri;
     }

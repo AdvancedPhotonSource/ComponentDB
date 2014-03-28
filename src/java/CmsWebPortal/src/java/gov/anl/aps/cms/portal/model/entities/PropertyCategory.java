@@ -51,7 +51,7 @@ public class PropertyCategory implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "propertyCategoryId")
+    @OneToMany(mappedBy = "propertyCategory")
     private List<PropertyType> propertyTypeList;
 
     public PropertyCategory() {

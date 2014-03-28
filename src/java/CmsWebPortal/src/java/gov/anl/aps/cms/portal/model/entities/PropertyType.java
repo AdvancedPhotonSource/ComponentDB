@@ -60,7 +60,7 @@ public class PropertyType implements Serializable
     private List<ComponentProperty> componentPropertyList;
     @JoinColumn(name = "property_category_id", referencedColumnName = "id")
     @ManyToOne
-    private PropertyCategory propertyCategoryId;
+    private PropertyCategory propertyCategory;
 
     public PropertyType() {
     }
@@ -116,12 +116,12 @@ public class PropertyType implements Serializable
         this.componentPropertyList = componentPropertyList;
     }
 
-    public PropertyCategory getPropertyCategoryId() {
-        return propertyCategoryId;
+    public PropertyCategory getPropertyCategory() {
+        return propertyCategory;
     }
 
-    public void setPropertyCategoryId(PropertyCategory propertyCategoryId) {
-        this.propertyCategoryId = propertyCategoryId;
+    public void setPropertyCategory(PropertyCategory propertyCategory) {
+        this.propertyCategory = propertyCategory;
     }
 
     @Override

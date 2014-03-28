@@ -277,6 +277,9 @@ h2 {
     color: #4e80b6;
 }
 
+.shortFilterColumn {
+    width: 40px;
+}
 
 .ui-panelgrid tr, .ui-panelgrid td {
     background: #f2f4f7;

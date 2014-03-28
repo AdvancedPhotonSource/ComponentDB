@@ -28,7 +28,9 @@
                 <h:outputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
 
                 <h:outputLabel for="documentationUri" value="Documentation URI" styleClass="entityDataLabel"/>
-                <h:link id="documentationUri" value="#{selected.documentationUri}" title="Documentation URI" target="_new" styleClass="entityDataText"/>
+                <h:outputLink id="documentationUri" value="#{selected.documentationUri}" title="Documentation URI" target="_new" styleClass="entityDataText">
+                    <h:outputText value="#{selected.documentationUri}"/>
+                </h:outputLink>
 
                 <h:outputLabel for="componentState" value="State" styleClass="entityDataLabel"/>
                 <h:outputText id="componentState" value="#{selected.componentState.name}" title="State" styleClass="entityDataText"/>
