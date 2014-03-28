@@ -11,17 +11,34 @@ if [ ! -f ${CMS_ENV_FILE} ]; then
 fi
 . ${CMS_ENV_FILE} > /dev/null
 
-GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$EPICS_HOST_ARCH
+CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
 CMS_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
 CMS_DIST_DIR=$CMS_ROOT_DIR/src/java/CmsWebPortal/dist
-CMS_WAR_FILE=$CMS_DIST_DIR/CmsWebPortal.war
-JAVA_HOME=$CMS_SUPPORT/java/$EPICS_HOST_ARCH
+CMS_WAR_FILE=CmsWebPortal.war
+JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
 
 export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
 # copy war file
-echo "Deploying war file"
-rm -f $CMS_DEPLOY_DIR/`basename $CMS_WAR_FILE`*
-cp $CMS_WAR_FILE $CMS_DEPLOY_DIR
+echo "Copying war file"
+rm -f $CMS_DEPLOY_DIR/${CMS_WAR_FILE}_*
+cp $CMS_DIST_DIR/$CMS_WAR_FILE $CMS_DEPLOY_DIR
+
+# wait on deployment
+echo "Waiting on war deployment..."
+WAIT_TIME=30
+cd $CMS_DEPLOY_DIR
+t=0
+while [ $t -lt $WAIT_TIME ]; do
+    sleep 1
+    deploymentStatus=`ls -c1 ${CMS_WAR_FILE}_* 2> /dev/null | cut -f2 -d'_'`
+    if [ ! -z "$deploymentStatus" ]; then
+        break
+    fi
+    t=`expr $t + 1`
+done
+echo "Deployment Status: $deploymentStatus"
+
 
