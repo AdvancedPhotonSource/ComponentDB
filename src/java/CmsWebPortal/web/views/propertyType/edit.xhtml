@@ -10,12 +10,12 @@
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Edit Collection</h1>
+            <h1>Edit Property Type</h1>
         </div>
 
-        <h:form id="editCollectionForm">
+        <h:form id="editPropertyTypeForm">
 
-            <c:set var="selected" value="#{collectionController.selected}"/>
+            <c:set var="selected" value="#{propertyTypeController.selected}"/>
 
             <p:panelGrid columns="3">
                 <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
@@ -30,21 +30,19 @@
                 <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
                 <p:message for="description"/> 
 
-                <h:outputLabel for="parentCollection" value="Parent" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="parentCollection" value="#{selected.parentCollection}" title="Parent" styleClass="entityDataText">
+                <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
+                <h:selectOneMenu id="category" value="#{selected.propertyCategory}" title="Category" styleClass="entityDataText">
                     <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                    <f:selectItems var="parentCollection" value="#{collectionController.availableItems}" itemLabel="#{parentCollection.name}" itemValue="#{parentCollection}"/>
+                    <f:selectItems var="category" value="#{propertyCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
                 </h:selectOneMenu>
-                <p:message for="parentCollection"/> 
-
-                <ui:include src="../entityInfo/edit.xhtml"/>
+                <p:message for="category"/> 
 
             </p:panelGrid>
 
             <p/>
             <div class="actionButton">
-                <p:commandButton action="#{collectionController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{collectionController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+                <p:commandButton action="#{propertyTypeController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
+                <p:commandButton action="#{propertyTypeController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
             </div>
         </h:form>
 

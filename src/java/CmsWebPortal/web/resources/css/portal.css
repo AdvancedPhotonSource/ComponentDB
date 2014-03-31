@@ -132,6 +132,18 @@ a:link:hover, a:visited:hover  {
     color: white;
 }
 
+.middleCenterLeftContent {
+    float: left;
+    width: 46%;
+    margin-right: 2%;
+}
+
+.middleCenterRightContent {
+    float: left;
+    width: 46%;
+    margin-left: 2%;
+}
+
 .middleRightContent {
     float: right;
     width: 50px;

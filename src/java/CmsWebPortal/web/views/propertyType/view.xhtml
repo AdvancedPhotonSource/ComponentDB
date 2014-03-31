@@ -10,11 +10,11 @@
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Collection Details</h1>
+            <h1>Property Type Details</h1>
         </div>
 
-        <h:form id="viewCollectionForm">
-            <c:set var="selected" value="#{collectionController.selected}"/>
+        <h:form id="viewPropertyTypeForm">
+            <c:set var="selected" value="#{propertyTypeController.selected}"/>
 
             <p:panelGrid columns="2">
 
@@ -27,26 +27,24 @@
                 <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
                 <h:outputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
 
-                <h:outputLabel for="parentCollection" value="Parent" styleClass="entityDataLabel"/>
-                <h:outputText id="parentCollection" value="#{selected.parentCollection.name}" title="Parent" styleClass="entityDataText"/>
-
-                <ui:include src="../entityInfo/view.xhtml"/>
+                <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
+                <h:outputText id="category" value="#{selected.propertyCategory.name}" title="Category" styleClass="entityDataText"/>
 
             </p:panelGrid>
-            
+
             <p/>
-            <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(selected.entityInfo)}"/>
+            <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
-                <p:commandButton action="#{collectionController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
+                <p:commandButton action="#{propertyTypeController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
                 <p:commandButton onclick="PF('confirmation').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                    <f:setPropertyActionListener value="#{selected}" target="#{collectionController.current}"/>
+                    <f:setPropertyActionListener value="#{selected}" target="#{propertyTypeController.current}"/>
                 </p:commandButton>  
-                <p:commandButton action="#{collectionController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton action="#{propertyTypeController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
 
-            <p:confirmDialog id="destroyCollectionDialog" message="Destroy collection #{collectionController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Collection" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{collectionController.destroy()}"/>
+            <p:confirmDialog id="destroyPropertyTypeDialog" message="Destroy property type #{propertyTypeController.getCurrentEntityInstanceName()}?"
+                             header="Destroy Property Type" severity="alert" widgetVar="confirmation">
+                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyTypeController.destroy()}"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>  
         </h:form>

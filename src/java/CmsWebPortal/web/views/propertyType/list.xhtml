@@ -39,7 +39,12 @@
                               filterOptions="#{propertyCategoryController.availableItemsForSelectOne}">
                         <h:outputText value="#{item.propertyCategory.name}"/>
                     </p:column>
-                    
+
+                    <p:column sortBy="#{item.description}" headerText="Description" 
+                              filterBy="description" filterMatchMode="contains">
+                        <h:outputText value="#{item.description}"/>
+                    </p:column>
+
                     <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
                     <p:column headerText="Actions">
                         <div class="actionLink">
@@ -61,4 +66,5 @@
         </h:form>
 
     </ui:define>
+
 </ui:composition>
