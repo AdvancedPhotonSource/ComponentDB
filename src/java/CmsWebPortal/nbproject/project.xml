@@ -18,6 +18,10 @@
                     <file>${file.reference.mysql-connector-java-5.1.23-bin.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
+                <library dirs="200">
+                    <file>${file.reference.org-netbeans-modules-j2ee-persistence.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
             </web-module-libraries>
             <web-module-additional-libraries/>
             <source-roots>
