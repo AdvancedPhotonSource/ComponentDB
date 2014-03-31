@@ -113,15 +113,12 @@ public class PropertyCategory implements Serializable
             return false;
         }
         PropertyCategory other = (PropertyCategory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.PropertyCategory[ id=" + id + " ]";
+        return name;
     }
     
 }

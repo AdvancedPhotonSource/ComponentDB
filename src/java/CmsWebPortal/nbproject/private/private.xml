@@ -5,6 +5,7 @@
         <group>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentConnector.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentState.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyCategory/create.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/edit.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ResourceCategory.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ConnectorCategory.java</file>
@@ -20,6 +21,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collection/list.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/setup/glassfish-resources.xml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentCategory.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyCategory/edit.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/user/list.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/CollectionFacade.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/LocationType.java</file>
@@ -54,8 +56,10 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/ConnectorTypeController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/ComponentTypeController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/templates/contentViewTemplate4x4.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyCategory/list.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/Location.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/exceptions/ObjectAlreadyExists.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyCategory/view.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/DesignComponentConnection.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/PropertyTypeController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/PropertyCategory.java</file>

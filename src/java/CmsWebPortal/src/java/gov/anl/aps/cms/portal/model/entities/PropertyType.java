@@ -138,15 +138,16 @@ public class PropertyType implements Serializable
             return false;
         }
         PropertyType other = (PropertyType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.PropertyType[ id=" + id + " ]";
+        String result = name;
+        if (propertyCategory != null) {
+            result += "/" + propertyCategory.getName();
+        }
+        return result;
     }
     
 }
