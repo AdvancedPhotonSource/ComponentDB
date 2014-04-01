@@ -56,7 +56,7 @@ public class PropertyType implements Serializable
     private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyTypeId")
     private List<ConnectorTypeProperty> connectorTypePropertyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyTypeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<ComponentProperty> componentPropertyList;
     @JoinColumn(name = "property_category_id", referencedColumnName = "id")
     @ManyToOne

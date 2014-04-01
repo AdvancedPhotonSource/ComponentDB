@@ -17,7 +17,10 @@ a:link:hover, a:visited:hover  {
 }
 
 #top {
-    position: relative;
+    width: 960px;
+    height: 75px;
+    margin: 0 auto;
+    padding: 25px 10px 0 10px;
     color: white;
 
     /* IE10 */
@@ -41,10 +44,17 @@ a:link:hover, a:visited:hover  {
 }
 
 #menu {
+    	width: 960px;
+	margin: 0 auto;
+	padding: 0;
+	height: 59px;
     background-color: #6da5d8;
 }
 
 #middle {
+    	width: 960px;
+	margin: 0 auto;
+	padding: 20px 5px;
 }
 
 #bottom {
@@ -57,22 +67,23 @@ a:link:hover, a:visited:hover  {
 
 .topLeftContent {
     float: left;
-    width: 170px;
+    /*width: 150px;*/
     vertical-align: central;
     text-align: center;
-    margin-left: 35px;
+    /*margin-left: 35px;*/
+    margin: 0;
 }
 
 .topCenterContent {
-    position: relative;
+    /*position: relative;*/
     vertical-align: central;
     text-align: center;
-    margin: 0px 170px 0px 170px;
+    /*margin: 0px 170px 0px 170px;*/
 }
 
 .topRightContent {
     float: right;
-    width: 170px;
+    /*width: 170px;*/
     vertical-align: central;
     text-align: left;
     font-size: 10px;
@@ -86,21 +97,22 @@ a:link:hover, a:visited:hover  {
     position: relative;
     vertical-align: central;
     text-align: left;
-    margin: 0px 0px 0px 0px;
+    /*margin: 0px 0px 0px 0px;*/
     color: white;
     background-color: #6da5d8;
+    /*width: 960px;*/
 }
 
 .menuLeftContent {
     float: left;
-    width: 50px;
-    height: fit-content;
+    /*width: 50px;*/
+    /*height: fit-content;*/
     text-align: center;
     background-color: #6da5d8;
 }
 
 .menuCenterContent {
-    position: relative;
+    /*position: relative;*/
     vertical-align: central;
     text-align: left;
     margin: 0px 0px 0px 0px;
@@ -110,7 +122,7 @@ a:link:hover, a:visited:hover  {
 
 .menuRightContent {
     float: right;
-    width: 50px;
+    /*width: 50px;*/
     vertical-align: central;
     text-align: center;
     background-color: #6da5d8;
@@ -118,7 +130,7 @@ a:link:hover, a:visited:hover  {
 
 .middleLeftContent {
     float: left;
-    width: 50px;
+    /*width: 50px;*/
     height: fit-content;
     text-align: center;
     background-color: #6da5d8;
@@ -128,17 +140,19 @@ a:link:hover, a:visited:hover  {
     position: relative;
     vertical-align: central;
     text-align: left;
-    margin: 50px;
+    /*margin: 50px;*/
     color: white;
 }
 
 .middleCenterLeftContent {
     float: left;
+    width: 46%;
     margin-right: 2%;
 }
 
 .middleCenterRightContent {
     float: left;
+    width: 46%;
     margin-left: 2%;
 }
 
@@ -155,10 +169,6 @@ a:link:hover, a:visited:hover  {
     margin-bottom: 5px;
     margin-right: 5px;
     border: 0px;
-}
-
-.actionButtonRight {
-    float: right;
 }
 
 .actionLink {
@@ -293,10 +303,6 @@ h2 {
 
 .shortFilterColumn {
     width: 40px;
-}
-
-.ui-accordion .ui-accordion-content {
-    background: #f2f4f7;    
 }
 
 .ui-panelgrid tr, .ui-panelgrid td {

@@ -39,5 +39,16 @@ public class ComponentFacade extends AbstractFacade<Component> {
         catch (NoResultException ex) {
         }
         return null;
-    }    
+    }  
+    
+    public Component findById(Integer id) {
+        try {
+            return (Component)em.createNamedQuery("Component.findById")
+                .setParameter("id", id)
+                .getSingleResult();
+        }
+        catch (NoResultException ex) {
+        }
+        return null;
+    }      
 }

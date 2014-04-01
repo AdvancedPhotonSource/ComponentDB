@@ -20,9 +20,9 @@
                     <h:outputText value="#{resources.ViewComponentPropertyLabel_value}"/>
                     <h:outputText value="#{componentPropertyController.selected.value}" title="#{resources.ViewComponentPropertyTitle_value}"/>
                     <h:outputText value="#{resources.ViewComponentPropertyLabel_propertyTypeId}"/>
-                    <h:outputText value="#{componentPropertyController.selected.propertyTypeId}" title="#{resources.ViewComponentPropertyTitle_propertyTypeId}"/>
+                    <h:outputText value="#{componentPropertyController.selected.propertyType}" title="#{resources.ViewComponentPropertyTitle_propertyTypeId}"/>
                     <h:outputText value="#{resources.ViewComponentPropertyLabel_componentId}"/>
-                    <h:outputText value="#{componentPropertyController.selected.componentId}" title="#{resources.ViewComponentPropertyTitle_componentId}"/>
+                    <h:outputText value="#{componentPropertyController.selected.component}" title="#{resources.ViewComponentPropertyTitle_componentId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{componentPropertyController.destroyAndView}" value="#{resources.ViewComponentPropertyDestroyLink}"/>

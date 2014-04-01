@@ -7,6 +7,7 @@
 package gov.anl.aps.cms.portal.model.beans;
 
 import gov.anl.aps.cms.portal.model.entities.ComponentSource;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,5 +29,11 @@ public class ComponentSourceFacade extends AbstractFacade<ComponentSource> {
     public ComponentSourceFacade() {
         super(ComponentSource.class);
     }
+
     
+    public List<ComponentSource> findAllByComponentId(Integer componentId) {
+        return (List<ComponentSource>)em.createNamedQuery("ComponentSource.findAllByComponentId")
+                .setParameter("componentId", componentId)
+                .getResultList();
+    }    
 }

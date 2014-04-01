@@ -20,11 +20,11 @@
                     <h:outputLabel value="#{resources.CreateComponentPropertyLabel_value}" for="value" />
                     <h:inputText id="value" value="#{componentPropertyController.selected.value}" title="#{resources.CreateComponentPropertyTitle_value}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_value}"/>
                     <h:outputLabel value="#{resources.CreateComponentPropertyLabel_propertyTypeId}" for="propertyTypeId" />
-                    <h:selectOneMenu id="propertyTypeId" value="#{componentPropertyController.selected.propertyTypeId}" title="#{resources.CreateComponentPropertyTitle_propertyTypeId}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_propertyTypeId}">
+                    <h:selectOneMenu id="propertyTypeId" value="#{componentPropertyController.selected.propertyType}" title="#{resources.CreateComponentPropertyTitle_propertyTypeId}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_propertyTypeId}">
                         <f:selectItems value="#{propertyTypeController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateComponentPropertyLabel_componentId}" for="componentId" />
-                    <h:selectOneMenu id="componentId" value="#{componentPropertyController.selected.componentId}" title="#{resources.CreateComponentPropertyTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_componentId}">
+                    <h:selectOneMenu id="componentId" value="#{componentPropertyController.selected.component}" title="#{resources.CreateComponentPropertyTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentPropertyRequiredMessage_componentId}">
                         <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

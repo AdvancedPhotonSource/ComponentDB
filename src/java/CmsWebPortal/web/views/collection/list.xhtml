@@ -19,7 +19,8 @@
             </div>
             <h:panelGroup>  
 
-                <p:dataTable id="collectionListDataTable" var="item" value="#{collectionController.items}" paginator="true" rows="10"
+                <p:dataTable id="collectionListDataTable" var="item" value="#{collectionController.items}" 
+                             paginator="true" paginatorAlwaysVisible="false" rows="10"
                              emptyMessage="No collections found.">
 
                     <f:facet name="header">

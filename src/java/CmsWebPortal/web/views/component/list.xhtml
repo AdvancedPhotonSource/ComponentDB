@@ -19,7 +19,8 @@
             </div>
             <h:panelGroup>
 
-                <p:dataTable id="componentListDataTable" var="item" value="#{componentController.items}" paginator="true" rows="10"
+                <p:dataTable id="componentListDataTable" var="item" value="#{componentController.items}" 
+                             paginator="true" paginatorAlwaysVisible="false" rows="10"
                              emptyMessage="No components found." filteredValue="#{componentController.filteredItems}">
 
                     <f:facet name="header">

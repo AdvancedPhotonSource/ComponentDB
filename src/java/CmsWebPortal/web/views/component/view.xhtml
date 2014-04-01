@@ -6,14 +6,19 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="../../templates/contentViewTemplate4x3.xhtml">
+                template="../../templates/contentViewTemplate4x4.xhtml">
 
-    <ui:define name="middleCenter">
+    <f:metadata>
+        <f:viewParam name="id" value="#{componentController.componentIdViewParam}" />
+        <f:event type="preRenderView" listener="#{componentController.selectByComponentIdViewParam()}" />
+    </f:metadata>
+
+    <ui:define name="middleCenterLeft">
         <div class="pageTitle">
-            <h1>Component Details</h1>
+            <h1>Component Details: #{componentController.selected.name}</h1>
         </div>
 
-        <h:form id="viewComponentForm">
+        <h:form id="viewComponentLeftForm">
             <c:set var="selected" value="#{componentController.selected}"/>
 
             <p:panelGrid columns="2">
@@ -37,14 +42,14 @@
 
                 <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
                 <h:outputText id="componentTypes" value="#{componentController.displayEntityList(selected.componentTypeList)}" title="Type" styleClass="entityDataText"/>
-                
+
                 <h:outputLabel for="estimatedCost" value="Estimated Cost" styleClass="entityDataLabel"/>
                 <h:outputText id="estimatedCost" value="#{selected.estimatedCost}" title="Estimated Cost" styleClass="entityDataText"/>
 
                 <ui:include src="../entityInfo/view.xhtml"/>
 
             </p:panelGrid>
-            
+
             <p/>
             <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(selected.entityInfo)}"/>
             <div class="actionButton">
@@ -60,6 +65,30 @@
                 <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{componentController.destroy()}"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>  
+        </h:form>
+
+
+    </ui:define>
+
+    <ui:define name="middleCenterRight">
+        <h:form id="viewComponentRightForm">
+            <c:set var="selected" value="#{componentController.selected}"/>
+            <p:accordionPanel multiple="true">
+                <p:tab title="Properties">
+
+                    <ui:include src="../componentProperty/view.xhtml"/>
+
+                </p:tab>
+
+                <p:tab title="Connectors">
+
+                </p:tab>
+                <p:tab title="Sources">
+
+                    <ui:include src="../componentSource/view.xhtml"/>
+
+                </p:tab>
+            </p:accordionPanel>
         </h:form>
 
     </ui:define>

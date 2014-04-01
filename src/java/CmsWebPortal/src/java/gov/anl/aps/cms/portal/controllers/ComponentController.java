@@ -36,7 +36,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private UserFacade userFacade;
     @EJB
     private ComponentStateFacade componentStateFacade;
-
+    private Integer componentIdViewParam = null;
+            
     public ComponentController() {
         super();
     }
@@ -109,6 +110,25 @@ public class ComponentController extends CrudEntityController<Component, Compone
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
+    }
+    
+    public Component findById(Integer id) {
+        return componentFacade.findById(id);
+    }
+    
+    public void selectByComponentIdViewParam() {
+        if (componentIdViewParam != null) {
+            setCurrent(findById(componentIdViewParam));
+            componentIdViewParam = null;
+        }
+    }
+
+    public Integer getComponentIdViewParam() {
+        return componentIdViewParam;
+    }
+
+    public void setComponentIdViewParam(Integer componentIdViewParam) {
+        this.componentIdViewParam = componentIdViewParam;
     }
     
     @FacesConverter(forClass = Component.class)

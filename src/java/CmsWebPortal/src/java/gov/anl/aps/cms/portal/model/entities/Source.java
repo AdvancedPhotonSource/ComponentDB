@@ -52,7 +52,7 @@ public class Source implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sourceId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
     private List<ComponentSource> componentSourceList;
 
     public Source() {

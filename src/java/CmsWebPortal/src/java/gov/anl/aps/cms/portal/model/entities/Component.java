@@ -95,9 +95,9 @@ public class Component implements Serializable
     private List<AssemblyComponent> assemblyComponentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assemblyId")
     private List<AssemblyComponent> assemblyComponentList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentSource> componentSourceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentProperty> componentPropertyList;
 
     public Component() {
@@ -144,7 +144,16 @@ public class Component implements Serializable
         if (documentationUri == null) {
             return null;
         }
-        return "EDP";
+        
+        // Use first three letters of URL host
+        String display = documentationUri;
+        String urlDelimiter = "//";
+        int pos = documentationUri.indexOf(urlDelimiter);
+        if (pos >= 0) {
+            pos += urlDelimiter.length();
+            display = display.substring(pos, pos+3);
+        }
+        return display.toUpperCase();
     }
     
     public void setDocumentationUri(String documentationUri) {

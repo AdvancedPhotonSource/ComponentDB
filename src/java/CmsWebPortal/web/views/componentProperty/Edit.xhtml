@@ -20,11 +20,11 @@
                     <h:outputLabel value="#{resources.EditComponentPropertyLabel_value}" for="value" />
                     <h:inputText id="value" value="#{componentPropertyController.selected.value}" title="#{resources.EditComponentPropertyTitle_value}" required="true" requiredMessage="#{resources.EditComponentPropertyRequiredMessage_value}"/>
                     <h:outputLabel value="#{resources.EditComponentPropertyLabel_propertyTypeId}" for="propertyTypeId" />
-                    <h:selectOneMenu id="propertyTypeId" value="#{componentPropertyController.selected.propertyTypeId}" title="#{resources.EditComponentPropertyTitle_propertyTypeId}" required="true" requiredMessage="#{resources.EditComponentPropertyRequiredMessage_propertyTypeId}">
+                    <h:selectOneMenu id="propertyTypeId" value="#{componentPropertyController.selected.propertyType}" title="#{resources.EditComponentPropertyTitle_propertyTypeId}" required="true" requiredMessage="#{resources.EditComponentPropertyRequiredMessage_propertyTypeId}">
                         <f:selectItems value="#{propertyTypeController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.EditComponentPropertyLabel_componentId}" for="componentId" />
-                    <h:selectOneMenu id="componentId" value="#{componentPropertyController.selected.componentId}" title="#{resources.EditComponentPropertyTitle_componentId}" required="true" requiredMessage="#{resources.EditComponentPropertyRequiredMessage_componentId}">
+                    <h:selectOneMenu id="componentId" value="#{componentPropertyController.selected.component}" title="#{resources.EditComponentPropertyTitle_componentId}" required="true" requiredMessage="#{resources.EditComponentPropertyRequiredMessage_componentId}">
                         <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

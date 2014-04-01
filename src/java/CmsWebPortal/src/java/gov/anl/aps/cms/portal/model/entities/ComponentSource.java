@@ -32,7 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentSource.findAll", query = "SELECT c FROM ComponentSource c"),
     @NamedQuery(name = "ComponentSource.findById", query = "SELECT c FROM ComponentSource c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentSource.findByPartNumber", query = "SELECT c FROM ComponentSource c WHERE c.partNumber = :partNumber"),
-    @NamedQuery(name = "ComponentSource.findByCost", query = "SELECT c FROM ComponentSource c WHERE c.cost = :cost")})
+    @NamedQuery(name = "ComponentSource.findByCost", query = "SELECT c FROM ComponentSource c WHERE c.cost = :cost"),
+    @NamedQuery(name = "ComponentSource.findAllByComponentId", query = "SELECT c FROM ComponentSource c WHERE c.component.id = :componentId")})
 public class ComponentSource implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -49,10 +50,10 @@ public class ComponentSource implements Serializable
     private Float cost;
     @JoinColumn(name = "source_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Source sourceId;
+    private Source source;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
 
     public ComponentSource() {
     }
@@ -85,20 +86,20 @@ public class ComponentSource implements Serializable
         this.cost = cost;
     }
 
-    public Source getSourceId() {
-        return sourceId;
+    public Source getSource() {
+        return source;
     }
 
-    public void setSourceId(Source sourceId) {
-        this.sourceId = sourceId;
+    public void setSource(Source source) {
+        this.source = source;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
     @Override

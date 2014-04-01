@@ -10,19 +10,17 @@
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Property Types</h1>
+            <h1>Registered User Groups</h1>
         </div>
 
-        <h:form id="viewPropertyTypeListForm">            
+        <h:form id="viewUserGroupListForm">            
             <div class="actionButton">
-                <p:commandButton action="#{propertyTypeController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add Property Type" icon="ui-icon-plus"/>
-                <p:button href="../propertyCategory/list.xhtml" rendered="#{loginController.loggedInAsAdmin}" value="Manage Categories" alt="Manage Categories" styleClass="actionButtonRight"/>
+                <p:commandButton action="#{userGroupController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add User Group" icon="ui-icon-plus"/>
             </div>
             <h:panelGroup>  
 
-                <p:dataTable id="propertyTypeListDataTable" var="item" value="#{propertyTypeController.items}" 
-                             paginator="true" paginatorAlwaysVisible="false" rows="10"
-                             emptyMessage="No property types found.">
+                <p:dataTable id="userGroupListDataTable" var="item" value="#{userGroupController.items}" paginator="true" rows="10"
+                             emptyMessage="No user groups found.">
 
                     <f:facet name="header">
                     </f:facet>
@@ -36,12 +34,6 @@
                         <h:outputText value="#{item.name}"/>
                     </p:column>
 
-                    <p:column sortBy="#{item.propertyCategory.name}" headerText="Category" 
-                              filterBy="#{item.propertyCategory.name}" filterMatchMode="exact"
-                              filterOptions="#{propertyCategoryController.availableItemsForSelectOne}">
-                        <h:outputText value="#{item.propertyCategory.name}"/>
-                    </p:column>
-
                     <p:column sortBy="#{item.description}" headerText="Description" 
                               filterBy="description" filterMatchMode="contains">
                         <h:outputText value="#{item.description}"/>
@@ -50,18 +42,18 @@
                     <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
                     <p:column headerText="Actions">
                         <div class="actionLink">
-                            <p:commandLink action="#{propertyTypeController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                            <p:commandLink action="#{propertyTypeController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                            <p:commandLink action="#{userGroupController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                            <p:commandLink action="#{userGroupController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
                             <p:commandLink oncomplete="confirmation.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                                <f:setPropertyActionListener value="#{item}" target="#{propertyTypeController.current}"/>
+                                <f:setPropertyActionListener value="#{item}" target="#{userGroupController.current}"/>
                             </p:commandLink>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:panelGroup>
-            <p:confirmDialog id="destroyPropertyTypeDialog" message="Destroy property type #{propertyTypeController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Property Type" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyTypeController.destroy()}" update="@form"/>
+            <p:confirmDialog id="destroyUserGroupDialog" message="Destroy user group #{userGroupController.getCurrentEntityInstanceName()}?"
+                             header="Destroy User Group" severity="alert" widgetVar="confirmation">
+                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{userGroupController.destroy()}" update="@form"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
 

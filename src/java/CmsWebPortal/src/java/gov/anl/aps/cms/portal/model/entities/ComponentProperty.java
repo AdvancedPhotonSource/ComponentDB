@@ -32,7 +32,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "ComponentProperty.findAll", query = "SELECT c FROM ComponentProperty c"),
     @NamedQuery(name = "ComponentProperty.findById", query = "SELECT c FROM ComponentProperty c WHERE c.id = :id"),
-    @NamedQuery(name = "ComponentProperty.findByValue", query = "SELECT c FROM ComponentProperty c WHERE c.value = :value")})
+    @NamedQuery(name = "ComponentProperty.findByValue", query = "SELECT c FROM ComponentProperty c WHERE c.value = :value"),
+    @NamedQuery(name = "ComponentProperty.findAllByComponentId", query = "SELECT c FROM ComponentProperty c WHERE c.component.id = :componentId")})
+
 public class ComponentProperty implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -48,10 +50,10 @@ public class ComponentProperty implements Serializable
     private String value;
     @JoinColumn(name = "property_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private PropertyType propertyTypeId;
+    private PropertyType propertyType;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
 
     public ComponentProperty() {
     }
@@ -81,20 +83,20 @@ public class ComponentProperty implements Serializable
         this.value = value;
     }
 
-    public PropertyType getPropertyTypeId() {
-        return propertyTypeId;
+    public PropertyType getPropertyType() {
+        return propertyType;
     }
 
-    public void setPropertyTypeId(PropertyType propertyTypeId) {
-        this.propertyTypeId = propertyTypeId;
+    public void setPropertyType(PropertyType propertyType) {
+        this.propertyType = propertyType;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
     @Override
@@ -111,10 +113,7 @@ public class ComponentProperty implements Serializable
             return false;
         }
         ComponentProperty other = (ComponentProperty) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
