@@ -1,0 +1,15 @@
+Release 20140331 (03/31/2014)
+=============================
+
+- Completed initial DB design and schema creation scripts
+- Developed glassfish deployment/configuration scripts (SSL enabled)
+- Developed initial J2EE UI version (based on JSF/PrimeFaces) with the
+  following functionality:
+    - UNIX-like authorization scheme for editing content
+    - Ability to use LDAP and local db for user authentication
+    - User/group management completed
+    - Property type management completed
+    - Source management completed
+    - Initial version of collection and component management 
+
+
