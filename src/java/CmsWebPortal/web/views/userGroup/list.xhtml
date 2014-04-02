@@ -19,7 +19,8 @@
             </div>
             <h:panelGroup>  
 
-                <p:dataTable id="userGroupListDataTable" var="item" value="#{userGroupController.items}" paginator="true" rows="10"
+                <p:dataTable id="userGroupListDataTable" var="item" value="#{userGroupController.items}" 
+                             paginator="true" paginatorAlwaysVisible="false" rows="10"
                              emptyMessage="No user groups found.">
 
                     <f:facet name="header">

@@ -5,14 +5,24 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:panelGrid columns="2">
-        <c:forEach var="item" items="#{componentPropertyController.findAllByComponentId(selected.id)}">
-            <h:outputLabel value="${item.propertyType.name}" styleClass="entityDataLabel"/>
-            <h:outputText value="${item.value}" styleClass="entityDataText"/>
-        </c:forEach>       
-    </p:panelGrid>
+    <p:dataTable id="viewComponentPropertyListDataTable" var="componentProperty" value="#{componentController.selected.componentPropertyList}" 
+                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+                 emptyMessage="No component properties found.">
+
+        <f:facet name="header">
+        </f:facet>
+
+        <p:column sortBy="#{componentProperty.propertyType.name}" headerText="Name">
+            <h:outputText value="#{componentProperty.propertyType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentProperty.value}" headerText="Value">
+            <h:outputText value="#{componentProperty.value}"/>
+        </p:column>
+
+    </p:dataTable>
 
 </ui:composition>
 

@@ -10,7 +10,7 @@
 
     <f:metadata>
         <f:viewParam name="id" value="#{componentController.componentIdViewParam}" />
-        <f:event type="preRenderView" listener="#{componentController.selectByComponentIdViewParam()}" />
+        <f:event type="preRenderComponent" listener="#{componentController.selectByRequestParams()}" />
     </f:metadata>
 
     <ui:define name="middleCenterLeft">

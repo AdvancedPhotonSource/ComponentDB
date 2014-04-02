@@ -235,6 +235,14 @@ input, textarea {
     width: 250px;
 }
 
+.cellSelect {
+    width: 125px;
+}
+
+.cellInput {
+    width: 125px;
+}
+
 select {
     width: 250px;
 }

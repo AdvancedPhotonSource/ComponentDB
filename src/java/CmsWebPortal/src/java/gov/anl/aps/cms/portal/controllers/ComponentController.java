@@ -5,6 +5,8 @@ import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.beans.ComponentFacade;
 import gov.anl.aps.cms.portal.model.beans.ComponentStateFacade;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.entities.ComponentProperty;
+import gov.anl.aps.cms.portal.model.entities.ComponentSource;
 import gov.anl.aps.cms.portal.model.entities.ComponentState;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.User;
@@ -116,9 +118,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return componentFacade.findById(id);
     }
     
-    public void selectByComponentIdViewParam() {
+    @Override
+    public void selectByRequestParams() {
         if (componentIdViewParam != null) {
-            setCurrent(findById(componentIdViewParam));
+            Component component = findById(componentIdViewParam);
+            setCurrent(component);
             componentIdViewParam = null;
         }
     }
@@ -129,6 +133,44 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setComponentIdViewParam(Integer componentIdViewParam) {
         this.componentIdViewParam = componentIdViewParam;
+    }
+    
+    public void prepareAddProperty() {
+        Component component = getCurrent();
+        List<ComponentProperty> propertyList = component.getComponentPropertyList();
+        ComponentProperty property = new ComponentProperty();
+        property.setComponent(component);
+        propertyList.add(property);
+    }
+
+    public void savePropertyList() {
+        update();
+    }
+
+    public void deleteProperty(ComponentProperty property) {
+        Component component = getCurrent();
+        List<ComponentProperty> propertyList = component.getComponentPropertyList();
+        propertyList.remove(property);
+        update();
+    }
+
+    public void prepareAddSource() {
+        Component component = getCurrent();
+        List<ComponentSource> sourceList = component.getComponentSourceList();
+        ComponentSource source = new ComponentSource();
+        source.setComponent(component);
+        sourceList.add(source);
+    }
+
+    public void saveSourceList() {
+        update();
+    }
+
+    public void deleteSource(ComponentSource source) {
+        Component component = getCurrent();
+        List<ComponentSource> sourceList = component.getComponentSourceList();
+        sourceList.remove(source);
+        update();
     }
     
     @FacesConverter(forClass = Component.class)

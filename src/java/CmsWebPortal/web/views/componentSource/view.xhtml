@@ -7,26 +7,25 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:panelGrid columns="3">
-        <p:dataTable id="componentSourceListDataTable" var="item" value="#{componentSourceController.findAllByComponentId(selected.id)}" paginator="true" rows="10"
-                     emptyMessage="No component sources found." paginatorAlwaysVisible="false">
+    <p:dataTable id="componentSourceListDataTable" var="componentSource" value="#{componentController.selected.componentSourceList}" 
+                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+                 emptyMessage="No component sources found.">
 
-            <f:facet name="header">
-            </f:facet>
+        <f:facet name="header">
+        </f:facet>
 
-            <p:column sortBy="#{item.source.name}" headerText="Name">
-                <h:outputText value="#{item.source.name}"/>
-            </p:column>
+        <p:column sortBy="#{componentSource.source.name}" headerText="Name">
+            <h:outputText value="#{componentSource.source.name}"/>
+        </p:column>
 
-            <p:column sortBy="#{item.partNumber}" headerText="Part Number">
-                <h:outputText value="#{item.partNumber}"/>
-            </p:column>
+        <p:column sortBy="#{componentSource.partNumber}" headerText="Part Number">
+            <h:outputText value="#{componentSource.partNumber}"/>
+        </p:column>
 
-            <p:column sortBy="#{item.cost}" headerText="Cost [$]">
-                <h:outputText value="#{item.cost}"/>
-            </p:column>
-        </p:dataTable>
-    </p:panelGrid>
+        <p:column sortBy="#{componentSource.cost}" headerText="Cost [$]">
+            <h:outputText value="#{componentSource.cost}"/>
+        </p:column>
+    </p:dataTable>
 
 </ui:composition>
 

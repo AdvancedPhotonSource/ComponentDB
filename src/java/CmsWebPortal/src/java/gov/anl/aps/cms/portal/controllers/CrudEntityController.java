@@ -37,7 +37,11 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         this.current = current;
     }
 
+    public void selectByRequestParams() {    
+    }
+    
     public EntityType getSelected() {
+        selectByRequestParams();
         if (current == null) {
             current = createEntityInstance();
         }
@@ -53,6 +57,11 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return "list?faces-redirect=true";
     }
 
+    public boolean isViewValid() {
+        selectByRequestParams();
+        return current != null;
+    }
+    
     public String prepareView(EntityType entity) {
         current = entity;
         return "view?faces-redirect=true";

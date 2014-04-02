@@ -12,6 +12,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 
 @Named("componentSourceController")
@@ -55,6 +57,10 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
         return super.getAvailableItems();
     }
 
+    public DataModel getListDataModelByComponentId(Integer componentId) {
+        return new ListDataModel(componentSourceFacade.findAllByComponentId(componentId));
+    }    
+    
     public List<ComponentSource> findAllByComponentId(Integer componentId) {
         return componentSourceFacade.findAllByComponentId(componentId);
     }
