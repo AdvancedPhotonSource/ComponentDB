@@ -338,6 +338,7 @@ CREATE TABLE `assembly_component` (
   `assembly_id` int(11) unsigned NOT NULL,
   `component_id` int(11) unsigned NOT NULL,
   `quantity` int(11) unsigned DEFAULT 1,
+  `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `assembly_component_k1` (`assembly_id`),
   CONSTRAINT `assembly_component_fk1` FOREIGN KEY (`assembly_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -379,6 +380,7 @@ CREATE TABLE `collection_component` (
   `component_id` int(11) unsigned NOT NULL,
   `quantity` int(11) unsigned DEFAULT 1,
   `description` varchar(256) DEFAULT NULL,
+  `tag` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `collection_component_u1` (`collection_id`, `component_id`),
   KEY `collection_component_k1` (`collection_id`),
@@ -630,6 +632,7 @@ CREATE TABLE `design_component` (
   `component_id` int(11) unsigned NOT NULL,
   `location_id` int(11) unsigned NOT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `design_component_u1` (`name`, `design_id`),
   KEY `design_component_k1` (`design_id`),
@@ -645,6 +648,24 @@ CREATE TABLE `design_component` (
 --
 -- Note: Need trigger to prevent changing entity_info_id
 --
+
+--
+-- Table `design_component_property`
+--
+
+DROP TABLE IF EXISTS `design_component_property`;
+CREATE TABLE `design_component_property` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `design_component_id` int(11) unsigned NOT NULL,
+  `property_type_id` int(11) unsigned NOT NULL,
+  `value` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `design_component_property_u1` (`design_component_id`, `property_type_id`),
+  KEY `design_component_property_k1` (`design_component_id`),
+  CONSTRAINT `design_component_property_fk1` FOREIGN KEY (`design_component_id`) REFERENCES `design_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_component_property_k2` (`property_type_id`),
+  CONSTRAINT `design_component_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table `design_component_log`
