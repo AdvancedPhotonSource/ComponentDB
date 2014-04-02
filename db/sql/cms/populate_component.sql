@@ -33,7 +33,7 @@ VALUES
 	(3,'VacChamberAssy1','GTAW-welded SST 316L tube, SST 316L standard and chain-clamped CF flanges',1,NULL,NULL,3),
 	(4,'VacChamberAssy2','GTAW-welded SST 316L tube, SST 316L standard and chain-clamped CF flanges',1,NULL,NULL,4),
 	(5,'VacChamberAssy3','GTAW-welded aluminum extrusion with antechamber, AL chain-clamped CF flanges',1,NULL,NULL,5),
-	(6,'VacChamberAssy4','GTAW-welded, EDM-ed aluminum with side pocket for x-ray extraction, AL chain-clamped CF flanges',1,NULL,NULL,6),
+	(6,'VacChamberAssy4','GTAW-welded, EDM-ed aluminum with side pocket for x-ray extraction, AL chain-clamped CF flanges',1,'https://edpstage.aps.anl.gov/browse/index/collection_id/1338',NULL,6),
 	(7,'VacChamberAssy5','GTAW-welded, EDM-ed aluminum with side pocket for x-ray extraction, AL chain-clamped CF flanges',1,NULL,NULL,7),
 	(8,'VacChamberAssy6','GTAW-welded SST 316L cross, SST 316L chain-clamped flanges',1,NULL,NULL,8),
 	(9,'VacChamberAssy7','GTAW-welded aluminum extrusion without antechamber, AL chain-clamped CF flanges',1,NULL,NULL,9),
