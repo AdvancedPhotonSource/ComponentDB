@@ -44,14 +44,15 @@ public class LdapUtility
 
         boolean validated = false;
         Hashtable env = new Hashtable();
-        String dn = "uid=" + username + ",ou=people,o=aps.anl.gov,dc=aps,dc=anl,dc=gov";
+        String dn = ldapDnString.replace("USERNAME", username);
+        logger.debug("Authenticating: " + dn);
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, ldapUrl);
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, dn);
         env.put(Context.SECURITY_CREDENTIALS, password);
         // the below property allows us to circumvent server certificate checks
-        env.put("java.naming.ldap.factory.socket", "gov.anl.aps.cms.portal.utility.NoServerVerificationSSLSocketFactory");
+        env.put("java.naming.ldap.factory.socket", "gov.anl.aps.cms.portal.utilities.NoServerVerificationSSLSocketFactory");
 
         try {
             DirContext ctx = new InitialDirContext(env);
