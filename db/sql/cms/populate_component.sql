@@ -109,9 +109,8 @@ VALUES
 	(79,'Generic Current Monitor','Generic Current Monitor',2,NULL,NULL,79),
 	(80,'Generic RF Cavity','Generic RF Cavity',2,NULL,NULL,80),
 	(81,'Generic Magnet','Generic Magnet',2,NULL,NULL,81),
-	(82,'Generic Cabinet','Generic Cabinet',2,NULL,NULL,82);
-	(83,'TransAbsorber1','',1,NULL,NULL,83),
-	(84,'TransAbsorber1','',1,NULL,NULL,84),
+	(82,'Generic Cabinet','Generic Cabinet',2,NULL,NULL,82),
+	(83,'TransAbsorber1','',1,NULL,NULL,83);
 
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

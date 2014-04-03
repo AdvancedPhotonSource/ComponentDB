@@ -86,6 +86,8 @@ execute $mysqlCmd populate_component_component_type.sql
 execute $mysqlCmd populate_component_connector.sql
 execute $mysqlCmd populate_component_connector_resource.sql
 
+execute $mysqlCmd populate_collection.sql
+
 # Add development rows
 #execute $mysqlCmd add_cms_development_entries.sql
 
