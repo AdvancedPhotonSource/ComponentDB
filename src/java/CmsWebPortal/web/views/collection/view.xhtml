@@ -6,14 +6,14 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="../../templates/contentViewTemplate4x3.xhtml">
+                template="../../templates/contentViewTemplate4x4.xhtml">
 
-    <ui:define name="middleCenter">
+    <ui:define name="middleCenterLeft">
         <div class="pageTitle">
-            <h1>Collection Details</h1>
+            <h1>Collection Details: #{collectionController.selected.name}</h1>
         </div>
 
-        <h:form id="viewCollectionForm">
+        <h:form id="viewCollectionLeftForm">
             <c:set var="selected" value="#{collectionController.selected}"/>
 
             <p:panelGrid columns="2">
@@ -33,7 +33,7 @@
                 <ui:include src="../entityInfo/view.xhtml"/>
 
             </p:panelGrid>
-            
+
             <p/>
             <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(selected.entityInfo)}"/>
             <div class="actionButton">
@@ -52,6 +52,21 @@
         </h:form>
 
     </ui:define>
+
+    <ui:define name="middleCenterRight">
+        <h:form id="viewCollectionRightForm">
+            <c:set var="selected" value="#{collectionController.selected}"/>
+            <p:accordionPanel multiple="true">
+                <p:tab title="Components">
+
+                    <ui:include src="../collectionComponent/view.xhtml"/>
+
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+    </ui:define>
+
 </ui:composition>
 
 

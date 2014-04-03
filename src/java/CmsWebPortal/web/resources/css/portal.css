@@ -135,11 +135,12 @@ a:link:hover, a:visited:hover  {
 .middleCenterLeftContent {
     float: left;
     margin-right: 2%;
+    margin-bottom: 2%;
 }
 
 .middleCenterRightContent {
     float: left;
-    margin-left: 2%;
+    margin-bottom: 2%;
 }
 
 .middleRightContent {
@@ -241,6 +242,10 @@ input, textarea {
 
 .cellInput {
     width: 125px;
+}
+
+.longCellInput {
+    width: 250px;
 }
 
 select {

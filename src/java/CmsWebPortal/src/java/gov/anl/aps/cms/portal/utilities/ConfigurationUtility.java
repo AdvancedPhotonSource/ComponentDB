@@ -19,6 +19,10 @@ public class ConfigurationUtility {
         return portalProperties;
     }
 
+    public static String getPortalProperty(String propertyName) {
+        return portalProperties.getProperty(propertyName, "");
+    }
+    
     public static String getPortalProperty(String propertyName, String defaultValue) {
         return portalProperties.getProperty(propertyName, defaultValue);
     }

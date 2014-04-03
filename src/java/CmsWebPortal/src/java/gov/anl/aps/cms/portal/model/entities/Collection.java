@@ -43,33 +43,41 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Collection implements Serializable
 {
     private static final long serialVersionUID = 1L;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
+    
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+    
     @JoinTable(name = "collection_log", joinColumns = {
         @JoinColumn(name = "collection_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
     private List<Log> logList;
+    
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
+    
     @OneToMany(mappedBy = "parentCollection")
     private List<Collection> collectionList;
+    
     @JoinColumn(name = "parent_collection_id", referencedColumnName = "id")
     @ManyToOne
     private Collection parentCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "collectionId")
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "collection")
     private List<CollectionComponent> collectionComponentList;
 
     public Collection() {

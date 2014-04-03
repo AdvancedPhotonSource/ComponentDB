@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dataTable id="viewComponentPropertyListDataTable" var="collectionComponent" value="#{collectionController.selected.collectionComponentList}" 
+                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+                 emptyMessage="No collection components found.">
+
+        <f:facet name="header">
+        </f:facet>
+
+        <p:column sortBy="#{collectionComponent.name}" headerText="Name">
+            <h:outputText value="#{collectionComponent.component.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionComponent.tag}" headerText="Tag">
+            <h:outputText value="#{collectionComponent.tag}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionComponent.quantity}" headerText="Quantity">
+            <h:outputText value="#{collectionComponent.quantity}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionComponent.description}" headerText="Description">
+            <h:outputText value="#{collectionComponent.description}"/>
+        </p:column>
+
+
+    </p:dataTable>
+
+</ui:composition>
+
+

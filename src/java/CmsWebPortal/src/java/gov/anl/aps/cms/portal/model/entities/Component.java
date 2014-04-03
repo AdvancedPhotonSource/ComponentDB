@@ -87,7 +87,7 @@ public class Component implements Serializable
     private List<DesignComponent> designComponentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "designId")
     private List<DesignComponent> designComponentList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<CollectionComponent> collectionComponentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentInstance> componentInstanceList;

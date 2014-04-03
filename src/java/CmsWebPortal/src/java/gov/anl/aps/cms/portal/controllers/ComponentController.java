@@ -173,7 +173,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
     
-    @FacesConverter(forClass = Component.class)
+    @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter
     {
 

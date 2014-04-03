@@ -4,6 +4,7 @@ import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.Collection;
 import gov.anl.aps.cms.portal.model.beans.CollectionFacade;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.entities.CollectionComponent;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
@@ -87,7 +88,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
-        logger.debug("Inserting new component " + collection.getName() + " (user: " + createdByUser.getUsername() + ")");
+        logger.debug("Inserting new collection " + collection.getName() + " (user: " + createdByUser.getUsername() + ")");
     }
 
     @Override
@@ -98,10 +99,29 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
-        logger.debug("Updating component " + collection.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
+        logger.debug("Updating collection " + collection.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
-    @FacesConverter(forClass = Collection.class)
+    public void prepareAddComponent() {
+        Collection collection = getCurrent();
+        List<CollectionComponent> componentList = collection.getCollectionComponentList();
+        CollectionComponent component = new CollectionComponent();
+        component.setCollection(collection);
+        componentList.add(component);
+    }
+
+    public void saveComponentList() {
+        update();
+    }
+
+    public void deleteComponent(CollectionComponent component) {
+        Collection collection = getCurrent();
+        List<CollectionComponent> componentList = collection.getCollectionComponentList();
+        componentList.remove(component);
+        update();
+    }
+    
+    @FacesConverter(value = "collectionConverter", forClass = Collection.class)
     public static class CollectionControllerConverter implements Converter
     {
 

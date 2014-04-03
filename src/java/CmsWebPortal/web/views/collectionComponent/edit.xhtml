@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <div class="actionButton">
+        <p:commandButton action="#{collectionController.prepareAddComponent()}" value="Add" alt="Add Component" icon="ui-icon-plus"
+                         update="@form"/>
+        <p:commandButton action="#{collectionController.saveComponentList()}" value="Save" alt="Save Component List" icon="ui-icon-check"
+                         update="@form"/>
+    </div>
+    <p:dataTable id="editCollectionComponentListDataTable" var="collectionComponent" value="#{collectionController.selected.collectionComponentList}" 
+                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+                 editable="true"
+                 emptyMessage="No collection components found.">
+
+        <f:facet name="header">
+        </f:facet>
+
+        <p:column sortBy="#{collectionComponent.component.name}" headerText="Name">
+            <h:selectOneMenu value="#{collectionComponent.component}" title="Component" 
+                             converter="componentConverter"
+                             styleClass="cellSelect">
+                <f:selectItem itemLabel="Select" itemValue="#{collectionComponent.component}"/>
+                <f:selectItems var="selectedComponent" value="#{componentController.availableItems}" itemLabel="#{selectedComponent.name}" itemValue="#{selectedComponent}"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column sortBy="#{collectionComponent.tag}" headerText="Tag">
+            <h:inputText value="#{collectionComponent.tag}" styleClass="cellInput"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionComponent.quantity}" headerText="Quantity">
+            <h:inputText value="#{collectionComponent.quantity}" styleClass="cellInput"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionComponent.description}" headerText="Description">
+            <h:inputText value="#{collectionComponent.description}" styleClass="longCellInput"/>
+        </p:column>
+        
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{collectionController.deleteComponent(collectionComponent)}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

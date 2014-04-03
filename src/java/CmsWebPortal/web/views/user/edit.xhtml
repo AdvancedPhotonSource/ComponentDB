@@ -27,7 +27,9 @@
                 <p:message for="username"/> 
                 
                 <h:outputLabel for="userGroups" value="Group" styleClass="entityDataLabel"/>
-                <h:selectManyMenu id="userGroups" value="#{selected.userGroupList}" converter="userGroupConverter" title="Group" styleClass="entityDataSelectMany">
+                <h:selectManyMenu id="userGroups" value="#{selected.userGroupList}" 
+                                  converter="userGroupConverter" title="Group" 
+                                  styleClass="entityDataSelectMany">
                     <f:selectItem itemLabel="Select" itemValue="#{null}"/>
                     <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
                 </h:selectManyMenu>

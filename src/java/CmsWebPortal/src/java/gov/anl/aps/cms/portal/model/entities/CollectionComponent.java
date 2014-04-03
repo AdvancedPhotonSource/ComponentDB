@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cms.portal.model.entities;
 
 import java.io.Serializable;
@@ -35,23 +34,33 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CollectionComponent.findByDescription", query = "SELECT c FROM CollectionComponent c WHERE c.description = :description")})
 public class CollectionComponent implements Serializable
 {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @Column(name = "quantity")
-    private Integer quantity;
+    private Integer quantity = 1;
+
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+
+    @Size(max = 64)
+    @Column(name = "tag")
+    private String tag;
+
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
+
     @JoinColumn(name = "collection_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Collection collectionId;
+    private Collection collection;
 
     public CollectionComponent() {
     }
@@ -84,20 +93,28 @@ public class CollectionComponent implements Serializable
         this.description = description;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
-    public Collection getCollectionId() {
-        return collectionId;
+    public Collection getCollection() {
+        return collection;
     }
 
-    public void setCollectionId(Collection collectionId) {
-        this.collectionId = collectionId;
+    public void setCollection(Collection collection) {
+        this.collection = collection;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     @Override
@@ -114,15 +131,12 @@ public class CollectionComponent implements Serializable
             return false;
         }
         CollectionComponent other = (CollectionComponent) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
         return "gov.anl.aps.cms.test.entities.CollectionComponent[ id=" + id + " ]";
     }
-    
+
 }
