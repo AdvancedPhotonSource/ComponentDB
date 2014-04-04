@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cms.portal.model.entities;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -46,54 +46,71 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password")})
 public class User implements Serializable
 {
+
     private static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)
     @Column(name = "username")
     private String username;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)
     @Column(name = "first_name")
     private String firstName;
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 16)
     @Column(name = "last_name")
     private String lastName;
+
     @Size(max = 16)
     @Column(name = "middle_name")
     private String middleName;
+
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 16)
     @Column(name = "email")
     private String email;
+
     @Size(max = 16)
     @Column(name = "password")
     private String password;
+
     @JoinTable(name = "user_user_group", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
     @ManyToMany(fetch = FetchType.EAGER)
     private List<UserGroup> userGroupList;
+
     @OneToMany(mappedBy = "obsoletedByUser")
     private List<EntityInfo> entityInfoList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUser")
     private List<EntityInfo> entityInfoList1;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
     private List<EntityInfo> entityInfoList2;
+
     @OneToMany(mappedBy = "ownerUser")
     private List<EntityInfo> entityInfoList3;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserSetting> userSettingList;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
     private List<Log> logList;
+
+    private transient HashMap<String, UserSetting> userSettingMap = null;
 
     public User() {
     }
@@ -217,6 +234,36 @@ public class User implements Serializable
 
     public void setUserSettingList(List<UserSetting> userSettingList) {
         this.userSettingList = userSettingList;
+
+        // Store settings into map for easy access
+        createUserSettingMap();
+    }
+
+    private void createUserSettingMap() {
+        userSettingMap = new HashMap<>();
+        for (UserSetting setting : userSettingList) {
+            userSettingMap.put(setting.getSettingType().getName(), setting);
+        }
+    }
+
+    public UserSetting getUserSetting(String name) {
+        if (userSettingMap == null) {
+            createUserSettingMap();
+        }
+        return userSettingMap.get(name);
+    }
+
+    public void setUserSetting(String name, UserSetting userSetting) {
+        if (userSettingMap == null) {
+            createUserSettingMap();
+        }
+        UserSetting oldUserSetting = userSettingMap.get(name);
+        if (oldUserSetting != null) {
+            oldUserSetting.setValue(userSetting.getValue());
+        }
+        else {
+            userSettingMap.put(name, userSetting);
+        }
     }
 
     @XmlTransient
@@ -249,5 +296,5 @@ public class User implements Serializable
     public String toString() {
         return username;
     }
-    
+
 }

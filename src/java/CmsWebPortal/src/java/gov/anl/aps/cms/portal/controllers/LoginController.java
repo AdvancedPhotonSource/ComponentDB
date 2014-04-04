@@ -183,7 +183,7 @@ public class LoginController implements Serializable
         }
 
         if (validCredentials) {
-            SessionUtility.setUserId(user.getId());
+            SessionUtility.setUser(user);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
                 SessionUtility.addInfoMessage("Successful Login", "Administrator " + username + " is logged in.");
@@ -273,6 +273,13 @@ public class LoginController implements Serializable
             }
         }
         return false;
+    }
+
+    public boolean isUserWriteable(User user) {
+        if (!isLoggedIn()) {
+            return false;
+        }
+        return isLoggedInAsAdmin() || this.user.getId() == user.getId();
     }
 
     /**

@@ -53,6 +53,7 @@ CREATE TABLE `setting_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `default_value` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `setting_type_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -66,7 +67,7 @@ CREATE TABLE `user_setting` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) unsigned NOT NULL,
   `setting_type_id` int(11) unsigned NOT NULL,
-  `value` varchar(64) NOT NULL,
+  `value` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_setting_u1` (`user_id`, `setting_type_id`),
   KEY `user_setting_k1` (`user_id`),

@@ -1,9 +1,14 @@
 package gov.anl.aps.cms.portal.controllers;
 
+import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
+import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
+import gov.anl.aps.cms.portal.model.entities.UserSetting;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -12,20 +17,26 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.apache.log4j.Logger;
 
 @Named("userController")
 @SessionScoped
-public class UserController extends CrudEntityController<User, UserFacade> implements Serializable {
+public class UserController extends CrudEntityController<User, UserFacade> implements Serializable
+{
+
+    private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
-    private UserFacade ejbFacade;
+    private UserFacade userFacade;
+    @EJB
+    private SettingTypeFacade settingTypeFacade;
 
     public UserController() {
     }
 
     @Override
     protected UserFacade getFacade() {
-        return ejbFacade;
+        return userFacade;
     }
 
     @Override
@@ -51,8 +62,43 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
         return super.getAvailableItems();
     }
 
+    @Override
+    public String prepareEdit(User user) {
+        List<SettingType> settingTypeList = settingTypeFacade.findAll();
+        ArrayList<UserSetting> userSettingList = new ArrayList<>();
+        for (SettingType settingType : settingTypeList) {
+            UserSetting setting = user.getUserSetting(settingType.getName());
+            if (setting == null || setting.getValue().isEmpty()) {
+                setting = new UserSetting();
+                setting.setUser(user);
+                setting.setSettingType(settingType);
+                setting.setValue(settingType.getDefaultValue());
+            }
+            userSettingList.add(setting);
+        }
+        user.setUserSettingList(userSettingList);
+        return super.prepareEdit(user);
+    }
+
+    @Override
+    public void prepareEntityUpdate(User user) throws CmsPortalException {
+        logger.debug("Updating user " + user.getUsername());
+        List<UserSetting> userSettingList = user.getUserSettingList();
+        for (UserSetting userSetting : userSettingList) {
+            if (userSetting.getValue() == null) {
+                userSetting.setValue(userSetting.getSettingType().getDefaultValue());
+            }
+        }
+    }
+
+    public void saveSettingList() {
+        update();
+    }
+
+    
     @FacesConverter(forClass = User.class)
-    public static class UserControllerConverter implements Converter {
+    public static class UserControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -84,7 +130,8 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
             if (object instanceof User) {
                 User o = (User) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + User.class.getName());
             }
         }

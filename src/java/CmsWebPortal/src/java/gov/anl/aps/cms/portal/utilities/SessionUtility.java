@@ -13,7 +13,7 @@ public class SessionUtility {
      * Keys.
      */
     public static final String MessagesKey = "messages";
-    public static final String UserIdKey = "userId";
+    public static final String UserKey = "user";
 
     /**
      * Constructor.
@@ -73,23 +73,23 @@ public class SessionUtility {
     }
 
     /**
-     * Set user id.
+     * Set user.
      *
-     * @param userId user id
+     * @param user user 
      */
-    public static void setUserId(Integer userId) {
+    public static void setUser(Object user) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        sessionMap.put(UserIdKey, userId);
+        sessionMap.put(UserKey, user);
     }
 
     /**
-     * Get user id.
+     * Get user.
      *
-     * @return user id
+     * @return user
      */
-    public static Integer getUserId() {
+    public static Object getUser() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        return (Integer) sessionMap.get(UserIdKey);
+        return sessionMap.get(UserKey);
     }    
 
 }

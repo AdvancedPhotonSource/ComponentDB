@@ -64,6 +64,7 @@ mysqlCmd="$mysqlCmd -D $DB_NAME <"
 execute $mysqlCmd create_cms_tables.sql
 
 # populate db
+execute $mysqlCmd populate_setting_type.sql
 execute $mysqlCmd populate_user.sql
 execute $mysqlCmd populate_user_group.sql
 execute $mysqlCmd populate_user_user_group.sql

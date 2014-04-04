@@ -17,7 +17,7 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     private EntityType current = null;
     private DataModel dataModel = null;
     private List<EntityType> filteredItems = null;
-
+    
     public CrudEntityController() {
     }
 

@@ -31,7 +31,8 @@
                     </p:column>
 
                     <p:column sortBy="#{item.name}" headerText="Name" 
-                              filterBy="#{item.name}" filterMatchMode="contains">
+                              filterBy="#{item.name}" filterMatchMode="contains"
+                              filterValue="#{componentController.filterByComponentName}">
                         <h:outputText value="#{item.name}"/>
                     </p:column>
 

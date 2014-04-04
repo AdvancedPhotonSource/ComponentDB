@@ -44,9 +44,8 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     @Override
     protected Collection createEntityInstance() {
         Collection collection = new Collection();
-        Integer userId = SessionUtility.getUserId();
         EntityInfo entityInfo = new EntityInfo();
-        User ownerUser = userFacade.find(userId);
+        User ownerUser = (User)SessionUtility.getUser();
         entityInfo.setOwnerUser(ownerUser);
         List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
         if (!ownerUserGroupList.isEmpty()) {
@@ -80,9 +79,8 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         if (existingComponent != null) {
             throw new ObjectAlreadyExists("Collection " + collection.getName() + " already exists.");
         }
-        Integer userId = SessionUtility.getUserId();
         EntityInfo entityInfo = collection.getEntityInfo();
-        User createdByUser = userFacade.find(userId);
+        User createdByUser = (User)SessionUtility.getUser();
         Date createdOnDateTime = new Date();
         entityInfo.setCreatedOnDateTime(createdOnDateTime);
         entityInfo.setCreatedByUser(createdByUser);
@@ -93,9 +91,8 @@ public class CollectionController extends CrudEntityController<Collection, Colle
 
     @Override
     public void prepareEntityUpdate(Collection collection) throws ObjectAlreadyExists {
-        Integer userId = SessionUtility.getUserId();
         EntityInfo entityInfo = collection.getEntityInfo();
-        User lastModifiedByUser = userFacade.find(userId);
+        User lastModifiedByUser = (User)SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);

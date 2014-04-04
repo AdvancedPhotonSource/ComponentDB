@@ -1,16 +1,20 @@
 package gov.anl.aps.cms.portal.controllers;
 
+import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
 import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.beans.ComponentFacade;
 import gov.anl.aps.cms.portal.model.beans.ComponentStateFacade;
+import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.ComponentProperty;
 import gov.anl.aps.cms.portal.model.entities.ComponentSource;
 import gov.anl.aps.cms.portal.model.entities.ComponentState;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
+import gov.anl.aps.cms.portal.model.entities.UserSetting;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -30,6 +34,8 @@ import org.apache.log4j.Logger;
 public class ComponentController extends CrudEntityController<Component, ComponentFacade> implements Serializable
 {
 
+    private static final String ComponentListFilterByComponentNameSettingName = "Component.List.FilterBy.ComponentName";
+
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
@@ -38,8 +44,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private UserFacade userFacade;
     @EJB
     private ComponentStateFacade componentStateFacade;
+    @EJB
+    private SettingTypeFacade settingTypeFacade;
+
     private Integer componentIdViewParam = null;
-            
+    private String filterByComponentName;
+
     public ComponentController() {
         super();
     }
@@ -52,13 +62,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
     @Override
     protected Component createEntityInstance() {
         Component component = new Component();
-        Integer userId = SessionUtility.getUserId();
+        User ownerUser = (User) SessionUtility.getUser();
         List<ComponentState> componentStateList = componentStateFacade.findAll();
         if (!componentStateList.isEmpty()) {
             component.setComponentState(componentStateList.get(0));
         }
         EntityInfo entityInfo = new EntityInfo();
-        User ownerUser = userFacade.find(userId);
         entityInfo.setOwnerUser(ownerUser);
         List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
         if (!ownerUserGroupList.isEmpty()) {
@@ -92,9 +101,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
         if (existingComponent != null) {
             throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
         }
-        Integer userId = SessionUtility.getUserId();
         EntityInfo entityInfo = component.getEntityInfo();
-        User createdByUser = userFacade.find(userId);
+        User createdByUser = (User) SessionUtility.getUser();
         Date createdOnDateTime = new Date();
         entityInfo.setCreatedOnDateTime(createdOnDateTime);
         entityInfo.setCreatedByUser(createdByUser);
@@ -104,20 +112,19 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    public void prepareEntityUpdate(Component component) throws ObjectAlreadyExists {
-        Integer userId = SessionUtility.getUserId();
+    public void prepareEntityUpdate(Component component) throws CmsPortalException {
         EntityInfo entityInfo = component.getEntityInfo();
-        User lastModifiedByUser = userFacade.find(userId);
+        User lastModifiedByUser = (User) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
-    
+
     public Component findById(Integer id) {
         return componentFacade.findById(id);
     }
-    
+
     @Override
     public void selectByRequestParams() {
         if (componentIdViewParam != null) {
@@ -134,7 +141,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void setComponentIdViewParam(Integer componentIdViewParam) {
         this.componentIdViewParam = componentIdViewParam;
     }
-    
+
     public void prepareAddProperty() {
         Component component = getCurrent();
         List<ComponentProperty> propertyList = component.getComponentPropertyList();
@@ -172,7 +179,37 @@ public class ComponentController extends CrudEntityController<Component, Compone
         sourceList.remove(source);
         update();
     }
-    
+
+    public void setFilterByComponentName(String filterByComponentName) {
+        this.filterByComponentName = filterByComponentName;
+
+        User user = (User) SessionUtility.getUser();
+        if (user == null) {
+            return;
+        }
+        UserSetting userSetting = user.getUserSetting(ComponentListFilterByComponentNameSettingName);
+        if (userSetting == null) {
+            SettingType settingType = settingTypeFacade.findByName(ComponentListFilterByComponentNameSettingName);
+            userSetting = new UserSetting();
+            userSetting.setSettingType(settingType);
+            userSetting.setUser(user);
+        }
+        userSetting.setValue(filterByComponentName);
+    }
+
+    public String getFilterByComponentName() {
+        if (filterByComponentName == null) {
+            User user = (User) SessionUtility.getUser();
+            if (user != null) {
+                UserSetting userSetting = user.getUserSetting(ComponentListFilterByComponentNameSettingName);
+                if (userSetting != null) {
+                    filterByComponentName = userSetting.getValue();
+                }
+            }
+        }
+        return filterByComponentName;
+    }
+
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter
     {

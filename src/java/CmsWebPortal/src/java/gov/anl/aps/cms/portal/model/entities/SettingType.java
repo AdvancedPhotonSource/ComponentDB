@@ -35,7 +35,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "SettingType.findAll", query = "SELECT s FROM SettingType s"),
     @NamedQuery(name = "SettingType.findById", query = "SELECT s FROM SettingType s WHERE s.id = :id"),
     @NamedQuery(name = "SettingType.findByName", query = "SELECT s FROM SettingType s WHERE s.name = :name"),
-    @NamedQuery(name = "SettingType.findByDescription", query = "SELECT s FROM SettingType s WHERE s.description = :description")})
+    @NamedQuery(name = "SettingType.findByDescription", query = "SELECT s FROM SettingType s WHERE s.description = :description"),
+    @NamedQuery(name = "SettingType.findByDefaultValue", query = "SELECT s FROM SettingType s WHERE s.defaultValue = :defaultValue")})
+
 public class SettingType implements Serializable
 {
     private static final long serialVersionUID = 1L;
@@ -52,6 +54,9 @@ public class SettingType implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
+    @Size(max = 64)
+    @Column(name = "default_value")
+    private String defaultValue;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "settingType")
     private List<UserSetting> userSettingList;
 
@@ -91,6 +96,14 @@ public class SettingType implements Serializable
         this.description = description;
     }
 
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
     @XmlTransient
     public List<UserSetting> getUserSettingList() {
         return userSettingList;
@@ -114,10 +127,7 @@ public class SettingType implements Serializable
             return false;
         }
         SettingType other = (SettingType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

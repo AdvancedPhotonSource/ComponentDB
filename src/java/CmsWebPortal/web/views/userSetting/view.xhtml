@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dataTable id="viewUserSettingListDataTable" var="userSetting" value="#{userController.selected.userSettingList}" 
+                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+                 emptyMessage="No user settings found.">
+
+        <f:facet name="header">
+        </f:facet>
+
+        <p:column sortBy="#{userSetting.settingType.name}" headerText="Name">
+            <h:outputText value="#{userSetting.settingType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{userSetting.value}" headerText="Value">
+            <h:outputText value="#{userSetting.value}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

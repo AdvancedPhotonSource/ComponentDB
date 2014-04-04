@@ -61,12 +61,12 @@
                         <h:outputText value="#{item.email}"/>
                     </p:column>
 
-                    <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+                    <c:set var="isEntityWriteable" value="#{loginController.isUserWriteable(item)}"/>
                     <p:column headerText="Actions">
                         <div class="actionLink">
                             <p:commandLink action="#{userController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
                             <p:commandLink action="#{userController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                            <p:commandLink oncomplete="confirmation.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                            <p:commandLink oncomplete="confirmation.show()" rendered="#{loginController.loggedInAsAdmin}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                                 <f:setPropertyActionListener value="#{item}" target="#{userController.current}"/>
                             </p:commandLink>
                         </div>
