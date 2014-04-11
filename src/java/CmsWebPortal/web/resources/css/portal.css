@@ -160,6 +160,8 @@ a:link:hover, a:visited:hover  {
 
 .actionButtonRight {
     float: right;
+    margin-right: 0px;
+    margin-left: 5px;
 }
 
 .actionLink {

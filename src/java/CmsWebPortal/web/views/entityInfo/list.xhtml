@@ -6,33 +6,45 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:column sortBy="#{item.entityInfo.ownerUser.username}" headerText="Owner"
-              filterBy="#{item.entityInfo.ownerUser.username}" filterMatchMode="contains">
+              filterBy="#{item.entityInfo.ownerUser.username}" filterMatchMode="contains"
+              filterValue="#{listController.filterByOwnerUser}"
+              rendered="#{listController.displayOwnerUser}">
         <h:outputText value="#{item.entityInfo.ownerUser.username}"/>
     </p:column>
 
     <p:column sortBy="#{item.entityInfo.ownerUserGroup.name}" headerText="Group"
               filterBy="#{item.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
-              filterOptions="#{userGroupController.availableItemsForSelectOne}">
+              filterOptions="#{userGroupController.availableItemsForSelectOne}"
+              filterValue="#{listController.filterByOwnerGroup}"
+              rendered="#{listController.displayOwnerGroup}">
         <h:outputText value="#{item.entityInfo.ownerUserGroup.name}"/>
     </p:column>
 
     <p:column sortBy="#{item.entityInfo.createdByUser.username}" headerText="Created By"
-              filterBy="#{item.entityInfo.createdByUser.username}" filterMatchMode="contains">
+              filterBy="#{item.entityInfo.createdByUser.username}" filterMatchMode="contains"
+              filterValue="#{listController.filterByCreatedByUser}"
+              rendered="#{listController.displayCreatedByUser}">
         <h:outputText value="#{item.entityInfo.createdByUser.username}"/>
     </p:column>
 
-    <p:column sortBy="#{item.entityInfo.createdOnDateTime}" rendered="false" headerText="Created On"
-              filterBy="#{item.entityInfo.createdOnDateTime}" filterMatchMode="contains">
+    <p:column sortBy="#{item.entityInfo.createdOnDateTime}" headerText="Created On"
+              filterBy="#{item.entityInfo.createdOnDateTime}" filterMatchMode="contains"
+              filterValue="#{listController.filterByCreatedOnDateTime}"
+              rendered="#{listController.displayCreatedOnDateTime}">
         <h:outputText value="#{item.entityInfo.createdOnDateTime}"/>
     </p:column>
 
     <p:column sortBy="#{item.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
-              filterBy="#{item.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains">
+              filterBy="#{item.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains"
+              filterValue="#{listController.filterByLastModifiedByUser}"
+              rendered="#{listController.displayLastModifiedByUser}">
         <h:outputText value="#{item.entityInfo.lastModifiedByUser.username}"/>
     </p:column>
 
-    <p:column sortBy="#{item.entityInfo.lastModifiedOnDateTime}" rendered="false" headerText="Modified On"
-              filterBy="#{item.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains">
+    <p:column sortBy="#{item.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
+              filterBy="#{item.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains"
+              filterValue="#{listController.filterByLastModifiedOnDateTime}"
+              rendered="#{listController.displayLastModifiedOnDateTime}">
         <h:outputText value="#{item.entityInfo.lastModifiedOnDateTime}"/>
     </p:column>
 

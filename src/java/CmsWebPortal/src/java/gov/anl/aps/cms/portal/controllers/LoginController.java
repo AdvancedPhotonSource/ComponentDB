@@ -34,7 +34,6 @@ public class LoginController implements Serializable
 
     private String username = null;
     private String password = null;
-    private String currentPage = null;
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
     private User user = null;
@@ -83,14 +82,6 @@ public class LoginController implements Serializable
      */
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getCurrentPage() {
-        return currentPage;
-    }
-
-    public void setCurrentPage(String currentPage) {
-        this.currentPage = currentPage;
     }
 
     /**
@@ -204,12 +195,9 @@ public class LoginController implements Serializable
     }
 
     public String getLandingPage() {
-        if (currentPage != null) {
-            return "/views/" + currentPage + "?faces-redirect=true";
-        }
-        else {
-            return "/views/home?faces-redirect=true";
-        }
+        String landingPage = SessionUtility.getCurrentView() + "?faces-redirect=true";
+        logger.debug("Landing page: " + landingPage); 
+        return landingPage;
     }
 
     public String dropAdminRole() {
@@ -288,12 +276,12 @@ public class LoginController implements Serializable
      * @return url to logout page
      */
     public String logout() {
+        SessionUtility.clearSession();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.invalidateSession();
         loggedInAsAdmin = false;
         loggedInAsUser = false;
         user = null;
-        currentPage = null;
         return "/views/home?faces-redirect=true";
     }
 

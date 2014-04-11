@@ -16,6 +16,7 @@
         <h:form id="viewPropertyCategoryListForm">            
             <div class="actionButton">
                 <p:commandButton action="#{propertyCategoryController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add Property Category" icon="ui-icon-plus"/>
+                <p:defaultCommand target="confirmDialogNo"/>
             </div>
             <h:panelGroup>  
 
@@ -54,8 +55,8 @@
             </h:panelGroup>
             <p:confirmDialog id="destroyPropertyCategoryDialog" message="Destroy property type #{propertyCategoryController.getCurrentEntityInstanceName()}?"
                              header="Destroy Property Category" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyCategoryController.destroy()}" update="@form"/>
-                <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
+                <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{propertyCategoryController.destroy()}" update="@form"/>
+                <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
 
         </h:form>

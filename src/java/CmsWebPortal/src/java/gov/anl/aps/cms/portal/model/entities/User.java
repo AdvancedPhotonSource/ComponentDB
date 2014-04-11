@@ -6,6 +6,7 @@
 package gov.anl.aps.cms.portal.model.entities;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.persistence.Basic;
@@ -111,6 +112,7 @@ public class User implements Serializable
     private List<Log> logList;
 
     private transient HashMap<String, UserSetting> userSettingMap = null;
+    private transient Date userSettingsModificationDate = null;
 
     public User() {
     }
@@ -244,6 +246,7 @@ public class User implements Serializable
         for (UserSetting setting : userSettingList) {
             userSettingMap.put(setting.getSettingType().getName(), setting);
         }
+        updateSettingsModificationDate();
     }
 
     public UserSetting getUserSetting(String name) {
@@ -264,6 +267,63 @@ public class User implements Serializable
         else {
             userSettingMap.put(name, userSetting);
         }
+        userSettingsModificationDate = new Date();
+    }
+
+    public String getUserSettingValueAsString(String name, String defaultValue) {
+        UserSetting userSetting = getUserSetting(name);
+        if (userSetting == null) {
+            return defaultValue;
+        }
+        return userSetting.getValue();
+    }
+
+    public Boolean getUserSettingValueAsBoolean(String name, Boolean defaultValue) {
+        UserSetting userSetting = getUserSetting(name);
+        if (userSetting == null) {
+            return defaultValue;
+        }
+        String settingValue = userSetting.getValue();
+        if (settingValue == null || settingValue.isEmpty()) {
+            return defaultValue;
+        }
+        return Boolean.parseBoolean(settingValue);
+    }
+
+    public Integer getUserSettingValueAsInteger(String name, Integer defaultValue) {
+        UserSetting userSetting = getUserSetting(name);
+        if (userSetting == null) {
+            return defaultValue;
+        }
+        String settingValue = userSetting.getValue();
+        if (settingValue == null || settingValue.isEmpty()) {
+            return defaultValue;
+        }
+        return Integer.parseInt(settingValue);
+    }
+
+    public Float getUserSettingValueAsFloat(String name, Float defaultValue) {
+        UserSetting userSetting = getUserSetting(name);
+        if (userSetting == null) {
+            return defaultValue;
+        }
+        String settingValue = userSetting.getValue();
+        if (settingValue == null || settingValue.isEmpty()) {
+            return defaultValue;
+        }
+        return Float.parseFloat(settingValue);
+    }
+    
+    public void updateSettingsModificationDate() {
+        userSettingsModificationDate = new Date();
+    }
+    
+    public Date getUserSettingsModificationDate() {
+        return userSettingsModificationDate;
+    }
+
+    public boolean areUserSettingsModifiedAfterDate(Date date) {
+        return date == null || userSettingsModificationDate == null || userSettingsModificationDate.after(date);
     }
 
     @XmlTransient

@@ -1,11 +1,11 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
-import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.UserSetting;
+import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,9 +28,8 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
 
     @EJB
     private UserFacade userFacade;
-    @EJB
-    private SettingTypeFacade settingTypeFacade;
 
+    
     public UserController() {
     }
 
@@ -64,14 +63,17 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
 
     @Override
     public String prepareEdit(User user) {
-        List<SettingType> settingTypeList = settingTypeFacade.findAll();
         ArrayList<UserSetting> userSettingList = new ArrayList<>();
-        for (SettingType settingType : settingTypeList) {
+        for (SettingType settingType : getSettingTypeList()) {
             UserSetting setting = user.getUserSetting(settingType.getName());
-            if (setting == null || setting.getValue().isEmpty()) {
+            if (setting == null) {
                 setting = new UserSetting();
                 setting.setUser(user);
                 setting.setSettingType(settingType);
+            }
+            
+            String settingValue = setting.getValue();
+            if (settingValue == null || settingValue.isEmpty()) {
                 setting.setValue(settingType.getDefaultValue());
             }
             userSettingList.add(setting);
@@ -93,8 +95,24 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
 
     public void saveSettingList() {
         update();
+        User selectedUser = getSelected();
+        selectedUser.updateSettingsModificationDate();
+        logger.debug("Settings for user " + selectedUser.getUsername() + " have been modified at " + selectedUser.getUserSettingsModificationDate());
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser.getId().equals(selectedUser.getId())) {
+            logger.debug("Settings modified for session user");
+            sessionUser.setUserSettingList(selectedUser.getUserSettingList());
+        }
     }
-
+    
+    public String prepareSessionUserEdit(String viewPath) {
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser == null) {
+            return null;
+        }
+        prepareEdit(sessionUser);
+        return viewPath + "?faces-redirect=true";
+    }
     
     @FacesConverter(forClass = User.class)
     public static class UserControllerConverter implements Converter

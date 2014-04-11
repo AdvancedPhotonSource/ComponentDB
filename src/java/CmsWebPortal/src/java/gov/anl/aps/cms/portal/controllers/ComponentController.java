@@ -14,12 +14,12 @@ import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
-import gov.anl.aps.cms.portal.model.entities.UserSetting;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -28,27 +28,56 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("componentController")
 @SessionScoped
 public class ComponentController extends CrudEntityController<Component, ComponentFacade> implements Serializable
 {
 
-    private static final String ComponentListFilterByComponentNameSettingName = "Component.List.FilterBy.ComponentName";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Component.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "Component.List.Display.Id";
+    private static final String DisplayDocumentationUriSettingTypeKey = "Component.List.Display.DocumentationUri";
+    private static final String DisplayStateSettingTypeKey = "Component.List.Display.State";
+    private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
+    private static final String DisplayOwnerUserSettingTypeKey = "Component.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
+    private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Component.List.Display.CreatedOnDateTime";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "Component.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Component.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayEstimatedCostSettingTypeKey = "Component.List.Display.EstimatedCost";
+
+    private static final String FilterByNameSettingTypeKey = "Component.List.FilterBy.Name";
+    private static final String FilterByDocumentationUriSettingTypeKey = "Component.List.FilterBy.DocumentationUri";
+    private static final String FilterByStateSettingTypeKey = "Component.List.FilterBy.State";
+    private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
+    private static final String FilterByOwnerUserSettingTypeKey = "Component.List.FilterBy.OwnerUser";
+    private static final String FilterByOwnerGroupSettingTypeKey = "Component.List.FilterBy.OwnerGroup";
+    private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
+    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
+    private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
+    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Component.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByEstimatedCostSettingTypeKey = "Component.List.FilterBy.EstimatedCost";
 
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
     private ComponentFacade componentFacade;
     @EJB
-    private UserFacade userFacade;
-    @EJB
     private ComponentStateFacade componentStateFacade;
-    @EJB
-    private SettingTypeFacade settingTypeFacade;
 
     private Integer componentIdViewParam = null;
-    private String filterByComponentName;
+
+    private Boolean displayDocumentationUri = null;
+    private Boolean displayState = null;
+    private Boolean displayType = null;
+    private Boolean displayEstimatedCost = null;
+
+    private String filterByDocumentationUri = null;
+    private String filterByState = null;
+    private String filterByType = null;
+    private String filterByEstimatedCost = null;
 
     public ComponentController() {
         super();
@@ -180,34 +209,172 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
-    public void setFilterByComponentName(String filterByComponentName) {
-        this.filterByComponentName = filterByComponentName;
-
-        User user = (User) SessionUtility.getUser();
-        if (user == null) {
+    @Override
+    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
             return;
         }
-        UserSetting userSetting = user.getUserSetting(ComponentListFilterByComponentNameSettingName);
-        if (userSetting == null) {
-            SettingType settingType = settingTypeFacade.findByName(ComponentListFilterByComponentNameSettingName);
-            userSetting = new UserSetting();
-            userSetting.setSettingType(settingType);
-            userSetting.setUser(user);
-        }
-        userSetting.setValue(filterByComponentName);
+
+        logger.debug("Updating list settings from setting type defaults");
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDocumentationUri = Boolean.parseBoolean(settingTypeMap.get(DisplayDocumentationUriSettingTypeKey).getDefaultValue());
+        displayState = Boolean.parseBoolean(settingTypeMap.get(DisplayStateSettingTypeKey).getDefaultValue());
+        displayType = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeSettingTypeKey).getDefaultValue());
+        displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
+        displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
+        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
+        displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayEstimatedCost = Boolean.parseBoolean(settingTypeMap.get(DisplayEstimatedCostSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDocumentationUri = settingTypeMap.get(FilterByDocumentationUriSettingTypeKey).getDefaultValue();
+        filterByState = settingTypeMap.get(FilterByStateSettingTypeKey).getDefaultValue();
+        filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
+        filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
+        filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
+        filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
+        filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
+        filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByEstimatedCost = settingTypeMap.get(FilterByEstimatedCostSettingTypeKey).getDefaultValue();
     }
 
-    public String getFilterByComponentName() {
-        if (filterByComponentName == null) {
-            User user = (User) SessionUtility.getUser();
-            if (user != null) {
-                UserSetting userSetting = user.getUserSetting(ComponentListFilterByComponentNameSettingName);
-                if (userSetting != null) {
-                    filterByComponentName = userSetting.getValue();
-                }
-            }
+    @Override
+    public void updateListSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        return filterByComponentName;
+
+        logger.debug("Updating list settings from session user");
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDocumentationUri = sessionUser.getUserSettingValueAsBoolean(DisplayDocumentationUriSettingTypeKey, displayDocumentationUri);
+        displayState = sessionUser.getUserSettingValueAsBoolean(DisplayStateSettingTypeKey, displayState);
+        displayType = sessionUser.getUserSettingValueAsBoolean(DisplayTypeSettingTypeKey, displayType);
+        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        displayEstimatedCost = sessionUser.getUserSettingValueAsBoolean(DisplayEstimatedCostSettingTypeKey, displayEstimatedCost);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDocumentationUri = sessionUser.getUserSettingValueAsString(FilterByDocumentationUriSettingTypeKey, filterByDocumentationUri);
+        filterByState = sessionUser.getUserSettingValueAsString(FilterByStateSettingTypeKey, filterByState);
+        filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
+        filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+        filterByEstimatedCost = sessionUser.getUserSettingValueAsString(FilterByEstimatedCostSettingTypeKey, filterByEstimatedCost);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        if (dataTable == null) {
+            return;
+        }
+
+        Map<String, String> filters = dataTable.getFilters();
+        logger.debug("Updating list filters from current data table filters: " + filters);
+        filterByName = filters.get("name");
+        filterByDocumentationUri = filters.get("documentationUriShortDisplay");
+        filterByState = filters.get("componentState.name");
+        filterByType = filters.get("componentTypeList");
+        filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
+        filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
+        filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
+        filterByCreatedOnDateTime = filters.get("entityInfo.createdOnDateTime");
+        filterByLastModifiedByUser = filters.get("entityInfo.lastModifiedByUser.username");
+        filterByLastModifiedOnDateTime = filters.get("entityInfo.lastModifiedOnDateTime");
+        filterByEstimatedCost = filters.get("estimatedCost");
+    }
+
+    @Override
+    public void clearListFilters() {
+        filterByName = null;
+        filterByDocumentationUri = null;
+        filterByState = null;
+        filterByType = null;
+        filterByOwnerUser = null;
+        filterByOwnerGroup = null;
+        filterByCreatedByUser = null;
+        filterByCreatedOnDateTime = null;
+        filterByLastModifiedByUser = null;
+        filterByLastModifiedOnDateTime = null;
+        filterByEstimatedCost = null;
+    }
+
+    public Boolean getDisplayDocumentationUri() {
+        return displayDocumentationUri;
+    }
+
+    public void setDisplayDocumentationUri(Boolean displayDocumentationUri) {
+        this.displayDocumentationUri = displayDocumentationUri;
+    }
+
+    public Boolean getDisplayState() {
+        return displayState;
+    }
+
+    public void setDisplayState(Boolean displayState) {
+        this.displayState = displayState;
+    }
+
+    public Boolean getDisplayType() {
+        return displayType;
+    }
+
+    public void setDisplayType(Boolean displayType) {
+        this.displayType = displayType;
+    }
+
+    public Boolean getDisplayEstimatedCost() {
+        return displayEstimatedCost;
+    }
+
+    public void setDisplayEstimatedCost(Boolean displayEstimatedCost) {
+        this.displayEstimatedCost = displayEstimatedCost;
+    }
+
+    public String getFilterByDocumentationUri() {
+        return filterByDocumentationUri;
+    }
+
+    public void setFilterByDocumentationUri(String filterByDocumentationUri) {
+        this.filterByDocumentationUri = filterByDocumentationUri;
+    }
+
+    public String getFilterByState() {
+        return filterByState;
+    }
+
+    public void setFilterByState(String filterByState) {
+        this.filterByState = filterByState;
+    }
+
+    public String getFilterByType() {
+        return filterByType;
+    }
+
+    public void setFilterByType(String filterByType) {
+        this.filterByType = filterByType;
+    }
+
+    public String getFilterByEstimatedCost() {
+        return filterByEstimatedCost;
+    }
+
+    public void setFilterByEstimatedCost(String filterByEstimatedCost) {
+        this.filterByEstimatedCost = filterByEstimatedCost;
     }
 
     @FacesConverter(value = "componentConverter", forClass = Component.class)

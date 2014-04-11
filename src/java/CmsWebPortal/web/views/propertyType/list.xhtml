@@ -17,6 +17,7 @@
             <div class="actionButton">
                 <p:commandButton action="#{propertyTypeController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add Property Type" icon="ui-icon-plus"/>
                 <p:button href="../propertyCategory/list.xhtml" rendered="#{loginController.loggedInAsAdmin}" value="Manage Categories" alt="Manage Categories" styleClass="actionButtonRight"/>
+                <p:defaultCommand target="confirmDialogNo"/>
             </div>
             <h:panelGroup>  
 
@@ -61,8 +62,8 @@
             </h:panelGroup>
             <p:confirmDialog id="destroyPropertyTypeDialog" message="Destroy property type #{propertyTypeController.getCurrentEntityInstanceName()}?"
                              header="Destroy Property Type" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyTypeController.destroy()}" update="@form"/>
-                <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
+                <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{propertyTypeController.destroy()}" update="@form"/>
+                <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
 
         </h:form>
