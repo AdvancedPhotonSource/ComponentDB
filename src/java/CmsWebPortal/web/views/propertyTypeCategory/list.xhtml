@@ -10,22 +10,21 @@
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Property Types</h1>
+            <h1>Property Type Categories</h1>
         </div>
 
-        <h:form id="viewPropertyTypeListForm">            
-            <c:set var="listController" value="#{propertyTypeController}"/>
+        <h:form id="viewPropertyTypeCategoryListForm">            
+            <c:set var="listController" value="#{propertyTypeCategoryController}"/>
             <div class="actionButton">
                 <p:commandButton action="#{listController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
                 <p:commandButton style="visibility:hidden" value="NoOp"/>
-                <p:button href="../propertyTypeCategory/list.xhtml" value="View Categories" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight"/>
                 <p:commandButton action="#{listController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
                 <p:defaultCommand target="confirmDialogNo"/>
             </div>
 
             <h:panelGroup>  
 
-                <p:dataTable id="propertyTypeListDataTable"
+                <p:dataTable id="propertyTypeCategoryListDataTable"
                              var="item" 
                              value="#{listController.items}" 
                              filteredValue="#{listController.filteredItems}"
@@ -33,14 +32,13 @@
                              paginatorAlwaysVisible="true" 
                              rows="#{listController.displayNumberOfItemsPerPage}"
                              binding="#{listController.listDataTable}"
-                             widgetVar="propertyTypeListWidget" 
-                             emptyMessage="No property types found." >
+                             widgetVar="propertyTypeCategoryListWidget" 
+                             emptyMessage="No property type categories found." > 
 
                     <f:facet name="header">
                     </f:facet>
 
-                    <p:column sortBy="#{item.id}" headerText="Id"
-                              rendered="true">
+                    <p:column sortBy="#{item.id}" headerText="Id">
                         <h:outputText value="#{item.id}"/>
                     </p:column>
 
@@ -49,14 +47,6 @@
                               filterValue="#{listController.filterByName}"
                               rendered="true">
                         <h:outputText value="#{item.name}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.propertyTypeCategory.name}" headerText="Category" 
-                              filterBy="#{item.propertyTypeCategory.name}" filterMatchMode="exact"
-                              filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
-                              filterValue="#{listController.filterByTypeCategory}"
-                              rendered="true">
-                        <h:outputText value="#{item.propertyTypeCategory.name}"/>
                     </p:column>
 
                     <p:column sortBy="#{item.description}" headerText="Description" 
@@ -79,15 +69,18 @@
                 </p:dataTable>
             </h:panelGroup>
 
-            <p:confirmDialog id="destroyPropertyTypeDialog" message="Destroy property type #{listController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Property Type" severity="alert" widgetVar="confirmation">
+            <p/>
+            <div class="actionButton">  
+                <p:button href="../propertyType/list.xhtml" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+            </div>
+
+            <p:confirmDialog id="destroyPropertyTypeCategoryDialog" message="Destroy property type category #{listController.getCurrentEntityInstanceName()}?"
+                             header="Destroy Property Type Category" severity="alert" widgetVar="confirmation">
                 <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{listController.destroy()}" update="@form"/>
                 <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
 
         </h:form>
-
-        <h:outputScript library="javascript/propertyType" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
 
     </ui:define>
 

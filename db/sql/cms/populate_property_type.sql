@@ -26,7 +26,7 @@
 LOCK TABLES `property_type` WRITE;
 /*!40000 ALTER TABLE `property_type` DISABLE KEYS */;
 
-INSERT INTO `property_type` (`id`, `name`, `description`, `property_category_id`)
+INSERT INTO `property_type` (`id`, `name`, `description`, `property_type_category_id`)
 VALUES
 	(1,'water flow',NULL,NULL),
 	(2,'slot length',NULL,NULL),

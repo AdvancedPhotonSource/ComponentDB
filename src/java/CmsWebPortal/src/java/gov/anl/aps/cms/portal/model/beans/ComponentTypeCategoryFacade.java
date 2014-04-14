@@ -6,7 +6,7 @@
 
 package gov.anl.aps.cms.portal.model.beans;
 
-import gov.anl.aps.cms.portal.model.entities.PropertyCategory;
+import gov.anl.aps.cms.portal.model.entities.ComponentTypeCategory;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class PropertyCategoryFacade extends AbstractFacade<PropertyCategory> {
+public class ComponentTypeCategoryFacade extends AbstractFacade<ComponentTypeCategory> {
     @PersistenceContext(unitName = "CmsWebPortalPU")
     private EntityManager em;
 
@@ -25,8 +25,8 @@ public class PropertyCategoryFacade extends AbstractFacade<PropertyCategory> {
         return em;
     }
 
-    public PropertyCategoryFacade() {
-        super(PropertyCategory.class);
+    public ComponentTypeCategoryFacade() {
+        super(ComponentTypeCategory.class);
     }
     
 }

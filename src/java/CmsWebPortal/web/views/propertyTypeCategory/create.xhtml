@@ -10,12 +10,12 @@
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Add Property Category</h1>
+            <h1>Add Property Type Category</h1>
         </div>
 
-        <h:form id="addPropertyCategoryForm">
+        <h:form id="addPropertyTypeCategoryForm">
 
-            <c:set var="selected" value="#{propertyCategoryController.selected}"/>
+            <c:set var="selected" value="#{propertyTypeCategoryController.selected}"/>
 
             <p:panelGrid columns="3">
                 <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
@@ -30,8 +30,8 @@
 
             <p/>
             <div class="actionButton">
-                <p:commandButton action="#{propertyCategoryController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{propertyCategoryController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+                <p:commandButton action="#{propertyTypeCategoryController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
+                <p:commandButton action="#{propertyTypeCategoryController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
             </div>
         </h:form>
 

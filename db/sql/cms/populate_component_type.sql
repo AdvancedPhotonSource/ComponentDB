@@ -26,7 +26,7 @@
 LOCK TABLES `component_type` WRITE;
 /*!40000 ALTER TABLE `component_type` DISABLE KEYS */;
 
-INSERT INTO `component_type` (`id`, `name`, `description`, `component_category_id`)
+INSERT INTO `component_type` (`id`, `name`, `description`, `component_type_category_id`)
 VALUES
 	(1,'Gate Valve',NULL,2),
 	(2,'Gate Valve Controller',NULL,3),

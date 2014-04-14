@@ -72,11 +72,11 @@ execute $mysqlCmd populate_entity_info.sql
 execute $mysqlCmd populate_component_state.sql
 execute $mysqlCmd populate_source.sql
 execute $mysqlCmd populate_property_type.sql
-execute $mysqlCmd populate_resource_category.sql
-execute $mysqlCmd populate_connector_category.sql
+execute $mysqlCmd populate_resource_type_category.sql
+execute $mysqlCmd populate_connector_type_category.sql
 execute $mysqlCmd populate_connector_type.sql
 
-execute $mysqlCmd populate_component_category.sql
+execute $mysqlCmd populate_component_type_category.sql
 execute $mysqlCmd populate_component_type.sql
 execute $mysqlCmd populate_resource_type.sql
 

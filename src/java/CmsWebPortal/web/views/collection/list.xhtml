@@ -14,7 +14,7 @@
         </div>
 
         <h:form id="viewCollectionListForm">    
-                            <c:set var="listController" value="#{collectionController}"/>
+            <c:set var="listController" value="#{collectionController}"/>
             <div class="actionButton">
                 <p:commandButton action="#{listController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
                 <p:commandButton style="visibility:hidden" value="NoOp"/>
@@ -77,6 +77,8 @@
             </p:confirmDialog>
 
         </h:form>
+        
+        <h:outputScript library="javascript/collection" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
 
     </ui:define>
 </ui:composition>

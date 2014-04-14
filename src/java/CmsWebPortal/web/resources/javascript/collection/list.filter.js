@@ -1,4 +1,4 @@
 
 jQuery(document).ready(function() {
-    componentListWidget.filter();
+    collectionListWidget.filter();
 });

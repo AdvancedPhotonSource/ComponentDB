@@ -10,6 +10,7 @@ import gov.anl.aps.cms.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -18,11 +19,13 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("userController")
 @SessionScoped
 public class UserController extends CrudEntityController<User, UserFacade> implements Serializable
 {
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "User.List.Display.NumberOfItemsPerPage";
 
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
@@ -112,6 +115,39 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
         }
         prepareEdit(sessionUser);
         return viewPath + "?faces-redirect=true";
+    }
+
+    @Override
+    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+    }
+
+    @Override
+    public void updateListSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        if (dataTable == null) {
+            return;
+        }
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterByName = filters.get("name");
+    }
+
+    @Override
+    public void clearListFilters() {
+        filterByName = null;
     }
     
     @FacesConverter(forClass = User.class)

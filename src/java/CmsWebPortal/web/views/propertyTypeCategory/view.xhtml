@@ -10,11 +10,11 @@
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Property Category Details</h1>
+            <h1>Property Type Category Details</h1>
         </div>
 
-        <h:form id="viewPropertyCategoryForm">
-            <c:set var="selected" value="#{propertyCategoryController.selected}"/>
+        <h:form id="viewPropertyTypeCategoryForm">
+            <c:set var="selected" value="#{propertyTypeCategoryController.selected}"/>
 
             <p:panelGrid columns="2">
 
@@ -32,16 +32,16 @@
             <p/>
             <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
-                <p:commandButton action="#{propertyCategoryController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
+                <p:commandButton action="#{propertyTypeCategoryController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
                 <p:commandButton onclick="PF('confirmation').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                    <f:setPropertyActionListener value="#{selected}" target="#{propertyCategoryController.current}"/>
+                    <f:setPropertyActionListener value="#{selected}" target="#{propertyTypeCategoryController.current}"/>
                 </p:commandButton>  
-                <p:commandButton action="#{propertyCategoryController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton action="#{propertyTypeCategoryController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
 
-            <p:confirmDialog id="destroyPropertyCategoryDialog" message="Destroy property type #{propertyCategoryController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Property Category" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyCategoryController.destroy()}"/>
+            <p:confirmDialog id="destroyPropertyTypeCategoryDialog" message="Destroy property type #{propertyTypeCategoryController.getCurrentEntityInstanceName()}?"
+                             header="Destroy Property Type Category" severity="alert" widgetVar="confirmation">
+                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{propertyTypeCategoryController.destroy()}"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>  
         </h:form>

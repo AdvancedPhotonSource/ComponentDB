@@ -28,14 +28,14 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
-@Table(name = "resource_category")
+@Table(name = "connector_type_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ResourceCategory.findAll", query = "SELECT r FROM ResourceCategory r"),
-    @NamedQuery(name = "ResourceCategory.findById", query = "SELECT r FROM ResourceCategory r WHERE r.id = :id"),
-    @NamedQuery(name = "ResourceCategory.findByName", query = "SELECT r FROM ResourceCategory r WHERE r.name = :name"),
-    @NamedQuery(name = "ResourceCategory.findByDescription", query = "SELECT r FROM ResourceCategory r WHERE r.description = :description")})
-public class ResourceCategory implements Serializable
+    @NamedQuery(name = "ConnectorTypeCategory.findAll", query = "SELECT c FROM ConnectorTypeCategory c"),
+    @NamedQuery(name = "ConnectorTypeCategory.findById", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.id = :id"),
+    @NamedQuery(name = "ConnectorTypeCategory.findByName", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.name = :name"),
+    @NamedQuery(name = "ConnectorTypeCategory.findByDescription", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.description = :description")})
+public class ConnectorTypeCategory implements Serializable
 {
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,17 +51,17 @@ public class ResourceCategory implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "resourceCategoryId")
-    private List<ResourceType> resourceTypeList;
+    @OneToMany(mappedBy = "connectorTypeCategory")
+    private List<ConnectorType> connectorTypeList;
 
-    public ResourceCategory() {
+    public ConnectorTypeCategory() {
     }
 
-    public ResourceCategory(Integer id) {
+    public ConnectorTypeCategory(Integer id) {
         this.id = id;
     }
 
-    public ResourceCategory(Integer id, String name) {
+    public ConnectorTypeCategory(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -91,12 +91,12 @@ public class ResourceCategory implements Serializable
     }
 
     @XmlTransient
-    public List<ResourceType> getResourceTypeList() {
-        return resourceTypeList;
+    public List<ConnectorType> getConnectorTypeList() {
+        return connectorTypeList;
     }
 
-    public void setResourceTypeList(List<ResourceType> resourceTypeList) {
-        this.resourceTypeList = resourceTypeList;
+    public void setConnectorTypeList(List<ConnectorType> connectorTypeList) {
+        this.connectorTypeList = connectorTypeList;
     }
 
     @Override
@@ -109,10 +109,10 @@ public class ResourceCategory implements Serializable
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ResourceCategory)) {
+        if (!(object instanceof ConnectorTypeCategory)) {
             return false;
         }
-        ResourceCategory other = (ResourceCategory) object;
+        ConnectorTypeCategory other = (ConnectorTypeCategory) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -121,7 +121,7 @@ public class ResourceCategory implements Serializable
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.ResourceCategory[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ConnectorCategory[ id=" + id + " ]";
     }
     
 }

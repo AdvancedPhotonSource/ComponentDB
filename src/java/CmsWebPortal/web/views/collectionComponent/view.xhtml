@@ -5,10 +5,16 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <p:dataTable id="viewComponentPropertyListDataTable" var="collectionComponent" value="#{collectionController.selected.collectionComponentList}" 
-                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+    <c:set var="viewController" value="#{collectionComponentController}"/>
+    <c:set var="collection" value="#{collectionController.selected}"/>
+    <p:dataTable id="viewCollectionComponentListDataTable" var="collectionComponent" 
+                 value="#{collection.collectionComponentList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{viewController.displayNumberOfItemsPerPage}"
                  emptyMessage="No collection components found.">
 
         <f:facet name="header">
@@ -18,15 +24,23 @@
             <h:outputText value="#{collectionComponent.component.name}"/>
         </p:column>
 
-        <p:column sortBy="#{collectionComponent.tag}" headerText="Tag">
+        <p:column sortBy="#{collectionComponent.tag}" headerText="Tag"
+                  rendered="#{viewController.displayTag}">
             <h:outputText value="#{collectionComponent.tag}"/>
         </p:column>
 
-        <p:column sortBy="#{collectionComponent.quantity}" headerText="Quantity">
-            <h:outputText value="#{collectionComponent.quantity}"/>
+        <p:column sortBy="#{collectionComponent.priority}" headerText="Priority"
+                  rendered="#{viewController.displayPriority}">
+            <h:outputText value="#{collectionComponent.priority}"/>
         </p:column>
 
-        <p:column sortBy="#{collectionComponent.description}" headerText="Description">
+        <p:column sortBy="#{collectionComponent.quantity}" headerText="Quantity"
+                  rendered="#{viewController.displayQuantity}">
+            <h:outputText value="#{collectionComponent.quantity}"/>
+        </p:column>
+        
+        <p:column sortBy="#{collectionComponent.description}" headerText="Description"
+                  rendered="#{viewController.displayDescription}">
             <h:outputText value="#{collectionComponent.description}"/>
         </p:column>
 

@@ -8,14 +8,20 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <c:set var="editController" value="#{collectionComponentController}"/>
+    <c:set var="collection" value="#{collectionController.selected}"/>
     <div class="actionButton">
         <p:commandButton action="#{collectionController.prepareAddComponent()}" value="Add" alt="Add Component" icon="ui-icon-plus"
                          update="@form"/>
         <p:commandButton action="#{collectionController.saveComponentList()}" value="Save" alt="Save Component List" icon="ui-icon-check"
                          update="@form"/>
     </div>
-    <p:dataTable id="editCollectionComponentListDataTable" var="collectionComponent" value="#{collectionController.selected.collectionComponentList}" 
-                 paginator="true" paginatorAlwaysVisible="false" rows="10"
+    <p:dataTable id="editCollectionComponentListDataTable" 
+                 var="collectionComponent" 
+                 value="#{collection.collectionComponentList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{editController.displayNumberOfItemsPerPage}"
                  editable="true"
                  emptyMessage="No collection components found.">
 
@@ -35,6 +41,10 @@
             <h:inputText value="#{collectionComponent.tag}" styleClass="cellInput"/>
         </p:column>
 
+        <p:column sortBy="#{collectionComponent.priority}" headerText="Priority">
+            <h:inputText value="#{collectionComponent.priority}" styleClass="cellInput"/>
+        </p:column>
+
         <p:column sortBy="#{collectionComponent.quantity}" headerText="Quantity">
             <h:inputText value="#{collectionComponent.quantity}" styleClass="cellInput"/>
         </p:column>
@@ -42,7 +52,7 @@
         <p:column sortBy="#{collectionComponent.description}" headerText="Description">
             <h:inputText value="#{collectionComponent.description}" styleClass="longCellInput"/>
         </p:column>
-        
+
         <p:column headerText="Actions">
             <div class="actionLink">
                 <p:commandLink action="#{collectionController.deleteComponent(collectionComponent)}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>

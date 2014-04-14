@@ -20,13 +20,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table resource_category
+# Dump of table resource_type_category
 # ------------------------------------------------------------
 
-LOCK TABLES `resource_category` WRITE;
-/*!40000 ALTER TABLE `resource_category` DISABLE KEYS */;
+LOCK TABLES `resource_type_category` WRITE;
+/*!40000 ALTER TABLE `resource_type_category` DISABLE KEYS */;
 
-INSERT INTO `resource_category` (`id`, `name`, `description`)
+INSERT INTO `resource_type_category` (`id`, `name`, `description`)
 VALUES
 	(1,'Water',NULL),
 	(2,'Vacuum',NULL),
@@ -37,7 +37,7 @@ VALUES
 	(7,'Housing',NULL),
 	(8,'Interface',NULL);
 
-/*!40000 ALTER TABLE `resource_category` ENABLE KEYS */;
+/*!40000 ALTER TABLE `resource_type_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

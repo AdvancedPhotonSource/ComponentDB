@@ -27,9 +27,9 @@
                 <p:message for="description"/> 
 
                 <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="category" value="#{selected.propertyCategory}" title="Category" styleClass="entityDataText">
+                <h:selectOneMenu id="category" value="#{selected.propertyTypeCategory}" title="Category" styleClass="entityDataText">
                     <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                    <f:selectItems var="category" value="#{propertyCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
+                    <f:selectItems var="category" value="#{propertyTypeCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
                 </h:selectOneMenu>
                 <p:message for="category"/> 
 

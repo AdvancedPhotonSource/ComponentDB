@@ -1,9 +1,9 @@
 package gov.anl.aps.cms.portal.controllers;
 
-import gov.anl.aps.cms.portal.model.entities.ResourceCategory;
+import gov.anl.aps.cms.portal.model.entities.ConnectorTypeCategory;
 import gov.anl.aps.cms.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cms.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cms.portal.model.beans.ResourceCategoryFacade;
+import gov.anl.aps.cms.portal.model.beans.ConnectorTypeCategoryFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -18,29 +18,29 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 
-@Named("resourceCategoryController")
+@Named("connectorTypeCategoryController")
 @SessionScoped
-public class ResourceCategoryController implements Serializable {
+public class ConnectorTypeCategoryController implements Serializable {
 
-    private ResourceCategory current;
+    private ConnectorTypeCategory current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cms.portal.model.beans.ResourceCategoryFacade ejbFacade;
+    private gov.anl.aps.cms.portal.model.beans.ConnectorTypeCategoryFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
-    public ResourceCategoryController() {
+    public ConnectorTypeCategoryController() {
     }
 
-    public ResourceCategory getSelected() {
+    public ConnectorTypeCategory getSelected() {
         if (current == null) {
-            current = new ResourceCategory();
+            current = new ConnectorTypeCategory();
             selectedItemIndex = -1;
         }
         return current;
     }
 
-    private ResourceCategoryFacade getFacade() {
+    private ConnectorTypeCategoryFacade getFacade() {
         return ejbFacade;
     }
 
@@ -68,13 +68,13 @@ public class ResourceCategoryController implements Serializable {
     }
 
     public String prepareView() {
-        current = (ResourceCategory) getItems().getRowData();
+        current = (ConnectorTypeCategory) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
 
     public String prepareCreate() {
-        current = new ResourceCategory();
+        current = new ConnectorTypeCategory();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -82,7 +82,7 @@ public class ResourceCategoryController implements Serializable {
     public String create() {
         try {
             getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ResourceCategoryCreated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ConnectorCategoryCreated"));
             return prepareCreate();
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
@@ -91,7 +91,7 @@ public class ResourceCategoryController implements Serializable {
     }
 
     public String prepareEdit() {
-        current = (ResourceCategory) getItems().getRowData();
+        current = (ConnectorTypeCategory) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -99,7 +99,7 @@ public class ResourceCategoryController implements Serializable {
     public String update() {
         try {
             getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ResourceCategoryUpdated"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ConnectorCategoryUpdated"));
             return "View";
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
@@ -108,7 +108,7 @@ public class ResourceCategoryController implements Serializable {
     }
 
     public String destroy() {
-        current = (ResourceCategory) getItems().getRowData();
+        current = (ConnectorTypeCategory) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -132,7 +132,7 @@ public class ResourceCategoryController implements Serializable {
     private void performDestroy() {
         try {
             getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ResourceCategoryDeleted"));
+            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ConnectorCategoryDeleted"));
         } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
         }
@@ -188,21 +188,21 @@ public class ResourceCategoryController implements Serializable {
         return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
     }
 
-    public ResourceCategory getResourceCategory(java.lang.Integer id) {
+    public ConnectorTypeCategory getConnectorCategory(java.lang.Integer id) {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = ResourceCategory.class)
-    public static class ResourceCategoryControllerConverter implements Converter {
+    @FacesConverter(forClass = ConnectorTypeCategory.class)
+    public static class ConnectorCategoryControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ResourceCategoryController controller = (ResourceCategoryController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "resourceCategoryController");
-            return controller.getResourceCategory(getKey(value));
+            ConnectorTypeCategoryController controller = (ConnectorTypeCategoryController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "connectorCategoryController");
+            return controller.getConnectorCategory(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -222,11 +222,11 @@ public class ResourceCategoryController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof ResourceCategory) {
-                ResourceCategory o = (ResourceCategory) object;
+            if (object instanceof ConnectorTypeCategory) {
+                ConnectorTypeCategory o = (ConnectorTypeCategory) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ResourceCategory.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ConnectorTypeCategory.class.getName());
             }
         }
 

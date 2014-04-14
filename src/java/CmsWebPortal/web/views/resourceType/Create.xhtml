@@ -22,7 +22,7 @@
                     <h:outputLabel value="#{resources.CreateResourceTypeLabel_description}" for="description" />
                     <h:inputText id="description" value="#{resourceTypeController.selected.description}" title="#{resources.CreateResourceTypeTitle_description}" />
                     <h:outputLabel value="#{resources.CreateResourceTypeLabel_resourceCategoryId}" for="resourceCategoryId" />
-                    <h:selectOneMenu id="resourceCategoryId" value="#{resourceTypeController.selected.resourceCategoryId}" title="#{resources.CreateResourceTypeTitle_resourceCategoryId}" >
+                    <h:selectOneMenu id="resourceCategoryId" value="#{resourceTypeController.selected.resourceTypeCategory}" title="#{resources.CreateResourceTypeTitle_resourceCategoryId}" >
                         <f:selectItems value="#{resourceCategoryController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

@@ -13,16 +13,27 @@
             <h1>Registered Users</h1>
         </div>
 
-        <h:form id="viewUserListForm">            
+        <h:form id="viewUserListForm">
+            <c:set var="listController" value="#{userController}"/>
             <div class="actionButton">
-                <p:commandButton action="#{userController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add User" icon="ui-icon-plus"/>
-                <p:button href="../userGroup/list.xhtml" rendered="#{loginController.loggedInAsAdmin}" value="Manage Groups" alt="Manage Groups" styleClass="actionButtonRight"/>
+                <p:commandButton action="#{listController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
+                <p:commandButton style="visibility:hidden" value="NoOp"/>
+                <p:button href="../userGroup/list.xhtml" value="View Groups" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight"/>
+                <p:commandButton action="#{listController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
                 <p:defaultCommand target="confirmDialogNo"/>
             </div>
+
             <h:panelGroup>  
 
-                <p:dataTable id="userListDataTable" var="item" value="#{userController.items}" 
-                             paginator="true" paginatorAlwaysVisible="false" rows="10"
+                <p:dataTable id="userListDataTable"                              
+                             var="item" 
+                             value="#{listController.items}" 
+                             filteredValue="#{listController.filteredItems}"
+                             paginator="true" 
+                             paginatorAlwaysVisible="true" 
+                             rows="#{listController.displayNumberOfItemsPerPage}"
+                             binding="#{listController.listDataTable}"
+                             widgetVar="userListWidget" 
                              emptyMessage="No users found.">
 
                     <f:facet name="header">
@@ -39,7 +50,7 @@
 
                     <p:column sortBy="#{item.userGroupList.toString()}" headerText="Group" 
                               filterBy="#{item.userGroupList}" filterMatchMode="contains">
-                        <h:outputText value="#{userController.displayEntityList(item.userGroupList)}"/>
+                        <h:outputText value="#{listController.displayEntityList(item.userGroupList)}"/>
                     </p:column>
 
                     <p:column sortBy="#{item.lastName}" headerText="Last Name" 
@@ -65,20 +76,23 @@
                     <c:set var="isEntityWriteable" value="#{loginController.isUserWriteable(item)}"/>
                     <p:column headerText="Actions">
                         <div class="actionLink">
-                            <p:commandLink action="#{userController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                            <p:commandLink action="#{userController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                            <p:commandLink action="#{listController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                            <p:commandLink action="#{listController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
                             <p:commandLink oncomplete="confirmation.show()" rendered="#{loginController.loggedInAsAdmin}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                                <f:setPropertyActionListener value="#{item}" target="#{userController.current}"/>
+                                <f:setPropertyActionListener value="#{item}" target="#{listController.current}"/>
                             </p:commandLink>
                         </div>
                     </p:column>
                 </p:dataTable>
             </h:panelGroup>
-            <p:confirmDialog id="destroyUserDialog" message="Destroy user #{userController.getCurrentEntityInstanceName()}?"
+
+            <p:confirmDialog id="destroyUserDialog" message="Destroy user #{listController.getCurrentEntityInstanceName()}?"
                              header="Destroy User" severity="alert" widgetVar="confirmation">
-                <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{userController.destroy()}" update="@form"/>
+                <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{listController.destroy()}" update="@form"/>
                 <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
+
+            <h:outputScript library="javascript/user" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
 
         </h:form>
 

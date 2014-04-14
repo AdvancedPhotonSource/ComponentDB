@@ -1,8 +1,8 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cms.portal.model.entities.PropertyType;
-import gov.anl.aps.cms.portal.model.beans.PropertyTypeFacade;
+import gov.anl.aps.cms.portal.model.entities.PropertyTypeCategory;
+import gov.anl.aps.cms.portal.model.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 
@@ -19,37 +19,34 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-@Named("propertyTypeController")
+@Named("propertyTypeCategoryController")
 @SessionScoped
-public class PropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeFacade> implements Serializable
+public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade> implements Serializable
 {
-
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyType.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
 
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
+    private PropertyTypeCategoryFacade propertyTypeCategoryFacade;
 
-    private String filterByTypeCategory = null;
-    
-    public PropertyTypeController() {
+    public PropertyTypeCategoryController() {
     }
 
     @Override
-    protected PropertyTypeFacade getFacade() {
-        return propertyTypeFacade;
+    protected PropertyTypeCategoryFacade getFacade() {
+        return propertyTypeCategoryFacade;
     }
 
     @Override
-    protected PropertyType createEntityInstance() {
-        PropertyType propertyType = new PropertyType();
-        return propertyType;
+    protected PropertyTypeCategory createEntityInstance() {
+        PropertyTypeCategory propertyCategory = new PropertyTypeCategory();
+        return propertyCategory;
     }
 
     @Override
     public String getEntityTypeName() {
-        return "property type";
+        return "property type category";
     }
 
     @Override
@@ -61,21 +58,21 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     }
 
     @Override
-    public List<PropertyType> getAvailableItems() {
+    public List<PropertyTypeCategory> getAvailableItems() {
         return super.getAvailableItems();
     }
 
     @Override
-    public void prepareEntityInsert(PropertyType propertyType) throws ObjectAlreadyExists {
-        PropertyType existingPropertyType = propertyTypeFacade.findByName(propertyType.getName());
-        if (existingPropertyType != null) {
-            throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
+    public void prepareEntityInsert(PropertyTypeCategory propertyTypeCategory) throws ObjectAlreadyExists {
+        PropertyTypeCategory existingPropertyTypeCategory = propertyTypeCategoryFacade.findByName(propertyTypeCategory.getName());
+        if (existingPropertyTypeCategory != null) {
+            throw new ObjectAlreadyExists("Property type category " + propertyTypeCategory.getName() + " already exists.");
         }
-        logger.debug("Inserting new property type " + propertyType.getName());
+        logger.debug("Inserting new property type " + propertyTypeCategory.getName());
     }
-    
+
     @Override
-    public void prepareEntityUpdate(PropertyType propertyType) throws ObjectAlreadyExists {
+    public void prepareEntityUpdate(PropertyTypeCategory propertyCategory) throws ObjectAlreadyExists {
     }
 
     @Override
@@ -105,26 +102,16 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         Map<String, String> filters = dataTable.getFilters();
         filterByName = filters.get("name");
         filterByDescription = filters.get("description");
-        filterByTypeCategory = filters.get("propertyTypeCategory.name");
     }
 
     @Override
     public void clearListFilters() {
         filterByName = null;
         filterByDescription = null;
-        filterByTypeCategory = null;
     }
-
-    public String getFilterByTypeCategory() {
-        return filterByTypeCategory;
-    }
-
-    public void setFilterByTypeCategory(String filterByTypeCategory) {
-        this.filterByTypeCategory = filterByTypeCategory;
-    }
-
-    @FacesConverter(forClass = PropertyType.class)
-    public static class PropertyTypeControllerConverter implements Converter
+    
+    @FacesConverter(forClass = PropertyTypeCategory.class)
+    public static class PropertyCategoryControllerConverter implements Converter
     {
 
         @Override
@@ -132,8 +119,8 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
             if (value == null || value.length() == 0) {
                 return null;
             }
-            PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyTypeController");
+            PropertyTypeCategoryController controller = (PropertyTypeCategoryController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "propertyTypeCategoryController");
             return controller.getEntity(getKey(value));
         }
 
@@ -154,12 +141,12 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
             if (object == null) {
                 return null;
             }
-            if (object instanceof PropertyType) {
-                PropertyType o = (PropertyType) object;
+            if (object instanceof PropertyTypeCategory) {
+                PropertyTypeCategory o = (PropertyTypeCategory) object;
                 return getStringKey(o.getId());
             }
             else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyType.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyTypeCategory.class.getName());
             }
         }
 

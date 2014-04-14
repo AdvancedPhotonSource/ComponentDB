@@ -6,7 +6,7 @@
 
 package gov.anl.aps.cms.portal.model.beans;
 
-import gov.anl.aps.cms.portal.model.entities.ResourceCategory;
+import gov.anl.aps.cms.portal.model.entities.ConnectorTypeCategory;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class ResourceCategoryFacade extends AbstractFacade<ResourceCategory> {
+public class ConnectorTypeCategoryFacade extends AbstractFacade<ConnectorTypeCategory> {
     @PersistenceContext(unitName = "CmsWebPortalPU")
     private EntityManager em;
 
@@ -25,8 +25,8 @@ public class ResourceCategoryFacade extends AbstractFacade<ResourceCategory> {
         return em;
     }
 
-    public ResourceCategoryFacade() {
-        super(ResourceCategory.class);
+    public ConnectorTypeCategoryFacade() {
+        super(ConnectorTypeCategory.class);
     }
     
 }

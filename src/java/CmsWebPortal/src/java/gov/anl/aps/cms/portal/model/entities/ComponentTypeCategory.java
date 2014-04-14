@@ -28,14 +28,14 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
-@Table(name = "connector_category")
+@Table(name = "component_type_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ConnectorCategory.findAll", query = "SELECT c FROM ConnectorCategory c"),
-    @NamedQuery(name = "ConnectorCategory.findById", query = "SELECT c FROM ConnectorCategory c WHERE c.id = :id"),
-    @NamedQuery(name = "ConnectorCategory.findByName", query = "SELECT c FROM ConnectorCategory c WHERE c.name = :name"),
-    @NamedQuery(name = "ConnectorCategory.findByDescription", query = "SELECT c FROM ConnectorCategory c WHERE c.description = :description")})
-public class ConnectorCategory implements Serializable
+    @NamedQuery(name = "ComponentTypeCategory.findAll", query = "SELECT c FROM ComponentTypeCategory c"),
+    @NamedQuery(name = "ComponentTypeCategory.findById", query = "SELECT c FROM ComponentTypeCategory c WHERE c.id = :id"),
+    @NamedQuery(name = "ComponentTypeCategory.findByName", query = "SELECT c FROM ComponentTypeCategory c WHERE c.name = :name"),
+    @NamedQuery(name = "ComponentTypeCategory.findByDescription", query = "SELECT c FROM ComponentTypeCategory c WHERE c.description = :description")})
+public class ComponentTypeCategory implements Serializable
 {
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,17 +51,17 @@ public class ConnectorCategory implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "connectorCategoryId")
-    private List<ConnectorType> connectorTypeList;
+    @OneToMany(mappedBy = "componentTypeCategory")
+    private List<ComponentType> componentTypeList;
 
-    public ConnectorCategory() {
+    public ComponentTypeCategory() {
     }
 
-    public ConnectorCategory(Integer id) {
+    public ComponentTypeCategory(Integer id) {
         this.id = id;
     }
 
-    public ConnectorCategory(Integer id, String name) {
+    public ComponentTypeCategory(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -91,12 +91,12 @@ public class ConnectorCategory implements Serializable
     }
 
     @XmlTransient
-    public List<ConnectorType> getConnectorTypeList() {
-        return connectorTypeList;
+    public List<ComponentType> getComponentTypeList() {
+        return componentTypeList;
     }
 
-    public void setConnectorTypeList(List<ConnectorType> connectorTypeList) {
-        this.connectorTypeList = connectorTypeList;
+    public void setComponentTypeList(List<ComponentType> componentTypeList) {
+        this.componentTypeList = componentTypeList;
     }
 
     @Override
@@ -109,10 +109,10 @@ public class ConnectorCategory implements Serializable
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ConnectorCategory)) {
+        if (!(object instanceof ComponentTypeCategory)) {
             return false;
         }
-        ConnectorCategory other = (ConnectorCategory) object;
+        ComponentTypeCategory other = (ComponentTypeCategory) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -121,7 +121,7 @@ public class ConnectorCategory implements Serializable
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.ConnectorCategory[ id=" + id + " ]";
+        return "gov.anl.aps.cms.test.entities.ComponentCategory[ id=" + id + " ]";
     }
     
 }

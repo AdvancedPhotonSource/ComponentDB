@@ -58,9 +58,9 @@ public class ConnectorType implements Serializable
     private List<ComponentConnector> componentConnectorList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorTypeId")
     private List<ConnectorTypeProperty> connectorTypePropertyList;
-    @JoinColumn(name = "connector_category_id", referencedColumnName = "id")
+    @JoinColumn(name = "connector_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private ConnectorCategory connectorCategoryId;
+    private ConnectorTypeCategory connectorTypeCategory;
 
     public ConnectorType() {
     }
@@ -116,12 +116,12 @@ public class ConnectorType implements Serializable
         this.connectorTypePropertyList = connectorTypePropertyList;
     }
 
-    public ConnectorCategory getConnectorCategoryId() {
-        return connectorCategoryId;
+    public ConnectorTypeCategory getConnectorTypeCategory() {
+        return connectorTypeCategory;
     }
 
-    public void setConnectorCategoryId(ConnectorCategory connectorCategoryId) {
-        this.connectorCategoryId = connectorCategoryId;
+    public void setConnectorTypeCategory(ConnectorTypeCategory connectorTypeCategory) {
+        this.connectorTypeCategory = connectorTypeCategory;
     }
 
     @Override

@@ -32,14 +32,12 @@
 
                 <h:outputLabel for="componentState" value="State" styleClass="entityDataLabel"/>
                 <h:selectOneMenu id="componentState" value="#{selected.componentState}" required="true" title="State" styleClass="entityDataSelectOne">
-                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
                     <f:selectItems var="componentState" value="#{componentStateController.availableItems}" itemLabel="#{componentState.name}" itemValue="#{componentState}"/>
                 </h:selectOneMenu>
                 <p:message for="componentState"/> 
 
                 <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
-                <h:selectManyMenu id="componentTypes" value="#{selected.componentTypeList}" converter="componentTypeConverter" title="Type" styleClass="entityDataSelectMany">
-                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                <h:selectManyMenu id="componentTypes" value="#{selected.componentTypeList}" required="true" converter="componentTypeConverter" title="Type" styleClass="entityDataSelectMany">
                     <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.name}" itemValue="#{componentType}"/>
                 </h:selectManyMenu>
                 <p:message for="componentTypes"/>

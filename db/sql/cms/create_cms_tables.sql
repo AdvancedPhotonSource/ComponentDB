@@ -122,16 +122,16 @@ CREATE TABLE `log` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `resource_category`
+-- Table `resource_type_category`
 --
 
-DROP TABLE IF EXISTS `resource_category`;
-CREATE TABLE `resource_category` (
+DROP TABLE IF EXISTS `resource_type_category`;
+CREATE TABLE `resource_type_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `resource_category_u1` (`name`)
+  UNIQUE KEY `resource_type_category_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -142,24 +142,24 @@ CREATE TABLE `resource_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `resource_category_id` int(11) unsigned DEFAULT NULL,
+  `resource_type_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `resource_type_u1` (`name`),
-  KEY `resource_type_k1` (`resource_category_id`),
-  CONSTRAINT `resource_type_fk1` FOREIGN KEY (`resource_category_id`) REFERENCES `resource_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  KEY `resource_type_k1` (`resource_type_category_id`),
+  CONSTRAINT `resource_type_fk1` FOREIGN KEY (`resource_type_category_id`) REFERENCES `resource_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `component_category`
+-- Table `component_type_category`
 --
 
-DROP TABLE IF EXISTS `component_category`;
-CREATE TABLE `component_category` (
+DROP TABLE IF EXISTS `component_type_category`;
+CREATE TABLE `component_type_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `component_category_u1` (`name`)
+  UNIQUE KEY `component_type_category_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -170,24 +170,24 @@ CREATE TABLE `component_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `component_category_id` int(11) unsigned DEFAULT NULL,
+  `component_type_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `component_type_u1` (`name`),
-  KEY `component_type_k1` (`component_category_id`),
-  CONSTRAINT `component_type_fk1` FOREIGN KEY (`component_category_id`) REFERENCES `component_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  KEY `component_type_k1` (`component_type_category_id`),
+  CONSTRAINT `component_type_fk1` FOREIGN KEY (`component_type_category_id`) REFERENCES `component_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `property_category`
+-- Table `property_type_category`
 --
 
-DROP TABLE IF EXISTS `property_category`;
-CREATE TABLE `property_category` (
+DROP TABLE IF EXISTS `property_type_category`;
+CREATE TABLE `property_type_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `property_category_u1` (`name`)
+  UNIQUE KEY `property_type_category_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -198,24 +198,24 @@ CREATE TABLE `property_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `property_category_id` int(11) unsigned DEFAULT NULL,
+  `property_type_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `property_type_u1` (`name`),
-  KEY `property_type_k1` (`property_category_id`),
-  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_category_id`) REFERENCES `property_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  KEY `property_type_k1` (`property_type_category_id`),
+  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_type_category_id`) REFERENCES `property_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `connector_category`
+-- Table `connector_type_category`
 --
 
-DROP TABLE IF EXISTS `connector_category`;
-CREATE TABLE `connector_category` (
+DROP TABLE IF EXISTS `connector_type_category`;
+CREATE TABLE `connector_type_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `connector_category_u1` (`name`)
+  UNIQUE KEY `connector_type_category_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -226,11 +226,11 @@ CREATE TABLE `connector_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `connector_category_id` int(11) unsigned DEFAULT NULL,
+  `connector_type_category_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `connector_type_u1` (`name`),
-  KEY `connector_type_k1` (`connector_category_id`),
-  CONSTRAINT `connector_type_fk1` FOREIGN KEY (`connector_category_id`) REFERENCES `connector_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  KEY `connector_type_k1` (`connector_type_category_id`),
+  CONSTRAINT `connector_type_fk1` FOREIGN KEY (`connector_type_category_id`) REFERENCES `connector_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -340,6 +340,7 @@ CREATE TABLE `assembly_component` (
   `component_id` int(11) unsigned NOT NULL,
   `quantity` int(11) unsigned DEFAULT 1,
   `description` varchar(256) DEFAULT NULL,
+  `priority` float(10,2) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `assembly_component_k1` (`assembly_id`),
   CONSTRAINT `assembly_component_fk1` FOREIGN KEY (`assembly_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -371,6 +372,21 @@ CREATE TABLE `collection` (
 --
 
 --
+-- Table `collection_link`
+--
+
+DROP TABLE IF EXISTS `collection_link`;
+CREATE TABLE `collection_link` (
+  `parent_collection_id` int(11) unsigned NOT NULL,
+  `child_collection_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`parent_collection_id`, `child_collection_id`),
+  KEY `collection_link_k1` (`parent_collection_id`),
+  CONSTRAINT `collection_link_fk1` FOREIGN KEY (`parent_collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `collection_link_fk2` FOREIGN KEY (`child_collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+--
 -- Table `collection_component`
 --
 
@@ -382,6 +398,7 @@ CREATE TABLE `collection_component` (
   `quantity` int(11) unsigned DEFAULT 1,
   `description` varchar(256) DEFAULT NULL,
   `tag` varchar(64) DEFAULT NULL,
+  `priority` float(10,2) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `collection_component_u1` (`collection_id`, `component_id`, `tag`),
   KEY `collection_component_k1` (`collection_id`),
@@ -635,6 +652,7 @@ CREATE TABLE `design_component` (
   `location_id` int(11) unsigned NOT NULL,
   `quantity` int(11) unsigned DEFAULT 1,
   `description` varchar(256) DEFAULT NULL,
+  `priority` float(10,2) unsigned DEFAULT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `design_component_u1` (`name`, `design_id`),

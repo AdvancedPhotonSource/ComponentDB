@@ -28,14 +28,14 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
-@Table(name = "component_category")
+@Table(name = "property_type_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ComponentCategory.findAll", query = "SELECT c FROM ComponentCategory c"),
-    @NamedQuery(name = "ComponentCategory.findById", query = "SELECT c FROM ComponentCategory c WHERE c.id = :id"),
-    @NamedQuery(name = "ComponentCategory.findByName", query = "SELECT c FROM ComponentCategory c WHERE c.name = :name"),
-    @NamedQuery(name = "ComponentCategory.findByDescription", query = "SELECT c FROM ComponentCategory c WHERE c.description = :description")})
-public class ComponentCategory implements Serializable
+    @NamedQuery(name = "PropertyTypeCategory.findAll", query = "SELECT p FROM PropertyTypeCategory p"),
+    @NamedQuery(name = "PropertyTypeCategory.findById", query = "SELECT p FROM PropertyTypeCategory p WHERE p.id = :id"),
+    @NamedQuery(name = "PropertyTypeCategory.findByName", query = "SELECT p FROM PropertyTypeCategory p WHERE p.name = :name"),
+    @NamedQuery(name = "PropertyTypeCategory.findByDescription", query = "SELECT p FROM PropertyTypeCategory p WHERE p.description = :description")})
+public class PropertyTypeCategory implements Serializable
 {
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,17 +51,17 @@ public class ComponentCategory implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "componentCategory")
-    private List<ComponentType> componentTypeList;
+    @OneToMany(mappedBy = "propertyTypeCategory")
+    private List<PropertyType> propertyTypeList;
 
-    public ComponentCategory() {
+    public PropertyTypeCategory() {
     }
 
-    public ComponentCategory(Integer id) {
+    public PropertyTypeCategory(Integer id) {
         this.id = id;
     }
 
-    public ComponentCategory(Integer id, String name) {
+    public PropertyTypeCategory(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -91,12 +91,12 @@ public class ComponentCategory implements Serializable
     }
 
     @XmlTransient
-    public List<ComponentType> getComponentTypeList() {
-        return componentTypeList;
+    public List<PropertyType> getPropertyTypeList() {
+        return propertyTypeList;
     }
 
-    public void setComponentTypeList(List<ComponentType> componentTypeList) {
-        this.componentTypeList = componentTypeList;
+    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
+        this.propertyTypeList = propertyTypeList;
     }
 
     @Override
@@ -109,19 +109,16 @@ public class ComponentCategory implements Serializable
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ComponentCategory)) {
+        if (!(object instanceof PropertyTypeCategory)) {
             return false;
         }
-        ComponentCategory other = (ComponentCategory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        PropertyTypeCategory other = (PropertyTypeCategory) object;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.ComponentCategory[ id=" + id + " ]";
+        return name;
     }
     
 }

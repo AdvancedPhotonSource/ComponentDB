@@ -56,9 +56,9 @@ public class ResourceType implements Serializable
     private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceTypeId")
     private List<ComponentConnectorResource> componentConnectorResourceList;
-    @JoinColumn(name = "resource_category_id", referencedColumnName = "id")
+    @JoinColumn(name = "resource_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private ResourceCategory resourceCategoryId;
+    private ResourceTypeCategory resourceTypeCategory;
 
     public ResourceType() {
     }
@@ -105,12 +105,12 @@ public class ResourceType implements Serializable
         this.componentConnectorResourceList = componentConnectorResourceList;
     }
 
-    public ResourceCategory getResourceCategoryId() {
-        return resourceCategoryId;
+    public ResourceTypeCategory getResourceTypeCategory() {
+        return resourceTypeCategory;
     }
 
-    public void setResourceCategoryId(ResourceCategory resourceCategoryId) {
-        this.resourceCategoryId = resourceCategoryId;
+    public void setResourceTypeCategory(ResourceTypeCategory resourceTypeCategory) {
+        this.resourceTypeCategory = resourceTypeCategory;
     }
 
     @Override

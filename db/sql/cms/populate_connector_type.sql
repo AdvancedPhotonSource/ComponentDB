@@ -26,7 +26,7 @@
 LOCK TABLES `connector_type` WRITE;
 /*!40000 ALTER TABLE `connector_type` DISABLE KEYS */;
 
-INSERT INTO `connector_type` (`id`, `name`, `description`, `connector_category_id`)
+INSERT INTO `connector_type` (`id`, `name`, `description`, `connector_type_category_id`)
 VALUES
 	(1,'TBD',NULL,1),
 	(2,'Parker CPI 3/\" compression',NULL,1),

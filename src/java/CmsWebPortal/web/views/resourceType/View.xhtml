@@ -22,7 +22,7 @@
                     <h:outputText value="#{resources.ViewResourceTypeLabel_description}"/>
                     <h:outputText value="#{resourceTypeController.selected.description}" title="#{resources.ViewResourceTypeTitle_description}"/>
                     <h:outputText value="#{resources.ViewResourceTypeLabel_resourceCategoryId}"/>
-                    <h:outputText value="#{resourceTypeController.selected.resourceCategoryId}" title="#{resources.ViewResourceTypeTitle_resourceCategoryId}"/>
+                    <h:outputText value="#{resourceTypeController.selected.resourceTypeCategory}" title="#{resources.ViewResourceTypeTitle_resourceCategoryId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{resourceTypeController.destroyAndView}" value="#{resources.ViewResourceTypeDestroyLink}"/>

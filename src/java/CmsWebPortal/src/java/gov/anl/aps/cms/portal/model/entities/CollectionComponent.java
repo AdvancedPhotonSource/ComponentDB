@@ -54,6 +54,9 @@ public class CollectionComponent implements Serializable
     @Column(name = "tag")
     private String tag;
 
+    @Column(name = "priority")
+    private Float priority;
+
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Component component;
@@ -115,6 +118,14 @@ public class CollectionComponent implements Serializable
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public Float getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Float priority) {
+        this.priority = priority;
     }
 
     @Override

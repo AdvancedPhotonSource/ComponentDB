@@ -22,7 +22,7 @@
                     <h:outputText value="#{resources.ViewConnectorTypeLabel_description}"/>
                     <h:outputText value="#{connectorTypeController.selected.description}" title="#{resources.ViewConnectorTypeTitle_description}"/>
                     <h:outputText value="#{resources.ViewConnectorTypeLabel_connectorCategoryId}"/>
-                    <h:outputText value="#{connectorTypeController.selected.connectorCategoryId}" title="#{resources.ViewConnectorTypeTitle_connectorCategoryId}"/>
+                    <h:outputText value="#{connectorTypeController.selected.connectorTypeCategory}" title="#{resources.ViewConnectorTypeTitle_connectorCategoryId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{connectorTypeController.destroyAndView}" value="#{resources.ViewConnectorTypeDestroyLink}"/>

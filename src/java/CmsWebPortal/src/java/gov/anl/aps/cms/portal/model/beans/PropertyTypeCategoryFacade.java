@@ -6,7 +6,7 @@
 
 package gov.anl.aps.cms.portal.model.beans;
 
-import gov.anl.aps.cms.portal.model.entities.PropertyType;
+import gov.anl.aps.cms.portal.model.entities.PropertyTypeCategory;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class PropertyTypeFacade extends AbstractFacade<PropertyType> {
+public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCategory> {
     @PersistenceContext(unitName = "CmsWebPortalPU")
     private EntityManager em;
 
@@ -26,13 +26,13 @@ public class PropertyTypeFacade extends AbstractFacade<PropertyType> {
         return em;
     }
 
-    public PropertyTypeFacade() {
-        super(PropertyType.class);
+    public PropertyTypeCategoryFacade() {
+        super(PropertyTypeCategory.class);
     }
 
-    public PropertyType findByName(String name) {
+        public PropertyTypeCategory findByName(String name) {
         try {
-            return (PropertyType)em.createNamedQuery("PropertyType.findByName")
+            return (PropertyTypeCategory)em.createNamedQuery("PropertyTypeCategory.findByName")
                 .setParameter("name", name)
                 .getSingleResult();
         }

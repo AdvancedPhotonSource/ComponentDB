@@ -31,7 +31,9 @@
                 <p:message for="description"/> 
 
                 <h:outputLabel for="parentCollection" value="Parent" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="parentCollection" value="#{selected.parentCollection}" title="Parent" styleClass="entityDataText">
+                <h:selectOneMenu id="parentCollection" value="#{selected.parentCollection}" title="Parent" 
+                                 converter="collectionConverter"
+                                 styleClass="entityDataText">
                     <f:selectItem itemLabel="Select" itemValue="#{null}"/>
                     <f:selectItems var="parentCollection" value="#{collectionController.availableItems}" itemLabel="#{parentCollection.name}" itemValue="#{parentCollection}"/>
                 </h:selectOneMenu>

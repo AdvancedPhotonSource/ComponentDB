@@ -26,7 +26,7 @@
 LOCK TABLES `resource_type` WRITE;
 /*!40000 ALTER TABLE `resource_type` DISABLE KEYS */;
 
-INSERT INTO `resource_type` (`id`, `name`, `description`, `resource_category_id`)
+INSERT INTO `resource_type` (`id`, `name`, `description`, `resource_type_category_id`)
 VALUES
 	(1,'cooling water',NULL,1),
 	(2,'110 VAC',NULL,4),

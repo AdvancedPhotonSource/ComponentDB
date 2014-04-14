@@ -22,7 +22,7 @@
                     <h:outputLabel value="#{resources.EditConnectorTypeLabel_description}" for="description" />
                     <h:inputText id="description" value="#{connectorTypeController.selected.description}" title="#{resources.EditConnectorTypeTitle_description}" />
                     <h:outputLabel value="#{resources.EditConnectorTypeLabel_connectorCategoryId}" for="connectorCategoryId" />
-                    <h:selectOneMenu id="connectorCategoryId" value="#{connectorTypeController.selected.connectorCategoryId}" title="#{resources.EditConnectorTypeTitle_connectorCategoryId}" >
+                    <h:selectOneMenu id="connectorCategoryId" value="#{connectorTypeController.selected.connectorTypeCategory}" title="#{resources.EditConnectorTypeTitle_connectorCategoryId}" >
                         <f:selectItems value="#{connectorCategoryController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

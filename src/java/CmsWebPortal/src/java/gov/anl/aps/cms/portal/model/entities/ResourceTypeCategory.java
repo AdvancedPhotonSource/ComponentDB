@@ -28,14 +28,14 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
-@Table(name = "property_category")
+@Table(name = "resource_type_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PropertyCategory.findAll", query = "SELECT p FROM PropertyCategory p"),
-    @NamedQuery(name = "PropertyCategory.findById", query = "SELECT p FROM PropertyCategory p WHERE p.id = :id"),
-    @NamedQuery(name = "PropertyCategory.findByName", query = "SELECT p FROM PropertyCategory p WHERE p.name = :name"),
-    @NamedQuery(name = "PropertyCategory.findByDescription", query = "SELECT p FROM PropertyCategory p WHERE p.description = :description")})
-public class PropertyCategory implements Serializable
+    @NamedQuery(name = "ResourceTypeCategory.findAll", query = "SELECT r FROM ResourceTypeCategory r"),
+    @NamedQuery(name = "ResourceTypeCategory.findById", query = "SELECT r FROM ResourceTypeCategory r WHERE r.id = :id"),
+    @NamedQuery(name = "ResourceTypeCategory.findByName", query = "SELECT r FROM ResourceTypeCategory r WHERE r.name = :name"),
+    @NamedQuery(name = "ResourceTypeCategory.findByDescription", query = "SELECT r FROM ResourceTypeCategory r WHERE r.description = :description")})
+public class ResourceTypeCategory implements Serializable
 {
     private static final long serialVersionUID = 1L;
     @Id
@@ -51,17 +51,17 @@ public class PropertyCategory implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(mappedBy = "propertyCategory")
-    private List<PropertyType> propertyTypeList;
+    @OneToMany(mappedBy = "resourceTypeCategory")
+    private List<ResourceType> resourceTypeList;
 
-    public PropertyCategory() {
+    public ResourceTypeCategory() {
     }
 
-    public PropertyCategory(Integer id) {
+    public ResourceTypeCategory(Integer id) {
         this.id = id;
     }
 
-    public PropertyCategory(Integer id, String name) {
+    public ResourceTypeCategory(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -91,12 +91,12 @@ public class PropertyCategory implements Serializable
     }
 
     @XmlTransient
-    public List<PropertyType> getPropertyTypeList() {
-        return propertyTypeList;
+    public List<ResourceType> getResourceTypeList() {
+        return resourceTypeList;
     }
 
-    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
-        this.propertyTypeList = propertyTypeList;
+    public void setResourceTypeList(List<ResourceType> resourceTypeList) {
+        this.resourceTypeList = resourceTypeList;
     }
 
     @Override
@@ -109,16 +109,19 @@ public class PropertyCategory implements Serializable
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PropertyCategory)) {
+        if (!(object instanceof ResourceTypeCategory)) {
             return false;
         }
-        PropertyCategory other = (PropertyCategory) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        ResourceTypeCategory other = (ResourceTypeCategory) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return name;
+        return "gov.anl.aps.cms.test.entities.ResourceCategory[ id=" + id + " ]";
     }
     
 }

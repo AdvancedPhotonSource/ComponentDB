@@ -58,9 +58,9 @@ public class PropertyType implements Serializable
     private List<ConnectorTypeProperty> connectorTypePropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<ComponentProperty> componentPropertyList;
-    @JoinColumn(name = "property_category_id", referencedColumnName = "id")
+    @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private PropertyCategory propertyCategory;
+    private PropertyTypeCategory propertyTypeCategory;
 
     public PropertyType() {
     }
@@ -116,12 +116,12 @@ public class PropertyType implements Serializable
         this.componentPropertyList = componentPropertyList;
     }
 
-    public PropertyCategory getPropertyCategory() {
-        return propertyCategory;
+    public PropertyTypeCategory getPropertyTypeCategory() {
+        return propertyTypeCategory;
     }
 
-    public void setPropertyCategory(PropertyCategory propertyCategory) {
-        this.propertyCategory = propertyCategory;
+    public void setPropertyTypeCategory(PropertyTypeCategory propertyTypeCategory) {
+        this.propertyTypeCategory = propertyTypeCategory;
     }
 
     @Override
@@ -144,8 +144,8 @@ public class PropertyType implements Serializable
     @Override
     public String toString() {
         String result = name;
-        if (propertyCategory != null) {
-            result += "/" + propertyCategory.getName();
+        if (propertyTypeCategory != null) {
+            result += "/" + propertyTypeCategory.getName();
         }
         return result;
     }

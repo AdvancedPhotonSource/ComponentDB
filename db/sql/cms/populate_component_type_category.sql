@@ -20,13 +20,13 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table component_category
+# Dump of table component_type_category
 # ------------------------------------------------------------
 
-LOCK TABLES `component_category` WRITE;
-/*!40000 ALTER TABLE `component_category` DISABLE KEYS */;
+LOCK TABLES `component_type_category` WRITE;
+/*!40000 ALTER TABLE `component_type_category` DISABLE KEYS */;
 
-INSERT INTO `component_category` (`id`, `name`, `description`)
+INSERT INTO `component_type_category` (`id`, `name`, `description`)
 VALUES
 	(1,'Other',NULL),
 	(2,'Mechanical',NULL),
@@ -42,7 +42,7 @@ VALUES
 	(12,'Timing',NULL),
 	(13,'Diagnostics',NULL);
 
-/*!40000 ALTER TABLE `component_category` ENABLE KEYS */;
+/*!40000 ALTER TABLE `component_type_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
 

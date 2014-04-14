@@ -33,12 +33,14 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     private DataModel listDataModel = null;
     private DataTable listDataTable = null;
     private Date listSettingsTimestamp = null;
+    private Date viewSettingsTimestamp = null;
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
     private List<EntityType> filteredItems = null;
 
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayId = null;
+    protected Boolean displayDescription = null;
     protected Boolean displayOwnerUser = null;
     protected Boolean displayOwnerGroup = null;
     protected Boolean displayCreatedByUser = null;
@@ -47,6 +49,7 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     protected Boolean displayLastModifiedOnDateTime = null;
 
     protected String filterByName = null;
+    protected String filterByDescription = null;
     protected String filterByOwnerUser = null;
     protected String filterByOwnerGroup = null;
     protected String filterByCreatedByUser = null;
@@ -60,6 +63,7 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     @PostConstruct
     public void initialize() {
         initializeListSettings();
+        initializeViewSettings();
     }
 
     public List<SettingType> getSettingTypeList() {
@@ -190,6 +194,22 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return false;
     }
 
+    public void initializeViewSettings() {
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser != null) {
+            updateViewSettingsFromSessionUser(sessionUser);
+        }
+        else {
+            updateViewSettingsFromSettingTypeDefaults(getSettingTypeMap());
+        }
+    }
+
+    public void updateViewSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    }
+
+    public void updateViewSettingsFromSessionUser(User sessionUser) {
+    }
+
     public boolean isViewValid() {
         selectByRequestParams();
         return current != null;
@@ -198,6 +218,14 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser != null) {
+            if (viewSettingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(viewSettingsTimestamp)) {
+                logger.debug("Updating view settings from session user");
+                updateViewSettingsFromSessionUser(sessionUser);
+                viewSettingsTimestamp = new Date();
+            }
+        }
         return "view?faces-redirect=true";
     }
 
@@ -215,9 +243,12 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public String create() {
         try {
+            EntityType newEntity = current;
             prepareEntityInsert(current);
             getFacade().create(current);
             SessionUtility.addInfoMessage("Success", "Created " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            resetDataModel();
+            current = newEntity;
             return view();
         }
         catch (CmsPortalException ex) {
@@ -240,9 +271,12 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public String update() {
         try {
+            EntityType updatedEntity = current;
             prepareEntityUpdate(current);
             getFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            resetDataModel();
+            current = updatedEntity;
             return view();
         }
         catch (CmsPortalException ex) {
@@ -327,6 +361,14 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         this.displayId = displayId;
     }
 
+    public Boolean getDisplayDescription() {
+        return displayDescription;
+    }
+
+    public void setDisplayDescription(Boolean displayDescription) {
+        this.displayDescription = displayDescription;
+    }
+
     public Boolean getDisplayOwnerUser() {
         return displayOwnerUser;
     }
@@ -381,6 +423,14 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public String getFilterByName() {
         return filterByName;
+    }
+
+    public String getFilterByDescription() {
+        return filterByDescription;
+    }
+
+    public void setFilterByDescription(String filterByDescription) {
+        this.filterByDescription = filterByDescription;
     }
 
     public String getFilterByOwnerUser() {

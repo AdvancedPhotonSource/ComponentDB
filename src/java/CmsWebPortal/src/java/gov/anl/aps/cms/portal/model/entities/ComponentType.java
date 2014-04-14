@@ -55,9 +55,9 @@ public class ComponentType implements Serializable
     private String description;
     @ManyToMany(mappedBy = "componentTypeList")
     private List<Component> componentList;
-    @JoinColumn(name = "component_category_id", referencedColumnName = "id")
+    @JoinColumn(name = "component_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private ComponentCategory componentCategory;
+    private ComponentTypeCategory componentTypeCategory;
 
     public ComponentType() {
     }
@@ -104,12 +104,12 @@ public class ComponentType implements Serializable
         this.componentList = componentList;
     }
 
-    public ComponentCategory getComponentCategory() {
-        return componentCategory;
+    public ComponentTypeCategory getComponentTypeCategory() {
+        return componentTypeCategory;
     }
 
-    public void setComponentCategory(ComponentCategory componentCategory) {
-        this.componentCategory = componentCategory;
+    public void setComponentTypeCategory(ComponentTypeCategory componentTypeCategory) {
+        this.componentTypeCategory = componentTypeCategory;
     }
 
     @Override
@@ -132,8 +132,8 @@ public class ComponentType implements Serializable
     @Override
     public String toString() {
         String result = name;
-        if (componentCategory != null) {
-            result += "/" + componentCategory.getName();
+        if (componentTypeCategory != null) {
+            result += "/" + componentTypeCategory.getName();
         }
         return result;
     }

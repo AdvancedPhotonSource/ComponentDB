@@ -20,17 +20,17 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table connector_category
+# Dump of table connector_type_category
 # ------------------------------------------------------------
 
-LOCK TABLES `connector_category` WRITE;
-/*!40000 ALTER TABLE `connector_category` DISABLE KEYS */;
+LOCK TABLES `connector_type_category` WRITE;
+/*!40000 ALTER TABLE `connector_type_category` DISABLE KEYS */;
 
-INSERT INTO `connector_category` (`id`, `name`, `description`)
+INSERT INTO `connector_type_category` (`id`, `name`, `description`)
 VALUES
 	(1,'TBD',NULL);
 
-/*!40000 ALTER TABLE `connector_category` ENABLE KEYS */;
+/*!40000 ALTER TABLE `connector_type_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
