@@ -1,3 +1,13 @@
+Release 20140430 (04/30/2014)
+=============================
+
+- Addey framework for managing user settings
+- Added filter management for collections, components, users/groups
+- Schema modifications:
+    - Renamed category tables (category => type_category)
+    - Added priority columns for design/collection/assembly components
+    - Introduced collection links instead of parent collections
+
 Release 20140331 (03/31/2014)
 =============================
 
