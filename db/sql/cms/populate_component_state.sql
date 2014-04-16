@@ -7,7 +7,7 @@
 #
 # Host: ctlappsdev (MySQL 5.1.73)
 # Database: cms
-# Generation Time: 2014-03-18 15:06:51 -0500
+# Generation Time: 2014-04-15 21:27:14 +0000
 # ************************************************************
 
 
@@ -32,7 +32,9 @@ VALUES
 	(2,'COTS','Commercial Off The Shelf'),
 	(3,'Design','Component In Design'),
 	(4,'Production','Component Ready For Production'),
-	(5,'Obsolete','Do Not Use in New Designs');
+	(5,'Obsolete','Do Not Use in New Designs'),
+	(6,'Generic','A generic component of a component type'),
+	(7,'R&D','Component for R&D only');
 
 /*!40000 ALTER TABLE `component_state` ENABLE KEYS */;
 UNLOCK TABLES;

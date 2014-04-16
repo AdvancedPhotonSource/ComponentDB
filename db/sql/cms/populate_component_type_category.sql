@@ -7,7 +7,7 @@
 #
 # Host: ctlappsdev (MySQL 5.1.73)
 # Database: cms
-# Generation Time: 2014-03-18 15:00:37 -0500
+# Generation Time: 2014-04-15 22:05:08 +0000
 # ************************************************************
 
 
@@ -29,18 +29,16 @@ LOCK TABLES `component_type_category` WRITE;
 INSERT INTO `component_type_category` (`id`, `name`, `description`)
 VALUES
 	(1,'Other',NULL),
-	(2,'Mechanical',NULL),
-	(3,'Electrical',NULL),
-	(4,'Vacuum',NULL),
-	(5,'Water',NULL),
-	(6,'Network',NULL),
-	(7,'MPS',NULL),
-	(8,'Controls',NULL),
+	(2,'Housing',NULL),
+	(3,'Instrumentation',NULL),
+	(4,'Controls',NULL),
+	(5,'Mechanical/Accelerator',NULL),
+	(6,'Magnets',NULL),
+	(7,'Power Supplies',NULL),
+	(8,'Diagnostics',NULL),
 	(9,'RF',NULL),
-	(10,'Magnets',NULL),
-	(11,'Power Supply',NULL),
-	(12,'Timing',NULL),
-	(13,'Diagnostics',NULL);
+	(10,'Mechanical/Beamlines',NULL),
+	(11,'Insertion Devices',NULL);
 
 /*!40000 ALTER TABLE `component_type_category` ENABLE KEYS */;
 UNLOCK TABLES;
