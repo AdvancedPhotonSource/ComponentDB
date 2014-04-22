@@ -24,7 +24,7 @@
                 <ui:include src="componentViewPanelGrid.xhtml"/>
 
                 <p/>
-                <c:set var="componentObject" value="#{collectionController.selected}"/>
+                <c:set var="componentObject" value="#{componentController.selected}"/>
                 <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
                 <div class="actionButton">
                     <p:commandButton action="#{componentController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
@@ -32,6 +32,8 @@
                         <f:setPropertyActionListener value="#{componentObject}" target="#{componentController.current}"/>
                     </p:commandButton>  
                     <p:commandButton action="#{componentController.followBreadcrumbOrPrepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                    <p:commandButton id="noOp" style="visibility:hidden" value="NoOp"/>
+                    <p:defaultCommand target="noOp"/>
                 </div>
 
                 <ui:include src="componentDestroyDialog.xhtml"/>

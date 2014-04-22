@@ -132,13 +132,13 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public void processViewRequestParams() {
         breadcrumbViewParam = SessionUtility.getRequestParameterValue("breadcrumb");
+        selectByRequestParams();
     }
 
     public void selectByRequestParams() {    
     }
     
     public EntityType getSelected() {
-        selectByRequestParams();
         if (current == null) {
             current = createEntityInstance();
         }
