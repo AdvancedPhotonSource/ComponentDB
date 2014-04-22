@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:confirmDialog id="componentTypeDestroyDialog" message="Destroy component type #{componentTypeController.getCurrentEntityInstanceName()}?"
+                     header="Destroy Component Type" severity="alert" widgetVar="componentTypeDestroyWidget"
+                     styleClass="dialog">
+        <p:commandButton value="Yes" oncomplete="componentTypeDestroyWidget.hide()" action="#{componentTypeController.destroy()}" update="@form"/>
+        <p:commandButton value="No" onclick="componentTypeDestroyWidget.hide()" type="button"/>
+    </p:confirmDialog>  
+    
+</ui:composition>
+
+
