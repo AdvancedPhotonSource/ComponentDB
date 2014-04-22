@@ -13,37 +13,9 @@
         <p:commandButton action="#{componentController.saveSourceList()}" value="Save" alt="Save Source List" icon="ui-icon-check"
                          update="@form"/>
     </div>
-    <p:dataTable id="editComponentSourceListDataTable" var="componentSource" value="#{componentController.selected.componentSourceList}" 
-                 paginator="true" paginatorAlwaysVisible="false" rows="10"
-                 editable="true"
-                 emptyMessage="No component properties found.">
 
-        <f:facet name="header">
-        </f:facet>
+    <ui:include src="componentSourceEditDataTable.xhtml"/>
 
-        <p:column sortBy="#{componentSource.source.name}" headerText="Name">
-            <h:selectOneMenu value="#{componentSource.source}" title="Source" required="true" 
-                             styleClass="cellSelect">
-                <f:selectItem itemLabel="Select" itemValue="{componentSource.source}"/>
-                <f:selectItems var="source" value="#{sourceController.availableItems}" itemLabel="#{source.name}" itemValue="#{source}"/>
-            </h:selectOneMenu>
-        </p:column>
-
-        <p:column sortBy="#{componentSource.partNumber}" headerText="Part Number">
-            <h:inputText value="#{componentSource.partNumber}" styleClass="cellInput"/>
-        </p:column>
-
-        <p:column sortBy="#{componentSource.cost}" headerText="Cost [$]">
-            <h:inputText value="#{componentSource.cost}" styleClass="cellInput"/>
-        </p:column>
-
-        <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink action="#{componentController.deleteSource(componentSource)}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
-
-            </div>
-        </p:column>
-    </p:dataTable>
 </ui:composition>
 
 

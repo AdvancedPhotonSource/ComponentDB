@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findByDescription", query = "SELECT p FROM PropertyType p WHERE p.description = :description")})
 public class PropertyType implements Serializable
 {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -131,14 +132,28 @@ public class PropertyType implements Serializable
         return hash;
     }
 
+    public boolean equalsByName(PropertyType other) {
+        if (other == null) {
+            return false;
+        }
+
+        return ObjectUtility.equals(this.name, other.name);
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PropertyType)) {
             return false;
         }
         PropertyType other = (PropertyType) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+        
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
     }
 
     @Override
@@ -149,5 +164,5 @@ public class PropertyType implements Serializable
         }
         return result;
     }
-    
+
 }

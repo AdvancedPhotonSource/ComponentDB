@@ -105,7 +105,7 @@ public class User implements Serializable
     @OneToMany(mappedBy = "ownerUser")
     private List<EntityInfo> entityInfoList3;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserSetting> userSettingList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
@@ -270,6 +270,13 @@ public class User implements Serializable
         userSettingsModificationDate = new Date();
     }
 
+    public void setUserSettingValue(String name, Object value) {
+        UserSetting userSetting = getUserSetting(name);
+        if (userSetting != null && value != null) {
+            userSetting.setValue(value.toString());
+        }
+    }
+    
     public String getUserSettingValueAsString(String name, String defaultValue) {
         UserSetting userSetting = getUserSetting(name);
         if (userSetting == null) {
@@ -301,7 +308,7 @@ public class User implements Serializable
         }
         return Integer.parseInt(settingValue);
     }
-
+    
     public Float getUserSettingValueAsFloat(String name, Float defaultValue) {
         UserSetting userSetting = getUserSetting(name);
         if (userSetting == null) {
@@ -313,11 +320,11 @@ public class User implements Serializable
         }
         return Float.parseFloat(settingValue);
     }
-    
+
     public void updateSettingsModificationDate() {
         userSettingsModificationDate = new Date();
     }
-    
+
     public Date getUserSettingsModificationDate() {
         return userSettingsModificationDate;
     }

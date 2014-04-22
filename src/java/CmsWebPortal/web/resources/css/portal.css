@@ -169,11 +169,21 @@ a:link:hover, a:visited:hover  {
 }
 
 .entityDataLabel {
-    font-weight: bold 
+    font-weight: bold;
+}
+
+.entityDataEmphasizedLabel {
+    font-weight: bold;
+    font-size: 105%;
 }
 
 .entityDataText {
     font-weight: normal;
+}
+
+.entityDataEmphasizedText {
+    font-weight: bold;
+    font-size: 105%;
 }
 
 .entityDataSelectOne {
@@ -189,8 +199,32 @@ a:link:hover, a:visited:hover  {
     font-weight: bold;
 }
 
+.createEntityDetails td:nth-child(1) {
+    vertical-align: top;
+}
+
+.createEntityDetails td:nth-child(2) {
+    width: 300px;
+}
+
+.viewEntityDetails td:nth-child(1) {
+    vertical-align: top;
+}
+
+.viewEntityDetails td:nth-child(2) {
+    width: 300px;
+}
+
+.editEntityDetails td:nth-child(1) {
+    vertical-align: top;
+}
+
+.editEntityDetails td:nth-child(2) {
+    width: 300px;
+}
+
 .commandLink {
-    
+
 }
 
 tr:hover .actionLink {
@@ -218,7 +252,7 @@ tr:hover .actionLink {
     text-align: center;
 }
 
-.loginDialog {
+.dialog {
     background: #6da5d8;
     box-shadow: 0px 3px 5px #d5d5d5;    
     vertical-align: central;
@@ -228,6 +262,10 @@ tr:hover .actionLink {
     margin-right: auto;
 }
 
+.dialogDataLabel {
+    float: left
+}
+
 .htmlPreserve {
     white-space: pre;
 }
@@ -235,23 +273,43 @@ tr:hover .actionLink {
 input, textarea {
     background: #f2f4f7;
     box-shadow: 0px 3px 5px #d5d5d5;
-    width: 250px;
+    width: 300px;
+}
+
+.loginInput input {
+    width: 200px;
 }
 
 .cellSelect {
-    width: 125px;
+    width: 150px;
+}
+
+.longCellSelect {
+    width: 300px;
 }
 
 .cellInput {
     width: 125px;
 }
 
+.shortCellInput {
+    width: 75px;
+}
+
 .longCellInput {
     width: 250px;
 }
 
+.threeDigitCellInput {
+    width: 20px;
+}
+
+.fourDigitCellInput {
+    width: 30px;
+}
+
 select {
-    width: 250px;
+    width: 150px;
 }
 
 h1 {
@@ -342,3 +400,17 @@ h2 {
 .ui-icon {
     display: inline-block;
 }
+
+.ui-dialog-footer, .ui-dialog-buttonpane, .ui-dialog .ui-dialog-buttonpane {
+    background: #6da5d8;
+    text-align: center;
+}
+
+.ui-confirm-dialog-message {
+    color: white;
+}
+
+.ui-column-dnd-bottom {
+    display: none;
+}
+

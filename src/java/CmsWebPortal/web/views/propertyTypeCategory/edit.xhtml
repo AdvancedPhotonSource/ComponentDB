@@ -15,27 +15,12 @@
 
         <h:form id="editPropertyTypeCategoryForm">
 
-            <c:set var="selected" value="#{propertyTypeCategoryController.selected}"/>
-
-            <p:panelGrid columns="3">
-                <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-                <h:outputText id="id" value="#{selected.id}" title="Id" styleClass="entityDataText"/>
-                <p:message for="id"/> 
-                
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
-                <p:message for="name"/> 
-
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-                <p:message for="description"/> 
-
-            </p:panelGrid>
+            <ui:include src="propertyTypeCategoryEditPanelGrid.xhtml"/>
 
             <p/>
             <div class="actionButton">
                 <p:commandButton action="#{propertyTypeCategoryController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{propertyTypeCategoryController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+                <p:commandButton action="#{propertyTypeCategoryController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
         </h:form>
 

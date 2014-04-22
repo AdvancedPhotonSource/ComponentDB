@@ -131,11 +131,7 @@ public class ComponentType implements Serializable
 
     @Override
     public String toString() {
-        String result = name;
-        if (componentTypeCategory != null) {
-            result += "/" + componentTypeCategory.getName();
-        }
-        return result;
+        return name;
     }
     
 }

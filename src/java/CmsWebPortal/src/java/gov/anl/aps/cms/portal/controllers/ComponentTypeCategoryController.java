@@ -1,12 +1,14 @@
 package gov.anl.aps.cms.portal.controllers;
 
+import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.ComponentTypeCategory;
-import gov.anl.aps.cms.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cms.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cms.portal.model.beans.ComponentTypeCategoryFacade;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
+import gov.anl.aps.cms.portal.model.entities.User;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,182 +16,98 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypeCategoryController")
 @SessionScoped
-public class ComponentTypeCategoryController implements Serializable {
+public class ComponentTypeCategoryController extends CrudEntityController<ComponentTypeCategory, ComponentTypeCategoryFacade> implements Serializable
+{
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypeCategory.List.Display.NumberOfItemsPerPage";
 
-    private ComponentTypeCategory current;
-    private DataModel items = null;
+    private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
+
     @EJB
-    private gov.anl.aps.cms.portal.model.beans.ComponentTypeCategoryFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private ComponentTypeCategoryFacade componentTypeCategoryFacade;
 
     public ComponentTypeCategoryController() {
     }
 
-    public ComponentTypeCategory getSelected() {
-        if (current == null) {
-            current = new ComponentTypeCategory();
-            selectedItemIndex = -1;
+    @Override
+    protected ComponentTypeCategoryFacade getFacade() {
+        return componentTypeCategoryFacade;
+    }
+
+    @Override
+    protected ComponentTypeCategory createEntityInstance() {
+        ComponentTypeCategory componentCategory = new ComponentTypeCategory();
+        return componentCategory;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "component type category";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getName();
         }
-        return current;
+        return "";
     }
 
-    private ComponentTypeCategoryFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<ComponentTypeCategory> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public void prepareEntityInsert(ComponentTypeCategory componentTypeCategory) throws ObjectAlreadyExists {
+        ComponentTypeCategory existingComponentTypeCategory = componentTypeCategoryFacade.findByName(componentTypeCategory.getName());
+        if (existingComponentTypeCategory != null) {
+            throw new ObjectAlreadyExists("Component type category " + componentTypeCategory.getName() + " already exists.");
         }
-        return pagination;
+        logger.debug("Inserting new component type " + componentTypeCategory.getName());
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
+    @Override
+    public void prepareEntityUpdate(ComponentTypeCategory componentCategory) throws ObjectAlreadyExists {
     }
 
-    public String prepareView() {
-        current = (ComponentTypeCategory) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new ComponentTypeCategory();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ComponentCategoryCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
     }
 
-    public String prepareEdit() {
-        current = (ComponentTypeCategory) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ComponentCategoryUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void updateListSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
-    public String destroy() {
-        current = (ComponentTypeCategory) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        if (dataTable == null) {
+            return;
         }
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterByName = filters.get("name");
+        filterByDescription = filters.get("description");
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ComponentCategoryDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public ComponentTypeCategory getComponentCategory(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    @Override
+    public void clearListFilters() {
+        filterByName = null;
+        filterByDescription = null;
     }
 
     @FacesConverter(forClass = ComponentTypeCategory.class)
@@ -202,7 +120,7 @@ public class ComponentTypeCategoryController implements Serializable {
             }
             ComponentTypeCategoryController controller = (ComponentTypeCategoryController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "componentCategoryController");
-            return controller.getComponentCategory(getKey(value));
+            return controller.getEntity(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

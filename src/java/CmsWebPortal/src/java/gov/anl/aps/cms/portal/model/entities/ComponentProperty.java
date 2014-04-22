@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -106,15 +107,39 @@ public class ComponentProperty implements Serializable
         return hash;
     }
 
+    public boolean equalsByComponentAndPropertyTypeAndValue(ComponentProperty other) {
+        if (other == null) {
+            return false;
+        }
+        
+        if (!ObjectUtility.equals(this.component, other.component)) {
+            return false;
+        }
+
+        if (!ObjectUtility.equals(this.propertyType, other.propertyType)) {
+            return false;
+        }
+        
+        return ObjectUtility.equals(this.value, other.value);
+    }
+    
+    
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ComponentProperty)) {
             return false;
         }
         ComponentProperty other = (ComponentProperty) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
-    }
+        if (this.id == null && other.id == null) {
+            return equalsByComponentAndPropertyTypeAndValue(other);
+        }
+        
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);        
+    }    
+   
 
     @Override
     public String toString() {

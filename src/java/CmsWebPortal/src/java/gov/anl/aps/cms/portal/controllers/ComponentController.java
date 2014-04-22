@@ -5,8 +5,6 @@ import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.beans.ComponentFacade;
 import gov.anl.aps.cms.portal.model.beans.ComponentStateFacade;
-import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
-import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.ComponentProperty;
 import gov.anl.aps.cms.portal.model.entities.ComponentSource;
 import gov.anl.aps.cms.portal.model.entities.ComponentState;
@@ -37,9 +35,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Component.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Component.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "Component.List.Display.Description";
     private static final String DisplayDocumentationUriSettingTypeKey = "Component.List.Display.DocumentationUri";
     private static final String DisplayStateSettingTypeKey = "Component.List.Display.State";
     private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
+    private static final String DisplayTypeCategorySettingTypeKey = "Component.List.Display.TypeCategory";
     private static final String DisplayOwnerUserSettingTypeKey = "Component.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
     private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
@@ -49,9 +49,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private static final String DisplayEstimatedCostSettingTypeKey = "Component.List.Display.EstimatedCost";
 
     private static final String FilterByNameSettingTypeKey = "Component.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "Component.List.FilterBy.Description";
     private static final String FilterByDocumentationUriSettingTypeKey = "Component.List.FilterBy.DocumentationUri";
     private static final String FilterByStateSettingTypeKey = "Component.List.FilterBy.State";
     private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
+    private static final String FilterByTypeCategorySettingTypeKey = "Component.List.FilterBy.TypeCategory";
     private static final String FilterByOwnerUserSettingTypeKey = "Component.List.FilterBy.OwnerUser";
     private static final String FilterByOwnerGroupSettingTypeKey = "Component.List.FilterBy.OwnerGroup";
     private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
@@ -67,18 +69,30 @@ public class ComponentController extends CrudEntityController<Component, Compone
     @EJB
     private ComponentStateFacade componentStateFacade;
 
-    private Integer componentIdViewParam = null;
-
     private Boolean displayDocumentationUri = null;
     private Boolean displayState = null;
     private Boolean displayType = null;
+    private Boolean displayTypeCategory = null;
     private Boolean displayEstimatedCost = null;
 
     private String filterByDocumentationUri = null;
     private String filterByState = null;
     private String filterByType = null;
+    private String filterByTypeCategory = null;
     private String filterByEstimatedCost = null;
 
+    private Boolean selectDisplayDocumentationUri = false;
+    private Boolean selectDisplayState = true;
+    private Boolean selectDisplayType = true;
+    private Boolean selectDisplayTypeCategory = true;
+    private Boolean selectDisplayEstimatedCost = false;
+
+    private String selectFilterByDocumentationUri = null;
+    private String selectFilterByState = null;
+    private String selectFilterByType = null;
+    private String selectFilterByTypeCategory = null;
+    private String selectFilterByEstimatedCost = null;
+    
     public ComponentController() {
         super();
     }
@@ -156,19 +170,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @Override
     public void selectByRequestParams() {
-        if (componentIdViewParam != null) {
-            Component component = findById(componentIdViewParam);
+        if (idViewParam != null) {
+            Component component = findById(idViewParam);
             setCurrent(component);
-            componentIdViewParam = null;
+            idViewParam = null;
         }
-    }
-
-    public Integer getComponentIdViewParam() {
-        return componentIdViewParam;
-    }
-
-    public void setComponentIdViewParam(Integer componentIdViewParam) {
-        this.componentIdViewParam = componentIdViewParam;
     }
 
     public void prepareAddProperty() {
@@ -183,11 +189,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
-    public void deleteProperty(ComponentProperty property) {
+    public void deleteProperty(ComponentProperty componentProperty) {
         Component component = getCurrent();
-        List<ComponentProperty> propertyList = component.getComponentPropertyList();
-        propertyList.remove(property);
-        update();
+        List<ComponentProperty> componentPropertyList = component.getComponentPropertyList();
+        componentPropertyList.remove(componentProperty);
     }
 
     public void prepareAddSource() {
@@ -219,9 +224,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
         displayDocumentationUri = Boolean.parseBoolean(settingTypeMap.get(DisplayDocumentationUriSettingTypeKey).getDefaultValue());
         displayState = Boolean.parseBoolean(settingTypeMap.get(DisplayStateSettingTypeKey).getDefaultValue());
         displayType = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeSettingTypeKey).getDefaultValue());
+        displayTypeCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeCategorySettingTypeKey).getDefaultValue());
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -231,9 +238,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayEstimatedCost = Boolean.parseBoolean(settingTypeMap.get(DisplayEstimatedCostSettingTypeKey).getDefaultValue());
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByDocumentationUri = settingTypeMap.get(FilterByDocumentationUriSettingTypeKey).getDefaultValue();
         filterByState = settingTypeMap.get(FilterByStateSettingTypeKey).getDefaultValue();
         filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
+        filterByTypeCategory = settingTypeMap.get(FilterByTypeCategorySettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
         filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
         filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
@@ -253,9 +262,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDocumentationUriSettingTypeKey, displayDescription);
         displayDocumentationUri = sessionUser.getUserSettingValueAsBoolean(DisplayDocumentationUriSettingTypeKey, displayDocumentationUri);
         displayState = sessionUser.getUserSettingValueAsBoolean(DisplayStateSettingTypeKey, displayState);
         displayType = sessionUser.getUserSettingValueAsBoolean(DisplayTypeSettingTypeKey, displayType);
+        displayTypeCategory = sessionUser.getUserSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
         displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -265,9 +276,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayEstimatedCost = sessionUser.getUserSettingValueAsBoolean(DisplayEstimatedCostSettingTypeKey, displayEstimatedCost);
 
         filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByDocumentationUri = sessionUser.getUserSettingValueAsString(FilterByDocumentationUriSettingTypeKey, filterByDocumentationUri);
         filterByState = sessionUser.getUserSettingValueAsString(FilterByStateSettingTypeKey, filterByState);
         filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
+        filterByTypeCategory = sessionUser.getUserSettingValueAsString(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
         filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
         filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
         filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
@@ -286,9 +299,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Map<String, String> filters = dataTable.getFilters();
         logger.debug("Updating list filters from current data table filters: " + filters);
         filterByName = filters.get("name");
+        filterByDescription = filters.get("decription");
         filterByDocumentationUri = filters.get("documentationUriShortDisplay");
         filterByState = filters.get("componentState.name");
         filterByType = filters.get("componentTypeList");
+        filterByTypeCategory = filters.get("componentTypeCategoryList");
         filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
         filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
         filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
@@ -301,9 +316,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
     @Override
     public void clearListFilters() {
         filterByName = null;
+        filterByDescription = null;
         filterByDocumentationUri = null;
         filterByState = null;
         filterByType = null;
+        filterByTypeCategory = null;
         filterByOwnerUser = null;
         filterByOwnerGroup = null;
         filterByCreatedByUser = null;
@@ -313,6 +330,24 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByEstimatedCost = null;
     }
 
+    @Override
+    public void clearSelectFilters() {
+        super.clearListFilters();
+        selectFilterByName = null;
+        selectFilterByDescription = null;
+        selectFilterByDocumentationUri = null;
+        selectFilterByState = null;
+        selectFilterByType = null;
+        selectFilterByTypeCategory = null;
+        selectFilterByOwnerUser = null;
+        selectFilterByOwnerGroup = null;
+        selectFilterByCreatedByUser = null;
+        selectFilterByCreatedOnDateTime = null;
+        selectFilterByLastModifiedByUser = null;
+        selectFilterByLastModifiedOnDateTime = null;
+        selectFilterByEstimatedCost = null;
+    }
+    
     public Boolean getDisplayDocumentationUri() {
         return displayDocumentationUri;
     }
@@ -335,6 +370,14 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setDisplayType(Boolean displayType) {
         this.displayType = displayType;
+    }
+
+    public Boolean getDisplayTypeCategory() {
+        return displayTypeCategory;
+    }
+
+    public void setDisplayTypeCategory(Boolean displayTypeCategory) {
+        this.displayTypeCategory = displayTypeCategory;
     }
 
     public Boolean getDisplayEstimatedCost() {
@@ -377,13 +420,102 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.filterByEstimatedCost = filterByEstimatedCost;
     }
 
+    public String getFilterByTypeCategory() {
+        return filterByTypeCategory;
+    }
+
+    public void setFilterByTypeCategory(String filterByTypeCategory) {
+        this.filterByTypeCategory = filterByTypeCategory;
+    }
+
+    public Boolean getSelectDisplayDocumentationUri() {
+        return selectDisplayDocumentationUri;
+    }
+
+    public void setSelectDisplayDocumentationUri(Boolean selectDisplayDocumentationUri) {
+        this.selectDisplayDocumentationUri = selectDisplayDocumentationUri;
+    }
+
+    public Boolean getSelectDisplayState() {
+        return selectDisplayState;
+    }
+
+    public void setSelectDisplayState(Boolean selectDisplayState) {
+        this.selectDisplayState = selectDisplayState;
+    }
+
+    public Boolean getSelectDisplayType() {
+        return selectDisplayType;
+    }
+
+    public void setSelectDisplayType(Boolean selectDisplayType) {
+        this.selectDisplayType = selectDisplayType;
+    }
+
+    public Boolean getSelectDisplayTypeCategory() {
+        return selectDisplayTypeCategory;
+    }
+
+    public void setSelectDisplayTypeCategory(Boolean selectDisplayTypeCategory) {
+        this.selectDisplayTypeCategory = selectDisplayTypeCategory;
+    }
+
+    public Boolean getSelectDisplayEstimatedCost() {
+        return selectDisplayEstimatedCost;
+    }
+
+    public void setSelectDisplayEstimatedCost(Boolean selectDisplayEstimatedCost) {
+        this.selectDisplayEstimatedCost = selectDisplayEstimatedCost;
+    }
+
+    public String getSelectFilterByDocumentationUri() {
+        return selectFilterByDocumentationUri;
+    }
+
+    public void setSelectFilterByDocumentationUri(String selectFilterByDocumentationUri) {
+        this.selectFilterByDocumentationUri = selectFilterByDocumentationUri;
+    }
+
+    public String getSelectFilterByState() {
+        return selectFilterByState;
+    }
+
+    public void setSelectFilterByState(String selectFilterByState) {
+        this.selectFilterByState = selectFilterByState;
+    }
+
+    public String getSelectFilterByType() {
+        return selectFilterByType;
+    }
+
+    public void setSelectFilterByType(String selectFilterByType) {
+        this.selectFilterByType = selectFilterByType;
+    }
+
+    public String getSelectFilterByTypeCategory() {
+        return selectFilterByTypeCategory;
+    }
+
+    public void setSelectFilterByTypeCategory(String selectFilterByTypeCategory) {
+        this.selectFilterByTypeCategory = selectFilterByTypeCategory;
+    }
+
+    public String getSelectFilterByEstimatedCost() {
+        return selectFilterByEstimatedCost;
+    }
+
+    public void setSelectFilterByEstimatedCost(String selectFilterByEstimatedCost) {
+        this.selectFilterByEstimatedCost = selectFilterByEstimatedCost;
+    }
+
+    
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter
     {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
             ComponentController controller = (ComponentController) facesContext.getApplication().getELResolver().

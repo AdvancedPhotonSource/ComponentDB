@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="collectionObject" value="#{collectionController.selected}"/>
+    <p:panelGrid columns="2" styleClass="viewEntityDetails">
+
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="name" value="#{collectionObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:outputText id="description" value="#{collectionObject.description}" title="Description" styleClass="entityDataText"/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{collectionObject.id}" title="Id" styleClass="entityDataText"/>
+
+        <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
+        <h:outputText id="ownerUser" value="#{collectionObject.entityInfo.ownerUser.username}" title="Owner User" styleClass="entityDataText"/>
+
+        <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
+        <h:outputText id="ownerGroup" value="#{collectionObject.entityInfo.ownerUserGroup.name}" title="Owner Group" styleClass="entityDataText"/>
+
+        <h:outputLabel for="createdBy" value="Created By" styleClass="entityDataLabel"/>
+        <h:outputText id="createdBy" value="#{collectionObject.entityInfo.createdByUser.username}" title="Created By" styleClass="entityDataText"/>
+
+        <h:outputLabel for="createdOn" value="Created On" styleClass="entityDataLabel"/>
+        <h:outputText id="createdOn" value="#{collectionObject.entityInfo.createdOnDateTime}" title="Created On" styleClass="entityDataText"/>
+
+        <h:outputLabel for="modifiedBy" value="Modified By" styleClass="entityDataLabel"/>
+        <h:outputText id="modifiedBy" value="#{collectionObject.entityInfo.lastModifiedByUser.username}" title="Modified By" styleClass="entityDataText"/>
+
+        <h:outputLabel for="modifiedOn" value="Modified On" styleClass="entityDataLabel"/>
+        <h:outputText id="modifiedOn" value="#{collectionObject.entityInfo.lastModifiedOnDateTime}" title="Modified On" styleClass="entityDataText"/>
+
+        <h:outputLabel for="obsoletedBy" value="Obsoleted By" rendered="#{collectionObject.entityInfo.obsoletedByUser != null}" styleClass="entityDataLabel"/>
+        <h:outputText id="obsoletedBy" value="#{collectionObject.entityInfo.obsoletedByUser.username}" rendered="#{collectionObject.entityInfo.obsoletedByUser != null}" title="Obsoleted By" styleClass="entityDataText"/>
+
+        <h:outputLabel for="obsoletedOn" value="Obsoleted On" rendered="#{collectionObject.entityInfo.obsoletedByUser != null}" styleClass="entityDataLabel"/>
+        <h:outputText id="obsoletedOn" value="#{collectionObject.entityInfo.obsoletedOnDateTime}" rendered="#{collectionObject.entityInfo.obsoletedByUser != null}" title="Obsoleted On" styleClass="entityDataText"/>
+
+        <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
+        <h:outputText id="groupWriteable" value="#{collectionObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
+
+    </p:panelGrid>
+
+
+</ui:composition>
+
+

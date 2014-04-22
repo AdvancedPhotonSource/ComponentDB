@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dataTable id="collectionListDataTable" 
+                 var="collectionObject" 
+                 value="#{collectionController.listDataModel}" 
+                 filteredValue="#{collectionController.filteredObjectList}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{collectionController.displayNumberOfItemsPerPage}"
+                 binding="#{collectionController.listDataTable}"
+                 widgetVar="collectionListWidget" 
+                 emptyMessage="No collections found.">
+
+        <p:column sortBy="#{collectionObject.id}" headerText="Id"
+                  rendered="#{collectionController.displayId}">
+            <h:outputText value="#{collectionObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.name}" headerText="Name" 
+                  filterBy="#{collectionObject.name}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByName}"
+                  rendered="true">
+            <h:outputText value="#{collectionObject.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.description}" headerText="Description" 
+                  filterBy="#{collectionObject.description}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByDescription}"
+                  rendered="#{collectionController.displayDescription}">
+            <h:outputText value="#{collectionObject.description}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.entityInfo.ownerUser.username}" headerText="Owner"
+                  filterBy="#{collectionObject.entityInfo.ownerUser.username}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByOwnerUser}"
+                  rendered="#{collectionController.displayOwnerUser}">
+            <h:outputText value="#{collectionObject.entityInfo.ownerUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.entityInfo.ownerUserGroup.name}" headerText="Group"
+                  filterBy="#{collectionObject.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
+                  filterOptions="#{userGroupController.availableItemsForSelectOne}"
+                  filterValue="#{collectionController.filterByOwnerGroup}"
+                  rendered="#{collectionController.displayOwnerGroup}">
+            <h:outputText value="#{collectionObject.entityInfo.ownerUserGroup.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.entityInfo.createdByUser.username}" headerText="Created By"
+                  filterBy="#{collectionObject.entityInfo.createdByUser.username}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByCreatedByUser}"
+                  rendered="#{collectionController.displayCreatedByUser}">
+            <h:outputText value="#{collectionObject.entityInfo.createdByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.entityInfo.createdOnDateTime}" headerText="Created On"
+                  filterBy="#{collectionObject.entityInfo.createdOnDateTime}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByCreatedOnDateTime}"
+                  rendered="#{collectionController.displayCreatedOnDateTime}">
+            <h:outputText value="#{collectionObject.entityInfo.createdOnDateTime}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
+                  filterBy="#{collectionObject.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByLastModifiedByUser}"
+                  rendered="#{collectionController.displayLastModifiedByUser}">
+            <h:outputText value="#{collectionObject.entityInfo.lastModifiedByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionObject.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
+                  filterBy="#{collectionObject.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains"
+                  filterValue="#{collectionController.filterByLastModifiedOnDateTime}"
+                  rendered="#{collectionController.displayLastModifiedOnDateTime}">
+            <h:outputText value="#{collectionObject.entityInfo.lastModifiedOnDateTime}"/>
+        </p:column>
+
+        <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(collectionObject.entityInfo)}"/>
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{collectionController.prepareView(collectionObject)}" 
+                               actionListener="#{collectionComponentController.updateListSettingsActionListener}"
+                               styleClass="ui-icon ui-icon-info" 
+                               title="View"/>
+                <p:commandLink action="#{collectionController.prepareEdit(collectionObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                <p:commandLink oncomplete="collectionDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                    <f:setPropertyActionListener value="#{collectionObject}" target="#{collectionController.current}"/>
+                </p:commandLink>
+            </div>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

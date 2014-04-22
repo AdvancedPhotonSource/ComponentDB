@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog id="collectionComponentListCustomizeDisplayDialog" header="Customize List Display" widgetVar="collectionComponentListCustomizeDisplayWidget" styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="displayNumberOfItemsPerPage" value="#{collectionComponentController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="displayId" value="#{collectionComponentController.displayId}"/>  
+                <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="displayTag" value="#{collectionComponentController.displayTag}"/>  
+                <h:outputLabel for="displayTag" value="Display Tag" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="displayPriority" value="#{collectionComponentController.displayPriority}"/>  
+                <h:outputLabel for="displayPriority" value="Display View Order" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="displayQuantity" value="#{collectionComponentController.displayQuantity}"/>  
+                <h:outputLabel for="displayQuantity" value="Display Quantity" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="displayDescription" value="#{collectionComponentController.displayDescription}"/>  
+                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+            </p:panelGrid>
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{collectionComponentController.customizeListDisplay()}"
+                                 update="@form"
+                                 oncomplete="collectionComponentListCustomizeDisplayWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userController.saveSettingListForSessionUser()}"
+                                 actionListener="#{collectionComponentController.saveListSettingsForSessionUserActionListener}"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>
+
+

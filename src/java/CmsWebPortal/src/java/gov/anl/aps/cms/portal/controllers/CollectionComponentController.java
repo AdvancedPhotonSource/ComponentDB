@@ -20,8 +20,9 @@ import org.apache.log4j.Logger;
 
 @Named("collectionComponentController")
 @SessionScoped
-public class CollectionComponentController extends CrudEntityController<CollectionComponent, CollectionComponentFacade> implements Serializable 
+public class CollectionComponentController extends CrudEntityController<CollectionComponent, CollectionComponentFacade> implements Serializable
 {
+
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "CollectionComponent.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "CollectionComponent.List.Display.Id";
     private static final String DisplayTagSettingTypeKey = "CollectionComponent.List.Display.Tag";
@@ -37,7 +38,6 @@ public class CollectionComponentController extends CrudEntityController<Collecti
     private Boolean displayTag = null;
     private Boolean displayQuantity = null;
     private Boolean displayPriority = null;
-
 
     public CollectionComponentController() {
     }
@@ -79,18 +79,8 @@ public class CollectionComponentController extends CrudEntityController<Collecti
     public void prepareEntityUpdate(CollectionComponent collectionComponent) throws ObjectAlreadyExists {
     }
 
-
     @Override
     public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-    }
-
-    @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
-    }
-
-
-    @Override
-    public void updateViewSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
@@ -100,7 +90,7 @@ public class CollectionComponentController extends CrudEntityController<Collecti
     }
 
     @Override
-    public void updateViewSettingsFromSessionUser(User sessionUser) {
+    public void updateListSettingsFromSessionUser(User sessionUser) {
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
@@ -109,6 +99,20 @@ public class CollectionComponentController extends CrudEntityController<Collecti
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
     }
 
+    @Override
+    public void saveListSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
+        sessionUser.setUserSettingValue(DisplayQuantitySettingTypeKey, displayQuantity);
+        sessionUser.setUserSettingValue(DisplayPrioritySettingTypeKey, displayPriority);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+    }
+    
     public Boolean getDisplayTag() {
         return displayTag;
     }
@@ -134,7 +138,8 @@ public class CollectionComponentController extends CrudEntityController<Collecti
     }
 
     @FacesConverter(forClass = CollectionComponent.class)
-    public static class CollectionComponentControllerConverter implements Converter {
+    public static class CollectionComponentControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -166,7 +171,8 @@ public class CollectionComponentController extends CrudEntityController<Collecti
             if (object instanceof CollectionComponent) {
                 CollectionComponent o = (CollectionComponent) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + CollectionComponent.class.getName());
             }
         }

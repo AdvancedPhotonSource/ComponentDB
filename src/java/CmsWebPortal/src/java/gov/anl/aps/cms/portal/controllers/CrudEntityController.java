@@ -5,6 +5,7 @@ import gov.anl.aps.cms.portal.model.beans.AbstractFacade;
 import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
+import gov.anl.aps.cms.portal.model.entities.UserSetting;
 import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
@@ -30,13 +32,21 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     private SettingTypeFacade settingTypeFacade;
 
     private EntityType current = null;
+
     private DataModel listDataModel = null;
     private DataTable listDataTable = null;
+    private boolean listDataModelReset = true;
+    private List<EntityType> filteredObjectList = null;
+
     private Date listSettingsTimestamp = null;
-    private Date viewSettingsTimestamp = null;
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
-    private List<EntityType> filteredItems = null;
+    private boolean settingsInitializedFromDefaults = false;
+
+    private DataModel selectDataModel = null;
+    private DataTable selectDataTable = null;
+    private boolean selectDataModelReset = false;
+    private List<EntityType> selectedObjectList = null;
 
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayId = null;
@@ -57,13 +67,34 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     protected String filterByLastModifiedByUser = null;
     protected String filterByLastModifiedOnDateTime = null;
 
+    protected Integer selectDisplayNumberOfItemsPerPage = null;
+    protected Boolean selectDisplayId = true;
+    protected Boolean selectDisplayDescription = false;
+    protected Boolean selectDisplayOwnerUser = true;
+    protected Boolean selectDisplayOwnerGroup = true;
+    protected Boolean selectDisplayCreatedByUser = false;
+    protected Boolean selectDisplayCreatedOnDateTime = false;
+    protected Boolean selectDisplayLastModifiedByUser = false;
+    protected Boolean selectDisplayLastModifiedOnDateTime = false;
+
+    protected String selectFilterByName = null;
+    protected String selectFilterByDescription = null;
+    protected String selectFilterByOwnerUser = null;
+    protected String selectFilterByOwnerGroup = null;
+    protected String selectFilterByCreatedByUser = null;
+    protected String selectFilterByCreatedOnDateTime = null;
+    protected String selectFilterByLastModifiedByUser = null;
+    protected String selectFilterByLastModifiedOnDateTime = null;
+
+    protected Integer idViewParam = null;
+    protected String breadcrumbViewParam = null;
+
     public CrudEntityController() {
     }
 
     @PostConstruct
     public void initialize() {
-        initializeListSettings();
-        initializeViewSettings();
+        updateListSettings();
     }
 
     public List<SettingType> getSettingTypeList() {
@@ -99,9 +130,13 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         this.current = current;
     }
 
-    public void selectByRequestParams() {
+    public void processViewRequestParams() {
+        breadcrumbViewParam = SessionUtility.getRequestParameterValue("breadcrumb");
     }
 
+    public void selectByRequestParams() {    
+    }
+    
     public EntityType getSelected() {
         selectByRequestParams();
         if (current == null) {
@@ -114,14 +149,39 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return new ListDataModel(getFacade().findAll());
     }
 
-    public void initializeListSettings() {
+    public void updateListSettingsActionListener(ActionEvent actionEvent) {
+        updateListSettings();
+    }
+
+    public void updateListSettings() {
         User sessionUser = (User) SessionUtility.getUser();
+        boolean settingsUpdated = false;
         if (sessionUser != null) {
-            updateListSettingsFromSessionUser(sessionUser);
+            List<UserSetting> userSettingList = sessionUser.getUserSettingList();
+            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(listSettingsTimestamp)) {
+                updateListSettingsFromSessionUser(sessionUser);
+                settingsUpdated = true;
+            }
         }
-        else {
+
+        if (!settingsUpdated && !settingsInitializedFromDefaults) {
+            settingsInitializedFromDefaults = true;
             updateListSettingsFromSettingTypeDefaults(getSettingTypeMap());
         }
+    }
+
+    public String customizeListDisplay() {
+        resetListDataModel();
+        String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
+        logger.debug("Returning to page: " + returnPage);
+        return returnPage;
+    }
+
+    public String customizeSelectDisplay() {
+        resetSelectDataModel();
+        String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
+        logger.debug("Returning to page: " + returnPage);
+        return returnPage;
     }
 
     public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -130,16 +190,36 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     public void updateListSettingsFromSessionUser(User sessionUser) {
     }
 
+    public void saveListSettingsForSessionUser(User sessionUser) {
+    }
+
+    public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+        logger.debug("Saving settings");
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser != null) {
+            logger.debug("Updating list settings for session user");
+            saveListSettingsForSessionUser(sessionUser);
+            resetListDataModel();
+            listSettingsTimestamp = new Date();
+        }
+    }
+
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
     }
 
     public void clearListFilters() {
     }
 
+    public void clearSelectFilters() {
+        if (selectDataTable != null) {
+            selectDataTable.getFilters().clear();
+        }
+    }
+
     public String resetList() {
         logger.debug("Resetting list");
         clearListFilters();
-        resetDataModel();
+        resetListDataModel();
         return prepareList();
     }
 
@@ -152,6 +232,14 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return "list?faces-redirect=true";
     }
 
+    public String followBreadcrumbOrPrepareList() {
+        String loadView = breadcrumbViewParam;
+        if (loadView == null) {
+            loadView = prepareList();
+        }
+        return loadView;
+    }
+
     public DataTable getListDataTable() {
         logger.debug("Getting data table");
         User sessionUser = (User) SessionUtility.getUser();
@@ -160,7 +248,7 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
             if (listSettingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(listSettingsTimestamp)) {
                 logger.debug("Updating list settings from session user");
                 updateListSettingsFromSessionUser(sessionUser);
-                resetDataModel();
+                resetListDataModel();
                 listSettingsTimestamp = new Date();
             }
             else {
@@ -181,6 +269,14 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         updateListSettingsFromListDataTable(listDataTable);
     }
 
+    public DataTable getSelectDataTable() {
+        return selectDataTable;
+    }
+
+    public void setSelectDataTable(DataTable selectDataTable) {
+        this.selectDataTable = selectDataTable;
+    }
+
     public boolean isAnyListFilterSet() {
         if (listDataTable == null) {
             return false;
@@ -194,22 +290,6 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return false;
     }
 
-    public void initializeViewSettings() {
-        User sessionUser = (User) SessionUtility.getUser();
-        if (sessionUser != null) {
-            updateViewSettingsFromSessionUser(sessionUser);
-        }
-        else {
-            updateViewSettingsFromSettingTypeDefaults(getSettingTypeMap());
-        }
-    }
-
-    public void updateViewSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-    }
-
-    public void updateViewSettingsFromSessionUser(User sessionUser) {
-    }
-
     public boolean isViewValid() {
         selectByRequestParams();
         return current != null;
@@ -218,14 +298,6 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
-        User sessionUser = (User) SessionUtility.getUser();
-        if (sessionUser != null) {
-            if (viewSettingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(viewSettingsTimestamp)) {
-                logger.debug("Updating view settings from session user");
-                updateViewSettingsFromSessionUser(sessionUser);
-                viewSettingsTimestamp = new Date();
-            }
-        }
         return "view?faces-redirect=true";
     }
 
@@ -247,11 +319,11 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
             prepareEntityInsert(current);
             getFacade().create(current);
             SessionUtility.addInfoMessage("Success", "Created " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
-            resetDataModel();
+            resetListDataModel();
             current = newEntity;
             return view();
         }
-        catch (CmsPortalException ex) {
+        catch (CmsPortalException | RuntimeException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
@@ -259,10 +331,11 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public String prepareEdit(EntityType entity) {
         current = entity;
-        return "edit?faces-redirect=true";
+        return edit();
     }
 
     public String edit() {
+        clearSelectFiltersAndResetSelectDataModel();
         return "edit?faces-redirect=true";
     }
 
@@ -271,29 +344,36 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public String update() {
         try {
-            EntityType updatedEntity = current;
+            logger.debug("Updating " + getEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(current);
-            getFacade().edit(current);
+            EntityType updatedEntity = getFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
-            resetDataModel();
+            resetListDataModel();
             current = updatedEntity;
             return view();
         }
-        catch (CmsPortalException ex) {
+        catch (CmsPortalException | RuntimeException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }
 
+    public void destroy(EntityType entity) {
+        current = entity;
+        destroy();
+    }
+
     public String destroy() {
         if (current == null) {
+            logger.warn("Current item is not set");
             // Do nothing if current item is not set.
             return null;
         }
         try {
+            logger.debug("Destroying " + getCurrentEntityInstanceName());
             getFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
-            resetDataModel();
+            resetListDataModel();
             return prepareList();
         }
         catch (Exception ex) {
@@ -302,26 +382,81 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         }
     }
 
-    public DataModel getItems() {
+    public DataModel getListDataModel() {
         if (listDataModel == null) {
             listDataModel = createDataModel();
         }
         return listDataModel;
     }
 
+    public DataModel getSelectDataModel() {
+        if (selectDataModel == null) {
+            selectDataModel = createDataModel();
+        }
+        return selectDataModel;
+    }
+
+    public DataModel getItems() {
+        return getListDataModel();
+    }
+
+    public List<EntityType> getSelectedObjectListAndResetSelectDataModel() {
+        List<EntityType> returnList = selectedObjectList;
+        resetSelectDataModel();
+        return returnList;
+    }
+
+    public List<EntityType> getSelectedObjectList() {
+        return selectedObjectList;
+    }
+
+    public List<EntityType> getFilteredObjectList() {
+        return filteredObjectList;
+    }
+
     public List<EntityType> getFilteredItems() {
-        return filteredItems;
+        return filteredObjectList;
+    }
+
+    public void resetSelectedObjectList() {
+        selectedObjectList = null;
+    }
+
+    public void setSelectedObjectList(List<EntityType> selectedObjectList) {
+        this.selectedObjectList = selectedObjectList;
+    }
+
+    public void setFilteredObjectList(List<EntityType> filteredObjectList) {
+        this.filteredObjectList = filteredObjectList;
     }
 
     public void setFilteredItems(List<EntityType> filteredItems) {
-        this.filteredItems = filteredItems;
+        this.filteredObjectList = filteredItems;
     }
 
-    private void resetDataModel() {
+    public void resetListDataModel() {
         listDataModel = null;
-        filteredItems = null;
-        current = null;
         listDataTable = null;
+        listDataModelReset = true;
+        filteredObjectList = null;
+        current = null;
+    }
+
+    public void resetSelectDataModel() {
+        selectDataModel = null;
+        selectDataTable = null;
+        selectedObjectList = null;
+        selectDataModelReset = true;
+    }
+
+    public void clearListFiltersAndResetListDataModel() {
+        clearListFilters();
+        resetListDataModel();
+    }
+
+    public void clearSelectFiltersAndResetSelectDataModel() {
+        clearSelectFilters();
+        resetSelectDataModel();
     }
 
     public List<EntityType> getAvailableItems() {
@@ -338,6 +473,10 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
 
     public SelectItem[] getAvailableItemsForSelectOne() {
         return CollectionUtility.getSelectItems(getFacade().findAll(), true);
+    }
+
+    public String getCurrentViewId() {
+        return SessionUtility.getCurrentViewId();
     }
 
     public static String displayEntityList(List<?> entityList) {
@@ -480,4 +619,175 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
     public void setFilterByLastModifiedOnDateTime(String filterByLastModifiedOnDateTime) {
         this.filterByLastModifiedOnDateTime = filterByLastModifiedOnDateTime;
     }
+
+    public boolean isListDataModelReset() {
+        if (listDataModelReset) {
+            listDataModelReset = false;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSelectDataModelReset() {
+        if (selectDataModelReset) {
+            selectDataModelReset = false;
+            return true;
+        }
+        return false;
+    }
+
+    public Integer getSelectDisplayNumberOfItemsPerPage() {
+        return selectDisplayNumberOfItemsPerPage;
+    }
+
+    public void setSelectDisplayNumberOfItemsPerPage(Integer selectDisplayNumberOfItemsPerPage) {
+        this.selectDisplayNumberOfItemsPerPage = selectDisplayNumberOfItemsPerPage;
+    }
+
+    public Boolean getSelectDisplayId() {
+        return selectDisplayId;
+    }
+
+    public void setSelectDisplayId(Boolean selectDisplayId) {
+        this.selectDisplayId = selectDisplayId;
+    }
+
+    public Boolean getSelectDisplayDescription() {
+        return selectDisplayDescription;
+    }
+
+    public void setSelectDisplayDescription(Boolean selectDisplayDescription) {
+        this.selectDisplayDescription = selectDisplayDescription;
+    }
+
+    public Boolean getSelectDisplayOwnerUser() {
+        return selectDisplayOwnerUser;
+    }
+
+    public void setSelectDisplayOwnerUser(Boolean selectDisplayOwnerUser) {
+        this.selectDisplayOwnerUser = selectDisplayOwnerUser;
+    }
+
+    public Boolean getSelectDisplayOwnerGroup() {
+        return selectDisplayOwnerGroup;
+    }
+
+    public void setSelectDisplayOwnerGroup(Boolean selectDisplayOwnerGroup) {
+        this.selectDisplayOwnerGroup = selectDisplayOwnerGroup;
+    }
+
+    public Boolean getSelectDisplayCreatedByUser() {
+        return selectDisplayCreatedByUser;
+    }
+
+    public void setSelectDisplayCreatedByUser(Boolean selectDisplayCreatedByUser) {
+        this.selectDisplayCreatedByUser = selectDisplayCreatedByUser;
+    }
+
+    public Boolean getSelectDisplayCreatedOnDateTime() {
+        return selectDisplayCreatedOnDateTime;
+    }
+
+    public void setSelectDisplayCreatedOnDateTime(Boolean selectDisplayCreatedOnDateTime) {
+        this.selectDisplayCreatedOnDateTime = selectDisplayCreatedOnDateTime;
+    }
+
+    public Boolean getSelectDisplayLastModifiedByUser() {
+        return selectDisplayLastModifiedByUser;
+    }
+
+    public void setSelectDisplayLastModifiedByUser(Boolean selectDisplayLastModifiedByUser) {
+        this.selectDisplayLastModifiedByUser = selectDisplayLastModifiedByUser;
+    }
+
+    public Boolean getSelectDisplayLastModifiedOnDateTime() {
+        return selectDisplayLastModifiedOnDateTime;
+    }
+
+    public void setSelectDisplayLastModifiedOnDateTime(Boolean selectDisplayLastModifiedOnDateTime) {
+        this.selectDisplayLastModifiedOnDateTime = selectDisplayLastModifiedOnDateTime;
+    }
+
+    public String getSelectFilterByName() {
+        return selectFilterByName;
+    }
+
+    public void setSelectFilterByName(String selectFilterByName) {
+        this.selectFilterByName = selectFilterByName;
+    }
+
+    public String getSelectFilterByDescription() {
+        return selectFilterByDescription;
+    }
+
+    public void setSelectFilterByDescription(String selectFilterByDescription) {
+        this.selectFilterByDescription = selectFilterByDescription;
+    }
+
+    public String getSelectFilterByOwnerUser() {
+        return selectFilterByOwnerUser;
+    }
+
+    public void setSelectFilterByOwnerUser(String selectFilterByOwnerUser) {
+        this.selectFilterByOwnerUser = selectFilterByOwnerUser;
+    }
+
+    public String getSelectFilterByOwnerGroup() {
+        return selectFilterByOwnerGroup;
+    }
+
+    public void setSelectFilterByOwnerGroup(String selectFilterByOwnerGroup) {
+        this.selectFilterByOwnerGroup = selectFilterByOwnerGroup;
+    }
+
+    public String getSelectFilterByCreatedByUser() {
+        return selectFilterByCreatedByUser;
+    }
+
+    public void setSelectFilterByCreatedByUser(String selectFilterByCreatedByUser) {
+        this.selectFilterByCreatedByUser = selectFilterByCreatedByUser;
+    }
+
+    public String getSelectFilterByCreatedOnDateTime() {
+        return selectFilterByCreatedOnDateTime;
+    }
+
+    public void setSelectFilterByCreatedOnDateTime(String selectFilterByCreatedOnDateTime) {
+        this.selectFilterByCreatedOnDateTime = selectFilterByCreatedOnDateTime;
+    }
+
+    public String getSelectFilterByLastModifiedByUser() {
+        return selectFilterByLastModifiedByUser;
+    }
+
+    public void setSelectFilterByLastModifiedByUser(String selectFilterByLastModifiedByUser) {
+        this.selectFilterByLastModifiedByUser = selectFilterByLastModifiedByUser;
+    }
+
+    public String getSelectFilterByLastModifiedOnDateTime() {
+        return selectFilterByLastModifiedOnDateTime;
+    }
+
+    public void setSelectFilterByLastModifiedOnDateTime(String selectFilterByLastModifiedOnDateTime) {
+        this.selectFilterByLastModifiedOnDateTime = selectFilterByLastModifiedOnDateTime;
+    }
+
+    public Integer getIdViewParam() {
+        return idViewParam;
+    }
+
+    public void setIdViewParam(Integer idViewParam) {
+        this.idViewParam = idViewParam;
+    }
+
+    public String getBreadcrumbViewParam() {
+        return breadcrumbViewParam;
+    }
+
+    public void setBreadcrumbViewParam(String breadcrumbViewParam) {
+        this.breadcrumbViewParam = breadcrumbViewParam;
+    }
+
+
+
 }

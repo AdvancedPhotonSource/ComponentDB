@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -106,22 +107,32 @@ public class ComponentTypeCategory implements Serializable
         return hash;
     }
 
+    public boolean equalsByName(ComponentTypeCategory other) {
+        if (other == null) {
+            return false;
+        }
+        return ObjectUtility.equals(this.name, other.name);
+    }
+    
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ComponentTypeCategory)) {
             return false;
         }
         ComponentTypeCategory other = (ComponentTypeCategory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+        
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id); 
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.ComponentCategory[ id=" + id + " ]";
+        return name;
     }
     
 }

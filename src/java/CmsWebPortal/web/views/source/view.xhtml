@@ -28,7 +28,7 @@
                 <h:outputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
 
             </p:panelGrid>
-            
+
             <p/>
             <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
@@ -40,7 +40,8 @@
             </div>
 
             <p:confirmDialog id="destroySourceDialog" message="Destroy source #{sourceController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Source" severity="alert" widgetVar="confirmation">
+                             header="Destroy Source" severity="alert" widgetVar="confirmation"
+                             styleClass="dialog">
                 <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{sourceController.destroy()}"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>  

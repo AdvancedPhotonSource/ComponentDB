@@ -25,6 +25,7 @@ import org.primefaces.component.datatable.DataTable;
 @SessionScoped
 public class UserController extends CrudEntityController<User, UserFacade> implements Serializable
 {
+
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "User.List.Display.NumberOfItemsPerPage";
 
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
@@ -32,7 +33,6 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
     @EJB
     private UserFacade userFacade;
 
-    
     public UserController() {
     }
 
@@ -74,7 +74,7 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
                 setting.setUser(user);
                 setting.setSettingType(settingType);
             }
-            
+
             String settingValue = setting.getValue();
             if (settingValue == null || settingValue.isEmpty()) {
                 setting.setValue(settingType.getDefaultValue());
@@ -107,7 +107,20 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
             sessionUser.setUserSettingList(selectedUser.getUserSettingList());
         }
     }
-    
+
+    public void saveSettingListForSessionUser() {
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser != null) {
+            logger.debug("Saving settings for session user");
+            User user = getEntity(sessionUser.getId());
+            user.setUserSettingList(sessionUser.getUserSettingList());
+            setCurrent(user);
+            update();
+            SessionUtility.setUser(user);
+        }
+
+    }
+
     public String prepareSessionUserEdit(String viewPath) {
         User sessionUser = (User) SessionUtility.getUser();
         if (sessionUser == null) {
@@ -149,7 +162,7 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
     public void clearListFilters() {
         filterByName = null;
     }
-    
+
     @FacesConverter(forClass = User.class)
     public static class UserControllerConverter implements Converter
     {

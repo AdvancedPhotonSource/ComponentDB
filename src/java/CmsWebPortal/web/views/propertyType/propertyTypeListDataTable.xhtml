@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dataTable id="propertyTypeListDataTable"
+                 var="propertyTypeObject" 
+                 value="#{propertyTypeController.listDataModel}" 
+                 filteredValue="#{propertyTypeController.filteredObjectList}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{propertyTypeController.displayNumberOfItemsPerPage}"
+                 binding="#{propertyTypeController.listDataTable}"
+                 widgetVar="propertyTypeListWidget" 
+                 emptyMessage="No property types found.">
+
+        <p:column sortBy="#{propertyTypeObject.id}" headerText="Id"
+                  rendered="true">
+            <h:outputText value="#{propertyTypeObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
+                  filterBy="name" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByName}"
+                  rendered="true">
+            <h:outputText value="#{propertyTypeObject.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.propertyTypeCategory.name}" headerText="Category" 
+                  filterBy="#{propertyTypeObject.propertyTypeCategory.name}" filterMatchMode="exact"
+                  filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
+                  filterValue="#{propertyTypeController.filterByTypeCategory}"
+                  rendered="true">
+            <h:outputText value="#{propertyTypeObject.propertyTypeCategory.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
+                  filterBy="description" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByDescription}"
+                  rendered="true">
+            <h:outputText value="#{propertyTypeObject.description}"/>
+        </p:column>
+
+        <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{propertyTypeController.prepareView(propertyTypeObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                <p:commandLink action="#{propertyTypeController.prepareEdit(propertyTypeObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                <p:commandLink oncomplete="propertyTypeDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                    <f:setPropertyActionListener value="#{propertyTypeObject}" target="#{propertyTypeController.current}"/>
+                </p:commandLink>
+            </div>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

@@ -57,6 +57,7 @@
                                     <p:menuitem value="Home" url="/faces/views/home.xhtml" icon="ui-icon-home"/>
                                     <p:menuitem value="Collections" url="/faces/views/collection/list.xhtml"/>
                                     <p:menuitem value="Components" url="/faces/views/component/list.xhtml"/>
+                                    <p:menuitem value="Component Types" url="/faces/views/componentType/list.xhtml"/>
                                     <p:menuitem value="Property Types" url="/faces/views/propertyType/list.xhtml"/>
                                     <p:menuitem value="Sources" url="/faces/views/source/list.xhtml"/>
                                     <p:menuitem value="Users" url="/faces/views/user/list.xhtml"/>
@@ -98,9 +99,9 @@
         </ui:fragment>
 
         <h:form id="loginForm">
-            <p:dialog id="loginDialog" styleClass="loginDialog" header="Login" widgetVar="loginDialog">
-                <h:panelGrid>
-                    <div class="loginDialog">
+            <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialog">
+                <h:panelGrid styleClass="loginInput">
+                    <div class="dialog">
                         <div>
                             <p:inputText id="username" value="#{loginController.username}" title="Username"/>
                             <p:watermark for="username" value="Username"/>
@@ -115,8 +116,6 @@
                 </h:panelGrid>
             </p:dialog>
         </h:form>
-
-
     </h:body>
 
 </html>

@@ -3,9 +3,12 @@ package gov.anl.aps.cms.portal.controllers;
 import gov.anl.aps.cms.portal.model.entities.ComponentType;
 import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.beans.ComponentTypeFacade;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
+import gov.anl.aps.cms.portal.model.entities.User;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,15 +17,21 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypeController")
 @SessionScoped
 public class ComponentTypeController extends CrudEntityController<ComponentType, ComponentTypeFacade> implements Serializable
 {
 
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentType.List.Display.NumberOfItemsPerPage";
+
+    private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
+
     @EJB
     private ComponentTypeFacade componentTypeFacade;
-    private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
+
+    private String filterByTypeCategory = null;
 
     public ComponentTypeController() {
     }
@@ -58,10 +67,60 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 
     @Override
     public void prepareEntityInsert(ComponentType componentType) throws ObjectAlreadyExists {
+        ComponentType existingComponentType = componentTypeFacade.findByName(componentType.getName());
+        if (existingComponentType != null) {
+            throw new ObjectAlreadyExists("Component type " + componentType.getName() + " already exists.");
+        }
+        logger.debug("Inserting new component type " + componentType.getName());
     }
 
     @Override
     public void prepareEntityUpdate(ComponentType componentType) throws ObjectAlreadyExists {
+    }
+
+    @Override
+    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+    }
+
+    @Override
+    public void updateListSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        if (dataTable == null) {
+            return;
+        }
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterByName = filters.get("name");
+        filterByDescription = filters.get("description");
+        filterByTypeCategory = filters.get("componentTypeCategory.name");
+    }
+
+    @Override
+    public void clearListFilters() {
+        filterByName = null;
+        filterByDescription = null;
+        filterByTypeCategory = null;
+    }
+
+    public String getFilterByTypeCategory() {
+        return filterByTypeCategory;
+    }
+
+    public void setFilterByTypeCategory(String filterByTypeCategory) {
+        this.filterByTypeCategory = filterByTypeCategory;
     }
 
     @FacesConverter(value = "componentTypeConverter", forClass = ComponentType.class)

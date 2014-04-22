@@ -15,18 +15,7 @@
 
         <h:form id="addPropertyTypeCategoryForm">
 
-            <c:set var="selected" value="#{propertyTypeCategoryController.selected}"/>
-
-            <p:panelGrid columns="3">
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
-                <p:message for="name"/> 
-
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-                <p:message for="description"/> 
-
-            </p:panelGrid>
+            <ui:include src="propertyTypeCategoryCreatePanelGrid.xhtml"/>
 
             <p/>
             <div class="actionButton">

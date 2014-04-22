@@ -14,76 +14,21 @@
         </div>
 
         <h:form id="viewPropertyTypeListForm">            
-            <c:set var="listController" value="#{propertyTypeController}"/>
             <div class="actionButton">
-                <p:commandButton action="#{listController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
-                <p:commandButton style="visibility:hidden" value="NoOp"/>
+                <p:commandButton action="#{propertyTypeController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
                 <p:button href="../propertyTypeCategory/list.xhtml" value="View Categories" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight"/>
-                <p:commandButton action="#{listController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
-                <p:defaultCommand target="confirmDialogNo"/>
+                <p:commandButton action="#{propertyTypeController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
+                <p:commandButton id="noOp" style="visibility:hidden" value="NoOp"/>
+                <p:defaultCommand target="noOp"/>
             </div>
 
             <h:panelGroup>  
+                
+                <ui:include src="propertyTypeListDataTable.xhtml"/>
 
-                <p:dataTable id="propertyTypeListDataTable"
-                             var="item" 
-                             value="#{listController.items}" 
-                             filteredValue="#{listController.filteredItems}"
-                             paginator="true" 
-                             paginatorAlwaysVisible="true" 
-                             rows="#{listController.displayNumberOfItemsPerPage}"
-                             binding="#{listController.listDataTable}"
-                             widgetVar="propertyTypeListWidget" 
-                             emptyMessage="No property types found." >
+             </h:panelGroup>
 
-                    <f:facet name="header">
-                    </f:facet>
-
-                    <p:column sortBy="#{item.id}" headerText="Id"
-                              rendered="true">
-                        <h:outputText value="#{item.id}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.name}" headerText="Name" 
-                              filterBy="name" filterMatchMode="contains"
-                              filterValue="#{listController.filterByName}"
-                              rendered="true">
-                        <h:outputText value="#{item.name}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.propertyTypeCategory.name}" headerText="Category" 
-                              filterBy="#{item.propertyTypeCategory.name}" filterMatchMode="exact"
-                              filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
-                              filterValue="#{listController.filterByTypeCategory}"
-                              rendered="true">
-                        <h:outputText value="#{item.propertyTypeCategory.name}"/>
-                    </p:column>
-
-                    <p:column sortBy="#{item.description}" headerText="Description" 
-                              filterBy="description" filterMatchMode="contains"
-                              filterValue="#{listController.filterByDescription}"
-                              rendered="true">
-                        <h:outputText value="#{item.description}"/>
-                    </p:column>
-
-                    <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
-                    <p:column headerText="Actions">
-                        <div class="actionLink">
-                            <p:commandLink action="#{listController.prepareView(item)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                            <p:commandLink action="#{listController.prepareEdit(item)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                            <p:commandLink oncomplete="confirmation.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                                <f:setPropertyActionListener value="#{item}" target="#{listController.current}"/>
-                            </p:commandLink>
-                        </div>
-                    </p:column>
-                </p:dataTable>
-            </h:panelGroup>
-
-            <p:confirmDialog id="destroyPropertyTypeDialog" message="Destroy property type #{listController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Property Type" severity="alert" widgetVar="confirmation">
-                <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{listController.destroy()}" update="@form"/>
-                <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
-            </p:confirmDialog>
+            <ui:include src="propertyTypeDestroyDialog.xhtml"/>
 
         </h:form>
 

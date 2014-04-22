@@ -21,7 +21,7 @@
     <p:message for="ownerGroup"/> 
 
     <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-    <h:inputText id="groupWriteable" value="#{selected.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
+    <h:selectBooleanCheckbox id="groupWriteable" value="#{selected.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
     <p:message for="groupWriteable"/> 
 
 </ui:composition>

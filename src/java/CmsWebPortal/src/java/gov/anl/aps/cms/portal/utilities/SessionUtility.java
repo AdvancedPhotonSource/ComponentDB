@@ -1,6 +1,7 @@
 package gov.anl.aps.cms.portal.utilities;
 
 import java.util.Map;
+import java.util.Stack;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
@@ -15,6 +16,7 @@ public class SessionUtility
      */
     public static final String MessagesKey = "messages";
     public static final String UserKey = "user";
+    public static final String ViewStackKey = "viewStack";
 
     /**
      * Constructor.
@@ -89,9 +91,39 @@ public class SessionUtility
         return sessionMap.get(UserKey);
     }
 
-    public static String getCurrentView() {
+    public static void pushViewOnStack(String viewId) {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        Stack<String> viewStack = (Stack) sessionMap.get(ViewStackKey);
+        if (viewStack == null) {
+            viewStack = new Stack<>();
+            sessionMap.put(ViewStackKey, viewStack);
+        }
+        viewStack.push(viewId);
+    }
+
+    public static String popViewFromStack() {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        Stack<String> viewStack = (Stack) sessionMap.get(ViewStackKey);
+        if (viewStack != null && !viewStack.empty()) {
+            return viewStack.pop();
+        }
+        return null;
+    }
+    
+    public static String getCurrentViewId() {
         FacesContext context = FacesContext.getCurrentInstance();
         return context.getViewRoot().getViewId();
+    }
+    
+    public static String getReferrerViewId() {
+        String referrer = FacesContext.getCurrentInstance().getExternalContext().getRequestHeaderMap().get("referer");
+        if (referrer != null) {
+            int beginViewId = referrer.indexOf("/views");
+            if (beginViewId >= 0) {
+                return referrer.substring(beginViewId);
+            }
+        }
+        return null;
     }
 
     public static void clearSession() {

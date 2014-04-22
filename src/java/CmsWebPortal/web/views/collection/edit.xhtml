@@ -6,62 +6,37 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="../../templates/contentViewTemplate4x4.xhtml">
+                template="../../templates/contentViewTemplate4x3.xhtml">
 
-    <ui:define name="middleCenterLeft">
-        <div class="pageTitle">
-            <h1>Edit Collection: #{collectionController.selected.name}</h1>
-        </div>
+    <ui:define name="middleCenter">
+        <c:set var="collectionObject" value="#{collectionController.selected}"/>
+        <c:set var="entityInfoObject" value="#{collectionObject.entityInfo}"/>
 
         <h:form id="editCollectionForm">
 
-            <c:set var="selected" value="#{collectionController.selected}"/>
+            <div class="middleCenterLeftContent">
+                <div class="pageTitle">
+                    <h1>Edit Collection</h1>
+                </div>
 
-            <p:panelGrid columns="3">
-                <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-                <h:outputText id="id" value="#{selected.id}" title="Id" styleClass="entityDataText"/>
-                <p:message for="id"/> 
-                
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
-                <p:message for="name"/> 
+                <ui:include src="collectionEditPanelGrid.xhtml"/>
 
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-                <p:message for="description"/> 
-
-                <h:outputLabel for="parentCollection" value="Parent" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="parentCollection" value="#{selected.parentCollection}" title="Parent" 
-                                 converter="collectionConverter"
-                                 styleClass="entityDataText">
-                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                    <f:selectItems var="parentCollection" value="#{collectionController.availableItems}" itemLabel="#{parentCollection.name}" itemValue="#{parentCollection}"/>
-                </h:selectOneMenu>
-                <p:message for="parentCollection"/> 
-
-                <ui:include src="../entityInfo/edit.xhtml"/>
-
-            </p:panelGrid>
-
-            <p/>
-            <div class="actionButton">
-                <p:commandButton action="#{collectionController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{collectionController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                <p/>
+                <div class="actionButton">
+                    <p:commandButton action="#{collectionController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
+                    <p:commandButton action="#{collectionController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                </div>
             </div>
-        </h:form>
 
-    </ui:define>
-    
-    <ui:define name="middleCenterRight">
-        <h:form id="editCollectionRightForm">
-            <c:set var="selected" value="#{collectionController.selected}"/>
-            <p:accordionPanel multiple="true">
-                <p:tab title="Components">
+            <div class="middleCenterRightContent">
+                <p:accordionPanel multiple="true">
+                    <p:tab title="Components">
 
-                    <ui:include src="../collectionComponent/edit.xhtml"/>
+                        <ui:include src="../collectionComponent/edit.xhtml"/>
 
-                </p:tab>
-            </p:accordionPanel>
+                    </p:tab>
+                </p:accordionPanel>
+            </div>
         </h:form>
 
     </ui:define>

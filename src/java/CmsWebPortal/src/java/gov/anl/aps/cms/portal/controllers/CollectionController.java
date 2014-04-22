@@ -3,8 +3,8 @@ package gov.anl.aps.cms.portal.controllers;
 import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.Collection;
 import gov.anl.aps.cms.portal.model.beans.CollectionFacade;
-import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.CollectionComponent;
+import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
@@ -30,46 +30,29 @@ import org.primefaces.component.datatable.DataTable;
 public class CollectionController extends CrudEntityController<Collection, CollectionFacade> implements Serializable
 {
 
-    private static final String CollectionDisplayNumberOfItemsPerPageSettingTypeKey = "Collection.List.Display.NumberOfItemsPerPage";
-    private static final String CollectionDisplayIdSettingTypeKey = "Collection.List.Display.Id";
-    private static final String CollectionDisplayParentCollectionSettingTypeKey = "Collection.List.Display.ParentCollection";
-    private static final String CollectionDisplayOwnerUserSettingTypeKey = "Collection.List.Display.OwnerUser";
-    private static final String CollectionDisplayOwnerGroupSettingTypeKey = "Collection.List.Display.OwnerGroup";
-    private static final String CollectionDisplayCreatedByUserSettingTypeKey = "Collection.List.Display.CreatedByUser";
-    private static final String CollectionDisplayCreatedOnDateTimeSettingTypeKey = "Collection.List.Display.CreatedOnDateTime";
-    private static final String CollectionDisplayLastModifiedByUserSettingTypeKey = "Collection.List.Display.LastModifiedByUser";
-    private static final String CollectionDisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Collection.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "Collection.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "Collection.List.Display.Description";
+    private static final String DisplayOwnerUserSettingTypeKey = "Collection.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "Collection.List.Display.OwnerGroup";
+    private static final String DisplayCreatedByUserSettingTypeKey = "Collection.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Collection.List.Display.CreatedOnDateTime";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "Collection.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.List.Display.LastModifiedOnDateTime";
 
-    private static final String CollectionComponentDisplayNumberOfItemsPerPageSettingTypeKey = "CollectionComponent.List.Display.NumberOfItemsPerPage";
-    private static final String CollectionComponentDisplayIdSettingTypeKey = "CollectionComponent.List.Display.Id";
-    private static final String CollectionComponentDisplayTagSettingTypeKey = "CollectionComponent.List.Display.Tag";
-    private static final String CollectionComponentDisplayQuantitySettingTypeKey = "CollectionComponent.List.Display.Quantity";
-    private static final String CollectionComponentDisplayPrioritySettingTypeKey = "CollectionComponent.List.Display.Priority";
-    private static final String CollectionComponentDisplayDescriptionSettingTypeKey = "CollectionComponent.List.Display.Description";
-
-    private static final String CollectionFilterByNameSettingTypeKey = "Collection.List.FilterBy.Name";
-    private static final String CollectionFilterByParentCollectionSettingTypeKey = "Collection.List.FilterBy.ParentCollection";
-    private static final String CollectionFilterByOwnerUserSettingTypeKey = "Collection.List.FilterBy.OwnerUser";
-    private static final String CollectionFilterByOwnerGroupSettingTypeKey = "Collection.List.FilterBy.OwnerGroup";
-    private static final String CollectionFilterByCreatedByUserSettingTypeKey = "Collection.List.FilterBy.CreatedByUser";
-    private static final String CollectionFilterByCreatedOnDateTimeSettingTypeKey = "Collection.List.FilterBy.CreatedOnDateTime";
-    private static final String CollectionFilterByLastModifiedByUserSettingTypeKey = "Collection.List.FilterBy.LastModifiedByUser";
-    private static final String CollectionFilterByLastModifiedOnDateTimeSettingTypeKey = "Collection.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByNameSettingTypeKey = "Collection.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "Collection.List.FilterBy.Description";
+    private static final String FilterByOwnerUserSettingTypeKey = "Collection.List.FilterBy.OwnerUser";
+    private static final String FilterByOwnerGroupSettingTypeKey = "Collection.List.FilterBy.OwnerGroup";
+    private static final String FilterByCreatedByUserSettingTypeKey = "Collection.List.FilterBy.CreatedByUser";
+    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Collection.List.FilterBy.CreatedOnDateTime";
+    private static final String FilterByLastModifiedByUserSettingTypeKey = "Collection.List.FilterBy.LastModifiedByUser";
+    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Collection.List.FilterBy.LastModifiedOnDateTime";
 
     private static final Logger logger = Logger.getLogger(CollectionController.class.getName());
 
     @EJB
     private CollectionFacade collectionFacade;
-
-    private Boolean displayParentCollection = null;
-    private Integer collectionComponentDisplayNumberOfItemsPerPage = null;
-    private Boolean collectionComponentDisplayId = null;
-    private Boolean collectionComponentDisplayTag = null;
-    private Boolean collectionComponentDisplayQuantity = null;
-    private Boolean collectionComponentDisplayPriority = null;
-    private Boolean collectionComponentDisplayDescription = null;
-
-    private String filterByParentCollection = null;
 
     public CollectionController() {
     }
@@ -145,15 +128,30 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         componentList.add(component);
     }
 
+    public void prepareSelectComponents() {
+
+    }
+
+    public void selectComponents(List<Component> componentList) {
+        Collection collection = getCurrent();
+        List<CollectionComponent> collectionComponentList = collection.getCollectionComponentList();
+        for (Component component : componentList) {
+            CollectionComponent collectionComponent = new CollectionComponent();
+            collectionComponent.setCollection(collection);
+            collectionComponent.setComponent(component);
+            collectionComponentList.add(collectionComponent);
+        }
+    }
+
     public void saveComponentList() {
         update();
     }
 
-    public void deleteComponent(CollectionComponent component) {
+    public void deleteComponent(CollectionComponent collectionComponent) {
+        logger.debug("Removing component " + collectionComponent.getComponent().getName() + " from collection " + collectionComponent.getCollection().getName());
         Collection collection = getCurrent();
-        List<CollectionComponent> componentList = collection.getCollectionComponentList();
-        componentList.remove(component);
-        update();
+        List<CollectionComponent> collectionComponentList = collection.getCollectionComponentList();
+        collectionComponentList.remove(collectionComponent);
     }
 
     @Override
@@ -162,24 +160,24 @@ public class CollectionController extends CrudEntityController<Collection, Colle
             return;
         }
 
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(CollectionDisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        displayId = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayIdSettingTypeKey).getDefaultValue());
-        displayParentCollection = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayParentCollectionSettingTypeKey).getDefaultValue());
-        displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayOwnerUserSettingTypeKey).getDefaultValue());
-        displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayOwnerGroupSettingTypeKey).getDefaultValue());
-        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayCreatedByUserSettingTypeKey).getDefaultValue());
-        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
-        displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
-        displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(CollectionDisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
+        displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
+        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
+        displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
 
-        filterByName = settingTypeMap.get(CollectionFilterByNameSettingTypeKey).getDefaultValue();
-        filterByParentCollection = settingTypeMap.get(CollectionFilterByParentCollectionSettingTypeKey).getDefaultValue();
-        filterByOwnerUser = settingTypeMap.get(CollectionFilterByOwnerUserSettingTypeKey).getDefaultValue();
-        filterByOwnerGroup = settingTypeMap.get(CollectionFilterByOwnerGroupSettingTypeKey).getDefaultValue();
-        filterByCreatedByUser = settingTypeMap.get(CollectionFilterByCreatedByUserSettingTypeKey).getDefaultValue();
-        filterByCreatedOnDateTime = settingTypeMap.get(CollectionFilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
-        filterByLastModifiedByUser = settingTypeMap.get(CollectionFilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
-        filterByLastModifiedOnDateTime = settingTypeMap.get(CollectionFilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
+        filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
+        filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
+        filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
+        filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -188,24 +186,50 @@ public class CollectionController extends CrudEntityController<Collection, Colle
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(CollectionDisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayIdSettingTypeKey, displayId);
-        displayParentCollection = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayParentCollectionSettingTypeKey, displayParentCollection);
-        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayOwnerUserSettingTypeKey, displayOwnerUser);
-        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
-        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
-        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(CollectionDisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
-        filterByName = sessionUser.getUserSettingValueAsString(CollectionFilterByNameSettingTypeKey, filterByName);
-        filterByParentCollection = sessionUser.getUserSettingValueAsString(CollectionFilterByParentCollectionSettingTypeKey, filterByParentCollection);
-        filterByOwnerUser = sessionUser.getUserSettingValueAsString(CollectionFilterByOwnerUserSettingTypeKey, filterByOwnerUser);
-        filterByOwnerGroup = sessionUser.getUserSettingValueAsString(CollectionFilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
-        filterByCreatedByUser = sessionUser.getUserSettingValueAsString(CollectionFilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
-        filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(CollectionFilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
-        filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(CollectionFilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
-        filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(CollectionFilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+    }
+
+    @Override
+    public void saveListSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        sessionUser.setUserSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        sessionUser.setUserSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        sessionUser.setUserSettingValue(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
     }
 
     @Override
@@ -216,7 +240,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
 
         Map<String, String> filters = dataTable.getFilters();
         filterByName = filters.get("name");
-        filterByParentCollection = filters.get("parentCollection");
+        filterByDescription = filters.get("description");
         filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
         filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
         filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
@@ -228,7 +252,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     @Override
     public void clearListFilters() {
         filterByName = null;
-        filterByParentCollection = null;
+        filterByDescription = null;
         filterByOwnerUser = null;
         filterByOwnerGroup = null;
         filterByCreatedByUser = null;
@@ -237,97 +261,13 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         filterByLastModifiedOnDateTime = null;
     }
 
-    @Override
-    public void updateViewSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        collectionComponentDisplayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(CollectionComponentDisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        collectionComponentDisplayId = Boolean.parseBoolean(settingTypeMap.get(CollectionComponentDisplayIdSettingTypeKey).getDefaultValue());
-        collectionComponentDisplayTag = Boolean.parseBoolean(settingTypeMap.get(CollectionComponentDisplayTagSettingTypeKey).getDefaultValue());
-        collectionComponentDisplayQuantity = Boolean.parseBoolean(settingTypeMap.get(CollectionComponentDisplayQuantitySettingTypeKey).getDefaultValue());
-        collectionComponentDisplayPriority = Boolean.parseBoolean(settingTypeMap.get(CollectionComponentDisplayPrioritySettingTypeKey).getDefaultValue());
-        collectionComponentDisplayDescription = Boolean.parseBoolean(settingTypeMap.get(CollectionComponentDisplayDescriptionSettingTypeKey).getDefaultValue());
-    }
-
-    @Override
-    public void updateViewSettingsFromSessionUser(User sessionUser) {
-        collectionComponentDisplayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(CollectionComponentDisplayNumberOfItemsPerPageSettingTypeKey, collectionComponentDisplayNumberOfItemsPerPage);
-        collectionComponentDisplayId = sessionUser.getUserSettingValueAsBoolean(CollectionComponentDisplayIdSettingTypeKey, collectionComponentDisplayId);
-        collectionComponentDisplayTag = sessionUser.getUserSettingValueAsBoolean(CollectionComponentDisplayTagSettingTypeKey, collectionComponentDisplayTag);
-        collectionComponentDisplayQuantity = sessionUser.getUserSettingValueAsBoolean(CollectionComponentDisplayQuantitySettingTypeKey, collectionComponentDisplayQuantity);
-        collectionComponentDisplayPriority = sessionUser.getUserSettingValueAsBoolean(CollectionComponentDisplayPrioritySettingTypeKey, collectionComponentDisplayPriority);
-        collectionComponentDisplayDescription = sessionUser.getUserSettingValueAsBoolean(CollectionComponentDisplayDescriptionSettingTypeKey, collectionComponentDisplayDescription);
-    }
-
-    public Boolean getDisplayParentCollection() {
-        return displayParentCollection;
-    }
-
-    public void setDisplayParentCollection(Boolean displayParentCollection) {
-        this.displayParentCollection = displayParentCollection;
-    }
-
-    public String getFilterByParentCollection() {
-        return filterByParentCollection;
-    }
-
-    public Integer getCollectionComponentDisplayNumberOfItemsPerPage() {
-        return collectionComponentDisplayNumberOfItemsPerPage;
-    }
-
-    public void setCollectionComponentDisplayNumberOfItemsPerPage(Integer collectionComponentDisplayNumberOfItemsPerPage) {
-        this.collectionComponentDisplayNumberOfItemsPerPage = collectionComponentDisplayNumberOfItemsPerPage;
-    }
-
-    public Boolean isCollectionComponentDisplayId() {
-        return collectionComponentDisplayId;
-    }
-
-    public void setCollectionComponentDisplayId(Boolean collectionComponentDisplayId) {
-        this.collectionComponentDisplayId = collectionComponentDisplayId;
-    }
-
-    public Boolean isCollectionComponentDisplayTag() {
-        return collectionComponentDisplayTag;
-    }
-
-    public void setCollectionComponentDisplayTag(Boolean collectionComponentDisplayTag) {
-        this.collectionComponentDisplayTag = collectionComponentDisplayTag;
-    }
-
-    public Boolean isCollectionComponentDisplayQuantity() {
-        return collectionComponentDisplayQuantity;
-    }
-
-    public void setCollectionComponentDisplayQuantity(Boolean collectionComponentDisplayQuantity) {
-        this.collectionComponentDisplayQuantity = collectionComponentDisplayQuantity;
-    }
-
-    public Boolean isCollectionComponentDisplayPriority() {
-        return collectionComponentDisplayPriority;
-    }
-
-    public void setCollectionComponentDisplayPriority(Boolean collectionComponentDisplayPriority) {
-        this.collectionComponentDisplayPriority = collectionComponentDisplayPriority;
-    }
-
-    public Boolean isCollectionComponentDisplayDescription() {
-        return collectionComponentDisplayDescription;
-    }
-
-    public void setCollectionComponentDisplayDescription(Boolean collectionComponentDisplayDescription) {
-        this.collectionComponentDisplayDescription = collectionComponentDisplayDescription;
-    }
-
-    public void setFilterByParentCollection(String filterByParentCollection) {
-        this.filterByParentCollection = filterByParentCollection;
-    }
-
     @FacesConverter(value = "collectionConverter", forClass = Collection.class)
     public static class CollectionControllerConverter implements Converter
     {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
             CollectionController controller = (CollectionController) facesContext.getApplication().getELResolver().

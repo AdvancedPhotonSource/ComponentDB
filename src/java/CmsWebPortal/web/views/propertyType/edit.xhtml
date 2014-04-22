@@ -15,34 +15,12 @@
 
         <h:form id="editPropertyTypeForm">
 
-            <c:set var="selected" value="#{propertyTypeController.selected}"/>
-
-            <p:panelGrid columns="3">
-                <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-                <h:outputText id="id" value="#{selected.id}" title="Id" styleClass="entityDataText"/>
-                <p:message for="id"/> 
-                
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
-                <p:message for="name"/> 
-
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-                <p:message for="description"/> 
-
-                <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
-                <h:selectOneMenu id="category" value="#{selected.propertyTypeCategory}" title="Category" styleClass="entityDataText">
-                    <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-                    <f:selectItems var="category" value="#{propertyTypeCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
-                </h:selectOneMenu>
-                <p:message for="category"/> 
-
-            </p:panelGrid>
+            <ui:include src="propertyTypeEditPanelGrid.xhtml"/>
 
             <p/>
             <div class="actionButton">
                 <p:commandButton action="#{propertyTypeController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{propertyTypeController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+                <p:commandButton action="#{propertyTypeController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
         </h:form>
 

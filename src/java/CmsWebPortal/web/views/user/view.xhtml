@@ -52,7 +52,8 @@
             </div>
 
             <p:confirmDialog id="destroyUserDialog" message="Destroy user #{userController.getCurrentEntityInstanceName()}?"
-                             header="Destroy User" severity="alert" widgetVar="confirmation">
+                             header="Destroy User" severity="alert" widgetVar="confirmation"
+                                                  styleClass="dialog">
                 <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{userController.destroy()}"/>
                 <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>  

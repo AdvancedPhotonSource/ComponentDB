@@ -30,7 +30,7 @@
                              value="#{listController.items}" 
                              filteredValue="#{listController.filteredItems}"
                              paginator="true" 
-                             paginatorAlwaysVisible="true" 
+                             paginatorAlwaysVisible="false" 
                              rows="#{listController.displayNumberOfItemsPerPage}"
                              binding="#{listController.listDataTable}"
                              widgetVar="userListWidget" 
@@ -87,7 +87,8 @@
             </h:panelGroup>
 
             <p:confirmDialog id="destroyUserDialog" message="Destroy user #{listController.getCurrentEntityInstanceName()}?"
-                             header="Destroy User" severity="alert" widgetVar="confirmation">
+                             header="Destroy User" severity="alert" widgetVar="confirmation"
+                                                  styleClass="dialog">
                 <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{listController.destroy()}" update="@form"/>
                 <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>

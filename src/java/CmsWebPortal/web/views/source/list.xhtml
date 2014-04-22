@@ -21,7 +21,7 @@
             <h:panelGroup>  
 
                 <p:dataTable id="sourceListDataTable" var="item" value="#{sourceController.items}" 
-                             paginator="true" paginatorAlwaysVisible="false" rows="10"
+                             paginator="true" paginatorAlwaysVisible="false" 
                              emptyMessage="No sources found.">
 
                     <f:facet name="header">
@@ -50,7 +50,8 @@
                 </p:dataTable>
             </h:panelGroup>
             <p:confirmDialog id="destroySourceDialog" message="Destroy source #{sourceController.getCurrentEntityInstanceName()}?"
-                             header="Destroy Source" severity="alert" widgetVar="confirmation">
+                             header="Destroy Source" severity="alert" widgetVar="confirmation"
+                             styleClass="dialog">
                 <p:commandButton id="confirmDialogYes" value="Yes" oncomplete="confirmation.hide()" action="#{sourceController.destroy()}" update="@form"/>
                 <p:commandButton id="confirmDialogNo" value="No" onclick="confirmation.hide()" type="button" />
             </p:confirmDialog>
