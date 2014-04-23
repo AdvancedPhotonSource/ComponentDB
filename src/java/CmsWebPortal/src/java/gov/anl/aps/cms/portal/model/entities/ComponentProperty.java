@@ -7,7 +7,6 @@
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,9 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentProperty.findByValue", query = "SELECT c FROM ComponentProperty c WHERE c.value = :value"),
     @NamedQuery(name = "ComponentProperty.findAllByComponentId", query = "SELECT c FROM ComponentProperty c WHERE c.component.id = :componentId")})
 
-public class ComponentProperty implements Serializable
+public class ComponentProperty extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

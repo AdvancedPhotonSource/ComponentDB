@@ -52,10 +52,10 @@ public class ComponentConnector implements Serializable
     private Integer quantity;
     @JoinColumn(name = "connector_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private ConnectorType connectorTypeId;
+    private ConnectorType connectorType;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentConnectorId")
     private List<ComponentConnectorResource> componentConnectorResourceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondComponentConnectorId")
@@ -98,20 +98,20 @@ public class ComponentConnector implements Serializable
         this.quantity = quantity;
     }
 
-    public ConnectorType getConnectorTypeId() {
-        return connectorTypeId;
+    public ConnectorType getConnectorType() {
+        return connectorType;
     }
 
-    public void setConnectorTypeId(ConnectorType connectorTypeId) {
-        this.connectorTypeId = connectorTypeId;
+    public void setConnectorType(ConnectorType connectorType) {
+        this.connectorType = connectorType;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
     @XmlTransient

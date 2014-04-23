@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,11 +28,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CollectionComponent.findById", query = "SELECT c FROM CollectionComponent c WHERE c.id = :id"),
     @NamedQuery(name = "CollectionComponent.findByQuantity", query = "SELECT c FROM CollectionComponent c WHERE c.quantity = :quantity"),
     @NamedQuery(name = "CollectionComponent.findByDescription", query = "SELECT c FROM CollectionComponent c WHERE c.description = :description")})
-public class CollectionComponent implements Serializable
+public class CollectionComponent extends CloneableEntity
 {
-
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

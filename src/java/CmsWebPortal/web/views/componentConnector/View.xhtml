@@ -22,9 +22,9 @@
                     <h:outputText value="#{resources.ViewComponentConnectorLabel_quantity}"/>
                     <h:outputText value="#{componentConnectorController.selected.quantity}" title="#{resources.ViewComponentConnectorTitle_quantity}"/>
                     <h:outputText value="#{resources.ViewComponentConnectorLabel_connectorTypeId}"/>
-                    <h:outputText value="#{componentConnectorController.selected.connectorTypeId}" title="#{resources.ViewComponentConnectorTitle_connectorTypeId}"/>
+                    <h:outputText value="#{componentConnectorController.selected.connectorType}" title="#{resources.ViewComponentConnectorTitle_connectorTypeId}"/>
                     <h:outputText value="#{resources.ViewComponentConnectorLabel_componentId}"/>
-                    <h:outputText value="#{componentConnectorController.selected.componentId}" title="#{resources.ViewComponentConnectorTitle_componentId}"/>
+                    <h:outputText value="#{componentConnectorController.selected.component}" title="#{resources.ViewComponentConnectorTitle_componentId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{componentConnectorController.destroyAndView}" value="#{resources.ViewComponentConnectorDestroyLink}"/>

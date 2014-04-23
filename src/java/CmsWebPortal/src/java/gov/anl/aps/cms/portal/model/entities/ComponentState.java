@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cms.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -36,9 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentState.findById", query = "SELECT c FROM ComponentState c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentState.findByName", query = "SELECT c FROM ComponentState c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentState.findByDescription", query = "SELECT c FROM ComponentState c WHERE c.description = :description")})
-public class ComponentState implements Serializable
+public class ComponentState extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

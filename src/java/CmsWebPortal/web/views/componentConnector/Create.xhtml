@@ -22,11 +22,11 @@
                     <h:outputLabel value="#{resources.CreateComponentConnectorLabel_quantity}" for="quantity" />
                     <h:inputText id="quantity" value="#{componentConnectorController.selected.quantity}" title="#{resources.CreateComponentConnectorTitle_quantity}" />
                     <h:outputLabel value="#{resources.CreateComponentConnectorLabel_connectorTypeId}" for="connectorTypeId" />
-                    <h:selectOneMenu id="connectorTypeId" value="#{componentConnectorController.selected.connectorTypeId}" title="#{resources.CreateComponentConnectorTitle_connectorTypeId}" required="true" requiredMessage="#{resources.CreateComponentConnectorRequiredMessage_connectorTypeId}">
+                    <h:selectOneMenu id="connectorTypeId" value="#{componentConnectorController.selected.connectorType}" title="#{resources.CreateComponentConnectorTitle_connectorTypeId}" required="true" requiredMessage="#{resources.CreateComponentConnectorRequiredMessage_connectorTypeId}">
                         <f:selectItems value="#{connectorTypeController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.CreateComponentConnectorLabel_componentId}" for="componentId" />
-                    <h:selectOneMenu id="componentId" value="#{componentConnectorController.selected.componentId}" title="#{resources.CreateComponentConnectorTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentConnectorRequiredMessage_componentId}">
+                    <h:selectOneMenu id="componentId" value="#{componentConnectorController.selected.component}" title="#{resources.CreateComponentConnectorTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentConnectorRequiredMessage_componentId}">
                         <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

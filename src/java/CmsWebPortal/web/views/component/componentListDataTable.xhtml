@@ -124,6 +124,7 @@
             <div class="actionLink">
                 <p:commandLink action="#{componentController.prepareView(componentObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{componentController.prepareEdit(componentObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                <p:commandLink action="#{componentController.prepareClone(componentObject)}" rendered="#{loginController.loggedIn}" styleClass="ui-icon ui-icon-copy" title="Clone"/>
                 <p:commandLink oncomplete="componentDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{componentObject}" target="#{componentController.current}"/>
                 </p:commandLink>

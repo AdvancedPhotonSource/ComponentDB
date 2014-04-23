@@ -92,7 +92,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private String selectFilterByType = null;
     private String selectFilterByTypeCategory = null;
     private String selectFilterByEstimatedCost = null;
-    
+
     public ComponentController() {
         super();
     }
@@ -118,6 +118,20 @@ public class ComponentController extends CrudEntityController<Component, Compone
         }
         component.setEntityInfo(entityInfo);
         return component;
+    }
+
+    @Override
+    public Component cloneEntityInstance(Component component) {
+        Component clonedComponent = super.cloneEntityInstance(component);
+        User ownerUser = (User) SessionUtility.getUser();
+        EntityInfo entityInfo = new EntityInfo();
+        entityInfo.setOwnerUser(ownerUser);
+        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        clonedComponent.setEntityInfo(entityInfo);
+        return clonedComponent;
     }
 
     @Override
@@ -347,7 +361,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         selectFilterByLastModifiedOnDateTime = null;
         selectFilterByEstimatedCost = null;
     }
-    
+
     public Boolean getDisplayDocumentationUri() {
         return displayDocumentationUri;
     }
@@ -508,7 +522,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.selectFilterByEstimatedCost = selectFilterByEstimatedCost;
     }
 
-    
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter
     {

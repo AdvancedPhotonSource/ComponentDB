@@ -54,7 +54,7 @@ public class ConnectorType implements Serializable
     @Size(max = 256)
     @Column(name = "description")
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorTypeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorType")
     private List<ComponentConnector> componentConnectorList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorTypeId")
     private List<ConnectorTypeProperty> connectorTypePropertyList;

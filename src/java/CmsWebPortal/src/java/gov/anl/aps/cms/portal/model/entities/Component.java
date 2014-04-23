@@ -6,8 +6,6 @@
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
-import gov.anl.aps.cms.portal.utilities.StringUtility;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Basic;
@@ -45,78 +43,76 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description"),
     @NamedQuery(name = "Component.findByDocumentationUri", query = "SELECT c FROM Component c WHERE c.documentationUri = :documentationUri"),
     @NamedQuery(name = "Component.findByEstimatedCost", query = "SELECT c FROM Component c WHERE c.estimatedCost = :estimatedCost")})
-public class Component implements Serializable
+public class Component extends CloneableEntity
 {
 
-    private static final long serialVersionUID = 1L;
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    
+
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 64)
     @Column(name = "name")
     private String name;
-    
+
     @Size(max = 256)
     @Column(name = "description")
     private String description;
     @Size(max = 256)
     @Column(name = "documentation_uri")
     private String documentationUri;
-    
+
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "estimated_cost")
     private Float estimatedCost;
-    
+
     @JoinTable(name = "component_log", joinColumns = {
         @JoinColumn(name = "component_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
     private List<Log> logList;
-    
+
     @JoinTable(name = "component_component_type", joinColumns = {
         @JoinColumn(name = "component_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "component_type_id", referencedColumnName = "id")})
     @ManyToMany(fetch = FetchType.EAGER)
     private List<ComponentType> componentTypeList;
-    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentConnector> componentConnectorList;
-    
+
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
-    
+
     @JoinColumn(name = "component_state_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentState componentState;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<DesignComponent> designComponentList;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "designId")
     private List<DesignComponent> designComponentList1;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<CollectionComponent> collectionComponentList;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentInstance> componentInstanceList;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<AssemblyComponent> assemblyComponentList;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "assemblyId")
     private List<AssemblyComponent> assemblyComponentList1;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentSource> componentSourceList;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentProperty> componentPropertyList;
 
@@ -336,9 +332,9 @@ public class Component implements Serializable
             return ObjectUtility.equals(this.name, other.name);
         }
         return false;
-       
+
     }
-    
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Component)) {
@@ -348,7 +344,7 @@ public class Component implements Serializable
         if (this.id == null && other.id == null) {
             return equalsByName(other);
         }
-        
+
         if (this.id == null || other.id == null) {
             return false;
         }
@@ -360,4 +356,35 @@ public class Component implements Serializable
         return name;
     }
 
+    @Override
+    public Component clone() throws CloneNotSupportedException {
+        Component cloned = (Component) super.clone();
+        cloned.id = null;
+        cloned.name = "Copy Of " + cloned.name;
+        //cloned.componentTypeList = null;
+        //cloned.componentTypeCategoryList = null;
+        //cloned.componentPropertyList = null;
+        //cloned.componentSourceList = null;
+        cloned.componentConnectorList = null;
+        cloned.collectionComponentList = null;
+        cloned.componentInstanceList = null;
+        cloned.assemblyComponentList = null;
+        cloned.assemblyComponentList1 = null;
+        cloned.designComponentList = null;
+        cloned.designComponentList1 = null;
+        for (ComponentProperty componentProperty : cloned.componentPropertyList) {
+            componentProperty.setId(null);
+            componentProperty.setComponent(cloned);
+        }
+        for (ComponentSource componentSource : cloned.componentSourceList) {
+            componentSource.setId(null);
+            componentSource.setComponent(cloned);
+        }
+//        for (ComponentConnector componentConnector : cloned.componentConnectorList) {
+//            componentConnector.setId(null);
+//            componentConnector.setComponent(cloned);
+//        }
+        cloned.entityInfo = null;
+        return cloned;
+    }
 }

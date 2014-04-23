@@ -3,6 +3,7 @@ package gov.anl.aps.cms.portal.controllers;
 import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
 import gov.anl.aps.cms.portal.model.beans.AbstractFacade;
 import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
+import gov.anl.aps.cms.portal.model.entities.CloneableEntity;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserSetting;
@@ -23,7 +24,7 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-public abstract class CrudEntityController<EntityType, FacadeType extends AbstractFacade<EntityType>> implements Serializable
+public abstract class CrudEntityController<EntityType extends CloneableEntity, FacadeType extends AbstractFacade<EntityType>> implements Serializable
 {
 
     private static final Logger logger = Logger.getLogger(CrudEntityController.class.getName());
@@ -310,6 +311,23 @@ public abstract class CrudEntityController<EntityType, FacadeType extends Abstra
         return "create?faces-redirect=true";
     }
 
+    public EntityType cloneEntityInstance(EntityType entity) {
+        EntityType clonedEntity;
+        try {
+            clonedEntity = (EntityType)(entity.clone());
+        }
+        catch (CloneNotSupportedException ex) {
+            logger.error("Object cannot be cloned: " + ex);
+            clonedEntity = createEntityInstance();
+        }
+        return clonedEntity;
+    }
+    
+    public String prepareClone(EntityType entity) {
+        current = cloneEntityInstance(entity);
+        return "create?faces-redirect=true";
+    }
+    
     protected void prepareEntityInsert(EntityType entity) throws CmsPortalException {
     }
 
