@@ -131,7 +131,7 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
     }
 
     @Override
-    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;
         }

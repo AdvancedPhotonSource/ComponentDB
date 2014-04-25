@@ -28,6 +28,7 @@
                 <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
                 <div class="actionButton">
                     <p:commandButton action="#{componentController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
+                    <p:commandButton action="#{componentController.prepareClone(componentObject)}" rendered="#{loginController.loggedIn}" value="Clone" alt="Clone" icon="ui-icon-copy"/>
                     <p:commandButton onclick="PF('componentDestroyWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
                         <f:setPropertyActionListener value="#{componentObject}" target="#{componentController.current}"/>
                     </p:commandButton>  

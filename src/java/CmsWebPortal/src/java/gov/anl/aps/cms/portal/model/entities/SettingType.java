@@ -48,7 +48,7 @@ public class SettingType implements Serializable
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(min = 1, max = 128)
     @Column(name = "name")
     private String name;
     @Size(max = 256)

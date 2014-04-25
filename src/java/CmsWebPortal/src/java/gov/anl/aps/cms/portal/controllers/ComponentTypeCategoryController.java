@@ -76,7 +76,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
     }
 
     @Override
-    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;
         }

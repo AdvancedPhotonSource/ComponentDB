@@ -229,7 +229,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;
         }
@@ -325,6 +325,44 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByLastModifiedByUser = filters.get("entityInfo.lastModifiedByUser.username");
         filterByLastModifiedOnDateTime = filters.get("entityInfo.lastModifiedOnDateTime");
         filterByEstimatedCost = filters.get("estimatedCost");
+    }
+
+    @Override
+    public void saveSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        sessionUser.setUserSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+
+        sessionUser.setUserSettingValue(DisplayDocumentationUriSettingTypeKey, displayDocumentationUri);
+        sessionUser.setUserSettingValue(DisplayEstimatedCostSettingTypeKey, displayEstimatedCost);
+        sessionUser.setUserSettingValue(DisplayStateSettingTypeKey, displayState);
+        sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
+        sessionUser.setUserSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        sessionUser.setUserSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        sessionUser.setUserSettingValue(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+
+        sessionUser.setUserSettingValue(FilterByDocumentationUriSettingTypeKey, filterByDocumentationUri);
+        sessionUser.setUserSettingValue(FilterByEstimatedCostSettingTypeKey, filterByEstimatedCost);
+        sessionUser.setUserSettingValue(FilterByStateSettingTypeKey, filterByState);        
+        sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
+        sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
     }
 
     @Override

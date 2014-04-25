@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+    <p:dialog id="parentCollectionListCustomizeDisplayDialog" header="Customize Parent Collection List Display" widgetVar="parentCollectionListCustomizeDisplayWidget" styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="viewParentCollectionListDisplayNumberOfItemsPerPage" value="#{collectionController.viewParentCollectionListDisplayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="viewParentCollectionListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayCreatedByUser" value="#{collectionController.viewParentCollectionListDisplayCreatedByUser}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayCreatedOnDateTime" value="#{collectionController.viewParentCollectionListDisplayCreatedOnDateTime}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayDescription" value="#{collectionController.viewParentCollectionListDisplayDescription}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayId" value="#{collectionController.viewParentCollectionListDisplayId}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayLastModifiedByUser" value="#{collectionController.viewParentCollectionListDisplayLastModifiedByUser}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayLastModifiedOnDateTime" value="#{collectionController.viewParentCollectionListDisplayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayOwnerUser" value="#{collectionController.viewParentCollectionListDisplayOwnerUser}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewParentCollectionListDisplayOwnerGroup" value="#{collectionController.viewParentCollectionListDisplayOwnerGroup}"/>  
+                <h:outputLabel for="viewParentCollectionListDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{collectionController.customizeViewDisplay()}"
+                                 update="@form"
+                                 oncomplete="parentCollectionListCustomizeDisplayWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userController.saveSettingListForSessionUser()}"
+                                 actionListener="#{collectionController.saveViewSettingsForSessionUserActionListener}"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>

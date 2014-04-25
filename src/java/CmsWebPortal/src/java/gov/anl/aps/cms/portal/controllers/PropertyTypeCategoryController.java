@@ -76,7 +76,7 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
     }
 
     @Override
-    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;
         }

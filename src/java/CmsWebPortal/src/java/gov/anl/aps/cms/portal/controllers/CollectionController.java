@@ -40,6 +40,26 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     private static final String DisplayLastModifiedByUserSettingTypeKey = "Collection.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.List.Display.LastModifiedOnDateTime";
 
+    private static final String ViewChildCollectionListDisplayNumberOfItemsPerPageSettingTypeKey = "Collection.View.ChildCollectionList.Display.NumberOfItemsPerPage";
+    private static final String ViewChildCollectionListDisplayIdSettingTypeKey = "Collection.View.ChildCollectionList.Display.Id";
+    private static final String ViewChildCollectionListDisplayDescriptionSettingTypeKey = "Collection.View.ChildCollectionList.Display.Description";
+    private static final String ViewChildCollectionListDisplayOwnerUserSettingTypeKey = "Collection.View.ChildCollectionList.Display.OwnerUser";
+    private static final String ViewChildCollectionListDisplayOwnerGroupSettingTypeKey = "Collection.View.ChildCollectionList.Display.OwnerGroup";
+    private static final String ViewChildCollectionListDisplayCreatedByUserSettingTypeKey = "Collection.View.ChildCollectionList.Display.CreatedByUser";
+    private static final String ViewChildCollectionListDisplayCreatedOnDateTimeSettingTypeKey = "Collection.View.ChildCollectionList.Display.CreatedOnDateTime";
+    private static final String ViewChildCollectionListDisplayLastModifiedByUserSettingTypeKey = "Collection.View.ChildCollectionList.Display.LastModifiedByUser";
+    private static final String ViewChildCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.View.ChildCollectionList.Display.LastModifiedOnDateTime";
+
+    private static final String ViewParentCollectionListDisplayNumberOfItemsPerPageSettingTypeKey = "Collection.View.ParentCollectionList.Display.NumberOfItemsPerPage";
+    private static final String ViewParentCollectionListDisplayIdSettingTypeKey = "Collection.View.ParentCollectionList.Display.Id";
+    private static final String ViewParentCollectionListDisplayDescriptionSettingTypeKey = "Collection.View.ParentCollectionList.Display.Description";
+    private static final String ViewParentCollectionListDisplayOwnerUserSettingTypeKey = "Collection.View.ParentCollectionList.Display.OwnerUser";
+    private static final String ViewParentCollectionListDisplayOwnerGroupSettingTypeKey = "Collection.View.ParentCollectionList.Display.OwnerGroup";
+    private static final String ViewParentCollectionListDisplayCreatedByUserSettingTypeKey = "Collection.View.ParentCollectionList.Display.CreatedByUser";
+    private static final String ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey = "Collection.View.ParentCollectionList.Display.CreatedOnDateTime";
+    private static final String ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey = "Collection.View.ParentCollectionList.Display.LastModifiedByUser";
+    private static final String ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.View.ParentCollectionList.Display.LastModifiedOnDateTime";
+    
     private static final String FilterByNameSettingTypeKey = "Collection.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "Collection.List.FilterBy.Description";
     private static final String FilterByOwnerUserSettingTypeKey = "Collection.List.FilterBy.OwnerUser";
@@ -51,6 +71,26 @@ public class CollectionController extends CrudEntityController<Collection, Colle
 
     private static final Logger logger = Logger.getLogger(CollectionController.class.getName());
 
+    protected Integer viewChildCollectionListDisplayNumberOfItemsPerPage = null;
+    protected Boolean viewChildCollectionListDisplayId = null;
+    protected Boolean viewChildCollectionListDisplayDescription = null;
+    protected Boolean viewChildCollectionListDisplayOwnerUser = null;
+    protected Boolean viewChildCollectionListDisplayOwnerGroup = null;
+    protected Boolean viewChildCollectionListDisplayCreatedByUser = null;
+    protected Boolean viewChildCollectionListDisplayCreatedOnDateTime = null;
+    protected Boolean viewChildCollectionListDisplayLastModifiedByUser = null;
+    protected Boolean viewChildCollectionListDisplayLastModifiedOnDateTime = null;
+
+    protected Integer viewParentCollectionListDisplayNumberOfItemsPerPage = null;
+    protected Boolean viewParentCollectionListDisplayId = null;
+    protected Boolean viewParentCollectionListDisplayDescription = null;
+    protected Boolean viewParentCollectionListDisplayOwnerUser = null;
+    protected Boolean viewParentCollectionListDisplayOwnerGroup = null;
+    protected Boolean viewParentCollectionListDisplayCreatedByUser = null;
+    protected Boolean viewParentCollectionListDisplayCreatedOnDateTime = null;
+    protected Boolean viewParentCollectionListDisplayLastModifiedByUser = null;
+    protected Boolean viewParentCollectionListDisplayLastModifiedOnDateTime = null;
+    
     @EJB
     private CollectionFacade collectionFacade;
 
@@ -76,6 +116,20 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         return collection;
     }
 
+    @Override
+    public Collection cloneEntityInstance(Collection collection) {
+        Collection clonedCollection = super.cloneEntityInstance(collection);
+        User ownerUser = (User) SessionUtility.getUser();
+        EntityInfo entityInfo = new EntityInfo();
+        entityInfo.setOwnerUser(ownerUser);
+        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        clonedCollection.setEntityInfo(entityInfo);
+        return clonedCollection;
+    }
+    
     @Override
     public String getEntityTypeName() {
         return "collection";
@@ -120,6 +174,19 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         logger.debug("Updating collection " + collection.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
+    public Collection findById(Integer id) {
+        return collectionFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            Collection collection = findById(idViewParam);
+            setCurrent(collection);
+            idViewParam = null;
+        }
+    }
+    
     public void prepareAddComponent() {
         Collection collection = getCurrent();
         List<CollectionComponent> componentList = collection.getCollectionComponentList();
@@ -155,7 +222,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     }
 
     @Override
-    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;
         }
@@ -169,6 +236,26 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+
+        viewChildCollectionListDisplayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(ViewChildCollectionListDisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayId = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayIdSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayDescription = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayDescriptionSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayOwnerUserSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayOwnerGroupSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
+        viewChildCollectionListDisplayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewChildCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+
+        viewParentCollectionListDisplayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(ViewParentCollectionListDisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayId = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayIdSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayDescription = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayDescriptionSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayOwnerUserSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayOwnerGroupSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
+        viewParentCollectionListDisplayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());        
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
@@ -207,7 +294,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     }
 
     @Override
-    public void saveListSettingsForSessionUser(User sessionUser) {
+    public void saveSettingsForSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }
@@ -221,6 +308,26 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayNumberOfItemsPerPageSettingTypeKey, viewChildCollectionListDisplayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayIdSettingTypeKey, viewChildCollectionListDisplayId);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayDescriptionSettingTypeKey, viewChildCollectionListDisplayDescription);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayOwnerUserSettingTypeKey, viewChildCollectionListDisplayOwnerUser);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayOwnerGroupSettingTypeKey, viewChildCollectionListDisplayOwnerGroup);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayCreatedByUserSettingTypeKey, viewChildCollectionListDisplayCreatedByUser);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayCreatedOnDateTimeSettingTypeKey, viewChildCollectionListDisplayCreatedOnDateTime);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayLastModifiedByUserSettingTypeKey, viewChildCollectionListDisplayLastModifiedByUser);
+        sessionUser.setUserSettingValue(ViewChildCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewChildCollectionListDisplayLastModifiedOnDateTime);
+
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayNumberOfItemsPerPageSettingTypeKey, viewParentCollectionListDisplayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayIdSettingTypeKey, viewParentCollectionListDisplayId);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayDescriptionSettingTypeKey, viewParentCollectionListDisplayDescription);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayOwnerUserSettingTypeKey, viewParentCollectionListDisplayOwnerUser);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayOwnerGroupSettingTypeKey, viewParentCollectionListDisplayOwnerGroup);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayCreatedByUserSettingTypeKey, viewParentCollectionListDisplayCreatedByUser);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayCreatedOnDateTime);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey, viewParentCollectionListDisplayLastModifiedByUser);
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);        
 
         sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
@@ -261,6 +368,178 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         filterByLastModifiedOnDateTime = null;
     }
 
+    @Override
+    public void updateViewSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        viewChildCollectionListDisplayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(ViewChildCollectionListDisplayNumberOfItemsPerPageSettingTypeKey, viewChildCollectionListDisplayNumberOfItemsPerPage);
+        viewChildCollectionListDisplayId = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayIdSettingTypeKey, viewChildCollectionListDisplayId);
+        viewChildCollectionListDisplayDescription = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayDescriptionSettingTypeKey, viewChildCollectionListDisplayDescription);
+        viewChildCollectionListDisplayOwnerUser = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayOwnerUserSettingTypeKey, viewChildCollectionListDisplayOwnerUser);
+        viewChildCollectionListDisplayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayOwnerGroupSettingTypeKey, viewChildCollectionListDisplayOwnerGroup);
+        viewChildCollectionListDisplayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayCreatedByUserSettingTypeKey, viewChildCollectionListDisplayCreatedByUser);
+        viewChildCollectionListDisplayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayCreatedOnDateTimeSettingTypeKey, viewChildCollectionListDisplayCreatedOnDateTime);
+        viewChildCollectionListDisplayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayLastModifiedByUserSettingTypeKey, viewChildCollectionListDisplayLastModifiedByUser);
+        viewChildCollectionListDisplayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewChildCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewChildCollectionListDisplayLastModifiedOnDateTime);
+
+        viewParentCollectionListDisplayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(ViewParentCollectionListDisplayNumberOfItemsPerPageSettingTypeKey, viewParentCollectionListDisplayNumberOfItemsPerPage);
+        viewParentCollectionListDisplayId = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayIdSettingTypeKey, viewParentCollectionListDisplayId);
+        viewParentCollectionListDisplayDescription = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayDescriptionSettingTypeKey, viewParentCollectionListDisplayDescription);
+        viewParentCollectionListDisplayOwnerUser = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayOwnerUserSettingTypeKey, viewParentCollectionListDisplayOwnerUser);
+        viewParentCollectionListDisplayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayOwnerGroupSettingTypeKey, viewParentCollectionListDisplayOwnerGroup);
+        viewParentCollectionListDisplayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayCreatedByUserSettingTypeKey, viewParentCollectionListDisplayCreatedByUser);
+        viewParentCollectionListDisplayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayCreatedOnDateTime);
+        viewParentCollectionListDisplayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey, viewParentCollectionListDisplayLastModifiedByUser);
+        viewParentCollectionListDisplayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);
+    }
+    
+    public Integer getViewChildCollectionListDisplayNumberOfItemsPerPage() {
+        return viewChildCollectionListDisplayNumberOfItemsPerPage;
+    }
+
+    public void setViewChildCollectionListDisplayNumberOfItemsPerPage(Integer viewChildCollectionListDisplayNumberOfItemsPerPage) {
+        this.viewChildCollectionListDisplayNumberOfItemsPerPage = viewChildCollectionListDisplayNumberOfItemsPerPage;
+    }
+
+    public Boolean getViewChildCollectionListDisplayId() {
+        return viewChildCollectionListDisplayId;
+    }
+
+    public void setViewChildCollectionListDisplayId(Boolean viewChildCollectionListDisplayId) {
+        this.viewChildCollectionListDisplayId = viewChildCollectionListDisplayId;
+    }
+
+    public Boolean getViewChildCollectionListDisplayDescription() {
+        return viewChildCollectionListDisplayDescription;
+    }
+
+    public void setViewChildCollectionListDisplayDescription(Boolean viewChildCollectionListDisplayDescription) {
+        this.viewChildCollectionListDisplayDescription = viewChildCollectionListDisplayDescription;
+    }
+
+    public Boolean getViewChildCollectionListDisplayOwnerUser() {
+        return viewChildCollectionListDisplayOwnerUser;
+    }
+
+    public void setViewChildCollectionListDisplayOwnerUser(Boolean viewChildCollectionListDisplayOwnerUser) {
+        this.viewChildCollectionListDisplayOwnerUser = viewChildCollectionListDisplayOwnerUser;
+    }
+
+    public Boolean getViewChildCollectionListDisplayOwnerGroup() {
+        return viewChildCollectionListDisplayOwnerGroup;
+    }
+
+    public void setViewChildCollectionListDisplayOwnerGroup(Boolean viewChildCollectionListDisplayOwnerGroup) {
+        this.viewChildCollectionListDisplayOwnerGroup = viewChildCollectionListDisplayOwnerGroup;
+    }
+
+    public Boolean getViewChildCollectionListDisplayCreatedByUser() {
+        return viewChildCollectionListDisplayCreatedByUser;
+    }
+
+    public void setViewChildCollectionListDisplayCreatedByUser(Boolean viewChildCollectionListDisplayCreatedByUser) {
+        this.viewChildCollectionListDisplayCreatedByUser = viewChildCollectionListDisplayCreatedByUser;
+    }
+
+    public Boolean getViewChildCollectionListDisplayCreatedOnDateTime() {
+        return viewChildCollectionListDisplayCreatedOnDateTime;
+    }
+
+    public void setViewChildCollectionListDisplayCreatedOnDateTime(Boolean viewChildCollectionListDisplayCreatedOnDateTime) {
+        this.viewChildCollectionListDisplayCreatedOnDateTime = viewChildCollectionListDisplayCreatedOnDateTime;
+    }
+
+    public Boolean getViewChildCollectionListDisplayLastModifiedByUser() {
+        return viewChildCollectionListDisplayLastModifiedByUser;
+    }
+
+    public void setViewChildCollectionListDisplayLastModifiedByUser(Boolean viewChildCollectionListDisplayLastModifiedByUser) {
+        this.viewChildCollectionListDisplayLastModifiedByUser = viewChildCollectionListDisplayLastModifiedByUser;
+    }
+
+    public Boolean getViewChildCollectionListDisplayLastModifiedOnDateTime() {
+        return viewChildCollectionListDisplayLastModifiedOnDateTime;
+    }
+
+    public void setViewChildCollectionListDisplayLastModifiedOnDateTime(Boolean viewChildCollectionListDisplayLastModifiedOnDateTime) {
+        this.viewChildCollectionListDisplayLastModifiedOnDateTime = viewChildCollectionListDisplayLastModifiedOnDateTime;
+    }
+
+    public Integer getViewParentCollectionListDisplayNumberOfItemsPerPage() {
+        return viewParentCollectionListDisplayNumberOfItemsPerPage;
+    }
+
+    public void setViewParentCollectionListDisplayNumberOfItemsPerPage(Integer viewParentCollectionListDisplayNumberOfItemsPerPage) {
+        this.viewParentCollectionListDisplayNumberOfItemsPerPage = viewParentCollectionListDisplayNumberOfItemsPerPage;
+    }
+
+    public Boolean getViewParentCollectionListDisplayId() {
+        return viewParentCollectionListDisplayId;
+    }
+
+    public void setViewParentCollectionListDisplayId(Boolean viewParentCollectionListDisplayId) {
+        this.viewParentCollectionListDisplayId = viewParentCollectionListDisplayId;
+    }
+
+    public Boolean getViewParentCollectionListDisplayDescription() {
+        return viewParentCollectionListDisplayDescription;
+    }
+
+    public void setViewParentCollectionListDisplayDescription(Boolean viewParentCollectionListDisplayDescription) {
+        this.viewParentCollectionListDisplayDescription = viewParentCollectionListDisplayDescription;
+    }
+
+    public Boolean getViewParentCollectionListDisplayOwnerUser() {
+        return viewParentCollectionListDisplayOwnerUser;
+    }
+
+    public void setViewParentCollectionListDisplayOwnerUser(Boolean viewParentCollectionListDisplayOwnerUser) {
+        this.viewParentCollectionListDisplayOwnerUser = viewParentCollectionListDisplayOwnerUser;
+    }
+
+    public Boolean getViewParentCollectionListDisplayOwnerGroup() {
+        return viewParentCollectionListDisplayOwnerGroup;
+    }
+
+    public void setViewParentCollectionListDisplayOwnerGroup(Boolean viewParentCollectionListDisplayOwnerGroup) {
+        this.viewParentCollectionListDisplayOwnerGroup = viewParentCollectionListDisplayOwnerGroup;
+    }
+
+    public Boolean getViewParentCollectionListDisplayCreatedByUser() {
+        return viewParentCollectionListDisplayCreatedByUser;
+    }
+
+    public void setViewParentCollectionListDisplayCreatedByUser(Boolean viewParentCollectionListDisplayCreatedByUser) {
+        this.viewParentCollectionListDisplayCreatedByUser = viewParentCollectionListDisplayCreatedByUser;
+    }
+
+    public Boolean getViewParentCollectionListDisplayCreatedOnDateTime() {
+        return viewParentCollectionListDisplayCreatedOnDateTime;
+    }
+
+    public void setViewParentCollectionListDisplayCreatedOnDateTime(Boolean viewParentCollectionListDisplayCreatedOnDateTime) {
+        this.viewParentCollectionListDisplayCreatedOnDateTime = viewParentCollectionListDisplayCreatedOnDateTime;
+    }
+
+    public Boolean getViewParentCollectionListDisplayLastModifiedByUser() {
+        return viewParentCollectionListDisplayLastModifiedByUser;
+    }
+
+    public void setViewParentCollectionListDisplayLastModifiedByUser(Boolean viewParentCollectionListDisplayLastModifiedByUser) {
+        this.viewParentCollectionListDisplayLastModifiedByUser = viewParentCollectionListDisplayLastModifiedByUser;
+    }
+
+    public Boolean getViewParentCollectionListDisplayLastModifiedOnDateTime() {
+        return viewParentCollectionListDisplayLastModifiedOnDateTime;
+    }
+
+    public void setViewParentCollectionListDisplayLastModifiedOnDateTime(Boolean viewParentCollectionListDisplayLastModifiedOnDateTime) {
+        this.viewParentCollectionListDisplayLastModifiedOnDateTime = viewParentCollectionListDisplayLastModifiedOnDateTime;
+    }
+
+    
     @FacesConverter(value = "collectionConverter", forClass = Collection.class)
     public static class CollectionControllerConverter implements Converter
     {

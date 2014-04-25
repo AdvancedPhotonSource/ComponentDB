@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Collection.findByDescription", query = "SELECT c FROM Collection c WHERE c.description = :description")})
 public class Collection extends CloneableEntity
 {
-   
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -57,13 +56,19 @@ public class Collection extends CloneableEntity
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
     private List<Log> logList;
+  
+    @JoinTable(name = "collection_link", joinColumns = {
+        @JoinColumn(name = "parent_collection_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "child_collection_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Collection> childCollectionList;
+    
+    @ManyToMany(mappedBy = "childCollectionList")
+    private List<Collection> parentCollectionList;
     
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
-    
-    @OneToMany(mappedBy = "parentCollection")
-    private List<Collection> collectionList;
     
     @JoinColumn(name = "parent_collection_id", referencedColumnName = "id")
     @ManyToOne
@@ -126,14 +131,23 @@ public class Collection extends CloneableEntity
     }
 
     @XmlTransient
-    public List<Collection> getCollectionList() {
-        return collectionList;
+    public List<Collection> getChildCollectionList() {
+        return childCollectionList;
     }
 
-    public void setCollectionList(List<Collection> collectionList) {
-        this.collectionList = collectionList;
+    public void setChildCollectionList(List<Collection> childCollectionList) {
+        this.childCollectionList = childCollectionList;
     }
 
+    @XmlTransient
+    public List<Collection> getParentCollectionList() {
+        return parentCollectionList;
+    }
+
+    public void setParentCollectionList(List<Collection> parentCollectionList) {
+        this.parentCollectionList = parentCollectionList;
+    }
+    
     public Collection getParentCollection() {
         return parentCollection;
     }
@@ -175,5 +189,19 @@ public class Collection extends CloneableEntity
     public String toString() {
         return "gov.anl.aps.cms.test.entities.Collection[ id=" + id + " ]";
     }
-    
+
+    @Override
+    public Collection clone() throws CloneNotSupportedException {
+        Collection cloned = (Collection) super.clone();
+        cloned.id = null;
+        cloned.name = "Copy Of " + cloned.name;
+        cloned.childCollectionList = null;
+        cloned.parentCollectionList = null;
+        for (CollectionComponent collectionComponent : cloned.collectionComponentList) {
+            collectionComponent.setId(null);
+            collectionComponent.setCollection(cloned);
+        }
+        cloned.entityInfo = null;
+        return cloned;
+    }    
 }

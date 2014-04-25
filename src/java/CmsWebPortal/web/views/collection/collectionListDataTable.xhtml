@@ -88,6 +88,7 @@
                                styleClass="ui-icon ui-icon-info" 
                                title="View"/>
                 <p:commandLink action="#{collectionController.prepareEdit(collectionObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                <p:commandLink action="#{collectionController.prepareClone(collectionObject)}" rendered="#{loginController.loggedIn}" styleClass="ui-icon ui-icon-copy" title="Clone"/>
                 <p:commandLink oncomplete="collectionDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{collectionObject}" target="#{collectionController.current}"/>
                 </p:commandLink>

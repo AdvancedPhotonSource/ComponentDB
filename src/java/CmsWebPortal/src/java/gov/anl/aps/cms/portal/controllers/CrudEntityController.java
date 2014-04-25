@@ -136,9 +136,9 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         selectByRequestParams();
     }
 
-    public void selectByRequestParams() {    
+    public void selectByRequestParams() {
     }
-    
+
     public EntityType getSelected() {
         if (current == null) {
             current = createEntityInstance();
@@ -167,7 +167,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
         if (!settingsUpdated && !settingsInitializedFromDefaults) {
             settingsInitializedFromDefaults = true;
-            updateListSettingsFromSettingTypeDefaults(getSettingTypeMap());
+            updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
         }
     }
 
@@ -185,13 +185,13 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return returnPage;
     }
 
-    public void updateListSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
     }
 
     public void updateListSettingsFromSessionUser(User sessionUser) {
     }
 
-    public void saveListSettingsForSessionUser(User sessionUser) {
+    public void saveSettingsForSessionUser(User sessionUser) {
     }
 
     public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
@@ -199,7 +199,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         User sessionUser = (User) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Updating list settings for session user");
-            saveListSettingsForSessionUser(sessionUser);
+            saveSettingsForSessionUser(sessionUser);
             resetListDataModel();
             listSettingsTimestamp = new Date();
         }
@@ -291,6 +291,40 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return false;
     }
 
+    public void updateViewSettingsFromSessionUser(User sessionUser) {
+    }
+
+    public void updateViewSettings() {
+        User sessionUser = (User) SessionUtility.getUser();
+        boolean settingsUpdated = false;
+        if (sessionUser != null) {
+            List<UserSetting> userSettingList = sessionUser.getUserSettingList();
+            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(listSettingsTimestamp)) {
+                updateViewSettingsFromSessionUser(sessionUser);
+                settingsUpdated = true;
+            }
+        }
+
+        if (!settingsUpdated && !settingsInitializedFromDefaults) {
+            settingsInitializedFromDefaults = true;
+            updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+        }
+    }
+
+    public void saveViewSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser != null) {
+            logger.debug("Saving settings for session user");
+            saveSettingsForSessionUser(sessionUser);
+        }
+    }
+
+    public String customizeViewDisplay() {
+        String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
+        logger.debug("Returning to page: " + returnPage);
+        return returnPage;
+    }
+
     public boolean isViewValid() {
         selectByRequestParams();
         return current != null;
@@ -299,6 +333,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
+        updateViewSettings();
         return "view?faces-redirect=true";
     }
 
@@ -314,7 +349,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public EntityType cloneEntityInstance(EntityType entity) {
         EntityType clonedEntity;
         try {
-            clonedEntity = (EntityType)(entity.clone());
+            clonedEntity = (EntityType) (entity.clone());
         }
         catch (CloneNotSupportedException ex) {
             logger.error("Object cannot be cloned: " + ex);
@@ -322,12 +357,12 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         }
         return clonedEntity;
     }
-    
+
     public String prepareClone(EntityType entity) {
         current = cloneEntityInstance(entity);
         return "create?faces-redirect=true";
     }
-    
+
     protected void prepareEntityInsert(EntityType entity) throws CmsPortalException {
     }
 
@@ -805,7 +840,5 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public void setBreadcrumbViewParam(String breadcrumbViewParam) {
         this.breadcrumbViewParam = breadcrumbViewParam;
     }
-
-
 
 }

@@ -39,5 +39,16 @@ public class CollectionFacade extends AbstractFacade<Collection> {
         catch (NoResultException ex) {
         }
         return null;
-    }      
+    }
+    
+    public Collection findById(Integer id) {
+        try {
+            return (Collection)em.createNamedQuery("Collection.findById")
+                .setParameter("id", id)
+                .getSingleResult();
+        }
+        catch (NoResultException ex) {
+        }
+        return null;
+    }       
 }

@@ -51,7 +51,7 @@ CREATE TABLE `user_user_group` (
 DROP TABLE IF EXISTS `setting_type`;
 CREATE TABLE `setting_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `default_value` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),

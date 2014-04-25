@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="breadcrumb" value="#{collectionController.currentViewId}"/>
+    <c:set var="collectionObject" value="#{collectionController.selected}"/>
+    <p:dataTable id="childCollectionListDataTable" 
+                 var="childCollectionObject" 
+                 value="#{collectionObject.childCollectionList}" 
+                 emptyMessage="No child collections found.">
+
+        <p:column sortBy="#{childCollectionObject.id}" headerText="Id"
+                  rendered="#{collectionController.viewChildCollectionListDisplayId}">
+            <h:outputText value="#{childCollectionObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.name}" headerText="Name">
+            <h:outputLink value="../collection/view.xhtml?id=#{childCollectionObject.id}&amp;breadcrumb=#{breadcrumb}" title="Component">
+                <h:outputText value="#{childCollectionObject.name}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.description}" headerText="Description"
+                  rendered="#{collectionController.viewChildCollectionListDisplayDescription}">
+            <h:outputText value="#{childCollectionObject.description}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.entityInfo.ownerUser.username}" headerText="Owner"
+                  rendered="#{collectionController.viewChildCollectionListDisplayOwnerUser}">
+            <h:outputText value="#{childCollectionObject.entityInfo.ownerUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.entityInfo.ownerUserGroup.name}" headerText="Group"
+                  rendered="#{collectionController.viewChildCollectionListDisplayOwnerGroup}">
+            <h:outputText value="#{childCollectionObject.entityInfo.ownerUserGroup.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.entityInfo.createdByUser.username}" headerText="Created By"
+                  rendered="#{collectionController.viewChildCollectionListDisplayCreatedByUser}">
+            <h:outputText value="#{childCollectionObject.entityInfo.createdByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.entityInfo.createdOnDateTime}" headerText="Created On"
+                  rendered="#{collectionController.viewChildCollectionListDisplayCreatedOnDateTime}">
+            <h:outputText value="#{childCollectionObject.entityInfo.createdOnDateTime}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
+                  rendered="#{collectionController.viewChildCollectionListDisplayLastModifiedByUser}">
+            <h:outputText value="#{childCollectionObject.entityInfo.lastModifiedByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{childCollectionObject.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
+                  rendered="#{collectionController.viewChildCollectionListDisplayLastModifiedOnDateTime}">
+            <h:outputText value="#{childCollectionObject.entityInfo.lastModifiedOnDateTime}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>

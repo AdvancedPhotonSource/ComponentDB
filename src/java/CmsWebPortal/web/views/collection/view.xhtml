@@ -8,6 +8,11 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
+    <f:metadata>
+        <f:viewParam id="id" name="id" value="#{collectionController.idViewParam}"/>
+        <f:event type="preRenderComponent" listener="#{collectionController.processViewRequestParams()}"/>
+    </f:metadata>
+
     <ui:define name="middleCenter">
         <h:form id="viewCollectionForm">
 
@@ -24,6 +29,7 @@
                 <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(collectionObject.entityInfo)}"/>
                 <div class="actionButton">
                     <p:commandButton action="#{collectionController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
+                    <p:commandButton action="#{collectionController.prepareClone(collectionObject)}" rendered="#{loginController.loggedIn}" value="Clone" alt="Clone" icon="ui-icon-copy"/>
                     <p:commandButton onclick="PF('collectionDestroyWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
                         <f:setPropertyActionListener value="#{collectionObject}" target="#{collectionController.current}"/>
                     </p:commandButton>  
@@ -43,6 +49,34 @@
                         <ui:include src="../collectionComponent/view.xhtml"/>
 
                     </p:tab>
+
+                    <p:tab title="Child Collections">
+                        <div class="middleCenterRightContent">
+                            <ui:include src="childCollectionListDataTable.xhtml"/>
+                        </div>
+                        <div class="middleCenterRightContent">
+                            <div class="actionButton">
+                                <p:commandLink id="childCollectionListCustomizeDisplay" onclick="childCollectionListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="childCollectionListCustomizeDisplay" value="Customize Child Collection List View" />
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <ui:include src="childCollectionListCustomizeDisplayDialog.xhtml"/>
+                    </p:tab>
+
+                    <p:tab title="Parent Collections">
+                        <div class="middleCenterRightContent">
+                            <ui:include src="parentCollectionListDataTable.xhtml"/>
+                        </div>
+                        <div class="middleCenterRightContent">
+                            <div class="actionButton">
+                                <p:commandLink id="parentCollectionListCustomizeDisplay" onclick="parentCollectionListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="parentCollectionListCustomizeDisplay" value="Customize Child Collection List View" />
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <ui:include src="parentCollectionListCustomizeDisplayDialog.xhtml"/>
+                    </p:tab>                    
                 </p:accordionPanel>
 
             </div>
