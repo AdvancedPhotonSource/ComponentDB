@@ -88,7 +88,9 @@ VALUES
 
 	('Source.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
-	('User.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25');
+	('User.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25');
 
 
 UNLOCK TABLES;

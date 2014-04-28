@@ -59,7 +59,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     private static final String ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey = "Collection.View.ParentCollectionList.Display.CreatedOnDateTime";
     private static final String ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey = "Collection.View.ParentCollectionList.Display.LastModifiedByUser";
     private static final String ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.View.ParentCollectionList.Display.LastModifiedOnDateTime";
-    
+
     private static final String FilterByNameSettingTypeKey = "Collection.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "Collection.List.FilterBy.Description";
     private static final String FilterByOwnerUserSettingTypeKey = "Collection.List.FilterBy.OwnerUser";
@@ -90,7 +90,9 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     protected Boolean viewParentCollectionListDisplayCreatedOnDateTime = null;
     protected Boolean viewParentCollectionListDisplayLastModifiedByUser = null;
     protected Boolean viewParentCollectionListDisplayLastModifiedOnDateTime = null;
-    
+
+    private boolean selectChildCollections = false;
+
     @EJB
     private CollectionFacade collectionFacade;
 
@@ -129,7 +131,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         clonedCollection.setEntityInfo(entityInfo);
         return clonedCollection;
     }
-    
+
     @Override
     public String getEntityTypeName() {
         return "collection";
@@ -186,7 +188,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
             idViewParam = null;
         }
     }
-    
+
     public void prepareAddComponent() {
         Collection collection = getCurrent();
         List<CollectionComponent> componentList = collection.getCollectionComponentList();
@@ -196,7 +198,6 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     }
 
     public void prepareSelectComponents() {
-
     }
 
     public void selectComponents(List<Component> componentList) {
@@ -219,6 +220,72 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         Collection collection = getCurrent();
         List<CollectionComponent> collectionComponentList = collection.getCollectionComponentList();
         collectionComponentList.remove(collectionComponent);
+    }
+
+    @Override
+    public void prepareEntityListForSelection(List<Collection> selectEntityList) { 
+        // For now, prevent selecting current collection, or any children or parents.
+        Collection currentCollection = getCurrent();
+        selectEntityList.remove(currentCollection);
+        for (Collection collection : currentCollection.getChildCollectionList()) {
+            selectEntityList.remove(collection);
+        }
+        for (Collection collection : currentCollection.getParentCollectionList()) {
+            selectEntityList.remove(collection);
+        }
+    }
+    
+    public void selectCollections(List<Collection> collectionList) {
+        if (selectChildCollections) {
+            selectChildCollections(collectionList);
+        }
+        else {
+            selectParentCollections(collectionList);
+        }
+    }
+    
+    public void prepareSelectChildCollections() {
+        clearSelectFiltersAndResetSelectDataModel();
+        selectChildCollections = true;
+    }
+
+    public void selectChildCollections(List<Collection> collectionList) {
+        Collection collection = getCurrent();
+        List<Collection> childCollectionList = collection.getChildCollectionList();
+        childCollectionList.addAll(collectionList);
+    }
+
+    public void saveChildCollectionList() {
+        update();
+    }
+
+    public void deleteChildCollection(Collection childCollection) {
+        Collection collection = getCurrent();
+        List<Collection> childCollectionList = collection.getChildCollectionList();
+        childCollectionList.remove(childCollection);
+        update();
+    }
+
+    public void prepareSelectParentCollections() {
+        clearSelectFiltersAndResetSelectDataModel();
+        selectChildCollections = false;
+    }
+
+    public void selectParentCollections(List<Collection> collectionList) {
+        Collection collection = getCurrent();
+        List<Collection> parentCollectionList = collection.getParentCollectionList();
+        parentCollectionList.addAll(collectionList);
+    }
+
+    public void saveParentCollectionList() {
+        update();
+    }
+
+    public void deleteParentCollection(Collection parentCollection) {
+        Collection collection = getCurrent();
+        List<Collection> parentCollectionList = collection.getParentCollectionList();
+        parentCollectionList.remove(parentCollection);
+        update();
     }
 
     @Override
@@ -255,7 +322,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         viewParentCollectionListDisplayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayCreatedByUserSettingTypeKey).getDefaultValue());
         viewParentCollectionListDisplayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
         viewParentCollectionListDisplayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
-        viewParentCollectionListDisplayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());        
+        viewParentCollectionListDisplayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
@@ -327,7 +394,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         sessionUser.setUserSettingValue(ViewParentCollectionListDisplayCreatedByUserSettingTypeKey, viewParentCollectionListDisplayCreatedByUser);
         sessionUser.setUserSettingValue(ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayCreatedOnDateTime);
         sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey, viewParentCollectionListDisplayLastModifiedByUser);
-        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);        
+        sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);
 
         sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
@@ -337,35 +404,6 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-    }
-
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        if (dataTable == null) {
-            return;
-        }
-
-        Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("description");
-        filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
-        filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
-        filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
-        filterByCreatedOnDateTime = filters.get("entityInfo.createdOnDateTime");
-        filterByLastModifiedByUser = filters.get("entityInfo.lastModifiedByUser.username");
-        filterByLastModifiedOnDateTime = filters.get("entityInfo.lastModifiedOnDateTime");
-    }
-
-    @Override
-    public void clearListFilters() {
-        filterByName = null;
-        filterByDescription = null;
-        filterByOwnerUser = null;
-        filterByOwnerGroup = null;
-        filterByCreatedByUser = null;
-        filterByCreatedOnDateTime = null;
-        filterByLastModifiedByUser = null;
-        filterByLastModifiedOnDateTime = null;
     }
 
     @Override
@@ -394,7 +432,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         viewParentCollectionListDisplayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey, viewParentCollectionListDisplayLastModifiedByUser);
         viewParentCollectionListDisplayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);
     }
-    
+
     public Integer getViewChildCollectionListDisplayNumberOfItemsPerPage() {
         return viewChildCollectionListDisplayNumberOfItemsPerPage;
     }
@@ -539,7 +577,14 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         this.viewParentCollectionListDisplayLastModifiedOnDateTime = viewParentCollectionListDisplayLastModifiedOnDateTime;
     }
 
-    
+    public boolean isSelectChildCollections() {
+        return selectChildCollections;
+    }
+
+    public void setSelectChildCollections(boolean selectChildCollections) {
+        this.selectChildCollections = selectChildCollections;
+    }
+
     @FacesConverter(value = "collectionConverter", forClass = Collection.class)
     public static class CollectionControllerConverter implements Converter
     {

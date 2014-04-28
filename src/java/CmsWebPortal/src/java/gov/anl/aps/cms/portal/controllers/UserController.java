@@ -19,7 +19,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("userController")
 @SessionScoped
@@ -146,21 +145,6 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-    }
-
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        if (dataTable == null) {
-            return;
-        }
-
-        Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-    }
-
-    @Override
-    public void clearListFilters() {
-        filterByName = null;
     }
 
     @FacesConverter(forClass = User.class)

@@ -15,22 +15,10 @@
 
         <h:form id="addUserGroupForm">
 
-            <c:set var="selected" value="#{userGroupController.selected}"/>
-
-            <p:panelGrid columns="3">
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
-                <p:message for="name"/> 
-
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-                <p:message for="description"/>  
-
-            </p:panelGrid>
-
+            <ui:include src="userGroupCreatePanelGrid.xhtml"/>
             <p/>
             <div class="actionButton">
-                <p:commandButton action="#{userGroupController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
+                <p:commandButton action="#{userGroupController.create()}" value="Save" alt="Save User" icon="ui-icon-check" update="@form"/>
                 <p:commandButton action="#{userGroupController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
             </div>
         </h:form>

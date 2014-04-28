@@ -5,18 +5,17 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dataTable id="collectionComponentSelectDataTable" 
-                 var="componentObject" 
-                 value="#{componentController.selectDataModel}" 
-                 selection="#{componentController.selectedObjectList}"
+    <p:dataTable var="collectionSelectObject" 
+                 value="#{collectionController.selectDataModel}" 
+                 selection="#{collectionController.selectedObjectList}"
                  selectionMode="multiple"
-                 rowKey="#{componentObject.id}"
+                 rowKey="#{collectionSelectObject.id}"
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="20"
-                 binding="#{componentController.selectDataTable}"
-                 emptyMessage="No available components found.">
-        <ui:include src="../component/componentSelectObject.xhtml"/>
+                 binding="#{collectionController.selectDataTable}"
+                 emptyMessage="No available collections found.">
+        <ui:include src="../collection/collectionSelectObject.xhtml"/>
     </p:dataTable>
 
 </ui:composition>

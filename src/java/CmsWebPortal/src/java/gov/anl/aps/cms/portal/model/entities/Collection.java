@@ -1,5 +1,6 @@
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -172,22 +173,33 @@ public class Collection extends CloneableEntity
         return hash;
     }
 
+    public boolean equalsByName(Collection other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.name, other.name);
+        }
+        return false;
+
+    }    
+    
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Collection)) {
             return false;
         }
         Collection other = (Collection) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cms.test.entities.Collection[ id=" + id + " ]";
+        return name;
     }
 
     @Override
@@ -195,8 +207,6 @@ public class Collection extends CloneableEntity
         Collection cloned = (Collection) super.clone();
         cloned.id = null;
         cloned.name = "Copy Of " + cloned.name;
-        cloned.childCollectionList = null;
-        cloned.parentCollectionList = null;
         for (CollectionComponent collectionComponent : cloned.collectionComponentList) {
             collectionComponent.setId(null);
             collectionComponent.setCollection(cloned);

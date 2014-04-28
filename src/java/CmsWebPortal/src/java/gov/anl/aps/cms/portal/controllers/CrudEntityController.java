@@ -146,10 +146,6 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return current;
     }
 
-    public DataModel createDataModel() {
-        return new ListDataModel(getFacade().findAll());
-    }
-
     public void updateListSettingsActionListener(ActionEvent actionEvent) {
         updateListSettings();
     }
@@ -206,15 +202,44 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        if (dataTable == null) {
+            return;
+        }
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterByName = filters.get("name");
+        filterByDescription = filters.get("decription");
+        filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
+        filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
+        filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
+        filterByCreatedOnDateTime = filters.get("entityInfo.createdOnDateTime");
+        filterByLastModifiedByUser = filters.get("entityInfo.lastModifiedByUser.username");
+        filterByLastModifiedOnDateTime = filters.get("entityInfo.lastModifiedOnDateTime");
     }
 
     public void clearListFilters() {
+        filterByName = null;
+        filterByDescription = null;
+        filterByOwnerUser = null;
+        filterByOwnerGroup = null;
+        filterByCreatedByUser = null;
+        filterByCreatedOnDateTime = null;
+        filterByLastModifiedByUser = null;
+        filterByLastModifiedOnDateTime = null;
     }
 
     public void clearSelectFilters() {
         if (selectDataTable != null) {
             selectDataTable.getFilters().clear();
         }
+        selectFilterByName = null;
+        selectFilterByDescription = null;
+        selectFilterByOwnerUser = null;
+        selectFilterByOwnerGroup = null;
+        selectFilterByCreatedByUser = null;
+        selectFilterByCreatedOnDateTime = null;
+        selectFilterByLastModifiedByUser = null;
+        selectFilterByLastModifiedOnDateTime = null;
     }
 
     public String resetList() {
@@ -435,16 +460,29 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         }
     }
 
+    public DataModel createListDataModel() {
+        return new ListDataModel(getFacade().findAll());
+    }
+    
     public DataModel getListDataModel() {
         if (listDataModel == null) {
-            listDataModel = createDataModel();
+            listDataModel = createListDataModel();
         }
         return listDataModel;
     }
 
+    public void prepareEntityListForSelection(List<EntityType> selectEntityList) {    
+    }
+    
+    public DataModel createSelectDataModel() {
+        List<EntityType> selectEntityList = getFacade().findAll();
+        prepareEntityListForSelection(selectEntityList);
+        return new ListDataModel(selectEntityList);
+    }
+    
     public DataModel getSelectDataModel() {
         if (selectDataModel == null) {
-            selectDataModel = createDataModel();
+            selectDataModel = createSelectDataModel();
         }
         return selectDataModel;
     }

@@ -31,11 +31,42 @@
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true">
                     <p:tab title="Components">
-
                         <ui:include src="../collectionComponent/edit.xhtml"/>
+                    </p:tab>
+
+                    <p:tab title="Child Collections">
+                        <div class="actionButton">
+                            <p:commandButton action="#{collectionController.prepareSelectChildCollections()}" 
+                                             oncomplete="collectionSelectWidget.show()" 
+                                             value="Add" alt="Add Child Collections" icon="ui-icon-plus"/>
+                            <p:commandButton action="#{collectionController.saveChildCollectionList()}" 
+                                             value="Save" alt="Save Child Collection List" icon="ui-icon-check"
+                                             update="@form"/>
+                        </div>
+
+                        <ui:include src="childCollectionEditDataTable.xhtml"/>
 
                     </p:tab>
+
+                    <p:tab title="Parent Collections">
+                        <div class="actionButton">
+                            <p:commandButton action="#{collectionController.prepareSelectParentCollections()}" 
+                                             oncomplete="collectionSelectWidget.show()" 
+                                             value="Add" alt="Add Parent Collections" icon="ui-icon-plus"/>
+                            <p:commandButton action="#{collectionController.saveParentCollectionList()}" 
+                                             value="Save" alt="Save Parent Collection List" icon="ui-icon-check"
+                                             update="@form"/>
+                        </div>
+
+                        <ui:include src="parentCollectionEditDataTable.xhtml"/>
+
+                    </p:tab>
+
                 </p:accordionPanel>
+
+                <ui:include src="collectionSelectDialog.xhtml"/>
+
+                <ui:include src="collectionSelectCustomizeDisplayDialog.xhtml"/>                
             </div>
         </h:form>
 

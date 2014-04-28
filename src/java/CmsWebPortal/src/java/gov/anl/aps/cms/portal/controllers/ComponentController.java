@@ -306,24 +306,16 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
         if (dataTable == null) {
             return;
         }
 
         Map<String, String> filters = dataTable.getFilters();
-        logger.debug("Updating list filters from current data table filters: " + filters);
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("decription");
         filterByDocumentationUri = filters.get("documentationUriShortDisplay");
         filterByState = filters.get("componentState.name");
         filterByType = filters.get("componentTypeList");
         filterByTypeCategory = filters.get("componentTypeCategoryList");
-        filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
-        filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
-        filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
-        filterByCreatedOnDateTime = filters.get("entityInfo.createdOnDateTime");
-        filterByLastModifiedByUser = filters.get("entityInfo.lastModifiedByUser.username");
-        filterByLastModifiedOnDateTime = filters.get("entityInfo.lastModifiedOnDateTime");
         filterByEstimatedCost = filters.get("estimatedCost");
     }
 
@@ -367,36 +359,21 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @Override
     public void clearListFilters() {
-        filterByName = null;
-        filterByDescription = null;
+        super.clearListFilters();
         filterByDocumentationUri = null;
         filterByState = null;
         filterByType = null;
         filterByTypeCategory = null;
-        filterByOwnerUser = null;
-        filterByOwnerGroup = null;
-        filterByCreatedByUser = null;
-        filterByCreatedOnDateTime = null;
-        filterByLastModifiedByUser = null;
-        filterByLastModifiedOnDateTime = null;
         filterByEstimatedCost = null;
     }
 
     @Override
     public void clearSelectFilters() {
-        super.clearListFilters();
-        selectFilterByName = null;
-        selectFilterByDescription = null;
+        super.clearSelectFilters();
         selectFilterByDocumentationUri = null;
         selectFilterByState = null;
         selectFilterByType = null;
         selectFilterByTypeCategory = null;
-        selectFilterByOwnerUser = null;
-        selectFilterByOwnerGroup = null;
-        selectFilterByCreatedByUser = null;
-        selectFilterByCreatedOnDateTime = null;
-        selectFilterByLastModifiedByUser = null;
-        selectFilterByLastModifiedOnDateTime = null;
         selectFilterByEstimatedCost = null;
     }
 

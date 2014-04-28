@@ -2,9 +2,12 @@ package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
 import gov.anl.aps.cms.portal.model.beans.UserGroupFacade;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
+import gov.anl.aps.cms.portal.model.entities.User;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -15,11 +18,13 @@ import javax.faces.convert.FacesConverter;
 
 @Named("userGroupController")
 @SessionScoped
-public class UserGroupController extends CrudEntityController<UserGroup, UserGroupFacade> implements Serializable {
+public class UserGroupController extends CrudEntityController<UserGroup, UserGroupFacade> implements Serializable
+{
+
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserGroup.List.Display.NumberOfItemsPerPage";
 
     @EJB
     private UserGroupFacade ejbFacade;
-;
 
     public UserGroupController() {
     }
@@ -52,9 +57,27 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
         return super.getAvailableItems();
     }
 
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
 
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+    }
+
+    @Override
+    public void updateListSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    }
+    
     @FacesConverter(value = "userGroupConverter", forClass = UserGroup.class)
-    public static class UserGroupControllerConverter implements Converter {
+    public static class UserGroupControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -86,7 +109,8 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
             if (object instanceof UserGroup) {
                 UserGroup o = (UserGroup) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + UserGroup.class.getName());
             }
         }

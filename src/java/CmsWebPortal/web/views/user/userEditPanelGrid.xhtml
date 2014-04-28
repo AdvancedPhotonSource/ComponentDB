@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="userObject" value="#{userController.selected}"/>
+    <c:set var="isFieldWriteable" value="#{logginController.loggedInAsAdmin}"/>
+
+    <p:panelGrid columns="3"> 
+
+        <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="username" value="#{userObject.username}" rendered="#{isFieldWriteable}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
+        <h:outputText id="usernameOutput" value="#{userObject.username}" rendered="#{!isFieldWriteable}" title="Username" styleClass="entityDataEmphasizedText"/>
+        <p:message for="username"/> 
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{userObject.id}" title="Id" styleClass="entityDataText"/>
+        <p:message for="id"/>
+
+        <h:outputLabel for="userGroups" value="Group" styleClass="entityDataLabel"/>
+        <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" rendered="#{isFieldWriteable}"
+                          converter="userGroupConverter" title="Group" 
+                          styleClass="entityDataSelectMany">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
+        </h:selectManyMenu>
+        <h:outputText id="userGroupsOutput" value="#{userController.displayEntityList(userObject.userGroupList)}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
+        <p:message for="userGroups"/>
+
+        <h:outputLabel for="lastName" value="Last Name" styleClass="entityDataLabel"/>
+        <h:inputText id="lastName" value="#{userObject.lastName}" rendered="#{isFieldWriteable}" title="Last Name" required="true" styleClass="entityDataText"/>
+        <h:outputText id="lastNameOutput" value="#{userObject.lastName}" rendered="#{!isFieldWriteable}" title="Last Name" styleClass="entityDataText"/>
+        <p:message for="lastName"/>
+
+        <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
+        <h:inputText id="firstName" value="#{userObject.firstName}" rendered="#{isFieldWriteable}" title="First Name" required="true" styleClass="entityDataText"/>
+        <h:outputText id="firstNameOutput" value="#{userObject.firstName}" rendered="#{!isFieldWriteable}" title="First Name" styleClass="entityDataText"/>
+        <p:message for="firstName"/> 
+
+        <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
+        <h:inputText id="middleName" value="#{userObject.middleName}" title="Middle Name" rendered="#{isFieldWriteable}" styleClass="entityDataText"/>
+        <h:outputText id="middleNameOutput" value="#{userObject.middleName}" title="Middle Name" rendered="#{!isFieldWriteable}" styleClass="entityDataText"/>
+        <p:message for="middleName"/>
+
+        <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
+        <h:inputText id="email" value="#{userObject.email}" title="Email" styleClass="entityDataText"/>
+        <p:message for="email"/>
+
+        <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
+        <h:inputSecret id="password" value="#{userObject.password}" title="Password" styleClass="entityDataText"/>
+        <p:message for="password"/>
+
+    </p:panelGrid>
+</ui:composition>
+
+

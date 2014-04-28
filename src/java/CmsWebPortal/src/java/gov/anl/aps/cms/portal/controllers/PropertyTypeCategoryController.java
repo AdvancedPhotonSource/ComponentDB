@@ -17,7 +17,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyTypeCategoryController")
 @SessionScoped
@@ -93,23 +92,6 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        if (dataTable == null) {
-            return;
-        }
-
-        Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("description");
-    }
-
-    @Override
-    public void clearListFilters() {
-        filterByName = null;
-        filterByDescription = null;
-    }
-    
     @FacesConverter(forClass = PropertyTypeCategory.class)
     public static class PropertyCategoryControllerConverter implements Converter
     {

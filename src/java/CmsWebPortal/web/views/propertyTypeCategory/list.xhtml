@@ -14,7 +14,6 @@
         </div>
 
         <h:form id="viewPropertyTypeCategoryListForm">            
-            <c:set var="listController" value="#{propertyTypeCategoryController}"/>
             <div class="actionButton">
                 <p:commandButton action="#{propertyTypeCategoryController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Component" icon="ui-icon-plus"/>
                 <p:commandButton action="#{propertyTypeCategoryController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>

@@ -98,20 +98,17 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
 
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
         if (dataTable == null) {
             return;
         }
-
         Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("description");
         filterByTypeCategory = filters.get("propertyTypeCategory.name");
     }
 
     @Override
     public void clearListFilters() {
-        filterByName = null;
-        filterByDescription = null;
+        super.clearListFilters();
         filterByTypeCategory = null;
     }
 

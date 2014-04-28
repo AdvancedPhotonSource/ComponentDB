@@ -14,36 +14,19 @@
         </div>
 
         <h:form id="viewUserGroupForm">
-            <c:set var="selected" value="#{userGroupController.selected}"/>
-
-            <p:panelGrid columns="2">
-
-                <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-                <h:outputText id="id" value="#{selected.id}" title="Id" styleClass="entityDataText"/>
-
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:outputText id="name" value="#{selected.name}" title="Name" styleClass="entityDataText"/>
-
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:outputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-
-            </p:panelGrid>
+            <ui:include src="userGroupViewPanelGrid.xhtml"/>
 
             <p/>
             <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
                 <p:commandButton action="#{userGroupController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                <p:commandButton onclick="PF('confirmation').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                    <f:setPropertyActionListener value="#{selected}" target="#{userGroupController.current}"/>
+                <p:commandButton onclick="PF('userGroupDestroyWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
+                    <f:setPropertyActionListener value="#{userGroupObject}" target="#{userGroupController.current}"/>
                 </p:commandButton>  
                 <p:commandButton action="#{userGroupController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
 
-            <p:confirmDialog id="destroyUserGroupDialog" message="Destroy user group #{userGroupController.getCurrentEntityInstanceName()}?"
-                             header="Destroy User Group" severity="alert" widgetVar="confirmation">
-                <p:commandButton value="Yes" oncomplete="confirmation.hide()" action="#{userGroupController.destroy()}"/>
-                <p:commandButton value="No" onclick="confirmation.hide()" type="button" />
-            </p:confirmDialog>  
+            <ui:include src="userGroupDestroyDialog.xhtml"/>
         </h:form>
 
     </ui:define>

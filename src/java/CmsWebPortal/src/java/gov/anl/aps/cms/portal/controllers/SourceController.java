@@ -2,9 +2,12 @@ package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.model.entities.Source;
 import gov.anl.aps.cms.portal.model.beans.SourceFacade;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
+import gov.anl.aps.cms.portal.model.entities.User;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -18,6 +21,8 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class SourceController extends CrudEntityController<Source, SourceFacade> implements Serializable
 {
+
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
 
     @EJB
     private SourceFacade sourceFacade;
@@ -55,9 +60,27 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         return super.getAvailableItems();
     }
 
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+    }
+
+    @Override
+    public void updateListSettingsFromSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    }
 
     @FacesConverter(forClass = Source.class)
-    public static class SourceControllerConverter implements Converter {
+    public static class SourceControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -89,7 +112,8 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
             if (object instanceof Source) {
                 Source o = (Source) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Source.class.getName());
             }
         }

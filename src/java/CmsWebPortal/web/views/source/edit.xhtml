@@ -15,22 +15,7 @@
 
         <h:form id="editSourceForm">
 
-            <c:set var="selected" value="#{sourceController.selected}"/>
-
-            <p:panelGrid columns="3">
-                <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-                <h:outputText id="id" value="#{selected.id}" title="Id" styleClass="entityDataText"/>
-                <p:message for="id"/> 
-                
-                <h:outputLabel for="name" value="Name" styleClass="entityDataLabel"/>
-                <h:inputText id="name" value="#{selected.name}" title="Name" required="true" styleClass="entityDataText"/>
-                <p:message for="name"/> 
-
-                <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-                <h:inputText id="description" value="#{selected.description}" title="Description" styleClass="entityDataText"/>
-                <p:message for="description"/> 
-
-            </p:panelGrid>
+            <ui:include src="sourceEditPanelGrid.xhtml"/>
 
             <p/>
             <div class="actionButton">
