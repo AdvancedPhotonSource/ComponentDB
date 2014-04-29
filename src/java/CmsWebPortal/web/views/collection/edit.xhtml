@@ -23,9 +23,19 @@
 
                 <p/>
                 <div class="actionButton">
-                    <p:commandButton action="#{collectionController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                    <p:commandButton action="#{collectionController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                    <p:commandButton action="#{collectionController.update()}"
+                                     value="Save" alt="Save Collection" icon="ui-icon-check" update="@form"/>
+                    <p:commandButton action="#{collectionController.prepareList()}" immediate="true" value="Done" alt="Return To Collection List" icon="ui-icon-arrowreturnthick-1-w"/>
                 </div>
+
+                <p/>
+                <p:accordionPanel multiple="false">
+                    <p:tab title="Log">
+
+                        <ui:include src="../collectionLog/edit.xhtml"/>
+
+                    </p:tab>
+                </p:accordionPanel>  
             </div>
 
             <div class="middleCenterRightContent">

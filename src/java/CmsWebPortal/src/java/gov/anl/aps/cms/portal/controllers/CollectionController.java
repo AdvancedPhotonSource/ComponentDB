@@ -6,12 +6,14 @@ import gov.anl.aps.cms.portal.model.beans.CollectionFacade;
 import gov.anl.aps.cms.portal.model.entities.CollectionComponent;
 import gov.anl.aps.cms.portal.model.entities.Component;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
+import gov.anl.aps.cms.portal.model.entities.Log;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +25,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("collectionController")
 @SessionScoped
@@ -60,6 +61,11 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     private static final String ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey = "Collection.View.ParentCollectionList.Display.LastModifiedByUser";
     private static final String ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey = "Collection.View.ParentCollectionList.Display.LastModifiedOnDateTime";
 
+    private static final String ViewCollectionLogListDisplayNumberOfItemsPerPageSettingTypeKey = "Collection.View.CollectionLogList.Display.NumberOfItemsPerPage";
+    private static final String ViewCollectionLogListDisplayIdSettingTypeKey = "Collection.View.CollectionLogList.Display.Id";
+    private static final String ViewCollectionLogListDisplayCreatedByUserSettingTypeKey = "Collection.View.CollectionLogList.Display.CreatedByUser";
+    private static final String ViewCollectionLogListDisplayCreatedOnDateTimeSettingTypeKey = "Collection.View.CollectionLogList.Display.CreatedOnDateTime";
+    
     private static final String FilterByNameSettingTypeKey = "Collection.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "Collection.List.FilterBy.Description";
     private static final String FilterByOwnerUserSettingTypeKey = "Collection.List.FilterBy.OwnerUser";
@@ -91,6 +97,11 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     protected Boolean viewParentCollectionListDisplayLastModifiedByUser = null;
     protected Boolean viewParentCollectionListDisplayLastModifiedOnDateTime = null;
 
+    protected Integer viewCollectionLogListDisplayNumberOfItemsPerPage = null;
+    protected Boolean viewCollectionLogListDisplayId = null;
+    protected Boolean viewCollectionLogListDisplayCreatedByUser = null;
+    protected Boolean viewCollectionLogListDisplayCreatedOnDateTime = null;    
+    
     private boolean selectChildCollections = false;
 
     @EJB
@@ -163,6 +174,17 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
+        String logText = getLogText();
+        if (logText != null && !logText.isEmpty()) {
+            Log logEntry = new Log();
+            logEntry.setText(logText);
+            logEntry.setCreatedByUser(createdByUser);
+            logEntry.setCreatedOnDateTime(createdOnDateTime);
+            List<Log> logList = new ArrayList<>();
+            logList.add(logEntry);
+            collection.setLogList(logList);
+            resetLogText();
+        }
         logger.debug("Inserting new collection " + collection.getName() + " (user: " + createdByUser.getUsername() + ")");
     }
 
@@ -173,6 +195,15 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
+        String logText = getLogText();
+        if (logText != null && !logText.isEmpty()) {
+            Log logEntry = new Log();
+            logEntry.setText(logText);
+            logEntry.setCreatedByUser(lastModifiedByUser);
+            logEntry.setCreatedOnDateTime(lastModifiedOnDateTime);
+            collection.getLogList().add(logEntry);
+            resetLogText();
+        }
         logger.debug("Updating collection " + collection.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
@@ -222,6 +253,32 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         collectionComponentList.remove(collectionComponent);
     }
 
+    public void deleteLog(Log collectionLog) {
+        Collection collection = getCurrent();
+        List<Log> collectionLogList = collection.getLogList();
+        collectionLogList.remove(collectionLog);
+    }
+
+    public List<Log> getLogList() {
+        Collection collection = getCurrent();
+        List<Log> collectionLogList = collection.getLogList();        
+        User sessionUser = (User) SessionUtility.getUser();
+        if (sessionUser != null) {
+            Date settingsTimestamp = getSettingsTimestamp();
+            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
+                logger.debug("Updating list settings from session user");
+                updateViewSettingsFromSessionUser(sessionUser);
+                settingsTimestamp = new Date();
+                setSettingsTimestamp(settingsTimestamp);
+            }
+        }
+        return collectionLogList;
+    }
+    
+    public void saveLogList() {
+        update();
+    }
+    
     @Override
     public void prepareEntityListForSelection(List<Collection> selectEntityList) { 
         // For now, prevent selecting current collection, or any children or parents.
@@ -324,6 +381,11 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         viewParentCollectionListDisplayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         viewParentCollectionListDisplayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
 
+        viewCollectionLogListDisplayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(ViewCollectionLogListDisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        viewCollectionLogListDisplayId = Boolean.parseBoolean(settingTypeMap.get(ViewCollectionLogListDisplayIdSettingTypeKey).getDefaultValue());
+        viewCollectionLogListDisplayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewCollectionLogListDisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        viewCollectionLogListDisplayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewCollectionLogListDisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
@@ -396,6 +458,11 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey, viewParentCollectionListDisplayLastModifiedByUser);
         sessionUser.setUserSettingValue(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);
 
+        sessionUser.setUserSettingValue(ViewCollectionLogListDisplayNumberOfItemsPerPageSettingTypeKey, viewCollectionLogListDisplayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(ViewCollectionLogListDisplayIdSettingTypeKey, viewCollectionLogListDisplayId);
+        sessionUser.setUserSettingValue(ViewCollectionLogListDisplayCreatedByUserSettingTypeKey, viewCollectionLogListDisplayCreatedByUser);
+        sessionUser.setUserSettingValue(ViewCollectionLogListDisplayCreatedOnDateTimeSettingTypeKey, viewCollectionLogListDisplayCreatedOnDateTime);
+        
         sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
@@ -431,6 +498,11 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         viewParentCollectionListDisplayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayCreatedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayCreatedOnDateTime);
         viewParentCollectionListDisplayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayLastModifiedByUserSettingTypeKey, viewParentCollectionListDisplayLastModifiedByUser);
         viewParentCollectionListDisplayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewParentCollectionListDisplayLastModifiedOnDateTimeSettingTypeKey, viewParentCollectionListDisplayLastModifiedOnDateTime);
+
+        viewCollectionLogListDisplayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(ViewCollectionLogListDisplayNumberOfItemsPerPageSettingTypeKey, viewCollectionLogListDisplayNumberOfItemsPerPage);
+        viewCollectionLogListDisplayId = sessionUser.getUserSettingValueAsBoolean(ViewCollectionLogListDisplayIdSettingTypeKey, viewCollectionLogListDisplayId);
+        viewCollectionLogListDisplayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(ViewCollectionLogListDisplayCreatedByUserSettingTypeKey, viewCollectionLogListDisplayCreatedByUser);
+        viewCollectionLogListDisplayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewCollectionLogListDisplayCreatedOnDateTimeSettingTypeKey, viewCollectionLogListDisplayCreatedOnDateTime);        
     }
 
     public Integer getViewChildCollectionListDisplayNumberOfItemsPerPage() {
@@ -575,6 +647,38 @@ public class CollectionController extends CrudEntityController<Collection, Colle
 
     public void setViewParentCollectionListDisplayLastModifiedOnDateTime(Boolean viewParentCollectionListDisplayLastModifiedOnDateTime) {
         this.viewParentCollectionListDisplayLastModifiedOnDateTime = viewParentCollectionListDisplayLastModifiedOnDateTime;
+    }
+
+    public Integer getViewCollectionLogListDisplayNumberOfItemsPerPage() {
+        return viewCollectionLogListDisplayNumberOfItemsPerPage;
+    }
+
+    public void setViewCollectionLogListDisplayNumberOfItemsPerPage(Integer viewCollectionLogListDisplayNumberOfItemsPerPage) {
+        this.viewCollectionLogListDisplayNumberOfItemsPerPage = viewCollectionLogListDisplayNumberOfItemsPerPage;
+    }
+
+    public Boolean getViewCollectionLogListDisplayId() {
+        return viewCollectionLogListDisplayId;
+    }
+
+    public void setViewCollectionLogListDisplayId(Boolean viewCollectionLogListDisplayId) {
+        this.viewCollectionLogListDisplayId = viewCollectionLogListDisplayId;
+    }
+
+    public Boolean getViewCollectionLogListDisplayCreatedByUser() {
+        return viewCollectionLogListDisplayCreatedByUser;
+    }
+
+    public void setViewCollectionLogListDisplayCreatedByUser(Boolean viewCollectionLogListDisplayCreatedByUser) {
+        this.viewCollectionLogListDisplayCreatedByUser = viewCollectionLogListDisplayCreatedByUser;
+    }
+
+    public Boolean getViewCollectionLogListDisplayCreatedOnDateTime() {
+        return viewCollectionLogListDisplayCreatedOnDateTime;
+    }
+
+    public void setViewCollectionLogListDisplayCreatedOnDateTime(Boolean viewCollectionLogListDisplayCreatedOnDateTime) {
+        this.viewCollectionLogListDisplayCreatedOnDateTime = viewCollectionLogListDisplayCreatedOnDateTime;
     }
 
     public boolean isSelectChildCollections() {

@@ -8,7 +8,6 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <c:set var="collectionObject" value="#{collectionController.selected}"/>
-
     <p:panelGrid columns="3" styleClass="editEntityDetails">    
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{collectionObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
@@ -39,6 +38,10 @@
         <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
         <h:selectBooleanCheckbox id="groupWriteable" value="#{collectionObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
         <p:message for="groupWriteable"/> 
+
+        <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
+        <h:inputTextarea id="logEntry" value="#{collectionController.logText}" title="Log Entry" styleClass="entityDataText"/>
+        <p:message for="logEntry"/> 
         
     </p:panelGrid>
 </ui:composition>

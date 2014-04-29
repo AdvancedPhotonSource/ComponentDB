@@ -26,11 +26,11 @@
 LOCK TABLES `collection` WRITE;
 /*!40000 ALTER TABLE `collection` DISABLE KEYS */;
 
-INSERT INTO `collection` (`id`, `name`, `description`, `parent_collection_id`, `entity_info_id`)
+INSERT INTO `collection` (`id`, `name`, `description`, `entity_info_id`)
 VALUES
-	(1,'Design Option 2 - NEG-Coated Copper Chambers in FODO Section','MBA Vacuum System Component Listing; Sector 01 (Typical)',NULL,156),
-	(2,'Ned\'s Generic List of Generic Components','A typical parts list for an IOC',NULL,157),
-	(3,'Sinisa\'s Collection','Whatever',NULL,158);
+	(1,'Design Option 2 - NEG-Coated Copper Chambers in FODO Section','MBA Vacuum System Component Listing; Sector 01 (Typical)',156),
+	(2,'Ned\'s Generic List of Generic Components','A typical parts list for an IOC',157),
+	(3,'Sinisa\'s Collection','Whatever',158);
 
 /*!40000 ALTER TABLE `collection` ENABLE KEYS */;
 UNLOCK TABLES;

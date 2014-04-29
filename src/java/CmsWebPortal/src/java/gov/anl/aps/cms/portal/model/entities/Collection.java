@@ -55,7 +55,7 @@ public class Collection extends CloneableEntity
     @JoinTable(name = "collection_log", joinColumns = {
         @JoinColumn(name = "collection_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
   
     @JoinTable(name = "collection_link", joinColumns = {
@@ -70,10 +70,6 @@ public class Collection extends CloneableEntity
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
-    
-    @JoinColumn(name = "parent_collection_id", referencedColumnName = "id")
-    @ManyToOne
-    private Collection parentCollection;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "collection")
     private List<CollectionComponent> collectionComponentList;
@@ -148,14 +144,6 @@ public class Collection extends CloneableEntity
     public void setParentCollectionList(List<Collection> parentCollectionList) {
         this.parentCollectionList = parentCollectionList;
     }
-    
-    public Collection getParentCollection() {
-        return parentCollection;
-    }
-
-    public void setParentCollection(Collection parentCollection) {
-        this.parentCollection = parentCollection;
-    }
 
     @XmlTransient
     public List<CollectionComponent> getCollectionComponentList() {
@@ -178,7 +166,6 @@ public class Collection extends CloneableEntity
             return ObjectUtility.equals(this.name, other.name);
         }
         return false;
-
     }    
     
     @Override

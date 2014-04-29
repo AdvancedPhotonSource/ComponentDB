@@ -38,6 +38,24 @@
                     <p:defaultCommand target="noOp"/>
                 </div>
 
+                <p/>
+                <p:accordionPanel multiple="false">
+                    <p:tab title="Log">
+
+                        <div class="middleCenterRightContent">
+                        <ui:include src="../collectionLog/view.xhtml"/>
+                        </div>
+                        <div class="middleCenterRightContent">
+                            <div class="actionButton">
+                                <p:commandLink id="collectionLogListCustomizeDisplay" onclick="collectionLogListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="collectionLogListCustomizeDisplay" value="Customize Collection Log List View" />
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <ui:include src="../collectionLog/collectionLogListCustomizeDisplayDialog.xhtml"/>
+                    </p:tab>
+                </p:accordionPanel>          
+                
                 <ui:include src="collectionDestroyDialog.xhtml"/>
 
             </div>

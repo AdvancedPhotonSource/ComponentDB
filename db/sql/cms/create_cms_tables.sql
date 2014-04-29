@@ -357,14 +357,11 @@ CREATE TABLE `collection` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `parent_collection_id` int(11) unsigned DEFAULT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `collection_u1` (`name`),
-  KEY `collection_k1` (`parent_collection_id`),
-  CONSTRAINT `collection_fk1` FOREIGN KEY (`parent_collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE,
-  KEY `collection_k2` (`entity_info_id`),
-  CONSTRAINT `collection_fk2` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+  KEY `collection_k1` (`entity_info_id`),
+  CONSTRAINT `collection_fk1` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

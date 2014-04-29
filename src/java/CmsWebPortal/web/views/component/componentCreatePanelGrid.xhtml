@@ -55,7 +55,10 @@
         <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
         <h:inputText id="groupWriteable" value="#{componentObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
         <p:message for="groupWriteable"/>
-
+        
+        <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
+        <h:inputTextarea id="logEntry" value="#{componentController.logText}" immediate="false" title="Log Entry" styleClass="entityDataText"/>
+        <p:message for="logEntry"/> 
     </p:panelGrid>
 
 </ui:composition>

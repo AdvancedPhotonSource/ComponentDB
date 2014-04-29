@@ -25,6 +25,15 @@
                     <p:commandButton action="#{componentController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
                     <p:commandButton action="#{componentController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
                 </div>
+
+                <p/>
+                <p:accordionPanel multiple="false">
+                    <p:tab title="Log">
+
+                        <ui:include src="../componentLog/edit.xhtml"/>
+
+                    </p:tab>
+                </p:accordionPanel>  
             </div>
 
             <div class="middleCenterRightContent">
@@ -35,9 +44,9 @@
 
                     </p:tab>
 
-                    <p:tab title="Connectors">
+<!--                    <p:tab title="Connectors">
 
-                    </p:tab>
+                    </p:tab>-->
                     <p:tab title="Sources">
 
                         <ui:include src="../componentSource/edit.xhtml"/>

@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -40,9 +41,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Log.findAll", query = "SELECT l FROM Log l"),
     @NamedQuery(name = "Log.findById", query = "SELECT l FROM Log l WHERE l.id = :id"),
     @NamedQuery(name = "Log.findByCreatedOnDateTime", query = "SELECT l FROM Log l WHERE l.createdOnDateTime = :createdOnDateTime")})
-public class Log implements Serializable
+public class Log extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -170,17 +170,27 @@ public class Log implements Serializable
         return hash;
     }
 
+    public boolean equalsByText(Log other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.text, other.text);
+        }
+        return false;
+    }  
+    
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Log)) {
             return false;
         }
         Log other = (Log) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByText(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override

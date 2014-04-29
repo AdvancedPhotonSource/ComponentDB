@@ -1,5 +1,6 @@
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "User.findByPassword", query = "SELECT u FROM User u WHERE u.password = :password")})
 public class User extends CloneableEntity
 {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -267,7 +269,7 @@ public class User extends CloneableEntity
             userSetting.setValue(value.toString());
         }
     }
-    
+
     public String getUserSettingValueAsString(String name, String defaultValue) {
         UserSetting userSetting = getUserSetting(name);
         if (userSetting == null) {
@@ -299,7 +301,7 @@ public class User extends CloneableEntity
         }
         return Integer.parseInt(settingValue);
     }
-    
+
     public Float getUserSettingValueAsFloat(String name, Float defaultValue) {
         UserSetting userSetting = getUserSetting(name);
         if (userSetting == null) {
@@ -324,6 +326,10 @@ public class User extends CloneableEntity
         return date == null || userSettingsModificationDate == null || userSettingsModificationDate.after(date);
     }
 
+    public boolean hasUserSettings() {
+        return userSettingList != null && !userSettingList.isEmpty();
+    }
+    
     @XmlTransient
     public List<Log> getLogList() {
         return logList;
@@ -340,14 +346,27 @@ public class User extends CloneableEntity
         return hash;
     }
 
+    public boolean equalsByUsername(User other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.username, other.username);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof User)) {
             return false;
         }
         User other = (User) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsByUsername(other);
+        }
+
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
     }
 
     @Override

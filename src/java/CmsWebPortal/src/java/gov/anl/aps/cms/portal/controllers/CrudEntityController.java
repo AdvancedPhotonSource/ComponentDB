@@ -39,7 +39,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     private boolean listDataModelReset = true;
     private List<EntityType> filteredObjectList = null;
 
-    private Date listSettingsTimestamp = null;
+    private Date settingsTimestamp = null;
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
     private boolean settingsInitializedFromDefaults = false;
@@ -49,6 +49,8 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     private boolean selectDataModelReset = false;
     private List<EntityType> selectedObjectList = null;
 
+    private String logText = null;
+    
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayId = null;
     protected Boolean displayDescription = null;
@@ -98,6 +100,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         updateListSettings();
     }
 
+    public void resetLogText() {
+        logText = "";
+    }
+    
     public List<SettingType> getSettingTypeList() {
         if (settingTypeList == null) {
             settingTypeList = settingTypeFacade.findAll();
@@ -155,7 +161,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         boolean settingsUpdated = false;
         if (sessionUser != null) {
             List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(listSettingsTimestamp)) {
+            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 updateListSettingsFromSessionUser(sessionUser);
                 settingsUpdated = true;
             }
@@ -197,7 +203,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             logger.debug("Updating list settings for session user");
             saveSettingsForSessionUser(sessionUser);
             resetListDataModel();
-            listSettingsTimestamp = new Date();
+            settingsTimestamp = new Date();
         }
     }
 
@@ -271,14 +277,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         User sessionUser = (User) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Session user is not null, list settings timestamp: " + sessionUser.getUserSettingsModificationDate());
-            if (listSettingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(listSettingsTimestamp)) {
+            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 logger.debug("Updating list settings from session user");
                 updateListSettingsFromSessionUser(sessionUser);
                 resetListDataModel();
-                listSettingsTimestamp = new Date();
+                settingsTimestamp = new Date();
             }
             else {
-                logger.debug("Session user settings have not been changed since " + listSettingsTimestamp);
+                logger.debug("Session user settings have not been changed since " + settingsTimestamp);
             }
         }
 
@@ -324,7 +330,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         boolean settingsUpdated = false;
         if (sessionUser != null) {
             List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(listSettingsTimestamp)) {
+            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 updateViewSettingsFromSessionUser(sessionUser);
                 settingsUpdated = true;
             }
@@ -341,6 +347,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         if (sessionUser != null) {
             logger.debug("Saving settings for session user");
             saveSettingsForSessionUser(sessionUser);
+            settingsTimestamp = new Date();
         }
     }
 
@@ -408,6 +415,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public String prepareEdit(EntityType entity) {
+        resetLogText();
         current = entity;
         return edit();
     }
@@ -427,6 +435,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             EntityType updatedEntity = getFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
+            resetLogText();
             current = updatedEntity;
             return view();
         }
@@ -573,6 +582,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public static String displayEntityList(List<?> entityList) {
         String itemDelimiter = ", ";
         return CollectionUtility.displayItemListWithoutOutsideDelimiters(entityList, itemDelimiter);
+    }
+
+    public String getLogText() {
+        return logText;
+    }
+
+    public void setLogText(String logText) {
+        this.logText = logText;
     }
 
     public Integer getDisplayNumberOfItemsPerPage() {
@@ -877,6 +894,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     public void setBreadcrumbViewParam(String breadcrumbViewParam) {
         this.breadcrumbViewParam = breadcrumbViewParam;
+    }
+
+    public Date getSettingsTimestamp() {
+        return settingsTimestamp;
+    }
+
+    public void setSettingsTimestamp(Date settingsTimestamp) {
+        this.settingsTimestamp = settingsTimestamp;
     }
 
 }

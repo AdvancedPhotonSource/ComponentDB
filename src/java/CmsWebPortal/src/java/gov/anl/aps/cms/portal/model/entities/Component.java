@@ -72,7 +72,7 @@ public class Component extends CloneableEntity
     @JoinTable(name = "component_log", joinColumns = {
         @JoinColumn(name = "component_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
 
     @JoinTable(name = "component_component_type", joinColumns = {

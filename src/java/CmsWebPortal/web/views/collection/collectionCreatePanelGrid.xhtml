@@ -35,6 +35,10 @@
         <h:inputText id="groupWriteable" value="#{collectionObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
         <p:message for="groupWriteable"/>
 
+        <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
+        <h:inputTextarea id="logEntry" value="#{collectionController.logText}" immediate="false" title="Log Entry" styleClass="entityDataText"/>
+        <p:message for="logEntry"/> 
+        
     </p:panelGrid>
 
 </ui:composition>

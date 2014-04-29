@@ -18,7 +18,7 @@ import javax.faces.convert.FacesConverter;
 public class ComponentStateController extends CrudEntityController<ComponentState, ComponentStateFacade> implements Serializable {
 
     @EJB
-    private ComponentStateFacade ejbFacade;
+    private ComponentStateFacade componentStateFacade;
 
     public ComponentStateController() {
         super();
@@ -26,7 +26,7 @@ public class ComponentStateController extends CrudEntityController<ComponentStat
 
     @Override
     protected ComponentStateFacade getFacade() {
-        return ejbFacade;
+        return componentStateFacade;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ComponentStateController extends CrudEntityController<ComponentStat
 
     @Override
     public String getEntityTypeName() {
-        return "component";
+        return "component state";
     }
 
     @Override

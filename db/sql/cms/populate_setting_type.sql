@@ -39,6 +39,11 @@ VALUES
 	('Collection.View.CollectionComponentList.Display.Quantity','Display collection component quantity.', 'true'),
 	('Collection.View.CollectionComponentList.Display.Tag','Display collection component tag.', 'true'),
 
+	('Collection.View.CollectionLogList.Display.CreatedOnDateTime','Display log entry created on date/time for log list.', 'true'),
+	('Collection.View.CollectionLogList.Display.CreatedByUser','Display log entry created by user for log list.', 'true'),
+	('Collection.View.CollectionLogList.Display.Id','Display log entry id for log list.', 'true'),
+	('Collection.View.CollectionLogList.Display.NumberOfItemsPerPage','Display specified number of log entries per page for log list.', '25'),
+
 	('Collection.View.ParentCollectionList.Display.CreatedByUser','Display created by username for parent collection list.', 'false'),
 	('Collection.View.ParentCollectionList.Display.CreatedOnDateTime','Display created on date/time for parent collection list.', 'false'),
 	('Collection.View.ParentCollectionList.Display.Description','Display collection description for parent collection list.', 'false'),
@@ -78,9 +83,16 @@ VALUES
 	('Component.List.FilterBy.Type','Find components by type.', NULL),
 	('Component.List.FilterBy.TypeCategory','Find components by type category.', NULL),
 
+	('Component.View.ComponentLogList.Display.CreatedOnDateTime','Display log entry created on date/time for log list.', 'true'),
+	('Component.View.ComponentLogList.Display.CreatedByUser','Display log entry created by user for log list.', 'true'),
+	('Component.View.ComponentLogList.Display.Id','Display log entry id for log list.', 'true'),
+	('Component.View.ComponentLogList.Display.NumberOfItemsPerPage','Display specified number of log entries per page for log list.', '25'),
+
 	('ComponentType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('ComponentTypeCategory.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('Log.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('PropertyType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 

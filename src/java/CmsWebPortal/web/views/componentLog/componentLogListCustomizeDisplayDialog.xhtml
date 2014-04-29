@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog id="componentLogListCustomizeDisplayDialog" header="Customize Component Log List Display" widgetVar="componentLogListCustomizeDisplayWidget" styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="viewComponentLogListDisplayNumberOfItemsPerPage" value="#{componentController.viewComponentLogListDisplayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="viewComponentLogListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewComponentLogListDisplayCreatedByUser" value="#{componentController.viewComponentLogListDisplayCreatedByUser}"/>  
+                <h:outputLabel for="viewComponentLogListDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewComponentLogListDisplayCreatedOnDateTime" value="#{componentController.viewComponentLogListDisplayCreatedOnDateTime}"/>  
+                <h:outputLabel for="viewComponentLogListDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="viewComponentLogListDisplayId" value="#{componentController.viewComponentLogListDisplayId}"/>  
+                <h:outputLabel for="viewComponentLogListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{componentController.customizeViewDisplay()}"
+                                 update="@form"
+                                 oncomplete="componentLogListCustomizeDisplayWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userController.saveSettingListForSessionUser()}"
+                                 actionListener="#{componentController.saveViewSettingsForSessionUserActionListener}"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>
+
+

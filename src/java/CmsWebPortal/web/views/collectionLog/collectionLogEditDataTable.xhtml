@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="collectionObject" value="#{collectionController.selected}"/>
+
+    <p:dataTable id="collectionLogEditDataTable" 
+                 var="collectionLogObject" 
+                 value="#{collectionObject.logList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{collectionController.viewCollectionLogListDisplayNumberOfItemsPerPage}"
+                 editable="true"
+                 emptyMessage="No collection log entries found.">
+
+        <p:column sortBy="#{collectionLogObject.id}" headerText="Id">
+            <h:outputText value="#{collectionLogObject.id}"/>
+        </p:column>
+        
+        <p:column sortBy="#{collectionLogObject.createdOnDateTime}" headerText="Created On">
+            <h:outputText value="#{collectionLogObject.createdOnDateTime}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionLogObject.createdByUser.username}" headerText="Created By">
+            <h:outputText value="#{collectionLogObject.createdByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{collectionLogObject.text}" headerText="Log Entry">
+            <h:inputTextarea value="#{collectionLogObject.text}"/>
+        </p:column>
+
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{collectionController.deleteLog(collectionLogObject)}" 
+                               actionListener="#{logController.destroy(collectionLogObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

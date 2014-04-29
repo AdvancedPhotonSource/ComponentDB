@@ -21,7 +21,7 @@
         <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
         <h:outputText id="id" value="#{componentObject.id}" title="Id" styleClass="entityDataText"/>
         <p:message for="id"/> 
-        
+
         <h:outputLabel for="documentationUri" value="Documentation URI" styleClass="entityDataLabel"/>
         <h:inputText id="documentationUri" value="#{componentObject.documentationUri}" title="Documentation URI" styleClass="entityDataText"/>
         <p:message for="documentationUri"/> 
@@ -60,6 +60,9 @@
         <h:selectBooleanCheckbox id="groupWriteable" value="#{componentObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
         <p:message for="groupWriteable"/> 
 
+        <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
+        <h:inputTextarea id="logEntry" value="#{componentController.logText}" title="Log Entry" styleClass="entityDataText"/>
+        <p:message for="logEntry"/> 
     </p:panelGrid>
 
 </ui:composition>

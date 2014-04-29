@@ -223,6 +223,10 @@ a:link:hover, a:visited:hover  {
     width: 300px;
 }
 
+.entityLogList td:nth-child(4) {
+    width: 300px;
+}
+
 .commandLink {
 
 }

@@ -5,14 +5,18 @@
  */
 package gov.anl.aps.cms.portal.controllers;
 
+import gov.anl.aps.cms.portal.model.beans.SettingTypeFacade;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
+import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
+import gov.anl.aps.cms.portal.model.entities.UserSetting;
 import gov.anl.aps.cms.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cms.portal.utilities.LdapUtility;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -31,6 +35,8 @@ public class LoginController implements Serializable
 
     @EJB
     private UserFacade userFacade;
+    @EJB
+    private SettingTypeFacade settingTypeFacade;
 
     private String username = null;
     private String password = null;
@@ -174,6 +180,9 @@ public class LoginController implements Serializable
         }
 
         if (validCredentials) {
+            if (!user.hasUserSettings()) {
+                setSessionUserSettingsFromSettingTypeDefaults(user);
+            }
             SessionUtility.setUser(user);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
@@ -194,12 +203,25 @@ public class LoginController implements Serializable
 
     }
 
+    private void setSessionUserSettingsFromSettingTypeDefaults(User sessionUser) {
+        List<SettingType> settingTypeList = settingTypeFacade.findAll();
+        List<UserSetting> userSettingList = new ArrayList<>();
+        for (SettingType settingType : settingTypeList) {
+            UserSetting userSetting = new UserSetting();
+            userSetting.setSettingType(settingType);
+            userSetting.setUser(sessionUser);
+            userSetting.setValue(settingType.getDefaultValue());
+            userSettingList.add(userSetting);
+        }
+        sessionUser.setUserSettingList(userSettingList);
+    }
+
     public String getLandingPage() {
         String landingPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         if (landingPage.contains("login")) {
             landingPage = "/views/home?faces-redirect=true";
         }
-        logger.debug("Landing page: " + landingPage); 
+        logger.debug("Landing page: " + landingPage);
         return landingPage;
     }
 

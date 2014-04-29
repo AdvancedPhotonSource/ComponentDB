@@ -37,6 +37,23 @@
                     <p:defaultCommand target="noOp"/>
                 </div>
 
+                <p/>
+                <p:accordionPanel multiple="false">
+                    <p:tab title="Log">
+
+                        <div class="middleCenterRightContent">
+                            <ui:include src="../componentLog/view.xhtml"/>
+                        </div>
+                        <div class="middleCenterRightContent">
+                            <div class="actionButton">
+                                <p:commandLink id="componentLogListCustomizeDisplay" onclick="componentLogListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="componentLogListCustomizeDisplay" value="Customize Component Log List View" />
+                                </p:commandLink>
+                            </div>
+                        </div>
+                        <ui:include src="../componentLog/componentLogListCustomizeDisplayDialog.xhtml"/>
+                    </p:tab>
+                </p:accordionPanel>   
                 <ui:include src="componentDestroyDialog.xhtml"/>
 
             </div>
@@ -49,9 +66,9 @@
 
                     </p:tab>
 
-                    <p:tab title="Connectors">
+<!--                    <p:tab title="Connectors">
 
-                    </p:tab>
+                    </p:tab>-->
                     <p:tab title="Sources">
 
                         <ui:include src="../componentSource/view.xhtml"/>
