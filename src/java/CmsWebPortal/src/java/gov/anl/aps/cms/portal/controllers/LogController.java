@@ -21,6 +21,9 @@ import javax.faces.convert.FacesConverter;
 public class LogController extends CrudEntityController<Log, LogFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "Log.List.Display.Id";
+    private static final String DisplayCreatedByUserSettingTypeKey = "Log.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Log.List.Display.CreatedOnDateTime";
     
     @EJB
     private LogFacade logFacade;
@@ -64,15 +67,33 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         }
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+    }
+    
+    @Override
+    public void saveSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
     }
     
     @FacesConverter(forClass = Log.class)

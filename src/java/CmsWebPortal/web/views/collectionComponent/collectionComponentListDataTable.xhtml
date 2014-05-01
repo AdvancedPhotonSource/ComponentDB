@@ -8,7 +8,8 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="breadcrumb" value="#{collectionComponentController.currentViewId}"/>
-    <p:dataTable id="collectionComponentCollectionComponentListDataTable" 
+    <c:set var="collection" value="#{collectionController.selected}"/>
+    <p:dataTable id="collectionComponentListDataTable" 
                  var="collectionComponent" 
                  value="#{collection.collectionComponentList}" 
                  paginator="true" 
@@ -23,7 +24,7 @@
             <h:outputText value="#{collectionComponent.id}"/>
         </p:column>
 
-        <p:column sortBy="#{collectionComponent.component.name}" headerText="Name">
+        <p:column sortBy="#{collectionComponent.component.name}" headerText="Component Name">
             <h:outputLink value="../component/view.xhtml?id=#{collectionComponent.component.id}&amp;breadcrumb=#{breadcrumb}" title="Component">
                 <h:outputText value="#{collectionComponent.component.name}"/>
             </h:outputLink>

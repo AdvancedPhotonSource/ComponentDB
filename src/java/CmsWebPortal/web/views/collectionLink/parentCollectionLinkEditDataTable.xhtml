@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <c:set var="collectionObject" value="#{collectionController.selected}"/>
+    <p:dataTable id="parentCollectionLinkEditDataTable" 
+                 var="parentCollectionLinkObject" 
+                 value="#{collectionObject.parentCollectionLinkList}" 
+                 emptyMessage="No parent collections found.">
+
+        <p:column sortBy="#{parentCollectionLinkObject.id}" headerText="Id">
+            <h:outputText value="#{parentCollectionLinkObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{parentCollectionLinkObject.parentCollection.name}" headerText="Parent Collection Name">
+            <h:selectOneMenu value="#{parentCollectionLinkObject.parentCollection}" title="Parent Collection" 
+                             converter="collectionConverter"
+                             styleClass="veryLongCellSelect">
+                <f:selectItem itemLabel="Select" itemValue="#{parentCollectionLinkObject.parentCollection}"/>
+                <f:selectItems var="selectedCollection" value="#{collectionController.availableItems}" itemLabel="#{selectedCollection.name}" itemValue="#{selectedCollection}"/>
+            </h:selectOneMenu>
+        </p:column>
+
+        <p:column sortBy="#{parentCollectionLinkObject.tag}" headerText="Tag">
+            <h:inputText value="#{parentCollectionLinkObject.tag}" styleClass="cellInput"/>
+        </p:column>
+
+        <p:column sortBy="#{parentCollectionLinkObject.description}" headerText="Description">
+            <h:inputText value="#{parentCollectionLinkObject.description}" styleClass="longCellInput"/>
+        </p:column>
+        
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{collectionController.deleteParentCollectionLink(parentCollectionLinkObject)}" 
+                               actionListener="#{collectionLinkController.destroy(parentCollectionLinkObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>

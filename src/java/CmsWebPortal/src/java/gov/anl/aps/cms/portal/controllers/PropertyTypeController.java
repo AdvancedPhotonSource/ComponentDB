@@ -88,7 +88,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }

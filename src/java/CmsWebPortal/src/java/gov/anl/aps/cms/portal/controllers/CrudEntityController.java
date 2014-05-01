@@ -162,7 +162,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         if (sessionUser != null) {
             List<UserSetting> userSettingList = sessionUser.getUserSettingList();
             if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateListSettingsFromSessionUser(sessionUser);
+                updateSettingsFromSessionUser(sessionUser);
                 settingsUpdated = true;
             }
         }
@@ -190,7 +190,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
     }
 
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
     }
 
     public void saveSettingsForSessionUser(User sessionUser) {
@@ -273,13 +273,12 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public DataTable getListDataTable() {
-        logger.debug("Getting data table");
         User sessionUser = (User) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Session user is not null, list settings timestamp: " + sessionUser.getUserSettingsModificationDate());
             if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 logger.debug("Updating list settings from session user");
-                updateListSettingsFromSessionUser(sessionUser);
+                updateSettingsFromSessionUser(sessionUser);
                 resetListDataModel();
                 settingsTimestamp = new Date();
             }
@@ -296,7 +295,6 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public void setListDataTable(DataTable listDataTable) {
-        logger.debug("Setting data table");
         this.listDataTable = listDataTable;
         updateListSettingsFromListDataTable(listDataTable);
     }
@@ -322,16 +320,13 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return false;
     }
 
-    public void updateViewSettingsFromSessionUser(User sessionUser) {
-    }
-
     public void updateViewSettings() {
         User sessionUser = (User) SessionUtility.getUser();
         boolean settingsUpdated = false;
         if (sessionUser != null) {
             List<UserSetting> userSettingList = sessionUser.getUserSettingList();
             if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateViewSettingsFromSessionUser(sessionUser);
+                updateSettingsFromSessionUser(sessionUser);
                 settingsUpdated = true;
             }
         }

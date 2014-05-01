@@ -223,8 +223,8 @@ a:link:hover, a:visited:hover  {
     width: 300px;
 }
 
-.entityLogList td:nth-child(4) {
-    width: 300px;
+.entityLogList td:last-child {
+    width: 195px;
 }
 
 .commandLink {
@@ -290,6 +290,10 @@ input, textarea {
 
 .longCellSelect {
     width: 300px;
+}
+
+.veryLongCellSelect {
+    width: 450px;
 }
 
 .cellInput {
@@ -418,3 +422,14 @@ h2 {
     display: none;
 }
 
+.ui-icon-excel {
+    background-image: url(../../resources/images/excel.ico) !important;
+    background-repeat: no-repeat;
+    background-position: left
+}
+
+.ui-icon-pdf {
+    background-image: url(../../resources/images/pdf.ico) !important;
+    background-repeat: no-repeat;
+    background-position: left
+}

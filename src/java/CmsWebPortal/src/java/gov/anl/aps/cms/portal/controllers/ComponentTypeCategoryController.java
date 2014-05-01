@@ -85,7 +85,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }

@@ -8,21 +8,21 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <p:dialog id="collectionComponentListCustomizeDisplayDialog" header="Customize List Display" widgetVar="collectionComponentListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="collectionComponentListCustomizeDisplayDialog" header="Customize Collection Component List Display" widgetVar="collectionComponentListCustomizeDisplayWidget" styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
-                <p:inputText id="displayNumberOfItemsPerPage" value="#{collectionComponentController.displayNumberOfItemsPerPage}" style="width:20px"/>
-                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
-                <p:selectBooleanCheckbox id="displayId" value="#{collectionComponentController.displayId}"/>  
-                <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
-                <p:selectBooleanCheckbox id="displayTag" value="#{collectionComponentController.displayTag}"/>  
-                <h:outputLabel for="displayTag" value="Display Tag" styleClass="dialogDataLabel"/>
-                <p:selectBooleanCheckbox id="displayPriority" value="#{collectionComponentController.displayPriority}"/>  
-                <h:outputLabel for="displayPriority" value="Display View Order" styleClass="dialogDataLabel"/>
-                <p:selectBooleanCheckbox id="displayQuantity" value="#{collectionComponentController.displayQuantity}"/>  
-                <h:outputLabel for="displayQuantity" value="Display Quantity" styleClass="dialogDataLabel"/>
-                <p:selectBooleanCheckbox id="displayDescription" value="#{collectionComponentController.displayDescription}"/>  
-                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+                <p:inputText id="collectionComponentListDisplayNumberOfItemsPerPage" value="#{collectionComponentController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="collectionComponentListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="collectionComponentListDisplayId" value="#{collectionComponentController.displayId}"/>  
+                <h:outputLabel for="collectionComponentListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="collectionComponentListDisplayTag" value="#{collectionComponentController.displayTag}"/>  
+                <h:outputLabel for="collectionComponentListDisplayTag" value="Display Tag" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="collectionComponentListDisplayPriority" value="#{collectionComponentController.displayPriority}"/>  
+                <h:outputLabel for="collectionComponentListDisplayPriority" value="Display View Order" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="collectionComponentListDisplayQuantity" value="#{collectionComponentController.displayQuantity}"/>  
+                <h:outputLabel for="collectionComponentListDisplayQuantity" value="Display Quantity" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="collectionComponentListDisplayDescription" value="#{collectionComponentController.displayDescription}"/>  
+                <h:outputLabel for="collectionComponentListDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
             </p:panelGrid>
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 

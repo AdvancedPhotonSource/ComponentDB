@@ -1,5 +1,6 @@
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.util.Date;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ public class User extends CloneableEntity
     private String middleName;
 
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
-    @Size(max = 16)
+    @Size(max = 64)
     @Column(name = "email")
     private String email;
 
@@ -183,6 +184,7 @@ public class User extends CloneableEntity
     }
 
     public void setUserGroupList(List<UserGroup> userGroupList) {
+        CollectionUtility.removeNullReferencesFromList(userGroupList);
         this.userGroupList = userGroupList;
     }
 

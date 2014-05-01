@@ -57,15 +57,12 @@ public class Collection extends CloneableEntity
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
-  
-    @JoinTable(name = "collection_link", joinColumns = {
-        @JoinColumn(name = "parent_collection_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "child_collection_id", referencedColumnName = "id")})
-    @ManyToMany
-    private List<Collection> childCollectionList;
-    
-    @ManyToMany(mappedBy = "childCollectionList")
-    private List<Collection> parentCollectionList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentCollection")
+    private List<CollectionLink> childCollectionLinkList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childCollection")
+    private List<CollectionLink> parentCollectionLinkList;
     
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
@@ -126,25 +123,25 @@ public class Collection extends CloneableEntity
     public void setEntityInfo(EntityInfo entityInfo) {
         this.entityInfo = entityInfo;
     }
+    
+    @XmlTransient
+    public List<CollectionLink> getChildCollectionLinkList() {
+        return childCollectionLinkList;
+    }
+
+    public void setChildCollectionLinkList(List<CollectionLink> childCollectionLinkList) {
+        this.childCollectionLinkList = childCollectionLinkList;
+    }
 
     @XmlTransient
-    public List<Collection> getChildCollectionList() {
-        return childCollectionList;
+    public List<CollectionLink> getParentCollectionLinkList() {
+        return parentCollectionLinkList;
     }
 
-    public void setChildCollectionList(List<Collection> childCollectionList) {
-        this.childCollectionList = childCollectionList;
+    public void setParentCollectionLinkList(List<CollectionLink> parentCollectionLinkList) {
+        this.parentCollectionLinkList = parentCollectionLinkList;
     }
-
-    @XmlTransient
-    public List<Collection> getParentCollectionList() {
-        return parentCollectionList;
-    }
-
-    public void setParentCollectionList(List<Collection> parentCollectionList) {
-        this.parentCollectionList = parentCollectionList;
-    }
-
+    
     @XmlTransient
     public List<CollectionComponent> getCollectionComponentList() {
         return collectionComponentList;

@@ -33,7 +33,8 @@
         <p:message for="componentState"/> 
 
         <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
-        <h:selectManyMenu id="componentTypes" value="#{componentObject.componentTypeList}" required="true" converter="componentTypeConverter" title="Type" styleClass="entityDataSelectMany">
+        <h:selectManyMenu id="componentTypes" value="#{componentObject.componentTypeList}" converter="componentTypeConverter" title="Type" styleClass="entityDataSelectMany">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.name}" itemValue="#{componentType}"/>
         </h:selectManyMenu>
         <p:message for="componentTypes"/>
@@ -44,14 +45,14 @@
 
         <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
         <h:selectOneMenu id="ownerUser" value="#{componentObject.entityInfo.ownerUser}" title="Owner User" styleClass="entityDataText">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="ownerUser" value="#{userController.availableItems}" itemLabel="#{ownerUser.username}" itemValue="#{ownerUser}"/>
         </h:selectOneMenu>
         <p:message for="ownerUser"/> 
 
         <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
         <h:selectOneMenu id="ownerGroup" value="#{componentObject.entityInfo.ownerUserGroup}" converter="userGroupConverter" title="Owner Group" styleClass="entityDataText">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
         </h:selectOneMenu>
         <p:message for="ownerGroup"/> 

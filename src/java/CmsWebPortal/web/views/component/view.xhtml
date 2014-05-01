@@ -39,19 +39,20 @@
 
                 <p/>
                 <p:accordionPanel multiple="false">
-                    <p:tab title="Log">
+                    <p:tab title="Log Entries">
 
                         <div class="middleCenterRightContent">
-                            <ui:include src="../componentLog/view.xhtml"/>
+                            <c:set var="entityController" value="#{componentController}"/>
+                            <ui:include src="../log/logListDataTable.xhtml"/>
                         </div>
                         <div class="middleCenterRightContent">
                             <div class="actionButton">
-                                <p:commandLink id="componentLogListCustomizeDisplay" onclick="componentLogListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
-                                    <p:tooltip for="componentLogListCustomizeDisplay" value="Customize Component Log List View" />
+                                <p:commandLink id="logListCustomizeDisplay" onclick="logListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="logListCustomizeDisplay" value="Customize Log List View" />
                                 </p:commandLink>
                             </div>
                         </div>
-                        <ui:include src="../componentLog/componentLogListCustomizeDisplayDialog.xhtml"/>
+                        <ui:include src="../log/logListCustomizeDisplayDialog.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>   
                 <ui:include src="componentDestroyDialog.xhtml"/>
@@ -66,9 +67,9 @@
 
                     </p:tab>
 
-<!--                    <p:tab title="Connectors">
-
-                    </p:tab>-->
+                    <!--                    <p:tab title="Connectors">
+                    
+                                        </p:tab>-->
                     <p:tab title="Sources">
 
                         <ui:include src="../componentSource/view.xhtml"/>

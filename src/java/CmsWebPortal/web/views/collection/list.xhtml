@@ -16,9 +16,24 @@
 
         <h:form id="viewCollectionListForm">    
             <div class="actionButton">
-                <p:commandButton action="#{collectionController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Collection" icon="ui-icon-plus"/>
-                <p:commandButton oncomplete="collectionListCustomizeDisplayWidget.show()" value="Customize List" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench"/>
-                <p:commandButton action="#{collectionController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
+                <p:commandButton id="addButton" action="#{collectionController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Collection" icon="ui-icon-plus">
+                    <p:tooltip for="addButton" value="Create new collection."/>
+                </p:commandButton>
+                <p:commandButton id="exportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+                    <p:dataExporter type="xls" target="collectionListDataTable" fileName="collections"/>
+                    <p:tooltip for="exportXlsButton" value="Export list to excel file."/>
+                </p:commandButton>  
+                <p:commandButton id="exportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+                    <p:dataExporter type="pdf" target="collectionListDataTable" fileName="collections"/>
+                    <p:tooltip for="exportPdfButton" value="Export list to pdf file."/>
+                </p:commandButton>  
+                <p:commandButton id="customizeDisplayButton" oncomplete="collectionListCustomizeDisplayWidget.show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+                    <p:tooltip for="customizeDisplayButton" value="Customize list view."/>
+                </p:commandButton>
+                <p:commandButton id="resetFiltersButton" action="#{collectionController.resetList()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+                    <p:tooltip for="resetFiltersButton" value="Reset list filters."/>
+                </p:commandButton>
+
                 <p:commandButton id="noOp" style="visibility:hidden" value="NoOp"/>
                 <p:defaultCommand target="noOp"/>
             </div>

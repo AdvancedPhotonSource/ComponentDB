@@ -9,7 +9,7 @@
 
     <c:set var="userObject" value="#{userController.selected}"/>
 
-    <p:panelGrid columns="3">
+    <p:panelGrid columns="3" styleClass="createEntityDetails">
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="username" value="#{userObject.username}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
@@ -17,7 +17,7 @@
 
         <h:outputLabel for="userGroups" value="Group" styleClass="entityDataLabel"/>
         <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" converter="userGroupConverter" title="Group" styleClass="entityDataSelectMany">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
         </h:selectManyMenu>
         <p:message for="userGroups"/>
@@ -39,7 +39,7 @@
         <p:message for="email"/>
 
         <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
-        <h:inputSecret id="password" value="#{userObject.password}" title="Password" styleClass="entityDataText"/>
+        <p:password id="password" value="#{userObject.password}" title="Password" feedback="true" styleClass="entityDataText"/>
         <p:message for="password"/>
 
     </p:panelGrid>

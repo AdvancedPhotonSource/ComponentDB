@@ -70,7 +70,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }

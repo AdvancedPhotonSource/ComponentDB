@@ -67,7 +67,7 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }
@@ -81,7 +81,7 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
             UserGroupController controller = (UserGroupController) facesContext.getApplication().getELResolver().

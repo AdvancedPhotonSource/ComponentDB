@@ -7,7 +7,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="collectionObject" value="#{collectionController.selected}"/>
-    <p:panelGrid columns="2" styleClass="viewEntityDetails">
+    <p:panelGrid id="collectionViewPanelGrid" columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="name" value="#{collectionObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>

@@ -1,15 +1,19 @@
 package gov.anl.aps.cms.portal.controllers;
 
 import gov.anl.aps.cms.portal.exceptions.CmsPortalException;
+import gov.anl.aps.cms.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.beans.UserFacade;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
+import gov.anl.aps.cms.portal.model.entities.UserGroup;
 import gov.anl.aps.cms.portal.model.entities.UserSetting;
+import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -31,6 +35,8 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
 
     @EJB
     private UserFacade userFacade;
+
+    private String passwordEntry = null;
 
     public UserController() {
     }
@@ -81,7 +87,17 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
             userSettingList.add(setting);
         }
         user.setUserSettingList(userSettingList);
+        passwordEntry = null;
         return super.prepareEdit(user);
+    }
+
+    @Override
+    public void prepareEntityInsert(User user) throws ObjectAlreadyExists {
+        User existingUser = userFacade.findByUsername(user.getUsername());
+        if (existingUser != null) {
+            throw new ObjectAlreadyExists("User " + user.getUsername() + " already exists.");
+        }
+        logger.debug("Inserting new user " + user.getUsername());
     }
 
     @Override
@@ -91,6 +107,9 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
         for (UserSetting userSetting : userSettingList) {
             if (userSetting.getValue() == null) {
                 userSetting.setValue(userSetting.getSettingType().getDefaultValue());
+            }
+            if (passwordEntry != null && !passwordEntry.isEmpty()) {
+                user.setPassword(passwordEntry);
             }
         }
     }
@@ -139,12 +158,20 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    }
+
+    public String getPasswordEntry() {
+        return passwordEntry;
+    }
+
+    public void setPasswordEntry(String passwordEntry) {
+        this.passwordEntry = passwordEntry;
     }
 
     @FacesConverter(forClass = User.class)

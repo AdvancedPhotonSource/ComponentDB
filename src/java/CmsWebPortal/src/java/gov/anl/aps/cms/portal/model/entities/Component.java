@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
 import java.util.LinkedList;
 import java.util.List;
@@ -201,6 +202,7 @@ public class Component extends CloneableEntity
     }
 
     public void setComponentTypeList(List<ComponentType> componentTypeList) {
+        CollectionUtility.removeNullReferencesFromList(componentTypeList);
         this.componentTypeList = componentTypeList;
         updateComponentTypeCategoryList();
     }
@@ -386,5 +388,15 @@ public class Component extends CloneableEntity
 //        }
         cloned.entityInfo = null;
         return cloned;
+    }
+    
+    public String getDisplayComponentTypeAndCategoryList() {
+        String display = "";
+        String delimiter = "";
+        for (ComponentType componentType : componentTypeList) {
+            display += delimiter + componentType.getNameWithCategory();
+            delimiter = ", ";
+        }
+        return display;
     }
 }

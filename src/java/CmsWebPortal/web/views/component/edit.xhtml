@@ -28,10 +28,14 @@
 
                 <p/>
                 <p:accordionPanel multiple="false">
-                    <p:tab title="Log">
-
-                        <ui:include src="../componentLog/edit.xhtml"/>
-
+                    <p:tab title="Log Entries">
+                        <div class="actionButton">
+                            <p:commandButton action="#{componentController.saveLogList()}" 
+                                             value="Save" alt="Save Log List" icon="ui-icon-check"
+                                             update="@form"/>
+                        </div>
+                        <c:set var="entityController" value="#{componentController}"/>
+                        <ui:include src="../log/logEditDataTable.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>  
             </div>

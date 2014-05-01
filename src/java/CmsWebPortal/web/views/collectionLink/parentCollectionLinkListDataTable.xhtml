@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="breadcrumb" value="#{collectionController.currentViewId}"/>
+    <c:set var="collectionObject" value="#{collectionController.selected}"/>
+    <p:dataTable id="parentCollectionLinkListDataTable" 
+                 var="parentCollectionLinkObject" 
+                 value="#{collectionObject.parentCollectionLinkList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{collectionLinkController.displayNumberOfItemsPerPage}"
+                 emptyMessage="No parent collection links found.">
+        
+        <c:set var="parentCollectionObject" value="#{parentCollectionLinkObject.parentCollection}"/>
+        <p:column sortBy="#{parentCollectionLinkObject.id}" headerText="Id"
+                  rendered="#{collectionLinkController.displayId}">
+            <h:outputText value="#{parentCollectionLinkObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{parentCollectionLinkObject.parentCollection.name}" headerText="Parent Collection Name">
+            <h:outputLink value="../collection/view.xhtml?id=#{parentCollectionLinkObject.parentCollection.id}&amp;breadcrumb=#{breadcrumb}" title="Parent Collection">
+                <h:outputText value="#{parentCollectionLinkObject.parentCollection.name}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{parentCollectionLinkObject.tag}" headerText="Tag"
+                  rendered="#{collectionLinkController.displayTag}">
+            <h:outputText value="#{parentCollectionLinkObject.tag}"/>
+        </p:column>
+
+        <p:column sortBy="#{parentCollectionLinkObject.description}" headerText="Description"
+                  rendered="#{collectionLinkController.displayDescription}">
+            <h:outputText value="#{parentCollectionLinkObject.description}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>

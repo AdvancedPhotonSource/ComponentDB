@@ -1,6 +1,7 @@
 package gov.anl.aps.cms.portal.utilities;
 
 import java.util.List;
+import java.util.ListIterator;
 import javax.faces.model.SelectItem;
 
 public class CollectionUtility
@@ -51,4 +52,12 @@ public class CollectionUtility
         return displayItemList(list, beginDelimiter, itemDelimiter, endDelimiter);
     }
 
+    public static void removeNullReferencesFromList(List<?> list) {
+        ListIterator iterator = list.listIterator();
+        while (iterator.hasNext()) {
+            if (iterator.next() == null) {
+                iterator.remove();
+            }
+        }
+    }
 }

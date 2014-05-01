@@ -9,7 +9,7 @@ CREATE TABLE `user` (
   `first_name` varchar(16) NOT NULL,
   `last_name` varchar(16) NOT NULL,
   `middle_name` varchar(16) DEFAULT NULL,
-  `email` varchar(16) DEFAULT NULL,
+  `email` varchar(64) DEFAULT NULL,
   `password` varchar(16) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_u1` (`username`),
@@ -374,9 +374,13 @@ CREATE TABLE `collection` (
 
 DROP TABLE IF EXISTS `collection_link`;
 CREATE TABLE `collection_link` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `parent_collection_id` int(11) unsigned NOT NULL,
   `child_collection_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`parent_collection_id`, `child_collection_id`),
+  `description` varchar(256) DEFAULT NULL,
+  `tag` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `collection_link_u1` (`parent_collection_id`, `child_collection_id`, `tag`),
   KEY `collection_link_k1` (`parent_collection_id`),
   CONSTRAINT `collection_link_fk1` FOREIGN KEY (`parent_collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `collection_link_fk2` FOREIGN KEY (`child_collection_id`) REFERENCES `collection` (`id`) ON UPDATE CASCADE ON DELETE CASCADE

@@ -7,7 +7,9 @@
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
+import java.beans.Transient;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -72,7 +74,9 @@ public class Log extends CloneableEntity
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private User createdByUser;
-
+    
+    private static transient SimpleDateFormat shortDisplayDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
+    
     public Log() {
     }
 
@@ -193,6 +197,14 @@ public class Log extends CloneableEntity
         return this.id.equals(other.id);
     }
 
+    public String getShortDisplayCreatedOnDateTime() {
+        if (createdOnDateTime == null) {
+            return null;
+        }
+        return shortDisplayDateFormat.format(createdOnDateTime);
+        
+    }
+    
     @Override
     public String toString() {
         return "gov.anl.aps.cms.test.entities.Log[ id=" + id + " ]";

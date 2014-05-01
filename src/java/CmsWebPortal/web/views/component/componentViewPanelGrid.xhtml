@@ -28,7 +28,7 @@
         <h:outputText id="componentState" value="#{componentObject.componentState.name}" title="State" styleClass="entityDataText"/>
 
         <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
-        <h:outputText id="componentTypes" value="#{componentController.displayEntityList(componentObject.componentTypeList)}" title="Type" styleClass="entityDataText"/>
+        <h:outputText id="componentTypes" value="#{componentObject.displayComponentTypeAndCategoryList}" title="Type" styleClass="entityDataText"/>
 
         <h:outputLabel for="estimatedCost" value="Estimated Cost" styleClass="entityDataLabel"/>
         <h:outputText id="estimatedCost" value="#{componentObject.estimatedCost}" title="Estimated Cost" styleClass="entityDataText"/>

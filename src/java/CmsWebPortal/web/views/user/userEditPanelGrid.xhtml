@@ -8,9 +8,9 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="userObject" value="#{userController.selected}"/>
-    <c:set var="isFieldWriteable" value="#{logginController.loggedInAsAdmin}"/>
+    <c:set var="isFieldWriteable" value="#{loginController.loggedInAsAdmin}"/>
 
-    <p:panelGrid columns="3"> 
+    <p:panelGrid columns="3" styleClass="editEntityDetails"> 
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="username" value="#{userObject.username}" rendered="#{isFieldWriteable}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
@@ -25,7 +25,7 @@
         <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" rendered="#{isFieldWriteable}"
                           converter="userGroupConverter" title="Group" 
                           styleClass="entityDataSelectMany">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
         </h:selectManyMenu>
         <h:outputText id="userGroupsOutput" value="#{userController.displayEntityList(userObject.userGroupList)}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
@@ -51,7 +51,7 @@
         <p:message for="email"/>
 
         <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
-        <h:inputSecret id="password" value="#{userObject.password}" title="Password" styleClass="entityDataText"/>
+        <p:password id="password" value="#{userController.passwordEntry}" title="Password" feedback="true" styleClass="entityDataText"/>
         <p:message for="password"/>
 
     </p:panelGrid>

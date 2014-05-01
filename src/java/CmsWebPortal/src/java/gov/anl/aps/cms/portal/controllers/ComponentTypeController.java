@@ -88,7 +88,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }
@@ -129,7 +129,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
             ComponentTypeController controller = (ComponentTypeController) facesContext.getApplication().getELResolver().

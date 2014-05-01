@@ -40,62 +40,78 @@
 
                 <p/>
                 <p:accordionPanel multiple="false">
-                    <p:tab title="Log">
+                    <p:tab title="Log Entries">
 
                         <div class="middleCenterRightContent">
-                        <ui:include src="../collectionLog/view.xhtml"/>
+                            <c:set var="entityController" value="#{collectionController}"/>
+                            <ui:include src="../log/logListDataTable.xhtml"/>
                         </div>
                         <div class="middleCenterRightContent">
                             <div class="actionButton">
-                                <p:commandLink id="collectionLogListCustomizeDisplay" onclick="collectionLogListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
-                                    <p:tooltip for="collectionLogListCustomizeDisplay" value="Customize Collection Log List View" />
+                                <p:commandLink id="logListCustomizeDisplay" onclick="logListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="logListCustomizeDisplay" value="Customize Log List View" />
                                 </p:commandLink>
                             </div>
                         </div>
-                        <ui:include src="../collectionLog/collectionLogListCustomizeDisplayDialog.xhtml"/>
+                        <ui:include src="../log/logListCustomizeDisplayDialog.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>          
-                
+
                 <ui:include src="collectionDestroyDialog.xhtml"/>
 
             </div>
             <div class="middleCenterRightContent">
 
                 <p:accordionPanel multiple="true">
-                    <p:tab title="Components">
-
-                        <ui:include src="../collectionComponent/view.xhtml"/>
-
-                    </p:tab>
-
-                    <p:tab title="Child Collections">
+                    <p:tab title="Collection Components">
                         <div class="middleCenterRightContent">
-                            <ui:include src="childCollectionListDataTable.xhtml"/>
+                            <ui:include src="../collectionComponent/collectionComponentListDataTable.xhtml"/>
                         </div>
+
                         <div class="middleCenterRightContent">
                             <div class="actionButton">
-                                <p:commandLink id="childCollectionListCustomizeDisplay" onclick="childCollectionListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
-                                    <p:tooltip for="childCollectionListCustomizeDisplay" value="Customize Child Collection List View" />
+                                <p:commandLink id="collectionComponentListCustomizeDisplay" onclick="collectionComponentListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="collectionComponentListCustomizeDisplay" value="Customize Collection Component List View" />
                                 </p:commandLink>
                             </div>
                         </div>
-                        <ui:include src="childCollectionListCustomizeDisplayDialog.xhtml"/>
+                        <ui:include src="../collectionComponent/collectionComponentListCustomizeDisplayDialog.xhtml"/>
+                        <h:outputScript library="javascript/collectionComponent" name="list.filter.js" rendered="#{collectionComponentController.listDataModelReset}"/>
                     </p:tab>
 
-                    <p:tab title="Parent Collections">
+                    <p:tab title="Child Collection Links">
                         <div class="middleCenterRightContent">
-                            <ui:include src="parentCollectionListDataTable.xhtml"/>
+                            <ui:include src="../collectionLink/childCollectionLinkListDataTable.xhtml"/>
                         </div>
                         <div class="middleCenterRightContent">
                             <div class="actionButton">
-                                <p:commandLink id="parentCollectionListCustomizeDisplay" onclick="parentCollectionListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
-                                    <p:tooltip for="parentCollectionListCustomizeDisplay" value="Customize Child Collection List View" />
+                                <p:commandLink id="childCollectionLinkListCustomizeDisplay" onclick="collectionLinkListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="childCollectionLinkListCustomizeDisplay" value="Customize Collection Link List View" />
                                 </p:commandLink>
                             </div>
                         </div>
-                        <ui:include src="parentCollectionListCustomizeDisplayDialog.xhtml"/>
-                    </p:tab>                    
+                    </p:tab>
+
+                    <p:tab title="Parent Collection Links">
+                        <div class="middleCenterRightContent">
+                            <ui:include src="../collectionLink/parentCollectionLinkListDataTable.xhtml"/>
+                        </div>
+                        <div class="middleCenterRightContent">
+                            <div class="actionButton">
+                                <p:commandLink id="parentCollectionLinkListCustomizeDisplay" onclick="collectionLinkListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
+                                    <p:tooltip for="parentCollectionLinkListCustomizeDisplay" value="Customize Collection Link List View" />
+                                </p:commandLink>
+                            </div>
+                        </div>
+
+                    </p:tab>   
+
+
+
+
                 </p:accordionPanel>
+                <ui:include src="../collectionLink/collectionLinkListCustomizeDisplayDialog.xhtml"/>
+
 
             </div>
         </h:form>

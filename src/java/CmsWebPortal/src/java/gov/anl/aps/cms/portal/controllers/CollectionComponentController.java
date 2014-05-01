@@ -23,12 +23,12 @@ import org.apache.log4j.Logger;
 public class CollectionComponentController extends CrudEntityController<CollectionComponent, CollectionComponentFacade> implements Serializable
 {
 
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Collection.View.CollectionComponentList.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "Collection.View.CollectionComponentList.Display.Id";
-    private static final String DisplayTagSettingTypeKey = "Collection.View.CollectionComponentList.Display.Tag";
-    private static final String DisplayQuantitySettingTypeKey = "Collection.View.CollectionComponentList.Display.Quantity";
-    private static final String DisplayPrioritySettingTypeKey = "Collection.View.CollectionComponentList.Display.Priority";
-    private static final String DisplayDescriptionSettingTypeKey = "Collection.View.CollectionComponentList.Display.Description";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "CollectionComponent.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "CollectionComponent.List.Display.Id";
+    private static final String DisplayTagSettingTypeKey = "CollectionComponent.List.Display.Tag";
+    private static final String DisplayQuantitySettingTypeKey = "CollectionComponent.List.Display.Quantity";
+    private static final String DisplayPrioritySettingTypeKey = "CollectionComponent.List.Display.Priority";
+    private static final String DisplayDescriptionSettingTypeKey = "CollectionComponent.List.Display.Description";
 
     private static final Logger logger = Logger.getLogger(CollectionComponentController.class.getName());
 
@@ -90,7 +90,7 @@ public class CollectionComponentController extends CrudEntityController<Collecti
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);

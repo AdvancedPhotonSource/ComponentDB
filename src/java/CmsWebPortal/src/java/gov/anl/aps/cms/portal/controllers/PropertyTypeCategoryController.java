@@ -84,7 +84,7 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }

@@ -8,11 +8,13 @@ import gov.anl.aps.cms.portal.model.beans.ComponentStateFacade;
 import gov.anl.aps.cms.portal.model.entities.ComponentProperty;
 import gov.anl.aps.cms.portal.model.entities.ComponentSource;
 import gov.anl.aps.cms.portal.model.entities.ComponentState;
+import gov.anl.aps.cms.portal.model.entities.ComponentType;
 import gov.anl.aps.cms.portal.model.entities.EntityInfo;
 import gov.anl.aps.cms.portal.model.entities.Log;
 import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserGroup;
+import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -63,16 +65,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
     private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Component.List.FilterBy.LastModifiedOnDateTime";
     private static final String FilterByEstimatedCostSettingTypeKey = "Component.List.FilterBy.EstimatedCost";
-
-    private static final String ViewComponentLogListDisplayNumberOfItemsPerPageSettingTypeKey = "Component.View.ComponentLogList.Display.NumberOfItemsPerPage";
-    private static final String ViewComponentLogListDisplayIdSettingTypeKey = "Component.View.ComponentLogList.Display.Id";
-    private static final String ViewComponentLogListDisplayCreatedByUserSettingTypeKey = "Component.View.ComponentLogList.Display.CreatedByUser";
-    private static final String ViewComponentLogListDisplayCreatedOnDateTimeSettingTypeKey = "Component.View.ComponentLogList.Display.CreatedOnDateTime";
-
-    protected Integer viewComponentLogListDisplayNumberOfItemsPerPage = null;
-    protected Boolean viewComponentLogListDisplayId = null;
-    protected Boolean viewComponentLogListDisplayCreatedByUser = null;
-    protected Boolean viewComponentLogListDisplayCreatedOnDateTime = null;
 
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
@@ -273,8 +265,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         if (sessionUser != null) {
             Date settingsTimestamp = getSettingsTimestamp();
             if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                logger.debug("Updating list settings from session user");
-                updateViewSettingsFromSessionUser(sessionUser);
+                updateSettingsFromSessionUser(sessionUser);
                 settingsTimestamp = new Date();
                 setSettingsTimestamp(settingsTimestamp);
             }
@@ -322,15 +313,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
         filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
         filterByEstimatedCost = settingTypeMap.get(FilterByEstimatedCostSettingTypeKey).getDefaultValue();
-
-        viewComponentLogListDisplayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(ViewComponentLogListDisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        viewComponentLogListDisplayId = Boolean.parseBoolean(settingTypeMap.get(ViewComponentLogListDisplayIdSettingTypeKey).getDefaultValue());
-        viewComponentLogListDisplayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(ViewComponentLogListDisplayCreatedByUserSettingTypeKey).getDefaultValue());
-        viewComponentLogListDisplayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(ViewComponentLogListDisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
     }
 
     @Override
-    public void updateListSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(User sessionUser) {
         if (sessionUser == null) {
             return;
         }
@@ -365,6 +351,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
         filterByEstimatedCost = sessionUser.getUserSettingValueAsString(FilterByEstimatedCostSettingTypeKey, filterByEstimatedCost);
+
     }
 
     @Override
@@ -418,23 +405,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
         sessionUser.setUserSettingValue(FilterByStateSettingTypeKey, filterByState);
         sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
         sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
-
-        sessionUser.setUserSettingValue(ViewComponentLogListDisplayNumberOfItemsPerPageSettingTypeKey, viewComponentLogListDisplayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(ViewComponentLogListDisplayIdSettingTypeKey, viewComponentLogListDisplayId);
-        sessionUser.setUserSettingValue(ViewComponentLogListDisplayCreatedByUserSettingTypeKey, viewComponentLogListDisplayCreatedByUser);
-        sessionUser.setUserSettingValue(ViewComponentLogListDisplayCreatedOnDateTimeSettingTypeKey, viewComponentLogListDisplayCreatedOnDateTime);
-    }
-
-    @Override
-    public void updateViewSettingsFromSessionUser(User sessionUser) {
-        if (sessionUser == null) {
-            return;
-        }
-
-        viewComponentLogListDisplayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(ViewComponentLogListDisplayNumberOfItemsPerPageSettingTypeKey, viewComponentLogListDisplayNumberOfItemsPerPage);
-        viewComponentLogListDisplayId = sessionUser.getUserSettingValueAsBoolean(ViewComponentLogListDisplayIdSettingTypeKey, viewComponentLogListDisplayId);
-        viewComponentLogListDisplayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(ViewComponentLogListDisplayCreatedByUserSettingTypeKey, viewComponentLogListDisplayCreatedByUser);
-        viewComponentLogListDisplayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(ViewComponentLogListDisplayCreatedOnDateTimeSettingTypeKey, viewComponentLogListDisplayCreatedOnDateTime);
     }
 
     @Override
@@ -615,38 +585,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setSelectFilterByEstimatedCost(String selectFilterByEstimatedCost) {
         this.selectFilterByEstimatedCost = selectFilterByEstimatedCost;
-    }
-
-    public Integer getViewComponentLogListDisplayNumberOfItemsPerPage() {
-        return viewComponentLogListDisplayNumberOfItemsPerPage;
-    }
-
-    public void setViewComponentLogListDisplayNumberOfItemsPerPage(Integer viewComponentLogListDisplayNumberOfItemsPerPage) {
-        this.viewComponentLogListDisplayNumberOfItemsPerPage = viewComponentLogListDisplayNumberOfItemsPerPage;
-    }
-
-    public Boolean getViewComponentLogListDisplayId() {
-        return viewComponentLogListDisplayId;
-    }
-
-    public void setViewComponentLogListDisplayId(Boolean viewComponentLogListDisplayId) {
-        this.viewComponentLogListDisplayId = viewComponentLogListDisplayId;
-    }
-
-    public Boolean getViewComponentLogListDisplayCreatedByUser() {
-        return viewComponentLogListDisplayCreatedByUser;
-    }
-
-    public void setViewComponentLogListDisplayCreatedByUser(Boolean viewComponentLogListDisplayCreatedByUser) {
-        this.viewComponentLogListDisplayCreatedByUser = viewComponentLogListDisplayCreatedByUser;
-    }
-
-    public Boolean getViewComponentLogListDisplayCreatedOnDateTime() {
-        return viewComponentLogListDisplayCreatedOnDateTime;
-    }
-
-    public void setViewComponentLogListDisplayCreatedOnDateTime(Boolean viewComponentLogListDisplayCreatedOnDateTime) {
-        this.viewComponentLogListDisplayCreatedOnDateTime = viewComponentLogListDisplayCreatedOnDateTime;
     }
 
     @FacesConverter(value = "componentConverter", forClass = Component.class)

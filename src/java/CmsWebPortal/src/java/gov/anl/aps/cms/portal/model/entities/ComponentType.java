@@ -132,4 +132,12 @@ public class ComponentType extends CloneableEntity
         return name;
     }
     
+    public String getNameWithCategory() {
+        String result = name;
+        if (componentTypeCategory != null) {
+            result += ":" + componentTypeCategory.getName();
+        }
+        return result;
+    }
+    
 }
