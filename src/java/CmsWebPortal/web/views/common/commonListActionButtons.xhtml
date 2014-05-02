@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <div class="actionButton">
+        <p:commandButton id="#{entityName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add new #{entityName}" icon="ui-icon-plus">
+            <p:tooltip for="#{entityName}AddButton" value="Create new #{entityName}."/>
+        </p:commandButton>
+        <p:commandButton id="#{entityName}ExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+            <p:dataExporter type="xls" target="#{entityName}ListDataTable" fileName="#{entityName}s"/>
+            <p:tooltip for="#{entityName}ExportXlsButton" value="Export list to excel file."/>
+        </p:commandButton>  
+        <p:commandButton id="#{entityName}ExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+            <p:dataExporter type="pdf" target="#{entityName}ListDataTable" fileName="#{entityName}s"/>
+            <p:tooltip for="#{entityName}ExportPdfButton" value="Export list to pdf file."/>
+        </p:commandButton>  
+        <p:commandButton id="#{entityName}PrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+            <p:printer target="#{entityName}ListDataTable"/>
+            <p:tooltip for="#{entityName}PrintButton" value="Print list."/>
+        </p:commandButton> 
+        <p:commandButton id="#{entityName}CustomizeDisplayButton" oncomplete="#{entityName}ListCustomizeDisplayWidget.show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:tooltip for="#{entityName}CustomizeDisplayButton" value="Customize list view."/>
+        </p:commandButton>
+        <p:commandButton id="#{entityName}ResetFiltersButton" action="#{entityController.resetList()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityName}ResetFiltersButton" value="Reset list filters."/>
+        </p:commandButton>
+
+        <p:commandButton id="#{entityName}NoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{entityName}NoOp"/>
+    </div>
+
+</ui:composition>

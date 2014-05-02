@@ -7,6 +7,7 @@ package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Basic;
@@ -46,6 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findByEstimatedCost", query = "SELECT c FROM Component c WHERE c.estimatedCost = :estimatedCost")})
 public class Component extends CloneableEntity
 {
+    private static final DecimalFormat EstimatedCostDecimalFormat = new DecimalFormat(".00");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -187,6 +189,13 @@ public class Component extends CloneableEntity
         this.estimatedCost = estimatedCost;
     }
 
+    public String getDisplayEstimatedCost() {
+        if (estimatedCost == null) {
+            return null;
+        }
+        return "$ " + EstimatedCostDecimalFormat.format(estimatedCost);
+    }
+    
     @XmlTransient
     public List<Log> getLogList() {
         return logList;

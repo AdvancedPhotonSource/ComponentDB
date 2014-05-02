@@ -15,18 +15,23 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("logController")
 @SessionScoped
-public class LogController extends CrudEntityController<Log, LogFacade> implements Serializable {
+public class LogController extends CrudEntityController<Log, LogFacade> implements Serializable
+{
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Log.List.Display.Id";
     private static final String DisplayCreatedByUserSettingTypeKey = "Log.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Log.List.Display.CreatedOnDateTime";
-    
+
     @EJB
     private LogFacade logFacade;
+
+    private DataTable collectionLogListDataTable = null;
+    private DataTable componentLogListDataTable = null;
 
     public LogController() {
         super();
@@ -60,6 +65,28 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         return super.getAvailableItems();
     }
 
+    public DataTable getCollectionLogListDataTable() {
+        if (userSettingsChanged()) {
+            collectionLogListDataTable = new DataTable();
+        }
+        return collectionLogListDataTable;
+    }
+ 
+    public void setCollectionLogListDataTable(DataTable collectionLogListDataTable) {
+        this.collectionLogListDataTable = collectionLogListDataTable;
+    }
+     
+    public DataTable getComponentLogListDataTable() {
+        if (userSettingsChanged()) {
+            componentLogListDataTable = new DataTable();
+        }
+        return componentLogListDataTable;
+    }
+
+    public void setComponentLogListDataTable(DataTable componentLogListDataTable) {
+        this.componentLogListDataTable = componentLogListDataTable;
+    }
+    
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
@@ -83,7 +110,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
         displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
     }
-    
+
     @Override
     public void saveSettingsForSessionUser(User sessionUser) {
         if (sessionUser == null) {
@@ -95,9 +122,10 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
         sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
     }
-    
+
     @FacesConverter(forClass = Log.class)
-    public static class LogControllerConverter implements Converter {
+    public static class LogControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -129,7 +157,8 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             if (object instanceof Log) {
                 Log o = (Log) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Log.class.getName());
             }
         }

@@ -44,7 +44,7 @@
 
                         <div class="middleCenterRightContent">
                             <c:set var="entityController" value="#{collectionController}"/>
-                            <ui:include src="../log/logListDataTable.xhtml"/>
+                            <ui:include src="../log/collectionLogListDataTable.xhtml"/>
                         </div>
                         <div class="middleCenterRightContent">
                             <div class="actionButton">
@@ -75,6 +75,8 @@
                                 </p:commandLink>
                             </div>
                         </div>
+
+
                         <ui:include src="../collectionComponent/collectionComponentListCustomizeDisplayDialog.xhtml"/>
                         <h:outputScript library="javascript/collectionComponent" name="list.filter.js" rendered="#{collectionComponentController.listDataModelReset}"/>
                     </p:tab>

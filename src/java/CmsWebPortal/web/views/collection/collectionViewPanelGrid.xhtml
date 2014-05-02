@@ -45,7 +45,10 @@
         <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
         <h:outputText id="groupWriteable" value="#{collectionObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
 
-    </p:panelGrid>
+        <h:outputLabel for="estimatedCost" value="Estimated Cost" styleClass="entityDataLabel"/>
+        <h:outputText id="estimatedCost" value="#{collectionObject.displayEstimatedComponentCostSum}" title="Estimated Cost" styleClass="entityDataText"/>
+
+     </p:panelGrid>
 
 
 </ui:composition>

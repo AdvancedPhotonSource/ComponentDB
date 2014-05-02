@@ -81,7 +81,7 @@
         </p:column>
 
         <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(collectionObject.entityInfo)}"/>
-        <p:column headerText="Actions">
+        <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:commandLink action="#{collectionController.prepareView(collectionObject)}" 
                                actionListener="#{collectionComponentController.updateListSettingsActionListener}"

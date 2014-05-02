@@ -15,9 +15,9 @@ import java.io.Serializable;
 public class CloneableEntity implements Serializable, Cloneable
 {
     protected static final long serialVersionUID = 1L;
-
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+    
 }

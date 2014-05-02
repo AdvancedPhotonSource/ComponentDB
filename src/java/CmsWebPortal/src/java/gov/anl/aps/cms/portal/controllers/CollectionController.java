@@ -316,6 +316,14 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         parentCollectionLinkList.remove(parentCollectionLink);
     }
 
+    public Double getCollectionComponentEstimatedCostSum(Collection collection) {
+        return collection.getEstimatedComponentCostSum();
+    }
+ 
+    public Double getCollectionComponentEstimatedCostAverage(Collection collection) {
+        return collection.getEstimatedComponentCostAverage();
+    }
+    
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {

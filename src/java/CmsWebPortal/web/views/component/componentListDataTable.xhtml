@@ -120,7 +120,7 @@
         </p:column>
 
         <c:set var="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
-        <p:column headerText="Actions">
+        <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:commandLink action="#{componentController.prepareView(componentObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{componentController.prepareEdit(componentObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>

@@ -50,7 +50,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     private List<EntityType> selectedObjectList = null;
 
     private String logText = null;
-    
+
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayId = null;
     protected Boolean displayDescription = null;
@@ -103,7 +103,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public void resetLogText() {
         logText = "";
     }
-    
+
     public List<SettingType> getSettingTypeList() {
         if (settingTypeList == null) {
             settingTypeList = settingTypeFacade.findAll();
@@ -272,21 +272,25 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return loadView;
     }
 
-    public DataTable getListDataTable() {
+    public boolean userSettingsChanged() {
         User sessionUser = (User) SessionUtility.getUser();
-        if (sessionUser != null) {
-            logger.debug("Session user is not null, list settings timestamp: " + sessionUser.getUserSettingsModificationDate());
-            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                logger.debug("Updating list settings from session user");
-                updateSettingsFromSessionUser(sessionUser);
-                resetListDataModel();
-                settingsTimestamp = new Date();
-            }
-            else {
-                logger.debug("Session user settings have not been changed since " + settingsTimestamp);
-            }
+        if (sessionUser == null) {
+            return false;
         }
 
+        if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
+            logger.debug("Updating settings from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
+            updateSettingsFromSessionUser(sessionUser);
+            settingsTimestamp = new Date();
+            return true;
+        }
+        return false;
+    }
+
+    public DataTable getListDataTable() {
+        if (userSettingsChanged()) {
+            resetListDataModel();
+        }
         if (listDataTable == null) {
             logger.debug("Recreating data table");
             listDataTable = new DataTable();
@@ -467,7 +471,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public DataModel createListDataModel() {
         return new ListDataModel(getFacade().findAll());
     }
-    
+
     public DataModel getListDataModel() {
         if (listDataModel == null) {
             listDataModel = createListDataModel();
@@ -475,15 +479,15 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return listDataModel;
     }
 
-    public void prepareEntityListForSelection(List<EntityType> selectEntityList) {    
+    public void prepareEntityListForSelection(List<EntityType> selectEntityList) {
     }
-    
+
     public DataModel createSelectDataModel() {
         List<EntityType> selectEntityList = getFacade().findAll();
         prepareEntityListForSelection(selectEntityList);
         return new ListDataModel(selectEntityList);
     }
-    
+
     public DataModel getSelectDataModel() {
         if (selectDataModel == null) {
             selectDataModel = createSelectDataModel();

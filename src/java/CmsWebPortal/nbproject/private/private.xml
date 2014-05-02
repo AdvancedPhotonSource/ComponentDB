@@ -32,6 +32,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collection/collectionListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/componentProperty/componentPropertyEditDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentSource.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/CollectionComponentFacade.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/CollectionComponent.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/source/sourceViewPanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/componentListCustomizeDisplayDialog.xhtml</file>
@@ -47,7 +48,6 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/log/logListCustomizeDisplayDialog.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/User.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/ConnectorTypeCategoryController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collectionComponent/customizeCollectionComponentSelectPanel.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/ComponentStateController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/componentListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/userGroup/userGroupEditPanelGrid.xhtml</file>
@@ -67,6 +67,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/userGroup/userGroupViewPanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/componentEditPanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/PropertyTypeController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/common/commonListActionButtons.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/controllers/UserController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentType.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/PropertyType.java</file>
@@ -90,6 +91,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/source/create.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/entityInfo/entityInfoEditObject.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/entityInfo/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/log/componentLogListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentConnector.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/PropertyTypeCategory.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/ComponentState.java</file>
@@ -101,6 +103,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/CloneableEntity.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collection/create.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collection/collectionViewPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/log/logListObject.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collection/collectionSelectDialog.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/userGroup/list.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/componentTypeCategory/componentTypeCategoryListDataTable.xhtml</file>
@@ -146,6 +149,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collectionLink/parentCollectionLinkEditDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyTypeCategory/create.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/resources/css/portal.css</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/log/collectionLogListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/resources/css/portal-1.css</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/Collection.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyTypeCategory/list.xhtml</file>
