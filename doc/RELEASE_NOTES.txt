@@ -3,7 +3,7 @@ Release 20140430 (04/30/2014)
 
 - Added framework for managing user settings
 - Added filter management for collections, components, users/groups
-- Reworked collection links
+- Completed work on collection links
 - Added print/export functionality for collection and component lists
 - Schema modifications:
     - Renamed category tables (category => type_category)
