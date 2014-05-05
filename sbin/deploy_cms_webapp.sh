@@ -11,6 +11,22 @@ if [ ! -f ${CMS_ENV_FILE} ]; then
 fi
 . ${CMS_ENV_FILE} > /dev/null
 
+# Use first argument as db name, if provided
+if [ ! -z "$1" ]; then
+    DB_NAME=$1
+fi
+echo "Using DB name: $DB_NAME"
+
+# Look for deployment file in etc directory, and use it to override
+# default entries
+deployConfigFile=$CMS_ROOT_DIR/etc/${DB_NAME}.deploy.conf
+if [ -f $deployConfigFile ]; then
+    echo "Using deployment config file: $deployConfigFile"
+    . $deployConfigFile
+else
+    echo "Deployment config file $deployConfigFile not found, using defaults"
+fi
+
 CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
 CMS_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy

@@ -11,6 +11,22 @@ if [ ! -f ${CMS_ENV_FILE} ]; then
 fi
 . ${CMS_ENV_FILE} > /dev/null
 
+# Use first argument as db name, if provided
+if [ ! -z "$1" ]; then
+    DB_NAME=$1
+fi
+echo "Using DB name: $DB_NAME"
+
+# Look for deployment file in etc directory, and use it to override
+# default entries
+deployConfigFile=$CMS_ROOT_DIR/etc/${DB_NAME}.deploy.conf
+if [ -f $deployConfigFile ]; then
+    echo "Using deployment config file: $deployConfigFile"
+    . $deployConfigFile
+else
+    echo "Deployment config file $deployConfigFile not found, using defaults"
+fi
+
 CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
 JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
@@ -18,13 +34,13 @@ JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
 export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin 
 
-CMS_DB_NAME=cms
-CMS_DB_HOST=localhost
-CMS_DB_PORT=3306
-CMS_DB_USER=cms
-CMS_DB_PASSWORD=cms
-CMS_DB_POOL=mysql_cms_cmsPool
-CMS_DATA_SOURCE=CmsDataSource
+CMS_DB_NAME=${DB_NAME:=cms}
+CMS_DB_HOST=${DB_HOST:=localhost}
+CMS_DB_PORT=${DB_PORT:=3306}
+CMS_DB_USER=${DB_USER:=cms}
+CMS_DB_PASSWORD=${DB_PASSWORD:=cms}
+CMS_DB_POOL=mysql_${DB_NAME}_DbPool
+CMS_DATA_SOURCE=${DB_NAME}_DataSource
 CMS_DOMAIN=domain1
 
 # copy mysql driver
