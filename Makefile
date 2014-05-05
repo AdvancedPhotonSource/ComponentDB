@@ -2,7 +2,8 @@
 # are defined in the RULES file.
 
 TOP = .
-SUBDIRS = irmis src
+#SUBDIRS = irmis src
+SUBDIRS = src
 
 include $(TOP)/tools/make/RULES_CMS
 

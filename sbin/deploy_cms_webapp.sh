@@ -29,17 +29,37 @@ else
 fi
 
 CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
-CMS_CONTEXT_ROOT=${CMS_CONTEXT_ROOT:=CmsWebPortal}
+CMS_CONTEXT_ROOT=${CMS_CONTEXT_ROOT:=cms}
 GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
 CMS_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
 CMS_DIST_DIR=$CMS_ROOT_DIR/src/java/CmsWebPortal/dist
+CMS_BUILD_WAR_FILE=CmsWebPortal.war
 CMS_WAR_FILE=$CMS_CONTEXT_ROOT.war
 JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
 
-if [ ! -f $CMS_DIST_DIR/$CMS_WAR_FILE ]; then
-    echo "$CMS_WAR_FILE not found in $CMS_DIST_DIR."
+if [ ! -f $CMS_DIST_DIR/$CMS_BUILD_WAR_FILE ]; then
+    echo "$CMS_BUILD_WAR_FILE not found in $CMS_DIST_DIR."
     exit 1
 fi
+
+# Modify war file for proper context/persistence settings and
+# repackage it into new war 
+echo "Repackaging war file for context root $CMS_CONTEXT_ROOT"
+cd $CMS_DIST_DIR
+rm -rf $CMS_CONTEXT_ROOT
+mkdir -p $CMS_CONTEXT_ROOT
+cd $CMS_CONTEXT_ROOT
+jar xf ../$CMS_BUILD_WAR_FILE
+
+configFile=WEB-INF/glassfish-web.xml
+cmd="cat $configFile | sed 's?<context-root.*?<context-root>${CMS_CONTEXT_ROOT}</context-root>?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+
+configFile=WEB-INF/classes/META-INF/persistence.xml
+cmd="cat $configFile | sed 's?<jta-data-source.*?<jta-data-source>${CMS_DB_NAME}_DataSource</jta-data-source>?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+
+jar cf ../$CMS_WAR_FILE *
 
 export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
@@ -56,7 +76,7 @@ cd $CMS_DEPLOY_DIR
 t=0
 while [ $t -lt $WAIT_TIME ]; do
     sleep 1
-    deploymentStatus=`ls -c1 ${CMS_WAR_FILE}_* 2> /dev/null | cut -f2 -d'_'`
+    deploymentStatus=`ls -c1 ${CMS_WAR_FILE}_* 2> /dev/null | sed 's?.*war_??g'`
     if [ ! -z "$deploymentStatus" ]; then
         break
     fi
