@@ -1,6 +1,9 @@
 all:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d $(ARCH); done
 
+dist:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d $(ARCH); done
+
 clean:
 	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
 

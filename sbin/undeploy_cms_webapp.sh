@@ -36,32 +36,18 @@ CMS_DIST_DIR=$CMS_ROOT_DIR/src/java/CmsWebPortal/dist
 CMS_WAR_FILE=$CMS_CONTEXT_ROOT.war
 JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
 
-if [ ! -f $CMS_DIST_DIR/$CMS_WAR_FILE ]; then
-    echo "$CMS_WAR_FILE not found in $CMS_DIST_DIR."
-    exit 1
-fi
-
 export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
-# copy war file
-echo "Copying war file $CMS_DIST_DIR/$CMS_WAR_FILE to $CMS_DEPLOY_DIR"
-rm -f $CMS_DEPLOY_DIR/${CMS_WAR_FILE}_*
-cp $CMS_DIST_DIR/$CMS_WAR_FILE $CMS_DEPLOY_DIR
+# remove war file from autodeploy directory
+echo "Removing war file $CMS_DEPLOY_DIR/$CMS_WAR_FILE"
+rm -f $CMS_DEPLOY_DIR/${CMS_WAR_FILE}*
 
-# wait on deployment
-echo "Waiting on war deployment..."
-WAIT_TIME=30
-cd $CMS_DEPLOY_DIR
-t=0
-while [ $t -lt $WAIT_TIME ]; do
-    sleep 1
-    deploymentStatus=`ls -c1 ${CMS_WAR_FILE}_* 2> /dev/null | cut -f2 -d'_'`
-    if [ ! -z "$deploymentStatus" ]; then
-        break
-    fi
-    t=`expr $t + 1`
-done
-echo "Deployment Status: $deploymentStatus"
+# restart server
+echo "Restarting glassfish"
+$ASADMIN_CMD stop-domain ${CMS_DOMAIN}
+$ASADMIN_CMD start-domain ${CMS_DOMAIN}
+
+
 
 
