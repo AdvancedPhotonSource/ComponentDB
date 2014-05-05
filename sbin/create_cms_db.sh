@@ -1,5 +1,14 @@
 #!/bin/sh
 
+#
+# Script used for creating CMS database
+# Deployment configuration can be set in etc/$CMS_DB_NAME.deploy.conf file
+#
+# Usage:
+#
+# $0 [CMS_DB_NAME [CMS_DB_SCRIPTS_DIR]]
+#
+
 CMS_DB_NAME=cms
 CMS_DB_USER=cms
 CMS_DB_PASSWORD=cms

@@ -1,5 +1,14 @@
 #!/bin/sh
 
+#
+# Script used for un-configuring CMS webapp
+# Deployment configuration can be set in etc/$CMS_DB_NAME.deploy.conf file
+#
+# Usage:
+#
+# $0 [CMS_DB_NAME]
+#
+
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 if [ -z "${CMS_ROOT_DIR}" ]; then
     CMS_ROOT_DIR=$MY_DIR/..
