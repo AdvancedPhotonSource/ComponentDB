@@ -9,17 +9,4 @@
             <var>resources</var>
         </resource-bundle>
     </application>
-<!--    
-    <render-kit>
-        <renderer>
-            <component-family>org.primefaces.component</component-family>
-            <renderer-type>org.primefaces.component.DataTableRenderer</renderer-type>
-            <renderer-class>gov.anl.aps.cms.portal.controllers.util.MyDataTableRenderer</renderer-class>
-        </renderer>
-    </render-kit>-->
-    
-<!--     <component>
-        <component-type>org.primefaces.component.DataTable</component-type>
-        <component-class>gov.anl.aps.cms.portal.controllers.util.MyDataTable</component-class>
-    </component>-->
 </faces-config>
