@@ -76,6 +76,8 @@ VALUES
 
 	('PropertyTypeCategory.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('Search.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
 	('Source.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('User.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),

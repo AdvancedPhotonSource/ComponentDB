@@ -61,6 +61,7 @@
                                     <p:menuitem value="Property Types" url="/faces/views/propertyType/list.xhtml"/>
                                     <p:menuitem value="Sources" url="/faces/views/source/list.xhtml"/>
                                     <p:menuitem value="Users" url="/faces/views/user/list.xhtml"/>
+                                    <p:menuitem value="Search" url="/faces/views/search/search.xhtml" icon="ui-icon-search"/>
                                     <p:menuitem value="Settings" action="#{userController.prepareSessionUserEdit('/faces/views/user/edit.xhtml')}" rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
                                     <p:menuitem value="Login" onclick="loginDialog.show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
                                     <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>                                </p:menubar>

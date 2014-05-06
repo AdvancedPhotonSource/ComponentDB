@@ -7,9 +7,11 @@ package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.CollectionUtility;
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
+import gov.anl.aps.cms.portal.utilities.SearchResult;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,6 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findByEstimatedCost", query = "SELECT c FROM Component c WHERE c.estimatedCost = :estimatedCost")})
 public class Component extends CloneableEntity
 {
+
     private static final DecimalFormat EstimatedCostDecimalFormat = new DecimalFormat(".00");
 
     @Id
@@ -195,7 +198,7 @@ public class Component extends CloneableEntity
         }
         return "$ " + EstimatedCostDecimalFormat.format(estimatedCost);
     }
-    
+
     @XmlTransient
     public List<Log> getLogList() {
         return logList;
@@ -398,7 +401,7 @@ public class Component extends CloneableEntity
         cloned.entityInfo = null;
         return cloned;
     }
-    
+
     public String getDisplayComponentTypeAndCategoryList() {
         String display = "";
         String delimiter = "";
@@ -407,5 +410,17 @@ public class Component extends CloneableEntity
             delimiter = ", ";
         }
         return display;
+    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        for (Log logEntry : logList) {
+            String logEntryKey = "logEntryId:" + logEntry.getId();
+            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
+        }
+        return searchResult;
     }
 }

@@ -84,7 +84,7 @@
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:commandLink action="#{collectionController.prepareView(collectionObject)}" 
-                               actionListener="#{collectionComponentController.updateListSettingsActionListener}"
+                               actionListener="#{collectionComponentController.updateSettingsActionListener}"
                                styleClass="ui-icon ui-icon-info" 
                                title="View"/>
                 <p:commandLink action="#{collectionController.prepareEdit(collectionObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>

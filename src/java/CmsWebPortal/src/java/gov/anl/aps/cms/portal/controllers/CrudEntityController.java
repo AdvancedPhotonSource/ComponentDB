@@ -8,13 +8,17 @@ import gov.anl.aps.cms.portal.model.entities.SettingType;
 import gov.anl.aps.cms.portal.model.entities.User;
 import gov.anl.aps.cms.portal.model.entities.UserSetting;
 import gov.anl.aps.cms.portal.utilities.CollectionUtility;
+import gov.anl.aps.cms.portal.utilities.SearchResult;
 import gov.anl.aps.cms.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
@@ -97,7 +101,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     @PostConstruct
     public void initialize() {
-        updateListSettings();
+        updateSettings();
     }
 
     public void resetLogText() {
@@ -152,11 +156,11 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return current;
     }
 
-    public void updateListSettingsActionListener(ActionEvent actionEvent) {
-        updateListSettings();
+    public void updateSettingsActionListener(ActionEvent actionEvent) {
+        updateSettings();
     }
 
-    public void updateListSettings() {
+    public void updateSettings() {
         User sessionUser = (User) SessionUtility.getUser();
         boolean settingsUpdated = false;
         if (sessionUser != null) {
@@ -583,6 +587,31 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return CollectionUtility.displayItemListWithoutOutsideDelimiters(entityList, itemDelimiter);
     }
 
+    public List<SearchResult> getSearchResultList(String searchString, boolean caseInsensitive) {
+        LinkedList<SearchResult> searchResultList = new LinkedList<>();
+        if (searchString == null || searchString.isEmpty()) {
+            return searchResultList;
+        }
+        
+        Pattern searchPattern;
+        if (caseInsensitive) {
+           searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);                     
+        }
+        else {
+           searchPattern = Pattern.compile(Pattern.quote(searchString));         
+        }
+        DataModel<EntityType> dataModel = getListDataModel();
+        Iterator<EntityType> iterator = dataModel.iterator();
+        while (iterator.hasNext()) {
+            EntityType entity = iterator.next();
+            SearchResult searchResult = entity.search(searchPattern);
+            if (!searchResult.isEmpty()) {
+                searchResultList.add(searchResult);
+            }
+        }
+        return searchResultList;
+    }
+    
     public String getLogText() {
         return logText;
     }

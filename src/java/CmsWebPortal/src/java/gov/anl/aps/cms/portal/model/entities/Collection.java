@@ -1,8 +1,10 @@
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
+import gov.anl.aps.cms.portal.utilities.SearchResult;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -232,4 +234,17 @@ public class Collection extends CloneableEntity
         cloned.entityInfo = null;
         return cloned;
     }
+    
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        for (Log logEntry : logList) {
+            String logEntryKey = "logEntryId:" + logEntry.getId();
+            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
+        }
+        return searchResult;
+    }
+    
 }

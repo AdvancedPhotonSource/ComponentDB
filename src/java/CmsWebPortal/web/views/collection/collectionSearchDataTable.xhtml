@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="breadcrumb" value="#{searchController.currentViewId}"/>
+    <c:set var="searchString" value="#{searchController.searchString}"/>
+    <c:set var="caseInsensitive" value="#{searchController.caseInsensitive}"/>
+    <p:dataTable id="collectionSearchDataTable" 
+                 var="collectionSearchResultObject" 
+                 value="#{collectionController.getSearchResultList(searchString, caseInsensitive)}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{searchController.displayNumberOfItemsPerPage}" 
+                 emptyMessage="No collections match.">
+
+        <p:column sortBy="#{collectionSearchResultObject.objectId}" headerText="Id">
+            <h:outputText value="#{collectionSearchResultObject.objectId}"/>
+        </p:column>
+        
+        <p:column sortBy="#{collectionSearchResultObject.objectName}" headerText="Name">
+            <h:outputLink value="../collection/view.xhtml?id=#{collectionSearchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="Component">
+                <h:outputText value="#{collectionSearchResultObject.objectName}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{collectionSearchResultObject.display}" headerText="Match Description">
+            <h:outputText value="#{collectionSearchResultObject.display}"/>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>
+
+

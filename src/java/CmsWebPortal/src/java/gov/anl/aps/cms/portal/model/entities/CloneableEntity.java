@@ -6,7 +6,9 @@
 
 package gov.anl.aps.cms.portal.model.entities;
 
+import gov.anl.aps.cms.portal.utilities.SearchResult;
 import java.io.Serializable;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -18,6 +20,10 @@ public class CloneableEntity implements Serializable, Cloneable
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+    
+    public SearchResult search(Pattern searchPattern) {
+        return null;
     }
     
 }
