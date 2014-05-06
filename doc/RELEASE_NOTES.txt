@@ -3,6 +3,7 @@ Release 20150531 (05/31/2014)
 
 - Enhanced deployment scripts to allow multiple databases/applications
   on the same host
+- Added search framework
 
 Release 20140430 (04/30/2014)
 =============================
