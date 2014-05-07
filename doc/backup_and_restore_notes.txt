@@ -1,0 +1,46 @@
+#
+# All commands relative to CMS_ROOT_DIR
+# Deployment files are in the etc directory, named using database name. 
+# For example:
+#   etc/cms.deploy.conf describes deployment of "cms" database/webapp
+#   etc/cms_prd.deploy.conf describes deployment of "cms_prd" database/webapp
+# 
+
+#
+# Backup DB (1st argument) into specific backup directory (2nd argument)
+./sbin/backup_cms_db.sh cms backup/db.20140507
+#
+
+#
+# Edit or remove populate files in the db backup directory. For example,
+# if setting_type table changed, copy new populate_setting_type.sql file from db/sql/cms into
+# the db backup directory, and remove populate_user_setting.sql file from the
+# db backup directory. Note that this will result in user settings not being
+# preserved.
+#
+
+#
+# Create new database (1st argument) as the clone of the original, using
+# scripts from the db backup dir (2nd argument)
+./sbin/create_cms_db.sh cms_prd backup/db.20140507
+#
+
+#
+# Configure webapp (this needs to be done only the first time particular db is
+# instantiated).
+#
+./sbin/configure_cms_webapp.sh cms_prd
+
+# 
+# Build software. CmsWebPortal should be in src/java/CmsWebPortal/dist
+# directory
+#
+source setup.sh
+make clean
+make dist
+
+# 
+# Deploy webapp
+#
+./sbin/deploy_cms_webapp.sh cms_prd
+
