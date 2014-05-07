@@ -14,12 +14,9 @@
         </div>
 
         <h:form id="viewPropertyTypeCategoryListForm">            
-            <div class="actionButton">
-                <p:commandButton action="#{propertyTypeCategoryController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add Component" icon="ui-icon-plus"/>
-                <p:commandButton action="#{propertyTypeCategoryController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
-                <p:commandButton id="noOp" style="visibility:hidden" value="NoOp"/>
-                <p:defaultCommand target="noOp"/>
-            </div>
+            <c:set var="entityName" value="propertyTypeCategory"/>
+            <c:set var="entityController" value="#{propertyTypeCategoryController}"/>
+            <ui:include src="../common/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>  
 

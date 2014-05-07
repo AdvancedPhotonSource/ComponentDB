@@ -28,11 +28,20 @@
         </h:selectOneMenu>
         <p:message for="componentState"/> 
 
-        <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
-        <h:selectManyMenu id="componentTypes" value="#{componentObject.componentTypeList}" converter="componentTypeConverter" title="Type" styleClass="entityDataSelectMany">
-            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-            <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.name}" itemValue="#{componentType}"/>
-        </h:selectManyMenu>
+        <p:column>
+            <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
+            <div class="actionButtonRight">
+                <p:commandButton id="selectComponentTypesButton"
+                                 action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
+                                 oncomplete="componentTypeSelectDialogWidget.show()"
+                                 update="@form"
+                                 immediate="true"
+                                 alt="Select Component Types" icon="ui-icon-search">
+                    <p:tooltip for="selectComponentTypesButton" value="Select component types."/>
+                </p:commandButton>
+            </div>
+        </p:column>
+        <h:outputText id="componentTypes" value="#{componentObject.displayComponentTypeAndCategoryList}" title="Type" styleClass="entityDataText"/>
         <p:message for="componentTypes"/>
 
         <h:outputLabel for="estimatedCost" value="Estimated Cost" styleClass="entityDataLabel"/>
@@ -56,12 +65,13 @@
         <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
         <h:inputText id="groupWriteable" value="#{componentObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
         <p:message for="groupWriteable"/>
-        
+
         <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
         <h:inputTextarea id="logEntry" value="#{componentController.logText}" immediate="false" title="Log Entry" styleClass="entityDataText"/>
         <p:message for="logEntry"/> 
     </p:panelGrid>
 
+    <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>
 </ui:composition>
 
 

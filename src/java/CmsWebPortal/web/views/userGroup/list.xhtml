@@ -14,12 +14,9 @@
         </div>
 
         <h:form id="viewUserGroupListForm">            
-            <div class="actionButton">
-                <p:commandButton action="#{userGroupController.prepareCreate()}" rendered="#{loginController.loggedInAsAdmin}" value="Add" alt="Add User Group" icon="ui-icon-plus"/>
-                <p:commandButton action="#{userGroupController.resetList()}" value="Clear Filters" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"/>
-                <p:commandButton id="noOp" style="visibility:hidden" value="NoOp"/>
-                <p:defaultCommand target="noOp"/>
-            </div>
+            <c:set var="entityName" value="userGroup"/>
+            <c:set var="entityController" value="#{userGroupController}"/>
+            <ui:include src="../common/commonListActionButtons.xhtml"/>
             <h:panelGroup>  
                 <ui:include src="userGroupListDataTable.xhtml"/>
             </h:panelGroup>

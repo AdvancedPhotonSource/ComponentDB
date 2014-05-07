@@ -57,7 +57,7 @@
             <div class="actionLink">
                 <p:commandLink action="#{userController.prepareView(userObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{userController.prepareEdit(userObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="userDestroyWidget.show()" rendered="#{loginController.loggedInAsAdmin}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                <p:commandLink oncomplete="userDestroyDialogWidget.show()" rendered="#{loginController.loggedInAsAdmin}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{userObject}" target="#{userController.current}"/>
                 </p:commandLink>
             </div>

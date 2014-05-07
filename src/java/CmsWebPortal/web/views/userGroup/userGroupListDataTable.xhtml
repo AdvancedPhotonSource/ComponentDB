@@ -34,7 +34,7 @@
             <div class="actionLink">
                 <p:commandLink action="#{userGroupController.prepareView(userGroupObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{userGroupController.prepareEdit(userGroupObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="userGroupDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                <p:commandLink oncomplete="userGroupDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{userGroupObject}" target="#{userGroupController.current}"/>
                 </p:commandLink>
             </div>

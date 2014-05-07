@@ -53,6 +53,9 @@ public class CollectionUtility
     }
 
     public static void removeNullReferencesFromList(List<?> list) {
+        if (list == null) {
+            return;
+        }
         ListIterator iterator = list.listIterator();
         while (iterator.hasNext()) {
             if (iterator.next() == null) {

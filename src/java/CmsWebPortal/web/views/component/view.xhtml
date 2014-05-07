@@ -29,7 +29,7 @@
                 <div class="actionButton">
                     <p:commandButton action="#{componentController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
                     <p:commandButton action="#{componentController.prepareClone(componentObject)}" rendered="#{loginController.loggedIn}" value="Clone" alt="Clone" icon="ui-icon-copy"/>
-                    <p:commandButton onclick="PF('componentDestroyWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
+                    <p:commandButton onclick="PF('componentDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
                         <f:setPropertyActionListener value="#{componentObject}" target="#{componentController.current}"/>
                     </p:commandButton>  
                     <p:commandButton action="#{componentController.followBreadcrumbOrPrepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
@@ -48,7 +48,7 @@
                         <div class="middleCenterRightContent">
                             <div class="actionButton">
                                 <p:commandLink id="logListCustomizeDisplay" onclick="logListCustomizeDisplayWidget.show()" styleClass="ui-icon ui-icon-wrench">
-                                    <p:tooltip for="logListCustomizeDisplay" value="Customize Log List View" />
+                                    <p:tooltip for="logListCustomizeDisplay" value="Customize view." />
                                 </p:commandLink>
                             </div>
                         </div>

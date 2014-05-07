@@ -5,10 +5,10 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:confirmDialog id="sourceDestroyDialog" message="Destroy source #{sourceController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Source" severity="alert" widgetVar="sourceDestroyWidget"
+                     header="Destroy Source" severity="alert" widgetVar="sourceDestroyDialogWidget"
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="sourceDestroyWidget.hide()" action="#{sourceController.destroy()}"/>
-        <p:commandButton value="No" onclick="sourceDestroyWidget.hide()" type="button" />
+        <p:commandButton value="Yes" oncomplete="sourceDestroyDialogWidget.hide()" action="#{sourceController.destroy()}"/>
+        <p:commandButton value="No" onclick="sourceDestroyDialogWidget.hide()" type="button" />
     </p:confirmDialog>  
 
 </ui:composition>

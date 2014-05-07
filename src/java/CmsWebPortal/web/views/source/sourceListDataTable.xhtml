@@ -25,7 +25,7 @@
             <div class="actionLink">
                 <p:commandLink action="#{sourceController.prepareView(sourceObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{sourceController.prepareEdit(sourceObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="sourceDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                <p:commandLink oncomplete="sourceDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{sourceObject}" target="#{sourceController.current}"/>
                 </p:commandLink>
             </div>

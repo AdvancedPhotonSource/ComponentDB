@@ -5,9 +5,9 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:confirmDialog id="collectionDestroyDialog" message="Destroy collection #{collectionController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Collection" severity="alert" widgetVar="collectionDestroyWidget" styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="collectionDestroyWidget.hide()" action="#{collectionController.destroy()}" update="@form"/>
-        <p:commandButton value="No" onclick="collectionDestroyWidget.hide()" type="button" />
+                     header="Destroy Collection" severity="alert" widgetVar="collectionDestroyDialogWidget" styleClass="dialog">
+        <p:commandButton value="Yes" oncomplete="collectionDestroyDialogWidget.hide()" action="#{collectionController.destroy()}" update="@form"/>
+        <p:commandButton value="No" onclick="collectionDestroyDialogWidget.hide()" type="button" />
     </p:confirmDialog>
 
 </ui:composition>

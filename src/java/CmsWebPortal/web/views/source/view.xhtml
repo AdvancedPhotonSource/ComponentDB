@@ -22,7 +22,7 @@
             <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
                 <p:commandButton action="#{sourceController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                <p:commandButton onclick="PF('sourceDestroyWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
+                <p:commandButton onclick="PF('sourceDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
                     <f:setPropertyActionListener value="#{sourceObject}" target="#{sourceController.current}"/>
                 </p:commandButton>  
                 <p:commandButton action="#{sourceController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>

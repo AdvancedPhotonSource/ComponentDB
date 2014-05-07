@@ -50,7 +50,7 @@
             <div class="actionLink">
                 <p:commandLink action="#{propertyTypeController.prepareView(propertyTypeObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{propertyTypeController.prepareEdit(propertyTypeObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="propertyTypeDestroyWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                <p:commandLink oncomplete="propertyTypeDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{propertyTypeObject}" target="#{propertyTypeController.current}"/>
                 </p:commandLink>
             </div>

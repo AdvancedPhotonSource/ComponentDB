@@ -5,9 +5,9 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:confirmDialog id="userGroupDestroyDialog" message="Destroy user group #{userGroupController.getCurrentEntityInstanceName()}?"
-                     header="Destroy User Group" severity="alert" widgetVar="userGroupDestroyWidget">
-        <p:commandButton value="Yes" oncomplete="userGroupDestroyWidget.hide()" action="#{userGroupController.destroy()}"/>
-        <p:commandButton value="No" onclick="userGroupDestroyWidget.hide()" type="button" />
+                     header="Destroy User Group" severity="alert" widgetVar="userGroupDestroyDialogWidget">
+        <p:commandButton value="Yes" oncomplete="userGroupDestroyDialogWidget.hide()" action="#{userGroupController.destroy()}"/>
+        <p:commandButton value="No" onclick="userGroupDestroyDialogWidget.hide()" type="button" />
     </p:confirmDialog>  
 
 </ui:composition>

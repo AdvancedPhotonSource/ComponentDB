@@ -5,10 +5,10 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:confirmDialog id="userDestroyDialog" message="Destroy user #{userController.getCurrentEntityInstanceName()}?"
-                     header="Destroy User" severity="alert" widgetVar="userDestroyWidget"
+                     header="Destroy User" severity="alert" widgetVar="userDestroyDialogWidget"
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="userDestroyWidget.hide()" action="#{userController.destroy()}"/>
-        <p:commandButton value="No" onclick="userDestroyWidget.hide()" type="button" />
+        <p:commandButton value="Yes" oncomplete="userDestroyDialogWidget.hide()" action="#{userController.destroy()}"/>
+        <p:commandButton value="No" onclick="userDestroyDialogWidget.hide()" type="button" />
     </p:confirmDialog>  
 </ui:composition>
 

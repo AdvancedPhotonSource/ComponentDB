@@ -346,7 +346,6 @@ public class Component extends CloneableEntity
             return ObjectUtility.equals(this.name, other.name);
         }
         return false;
-
     }
 
     @Override
@@ -403,6 +402,10 @@ public class Component extends CloneableEntity
     }
 
     public String getDisplayComponentTypeAndCategoryList() {
+        if (componentTypeList == null || componentTypeList.isEmpty()) {
+            return "";
+        }
+        
         String display = "";
         String delimiter = "";
         for (ComponentType componentType : componentTypeList) {

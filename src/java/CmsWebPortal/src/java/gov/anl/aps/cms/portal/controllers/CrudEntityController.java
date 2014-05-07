@@ -557,6 +557,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         resetListDataModel();
     }
 
+    public void clearSelectFiltersAndResetSelectDataModelActionListener(ActionEvent actionEvent) {
+        clearSelectFiltersAndResetSelectDataModel();
+    }
+
     public void clearSelectFiltersAndResetSelectDataModel() {
         clearSelectFilters();
         resetSelectDataModel();
@@ -592,13 +596,13 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         if (searchString == null || searchString.isEmpty()) {
             return searchResultList;
         }
-        
+
         Pattern searchPattern;
         if (caseInsensitive) {
-           searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);                     
+            searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);
         }
         else {
-           searchPattern = Pattern.compile(Pattern.quote(searchString));         
+            searchPattern = Pattern.compile(Pattern.quote(searchString));
         }
         DataModel<EntityType> dataModel = getListDataModel();
         Iterator<EntityType> iterator = dataModel.iterator();
@@ -610,6 +614,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             }
         }
         return searchResultList;
+    }
+
+    public boolean entityHasCategories() {
+        return false;
+    }
+
+    public boolean entityHasGroups() {
+        return false;
     }
     
     public String getLogText() {

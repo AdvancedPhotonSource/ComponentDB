@@ -30,6 +30,14 @@
             <p:tooltip for="#{entityName}ResetFiltersButton" value="Reset list filters."/>
         </p:commandButton>
 
+        <p:button id="#{entityName}ViewCategoriesButton" href="../#{entityName}Category/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityName}ViewCategoriesButton" value="View categories."/>
+        </p:button>
+
+        <p:button id="#{entityName}ViewGroupsButton" href="../#{entityName}Group/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityName}ViewGroupsButton" value="View groups."/>
+        </p:button>        
+
         <p:commandButton id="#{entityName}NoOp" style="visibility:hidden" value="NoOp"/>
         <p:defaultCommand target="#{entityName}NoOp"/>
     </div>

@@ -60,6 +60,7 @@ public class CollectionController extends CrudEntityController<Collection, Colle
     private CollectionFacade collectionFacade;
 
     public CollectionController() {
+        super();
     }
 
     @Override

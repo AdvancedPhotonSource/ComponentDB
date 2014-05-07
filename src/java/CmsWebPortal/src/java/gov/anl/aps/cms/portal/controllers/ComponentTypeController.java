@@ -32,8 +32,18 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     private ComponentTypeFacade componentTypeFacade;
 
     private String filterByTypeCategory = null;
+    private String selectFilterByTypeCategory = null;
+
+    public ComponentTypeFacade getComponentTypeFacade() {
+        return componentTypeFacade;
+    }
+
+    public void setComponentTypeFacade(ComponentTypeFacade componentTypeFacade) {
+        this.componentTypeFacade = componentTypeFacade;
+    }
 
     public ComponentTypeController() {
+        super();
     }
 
     @Override
@@ -115,12 +125,31 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         filterByTypeCategory = null;
     }
 
+    @Override
+    public void clearSelectFilters() {
+        super.clearSelectFilters();
+        selectFilterByTypeCategory = null;
+    }
+
+    @Override
+    public boolean entityHasCategories() {
+        return true;
+    }
+
     public String getFilterByTypeCategory() {
         return filterByTypeCategory;
     }
 
     public void setFilterByTypeCategory(String filterByTypeCategory) {
         this.filterByTypeCategory = filterByTypeCategory;
+    }
+
+    public String getSelectFilterByTypeCategory() {
+        return selectFilterByTypeCategory;
+    }
+
+    public void setSelectFilterByTypeCategory(String selectFilterByTypeCategory) {
+        this.selectFilterByTypeCategory = selectFilterByTypeCategory;
     }
 
     @FacesConverter(value = "componentTypeConverter", forClass = ComponentType.class)

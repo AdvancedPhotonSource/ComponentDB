@@ -21,7 +21,7 @@
             <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
                 <p:commandButton action="#{componentTypeCategoryController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                <p:commandButton onclick="PF('componentTypeCategoryDestroyWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
+                <p:commandButton onclick="PF('componentTypeCategoryDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
                     <f:setPropertyActionListener value="#{componentTypeCategoryObject}" target="#{componentTypeCategoryController.current}"/>
                 </p:commandButton>  
                 <p:commandButton action="#{componentTypeCategoryController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>

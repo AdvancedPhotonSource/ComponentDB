@@ -166,6 +166,11 @@ public class UserController extends CrudEntityController<User, UserFacade> imple
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
+    @Override
+    public boolean entityHasGroups() {
+        return true;
+    }
+        
     public String getPasswordEntry() {
         return passwordEntry;
     }

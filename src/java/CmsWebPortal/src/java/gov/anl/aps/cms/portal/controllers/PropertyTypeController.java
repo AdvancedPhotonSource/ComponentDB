@@ -120,6 +120,11 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         this.filterByTypeCategory = filterByTypeCategory;
     }
 
+    @Override
+    public boolean entityHasCategories() {
+        return true;
+    }
+    
     @FacesConverter(forClass = PropertyType.class)
     public static class PropertyTypeControllerConverter implements Converter
     {

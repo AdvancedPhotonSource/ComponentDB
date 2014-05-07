@@ -23,7 +23,7 @@
                 <c:set var="isEntityWriteable" value="#{loginController.isUserWriteable(userObject)}"/>
                 <div class="actionButton">
                     <p:commandButton action="#{userController.prepareEdit(userObject)}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                    <p:commandButton onclick="PF('userDestroyWidget').show();" rendered="#{loginController.loggedInAsAdmin}" value="Delete" alt="Delete" icon="ui-icon-trash">
+                    <p:commandButton onclick="PF('userDestroyDialogWidget').show();" rendered="#{loginController.loggedInAsAdmin}" value="Delete" alt="Delete" icon="ui-icon-trash">
                         <f:setPropertyActionListener value="#{userObject}" target="#{userController.current}"/>
                     </p:commandButton>  
                     <p:commandButton action="#{userController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
