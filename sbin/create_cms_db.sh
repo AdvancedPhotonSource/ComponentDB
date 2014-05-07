@@ -19,7 +19,10 @@ CMS_DB_ADMIN_HOSTS="127.0.0.1 bluegill1.aps.anl.gov gaeaimac.aps.anl.gov visa%.a
 CMS_DB_ADMIN_PASSWORD=
 CMS_DB_CHARACTER_SET=utf8
 
+CURRENT_DIR=`pwd`
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
+cd $CURRENT_DIR
+
 if [ -z "${CMS_ROOT_DIR}" ]; then
     CMS_ROOT_DIR=$MY_DIR/..
 fi
@@ -52,6 +55,11 @@ CMS_DB_SCRIPTS_DIR=${CMS_DB_SCRIPTS_DIR:=$CMS_SQL_DIR}
 if [ ! -z "$2" ]; then
     CMS_DB_SCRIPTS_DIR=$2
 fi
+if [ ! -d $CMS_DB_SCRIPTS_DIR ]; then
+    echo "DB Scripts directory $CMS_DB_SCRIPTS_DIR does not exist."
+    exit 1
+fi
+
 echo "Using DB scripts directory: $CMS_DB_SCRIPTS_DIR"
 
 # Read password if needed
@@ -95,7 +103,7 @@ mysqlCmd="$mysqlCmd -D $CMS_DB_NAME <"
 execute $mysqlCmd create_cms_tables.sql
 
 # populate db
-cd $CMS_DB_SCRIPTS_DIR
+cd $CURRENT_DIR && cd $CMS_DB_SCRIPTS_DIR
 CMS_DB_TABLES="\
     setting_type \
     user \

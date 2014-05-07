@@ -16,6 +16,6 @@ CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 export JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
 export ANT_HOME=$CMS_SUPPORT/ant
 export PATH=$ANT_HOME/bin:$PATH
-ant $@
+ant -Dlibs.CopyLibs.classpath=lib/org-netbeans-modules-java-j2seproject-copylibstask.jar $@
 
 
