@@ -1,0 +1,2 @@
+j2ee.server.home=CMS_GLASSFISH_DIR/glassfish
+j2ee.server.middleware=CMS_GLASSFISH_DIR
