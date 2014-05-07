@@ -9,7 +9,7 @@ clean clean-all clean-install distclean: ant-clean
 
 .PHONY: ant-clean
 ant-clean:
-	$(ANT) clean
+	$(ANT) -Dlibs.CopyLibs.classpath=lib/org-netbeans-modules-java-j2seproject-copylibstask.jar  clean
 
 # For compiling from command line, we have to use generic build properties file
 .PHONY: dist
