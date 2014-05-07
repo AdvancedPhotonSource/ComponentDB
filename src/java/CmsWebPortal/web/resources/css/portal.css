@@ -209,9 +209,11 @@ a:link:hover, a:visited:hover  {
 
 .viewEntityDetails td:nth-child(1) {
     vertical-align: top;
+    width: 125px;
 }
 
 .viewEntityDetails td:nth-child(2) {
+    vertical-align: top;
     width: 300px;
 }
 

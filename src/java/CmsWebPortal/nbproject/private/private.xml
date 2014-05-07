@@ -76,7 +76,6 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/component/componentListObject.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collectionLink/parentCollectionLinkEditDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyTypeCategory/create.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/resources/css/portal-1.css</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/componentType/componentTypeSelectCustomizeDisplayDialog.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/propertyTypeCategory/list.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/Log.java</file>
@@ -181,6 +180,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collectionComponent/view.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/resources/javascript/component/list.filter.js</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/beans/ComponentFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/resources/css/portal.css</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/log/collectionLogListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/src/java/gov/anl/aps/cms/portal/model/entities/Collection.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CmsWebPortal/web/views/collection/collectionSearchDataTable.xhtml</file>
