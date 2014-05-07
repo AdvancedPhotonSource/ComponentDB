@@ -19,7 +19,9 @@ CMS_DB_ADMIN_HOSTS="127.0.0.1 bluegill1.aps.anl.gov gaeaimac.aps.anl.gov visa%.a
 CMS_DB_ADMIN_PASSWORD=
 CMS_DB_CHARACTER_SET=utf8
 
+CURRENT_DIR=`pwd`
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
+cd $CURRENT_DIR
 if [ -z "${CMS_ROOT_DIR}" ]; then
     CMS_ROOT_DIR=$MY_DIR/..
 fi
