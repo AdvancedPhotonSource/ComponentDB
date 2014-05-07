@@ -32,6 +32,9 @@ if [ -z $CMS_VAR_DIR ]; then
     fi
 fi
 
+# Establish machine architecture
+CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
+
 # Check support setup
 if [ -z $CMS_SUPPORT ]; then
     export CMS_SUPPORT=$CMS_ROOT_DIR/../support 
@@ -43,10 +46,9 @@ fi
 if [ ! -d $CMS_SUPPORT ]; then
     echo "Warning: $CMS_SUPPORT directory does not exist. Developers should point CMS_SUPPORT to the desired area." 
     unset CMS_SUPPORT
+else
+    export CMS_GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
 fi
-
-# Establish machine architecture
-CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
 
 # Add to path only if directory exists.
 prependPathIfDirExists() {
