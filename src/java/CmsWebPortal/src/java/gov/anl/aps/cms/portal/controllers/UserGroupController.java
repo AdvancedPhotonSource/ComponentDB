@@ -41,6 +41,11 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
 
     @Override
     public String getEntityTypeName() {
+        return "userGroup";
+    }
+    
+    @Override
+    public String getDisplayEntityTypeName() {
         return "user group";
     }
 

@@ -72,6 +72,11 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 
     @Override
     public String getEntityTypeName() {
+        return "componentType";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
         return "component type";
     }
 

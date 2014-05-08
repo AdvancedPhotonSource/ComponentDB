@@ -41,9 +41,14 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
 
     @Override
     public String getEntityTypeName() {
+        return "componentSource";
+    }
+    
+    @Override
+    public String getDisplayEntityTypeName() {
         return "component source";
     }
-
+    
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {

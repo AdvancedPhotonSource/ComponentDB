@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade> implements Serializable
 {
+
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
 
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
@@ -45,6 +46,11 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
 
     @Override
     public String getEntityTypeName() {
+        return "propertyTypeCategory";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
         return "property type category";
     }
 

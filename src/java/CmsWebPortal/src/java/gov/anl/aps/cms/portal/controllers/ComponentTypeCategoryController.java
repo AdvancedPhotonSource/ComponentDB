@@ -23,6 +23,7 @@ import org.primefaces.component.datatable.DataTable;
 @SessionScoped
 public class ComponentTypeCategoryController extends CrudEntityController<ComponentTypeCategory, ComponentTypeCategoryFacade> implements Serializable
 {
+
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypeCategory.List.Display.NumberOfItemsPerPage";
 
     private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
@@ -37,7 +38,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
     protected ComponentTypeCategoryFacade getFacade() {
         return componentTypeCategoryFacade;
     }
-    
+
     public ComponentTypeCategory findById(Integer id) {
         return componentTypeCategoryFacade.findById(id);
     }
@@ -50,7 +51,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
             idViewParam = null;
         }
     }
-    
+
     @Override
     protected ComponentTypeCategory createEntityInstance() {
         ComponentTypeCategory componentCategory = new ComponentTypeCategory();
@@ -59,6 +60,11 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
 
     @Override
     public String getEntityTypeName() {
+        return "componentTypeCategory";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
         return "component type category";
     }
 
@@ -124,7 +130,8 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
     }
 
     @FacesConverter(forClass = ComponentTypeCategory.class)
-    public static class ComponentCategoryControllerConverter implements Converter {
+    public static class ComponentCategoryControllerConverter implements Converter
+    {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -156,7 +163,8 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
             if (object instanceof ComponentTypeCategory) {
                 ComponentTypeCategory o = (ComponentTypeCategory) object;
                 return getStringKey(o.getId());
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ComponentTypeCategory.class.getName());
             }
         }

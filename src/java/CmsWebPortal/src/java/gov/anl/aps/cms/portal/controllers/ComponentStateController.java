@@ -36,9 +36,14 @@ public class ComponentStateController extends CrudEntityController<ComponentStat
 
     @Override
     public String getEntityTypeName() {
-        return "component state";
+        return "componentState";
     }
 
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "component state";
+    }
+    
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {

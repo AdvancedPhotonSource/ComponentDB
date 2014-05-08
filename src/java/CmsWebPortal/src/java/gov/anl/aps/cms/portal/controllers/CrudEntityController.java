@@ -133,6 +133,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     public abstract String getEntityTypeName();
 
+    public String getDisplayEntityTypeName() {
+        return getEntityTypeName();
+    }
+
     public abstract String getCurrentEntityInstanceName();
 
     public EntityType getCurrent() {
@@ -408,13 +412,13 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             EntityType newEntity = current;
             prepareEntityInsert(current);
             getFacade().create(current);
-            SessionUtility.addInfoMessage("Success", "Created " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             current = newEntity;
             return view();
         }
         catch (CmsPortalException | RuntimeException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not create " + getEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }
@@ -435,17 +439,17 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     public String update() {
         try {
-            logger.debug("Updating " + getEntityTypeName() + " " + getCurrentEntityInstanceName());
+            logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(current);
             EntityType updatedEntity = getFacade().edit(current);
-            SessionUtility.addInfoMessage("Success", "Updated " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetLogText();
             current = updatedEntity;
             return view();
         }
         catch (CmsPortalException | RuntimeException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not update " + getEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }
@@ -464,12 +468,12 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         try {
             logger.debug("Destroying " + getCurrentEntityInstanceName());
             getFacade().remove(current);
-            SessionUtility.addInfoMessage("Success", "Deleted " + getEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             return prepareList();
         }
         catch (Exception ex) {
-            SessionUtility.addErrorMessage("Error", "Could not delete " + getEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }

@@ -55,9 +55,14 @@ public class CollectionComponentController extends CrudEntityController<Collecti
 
     @Override
     public String getEntityTypeName() {
-        return "collection component";
+        return "collectionComponent";
     }
 
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "collection component";
+    }
+    
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {

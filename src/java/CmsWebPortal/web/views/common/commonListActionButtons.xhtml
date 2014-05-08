@@ -7,39 +7,40 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
+    <c:set var="entityTypeName" value="#{entityController.entityTypeName}"/>
     <div class="actionButton">
-        <p:commandButton id="#{entityName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add new #{entityName}" icon="ui-icon-plus">
-            <p:tooltip for="#{entityName}AddButton" value="Create new #{entityName}."/>
+        <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
+            <p:tooltip for="#{entityTypeName}AddButton" value="Create new #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
-        <p:commandButton id="#{entityName}ExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
-            <p:dataExporter type="xls" target="#{entityName}ListDataTable" fileName="#{entityName}s"/>
-            <p:tooltip for="#{entityName}ExportXlsButton" value="Export list to excel file."/>
+        <p:commandButton id="#{entityTypeName}ExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+            <p:dataExporter type="xls" target="#{entityTypeName}ListDataTable" fileName="#{entityTypeName}s"/>
+            <p:tooltip for="#{entityTypeName}ExportXlsButton" value="Export list to excel file."/>
         </p:commandButton>  
-        <p:commandButton id="#{entityName}ExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
-            <p:dataExporter type="pdf" target="#{entityName}ListDataTable" fileName="#{entityName}s"/>
-            <p:tooltip for="#{entityName}ExportPdfButton" value="Export list to pdf file."/>
+        <p:commandButton id="#{entityTypeName}ExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+            <p:dataExporter type="pdf" target="#{entityTypeName}ListDataTable" fileName="#{entityTypeName}s"/>
+            <p:tooltip for="#{entityTypeName}ExportPdfButton" value="Export list to pdf file."/>
         </p:commandButton>  
-        <p:commandButton id="#{entityName}PrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
-            <p:printer target="#{entityName}ListDataTable"/>
-            <p:tooltip for="#{entityName}PrintButton" value="Print list."/>
+        <p:commandButton id="#{entityTypeName}PrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+            <p:printer target="#{entityTypeName}ListDataTable"/>
+            <p:tooltip for="#{entityTypeName}PrintButton" value="Print list."/>
         </p:commandButton> 
-        <p:commandButton id="#{entityName}CustomizeDisplayButton" oncomplete="#{entityName}ListCustomizeDisplayWidget.show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
-            <p:tooltip for="#{entityName}CustomizeDisplayButton" value="Customize list view."/>
+        <p:commandButton id="#{entityTypeName}CustomizeDisplayButton" oncomplete="#{entityTypeName}ListCustomizeDisplayWidget.show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:tooltip for="#{entityTypeName}CustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
-        <p:commandButton id="#{entityName}ResetFiltersButton" action="#{entityController.resetList()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
-            <p:tooltip for="#{entityName}ResetFiltersButton" value="Reset list filters."/>
+        <p:commandButton id="#{entityTypeName}ResetFiltersButton" action="#{entityController.resetList()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ResetFiltersButton" value="Reset list filters."/>
         </p:commandButton>
 
-        <p:button id="#{entityName}ViewCategoriesButton" href="../#{entityName}Category/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
-            <p:tooltip for="#{entityName}ViewCategoriesButton" value="View categories."/>
+        <p:button id="#{entityTypeName}ViewCategoriesButton" href="../#{entityTypeName}Category/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ViewCategoriesButton" value="View categories."/>
         </p:button>
 
-        <p:button id="#{entityName}ViewGroupsButton" href="../#{entityName}Group/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
-            <p:tooltip for="#{entityName}ViewGroupsButton" value="View groups."/>
+        <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeName}Group/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ViewGroupsButton" value="View groups."/>
         </p:button>        
 
-        <p:commandButton id="#{entityName}NoOp" style="visibility:hidden" value="NoOp"/>
-        <p:defaultCommand target="#{entityName}NoOp"/>
+        <p:commandButton id="#{entityTypeName}NoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{entityTypeName}NoOp"/>
     </div>
 
 </ui:composition>

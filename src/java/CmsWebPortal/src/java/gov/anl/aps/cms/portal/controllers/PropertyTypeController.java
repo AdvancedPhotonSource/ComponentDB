@@ -32,7 +32,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     private PropertyTypeFacade propertyTypeFacade;
 
     private String filterByTypeCategory = null;
-    
+
     public PropertyTypeController() {
     }
 
@@ -49,6 +49,11 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
 
     @Override
     public String getEntityTypeName() {
+        return "propertyType";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
         return "property type";
     }
 
@@ -73,7 +78,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         }
         logger.debug("Inserting new property type " + propertyType.getName());
     }
-    
+
     @Override
     public void prepareEntityUpdate(PropertyType propertyType) throws ObjectAlreadyExists {
     }
@@ -124,7 +129,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     public boolean entityHasCategories() {
         return true;
     }
-    
+
     @FacesConverter(forClass = PropertyType.class)
     public static class PropertyTypeControllerConverter implements Converter
     {

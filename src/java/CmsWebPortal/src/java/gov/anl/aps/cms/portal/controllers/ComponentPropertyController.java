@@ -41,9 +41,14 @@ public class ComponentPropertyController extends CrudEntityController<ComponentP
 
     @Override
     public String getEntityTypeName() {
+        return "componentProperty";
+    }
+    
+    @Override
+    public String getDisplayEntityTypeName() {
         return "component property";
     }
-
+    
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
