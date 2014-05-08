@@ -96,6 +96,8 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     protected Integer idViewParam = null;
     protected String breadcrumbViewParam = null;
 
+    private boolean searchHasResults = false;
+    
     public CrudEntityController() {
     }
 
@@ -592,6 +594,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public List<SearchResult> getSearchResultList(String searchString, boolean caseInsensitive) {
+        searchHasResults = false;
         LinkedList<SearchResult> searchResultList = new LinkedList<>();
         if (searchString == null || searchString.isEmpty()) {
             return searchResultList;
@@ -613,9 +616,16 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
                 searchResultList.add(searchResult);
             }
         }
+        if (!searchResultList.isEmpty()) {
+            searchHasResults = true;
+        }
         return searchResultList;
     }
 
+    public boolean searchHasResults() {
+        return searchHasResults;
+    }
+    
     public boolean entityHasCategories() {
         return false;
     }
