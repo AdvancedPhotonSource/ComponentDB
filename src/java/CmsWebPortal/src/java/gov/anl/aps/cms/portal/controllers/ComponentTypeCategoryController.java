@@ -81,7 +81,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         if (existingComponentTypeCategory != null) {
             throw new ObjectAlreadyExists("Component type category " + componentTypeCategory.getName() + " already exists.");
         }
-        logger.debug("Inserting new component type " + componentTypeCategory.getName());
+        logger.debug("Inserting new component type category " + componentTypeCategory.getName());
     }
 
     @Override
@@ -132,7 +132,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
                 return null;
             }
             ComponentTypeCategoryController controller = (ComponentTypeCategoryController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componentCategoryController");
+                    getValue(facesContext.getELContext(), null, "componentTypeCategoryController");
             return controller.getEntity(getKey(value));
         }
 
