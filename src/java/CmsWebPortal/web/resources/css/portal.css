@@ -179,6 +179,7 @@ a:link:hover, a:visited:hover  {
 
 .entityDataText {
     font-weight: normal;
+    float: left;
 }
 
 .entityDataEmphasizedText {
@@ -201,28 +202,34 @@ a:link:hover, a:visited:hover  {
 
 .createEntityDetails td:nth-child(1) {
     vertical-align: top;
+    float: left;
 }
 
 .createEntityDetails td:nth-child(2) {
+    float: left;
     width: 300px;
 }
 
 .viewEntityDetails td:nth-child(1) {
     vertical-align: top;
+    float: left;
     width: 125px;
 }
 
 .viewEntityDetails td:nth-child(2) {
     vertical-align: top;
+    float: left;
     width: 300px;
 }
 
 .editEntityDetails td:nth-child(1) {
     vertical-align: top;
+    float: left;
 }
 
 .editEntityDetails td:nth-child(2) {
     width: 300px;
+    float: left;
 }
 
 .entityLogList td:last-child {

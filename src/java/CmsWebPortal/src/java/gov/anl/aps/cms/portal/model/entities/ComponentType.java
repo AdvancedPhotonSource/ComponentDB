@@ -3,11 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
+import gov.anl.aps.cms.portal.utilities.SearchResult;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentType.findByDescription", query = "SELECT c FROM ComponentType c WHERE c.description = :description")})
 public class ComponentType extends CloneableEntity
 {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -124,7 +126,7 @@ public class ComponentType extends CloneableEntity
         }
         return false;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof ComponentType)) {
@@ -145,7 +147,7 @@ public class ComponentType extends CloneableEntity
     public String toString() {
         return name;
     }
-    
+
     public String getNameWithCategory() {
         String result = name;
         if (componentTypeCategory != null) {
@@ -153,5 +155,12 @@ public class ComponentType extends CloneableEntity
         }
         return result;
     }
-    
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
 }

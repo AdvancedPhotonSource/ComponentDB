@@ -7,7 +7,9 @@
 package gov.anl.aps.cms.portal.model.entities;
 
 import gov.anl.aps.cms.portal.utilities.ObjectUtility;
+import gov.anl.aps.cms.portal.utilities.SearchResult;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -132,5 +134,12 @@ public class ComponentTypeCategory extends CloneableEntity
     public String toString() {
         return name;
     }
-    
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }    
 }

@@ -7,7 +7,11 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../../templates/contentViewTemplate4x3.xhtml">
-
+    <f:metadata>
+        <f:viewParam id="id" name="id" value="#{componentTypeController.idViewParam}"/>
+        <f:event type="preRenderComponent" listener="#{componentTypeController.processViewRequestParams()}"/>
+    </f:metadata>
+    
     <ui:define name="middleCenter">
         <div class="pageTitle">
             <h1>Component Type Details</h1>
@@ -24,7 +28,7 @@
                 <p:commandButton onclick="PF('componentTypeDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
                     <f:setPropertyActionListener value="#{componentTypeObject}" target="#{componentTypeController.current}"/>
                 </p:commandButton>  
-                <p:commandButton action="#{componentTypeController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton action="#{componentTypeController.followBreadcrumbOrPrepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton id="noOp" style="visibility:hidden" value="NoOp"/>
                 <p:defaultCommand target="noOp"/>
             </div>

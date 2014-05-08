@@ -51,6 +51,19 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         return componentTypeFacade;
     }
 
+    public ComponentType findById(Integer id) {
+        return componentTypeFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            ComponentType componentType = findById(idViewParam);
+            setCurrent(componentType);
+            idViewParam = null;
+        }
+    }
+
     @Override
     protected ComponentType createEntityInstance() {
         ComponentType componentType = new ComponentType();

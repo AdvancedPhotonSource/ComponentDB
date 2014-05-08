@@ -37,7 +37,20 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
     protected ComponentTypeCategoryFacade getFacade() {
         return componentTypeCategoryFacade;
     }
+    
+    public ComponentTypeCategory findById(Integer id) {
+        return componentTypeCategoryFacade.findById(id);
+    }
 
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            ComponentTypeCategory componentTypeCategory = findById(idViewParam);
+            setCurrent(componentTypeCategory);
+            idViewParam = null;
+        }
+    }
+    
     @Override
     protected ComponentTypeCategory createEntityInstance() {
         ComponentTypeCategory componentCategory = new ComponentTypeCategory();

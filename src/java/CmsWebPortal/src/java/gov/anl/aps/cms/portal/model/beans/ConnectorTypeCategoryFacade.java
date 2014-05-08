@@ -28,5 +28,5 @@ public class ConnectorTypeCategoryFacade extends AbstractFacade<ConnectorTypeCat
     public ConnectorTypeCategoryFacade() {
         super(ConnectorTypeCategory.class);
     }
-    
+
 }

@@ -18,13 +18,13 @@
 
                 <h:form id="searchForm">
                     <p:growl id="messages" showDetail="true" autoUpdate="true"/>
-                    <p:panelGrid columns="3">
+                    <p:panelGrid columns="3" style="editEntityDetails">
                         <h:outputLabel for="searchString" value="Search String" styleClass="entityDataLabel"/>
                         <h:inputText id="searchString" value="#{searchController.searchString}" required="true" title="Search String" styleClass="entityDataText"/>
                         <p:message for="searchString"/>
 
                         <h:outputLabel for="caseInsensitiveButton" value="Case Insensitive" styleClass="entityDataLabel"/>
-                        <h:selectBooleanCheckbox id="caseInsensitiveButton" value="#{searchController.caseInsensitive}" title="Case Insensitive"/>
+                        <h:selectBooleanCheckbox id="caseInsensitiveButton" value="#{searchController.caseInsensitive}" title="Case Insensitive" styleClass="entityDataLabel"/>
                         <p:message for="caseInsensitiveButton"/>                        
 
                     </p:panelGrid>
@@ -40,14 +40,23 @@
                             <h2>Search Results</h2>
                         </div>  
 
-                        <p:accordionPanel multiple="true">
+                        <p:accordionPanel multiple="true" activeIndex="0,1,2,3">
                             <p:tab title="Collections">
                                 <ui:include src="../collection/collectionSearchDataTable.xhtml"/>
                             </p:tab>
 
                             <p:tab title="Components">
                                 <ui:include src="../component/componentSearchDataTable.xhtml"/>
-                            </p:tab>                            
+                            </p:tab>   
+             
+                            <p:tab title="Component Types">
+                                <ui:include src="../componentType/componentTypeSearchDataTable.xhtml"/>
+                            </p:tab>  
+                            
+                            
+                            <p:tab title="Component Type Categories">
+                                <ui:include src="../componentTypeCategory/componentTypeCategorySearchDataTable.xhtml"/>
+                            </p:tab>    
                         </p:accordionPanel>
                     </ui:fragment>
                 </h:form>
