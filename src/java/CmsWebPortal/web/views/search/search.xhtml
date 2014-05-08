@@ -18,13 +18,13 @@
 
                 <h:form id="searchForm">
                     <p:growl id="messages" showDetail="true" autoUpdate="true"/>
-                    <p:panelGrid columns="3" style="editEntityDetails">
+                    <p:panelGrid columns="3" styleClass="editEntityDetails">
                         <h:outputLabel for="searchString" value="Search String" styleClass="entityDataLabel"/>
                         <h:inputText id="searchString" value="#{searchController.searchString}" required="true" title="Search String" styleClass="entityDataText"/>
                         <p:message for="searchString"/>
 
                         <h:outputLabel for="caseInsensitiveButton" value="Case Insensitive" styleClass="entityDataLabel"/>
-                        <h:selectBooleanCheckbox id="caseInsensitiveButton" value="#{searchController.caseInsensitive}" title="Case Insensitive" styleClass="entityDataLabel"/>
+                        <h:selectBooleanCheckbox id="caseInsensitiveButton" value="#{searchController.caseInsensitive}" title="Case Insensitive" style="width:10px"/>
                         <p:message for="caseInsensitiveButton"/>                        
 
                     </p:panelGrid>
