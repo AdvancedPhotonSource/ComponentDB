@@ -6,6 +6,7 @@ Release 20150531 (05/31/2014)
 - Added search framework
 - Added common control panel (print/export/reset, etc.) functionality 
   for all main tables
+- Introduced component type selection mechanism
 
 Release 20140430 (04/30/2014)
 =============================
@@ -15,6 +16,7 @@ Release 20140430 (04/30/2014)
 - Completed work on collection links
 - Added collection and component logs
 - Added print/export functionality for collection and component lists
+- Added ability to clone collections and components
 - Schema modifications:
     - Renamed category tables (category => type_category)
     - Added priority columns for design/collection/assembly components
