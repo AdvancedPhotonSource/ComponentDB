@@ -231,6 +231,14 @@ public class Collection extends CloneableEntity
             collectionComponent.setId(null);
             collectionComponent.setCollection(cloned);
         }
+        for (CollectionLink collectionLink : cloned.childCollectionLinkList) {
+            collectionLink.setId(null);
+            collectionLink.setParentCollection(cloned);
+        }
+        for (CollectionLink collectionLink : cloned.parentCollectionLinkList) {
+            collectionLink.setId(null);
+            collectionLink.setChildCollection(cloned);
+        }
         cloned.entityInfo = null;
         return cloned;
     }
