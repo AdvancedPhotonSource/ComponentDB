@@ -63,8 +63,12 @@ VALUES
 	('Component.List.FilterBy.Type','Find components by type.', NULL),
 	('Component.List.FilterBy.TypeCategory','Find components by type category.', NULL),
 
+	('ComponentType.List.Display.Description','Display component type description.', 'true'),
+	('ComponentType.List.Display.Id','Display component type id.', 'true'),
 	('ComponentType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('ComponentTypeCategory.List.Display.Description','Display component type category description.', 'true'),
+	('ComponentTypeCategory.List.Display.Id','Display component type category id.', 'true'),
 	('ComponentTypeCategory.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('Log.List.Display.CreatedOnDateTime','Display log entry created on date/time.', 'true'),
@@ -72,16 +76,23 @@ VALUES
 	('Log.List.Display.Id','Display log entry id.', 'false'),
 	('Log.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('PropertyType.List.Display.Description','Display property type description.', 'true'),
+	('PropertyType.List.Display.Id','Display property type id.', 'true'),
 	('PropertyType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('PropertyTypeCategory.List.Display.Description','Display property type category description.', 'true'),
+	('PropertyTypeCategory.List.Display.Id','Display property type category id.', 'true'),
 	('PropertyTypeCategory.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('Search.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('Source.List.Display.Id','Display source id.', 'true'),
 	('Source.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('User.List.Display.Id','Display user id.', 'true'),
 	('User.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('UserGroup.List.Display.Id','Display user group id.', 'true'),
 	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25');
 
 
