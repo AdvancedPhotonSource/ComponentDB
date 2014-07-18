@@ -637,6 +637,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public boolean entityHasGroups() {
         return false;
     }
+
+    public boolean entityCanBeCreatedByUsers() {
+        return false;
+    }
     
     public String getLogText() {
         return logText;

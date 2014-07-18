@@ -324,7 +324,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDocumentationUriSettingTypeKey, displayDescription);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
         displayDocumentationUri = sessionUser.getUserSettingValueAsBoolean(DisplayDocumentationUriSettingTypeKey, displayDocumentationUri);
         displayState = sessionUser.getUserSettingValueAsBoolean(DisplayStateSettingTypeKey, displayState);
         displayType = sessionUser.getUserSettingValueAsBoolean(DisplayTypeSettingTypeKey, displayType);
@@ -591,6 +591,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.selectFilterByEstimatedCost = selectFilterByEstimatedCost;
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+    
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter
     {

@@ -412,6 +412,11 @@ public class CollectionController extends CrudEntityController<Collection, Colle
         this.selectChildCollections = selectChildCollections;
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+    
     @FacesConverter(value = "collectionConverter", forClass = Collection.class)
     public static class CollectionControllerConverter implements Converter
     {

@@ -25,6 +25,8 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentType.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "ComponentType.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "ComponentType.List.Display.Description";
 
     private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
 
@@ -113,6 +115,8 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         }
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -122,10 +126,13 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
     }
 
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
         if (dataTable == null) {
             return;
         }
@@ -136,6 +143,17 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         filterByTypeCategory = filters.get("componentTypeCategory.name");
     }
 
+    @Override
+    public void saveSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+    }
+    
     @Override
     public void clearListFilters() {
         filterByName = null;
