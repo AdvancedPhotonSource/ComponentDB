@@ -19,7 +19,7 @@
                  emptyMessage="No component types found.">
 
         <p:column sortBy="#{componentTypeObject.id}" headerText="Id"
-                  rendered="true">
+                  rendered="#{componentTypeController.displayId}">
             <h:outputText value="#{componentTypeObject.id}"/>
         </p:column>
 
@@ -41,7 +41,7 @@
         <p:column sortBy="#{componentTypeObject.description}" headerText="Description" 
                   filterBy="description" filterMatchMode="contains"
                   filterValue="#{componentTypeController.filterByDescription}"
-                  rendered="true">
+                  rendered="#{componentTypeController.displayDescription}">
             <h:outputText value="#{componentTypeObject.description}"/>
         </p:column>
 

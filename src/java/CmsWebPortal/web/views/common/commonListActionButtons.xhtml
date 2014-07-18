@@ -8,8 +8,10 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <c:set var="displayAddButton" value="#{loginController.loggedInAsAdmin or (logginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
+
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
+        <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
             <p:tooltip for="#{entityTypeName}AddButton" value="Create new #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
         <p:commandButton id="#{entityTypeName}ExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
