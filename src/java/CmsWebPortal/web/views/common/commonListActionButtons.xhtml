@@ -8,7 +8,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="entityTypeName" value="#{entityController.entityTypeName}"/>
-    <c:set var="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
+<!--    <c:set var="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>-->
 
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{loginController.loggedIn}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
