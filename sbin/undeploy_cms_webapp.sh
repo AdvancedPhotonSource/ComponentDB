@@ -41,6 +41,7 @@ CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CMS_CONTEXT_ROOT=${CMS_CONTEXT_ROOT:=CmsWebPortal}
 GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
 CMS_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
+CMS_APP_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/applications/$CMS_CONTEXT_ROOT
 CMS_DIST_DIR=$CMS_ROOT_DIR/src/java/CmsWebPortal/dist
 CMS_WAR_FILE=$CMS_CONTEXT_ROOT.war
 JAVA_HOME=$CMS_SUPPORT/java/$CMS_HOST_ARCH
@@ -51,6 +52,14 @@ ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 # remove war file from autodeploy directory
 echo "Removing war file $CMS_DEPLOY_DIR/$CMS_WAR_FILE"
 rm -f $CMS_DEPLOY_DIR/${CMS_WAR_FILE}*
+
+# remove war file from autodeploy directory
+if [ -d $CMS_APP_DIR ]; then
+    echo "Removing application directory $CMS_APP_DIR"
+    rm -rf $CMS_APP_DIR
+else
+    echo "Application directory $CMS_APP_DIR not found"
+fi
 
 # restart server
 echo "Restarting glassfish"
