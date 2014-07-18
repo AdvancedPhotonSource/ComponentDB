@@ -42,21 +42,37 @@
                         <h:outputLabel for="nCatalogedComponents" value="Number of Cataloged Components" styleClass="entityDataLabel"/>
                         <h:outputText id="nCatalogedComponents" value="#{componentController.items.getRowCount()}" title="Number of Cataloged Components" styleClass="entityDataText"/>
 
-                                                <h:outputLabel for="nCatalogedCollections" value="Number of Cataloged Collections" styleClass="entityDataLabel"/>
+                        <h:outputLabel for="nCatalogedCollections" value="Number of Cataloged Collections" styleClass="entityDataLabel"/>
                         <h:outputText id="nCatalogedCollections" value="#{collectionController.items.getRowCount()}" title="Number of Cataloged Collections" styleClass="entityDataText"/>
 
                     </p:panelGrid>
                 </h:form>
             </div>
 
-            <ui:fragment rendered="#{loginController.loggedInAsAdmin}">
+            <ui:fragment>
                 <p/>
                 <div class="sectionTitle">
                     <h2>Quick Links</h2>
                     <h:form id="quickLinksForm">
-                        <div class="commandLink">
-                            <h:commandLink action="#{loginController.dropAdminRole()}" value="Drop Administrator Role"></h:commandLink>
-                        </div>
+                        <p:panelGrid columns="1">
+                            <h:outputLink value="https://edp.aps.anl.gov" target="EDP">
+                                <h:outputText value="EDP"/>
+                            </h:outputLink>
+                        </p:panelGrid>s
+                    </h:form>
+                </div>
+            </ui:fragment>
+
+            <ui:fragment rendered="#{loginController.loggedInAsAdmin}">
+                <p/>
+                <div class="sectionTitle">
+                    <h2>Administrative Tools</h2>
+                    <h:form id="adminToolsForm">
+                        <p:panelGrid columns="1">
+                            <div class="commandLink">
+                                <h:commandLink action="#{loginController.dropAdminRole()}" value="Drop Administrator Role"></h:commandLink>
+                            </div>
+                        </p:panelGrid>
                     </h:form>
                 </div>
             </ui:fragment>
