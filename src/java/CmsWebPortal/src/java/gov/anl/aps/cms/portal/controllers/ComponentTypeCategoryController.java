@@ -25,6 +25,8 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypeCategory.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "ComponentTypeCategory.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "ComponentTypeCategory.List.Display.Description";
 
     private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
 
@@ -101,6 +103,8 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         }
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -110,23 +114,19 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
     }
 
     @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        if (dataTable == null) {
+    public void saveSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("description");
-    }
-
-    @Override
-    public void clearListFilters() {
-        filterByName = null;
-        filterByDescription = null;
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
     }
 
     @FacesConverter(forClass = ComponentTypeCategory.class)

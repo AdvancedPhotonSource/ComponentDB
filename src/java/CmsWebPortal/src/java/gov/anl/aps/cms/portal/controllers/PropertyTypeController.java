@@ -25,6 +25,8 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyType.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "PropertyType.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "PropertyType.List.Display.Description";
 
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
@@ -90,6 +92,8 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         }
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -99,6 +103,8 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
     }
 
     @Override
@@ -111,6 +117,17 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         filterByTypeCategory = filters.get("propertyTypeCategory.name");
     }
 
+    @Override
+    public void saveSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+    }
+    
     @Override
     public void clearListFilters() {
         super.clearListFilters();

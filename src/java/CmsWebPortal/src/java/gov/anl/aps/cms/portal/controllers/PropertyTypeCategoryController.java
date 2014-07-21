@@ -24,6 +24,8 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "PropertyTypeCategory.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "PropertyTypeCategory.List.Display.Description";
 
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
@@ -87,6 +89,8 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         }
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -96,8 +100,21 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
     }
 
+    @Override
+    public void saveSettingsForSessionUser(User sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+    }
+    
     @FacesConverter(forClass = PropertyTypeCategory.class)
     public static class PropertyCategoryControllerConverter implements Converter
     {

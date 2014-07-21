@@ -138,8 +138,6 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         }
 
         Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("description");
         filterByTypeCategory = filters.get("componentTypeCategory.name");
     }
 
@@ -156,8 +154,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     
     @Override
     public void clearListFilters() {
-        filterByName = null;
-        filterByDescription = null;
+        super.clearListFilters();
         filterByTypeCategory = null;
     }
 
