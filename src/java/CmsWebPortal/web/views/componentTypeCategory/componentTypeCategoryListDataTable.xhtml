@@ -19,7 +19,8 @@
                  widgetVar="componentTypeCategoryListWidget" 
                  emptyMessage="No component type categories found." > 
 
-        <p:column sortBy="#{componentTypeCategoryObject.id}" headerText="Id">
+        <p:column sortBy="#{componentTypeCategoryObject.id}" headerText="Id"
+                  rendered="#{componentTypeCategoryController.displayId}">
             <h:outputText value="#{componentTypeCategoryObject.id}"/>
         </p:column>
 
@@ -33,7 +34,7 @@
         <p:column sortBy="#{componentTypeCategoryObject.description}" headerText="Description" 
                   filterBy="description" filterMatchMode="contains"
                   filterValue="#{componentTypeCategoryController.filterByDescription}"
-                  rendered="true">
+                  rendered="#{componentTypeCategoryController.displayDescription}">
             <h:outputText value="#{componentTypeCategoryObject.description}"/>
         </p:column>
 

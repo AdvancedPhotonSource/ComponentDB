@@ -30,7 +30,10 @@
 
             <ui:include src="componentTypeCategoryDestroyDialog.xhtml"/>
 
+            <ui:include src="componentTypeCategoryListCustomizeDisplayDialog.xhtml"/>
         </h:form>
+
+        <h:outputScript library="javascript/componentTypeCategory" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
 
     </ui:define>
 

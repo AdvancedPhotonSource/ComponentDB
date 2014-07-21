@@ -30,7 +30,10 @@
 
             <ui:include src="propertyTypeCategoryDestroyDialog.xhtml"/>
 
+            <ui:include src="propertyTypeCategoryListCustomizeDisplayDialog.xhtml"/>
         </h:form>
+
+        <h:outputScript library="javascript/propertyTypeCategory" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
 
     </ui:define>
 

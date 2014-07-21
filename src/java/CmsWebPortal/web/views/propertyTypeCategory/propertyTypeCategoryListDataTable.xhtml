@@ -19,7 +19,8 @@
                  widgetVar="propertyTypeCategoryListWidget" 
                  emptyMessage="No property type categories found." > 
 
-        <p:column sortBy="#{propertyTypeCategoryObject.id}" headerText="Id">
+        <p:column sortBy="#{propertyTypeCategoryObject.id}" headerText="Id"
+                  rendered="#{propertyTypeCategoryController.displayId}">
             <h:outputText value="#{propertyTypeCategoryObject.id}"/>
         </p:column>
 
@@ -33,7 +34,7 @@
         <p:column sortBy="#{propertyTypeCategoryObject.description}" headerText="Description" 
                   filterBy="description" filterMatchMode="contains"
                   filterValue="#{propertyTypeCategoryController.filterByDescription}"
-                  rendered="true">
+                  rendered="#{propertyTypeCategoryController.displayDescription}">
             <h:outputText value="#{propertyTypeCategoryObject.description}"/>
         </p:column>
 

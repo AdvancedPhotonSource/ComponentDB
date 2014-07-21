@@ -19,7 +19,7 @@
                  emptyMessage="No property types found.">
 
         <p:column sortBy="#{propertyTypeObject.id}" headerText="Id"
-                  rendered="true">
+                  rendered="#{propertyTypeController.displayId}">
             <h:outputText value="#{propertyTypeObject.id}"/>
         </p:column>
 
@@ -41,7 +41,7 @@
         <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
                   filterBy="description" filterMatchMode="contains"
                   filterValue="#{propertyTypeController.filterByDescription}"
-                  rendered="true">
+                  rendered="#{propertyTypeController.displayDescription}">
             <h:outputText value="#{propertyTypeObject.description}"/>
         </p:column>
 
