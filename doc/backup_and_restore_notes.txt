@@ -7,8 +7,14 @@
 # 
 
 #
+# Backup DB (1st argument)aand web app into specific backup directory (2nd argument)
+./sbin/backup_cms.sh cms backup/cms.20140507
+#
+
+#
+# Alternatively, one can backup only the db.
 # Backup DB (1st argument) into specific backup directory (2nd argument)
-./sbin/backup_cms_db.sh cms backup/db.20140507
+# ./sbin/backup_cms_db.sh cms backup/db.20140507
 #
 
 #
