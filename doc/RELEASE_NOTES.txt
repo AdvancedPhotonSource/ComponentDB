@@ -1,4 +1,12 @@
-Release 20150531 (05/31/2014)
+Release 20140731 (07/31/2014)
+=============================
+
+- Resolved issue with regular users being able to add property and 
+  component types
+- Added implementation for list view customization for component and property
+  types/categories
+
+Release 20140531 (05/31/2014)
 =============================
 
 - Enhanced deployment scripts to allow multiple databases/applications
