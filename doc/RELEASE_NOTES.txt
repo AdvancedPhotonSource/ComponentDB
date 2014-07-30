@@ -5,6 +5,7 @@ Release 20140731 (07/31/2014)
   component types
 - Added implementation for list view customization for component and property
   types/categories
+- Enhanced system backup scripts
 
 Release 20140531 (05/31/2014)
 =============================
