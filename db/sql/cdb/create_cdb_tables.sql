@@ -614,9 +614,10 @@ DROP TABLE IF EXISTS `component_instance`;
 CREATE TABLE `component_instance` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `component_id` int(11) unsigned NOT NULL,
-  `location_id` int(11) unsigned NOT NULL,
+  `location_id` int(11) unsigned DEFAULT NULL,
   `serial_number` varchar(16) DEFAULT NULL,
   `quantity` int(11) unsigned DEFAULT NULL,
+  `location_details` varchar(256) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -660,7 +661,8 @@ DROP TABLE IF EXISTS `component_instance_location_history`;
 CREATE TABLE `component_instance_location_history` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `component_instance_id` int(11) unsigned NOT NULL,
-  `location_id` int(11) unsigned NOT NULL,
+  `location_id` int(11) unsigned DEFAULT NULL,
+  `location_details` varchar(256) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `entered_on_date_time` datetime NOT NULL,
   `entered_by_user_id` int(11) unsigned NOT NULL,
