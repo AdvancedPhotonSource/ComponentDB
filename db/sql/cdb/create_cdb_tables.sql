@@ -155,10 +155,10 @@ CREATE TABLE `property_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `allowed_property_type`
+-- Table `allowed_property_value`
 --
 
-CREATE TABLE `allowed_property_type` (
+CREATE TABLE `allowed_property_value` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `property_type_id` int(11) unsigned NOT NULL,
   `value` varchar(64) DEFAULT NULL,
@@ -166,9 +166,9 @@ CREATE TABLE `allowed_property_type` (
   `description` varchar(256) DEFAULT NULL,
   `sort_order` float(10,2) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `allowed_property_type_u1` (`property_type_id`, `value`),
-  KEY `allowed_property_type_k1` (`property_type_id`),
-  CONSTRAINT `allowed_property_type_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  UNIQUE KEY `allowed_property_value_u1` (`property_type_id`, `value`),
+  KEY `allowed_property_value_k1` (`property_type_id`),
+  CONSTRAINT `allowed_property_value_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
