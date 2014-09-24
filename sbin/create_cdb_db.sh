@@ -112,6 +112,8 @@ CDB_DB_TABLES="\
     entity_info \
     source \
     property_type \
+    location_type \
+    location \
     resource_type_category \
     connector_type_category \
     connector_type \
