@@ -85,8 +85,8 @@ VALUES
 	('Source.List.Display.Id','Display source id.', 'true'),
 	('Source.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
-	('User.List.Display.Id','Display user id.', 'true'),
-	('User.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+	('UserInfo.List.Display.Id','Display user id.', 'true'),
+	('UserInfo.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('UserGroup.List.Display.Id','Display user group id.', 'true'),
 	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25');

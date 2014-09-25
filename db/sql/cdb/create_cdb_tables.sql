@@ -775,7 +775,7 @@ CREATE TABLE `design_element` (
   `parent_design_id` int(11) unsigned NOT NULL,
   `child_design_id` int(11) unsigned DEFAULT NULL,
   `component_id` int(11) unsigned DEFAULT NULL,
-  `location_id` int(11) unsigned NOT NULL,
+  `location_id` int(11) unsigned DEFAULT NULL,
   `quantity` int(11) unsigned DEFAULT 1,
   `description` varchar(256) DEFAULT NULL,
   `sort_order` float(10,2) unsigned DEFAULT NULL,
