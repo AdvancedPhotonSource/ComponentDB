@@ -111,7 +111,11 @@ CDB_DB_TABLES="\
     user_user_group \
     entity_info \
     source \
+    property_type_category \
     property_type \
+    allowed_property_value \
+    property_value \
+    property_value_history \
     location_type \
     location \
     resource_type_category \
