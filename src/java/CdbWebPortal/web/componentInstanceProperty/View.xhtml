@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentInstancePropertyTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentInstancePropertyLabel_componentInstancePropertyPK_propertyTypeId}"/>
+                    <h:outputText value="#{componentInstancePropertyController.selected.componentInstancePropertyPK.propertyTypeId}" title="#{resources.ViewComponentInstancePropertyTitle_componentInstancePropertyPK_propertyTypeId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstancePropertyLabel_componentInstancePropertyPK_componentInstanceId}"/>
+                    <h:outputText value="#{componentInstancePropertyController.selected.componentInstancePropertyPK.componentInstanceId}" title="#{resources.ViewComponentInstancePropertyTitle_componentInstancePropertyPK_componentInstanceId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstancePropertyLabel_componentInstancePropertyPK_propertyValueId}"/>
+                    <h:outputText value="#{componentInstancePropertyController.selected.componentInstancePropertyPK.propertyValueId}" title="#{resources.ViewComponentInstancePropertyTitle_componentInstancePropertyPK_propertyValueId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstancePropertyLabel_propertyValue}"/>
+                    <h:outputText value="#{componentInstancePropertyController.selected.propertyValue}" title="#{resources.ViewComponentInstancePropertyTitle_propertyValue}"/>
+                    <h:outputText value="#{resources.ViewComponentInstancePropertyLabel_propertyType}"/>
+                    <h:outputText value="#{componentInstancePropertyController.selected.propertyType}" title="#{resources.ViewComponentInstancePropertyTitle_propertyType}"/>
+                    <h:outputText value="#{resources.ViewComponentInstancePropertyLabel_componentInstance}"/>
+                    <h:outputText value="#{componentInstancePropertyController.selected.componentInstance}" title="#{resources.ViewComponentInstancePropertyTitle_componentInstance}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentInstancePropertyController.destroyAndView}" value="#{resources.ViewComponentInstancePropertyDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentInstancePropertyEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentInstancePropertyController.prepareCreate}" value="#{resources.ViewComponentInstancePropertyCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentInstancePropertyController.prepareList}" value="#{resources.ViewComponentInstancePropertyShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentInstancePropertyIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

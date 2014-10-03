@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentSourceTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentSourceLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{componentSourceController.selected.id}" title="#{resources.CreateComponentSourceTitle_id}" required="true" requiredMessage="#{resources.CreateComponentSourceRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateComponentSourceLabel_partNumber}" for="partNumber" />
+                    <h:inputText id="partNumber" value="#{componentSourceController.selected.partNumber}" title="#{resources.CreateComponentSourceTitle_partNumber}" />
+                    <h:outputLabel value="#{resources.CreateComponentSourceLabel_cost}" for="cost" />
+                    <h:inputText id="cost" value="#{componentSourceController.selected.cost}" title="#{resources.CreateComponentSourceTitle_cost}" />
+                    <h:outputLabel value="#{resources.CreateComponentSourceLabel_sourceId}" for="sourceId" />
+                    <h:selectOneMenu id="sourceId" value="#{componentSourceController.selected.sourceId}" title="#{resources.CreateComponentSourceTitle_sourceId}" required="true" requiredMessage="#{resources.CreateComponentSourceRequiredMessage_sourceId}">
+                        <f:selectItems value="#{sourceController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentSourceLabel_componentId}" for="componentId" />
+                    <h:selectOneMenu id="componentId" value="#{componentSourceController.selected.componentId}" title="#{resources.CreateComponentSourceTitle_componentId}" required="true" requiredMessage="#{resources.CreateComponentSourceRequiredMessage_componentId}">
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentSourceController.create}" value="#{resources.CreateComponentSourceSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentSourceController.prepareList}" value="#{resources.CreateComponentSourceShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentSourceIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

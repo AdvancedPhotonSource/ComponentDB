@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewDesignElementPropertyTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewDesignElementPropertyLabel_id}"/>
+                    <h:outputText value="#{designElementPropertyController.selected.id}" title="#{resources.ViewDesignElementPropertyTitle_id}"/>
+                    <h:outputText value="#{resources.ViewDesignElementPropertyLabel_propertyValueId}"/>
+                    <h:outputText value="#{designElementPropertyController.selected.propertyValueId}" title="#{resources.ViewDesignElementPropertyTitle_propertyValueId}"/>
+                    <h:outputText value="#{resources.ViewDesignElementPropertyLabel_propertyTypeId}"/>
+                    <h:outputText value="#{designElementPropertyController.selected.propertyTypeId}" title="#{resources.ViewDesignElementPropertyTitle_propertyTypeId}"/>
+                    <h:outputText value="#{resources.ViewDesignElementPropertyLabel_designElementId}"/>
+                    <h:outputText value="#{designElementPropertyController.selected.designElementId}" title="#{resources.ViewDesignElementPropertyTitle_designElementId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{designElementPropertyController.destroyAndView}" value="#{resources.ViewDesignElementPropertyDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewDesignElementPropertyEditLink}"/>
+                <br />
+                <h:commandLink action="#{designElementPropertyController.prepareCreate}" value="#{resources.ViewDesignElementPropertyCreateLink}" />
+                <br />
+                <h:commandLink action="#{designElementPropertyController.prepareList}" value="#{resources.ViewDesignElementPropertyShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewDesignElementPropertyIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

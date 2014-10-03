@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewResourceTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_id}"/>
+                    <h:outputText value="#{resourceTypeController.selected.id}" title="#{resources.ViewResourceTypeTitle_id}"/>
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_name}"/>
+                    <h:outputText value="#{resourceTypeController.selected.name}" title="#{resources.ViewResourceTypeTitle_name}"/>
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_description}"/>
+                    <h:outputText value="#{resourceTypeController.selected.description}" title="#{resources.ViewResourceTypeTitle_description}"/>
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_handlerName}"/>
+                    <h:outputText value="#{resourceTypeController.selected.handlerName}" title="#{resources.ViewResourceTypeTitle_handlerName}"/>
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_defaultValue}"/>
+                    <h:outputText value="#{resourceTypeController.selected.defaultValue}" title="#{resources.ViewResourceTypeTitle_defaultValue}"/>
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_defaultUnits}"/>
+                    <h:outputText value="#{resourceTypeController.selected.defaultUnits}" title="#{resources.ViewResourceTypeTitle_defaultUnits}"/>
+                    <h:outputText value="#{resources.ViewResourceTypeLabel_resourceTypeCategoryId}"/>
+                    <h:outputText value="#{resourceTypeController.selected.resourceTypeCategoryId}" title="#{resources.ViewResourceTypeTitle_resourceTypeCategoryId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{resourceTypeController.destroyAndView}" value="#{resources.ViewResourceTypeDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewResourceTypeEditLink}"/>
+                <br />
+                <h:commandLink action="#{resourceTypeController.prepareCreate}" value="#{resources.ViewResourceTypeCreateLink}" />
+                <br />
+                <h:commandLink action="#{resourceTypeController.prepareList}" value="#{resources.ViewResourceTypeShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewResourceTypeIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

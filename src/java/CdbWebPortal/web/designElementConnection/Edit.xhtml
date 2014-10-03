@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditDesignElementConnectionTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{designElementConnectionController.selected.id}" title="#{resources.EditDesignElementConnectionTitle_id}" required="true" requiredMessage="#{resources.EditDesignElementConnectionRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_linkComponentQuantity}" for="linkComponentQuantity" />
+                    <h:inputText id="linkComponentQuantity" value="#{designElementConnectionController.selected.linkComponentQuantity}" title="#{resources.EditDesignElementConnectionTitle_linkComponentQuantity}" />
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_label}" for="label" />
+                    <h:inputText id="label" value="#{designElementConnectionController.selected.label}" title="#{resources.EditDesignElementConnectionTitle_label}" />
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{designElementConnectionController.selected.description}" title="#{resources.EditDesignElementConnectionTitle_description}" />
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_resourceTypeId}" for="resourceTypeId" />
+                    <h:selectOneMenu id="resourceTypeId" value="#{designElementConnectionController.selected.resourceTypeId}" title="#{resources.EditDesignElementConnectionTitle_resourceTypeId}" >
+                        <f:selectItems value="#{resourceTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_linkComponentId}" for="linkComponentId" />
+                    <h:selectOneMenu id="linkComponentId" value="#{designElementConnectionController.selected.linkComponentId}" title="#{resources.EditDesignElementConnectionTitle_linkComponentId}" >
+                        <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_secondComponentConnectorId}" for="secondComponentConnectorId" />
+                    <h:selectOneMenu id="secondComponentConnectorId" value="#{designElementConnectionController.selected.secondComponentConnectorId}" title="#{resources.EditDesignElementConnectionTitle_secondComponentConnectorId}" >
+                        <f:selectItems value="#{componentConnectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_secondDesignElementId}" for="secondDesignElementId" />
+                    <h:selectOneMenu id="secondDesignElementId" value="#{designElementConnectionController.selected.secondDesignElementId}" title="#{resources.EditDesignElementConnectionTitle_secondDesignElementId}" required="true" requiredMessage="#{resources.EditDesignElementConnectionRequiredMessage_secondDesignElementId}">
+                        <f:selectItems value="#{designElementController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_firstComponentConnectorId}" for="firstComponentConnectorId" />
+                    <h:selectOneMenu id="firstComponentConnectorId" value="#{designElementConnectionController.selected.firstComponentConnectorId}" title="#{resources.EditDesignElementConnectionTitle_firstComponentConnectorId}" >
+                        <f:selectItems value="#{componentConnectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementConnectionLabel_firstDesignElementId}" for="firstDesignElementId" />
+                    <h:selectOneMenu id="firstDesignElementId" value="#{designElementConnectionController.selected.firstDesignElementId}" title="#{resources.EditDesignElementConnectionTitle_firstDesignElementId}" required="true" requiredMessage="#{resources.EditDesignElementConnectionRequiredMessage_firstDesignElementId}">
+                        <f:selectItems value="#{designElementController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{designElementConnectionController.update}" value="#{resources.EditDesignElementConnectionSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditDesignElementConnectionViewLink}"/>
+                <br />
+                <h:commandLink action="#{designElementConnectionController.prepareList}" value="#{resources.EditDesignElementConnectionShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditDesignElementConnectionIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

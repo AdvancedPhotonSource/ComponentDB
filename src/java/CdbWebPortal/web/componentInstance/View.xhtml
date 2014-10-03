@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentInstanceTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_id}"/>
+                    <h:outputText value="#{componentInstanceController.selected.id}" title="#{resources.ViewComponentInstanceTitle_id}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_serialNumber}"/>
+                    <h:outputText value="#{componentInstanceController.selected.serialNumber}" title="#{resources.ViewComponentInstanceTitle_serialNumber}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_quantity}"/>
+                    <h:outputText value="#{componentInstanceController.selected.quantity}" title="#{resources.ViewComponentInstanceTitle_quantity}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_locationDetails}"/>
+                    <h:outputText value="#{componentInstanceController.selected.locationDetails}" title="#{resources.ViewComponentInstanceTitle_locationDetails}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_description}"/>
+                    <h:outputText value="#{componentInstanceController.selected.description}" title="#{resources.ViewComponentInstanceTitle_description}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_entityInfoId}"/>
+                    <h:outputText value="#{componentInstanceController.selected.entityInfoId}" title="#{resources.ViewComponentInstanceTitle_entityInfoId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_locationId}"/>
+                    <h:outputText value="#{componentInstanceController.selected.locationId}" title="#{resources.ViewComponentInstanceTitle_locationId}"/>
+                    <h:outputText value="#{resources.ViewComponentInstanceLabel_componentId}"/>
+                    <h:outputText value="#{componentInstanceController.selected.componentId}" title="#{resources.ViewComponentInstanceTitle_componentId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentInstanceController.destroyAndView}" value="#{resources.ViewComponentInstanceDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentInstanceEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentInstanceController.prepareCreate}" value="#{resources.ViewComponentInstanceCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentInstanceController.prepareList}" value="#{resources.ViewComponentInstanceShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentInstanceIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

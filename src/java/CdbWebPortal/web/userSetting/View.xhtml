@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewUserSettingTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewUserSettingLabel_id}"/>
+                    <h:outputText value="#{userSettingController.selected.id}" title="#{resources.ViewUserSettingTitle_id}"/>
+                    <h:outputText value="#{resources.ViewUserSettingLabel_value}"/>
+                    <h:outputText value="#{userSettingController.selected.value}" title="#{resources.ViewUserSettingTitle_value}"/>
+                    <h:outputText value="#{resources.ViewUserSettingLabel_settingTypeId}"/>
+                    <h:outputText value="#{userSettingController.selected.settingType}" title="#{resources.ViewUserSettingTitle_settingTypeId}"/>
+                    <h:outputText value="#{resources.ViewUserSettingLabel_userId}"/>
+                    <h:outputText value="#{userSettingController.selected.user}" title="#{resources.ViewUserSettingTitle_userId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{userSettingController.destroyAndView}" value="#{resources.ViewUserSettingDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewUserSettingEditLink}"/>
+                <br />
+                <h:commandLink action="#{userSettingController.prepareCreate}" value="#{resources.ViewUserSettingCreateLink}" />
+                <br />
+                <h:commandLink action="#{userSettingController.prepareList}" value="#{resources.ViewUserSettingShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewUserSettingIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

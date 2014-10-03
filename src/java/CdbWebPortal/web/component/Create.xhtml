@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{componentController.selected.id}" title="#{resources.CreateComponentTitle_id}" required="true" requiredMessage="#{resources.CreateComponentRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateComponentLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{componentController.selected.name}" title="#{resources.CreateComponentTitle_name}" required="true" requiredMessage="#{resources.CreateComponentRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.CreateComponentLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{componentController.selected.description}" title="#{resources.CreateComponentTitle_description}" />
+                    <h:outputLabel value="#{resources.CreateComponentLabel_entityInfoId}" for="entityInfoId" />
+                    <h:selectOneMenu id="entityInfoId" value="#{componentController.selected.entityInfoId}" title="#{resources.CreateComponentTitle_entityInfoId}" required="true" requiredMessage="#{resources.CreateComponentRequiredMessage_entityInfoId}">
+                        <f:selectItems value="#{entityInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentLabel_componentTypeId}" for="componentTypeId" />
+                    <h:selectOneMenu id="componentTypeId" value="#{componentController.selected.componentTypeId}" title="#{resources.CreateComponentTitle_componentTypeId}" required="true" requiredMessage="#{resources.CreateComponentRequiredMessage_componentTypeId}">
+                        <f:selectItems value="#{componentTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentController.create}" value="#{resources.CreateComponentSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentController.prepareList}" value="#{resources.CreateComponentShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

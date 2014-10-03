@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListComponentInstanceLocationHistoryEmpty}" rendered="#{componentInstanceLocationHistoryController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{componentInstanceLocationHistoryController.items.rowCount > 0}">
+                    <h:outputText value="#{componentInstanceLocationHistoryController.pagination.pageFirstItem + 1}..#{componentInstanceLocationHistoryController.pagination.pageLastItem + 1}/#{componentInstanceLocationHistoryController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{componentInstanceLocationHistoryController.previous}" value="#{resources.Previous} #{componentInstanceLocationHistoryController.pagination.pageSize}" rendered="#{componentInstanceLocationHistoryController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{componentInstanceLocationHistoryController.next}" value="#{resources.Next} #{componentInstanceLocationHistoryController.pagination.pageSize}" rendered="#{componentInstanceLocationHistoryController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{componentInstanceLocationHistoryController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_locationDetails}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.locationDetails}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_enteredOnDateTime}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.enteredOnDateTime}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_enteredByUserId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.enteredByUserId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_locationId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.locationId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListComponentInstanceLocationHistoryTitle_componentInstanceId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.componentInstanceId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{componentInstanceLocationHistoryController.prepareView}" value="#{resources.ListComponentInstanceLocationHistoryViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{componentInstanceLocationHistoryController.prepareEdit}" value="#{resources.ListComponentInstanceLocationHistoryEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{componentInstanceLocationHistoryController.destroy}" value="#{resources.ListComponentInstanceLocationHistoryDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{componentInstanceLocationHistoryController.prepareCreate}" value="#{resources.ListComponentInstanceLocationHistoryCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListComponentInstanceLocationHistoryIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

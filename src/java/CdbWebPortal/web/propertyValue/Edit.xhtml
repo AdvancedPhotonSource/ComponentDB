@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditPropertyValueTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditPropertyValueLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{propertyValueController.selected.id}" title="#{resources.EditPropertyValueTitle_id}" required="true" requiredMessage="#{resources.EditPropertyValueRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditPropertyValueLabel_value}" for="value" />
+                    <h:inputText id="value" value="#{propertyValueController.selected.value}" title="#{resources.EditPropertyValueTitle_value}" />
+                    <h:outputLabel value="#{resources.EditPropertyValueLabel_units}" for="units" />
+                    <h:inputText id="units" value="#{propertyValueController.selected.units}" title="#{resources.EditPropertyValueTitle_units}" />
+                    <h:outputLabel value="#{resources.EditPropertyValueLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{propertyValueController.selected.description}" title="#{resources.EditPropertyValueTitle_description}" />
+                    <h:outputLabel value="#{resources.EditPropertyValueLabel_enteredOnDateTime}" for="enteredOnDateTime" />
+                    <h:inputText id="enteredOnDateTime" value="#{propertyValueController.selected.enteredOnDateTime}" title="#{resources.EditPropertyValueTitle_enteredOnDateTime}" required="true" requiredMessage="#{resources.EditPropertyValueRequiredMessage_enteredOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{resources.EditPropertyValueLabel_enteredByUserId}" for="enteredByUserId" />
+                    <h:selectOneMenu id="enteredByUserId" value="#{propertyValueController.selected.enteredByUserId}" title="#{resources.EditPropertyValueTitle_enteredByUserId}" required="true" requiredMessage="#{resources.EditPropertyValueRequiredMessage_enteredByUserId}">
+                        <f:selectItems value="#{userInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{propertyValueController.update}" value="#{resources.EditPropertyValueSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditPropertyValueViewLink}"/>
+                <br />
+                <h:commandLink action="#{propertyValueController.prepareList}" value="#{resources.EditPropertyValueShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditPropertyValueIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

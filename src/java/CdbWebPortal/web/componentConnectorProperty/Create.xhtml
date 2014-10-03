@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateComponentConnectorPropertyTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateComponentConnectorPropertyLabel_componentConnectorPropertyPK_propertyValueId}" for="componentConnectorPropertyPK_propertyValueId" />
+                    <h:inputText id="componentConnectorPropertyPK_propertyValueId" value="#{componentConnectorPropertyController.selected.componentConnectorPropertyPK.propertyValueId}" title="#{resources.CreateComponentConnectorPropertyTitle_componentConnectorPropertyPK_propertyValueId}" required="true" requiredMessage="#{resources.CreateComponentConnectorPropertyRequiredMessage_componentConnectorPropertyPK_propertyValueId}"/>
+                    <h:outputLabel value="#{resources.CreateComponentConnectorPropertyLabel_componentConnectorPropertyPK_componentConnectorId}" for="componentConnectorPropertyPK_componentConnectorId" />
+                    <h:inputText id="componentConnectorPropertyPK_componentConnectorId" value="#{componentConnectorPropertyController.selected.componentConnectorPropertyPK.componentConnectorId}" title="#{resources.CreateComponentConnectorPropertyTitle_componentConnectorPropertyPK_componentConnectorId}" required="true" requiredMessage="#{resources.CreateComponentConnectorPropertyRequiredMessage_componentConnectorPropertyPK_componentConnectorId}"/>
+                    <h:outputLabel value="#{resources.CreateComponentConnectorPropertyLabel_componentConnectorPropertyPK_propertyTypeId}" for="componentConnectorPropertyPK_propertyTypeId" />
+                    <h:inputText id="componentConnectorPropertyPK_propertyTypeId" value="#{componentConnectorPropertyController.selected.componentConnectorPropertyPK.propertyTypeId}" title="#{resources.CreateComponentConnectorPropertyTitle_componentConnectorPropertyPK_propertyTypeId}" required="true" requiredMessage="#{resources.CreateComponentConnectorPropertyRequiredMessage_componentConnectorPropertyPK_propertyTypeId}"/>
+                    <h:outputLabel value="#{resources.CreateComponentConnectorPropertyLabel_propertyValue}" for="propertyValue" />
+                    <h:selectOneMenu id="propertyValue" value="#{componentConnectorPropertyController.selected.propertyValue}" title="#{resources.CreateComponentConnectorPropertyTitle_propertyValue}" required="true" requiredMessage="#{resources.CreateComponentConnectorPropertyRequiredMessage_propertyValue}">
+                        <f:selectItems value="#{propertyValueController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentConnectorPropertyLabel_propertyType}" for="propertyType" />
+                    <h:selectOneMenu id="propertyType" value="#{componentConnectorPropertyController.selected.propertyType}" title="#{resources.CreateComponentConnectorPropertyTitle_propertyType}" required="true" requiredMessage="#{resources.CreateComponentConnectorPropertyRequiredMessage_propertyType}">
+                        <f:selectItems value="#{propertyTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateComponentConnectorPropertyLabel_componentConnector}" for="componentConnector" />
+                    <h:selectOneMenu id="componentConnector" value="#{componentConnectorPropertyController.selected.componentConnector}" title="#{resources.CreateComponentConnectorPropertyTitle_componentConnector}" required="true" requiredMessage="#{resources.CreateComponentConnectorPropertyRequiredMessage_componentConnector}">
+                        <f:selectItems value="#{componentConnectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentConnectorPropertyController.create}" value="#{resources.CreateComponentConnectorPropertySaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{componentConnectorPropertyController.prepareList}" value="#{resources.CreateComponentConnectorPropertyShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateComponentConnectorPropertyIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

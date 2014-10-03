@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewLocationTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewLocationLabel_id}"/>
+                    <h:outputText value="#{locationController.selected.id}" title="#{resources.ViewLocationTitle_id}"/>
+                    <h:outputText value="#{resources.ViewLocationLabel_name}"/>
+                    <h:outputText value="#{locationController.selected.name}" title="#{resources.ViewLocationTitle_name}"/>
+                    <h:outputText value="#{resources.ViewLocationLabel_description}"/>
+                    <h:outputText value="#{locationController.selected.description}" title="#{resources.ViewLocationTitle_description}"/>
+                    <h:outputText value="#{resources.ViewLocationLabel_isPhysical}"/>
+                    <h:outputText value="#{locationController.selected.isPhysical}" title="#{resources.ViewLocationTitle_isPhysical}"/>
+                    <h:outputText value="#{resources.ViewLocationLabel_parentLocationId}"/>
+                    <h:outputText value="#{locationController.selected.parentLocationId}" title="#{resources.ViewLocationTitle_parentLocationId}"/>
+                    <h:outputText value="#{resources.ViewLocationLabel_locationTypeId}"/>
+                    <h:outputText value="#{locationController.selected.locationTypeId}" title="#{resources.ViewLocationTitle_locationTypeId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{locationController.destroyAndView}" value="#{resources.ViewLocationDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewLocationEditLink}"/>
+                <br />
+                <h:commandLink action="#{locationController.prepareCreate}" value="#{resources.ViewLocationCreateLink}" />
+                <br />
+                <h:commandLink action="#{locationController.prepareList}" value="#{resources.ViewLocationShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewLocationIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

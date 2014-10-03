@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreatePropertyTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{propertyTypeController.selected.id}" title="#{resources.CreatePropertyTypeTitle_id}" required="true" requiredMessage="#{resources.CreatePropertyTypeRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{propertyTypeController.selected.name}" title="#{resources.CreatePropertyTypeTitle_name}" required="true" requiredMessage="#{resources.CreatePropertyTypeRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{propertyTypeController.selected.description}" title="#{resources.CreatePropertyTypeTitle_description}" />
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_handlerName}" for="handlerName" />
+                    <h:inputText id="handlerName" value="#{propertyTypeController.selected.handlerName}" title="#{resources.CreatePropertyTypeTitle_handlerName}" />
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_defaultValue}" for="defaultValue" />
+                    <h:inputText id="defaultValue" value="#{propertyTypeController.selected.defaultValue}" title="#{resources.CreatePropertyTypeTitle_defaultValue}" />
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_defaultUnits}" for="defaultUnits" />
+                    <h:inputText id="defaultUnits" value="#{propertyTypeController.selected.defaultUnits}" title="#{resources.CreatePropertyTypeTitle_defaultUnits}" />
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_isUserWriteable}" for="isUserWriteable" />
+                    <h:inputText id="isUserWriteable" value="#{propertyTypeController.selected.isUserWriteable}" title="#{resources.CreatePropertyTypeTitle_isUserWriteable}" required="true" requiredMessage="#{resources.CreatePropertyTypeRequiredMessage_isUserWriteable}"/>
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_isDynamic}" for="isDynamic" />
+                    <h:inputText id="isDynamic" value="#{propertyTypeController.selected.isDynamic}" title="#{resources.CreatePropertyTypeTitle_isDynamic}" required="true" requiredMessage="#{resources.CreatePropertyTypeRequiredMessage_isDynamic}"/>
+                    <h:outputLabel value="#{resources.CreatePropertyTypeLabel_propertyTypeCategoryId}" for="propertyTypeCategoryId" />
+                    <h:selectOneMenu id="propertyTypeCategoryId" value="#{propertyTypeController.selected.propertyTypeCategoryId}" title="#{resources.CreatePropertyTypeTitle_propertyTypeCategoryId}" >
+                        <f:selectItems value="#{propertyTypeCategoryController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{propertyTypeController.create}" value="#{resources.CreatePropertyTypeSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{propertyTypeController.prepareList}" value="#{resources.CreatePropertyTypeShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreatePropertyTypeIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

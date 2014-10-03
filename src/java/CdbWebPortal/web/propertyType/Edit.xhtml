@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditPropertyTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{propertyTypeController.selected.id}" title="#{resources.EditPropertyTypeTitle_id}" required="true" requiredMessage="#{resources.EditPropertyTypeRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{propertyTypeController.selected.name}" title="#{resources.EditPropertyTypeTitle_name}" required="true" requiredMessage="#{resources.EditPropertyTypeRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{propertyTypeController.selected.description}" title="#{resources.EditPropertyTypeTitle_description}" />
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_handlerName}" for="handlerName" />
+                    <h:inputText id="handlerName" value="#{propertyTypeController.selected.handlerName}" title="#{resources.EditPropertyTypeTitle_handlerName}" />
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_defaultValue}" for="defaultValue" />
+                    <h:inputText id="defaultValue" value="#{propertyTypeController.selected.defaultValue}" title="#{resources.EditPropertyTypeTitle_defaultValue}" />
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_defaultUnits}" for="defaultUnits" />
+                    <h:inputText id="defaultUnits" value="#{propertyTypeController.selected.defaultUnits}" title="#{resources.EditPropertyTypeTitle_defaultUnits}" />
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_isUserWriteable}" for="isUserWriteable" />
+                    <h:inputText id="isUserWriteable" value="#{propertyTypeController.selected.isUserWriteable}" title="#{resources.EditPropertyTypeTitle_isUserWriteable}" required="true" requiredMessage="#{resources.EditPropertyTypeRequiredMessage_isUserWriteable}"/>
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_isDynamic}" for="isDynamic" />
+                    <h:inputText id="isDynamic" value="#{propertyTypeController.selected.isDynamic}" title="#{resources.EditPropertyTypeTitle_isDynamic}" required="true" requiredMessage="#{resources.EditPropertyTypeRequiredMessage_isDynamic}"/>
+                    <h:outputLabel value="#{resources.EditPropertyTypeLabel_propertyTypeCategoryId}" for="propertyTypeCategoryId" />
+                    <h:selectOneMenu id="propertyTypeCategoryId" value="#{propertyTypeController.selected.propertyTypeCategoryId}" title="#{resources.EditPropertyTypeTitle_propertyTypeCategoryId}" >
+                        <f:selectItems value="#{propertyTypeCategoryController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{propertyTypeController.update}" value="#{resources.EditPropertyTypeSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditPropertyTypeViewLink}"/>
+                <br />
+                <h:commandLink action="#{propertyTypeController.prepareList}" value="#{resources.EditPropertyTypeShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditPropertyTypeIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

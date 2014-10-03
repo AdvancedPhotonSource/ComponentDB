@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditDesignElementPropertyTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditDesignElementPropertyLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{designElementPropertyController.selected.id}" title="#{resources.EditDesignElementPropertyTitle_id}" required="true" requiredMessage="#{resources.EditDesignElementPropertyRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditDesignElementPropertyLabel_propertyValueId}" for="propertyValueId" />
+                    <h:selectOneMenu id="propertyValueId" value="#{designElementPropertyController.selected.propertyValueId}" title="#{resources.EditDesignElementPropertyTitle_propertyValueId}" required="true" requiredMessage="#{resources.EditDesignElementPropertyRequiredMessage_propertyValueId}">
+                        <f:selectItems value="#{propertyValueController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementPropertyLabel_propertyTypeId}" for="propertyTypeId" />
+                    <h:selectOneMenu id="propertyTypeId" value="#{designElementPropertyController.selected.propertyTypeId}" title="#{resources.EditDesignElementPropertyTitle_propertyTypeId}" required="true" requiredMessage="#{resources.EditDesignElementPropertyRequiredMessage_propertyTypeId}">
+                        <f:selectItems value="#{propertyTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignElementPropertyLabel_designElementId}" for="designElementId" />
+                    <h:selectOneMenu id="designElementId" value="#{designElementPropertyController.selected.designElementId}" title="#{resources.EditDesignElementPropertyTitle_designElementId}" required="true" requiredMessage="#{resources.EditDesignElementPropertyRequiredMessage_designElementId}">
+                        <f:selectItems value="#{designElementController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{designElementPropertyController.update}" value="#{resources.EditDesignElementPropertySaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditDesignElementPropertyViewLink}"/>
+                <br />
+                <h:commandLink action="#{designElementPropertyController.prepareList}" value="#{resources.EditDesignElementPropertyShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditDesignElementPropertyIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

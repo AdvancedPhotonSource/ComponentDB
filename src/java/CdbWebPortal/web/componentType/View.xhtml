@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentTypeLabel_id}"/>
+                    <h:outputText value="#{componentTypeController.selected.id}" title="#{resources.ViewComponentTypeTitle_id}"/>
+                    <h:outputText value="#{resources.ViewComponentTypeLabel_name}"/>
+                    <h:outputText value="#{componentTypeController.selected.name}" title="#{resources.ViewComponentTypeTitle_name}"/>
+                    <h:outputText value="#{resources.ViewComponentTypeLabel_description}"/>
+                    <h:outputText value="#{componentTypeController.selected.description}" title="#{resources.ViewComponentTypeTitle_description}"/>
+                    <h:outputText value="#{resources.ViewComponentTypeLabel_componentTypeCategoryId}"/>
+                    <h:outputText value="#{componentTypeController.selected.componentTypeCategoryId}" title="#{resources.ViewComponentTypeTitle_componentTypeCategoryId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentTypeController.destroyAndView}" value="#{resources.ViewComponentTypeDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentTypeEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentTypeController.prepareCreate}" value="#{resources.ViewComponentTypeCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentTypeController.prepareList}" value="#{resources.ViewComponentTypeShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentTypeIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

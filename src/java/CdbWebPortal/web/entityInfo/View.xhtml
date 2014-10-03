@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewEntityInfoTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_id}"/>
+                    <h:outputText value="#{entityInfoController.selected.id}" title="#{resources.ViewEntityInfoTitle_id}"/>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_isGroupWriteable}"/>
+                    <h:outputText value="#{entityInfoController.selected.isGroupWriteable}" title="#{resources.ViewEntityInfoTitle_isGroupWriteable}"/>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_createdOnDateTime}"/>
+                    <h:outputText value="#{entityInfoController.selected.createdOnDateTime}" title="#{resources.ViewEntityInfoTitle_createdOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:outputText>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_lastModifiedOnDateTime}"/>
+                    <h:outputText value="#{entityInfoController.selected.lastModifiedOnDateTime}" title="#{resources.ViewEntityInfoTitle_lastModifiedOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:outputText>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_obsoletedOnDateTime}"/>
+                    <h:outputText value="#{entityInfoController.selected.obsoletedOnDateTime}" title="#{resources.ViewEntityInfoTitle_obsoletedOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:outputText>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_obsoletedByUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.obsoletedByUser}" title="#{resources.ViewEntityInfoTitle_obsoletedByUserId}"/>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_lastModifiedByUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.lastModifiedByUser}" title="#{resources.ViewEntityInfoTitle_lastModifiedByUserId}"/>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_createdByUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.createdByUser}" title="#{resources.ViewEntityInfoTitle_createdByUserId}"/>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_ownerUserGroupId}"/>
+                    <h:outputText value="#{entityInfoController.selected.ownerUserGroup}" title="#{resources.ViewEntityInfoTitle_ownerUserGroupId}"/>
+                    <h:outputText value="#{resources.ViewEntityInfoLabel_ownerUserId}"/>
+                    <h:outputText value="#{entityInfoController.selected.ownerUser}" title="#{resources.ViewEntityInfoTitle_ownerUserId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{entityInfoController.destroyAndView}" value="#{resources.ViewEntityInfoDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewEntityInfoEditLink}"/>
+                <br />
+                <h:commandLink action="#{entityInfoController.prepareCreate}" value="#{resources.ViewEntityInfoCreateLink}" />
+                <br />
+                <h:commandLink action="#{entityInfoController.prepareList}" value="#{resources.ViewEntityInfoShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewEntityInfoIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

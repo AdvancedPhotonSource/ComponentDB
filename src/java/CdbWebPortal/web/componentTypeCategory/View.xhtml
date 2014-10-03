@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewComponentTypeCategoryTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewComponentTypeCategoryLabel_id}"/>
+                    <h:outputText value="#{componentTypeCategoryController.selected.id}" title="#{resources.ViewComponentTypeCategoryTitle_id}"/>
+                    <h:outputText value="#{resources.ViewComponentTypeCategoryLabel_name}"/>
+                    <h:outputText value="#{componentTypeCategoryController.selected.name}" title="#{resources.ViewComponentTypeCategoryTitle_name}"/>
+                    <h:outputText value="#{resources.ViewComponentTypeCategoryLabel_description}"/>
+                    <h:outputText value="#{componentTypeCategoryController.selected.description}" title="#{resources.ViewComponentTypeCategoryTitle_description}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{componentTypeCategoryController.destroyAndView}" value="#{resources.ViewComponentTypeCategoryDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewComponentTypeCategoryEditLink}"/>
+                <br />
+                <h:commandLink action="#{componentTypeCategoryController.prepareCreate}" value="#{resources.ViewComponentTypeCategoryCreateLink}" />
+                <br />
+                <h:commandLink action="#{componentTypeCategoryController.prepareList}" value="#{resources.ViewComponentTypeCategoryShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewComponentTypeCategoryIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

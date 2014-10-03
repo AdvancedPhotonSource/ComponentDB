@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditComponentTypeCategoryTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditComponentTypeCategoryLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{componentTypeCategoryController.selected.id}" title="#{resources.EditComponentTypeCategoryTitle_id}" required="true" requiredMessage="#{resources.EditComponentTypeCategoryRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditComponentTypeCategoryLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{componentTypeCategoryController.selected.name}" title="#{resources.EditComponentTypeCategoryTitle_name}" required="true" requiredMessage="#{resources.EditComponentTypeCategoryRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.EditComponentTypeCategoryLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{componentTypeCategoryController.selected.description}" title="#{resources.EditComponentTypeCategoryTitle_description}" />
+                </h:panelGrid>
+                <h:commandLink action="#{componentTypeCategoryController.update}" value="#{resources.EditComponentTypeCategorySaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditComponentTypeCategoryViewLink}"/>
+                <br />
+                <h:commandLink action="#{componentTypeCategoryController.prepareList}" value="#{resources.EditComponentTypeCategoryShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditComponentTypeCategoryIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

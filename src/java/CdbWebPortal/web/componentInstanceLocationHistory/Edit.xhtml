@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditComponentInstanceLocationHistoryTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{componentInstanceLocationHistoryController.selected.id}" title="#{resources.EditComponentInstanceLocationHistoryTitle_id}" required="true" requiredMessage="#{resources.EditComponentInstanceLocationHistoryRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_locationDetails}" for="locationDetails" />
+                    <h:inputText id="locationDetails" value="#{componentInstanceLocationHistoryController.selected.locationDetails}" title="#{resources.EditComponentInstanceLocationHistoryTitle_locationDetails}" />
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{componentInstanceLocationHistoryController.selected.description}" title="#{resources.EditComponentInstanceLocationHistoryTitle_description}" />
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_enteredOnDateTime}" for="enteredOnDateTime" />
+                    <h:inputText id="enteredOnDateTime" value="#{componentInstanceLocationHistoryController.selected.enteredOnDateTime}" title="#{resources.EditComponentInstanceLocationHistoryTitle_enteredOnDateTime}" required="true" requiredMessage="#{resources.EditComponentInstanceLocationHistoryRequiredMessage_enteredOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_enteredByUserId}" for="enteredByUserId" />
+                    <h:selectOneMenu id="enteredByUserId" value="#{componentInstanceLocationHistoryController.selected.enteredByUserId}" title="#{resources.EditComponentInstanceLocationHistoryTitle_enteredByUserId}" required="true" requiredMessage="#{resources.EditComponentInstanceLocationHistoryRequiredMessage_enteredByUserId}">
+                        <f:selectItems value="#{userInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_locationId}" for="locationId" />
+                    <h:selectOneMenu id="locationId" value="#{componentInstanceLocationHistoryController.selected.locationId}" title="#{resources.EditComponentInstanceLocationHistoryTitle_locationId}" >
+                        <f:selectItems value="#{componentInstanceController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditComponentInstanceLocationHistoryLabel_componentInstanceId}" for="componentInstanceId" />
+                    <h:selectOneMenu id="componentInstanceId" value="#{componentInstanceLocationHistoryController.selected.componentInstanceId}" title="#{resources.EditComponentInstanceLocationHistoryTitle_componentInstanceId}" required="true" requiredMessage="#{resources.EditComponentInstanceLocationHistoryRequiredMessage_componentInstanceId}">
+                        <f:selectItems value="#{componentInstanceController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{componentInstanceLocationHistoryController.update}" value="#{resources.EditComponentInstanceLocationHistorySaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditComponentInstanceLocationHistoryViewLink}"/>
+                <br />
+                <h:commandLink action="#{componentInstanceLocationHistoryController.prepareList}" value="#{resources.EditComponentInstanceLocationHistoryShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditComponentInstanceLocationHistoryIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

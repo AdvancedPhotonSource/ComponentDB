@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditDesignLinkTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditDesignLinkLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{designLinkController.selected.id}" title="#{resources.EditDesignLinkTitle_id}" required="true" requiredMessage="#{resources.EditDesignLinkRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditDesignLinkLabel_label}" for="label" />
+                    <h:inputText id="label" value="#{designLinkController.selected.label}" title="#{resources.EditDesignLinkTitle_label}" />
+                    <h:outputLabel value="#{resources.EditDesignLinkLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{designLinkController.selected.description}" title="#{resources.EditDesignLinkTitle_description}" />
+                    <h:outputLabel value="#{resources.EditDesignLinkLabel_childDesignId}" for="childDesignId" />
+                    <h:selectOneMenu id="childDesignId" value="#{designLinkController.selected.childDesignId}" title="#{resources.EditDesignLinkTitle_childDesignId}" required="true" requiredMessage="#{resources.EditDesignLinkRequiredMessage_childDesignId}">
+                        <f:selectItems value="#{designController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditDesignLinkLabel_parentDesignId}" for="parentDesignId" />
+                    <h:selectOneMenu id="parentDesignId" value="#{designLinkController.selected.parentDesignId}" title="#{resources.EditDesignLinkTitle_parentDesignId}" required="true" requiredMessage="#{resources.EditDesignLinkRequiredMessage_parentDesignId}">
+                        <f:selectItems value="#{designController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{designLinkController.update}" value="#{resources.EditDesignLinkSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditDesignLinkViewLink}"/>
+                <br />
+                <h:commandLink action="#{designLinkController.prepareList}" value="#{resources.EditDesignLinkShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditDesignLinkIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
