@@ -1,0 +1,256 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package gov.anl.aps.cdb.portal.model.entities;
+
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+/**
+ *
+ * @author sveseli
+ */
+@Entity
+@Table(name = "design_element")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "DesignElement.findAll", query = "SELECT d FROM DesignElement d"),
+    @NamedQuery(name = "DesignElement.findById", query = "SELECT d FROM DesignElement d WHERE d.id = :id"),
+    @NamedQuery(name = "DesignElement.findByName", query = "SELECT d FROM DesignElement d WHERE d.name = :name"),
+    @NamedQuery(name = "DesignElement.findByQuantity", query = "SELECT d FROM DesignElement d WHERE d.quantity = :quantity"),
+    @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
+    @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
+public class DesignElement implements Serializable
+{
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    private Integer id;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 64)
+    private String name;
+    private Integer quantity;
+    @Size(max = 256)
+    private String description;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "sort_order")
+    private Float sortOrder;
+    @JoinTable(name = "design_element_log", joinColumns = {
+        @JoinColumn(name = "design_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "log_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Log> logList;
+    @JoinTable(name = "design_element_component_instance", joinColumns = {
+        @JoinColumn(name = "design_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "component_instance_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<ComponentInstance> componentInstanceList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
+    private List<DesignElementConnection> designElementConnectionList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstDesignElementId")
+    private List<DesignElementConnection> designElementConnectionList1;
+    @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private EntityInfo entityInfoId;
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Location locationId;
+    @JoinColumn(name = "component_id", referencedColumnName = "id")
+    @ManyToOne
+    private Component componentId;
+    @JoinColumn(name = "child_design_id", referencedColumnName = "id")
+    @ManyToOne
+    private Design childDesignId;
+    @JoinColumn(name = "parent_design_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private Design parentDesignId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "designElementId")
+    private List<DesignElementProperty> designElementPropertyList;
+
+    public DesignElement() {
+    }
+
+    public DesignElement(Integer id) {
+        this.id = id;
+    }
+
+    public DesignElement(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Float getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Float sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
+    @XmlTransient
+    public List<Log> getLogList() {
+        return logList;
+    }
+
+    public void setLogList(List<Log> logList) {
+        this.logList = logList;
+    }
+
+    @XmlTransient
+    public List<ComponentInstance> getComponentInstanceList() {
+        return componentInstanceList;
+    }
+
+    public void setComponentInstanceList(List<ComponentInstance> componentInstanceList) {
+        this.componentInstanceList = componentInstanceList;
+    }
+
+    @XmlTransient
+    public List<DesignElementConnection> getDesignElementConnectionList() {
+        return designElementConnectionList;
+    }
+
+    public void setDesignElementConnectionList(List<DesignElementConnection> designElementConnectionList) {
+        this.designElementConnectionList = designElementConnectionList;
+    }
+
+    @XmlTransient
+    public List<DesignElementConnection> getDesignElementConnectionList1() {
+        return designElementConnectionList1;
+    }
+
+    public void setDesignElementConnectionList1(List<DesignElementConnection> designElementConnectionList1) {
+        this.designElementConnectionList1 = designElementConnectionList1;
+    }
+
+    public EntityInfo getEntityInfoId() {
+        return entityInfoId;
+    }
+
+    public void setEntityInfoId(EntityInfo entityInfoId) {
+        this.entityInfoId = entityInfoId;
+    }
+
+    public Location getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(Location locationId) {
+        this.locationId = locationId;
+    }
+
+    public Component getComponentId() {
+        return componentId;
+    }
+
+    public void setComponentId(Component componentId) {
+        this.componentId = componentId;
+    }
+
+    public Design getChildDesignId() {
+        return childDesignId;
+    }
+
+    public void setChildDesignId(Design childDesignId) {
+        this.childDesignId = childDesignId;
+    }
+
+    public Design getParentDesignId() {
+        return parentDesignId;
+    }
+
+    public void setParentDesignId(Design parentDesignId) {
+        this.parentDesignId = parentDesignId;
+    }
+
+    @XmlTransient
+    public List<DesignElementProperty> getDesignElementPropertyList() {
+        return designElementPropertyList;
+    }
+
+    public void setDesignElementPropertyList(List<DesignElementProperty> designElementPropertyList) {
+        this.designElementPropertyList = designElementPropertyList;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof DesignElement)) {
+            return false;
+        }
+        DesignElement other = (DesignElement) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "gov.anl.aps.cdb.portal.model.entities.DesignElement[ id=" + id + " ]";
+    }
+    
+}
