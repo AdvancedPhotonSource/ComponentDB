@@ -32,7 +32,7 @@
                     <h:outputLabel value="#{resources.EditPropertyTypeLabel_isDynamic}" for="isDynamic" />
                     <h:inputText id="isDynamic" value="#{propertyTypeController.selected.isDynamic}" title="#{resources.EditPropertyTypeTitle_isDynamic}" required="true" requiredMessage="#{resources.EditPropertyTypeRequiredMessage_isDynamic}"/>
                     <h:outputLabel value="#{resources.EditPropertyTypeLabel_propertyTypeCategoryId}" for="propertyTypeCategoryId" />
-                    <h:selectOneMenu id="propertyTypeCategoryId" value="#{propertyTypeController.selected.propertyTypeCategoryId}" title="#{resources.EditPropertyTypeTitle_propertyTypeCategoryId}" >
+                    <h:selectOneMenu id="propertyTypeCategoryId" value="#{propertyTypeController.selected.propertyTypeCategory}" title="#{resources.EditPropertyTypeTitle_propertyTypeCategoryId}" >
                         <f:selectItems value="#{propertyTypeCategoryController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

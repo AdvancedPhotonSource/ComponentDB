@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.beans;
 
 import gov.anl.aps.cdb.portal.model.entities.PropertyTypeCategory;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -18,6 +18,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCategory>
 {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -29,5 +30,16 @@ public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCateg
     public PropertyTypeCategoryFacade() {
         super(PropertyTypeCategory.class);
     }
-    
+
+    public PropertyTypeCategory findByName(String name) {
+        try {
+            return (PropertyTypeCategory) em.createNamedQuery("PropertyTypeCategory.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        }
+        catch (NoResultException ex) {
+        }
+        return null;
+    }
+
 }

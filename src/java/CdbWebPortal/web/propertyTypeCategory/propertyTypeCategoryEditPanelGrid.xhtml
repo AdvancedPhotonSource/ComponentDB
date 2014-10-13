@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+    <c:set var="propertyTypeCategoryObject" value="#{propertyTypeCategoryController.selected}"/>
+
+    <p:panelGrid columns="3" styleClass="createEntityDetails">
+
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="name" value="#{propertyTypeCategoryObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:message for="name"/> 
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:inputText id="description" value="#{propertyTypeCategoryObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:message for="description"/> 
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{propertyTypeCategoryObject.id}" title="Id" styleClass="entityDataText"/>
+        <p:message for="id"/> 
+
+    </p:panelGrid>
+
+</ui:composition>
+
+

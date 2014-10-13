@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -34,9 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyTypeCategory.findById", query = "SELECT p FROM PropertyTypeCategory p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyTypeCategory.findByName", query = "SELECT p FROM PropertyTypeCategory p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyTypeCategory.findByDescription", query = "SELECT p FROM PropertyTypeCategory p WHERE p.description = :description")})
-public class PropertyTypeCategory implements Serializable
+public class PropertyTypeCategory extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -47,7 +47,7 @@ public class PropertyTypeCategory implements Serializable
     private String name;
     @Size(max = 256)
     private String description;
-    @OneToMany(mappedBy = "propertyTypeCategoryId")
+    @OneToMany(mappedBy = "propertyTypeCategory")
     private List<PropertyType> propertyTypeList;
 
     public PropertyTypeCategory() {
@@ -102,22 +102,32 @@ public class PropertyTypeCategory implements Serializable
         return hash;
     }
 
+    public boolean equalsByName(PropertyTypeCategory other) {
+        if (other == null) {
+            return false;
+        }
+        return ObjectUtility.equals(this.name, other.name);
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PropertyTypeCategory)) {
             return false;
         }
         PropertyTypeCategory other = (PropertyTypeCategory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.PropertyTypeCategory[ id=" + id + " ]";
+        return name;
     }
     
 }

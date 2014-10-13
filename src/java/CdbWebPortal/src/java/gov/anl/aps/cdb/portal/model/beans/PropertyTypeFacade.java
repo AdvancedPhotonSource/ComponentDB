@@ -9,6 +9,7 @@ package gov.anl.aps.cdb.portal.model.beans;
 import gov.anl.aps.cdb.portal.model.entities.PropertyType;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -28,6 +29,17 @@ public class PropertyTypeFacade extends AbstractFacade<PropertyType>
 
     public PropertyTypeFacade() {
         super(PropertyType.class);
+    }
+    
+    public PropertyType findByName(String name) {
+        try {
+            return (PropertyType)em.createNamedQuery("PropertyType.findByName")
+                .setParameter("name", name)
+                .getSingleResult();
+        }
+        catch (NoResultException ex) {
+        }
+        return null;
     }
     
 }

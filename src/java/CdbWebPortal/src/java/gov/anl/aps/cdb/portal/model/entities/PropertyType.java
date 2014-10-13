@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -45,9 +46,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findByDefaultUnits", query = "SELECT p FROM PropertyType p WHERE p.defaultUnits = :defaultUnits"),
     @NamedQuery(name = "PropertyType.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "PropertyType.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
-public class PropertyType implements Serializable
+public class PropertyType extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -99,7 +99,7 @@ public class PropertyType implements Serializable
     private List<DesignElementProperty> designElementPropertyList;
     @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private PropertyTypeCategory propertyTypeCategoryId;
+    private PropertyTypeCategory propertyTypeCategory;
 
     public PropertyType() {
     }
@@ -251,12 +251,12 @@ public class PropertyType implements Serializable
         this.designElementPropertyList = designElementPropertyList;
     }
 
-    public PropertyTypeCategory getPropertyTypeCategoryId() {
-        return propertyTypeCategoryId;
+    public PropertyTypeCategory getPropertyTypeCategory() {
+        return propertyTypeCategory;
     }
 
-    public void setPropertyTypeCategoryId(PropertyTypeCategory propertyTypeCategoryId) {
-        this.propertyTypeCategoryId = propertyTypeCategoryId;
+    public void setPropertyTypeCategory(PropertyTypeCategory propertyTypeCategory) {
+        this.propertyTypeCategory = propertyTypeCategory;
     }
 
     @Override
@@ -266,22 +266,34 @@ public class PropertyType implements Serializable
         return hash;
     }
 
+    public boolean equalsByName(PropertyType other) {
+        if (other == null) {
+            return false;
+        }
+
+        return ObjectUtility.equals(this.name, other.name);
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PropertyType)) {
             return false;
         }
         PropertyType other = (PropertyType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.PropertyType[ id=" + id + " ]";
+        return name;
     }
+
     
 }
