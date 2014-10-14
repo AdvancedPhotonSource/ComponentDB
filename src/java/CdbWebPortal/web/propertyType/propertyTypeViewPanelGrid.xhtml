@@ -22,6 +22,21 @@
         <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
         <h:outputText id="category" value="#{propertyTypeObject.propertyTypeCategory.name}" title="Category" styleClass="entityDataText"/>
 
+        <h:outputLabel for="handlerName" value="Handler Name" styleClass="entityDataLabel"/>
+        <h:outputText id="handlerName" value="#{propertyTypeObject.handlerName}" title="Handler Name" styleClass="entityDataText"/>
+
+        <h:outputLabel for="defaultValue" value="Default Value" styleClass="entityDataLabel"/>
+        <h:outputText id="defaultValue" value="#{propertyTypeObject.defaultValue}" title="Default Value" styleClass="entityDataText"/>
+
+        <h:outputLabel for="defaultUnits" value="Default Units" styleClass="entityDataLabel"/>
+        <h:outputText id="defaultUnits" value="#{propertyTypeObject.defaultUnits}" title="Default Units" styleClass="entityDataText"/>
+
+        <h:outputLabel for="userWriteable" value="User Writeable" styleClass="entityDataLabel"/>        
+        <h:outputText id="userWriteable" value="#{propertyTypeObject.isUserWriteable}" title="User Writeable" styleClass="entityDataText"/>
+
+        <h:outputLabel for="dynamic" value="Dynamic" styleClass="entityDataLabel"/>        
+        <h:outputText id="dynamic" value="#{propertyTypeObject.isDynamic}" title="Dynamic" styleClass="entityDataText"/>
+        
     </p:panelGrid>
 
 </ui:composition>

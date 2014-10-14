@@ -8,14 +8,16 @@
 
     <c:set var="propertyTypeCategoryObject" value="#{propertyTypeCategoryController.selected}"/>
 
-    <p:panelGrid columns="3" styleClass="createEntityDetails">
+    <p:panelGrid columns="4" styleClass="createEntityDetails">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{propertyTypeCategoryObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
+        <p:tooltip for="name" value="Enter property type category name. (Required)"/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputText id="description" value="#{propertyTypeCategoryObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/> 
+        <p:tooltip for="description" value="Enter property type category description. (Optional)"/>
 
     </p:panelGrid>
 
