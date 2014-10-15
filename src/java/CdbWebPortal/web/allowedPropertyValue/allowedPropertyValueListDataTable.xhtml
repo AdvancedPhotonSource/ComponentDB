@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="propertyTypeObject" value="#{propertyTypeController.selected}"/>
+    
+    <p:dataTable id="allowedPropertyValueListDataTable" 
+                 var="allowedPropertyValueObject" value="#{propertyTypeObject.allowedPropertyValueList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No specified allowed property values found.">
+
+        <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id">
+            <h:outputText value="#{allowedPropertyValueObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value">
+            <h:outputText value="#{allowedPropertyValueObject.value}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

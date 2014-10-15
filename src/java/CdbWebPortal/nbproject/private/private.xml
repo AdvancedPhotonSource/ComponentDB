@@ -7,7 +7,10 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/propertyType/propertyTypeViewPanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/propertyTypeCategory/propertyTypeCategoryCreatePanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/propertyType/propertyTypeEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/allowedPropertyValue/allowedPropertyValueListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/allowedPropertyValue/view.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/propertyTypeCategory/propertyTypeCategoryEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/propertyType/view.xhtml</file>
         </group>
     </open-files>
 </project-private>
