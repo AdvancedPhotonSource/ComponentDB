@@ -8,7 +8,7 @@
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link href="../resources/css/portal.css" rel="stylesheet" type="text/css" />
+        <link href="../../resources/css/portal.css" rel="stylesheet" type="text/css" />
         <title>Component Database Portal</title>
     </h:head>
 
@@ -17,7 +17,7 @@
         <div id="top" class="topContent">
             <div id="topLeft" class="topLeftContent">
                 <ui:insert name="topLeft">
-                    <h:graphicImage alt="ANL Logo" url="../resources/images/AnlLogo167x75.png"/>
+                    <h:graphicImage alt="ANL Logo" url="../../resources/images/AnlLogo167x75.png"/>
                 </ui:insert>
             </div>
             <div>
@@ -53,13 +53,7 @@
                     <div id="menuCenter" class="menuCenterContent">
                         <ui:insert name="menuCenter">
                             <h:form prependId="false">
-                                <p:menubar>
-                                    <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home"/>
-                                    <p:menuitem value="Users" url="/views/userInfo/list.xhtml"/>
-                                    <p:menuitem value="Property Types" url="/views/propertyType/list.xhtml"/>
-                                    <p:menuitem value="Login" onclick="loginDialog.show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
-                                    <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>                                
-                                </p:menubar>
+                                <ui:include src="contentViewTemplateMenubar.xhtml"/>
                             </h:form>
                         </ui:insert>
                     </div>

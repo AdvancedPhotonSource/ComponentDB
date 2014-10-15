@@ -6,26 +6,30 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                template="../templates/contentViewTemplate4x3.xhtml">
+                template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
         <div class="pageTitle">
-            <h1>Registered Users</h1>
+            <h1>Property Types</h1>
         </div>
 
-        <h:form id="viewUserInfoListForm">
-            <c:set var="entityController" value="#{userInfoController}"/>
+        <h:form id="viewPropertyTypeListForm">            
+            <c:set var="entityController" value="#{propertyTypeController}"/>
             <ui:include src="../common/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>  
-                <ui:include src="userInfoListDataTable.xhtml"/>
-            </h:panelGroup>
+                
+                <ui:include src="propertyTypeListDataTable.xhtml"/>
 
-            <ui:include src="userInfoDestroyDialog.xhtml"/>
+             </h:panelGroup>
 
-            <h:outputScript library="js/userInfo" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
+            <ui:include src="propertyTypeDestroyDialog.xhtml"/>
 
+            <ui:include src="propertyTypeListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
+        <h:outputScript library="js/propertyType" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
+
     </ui:define>
+
 </ui:composition>

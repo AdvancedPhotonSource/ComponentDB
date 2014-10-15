@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:composition template="./templates/contentViewTemplate4x3.xhtml">
+    <ui:composition template="../templates/homeViewTemplate.xhtml">
         <ui:define name="middleCenter">
 
             <div class="homePage">
@@ -24,7 +24,7 @@
                     <p/>
                     <ui:fragment rendered="#{!loginController.loggedIn}">
                         You can browse system pages without any authentication. If you would like to add or modify
-                        CDB data, please <h:link outcome="/login" value="login"/>.
+                        CDB data, please <h:link outcome="/views/login" value="login"/>.
                     </ui:fragment>
                     <p/>
                 </div>
