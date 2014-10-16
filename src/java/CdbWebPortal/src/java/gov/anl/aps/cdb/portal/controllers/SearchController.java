@@ -7,7 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.User;
+import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
@@ -18,7 +18,6 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 /**
  * Search controller.
@@ -77,7 +76,7 @@ public class SearchController implements Serializable
     }
 
     public void updateSettings() {
-        User sessionUser = (User) SessionUtility.getUser();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         boolean settingsUpdated = false;
         if (sessionUser != null) {
             List<UserSetting> userSettingList = sessionUser.getUserSettingList();
@@ -99,7 +98,7 @@ public class SearchController implements Serializable
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
     }
 
-    public void updateSettingsFromSessionUser(User sessionUser) {
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
             return;
         }
@@ -107,7 +106,7 @@ public class SearchController implements Serializable
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
-    public void saveSettingsForSessionUser(User sessionUser) {
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
             return;
         }

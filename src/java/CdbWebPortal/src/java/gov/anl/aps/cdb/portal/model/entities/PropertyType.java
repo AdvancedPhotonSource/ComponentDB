@@ -89,7 +89,7 @@ public class PropertyType extends CloneableEntity
     private List<DesignProperty> designPropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<ComponentInstanceProperty> componentInstancePropertyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyTypeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<AllowedPropertyValue> allowedPropertyValueList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<ComponentConnectorProperty> componentConnectorPropertyList;

@@ -13,16 +13,32 @@
                  var="allowedPropertyValueObject" value="#{propertyTypeObject.allowedPropertyValueList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 emptyMessage="No specified allowed property values found.">
+                 emptyMessage="No allowed property values have been specified.">
 
         <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id">
             <h:outputText value="#{allowedPropertyValueObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value">
+        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value"
+                  filterBy="#{allowedPropertyValueObject.value}" filterMatchMode="contains">
             <h:outputText value="#{allowedPropertyValueObject.value}"/>
         </p:column>
 
+        <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units"
+                  filterBy="#{allowedPropertyValueObject.units}" filterMatchMode="contains">
+            <h:outputText value="#{allowedPropertyValueObject.units}"/>
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order"
+                  filterBy="#{allowedPropertyValueObject.sortOrder}" filterMatchMode="contains">
+            <h:outputText value="#{allowedPropertyValueObject.sortOrder}"/>
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description"
+                  filterBy="#{allowedPropertyValueObject.description}" filterMatchMode="contains">
+            <h:outputText value="#{allowedPropertyValueObject.description}"/>
+        </p:column>
+        
     </p:dataTable>
 
 </ui:composition>

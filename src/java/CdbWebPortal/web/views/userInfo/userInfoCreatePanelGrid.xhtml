@@ -46,8 +46,8 @@
         <p:message for="description"/>        
         <p:tooltip for="description" value="Enter user description. (Optional)"/>
 
-        <h:outputLabel for="userGroups" value="Group" styleClass="entityDataLabel"/>
-        <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" converter="userGroupConverter" title="Group" styleClass="entityDataSelectMany">
+        <h:outputLabel for="userGroups" value="Groups" styleClass="entityDataLabel"/>
+        <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" converter="userGroupConverter" title="Groups" styleClass="entityDataSelectMany">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
         </h:selectManyMenu>

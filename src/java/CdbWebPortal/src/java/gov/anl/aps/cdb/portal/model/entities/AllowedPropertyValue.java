@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,10 +28,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AllowedPropertyValue.findByValue", query = "SELECT a FROM AllowedPropertyValue a WHERE a.value = :value"),
     @NamedQuery(name = "AllowedPropertyValue.findByUnits", query = "SELECT a FROM AllowedPropertyValue a WHERE a.units = :units"),
     @NamedQuery(name = "AllowedPropertyValue.findByDescription", query = "SELECT a FROM AllowedPropertyValue a WHERE a.description = :description"),
-    @NamedQuery(name = "AllowedPropertyValue.findBySortOrder", query = "SELECT a FROM AllowedPropertyValue a WHERE a.sortOrder = :sortOrder")})
-public class AllowedPropertyValue implements Serializable
+    @NamedQuery(name = "AllowedPropertyValue.findBySortOrder", query = "SELECT a FROM AllowedPropertyValue a WHERE a.sortOrder = :sortOrder"),
+    @NamedQuery(name = "AllowedPropertyValue.findAllByPropertyTypeId", query = "SELECT a FROM AllowedPropertyValue a WHERE a.propertyType.id = :propertyTypeId")})
+public class AllowedPropertyValue extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -53,7 +47,7 @@ public class AllowedPropertyValue implements Serializable
     private Float sortOrder;
     @JoinColumn(name = "property_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private PropertyType propertyTypeId;
+    private PropertyType propertyType;
 
     public AllowedPropertyValue() {
     }
@@ -102,12 +96,12 @@ public class AllowedPropertyValue implements Serializable
         this.sortOrder = sortOrder;
     }
 
-    public PropertyType getPropertyTypeId() {
-        return propertyTypeId;
+    public PropertyType getPropertyType() {
+        return propertyType;
     }
 
-    public void setPropertyTypeId(PropertyType propertyTypeId) {
-        this.propertyTypeId = propertyTypeId;
+    public void setPropertyType(PropertyType propertyType) {
+        this.propertyType = propertyType;
     }
 
     @Override
@@ -117,17 +111,32 @@ public class AllowedPropertyValue implements Serializable
         return hash;
     }
 
+    public boolean equalsByPropertyTypeAndValue(AllowedPropertyValue other) {
+        if (other == null) {
+            return false;
+        }
+        
+        if (!ObjectUtility.equals(this.propertyType, other.propertyType)) {
+            return false;
+        }
+        
+        return ObjectUtility.equals(this.value, other.value);
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AllowedPropertyValue)) {
             return false;
         }
         AllowedPropertyValue other = (AllowedPropertyValue) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByPropertyTypeAndValue(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override

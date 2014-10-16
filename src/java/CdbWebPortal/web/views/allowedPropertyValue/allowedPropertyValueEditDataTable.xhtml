@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <c:set var="propertyTypeObject" value="#{propertyTypeController.selected}"/>
+    <p:dataTable id="allowedPropertyValueEditDataTable" 
+                 var="allowedPropertyValueObject" 
+                 value="#{propertyTypeObject.allowedPropertyValueList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 editable="true"
+                 emptyMessage="No allowed property values have been specified.">
+
+        <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id">
+            <h:outputText id="valueId" value="#{allowedPropertyValueObject.id}"/>
+            <p:tooltip for="valueId" value="Object id cannot be modified."/>
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value">
+            <h:inputText id="value" value="#{allowedPropertyValueObject.value}" styleClass="cellInput"/>
+            <p:tooltip for="value" value="Enter allowed property value. (Optional)"/>
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units">
+            <h:inputText id="valueUnits" value="#{allowedPropertyValueObject.units}" styleClass="cellInput"/>
+            <p:tooltip for="valueUnits" value="Enter units. (Optional)"/>
+
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order">
+            <h:inputText id="valueSortOrder" value="#{allowedPropertyValueObject.sortOrder}" styleClass="shortCellInput"/>
+            <p:tooltip for="valueSortOrder" value="Enter sort order. (Optional)"/>
+
+        </p:column>
+
+        <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description">
+            <h:inputText id="valueDescription" value="#{allowedPropertyValueObject.description}" styleClass="longCellInput"/>
+            <p:tooltip for="valueDescription" value="Enter description. (Optional)"/>
+        </p:column>
+
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{propertyTypeController.deleteAllowedPropertyValue(allowedPropertyValueObject)}" 
+                               actionListener="#{allowedPropertyValueController.destroy(allowedPropertyValueObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

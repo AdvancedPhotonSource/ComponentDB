@@ -5,6 +5,7 @@ import gov.anl.aps.cdb.portal.model.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.entities.AllowedPropertyValue;
 
 import java.io.Serializable;
 import java.util.List;
@@ -150,6 +151,24 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     @Override
     public boolean entityHasCategories() {
         return true;
+    }
+
+    public void prepareAddAllowedPropertyValue() {
+        PropertyType propertyType = getCurrent();
+        List<AllowedPropertyValue> allowedPropertyValueList = propertyType.getAllowedPropertyValueList();
+        AllowedPropertyValue allowedPropertyValue = new AllowedPropertyValue();
+        allowedPropertyValue.setPropertyType(propertyType);
+        allowedPropertyValueList.add(allowedPropertyValue);
+    }
+
+    public void saveAllowedPropertyValueList() {
+        update();
+    }
+
+    public void deleteAllowedPropertyValue(AllowedPropertyValue allowedPropertyValue) {
+        PropertyType propertyType = getCurrent();
+        List<AllowedPropertyValue> allowedPropertyValueList = propertyType.getAllowedPropertyValueList();
+        allowedPropertyValueList.remove(allowedPropertyValue);
     }
 
     @FacesConverter(forClass = PropertyType.class)
