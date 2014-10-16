@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <c:set var="userInfoObject" value="#{userInfoController.selected}"/>    
+    <p:dataTable id="userSettingEditDataTable" 
+                 var="userSettingObject" 
+                 value="#{userInfoObject.userSettingList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="25"
+                 editable="true"
+                 emptyMessage="No user settings found.">
+
+        <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name">
+            <h:outputText value="#{userSettingObject.settingType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{userSettingObject.value}" headerText="Value">
+            <h:inputText value="#{userSettingObject.value}" styleClass="cellInput"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

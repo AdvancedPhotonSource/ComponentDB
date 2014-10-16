@@ -8,6 +8,8 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <c:set var="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
+    <c:set var="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
     <c:set var="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
 
     <div class="actionButton">
@@ -33,11 +35,11 @@
             <p:tooltip for="#{entityTypeName}ResetFiltersButton" value="Reset list filters."/>
         </p:commandButton>
 
-        <p:button id="#{entityTypeName}ViewCategoriesButton" href="../#{entityTypeName}Category/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
+        <p:button id="#{entityTypeName}ViewCategoriesButton" href="../#{entityTypeCategoryName}/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ViewCategoriesButton" value="View categories."/>
         </p:button>
 
-        <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeName}Group/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+        <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ViewGroupsButton" value="View groups."/>
         </p:button>        
 

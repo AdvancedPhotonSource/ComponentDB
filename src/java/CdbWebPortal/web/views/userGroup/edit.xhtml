@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+    <ui:define name="middleCenter">
+        <div class="pageTitle">
+            <h1>Edit User Group</h1>
+        </div>
+
+        <h:form id="editUserGroupForm">
+
+            <ui:include src="userGroupEditPanelGrid.xhtml"/>
+            <p/>
+            <div class="actionButton">
+                <p:commandButton action="#{userGroupController.update()}" value="Save" alt="Save User Group" icon="ui-icon-check" update="@form"/>
+                <p:commandButton action="#{userGroupController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
+            </div>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+
