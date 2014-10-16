@@ -55,6 +55,11 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     }
 
     @Override
+    public String getEntityTypeCategoryName() {
+        return "propertyTypeCategory";
+    }
+    
+    @Override
     public String getDisplayEntityTypeName() {
         return "property type";
     }

@@ -132,7 +132,15 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     protected abstract EntityType createEntityInstance();
 
     public abstract String getEntityTypeName();
+    
+    public String getEntityTypeGroupName() {
+        return null;
+    }
 
+    public String getEntityTypeCategoryName() {
+        return null;
+    }
+    
     public String getDisplayEntityTypeName() {
         return getEntityTypeName();
     }
@@ -631,11 +639,11 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
     
     public boolean entityHasCategories() {
-        return false;
+        return getEntityTypeCategoryName() != null;
     }
 
     public boolean entityHasGroups() {
-        return false;
+        return getEntityTypeGroupName() != null;
     }
 
     public boolean entityCanBeCreatedByUsers() {
