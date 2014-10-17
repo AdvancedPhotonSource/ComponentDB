@@ -18,7 +18,8 @@
                  widgetVar="userInfoListWidget" 
                  emptyMessage="No users found.">
 
-        <p:column sortBy="#{userObject.id}" headerText="Id">
+        <p:column sortBy="#{userObject.id}" headerText="Id"
+                  rendered="#{userInfoController.displayId}">
             <h:outputText value="#{userObject.id}"/>
         </p:column>
 
@@ -27,33 +28,39 @@
             <h:outputText value="#{userObject.username}"/>
         </p:column>
 
-        <p:column sortBy="#{userObject.userGroupList.toString()}" headerText="Group" 
-                  filterBy="#{userObject.userGroupList}" filterMatchMode="contains">
+        <p:column sortBy="#{userObject.userGroupList.toString()}" headerText="Groups" 
+                  filterBy="#{userObject.userGroupList}" filterMatchMode="contains"
+                  rendered="#{userInfoController.displayGroups}">
             <h:outputText value="#{userController.displayEntityList(userObject.userGroupList)}"/>
         </p:column>
 
         <p:column sortBy="#{userObject.lastName}" headerText="Last Name" 
-                  filterBy="#{userObject.lastName}" filterMatchMode="contains">
+                  filterBy="#{userObject.lastName}" filterMatchMode="contains"
+                  rendered="#{userInfoController.displayLastName}">
             <h:outputText value="#{userObject.lastName}"/>
         </p:column>                  
 
         <p:column sortBy="#{userObject.firstName}" headerText="First Name" 
-                  filterBy="#{userObject.firstName}" filterMatchMode="contains">
+                  filterBy="#{userObject.firstName}" filterMatchMode="contains"
+                  rendered="#{userInfoController.displayFirstName}">
             <h:outputText value="#{userObject.firstName}"/>
         </p:column> 
 
         <p:column sortBy="#{userObject.middleName}" rendered="false" headerText="Middle Name" 
-                  filterBy="#{userObject.middleName}" filterMatchMode="contains">
+                  filterBy="#{userObject.middleName}" filterMatchMode="contains"
+                  rendered="#{userInfoController.displayMiddleName}">
             <h:outputText value="#{userObject.middleName}"/>
         </p:column> 
 
         <p:column sortBy="#{userObject.email}" headerText="Email" 
-                  filterBy="#{userObject.email}" filterMatchMode="contains">
+                  filterBy="#{userObject.email}" filterMatchMode="contains"
+                  rendered="#{userInfoController.displayEmail}">
             <h:outputText value="#{userObject.email}"/>
         </p:column>
 
         <p:column sortBy="#{userObject.description}" headerText="Description" 
-                  filterBy="#{userObject.description}" filterMatchMode="contains">
+                  filterBy="#{userObject.description}" filterMatchMode="contains"
+                  rendered="#{userInfoController.displayDescription}">
             <h:outputText value="#{userObject.description}"/>
         </p:column>
         

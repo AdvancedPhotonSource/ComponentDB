@@ -12,12 +12,12 @@
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{sourceObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
-        <p:tooltip for="name" value="Enter source name. (Required)"/>
+        <p:tooltip for="name" value="Source name is required."/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputText id="description" value="#{sourceObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/>  
-        <p:tooltip for="description" value="Enter source description. (Optional)"/>
+        <p:tooltip for="description" value="Source description is optional."/>
 
     </p:panelGrid>
 

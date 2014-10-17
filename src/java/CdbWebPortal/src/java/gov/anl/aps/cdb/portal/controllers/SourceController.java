@@ -23,6 +23,11 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "Source.List.Display.Description";
+
+    private static final String FilterByNameSettingTypeKey = "Source.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "Source.List.FilterBy.Description";
 
     @EJB
     private SourceFacade sourceFacade;
@@ -67,6 +72,11 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         }
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();        
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -76,8 +86,27 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);        
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);        
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+    }
+    
     @FacesConverter(forClass = Source.class)
     public static class SourceControllerConverter implements Converter
     {

@@ -3,37 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/source/sourceEditPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/source/sourceCreatePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/allowedPropertyValue/allowedPropertyValueListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyTypeCategory/view.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/UserInfoController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/userInfoViewPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/propertyTypeViewPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/entities/AllowedPropertyValue.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/SearchController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/AllowedPropertyValueController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/userInfoCreatePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/edit.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/beans/AllowedPropertyValueFacade.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/userInfoListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/allowedPropertyValue/allowedPropertyValueEditDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userGroup/userGroupViewPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/create.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyTypeCategory/list.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/view.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userGroup/userGroupEditPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/edit.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/userInfoEditPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyTypeController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/propertyTypeCreatePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/propertyTypeEditPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/view.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/source/sourceListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userGroup/userGroupCreatePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/resources/css/portal.css</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userGroup/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/SourceController.java</file>
         </group>
     </open-files>
 </project-private>

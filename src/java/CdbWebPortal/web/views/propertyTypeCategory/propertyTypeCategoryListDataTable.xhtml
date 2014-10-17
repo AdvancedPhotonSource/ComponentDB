@@ -25,14 +25,14 @@
         </p:column>
 
         <p:column sortBy="#{propertyTypeCategoryObject.name}" headerText="Name" 
-                  filterBy="name" filterMatchMode="contains"
+                  filterBy="#{propertyTypeCategoryObject.name}" filterMatchMode="contains"
                   filterValue="#{propertyTypeCategoryController.filterByName}"
                   rendered="true">
             <h:outputText value="#{propertyTypeCategoryObject.name}"/>
         </p:column>
 
         <p:column sortBy="#{propertyTypeCategoryObject.description}" headerText="Description" 
-                  filterBy="description" filterMatchMode="contains"
+                  filterBy="#{propertyTypeCategoryObject.description}" filterMatchMode="contains"
                   filterValue="#{propertyTypeCategoryController.filterByDescription}"
                   rendered="#{propertyTypeCategoryController.displayDescription}">
             <h:outputText value="#{propertyTypeCategoryObject.description}"/>

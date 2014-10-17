@@ -29,12 +29,42 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     private static final String DisplayIdSettingTypeKey = "PropertyType.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "PropertyType.List.Display.Description";
 
+    private static final String DisplayCategorySettingTypeKey = "PropertyType.List.Display.Category";
+    private static final String DisplayDefaultUnitsSettingTypeKey = "PropertyType.List.Display.DefaultUnits";
+    private static final String DisplayDefaultValueSettingTypeKey = "PropertyType.List.Display.DefaultValue";
+    private static final String DisplayHandlerNameSettingTypeKey = "PropertyType.List.Display.HandlerName";
+    private static final String DisplayIsDynamicSettingTypeKey = "PropertyType.List.Display.IsDynamic";
+    private static final String DisplayIsUserWriteableSettingTypeKey = "PropertyType.List.Display.IsUserWriteable";
+
+    private static final String FilterByNameSettingTypeKey = "PropertyType.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "PropertyType.List.FilterBy.Description";
+    
+    private static final String FilterByCategorySettingTypeKey = "PropertyType.List.FilterBy.Category";
+    private static final String FilterByDefaultUnitsSettingTypeKey = "PropertyType.List.FilterBy.DefaultUnits";
+    private static final String FilterByDefaultValueSettingTypeKey = "PropertyType.List.FilterBy.DefaultValue";
+    private static final String FilterByHandlerNameSettingTypeKey = "PropertyType.List.FilterBy.HandlerName";
+    private static final String FilterByIsDynamicSettingTypeKey = "PropertyType.List.FilterBy.IsDynamic";
+    private static final String FilterByIsUserWriteableSettingTypeKey = "PropertyType.List.FilterBy.IsUserWriteable";
+    
+    
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
 
-    private String filterByTypeCategory = null;
+    private Boolean displayCategory = null;
+    private Boolean displayDefaultUnits = null;
+    private Boolean displayDefaultValue = null;
+    private Boolean displayHandlerName = null;
+    private Boolean displayIsDynamic = null;
+    private Boolean displayIsUserWriteable = null;
+
+    private String filterByCategory = null;    
+    private String filterByDefaultUnits = null;
+    private String filterByDefaultValue = null;
+    private String filterByHandlerName = null;
+    private String filterByIsDynamic = null;
+    private String filterByIsUserWriteable = null;    
 
     public PropertyTypeController() {
     }
@@ -100,6 +130,24 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        displayCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayCategorySettingTypeKey).getDefaultValue());
+        displayDefaultUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayDefaultUnitsSettingTypeKey).getDefaultValue());
+        displayDefaultValue = Boolean.parseBoolean(settingTypeMap.get(DisplayDefaultValueSettingTypeKey).getDefaultValue());
+        displayHandlerName = Boolean.parseBoolean(settingTypeMap.get(DisplayHandlerNameSettingTypeKey).getDefaultValue());
+        displayIsDynamic = Boolean.parseBoolean(settingTypeMap.get(DisplayIsDynamicSettingTypeKey).getDefaultValue());
+        displayIsUserWriteable = Boolean.parseBoolean(settingTypeMap.get(DisplayIsUserWriteableSettingTypeKey).getDefaultValue());
+ 
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();        
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+
+        filterByCategory = settingTypeMap.get(FilterByCategorySettingTypeKey).getDefaultValue();        
+        filterByDefaultUnits = settingTypeMap.get(FilterByDefaultUnitsSettingTypeKey).getDefaultValue();
+        filterByDefaultValue = settingTypeMap.get(FilterByDefaultValueSettingTypeKey).getDefaultValue();
+        filterByHandlerName = settingTypeMap.get(FilterByHandlerNameSettingTypeKey).getDefaultValue();
+        filterByIsDynamic = settingTypeMap.get(FilterByIsDynamicSettingTypeKey).getDefaultValue();
+        filterByIsUserWriteable = settingTypeMap.get(FilterByIsUserWriteableSettingTypeKey).getDefaultValue();
+        
     }
 
     @Override
@@ -111,6 +159,14 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        displayCategory = sessionUser.getUserSettingValueAsBoolean(DisplayCategorySettingTypeKey, displayCategory);
+        displayDefaultUnits = sessionUser.getUserSettingValueAsBoolean(DisplayDefaultUnitsSettingTypeKey, displayDefaultUnits);
+        displayDefaultValue = sessionUser.getUserSettingValueAsBoolean(DisplayDefaultValueSettingTypeKey, displayDefaultValue);
+        displayHandlerName = sessionUser.getUserSettingValueAsBoolean(DisplayHandlerNameSettingTypeKey, displayHandlerName);
+        displayIsDynamic = sessionUser.getUserSettingValueAsBoolean(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
+        displayIsUserWriteable = sessionUser.getUserSettingValueAsBoolean(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
+        
     }
 
     @Override
@@ -120,7 +176,12 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
             return;
         }
         Map<String, String> filters = dataTable.getFilters();
-        filterByTypeCategory = filters.get("propertyTypeCategory.name");
+        filterByCategory = filters.get("propertyTypeCategory.name");
+        filterByDefaultUnits = filters.get("defaultUnits");
+        filterByDefaultValue = filters.get("defaultValue");
+        filterByHandlerName = filters.get("handlerName");
+        filterByIsDynamic = filters.get("isDynamic");
+        filterByIsUserWriteable = filters.get("isUserWriteable");
     }
 
     @Override
@@ -132,21 +193,134 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
+        sessionUser.setUserSettingValue(DisplayDefaultUnitsSettingTypeKey, displayDefaultUnits);
+        sessionUser.setUserSettingValue(DisplayDefaultValueSettingTypeKey, displayDefaultValue);
+        sessionUser.setUserSettingValue(DisplayHandlerNameSettingTypeKey, displayHandlerName);
+        sessionUser.setUserSettingValue(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
+        sessionUser.setUserSettingValue(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        sessionUser.setUserSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
+        sessionUser.setUserSettingValue(FilterByDefaultUnitsSettingTypeKey, filterByDefaultUnits);
+        sessionUser.setUserSettingValue(FilterByDefaultValueSettingTypeKey, filterByDefaultValue);
+        sessionUser.setUserSettingValue(FilterByHandlerNameSettingTypeKey, filterByHandlerName);
+        sessionUser.setUserSettingValue(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
+        sessionUser.setUserSettingValue(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
+        
     }
     
     @Override
     public void clearListFilters() {
         super.clearListFilters();
-        filterByTypeCategory = null;
+        filterByCategory = null;
+        filterByDefaultUnits = null;
+        filterByDefaultValue = null;
+        filterByHandlerName = null;
+        filterByIsDynamic = null;
+        filterByIsUserWriteable = null;
     }
 
-    public String getFilterByTypeCategory() {
-        return filterByTypeCategory;
+    public Boolean getDisplayCategory() {
+        return displayCategory;
     }
 
-    public void setFilterByTypeCategory(String filterByTypeCategory) {
-        this.filterByTypeCategory = filterByTypeCategory;
+    public void setDisplayCategory(Boolean displayCategory) {
+        this.displayCategory = displayCategory;
     }
+
+    public Boolean getDisplayDefaultUnits() {
+        return displayDefaultUnits;
+    }
+
+    public void setDisplayDefaultUnits(Boolean displayDefaultUnits) {
+        this.displayDefaultUnits = displayDefaultUnits;
+    }
+
+    public Boolean getDisplayDefaultValue() {
+        return displayDefaultValue;
+    }
+
+    public void setDisplayDefaultValue(Boolean displayDefaultValue) {
+        this.displayDefaultValue = displayDefaultValue;
+    }
+
+    public Boolean getDisplayHandlerName() {
+        return displayHandlerName;
+    }
+
+    public void setDisplayHandlerName(Boolean displayHandlerName) {
+        this.displayHandlerName = displayHandlerName;
+    }
+
+    public Boolean getDisplayIsDynamic() {
+        return displayIsDynamic;
+    }
+
+    public void setDisplayIsDynamic(Boolean displayIsDynamic) {
+        this.displayIsDynamic = displayIsDynamic;
+    }
+
+    public Boolean getDisplayIsUserWriteable() {
+        return displayIsUserWriteable;
+    }
+
+    public void setDisplayIsUserWriteable(Boolean displayIsUserWriteable) {
+        this.displayIsUserWriteable = displayIsUserWriteable;
+    }
+
+    public String getFilterByCategory() {
+        return filterByCategory;
+    }
+
+    public void setFilterByCategory(String filterByCategory) {
+        this.filterByCategory = filterByCategory;
+    }
+
+    public String getFilterByDefaultUnits() {
+        return filterByDefaultUnits;
+    }
+
+    public void setFilterByDefaultUnits(String filterByDefaultUnits) {
+        this.filterByDefaultUnits = filterByDefaultUnits;
+    }
+
+    public String getFilterByDefaultValue() {
+        return filterByDefaultValue;
+    }
+
+    public void setFilterByDefaultValue(String filterByDefaultValue) {
+        this.filterByDefaultValue = filterByDefaultValue;
+    }
+
+    public String getFilterByHandlerName() {
+        return filterByHandlerName;
+    }
+
+    public void setFilterByHandlerName(String filterByHandlerName) {
+        this.filterByHandlerName = filterByHandlerName;
+    }
+
+    public String getFilterByIsDynamic() {
+        return filterByIsDynamic;
+    }
+
+    public void setFilterByIsDynamic(String filterByIsDynamic) {
+        this.filterByIsDynamic = filterByIsDynamic;
+    }
+
+    public String getFilterByIsUserWriteable() {
+        return filterByIsUserWriteable;
+    }
+
+    public void setFilterByIsUserWriteable(String filterByIsUserWriteable) {
+        this.filterByIsUserWriteable = filterByIsUserWriteable;
+    }
+
+
 
     @Override
     public boolean entityHasCategories() {

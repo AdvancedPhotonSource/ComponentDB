@@ -27,6 +27,9 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
     private static final String DisplayIdSettingTypeKey = "PropertyTypeCategory.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "PropertyTypeCategory.List.Display.Description";
 
+    private static final String FilterByNameSettingTypeKey = "PropertyTypeCategory.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "PropertyTypeCategory.List.FilterBy.Description";
+    
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
     @EJB
@@ -91,6 +94,9 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();        
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();        
     }
 
     @Override
@@ -102,6 +108,9 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);        
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);        
     }
 
     @Override
@@ -113,6 +122,9 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);        
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);        
     }
     
     @FacesConverter(forClass = PropertyTypeCategory.class)

@@ -16,7 +16,7 @@
         <h:inputText id="username" value="#{userObject.username}" rendered="#{isFieldWriteable}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
         <h:outputText id="usernameOutput" value="#{userObject.username}" rendered="#{!isFieldWriteable}" title="Username" styleClass="entityDataEmphasizedText"/>
         <p:message for="username"/> 
-        <p:tooltip for="username" value="Enter username. (Required)"/>
+        <p:tooltip for="username" value="Username is required."/>
 
         <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
         <h:outputText id="id" value="#{userObject.id}" title="Id" styleClass="entityDataText"/>
@@ -27,34 +27,34 @@
         <h:inputText id="lastName" value="#{userObject.lastName}" rendered="#{isFieldWriteable}" title="Last Name" required="true" styleClass="entityDataText"/>
         <h:outputText id="lastNameOutput" value="#{userObject.lastName}" rendered="#{!isFieldWriteable}" title="Last Name" styleClass="entityDataText"/>
         <p:message for="lastName"/>
-        <p:tooltip for="lastName" value="Enter user last name. (Required)"/>
+        <p:tooltip for="lastName" value="User last name is required."/>
 
         <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
         <h:inputText id="firstName" value="#{userObject.firstName}" rendered="#{isFieldWriteable}" title="First Name" required="true" styleClass="entityDataText"/>
         <h:outputText id="firstNameOutput" value="#{userObject.firstName}" rendered="#{!isFieldWriteable}" title="First Name" styleClass="entityDataText"/>
         <p:message for="firstName"/> 
-        <p:tooltip for="firstName" value="Enter user first name. (Required)"/>
+        <p:tooltip for="firstName" value="User first name is required."/>
 
         <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
         <h:inputText id="middleName" value="#{userObject.middleName}" title="Middle Name" rendered="#{isFieldWriteable}" styleClass="entityDataText"/>
         <h:outputText id="middleNameOutput" value="#{userObject.middleName}" title="Middle Name" rendered="#{!isFieldWriteable}" styleClass="entityDataText"/>
         <p:message for="middleName"/>
-        <p:tooltip for="middleName" value="Enter user middle name or initial. (Optional)"/>
+        <p:tooltip for="middleName" value="User middle name or initial is optional."/>
 
         <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
         <h:inputText id="email" value="#{userObject.email}" title="Email" styleClass="entityDataText"/>
         <p:message for="email"/>
-        <p:tooltip for="email" value="Enter user email. (Optional)"/>
+        <p:tooltip for="email" value="User email is optional."/>
 
         <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
         <p:password id="password" value="#{userController.passwordEntry}" title="Password" feedback="true" styleClass="entityDataText"/>
         <p:message for="password"/>
-        <p:tooltip for="password" value="Set user local password. When local password is set the system database becomes primary authentication mechanism. (Optional)"/>
+        <p:tooltip for="password" value="User local password specification is optional. When it is set, the system database becomes primary authentication mechanism. (Optional)"/>
  
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputText id="description" value="#{userObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/>        
-        <p:tooltip for="description" value="Enter user description. (Optional)"/>
+        <p:tooltip for="description" value="User description is optional."/>
 
         <h:outputLabel for="userGroups" value="Groups" styleClass="entityDataLabel"/>
         <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" rendered="#{isFieldWriteable}"
@@ -65,7 +65,7 @@
         </h:selectManyMenu>
         <h:outputText id="userGroupsOutput" value="#{userController.displayEntityList(userObject.userGroupList)}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
         <p:message for="userGroups"/>
-        <p:tooltip for="userGroups" value="Chose user groups. (Optional)"/>
+        <p:tooltip for="userGroups" value="User group specification is optional. More than one group may be selected."/>
 
     </p:panelGrid>
 </ui:composition>

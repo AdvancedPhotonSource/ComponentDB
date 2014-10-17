@@ -33,13 +33,48 @@
         <p:column sortBy="#{propertyTypeObject.propertyTypeCategory.name}" headerText="Category" 
                   filterBy="#{propertyTypeObject.propertyTypeCategory.name}" filterMatchMode="exact"
                   filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
-                  filterValue="#{propertyTypeController.filterByTypeCategory}"
-                  rendered="true">
+                  filterValue="#{propertyTypeController.filterByCategory}"
+                  rendered="#{propertyTypeController.displayCategory}">
             <h:outputText value="#{propertyTypeObject.propertyTypeCategory.name}"/>
         </p:column>
 
+        <p:column sortBy="#{propertyTypeObject.defaultUnits}" headerText="Default Units" 
+                  filterBy="#{propertyTypeObject.defaultUnits}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByDefaultUnits}"
+                  rendered="#{propertyTypeController.displayDefaultUnits}">
+            <h:outputText value="#{propertyTypeObject.defaultUnits}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.defaultValue}" headerText="Default Value" 
+                  filterBy="#{propertyTypeObject.defaultValue}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByDefaultValue}"
+                  rendered="#{propertyTypeController.displayDefaultValue}">
+            <h:outputText value="#{propertyTypeObject.defaultValue}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.handlerName}" headerText="Handler Name" 
+                  filterBy="#{propertyTypeObject.handlerName}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByHandlerName}"
+                  rendered="#{propertyTypeController.displayHandlerName}">
+            <h:outputText value="#{propertyTypeObject.handlerName}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.isDynamic}" headerText="Is Dynamic" 
+                  filterBy="#{propertyTypeObject.isDynamic}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByIsDynamic}"
+                  rendered="#{propertyTypeController.displayIsDynamic}">
+            <h:outputText value="#{propertyTypeObject.isDynamic}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeObject.isUserWriteable}" headerText="Is User Writeable" 
+                  filterBy="#{propertyTypeObject.isUserWriteable}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByIsUserWriteable}"
+                  rendered="#{propertyTypeController.displayIsUserWriteable}">
+            <h:outputText value="#{propertyTypeObject.isUserWriteable}"/>
+        </p:column>
+        
         <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
-                  filterBy="description" filterMatchMode="contains"
+                  filterBy="#{propertyTypeObject.description}" filterMatchMode="contains"
                   filterValue="#{propertyTypeController.filterByDescription}"
                   rendered="#{propertyTypeController.displayDescription}">
             <h:outputText value="#{propertyTypeObject.description}"/>

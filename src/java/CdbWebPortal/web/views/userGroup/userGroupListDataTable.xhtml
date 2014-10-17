@@ -15,17 +15,19 @@
                  rows="#{userGroupController.displayNumberOfItemsPerPage}"
                  emptyMessage="No user groups found.">
 
-        <p:column sortBy="#{userGroupObject.id}" headerText="Id">
+        <p:column sortBy="#{userGroupObject.id}" headerText="Id"
+                  rendered="#{userGroupController.displayId}">
             <h:outputText value="#{userGroupObject.id}"/>
         </p:column>
 
         <p:column sortBy="#{userGroupObject.name}" headerText="Name" 
-                  filterBy="name" filterMatchMode="contains">
+                  filterBy="#{userGroupObject.name}" filterMatchMode="contains">
             <h:outputText value="#{userGroupObject.name}"/>
         </p:column>
 
         <p:column sortBy="#{userGroupObject.description}" headerText="Description" 
-                  filterBy="description" filterMatchMode="contains">
+                  filterBy="#{userGroupObject.description}" filterMatchMode="contains"
+                  rendered="#{userGroupController.displayDescription}">
             <h:outputText value="#{userGroupObject.description}"/>
         </p:column>
 

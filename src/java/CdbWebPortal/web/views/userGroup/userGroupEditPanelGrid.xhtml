@@ -12,12 +12,12 @@
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{userGroupObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
-        <p:tooltip for="name" value="Enter group name. (Required)"/>
+        <p:tooltip for="name" value="Group name is required."/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputText id="description" value="#{userGroupObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/>
-        <p:tooltip for="description" value="Enter group description. (Optional)"/>
+        <p:tooltip for="description" value="Group description is optional."/>
         
         <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
         <h:outputText id="id" value="#{userGroupObject.id}" title="Id" styleClass="entityDataText"/>

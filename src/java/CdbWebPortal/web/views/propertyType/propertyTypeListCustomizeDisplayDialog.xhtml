@@ -14,12 +14,30 @@
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{propertyTypeController.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayCategory" value="#{propertyTypeController.displayCategory}"/>  
+                <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
+ 
+                <p:selectBooleanCheckbox id="displayDefaultUnits" value="#{propertyTypeController.displayDefaultUnits}"/>  
+                <h:outputLabel for="displayDefaultUnits" value="Display Default Units" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayDefaultValue" value="#{propertyTypeController.displayDefaultValue}"/>  
+                <h:outputLabel for="displayDefaultValue" value="Display Default Value" styleClass="dialogDataLabel"/>
+                
                 <p:selectBooleanCheckbox id="displayDescription" value="#{propertyTypeController.displayDescription}"/>  
                 <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayHandlerName" value="#{propertyTypeController.displayHandlerName}"/>  
+                <h:outputLabel for="displayHandlerName" value="Display Handler Name" styleClass="dialogDataLabel"/>
+                
                 <p:selectBooleanCheckbox id="displayId" value="#{propertyTypeController.displayId}"/>  
                 <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayIsDynamic" value="#{propertyTypeController.displayIsDynamic}"/>  
+                <h:outputLabel for="displayIsDynamic" value="Display Dynamic Flag" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayIsUserWriteable" value="#{propertyTypeController.displayIsUserWriteable}"/>  
+                <h:outputLabel for="displayIsUserWriteable" value="Display User-Writeable Flag" styleClass="dialogDataLabel"/>
+                
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">

@@ -11,15 +11,22 @@
                  paginator="true" paginatorAlwaysVisible="false" 
                  emptyMessage="No sources found.">
 
-        <p:column sortBy="#{sourceObject.id}" headerText="Id">
+        <p:column sortBy="#{sourceObject.id}" headerText="Id"
+                  rendered="#{sourceController.displayId}">
             <h:outputText value="#{sourceObject.id}"/>
         </p:column>
 
         <p:column sortBy="#{sourceObject.name}" headerText="Name" 
-                  filterBy="name" filterMatchMode="contains">
+                  filterBy="#{sourceObject.name}" filterMatchMode="contains">
             <h:outputText value="#{sourceObject.name}"/>
         </p:column>
 
+       <p:column sortBy="#{sourceObject.description}" headerText="Description" 
+                  filterBy="#{sourceObject.description}" filterMatchMode="contains"
+                  rendered="#{sourceController.displayDescription}">
+            <h:outputText value="#{sourceObject.description}"/>
+        </p:column>
+        
         <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
             <div class="actionLink">
