@@ -140,7 +140,7 @@ for dbTable in $CDB_DB_TABLES; do
     dbFile=populate_$dbTable.sql
     if [ -f $dbFile ]; then
         echo "Populating $dbTable using $dbFile script"
-        execute $mysqlCmd $dbFile
+        execute $mysqlCmd $dbFile || exit 1
     else
         echo "$dbFile not found, skipping $dbTable update"
     fi
