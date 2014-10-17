@@ -72,24 +72,64 @@ VALUES
 	('Log.List.Display.Id','Display log entry id.', 'false'),
 	('Log.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('PropertyType.List.Display.Category','Display property type category.', 'true'),
+	('PropertyType.List.Display.DefaultUnits','Display property type default units.', 'false'),
+	('PropertyType.List.Display.DefaultValue','Display property type default value.', 'false'),
 	('PropertyType.List.Display.Description','Display property type description.', 'true'),
+	('PropertyType.List.Display.HandlerName','Display property type class handler name.', 'false'),
 	('PropertyType.List.Display.Id','Display property type id.', 'true'),
+	('PropertyType.List.Display.IsDynamic','Display dynamic property type designation.', 'false'),
+	('PropertyType.List.Display.IsUserWriteable','Display user-writeable property type designation.', 'false'),
 	('PropertyType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('PropertyType.List.FilterBy.Category','Filter for property type category.', NULL),
+	('PropertyType.List.FilterBy.DefaultUnits','Filter for property type default units.', NULL),
+	('PropertyType.List.FilterBy.DefaultValue','Filter for property type default value.', NULL),
+	('PropertyType.List.FilterBy.Description','Filter for property type description.', NULL),
+	('PropertyType.List.FilterBy.HandlerName','Filter for property type class handler name.', NULL),
+	('PropertyType.List.FilterBy.IsDynamic','Filter for dynamic property type designation.', NULL),
+	('PropertyType.List.FilterBy.IsUserWriteable','Filter for user-writeable property type designation.', NULL),
+	('PropertyType.List.FilterBy.Name','Filter for property type name.', NULL),
 
 	('PropertyTypeCategory.List.Display.Description','Display property type category description.', 'true'),
 	('PropertyTypeCategory.List.Display.Id','Display property type category id.', 'true'),
 	('PropertyTypeCategory.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('PropertyTypeCategory.List.FilterBy.Description','Filter for property type category description.', NULL),
+	('PropertyTypeCategory.List.FilterBy.Name','Filter for property type category name.', NULL),
+
 	('Search.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('Source.List.Display.Description','Display source description.', 'true'),
 	('Source.List.Display.Id','Display source id.', 'true'),
 	('Source.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('Source.List.FilterBy.Description','Filter for source description.', NULL),
+	('Source.List.FilterBy.Name','Filter for source name.', NULL),
+
+	('UserInfo.List.Display.Description','Display user description.', 'false'),
+	('UserInfo.List.Display.Email','Display user email.', 'true'),
+	('UserInfo.List.Display.FirstName','Display user first name.', 'true'),
 	('UserInfo.List.Display.Id','Display user id.', 'true'),
+	('UserInfo.List.Display.Groups','Display user groups.', 'true'),
+	('UserInfo.List.Display.LastName','Display user last name.', 'true'),
+	('UserInfo.List.Display.MiddleName','Display user middle name.', 'false'),
 	('UserInfo.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
+	('UserInfo.List.FilterBy.Description','Filter for user description.', NULL),
+	('UserInfo.List.FilterBy.Email','Filter for user email.', NULL),
+	('UserInfo.List.FilterBy.FirstName','Filter for user first name.', NULL),
+	('UserInfo.List.FilterBy.Groups','Filter for user groups.', NULL),
+	('UserInfo.List.FilterBy.LastName','Filter for user last name.', NULL),
+	('UserInfo.List.FilterBy.MiddleName','Filter for user middle name.', NULL),
+	('UserInfo.List.FilterBy.Username','Filter for username.', NULL),
+
+	('UserGroup.List.Display.Description','Display user group description.', 'true'),
 	('UserGroup.List.Display.Id','Display user group id.', 'true'),
-	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25');
+	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('UserGroup.List.FilterBy.Description','Filter for user group description.', NULL),
+	('UserGroup.List.FilterBy.Name','Filter for user group name.', NULL);
 
 
 UNLOCK TABLES;
