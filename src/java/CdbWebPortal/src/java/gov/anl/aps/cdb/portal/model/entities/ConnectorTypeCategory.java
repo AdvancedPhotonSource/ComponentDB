@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -34,9 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorTypeCategory.findById", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorTypeCategory.findByName", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorTypeCategory.findByDescription", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.description = :description")})
-public class ConnectorTypeCategory implements Serializable
+public class ConnectorTypeCategory extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

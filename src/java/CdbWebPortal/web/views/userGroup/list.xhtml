@@ -22,10 +22,14 @@
 
             <p/>
             <div class="actionButton">  
-                <p:button href="../user/list.xhtml" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:button href="../userInfo/list.xhtml" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
             <ui:include src="userGroupDestroyDialog.xhtml"/>
+
+            <ui:include src="userGroupListCustomizeDisplayDialog.xhtml"/>
         </h:form>
+
+        <h:outputScript library="js/userGroup" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
     </ui:define>
 
 </ui:composition>

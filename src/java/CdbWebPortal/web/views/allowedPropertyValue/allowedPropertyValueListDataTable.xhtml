@@ -8,14 +8,15 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="propertyTypeObject" value="#{propertyTypeController.selected}"/>
-    
+
     <p:dataTable id="allowedPropertyValueListDataTable" 
                  var="allowedPropertyValueObject" value="#{propertyTypeObject.allowedPropertyValueList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No allowed property values have been specified.">
 
-        <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id">
+        <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id"
+                  rendered="#{allowedPropertyValueController.displayId}">
             <h:outputText value="#{allowedPropertyValueObject.id}"/>
         </p:column>
 
@@ -25,20 +26,23 @@
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units"
-                  filterBy="#{allowedPropertyValueObject.units}" filterMatchMode="contains">
+                  filterBy="#{allowedPropertyValueObject.units}" filterMatchMode="contains"
+                  rendered="#{allowedPropertyValueController.displayUnits}">
             <h:outputText value="#{allowedPropertyValueObject.units}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order"
-                  filterBy="#{allowedPropertyValueObject.sortOrder}" filterMatchMode="contains">
+                  filterBy="#{allowedPropertyValueObject.sortOrder}" filterMatchMode="contains"
+                  rendered="#{allowedPropertyValueController.displaySortOrder}">
             <h:outputText value="#{allowedPropertyValueObject.sortOrder}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description"
-                  filterBy="#{allowedPropertyValueObject.description}" filterMatchMode="contains">
+                  filterBy="#{allowedPropertyValueObject.description}" filterMatchMode="contains"
+                  rendered="#{allowedPropertyValueController.displayDescription}">
             <h:outputText value="#{allowedPropertyValueObject.description}"/>
         </p:column>
-        
+
     </p:dataTable>
 
 </ui:composition>

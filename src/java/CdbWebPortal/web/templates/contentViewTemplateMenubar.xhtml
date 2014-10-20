@@ -6,9 +6,12 @@
 
     <p:menubar>
         <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home"/>
-        <p:menuitem value="Users" url="/views/userInfo/list.xhtml"/>
+        <p:menuitem value="Component Types" url="/views/componentType/list.xhtml"/>
         <p:menuitem value="Property Types" url="/views/propertyType/list.xhtml"/>
         <p:menuitem value="Sources" url="/views/source/list.xhtml"/>
+        <p:menuitem value="Users" url="/views/userInfo/list.xhtml"/>  
+        <p:menuitem value="Settings" action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit.xhtml')}" 
+                    rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
         <p:menuitem value="Login" onclick="loginDialog.show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
         <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
     </p:menubar>

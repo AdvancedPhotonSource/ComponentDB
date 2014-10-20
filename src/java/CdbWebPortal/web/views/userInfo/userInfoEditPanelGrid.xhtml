@@ -47,7 +47,7 @@
         <p:tooltip for="email" value="User email is optional."/>
 
         <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
-        <p:password id="password" value="#{userController.passwordEntry}" title="Password" feedback="true" styleClass="entityDataText"/>
+        <p:password id="password" value="#{userInfoController.passwordEntry}" title="Password" feedback="true" styleClass="entityDataText"/>
         <p:message for="password"/>
         <p:tooltip for="password" value="User local password specification is optional. When it is set, the system database becomes primary authentication mechanism. (Optional)"/>
  
@@ -63,7 +63,7 @@
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
         </h:selectManyMenu>
-        <h:outputText id="userGroupsOutput" value="#{userController.displayEntityList(userObject.userGroupList)}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
+        <h:outputText id="userGroupsOutput" value="#{userInfoController.displayEntityList(userObject.userGroupList)}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
         <p:message for="userGroups"/>
         <p:tooltip for="userGroups" value="User group specification is optional. More than one group may be selected."/>
 

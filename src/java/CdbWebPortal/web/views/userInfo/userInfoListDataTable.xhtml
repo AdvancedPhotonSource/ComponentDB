@@ -31,7 +31,7 @@
         <p:column sortBy="#{userObject.userGroupList.toString()}" headerText="Groups" 
                   filterBy="#{userObject.userGroupList}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayGroups}">
-            <h:outputText value="#{userController.displayEntityList(userObject.userGroupList)}"/>
+            <h:outputText value="#{userInfoController.displayEntityList(userObject.userGroupList)}"/>
         </p:column>
 
         <p:column sortBy="#{userObject.lastName}" headerText="Last Name" 
@@ -46,7 +46,7 @@
             <h:outputText value="#{userObject.firstName}"/>
         </p:column> 
 
-        <p:column sortBy="#{userObject.middleName}" rendered="false" headerText="Middle Name" 
+        <p:column sortBy="#{userObject.middleName}" headerText="Middle Name" 
                   filterBy="#{userObject.middleName}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayMiddleName}">
             <h:outputText value="#{userObject.middleName}"/>

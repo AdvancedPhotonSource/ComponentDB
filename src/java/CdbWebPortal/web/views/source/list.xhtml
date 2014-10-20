@@ -20,7 +20,12 @@
                 <ui:include src="sourceListDataTable.xhtml"/>
             </h:panelGroup>
             <ui:include src="sourceDestroyDialog.xhtml"/>
+            
+            <ui:include src="sourceListCustomizeDisplayDialog.xhtml"/>
+
         </h:form>
 
+        <h:outputScript library="js/source" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
+        
     </ui:define>
 </ui:composition>

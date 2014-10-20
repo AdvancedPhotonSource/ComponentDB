@@ -2,9 +2,12 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.beans.AllowedPropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -15,16 +18,38 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("allowedPropertyValueController")
 @SessionScoped
 public class AllowedPropertyValueController extends CrudEntityController<AllowedPropertyValue, AllowedPropertyValueFacade> implements Serializable
 {
 
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AllowedPropertyValue.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "AllowedPropertyValue.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "AllowedPropertyValue.List.Display.Description";
+
+    private static final String DisplaySortOrderSettingTypeKey = "AllowedPropertyValue.List.Display.SortOrder";
+    private static final String DisplayUnitsSettingTypeKey = "AllowedPropertyValue.List.Display.Units";
+
+    private static final String FilterByDescriptionSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Description";
+    private static final String FilterBySortOrderSettingTypeKey = "AllowedPropertyValue.List.FilterBy.SortOrder";
+    private static final String FilterByUnitsSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Units";
+    private static final String FilterByValueSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Value";
+
+    
     @EJB
     private AllowedPropertyValueFacade allowedPropertyValueFacade;
     private static final Logger logger = Logger.getLogger(AllowedPropertyValueController.class.getName());
 
+    private Boolean displayUnits = null;
+    private Boolean displaySortOrder = null;
+    
+    private String filterBySortOrder = null;
+    private String filterByUnits = null;
+    private String filterByValue = null;
+    
+    
     public AllowedPropertyValueController() {
     }
 
@@ -76,6 +101,116 @@ public class AllowedPropertyValueController extends CrudEntityController<Allowed
             super.destroy(allowedPropertyValue);
         }
     }
+
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
+        displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
+        filterByUnits = settingTypeMap.get(FilterByUnitsSettingTypeKey).getDefaultValue();
+        filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();   
+    }
+
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        
+        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
+        }
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterBySortOrder = filters.get("sortOrder");
+        filterByUnits = filters.get("units");
+        filterByValue = filters.get("value");
+    }    
+    
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);        
+    }
+    
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterBySortOrder = null;
+        filterByUnits = null;
+        filterByValue = null;
+    }    
+
+    public Boolean getDisplayUnits() {
+        return displayUnits;
+    }
+
+    public void setDisplayUnits(Boolean displayUnits) {
+        this.displayUnits = displayUnits;
+    }
+
+    public Boolean getDisplaySortOrder() {
+        return displaySortOrder;
+    }
+
+    public void setDisplaySortOrder(Boolean displaySortOrder) {
+        this.displaySortOrder = displaySortOrder;
+    }
+
+    public String getFilterBySortOrder() {
+        return filterBySortOrder;
+    }
+
+    public void setFilterBySortOrder(String filterBySortOrder) {
+        this.filterBySortOrder = filterBySortOrder;
+    }
+
+    public String getFilterByUnits() {
+        return filterByUnits;
+    }
+
+    public void setFilterByUnits(String filterByUnits) {
+        this.filterByUnits = filterByUnits;
+    }
+
+    public String getFilterByValue() {
+        return filterByValue;
+    }
+
+    public void setFilterByValue(String filterByValue) {
+        this.filterByValue = filterByValue;
+    }
+    
     
     @FacesConverter(forClass = AllowedPropertyValue.class)
     public static class AllowedPropertyValueControllerConverter implements Converter

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <c:set var="componentTypeObject" value="#{componentTypeController.selected}"/>
+
+    <p:panelGrid columns="2" style="viewEntityDetails">
+
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="name" value="#{componentTypeObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:outputText id="description" value="#{componentTypeObject.description}" title="Description" styleClass="entityDataText"/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{componentTypeObject.id}" title="Id" styleClass="entityDataText"/>
+
+        <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
+        <h:outputText id="category" value="#{componentTypeObject.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
+
+    </p:panelGrid>
+
+</ui:composition>
+
+

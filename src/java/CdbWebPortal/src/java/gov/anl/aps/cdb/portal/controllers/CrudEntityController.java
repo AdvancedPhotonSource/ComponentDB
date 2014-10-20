@@ -282,6 +282,13 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return "list?faces-redirect=true";
     }
 
+    public String resetListForView() {
+        logger.debug("Resetting list for view");
+        clearListFilters();
+        resetListDataModel();
+        return "view?faces-redirect=true";
+    }
+    
     public String followBreadcrumbOrPrepareList() {
         String loadView = breadcrumbViewParam;
         if (loadView == null) {

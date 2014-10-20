@@ -6,8 +6,10 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -38,9 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentType.findById", query = "SELECT c FROM ComponentType c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentType.findByName", query = "SELECT c FROM ComponentType c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentType.findByDescription", query = "SELECT c FROM ComponentType c WHERE c.description = :description")})
-public class ComponentType implements Serializable
+public class ComponentType extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -59,7 +60,7 @@ public class ComponentType implements Serializable
     private List<Component> componentList;
     @JoinColumn(name = "component_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private ComponentTypeCategory componentTypeCategoryId;
+    private ComponentTypeCategory componentTypeCategory;
 
     public ComponentType() {
     }
@@ -124,12 +125,12 @@ public class ComponentType implements Serializable
         this.componentList = componentList;
     }
 
-    public ComponentTypeCategory getComponentTypeCategoryId() {
-        return componentTypeCategoryId;
+    public ComponentTypeCategory getComponentTypeCategory() {
+        return componentTypeCategory;
     }
 
-    public void setComponentTypeCategoryId(ComponentTypeCategory componentTypeCategoryId) {
-        this.componentTypeCategoryId = componentTypeCategoryId;
+    public void setComponentTypeCategory(ComponentTypeCategory componentTypeCategory) {
+        this.componentTypeCategory = componentTypeCategory;
     }
 
     @Override
@@ -139,22 +140,49 @@ public class ComponentType implements Serializable
         return hash;
     }
 
+    public boolean equalsByName(ComponentType other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.name, other.name);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ComponentType)) {
             return false;
         }
         ComponentType other = (ComponentType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ComponentType[ id=" + id + " ]";
+        return name;
     }
+
+    public String getNameWithCategory() {
+        String result = name;
+        if (componentTypeCategory != null) {
+            result += ":" + componentTypeCategory.getName();
+        }
+        return result;
+    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
+
     
 }
