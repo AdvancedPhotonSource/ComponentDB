@@ -3,6 +3,17 @@ LOCK TABLES `setting_type` WRITE;
 
 INSERT INTO `setting_type` (`name`, `description`, `default_value`)
 VALUES
+	('AllowedPropertyValue.List.Display.Description','Display allowed property value description.', 'false'),
+	('AllowedPropertyValue.List.Display.Id','Display allowed property value id.', 'true'),
+	('AllowedPropertyValue.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+	('AllowedPropertyValue.List.Display.SortOrder','Display allowed property value sort order.', 'true'),
+	('AllowedPropertyValue.List.Display.Units','Display allowed property value units.', 'true'),
+
+	('AllowedPropertyValue.List.FilterBy.Description','Filter for allowed property value description.', NULL),
+	('AllowedPropertyValue.List.FilterBy.SortOrder','Filter for allowed property value class sort order.', NULL),
+	('AllowedPropertyValue.List.FilterBy.Units','Filter for allowed property value units.', NULL),
+	('AllowedPropertyValue.List.FilterBy.Value','Filter for allowed property value.', NULL),
+
 	('Component.List.Display.CreatedByUser', 'Display created by username.', 'false'),
 	('Component.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
 	('Component.List.Display.Description', 'Display component description.', 'true'),
@@ -129,7 +140,9 @@ VALUES
 	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('UserGroup.List.FilterBy.Description','Filter for user group description.', NULL),
-	('UserGroup.List.FilterBy.Name','Filter for user group name.', NULL);
+	('UserGroup.List.FilterBy.Name','Filter for user group name.', NULL),
+
+	('UserSetting.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25');
 
 
 UNLOCK TABLES;

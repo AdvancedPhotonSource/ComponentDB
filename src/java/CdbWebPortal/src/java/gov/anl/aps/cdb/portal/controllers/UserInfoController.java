@@ -86,6 +86,11 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     public String getEntityTypeGroupName() {
         return "userGroup";
     }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "user";
+    }
     
     @Override
     public String getCurrentEntityInstanceName() {

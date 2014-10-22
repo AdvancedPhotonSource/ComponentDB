@@ -4,8 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 
     <p:dataTable id="propertyTypeCategoryListDataTable"
@@ -38,15 +37,12 @@
             <h:outputText value="#{propertyTypeCategoryObject.description}"/>
         </p:column>
 
-        <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink action="#{propertyTypeCategoryController.prepareView(propertyTypeCategoryObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                <p:commandLink action="#{propertyTypeCategoryController.prepareEdit(propertyTypeCategoryObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="propertyTypeCategoryDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                    <f:setPropertyActionListener value="#{propertyTypeCategoryObject}" target="#{propertyTypeCategoryController.current}"/>
-                </p:commandLink>
-            </div>
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{propertyTypeCategoryController}"/>
+                <ui:param name="entityObject" value="#{propertyTypeCategoryObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
         </p:column>
     </p:dataTable>
 

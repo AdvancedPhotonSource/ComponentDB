@@ -9,19 +9,17 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>Add User</h1>
-        </div>
 
-        <h:form id="addUserInfoForm">
+        <h:form id="addUserInfoForm" rendered="#{loginController.loggedInAsAdmin}">
+            <div class="pageTitle">
+                <h1>Add User</h1>
+            </div>
 
             <ui:include src="userInfoCreatePanelGrid.xhtml"/>
 
             <p/>
-            <div class="actionButton">
-                <p:commandButton action="#{userInfoController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{userInfoController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
-            </div>
+            <ui:param name="entityController" value="#{userInfoController}"/>
+            <ui:include src="../common/commonCreateActionButtons.xhtml"/>
         </h:form>
 
     </ui:define>

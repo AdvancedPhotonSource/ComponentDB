@@ -27,15 +27,12 @@
             <h:outputText value="#{sourceObject.description}"/>
         </p:column>
         
-        <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink action="#{sourceController.prepareView(sourceObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                <p:commandLink action="#{sourceController.prepareEdit(sourceObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="sourceDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                    <f:setPropertyActionListener value="#{sourceObject}" target="#{sourceController.current}"/>
-                </p:commandLink>
-            </div>
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{sourceController}"/>
+                <ui:param name="entityObject" value="#{sourceObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
         </p:column>
     </p:dataTable>
 

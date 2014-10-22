@@ -3,11 +3,13 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <c:set var="childEntityController" value="#{allowedPropertyValueController}"/>
-    <ui:include src="../common/commonChildListActionButtons.xhtml"/>
+    <ui:include src="../common/commonChildListActionButtons.xhtml">
+        <ui:param name="parentEntityController" value="#{propertyTypeController}"/>
+        <ui:param name="childEntityController" value="#{allowedPropertyValueController}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+    </ui:include>    
     <ui:include src="allowedPropertyValueListDataTable.xhtml"/>
 
     <ui:include src="allowedPropertyValueListCustomizeDisplayDialog.xhtml"/>

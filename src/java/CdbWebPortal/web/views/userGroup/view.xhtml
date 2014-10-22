@@ -9,23 +9,18 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>User Group Details</h1>
-        </div>
 
         <h:form id="viewUserGroupForm">
+            <div class="pageTitle">
+                <h1>User Group Details</h1>
+            </div>
+
             <ui:include src="userGroupViewPanelGrid.xhtml"/>
 
             <p/>
+            <ui:param name="entityController" value="#{userGroupController}"/>
             <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
-            <div class="actionButton">
-                <p:commandButton action="#{userGroupController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                <p:commandButton onclick="PF('userGroupDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                    <f:setPropertyActionListener value="#{userGroupObject}" target="#{userGroupController.current}"/>
-                </p:commandButton>  
-                <p:commandButton action="#{userGroupController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
-            </div>
-
+            <ui:include src="../common/commonViewActionButtons.xhtml"/>
             <ui:include src="userGroupDestroyDialog.xhtml"/>
         </h:form>
 

@@ -3,29 +3,28 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>Source Catalog</h1>
-        </div>
 
-        <h:form id="viewSourceListForm">            
+        <h:form id="viewSourceListForm">      
+            <div class="pageTitle">
+                <h1>Source Catalog</h1>
+            </div>
+
             <ui:param name="entityController" value="#{sourceController}"/>
             <ui:include src="../common/commonListActionButtons.xhtml"/>
             <h:panelGroup>  
                 <ui:include src="sourceListDataTable.xhtml"/>
             </h:panelGroup>
             <ui:include src="sourceDestroyDialog.xhtml"/>
-            
+
             <ui:include src="sourceListCustomizeDisplayDialog.xhtml"/>
 
         </h:form>
 
         <h:outputScript library="js/source" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
-        
+
     </ui:define>
 </ui:composition>

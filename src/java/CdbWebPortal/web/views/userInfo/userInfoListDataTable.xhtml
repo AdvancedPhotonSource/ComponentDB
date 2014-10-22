@@ -8,7 +8,7 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <p:dataTable id="userInfoListDataTable"                              
-                 var="userObject" 
+                 var="userInfoObject" 
                  value="#{userInfoController.listDataModel}" 
                  filteredValue="#{userInfoController.filteredObjectList}"
                  paginator="true" 
@@ -18,61 +18,58 @@
                  widgetVar="userInfoListWidget" 
                  emptyMessage="No users found.">
 
-        <p:column sortBy="#{userObject.id}" headerText="Id"
+        <p:column sortBy="#{userInfoObject.id}" headerText="Id"
                   rendered="#{userInfoController.displayId}">
-            <h:outputText value="#{userObject.id}"/>
+            <h:outputText value="#{userInfoObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{userObject.username}" headerText="Username" 
-                  filterBy="#{userObject.username}" filterMatchMode="contains">
-            <h:outputText value="#{userObject.username}"/>
+        <p:column sortBy="#{userInfoObject.username}" headerText="Username" 
+                  filterBy="#{userInfoObject.username}" filterMatchMode="contains">
+            <h:outputText value="#{userInfoObject.username}"/>
         </p:column>
 
-        <p:column sortBy="#{userObject.userGroupList.toString()}" headerText="Groups" 
-                  filterBy="#{userObject.userGroupList}" filterMatchMode="contains"
+        <p:column sortBy="#{userInfoObject.userGroupList.toString()}" headerText="Groups" 
+                  filterBy="#{userInfoObject.userGroupList}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayGroups}">
-            <h:outputText value="#{userInfoController.displayEntityList(userObject.userGroupList)}"/>
+            <h:outputText value="#{userInfoController.displayEntityList(userInfoObject.userGroupList)}"/>
         </p:column>
 
-        <p:column sortBy="#{userObject.lastName}" headerText="Last Name" 
-                  filterBy="#{userObject.lastName}" filterMatchMode="contains"
+        <p:column sortBy="#{userInfoObject.lastName}" headerText="Last Name" 
+                  filterBy="#{userInfoObject.lastName}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayLastName}">
-            <h:outputText value="#{userObject.lastName}"/>
+            <h:outputText value="#{userInfoObject.lastName}"/>
         </p:column>                  
 
-        <p:column sortBy="#{userObject.firstName}" headerText="First Name" 
-                  filterBy="#{userObject.firstName}" filterMatchMode="contains"
+        <p:column sortBy="#{userInfoObject.firstName}" headerText="First Name" 
+                  filterBy="#{userInfoObject.firstName}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayFirstName}">
-            <h:outputText value="#{userObject.firstName}"/>
+            <h:outputText value="#{userInfoObject.firstName}"/>
         </p:column> 
 
-        <p:column sortBy="#{userObject.middleName}" headerText="Middle Name" 
-                  filterBy="#{userObject.middleName}" filterMatchMode="contains"
+        <p:column sortBy="#{userInfoObject.middleName}" headerText="Middle Name" 
+                  filterBy="#{userInfoObject.middleName}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayMiddleName}">
-            <h:outputText value="#{userObject.middleName}"/>
+            <h:outputText value="#{userInfoObject.middleName}"/>
         </p:column> 
 
-        <p:column sortBy="#{userObject.email}" headerText="Email" 
-                  filterBy="#{userObject.email}" filterMatchMode="contains"
+        <p:column sortBy="#{userInfoObject.email}" headerText="Email" 
+                  filterBy="#{userInfoObject.email}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayEmail}">
-            <h:outputText value="#{userObject.email}"/>
+            <h:outputText value="#{userInfoObject.email}"/>
         </p:column>
 
-        <p:column sortBy="#{userObject.description}" headerText="Description" 
-                  filterBy="#{userObject.description}" filterMatchMode="contains"
+        <p:column sortBy="#{userInfoObject.description}" headerText="Description" 
+                  filterBy="#{userInfoObject.description}" filterMatchMode="contains"
                   rendered="#{userInfoController.displayDescription}">
-            <h:outputText value="#{userObject.description}"/>
+            <h:outputText value="#{userInfoObject.description}"/>
         </p:column>
         
-        <c:set var="isEntityWriteable" value="#{loginController.isUserWriteable(userObject)}"/>
         <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink action="#{userInfoController.prepareView(userObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                <p:commandLink action="#{userInfoController.prepareEdit(userObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="userInfoDestroyDialogWidget.show()" rendered="#{loginController.loggedInAsAdmin}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                    <f:setPropertyActionListener value="#{userObject}" target="#{userInfoController.current}"/>
-                </p:commandLink>
-            </div>
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{userInfoController}"/>
+                <ui:param name="entityObject" value="#{userInfoObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userInfoObject)}"/>
+            </ui:include>
         </p:column>
     </p:dataTable>
 

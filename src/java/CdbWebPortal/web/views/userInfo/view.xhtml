@@ -17,29 +17,22 @@
                 </div>
 
                 <ui:include src="userInfoViewPanelGrid.xhtml"/>
-                
-                <p/>
-                <ui:param name="userObject" value="#{userInfoController.selected}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userObject)}"/>
-                <div class="actionButton">
-                    <p:commandButton action="#{userInfoController.prepareEdit(userObject)}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                    <p:commandButton onclick="PF('userInfoDestroyDialogWidget').show();" rendered="#{loginController.loggedInAsAdmin}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                        <f:setPropertyActionListener value="#{userObject}" target="#{userInfoController.current}"/>
-                    </p:commandButton>  
-                    <p:commandButton action="#{userInfoController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
-                </div>
 
+                <p/>
+                <ui:param name="entityController" value="#{userInfoController}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userInfoController.selected)}"/>
+                <ui:include src="../common/commonViewActionButtons.xhtml"/>
                 <ui:include src="userInfoDestroyDialog.xhtml"/>
-                
+
             </div>
             <div class="middleCenterRightContent">
-            <p:accordionPanel multiple="true">
-                <p:tab title="Settings">
+                <p:accordionPanel multiple="true">
+                    <p:tab title="Settings">
 
-                    <ui:include src="../userSetting/view.xhtml"/>
+                        <ui:include src="../userSetting/view.xhtml"/>
 
-                </p:tab>
-            </p:accordionPanel>
+                    </p:tab>
+                </p:accordionPanel>
             </div>
         </h:form>
 

@@ -9,13 +9,15 @@
 
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
     <ui:param name="parentObject" value="#{parentEntityController.selected}"/>
-    <ui:param name="isParentEntityWriteable" value="#{loginController.isUserWriteable(parentObject)}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{childEntityTypeName}ListEditButton" action="#{parentEntityController.prepareEdit(parentObject)}" rendered="#{isParentEntityWriteable}" value="Edit" icon="ui-icon-pencil">
+        <p:commandButton id="#{childEntityTypeName}ListEditButton" action="#{parentEntityController.prepareEdit(parentObject)}" rendered="#{isParentEntityWriteable}" alt="Edit" icon="ui-icon-pencil">
             <p:tooltip for="#{childEntityTypeName}ListEditButton" value="Edit list."/>
         </p:commandButton>
-
+        <p:commandButton id="#{childEntityTypeName}ListDoneButton" action="#{parentEntityController.prepareList()}" alt="Done" icon="ui-icon-arrowreturnthick-1-w">
+            <p:tooltip for="#{childEntityTypeName}ListDoneButton" value="Return to #{parentEntityController.displayEntityTypeName} list page."/>
+        </p:commandButton>
+        
         <p:commandButton id="#{childEntityTypeName}ListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:dataExporter type="xls" target="#{childEntityTypeName}ListDataTable" fileName="#{childEntityTypeName}s"/>
             <p:tooltip for="#{childEntityTypeName}ListExportXlsButton" value="Export list to excel file."/>

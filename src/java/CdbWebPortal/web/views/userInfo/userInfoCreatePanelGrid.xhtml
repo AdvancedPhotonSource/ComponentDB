@@ -6,47 +6,47 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <ui:param name="userObject" value="#{userInfoController.selected}"/>
+    <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>
 
     <p:panelGrid columns="4" styleClass="createEntityDetails">
 
         <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="username" value="#{userObject.username}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
+        <h:inputText id="username" value="#{userInfoObject.username}" title="Username" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="username"/> 
         <p:tooltip for="username" value="Username is required."/>
 
         <h:outputLabel for="lastName" value="Last Name" styleClass="entityDataLabel"/>
-        <h:inputText id="lastName" value="#{userObject.lastName}" title="Last Name" required="true" styleClass="entityDataText"/>
+        <h:inputText id="lastName" value="#{userInfoObject.lastName}" title="Last Name" required="true" styleClass="entityDataText"/>
         <p:message for="lastName"/>
         <p:tooltip for="lastName" value="User last name is required."/>
 
         <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
-        <h:inputText id="firstName" value="#{userObject.firstName}" title="First Name" required="true" styleClass="entityDataText"/>
+        <h:inputText id="firstName" value="#{userInfoObject.firstName}" title="First Name" required="true" styleClass="entityDataText"/>
         <p:message for="firstName"/> 
         <p:tooltip for="firstName" value="User first name is required."/>
 
         <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
-        <h:inputText id="middleName" value="#{userObject.middleName}" title="Middle Name" styleClass="entityDataText"/>
+        <h:inputText id="middleName" value="#{userInfoObject.middleName}" title="Middle Name" styleClass="entityDataText"/>
         <p:message for="middleName"/>
         <p:tooltip for="middleName" value="User middle name or initial is optional."/>
 
         <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
-        <h:inputText id="email" value="#{userObject.email}" title="Email" styleClass="entityDataText"/>
+        <h:inputText id="email" value="#{userInfoObject.email}" title="Email" styleClass="entityDataText"/>
         <p:message for="email"/>
         <p:tooltip for="email" value="User email is optional."/>
 
         <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
-        <p:password id="password" value="#{userObject.password}" title="Password" feedback="true" styleClass="entityDataText"/>
+        <p:password id="password" value="#{userInfoObject.password}" title="Password" feedback="true" styleClass="entityDataText"/>
         <p:message for="password"/>
         <p:tooltip for="password" value="User local password specification is optional. When it is set, the system database becomes primary authentication mechanism. (Optional)"/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:inputText id="description" value="#{userObject.description}" title="Description" styleClass="entityDataText"/>
+        <h:inputText id="description" value="#{userInfoObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/>        
         <p:tooltip for="description" value="User description is optional."/>
 
         <h:outputLabel for="userGroups" value="Groups" styleClass="entityDataLabel"/>
-        <h:selectManyMenu id="userGroups" value="#{userObject.userGroupList}" converter="userGroupConverter" title="Groups" styleClass="entityDataSelectMany">
+        <h:selectManyMenu id="userGroups" value="#{userInfoObject.userGroupList}" converter="userGroupConverter" title="Groups" styleClass="entityDataSelectMany">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
         </h:selectManyMenu>

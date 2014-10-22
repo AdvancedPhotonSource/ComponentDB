@@ -4,8 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:dataTable id="propertyTypeListDataTable"
                  var="propertyTypeObject" 
@@ -72,7 +71,7 @@
                   rendered="#{propertyTypeController.displayIsUserWriteable}">
             <h:outputText value="#{propertyTypeObject.isUserWriteable}"/>
         </p:column>
-        
+
         <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
                   filterBy="#{propertyTypeObject.description}" filterMatchMode="contains"
                   filterValue="#{propertyTypeController.filterByDescription}"
@@ -80,15 +79,12 @@
             <h:outputText value="#{propertyTypeObject.description}"/>
         </p:column>
 
-        <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink action="#{propertyTypeController.prepareView(propertyTypeObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                <p:commandLink action="#{propertyTypeController.prepareEdit(propertyTypeObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="propertyTypeDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                    <f:setPropertyActionListener value="#{propertyTypeObject}" target="#{propertyTypeController.current}"/>
-                </p:commandLink>
-            </div>
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{propertyTypeController}"/>
+                <ui:param name="entityObject" value="#{propertyTypeObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
         </p:column>
     </p:dataTable>
 

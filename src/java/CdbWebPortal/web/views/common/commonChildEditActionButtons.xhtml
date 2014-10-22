@@ -10,8 +10,14 @@
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{childEntityTypeName}EditSaveButton" action="#{parentEntityController[saveAction]}" ajax="false" value="Save" alt="Save List" icon="ui-icon-check">
+        <p:commandButton id="#{childEntityTypeName}EditAddButton" action="#{parentEntityController[addAction]}" rendered="#{displayAddButton}" alt="Add" icon="ui-icon-plus" update="@form">
+            <p:tooltip for="#{childEntityTypeName}EditAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
+        </p:commandButton>
+        <p:commandButton id="#{childEntityTypeName}EditSaveButton" action="#{parentEntityController[saveAction]}" ajax="false" alt="Save List" icon="ui-icon-check">
             <p:tooltip for="#{childEntityTypeName}EditSaveButton" value="Save list."/>
+        </p:commandButton>
+        <p:commandButton id="#{childEntityTypeName}EditDoneButton" action="#{parentEntityController.prepareList()}" alt="Done" icon="ui-icon-arrowreturnthick-1-w">
+            <p:tooltip for="#{childEntityTypeName}EditDoneButton" value="Return to #{parentEntityController.displayEntityTypeName} list page."/>
         </p:commandButton>
         
         <p:commandButton id="#{childEntityTypeName}EditExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">

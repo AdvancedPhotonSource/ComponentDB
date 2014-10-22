@@ -4,10 +4,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:p="http://primefaces.org/ui">
 
-    <c:set var="propertyTypeObject" value="#{propertyTypeController.selected}"/>
+    <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
    
     <p:dataTable id="allowedPropertyValueListDataTable" 
                  var="allowedPropertyValueObject" 

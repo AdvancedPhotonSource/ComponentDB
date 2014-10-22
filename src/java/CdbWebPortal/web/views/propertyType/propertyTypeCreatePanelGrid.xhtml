@@ -4,10 +4,9 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <c:set var="propertyTypeObject" value="#{propertyTypeController.selected}"/>
+    <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
 
     <p:panelGrid columns="4" styleClass="createEntityDetails">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>

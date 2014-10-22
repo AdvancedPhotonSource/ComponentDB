@@ -9,7 +9,7 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <h:form id="editUserInfoForm">
+        <h:form id="editUserInfoForm" rendered="#{loginController.loggedIn}">
 
             <div class="middleCenterLeftContent">
                 <div class="pageTitle">
@@ -18,10 +18,8 @@
 
                 <ui:include src="userInfoEditPanelGrid.xhtml"/>
                 <p/>
-                <div class="actionButton">
-                    <p:commandButton action="#{userInfoController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                    <p:commandButton action="#{userInfoController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
-                </div>
+                <ui:param name="entityController" value="#{userInfoController}"/>
+                <ui:include src="../common/commonEditActionButtons.xhtml"/>
             </div>
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true">

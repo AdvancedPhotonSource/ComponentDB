@@ -8,25 +8,18 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>Source Details</h1>
-        </div>
 
         <h:form id="viewSourceForm">
+            <div class="pageTitle">
+                <h1>Source Details</h1>
+            </div>
 
             <ui:include src="sourceViewPanelGrid.xhtml"/>
 
             <p/>
-            <ui:param name="sourceObject" value="#{sourceController.selected}"/>
+            <ui:param name="entityController" value="#{sourceController}"/>
             <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
-            <div class="actionButton">
-                <p:commandButton action="#{sourceController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
-                <p:commandButton onclick="PF('sourceDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                    <f:setPropertyActionListener value="#{sourceObject}" target="#{sourceController.current}"/>
-                </p:commandButton>  
-                <p:commandButton action="#{sourceController.prepareList()}" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
-            </div>
-
+            <ui:include src="../common/commonViewActionButtons.xhtml"/>
             <ui:include src="sourceDestroyDialog.xhtml"/>
         </h:form>
 

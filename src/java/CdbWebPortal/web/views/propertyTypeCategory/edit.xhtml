@@ -9,19 +9,18 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>Edit Property Type Category</h1>
-        </div>
 
-        <h:form id="editPropertyTypeCategoryForm">
+        <h:form id="editPropertyTypeCategoryForm" rendered="#{loginController.loggedInAsAdmin}">
+
+            <div class="pageTitle">
+                <h1>Edit Property Type Category</h1>
+            </div>
 
             <ui:include src="propertyTypeCategoryEditPanelGrid.xhtml"/>
 
             <p/>
-            <div class="actionButton">
-                <p:commandButton action="#{propertyTypeCategoryController.update()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{propertyTypeCategoryController.prepareList()}" immediate="true" value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w"/>
-            </div>
+            <ui:param name="entityController" value="#{propertyTypeCategoryController}"/>
+            <ui:include src="../common/commonEditActionButtons.xhtml"/>
         </h:form>
 
     </ui:define>
