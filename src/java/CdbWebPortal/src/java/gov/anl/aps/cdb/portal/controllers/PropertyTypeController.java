@@ -166,7 +166,17 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         displayHandlerName = sessionUser.getUserSettingValueAsBoolean(DisplayHandlerNameSettingTypeKey, displayHandlerName);
         displayIsDynamic = sessionUser.getUserSettingValueAsBoolean(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
         displayIsUserWriteable = sessionUser.getUserSettingValueAsBoolean(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
-        
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);        
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        filterByCategory = sessionUser.getUserSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);        
+        filterByDefaultUnits = sessionUser.getUserSettingValueAsString(FilterByDefaultUnitsSettingTypeKey, filterByDefaultUnits);
+        filterByDefaultValue = sessionUser.getUserSettingValueAsString(FilterByDefaultValueSettingTypeKey, filterByDefaultValue);
+        filterByHandlerName = sessionUser.getUserSettingValueAsString(FilterByHandlerNameSettingTypeKey, filterByHandlerName);
+        filterByIsDynamic = sessionUser.getUserSettingValueAsString(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
+        filterByIsUserWriteable = sessionUser.getUserSettingValueAsString(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
+                
     }
 
     @Override

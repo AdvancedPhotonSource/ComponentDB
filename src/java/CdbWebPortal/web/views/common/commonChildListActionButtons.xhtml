@@ -7,31 +7,36 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <c:set var="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
+    <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
+    <ui:param name="parentObject" value="#{parentEntityController.selected}"/>
+    <ui:param name="isParentEntityWriteable" value="#{loginController.isUserWriteable(parentObject)}"/>
 
     <div class="actionButton">
+        <p:commandButton id="#{childEntityTypeName}ListEditButton" action="#{parentEntityController.prepareEdit(parentObject)}" rendered="#{isParentEntityWriteable}" value="Edit" icon="ui-icon-pencil">
+            <p:tooltip for="#{childEntityTypeName}ListEditButton" value="Edit list."/>
+        </p:commandButton>
 
-        <p:commandButton id="#{childEntityTypeName}ExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+        <p:commandButton id="#{childEntityTypeName}ListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:dataExporter type="xls" target="#{childEntityTypeName}ListDataTable" fileName="#{childEntityTypeName}s"/>
-            <p:tooltip for="#{childEntityTypeName}ExportXlsButton" value="Export list to excel file."/>
+            <p:tooltip for="#{childEntityTypeName}ListExportXlsButton" value="Export list to excel file."/>
         </p:commandButton>  
-        <p:commandButton id="#{childEntityTypeName}ExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+        <p:commandButton id="#{childEntityTypeName}ListExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
             <p:dataExporter type="pdf" target="#{childEntityTypeName}ListDataTable" fileName="#{childEntityTypeName}s"/>
-            <p:tooltip for="#{childEntityTypeName}ExportPdfButton" value="Export list to pdf file."/>
+            <p:tooltip for="#{childEntityTypeName}ListExportPdfButton" value="Export list to pdf file."/>
         </p:commandButton>  
-        <p:commandButton id="#{childEntityTypeName}PrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+        <p:commandButton id="#{childEntityTypeName}ListPrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
             <p:printer target="#{childEntityTypeName}ListDataTable"/>
-            <p:tooltip for="#{childEntityTypeName}PrintButton" value="Print list."/>
+            <p:tooltip for="#{childEntityTypeName}ListPrintButton" value="Print list."/>
         </p:commandButton> 
-        <p:commandButton id="#{childEntityTypeName}CustomizeDisplayButton" oncomplete="#{childEntityTypeName}ListCustomizeDisplayWidget.show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
-            <p:tooltip for="#{childEntityTypeName}CustomizeDisplayButton" value="Customize list view."/>
+        <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" oncomplete="#{childEntityTypeName}ListCustomizeDisplayWidget.show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}ResetFiltersButton" action="#{childEntityController.resetListForView()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
-            <p:tooltip for="#{childEntityTypeName}ResetFiltersButton" value="Reset list filters."/>
+        <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+            <p:tooltip for="#{childEntityTypeName}ListResetFiltersButton" value="Reset filters."/>
         </p:commandButton>
 
-        <p:commandButton id="#{childEntityTypeName}NoOp" style="visibility:hidden" value="NoOp"/>
-        <p:defaultCommand target="#{childEntityTypeName}NoOp"/>
+        <p:commandButton id="#{childEntityTypeName}ListNoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{childEntityTypeName}ListNoOp"/>
     </div>
 
 </ui:composition>

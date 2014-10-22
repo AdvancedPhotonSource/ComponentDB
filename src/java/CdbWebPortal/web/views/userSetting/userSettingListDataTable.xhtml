@@ -7,14 +7,14 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
-    <p:dataTable id="userSettingEditDataTable" 
+    <p:dataTable id="userSettingListDataTable" 
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 
-                 paginator="true" 
-                 paginatorAlwaysVisible="false" 
+                 filteredValue="#{userSettingController.filteredObjectList}"
                  rows="#{userSettingController.displayNumberOfItemsPerPage}"
-                 widgetVar="userSettingEditWidget" 
-                 editable="true"
+                 binding="#{userSettingController.listDataTable}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
                  emptyMessage="No user settings found.">
 
         <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name"
@@ -24,7 +24,7 @@
 
         <p:column sortBy="#{userSettingObject.value}" headerText="Value"
                   filterBy="#{userSettingObject.value}" filterMatchMode="contains">
-            <h:inputText value="#{userSettingObject.value}" styleClass="cellInput"/>
+            <h:outputText value="#{userSettingObject.value}"/>
         </p:column>
 
     </p:dataTable>

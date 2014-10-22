@@ -31,9 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserSetting.findAll", query = "SELECT u FROM UserSetting u"),
     @NamedQuery(name = "UserSetting.findById", query = "SELECT u FROM UserSetting u WHERE u.id = :id"),
     @NamedQuery(name = "UserSetting.findByValue", query = "SELECT u FROM UserSetting u WHERE u.value = :value")})
-public class UserSetting implements Serializable
+public class UserSetting extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

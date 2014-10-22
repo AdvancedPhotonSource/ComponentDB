@@ -30,6 +30,33 @@ import org.primefaces.component.datatable.DataTable;
 
 public abstract class CrudEntityController<EntityType extends CloneableEntity, FacadeType extends AbstractFacade<EntityType>> implements Serializable
 {
+    
+    public enum ActionType {
+
+        VIEW("view"),
+        EDIT("edit"),
+        CREATE("create"),
+        DESTROY("destroy"),
+        LIST("list");
+
+        private final String name;
+
+        private ActionType(String name) {
+            this.name = name;
+        }
+        
+        public boolean equals(String actionName) {
+            return actionName.equals(name);
+        }
+        
+        public boolean equals(ActionType other) {
+            return this.name.equals(other.name);
+        }
+        
+        public String getName() {
+            return name;
+        } 
+    }
 
     private static final Logger logger = Logger.getLogger(CrudEntityController.class.getName());
 
@@ -98,6 +125,8 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     private boolean searchHasResults = false;
     
+    private ActionType currentActionType;
+    
     public CrudEntityController() {
     }
 
@@ -147,6 +176,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     public abstract String getCurrentEntityInstanceName();
 
+    public String getCurrentActionTypeName() {
+        return currentActionType.name;
+    }
+    
     public EntityType getCurrent() {
         return current;
     }
@@ -274,6 +307,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public String prepareList() {
+        currentActionType = ActionType.LIST;
         logger.debug("Preparing list");
         current = null;
         if (listDataTable != null) {
@@ -286,8 +320,16 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         logger.debug("Resetting list for view");
         clearListFilters();
         resetListDataModel();
-        return "view?faces-redirect=true";
+        return view();
     }
+
+    public String resetListForEdit() {
+        logger.debug("Resetting list for edit");
+        clearListFilters();
+        resetListDataModel();
+        return edit();
+    }
+    
     
     public String followBreadcrumbOrPrepareList() {
         String loadView = breadcrumbViewParam;
@@ -390,14 +432,16 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         logger.debug("Preparing view");
         current = entity;
         updateViewSettings();
-        return "view?faces-redirect=true";
+        return view();
     }
 
     public String view() {
+        currentActionType = ActionType.VIEW;
         return "view?faces-redirect=true";
     }
 
     public String prepareCreate() {
+        currentActionType = ActionType.CREATE;
         current = createEntityInstance();
         return "create?faces-redirect=true";
     }
@@ -415,6 +459,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public String prepareClone(EntityType entity) {
+        currentActionType = ActionType.CREATE;
         current = cloneEntityInstance(entity);
         return "create?faces-redirect=true";
     }
@@ -445,6 +490,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public String edit() {
+        currentActionType = ActionType.EDIT;
         clearSelectFiltersAndResetSelectDataModel();
         return "edit?faces-redirect=true";
     }

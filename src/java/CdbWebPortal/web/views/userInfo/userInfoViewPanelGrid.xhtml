@@ -3,10 +3,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <c:set var="userObject" value="#{userInfoController.selected}"/>
+    <ui:param name="userObject" value="#{userInfoController.selected}"/>
 
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
 

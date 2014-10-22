@@ -14,7 +14,7 @@
         </div>
 
         <h:form id="viewUserGroupListForm">            
-            <c:set var="entityController" value="#{userGroupController}"/>
+            <ui:param name="entityController" value="#{userGroupController}"/>
             <ui:include src="../common/commonListActionButtons.xhtml"/>
             <h:panelGroup>  
                 <ui:include src="userGroupListDataTable.xhtml"/>

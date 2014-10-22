@@ -14,7 +14,7 @@
         </div>
 
         <h:form id="viewSourceListForm">            
-            <c:set var="entityController" value="#{sourceController}"/>
+            <ui:param name="entityController" value="#{sourceController}"/>
             <ui:include src="../common/commonListActionButtons.xhtml"/>
             <h:panelGroup>  
                 <ui:include src="sourceListDataTable.xhtml"/>

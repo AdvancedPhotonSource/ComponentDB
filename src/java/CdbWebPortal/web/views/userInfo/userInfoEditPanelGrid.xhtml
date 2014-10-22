@@ -4,11 +4,10 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <c:set var="userObject" value="#{userInfoController.selected}"/>
-    <c:set var="isFieldWriteable" value="#{loginController.loggedInAsAdmin}"/>
+    <ui:param name="userObject" value="#{userInfoController.selected}"/>
+    <ui:param name="isFieldWriteable" value="#{loginController.loggedInAsAdmin}"/>
 
     <p:panelGrid columns="4" styleClass="editEntityDetails"> 
 

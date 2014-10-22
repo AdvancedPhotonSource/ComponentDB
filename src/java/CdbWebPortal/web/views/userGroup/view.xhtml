@@ -17,7 +17,7 @@
             <ui:include src="userGroupViewPanelGrid.xhtml"/>
 
             <p/>
-            <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
             <div class="actionButton">
                 <p:commandButton action="#{userGroupController.edit()}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
                 <p:commandButton onclick="PF('userGroupDestroyDialogWidget').show();" rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">

@@ -4,13 +4,12 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <c:set var="entityTypeName" value="#{entityController.entityTypeName}"/>
-    <c:set var="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
-    <c:set var="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
-    <c:set var="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
+    <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
+    <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
 
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">

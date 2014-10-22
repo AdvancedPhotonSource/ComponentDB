@@ -19,8 +19,8 @@
                 <ui:include src="userInfoViewPanelGrid.xhtml"/>
                 
                 <p/>
-                    <c:set var="userObject" value="#{userInfoController.selected}"/>
-                <c:set var="isEntityWriteable" value="#{loginController.isUserWriteable(userObject)}"/>
+                <ui:param name="userObject" value="#{userInfoController.selected}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userObject)}"/>
                 <div class="actionButton">
                     <p:commandButton action="#{userInfoController.prepareEdit(userObject)}" rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil"/>
                     <p:commandButton onclick="PF('userInfoDestroyDialogWidget').show();" rendered="#{loginController.loggedInAsAdmin}" value="Delete" alt="Delete" icon="ui-icon-trash">

@@ -8,9 +8,14 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <c:set var="propertyTypeObject" value="#{propertyTypeController.selected}"/>
-
+   
     <p:dataTable id="allowedPropertyValueListDataTable" 
-                 var="allowedPropertyValueObject" value="#{propertyTypeObject.allowedPropertyValueList}" 
+                 var="allowedPropertyValueObject" 
+                 value="#{propertyTypeObject.allowedPropertyValueList}"
+                 filteredValue="#{allowedPropertyValueController.filteredObjectList}"
+                 rows="#{allowedPropertyValueController.displayNumberOfItemsPerPage}"
+                 binding="#{allowedPropertyValueController.listDataTable}"
+                 widgetVar="allowedPropertyValueListWidget" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No allowed property values have been specified.">

@@ -27,7 +27,7 @@
             <h:outputText value="#{sourceObject.description}"/>
         </p:column>
         
-        <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+        <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
             <div class="actionLink">
                 <p:commandLink action="#{sourceController.prepareView(sourceObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
