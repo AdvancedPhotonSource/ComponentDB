@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -33,9 +32,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentSource.findById", query = "SELECT c FROM ComponentSource c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentSource.findByPartNumber", query = "SELECT c FROM ComponentSource c WHERE c.partNumber = :partNumber"),
     @NamedQuery(name = "ComponentSource.findByCost", query = "SELECT c FROM ComponentSource c WHERE c.cost = :cost")})
-public class ComponentSource implements Serializable
+public class ComponentSource extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -47,10 +45,10 @@ public class ComponentSource implements Serializable
     private Float cost;
     @JoinColumn(name = "source_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Source sourceId;
+    private Source source;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
 
     public ComponentSource() {
     }
@@ -83,20 +81,20 @@ public class ComponentSource implements Serializable
         this.cost = cost;
     }
 
-    public Source getSourceId() {
-        return sourceId;
+    public Source getSource() {
+        return source;
     }
 
-    public void setSourceId(Source sourceId) {
-        this.sourceId = sourceId;
+    public void setSource(Source source) {
+        this.source = source;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
     @Override
@@ -113,10 +111,7 @@ public class ComponentSource implements Serializable
             return false;
         }
         ComponentSource other = (ComponentSource) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

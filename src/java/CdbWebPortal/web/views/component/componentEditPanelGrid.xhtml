@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:param name="componentObject" value="#{componentController.selected}"/>
+
+    <p:panelGrid columns="4" styleClass="editEntityDetails">
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="name" value="#{componentObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:message for="name"/> 
+        <p:tooltip for="name" value="Component name is required."/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:inputTextarea id="description" value="#{componentObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:message for="description"/> 
+        <p:tooltip for="description" value="Description is optional."/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{componentObject.id}" title="Id" styleClass="entityDataText"/>
+        <p:message for="id"/> 
+        <p:tooltip for="id" value="Component id cannot be modified."/>
+
+        <p:column>
+            <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
+            <div class="actionButtonRight">
+                <p:commandButton id="selectComponentTypeButton"
+                                 action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
+                                 oncomplete="componentTypeSelectDialogWidget.show()"
+                                 update="@form"
+                                 immediate="true"
+                                 alt="Select Component Type" icon="ui-icon-search">
+                    <p:tooltip for="selectComponentTypeButton" value="Select component type."/>
+                </p:commandButton>
+            </div>
+        </p:column>
+        <h:outputText id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText"/>
+        <p:message for="componentType"/>
+        <p:tooltip for="componentType" value="Component type specification is required."/>
+
+        <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
+        <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
+        <p:message for="componentTypeCategory"/>
+        <p:tooltip for="componentTypeCategory" value="Component type category is inherited from component type."/>
+        
+        <ui:include src="../entityInfo/entityInfoEditObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
+        </ui:include>
+
+        <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
+        <h:inputTextarea id="logEntry" value="#{componentController.logText}" title="Log Entry" styleClass="entityDataText"/>
+        <p:message for="logEntry"/> 
+    </p:panelGrid>
+
+    <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>
+</ui:composition>
+
+

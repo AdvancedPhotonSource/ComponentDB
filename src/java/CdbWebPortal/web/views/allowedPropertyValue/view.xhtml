@@ -7,13 +7,14 @@
 
     <ui:include src="../common/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{propertyTypeController}"/>
-        <ui:param name="childEntityController" value="#{allowedPropertyValueController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+        <ui:param name="childEntityController" value="#{allowedPropertyValueController}"/>
+        <ui:param name="childEntityTypeName" value="#{allowedPropertyValueController.entityTypeName}"/>
     </ui:include>    
     <ui:include src="allowedPropertyValueListDataTable.xhtml"/>
 
     <ui:include src="allowedPropertyValueListCustomizeDisplayDialog.xhtml"/>
-    <h:outputScript library="javascript/allowedPropertyValue" name="list.filter.js" rendered="#{allowedPropertyValueController.listDataModelReset}"/>
+    <h:outputScript library="js/allowedPropertyValue" name="list.filter.js" rendered="#{allowedPropertyValueController.listDataModelReset}"/>
 
 </ui:composition>
 

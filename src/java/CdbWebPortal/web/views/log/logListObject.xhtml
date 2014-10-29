@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column sortBy="#{logObject.id}" headerText="Id" 
+              rendered="#{logController.displayId}">
+        <h:outputText value="#{logObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Timestamp"
+              filterBy="#{logObject.enteredOnDateTime}" filterMatchMode="contains"
+              filterValue="#{logController.filterByEnteredOnDateTime}"
+              rendered="#{logController.displayEnteredOnDateTime}">
+        <h:outputText value="#{logObject.shortDisplayEnteredOnDateTime}"/>
+    </p:column>
+
+    <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User"
+              filterBy="#{logObject.enteredByUser}" filterMatchMode="contains"
+              filterValue="#{logController.filterByEnteredByUser}"
+              rendered="#{logController.displayEnteredByUser}">
+        <h:outputText value="#{logObject.enteredByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{logObject.text}" headerText="Log Entry"
+              filterBy="#{logObject.text}" filterMatchMode="contains"
+              filterValue="#{logController.filterByText}">
+        <h:outputText value="#{logObject.text}"/>
+    </p:column>
+
+</ui:composition>
+
+

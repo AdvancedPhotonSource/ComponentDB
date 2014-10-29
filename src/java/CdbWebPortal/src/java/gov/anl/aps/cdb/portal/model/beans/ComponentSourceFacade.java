@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.beans;
 
 import gov.anl.aps.cdb.portal.model.entities.ComponentSource;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -16,8 +16,8 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class ComponentSourceFacade extends AbstractFacade<ComponentSource>
-{
+public class ComponentSourceFacade extends AbstractFacade<ComponentSource> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -29,5 +29,10 @@ public class ComponentSourceFacade extends AbstractFacade<ComponentSource>
     public ComponentSourceFacade() {
         super(ComponentSource.class);
     }
-    
+
+    public List<ComponentSource> findAllByComponentId(Integer componentId) {
+        return (List<ComponentSource>) em.createNamedQuery("ComponentSource.findAllByComponentId")
+                .setParameter("componentId", componentId)
+                .getResultList();
+    }
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+    <f:metadata>
+        <f:viewParam id="id" name="id" value="#{componentController.idViewParam}"/>
+        <f:event type="preRenderComponent" listener="#{componentController.processViewRequestParams()}"/>
+    </f:metadata>
+
+    <ui:define name="middleCenter">
+        <h:form id="viewComponentForm">
+
+            <div class="middleCenterLeftContent">
+                <div class="pageTitle">
+                    <h1>Component Details</h1>
+                </div>
+                <ui:include src="componentViewPanelGrid.xhtml"/>
+
+                <p/>
+                <ui:param name="componentObject" value="#{componentController.selected}"/>
+                <ui:param name="entityController" value="#{componentController}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
+                <ui:include src="../common/commonViewActionButtons.xhtml"/>
+                <ui:include src="componentDestroyDialog.xhtml"/>
+ 
+
+                <p/>
+                <p:accordionPanel multiple="false">
+                    <p:tab title="Log Entries">
+                        <ui:include src="../componentLog/view.xhtml"/>
+                    </p:tab>
+                </p:accordionPanel>   
+
+            </div>
+
+            <div class="middleCenterRightContent">
+                <p:accordionPanel multiple="true">
+<!--                    <p:tab title="Properties">
+
+                        <ui:include src="../componentProperty/view.xhtml"/>
+
+                    </p:tab>-->
+
+                    <!--                    <p:tab title="Connectors">
+                    
+                                        </p:tab>-->
+<!--                    <p:tab title="Sources">
+
+                        <ui:include src="../componentSource/view.xhtml"/>
+
+                    </p:tab>-->
+                </p:accordionPanel>
+            </div>
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+

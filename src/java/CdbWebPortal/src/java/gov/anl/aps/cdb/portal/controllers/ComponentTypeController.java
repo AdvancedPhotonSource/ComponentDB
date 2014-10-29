@@ -3,6 +3,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.entities.ComponentType;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.beans.ComponentTypeFacade;
+import gov.anl.aps.cdb.portal.model.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 
@@ -21,20 +22,26 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypeController")
 @SessionScoped
-public class ComponentTypeController extends CrudEntityController<ComponentType, ComponentTypeFacade> implements Serializable
-{
+public class ComponentTypeController extends CrudEntityController<ComponentType, ComponentTypeFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentType.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "ComponentType.List.Display.Description";
+    private static final String DisplayCategorySettingTypeKey = "ComponentType.List.Display.Category";
+
+    private static final String FilterByNameSettingTypeKey = "ComponentType.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "ComponentType.List.FilterBy.Description";
+    private static final String FilterByCategorySettingTypeKey = "ComponentType.List.FilterBy.Category";
 
     private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
 
     @EJB
     private ComponentTypeFacade componentTypeFacade;
 
-    private String filterByTypeCategory = null;
-    private String selectFilterByTypeCategory = null;
+    private Boolean displayCategory = null;
+
+    private String filterByCategory = null;
+    private String selectFilterByCategory = null;
 
     public ComponentTypeFacade getComponentTypeFacade() {
         return componentTypeFacade;
@@ -117,6 +124,12 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayCategorySettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+
+        filterByCategory = settingTypeMap.get(FilterByCategorySettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -128,6 +141,13 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayCategory = sessionUser.getUserSettingValueAsBoolean(DisplayCategorySettingTypeKey, displayCategory);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        filterByCategory = sessionUser.getUserSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
+
     }
 
     @Override
@@ -138,7 +158,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         }
 
         Map<String, String> filters = dataTable.getFilters();
-        filterByTypeCategory = filters.get("componentTypeCategory.name");
+        filterByCategory = filters.get("componentTypeCategory.name");
     }
 
     @Override
@@ -150,18 +170,24 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        sessionUser.setUserSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
     }
-    
+
     @Override
     public void clearListFilters() {
         super.clearListFilters();
-        filterByTypeCategory = null;
+        filterByCategory = null;
     }
 
     @Override
     public void clearSelectFilters() {
         super.clearSelectFilters();
-        selectFilterByTypeCategory = null;
+        selectFilterByCategory = null;
     }
 
     @Override
@@ -169,25 +195,40 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         return true;
     }
 
-    public String getFilterByTypeCategory() {
-        return filterByTypeCategory;
+    public String getFilterByCategory() {
+        return filterByCategory;
     }
 
-    public void setFilterByTypeCategory(String filterByTypeCategory) {
-        this.filterByTypeCategory = filterByTypeCategory;
+    public void setFilterByCategory(String filterByCategory) {
+        this.filterByCategory = filterByCategory;
     }
 
-    public String getSelectFilterByTypeCategory() {
-        return selectFilterByTypeCategory;
+    public String getSelectFilterByCategory() {
+        return selectFilterByCategory;
     }
 
-    public void setSelectFilterByTypeCategory(String selectFilterByTypeCategory) {
-        this.selectFilterByTypeCategory = selectFilterByTypeCategory;
+    public void setSelectFilterByCategory(String selectFilterByCategory) {
+        this.selectFilterByCategory = selectFilterByCategory;
+    }
+
+    public void savePropertyTypeList() {
+        update();
+    }
+
+    public void deletePropertyType(PropertyType propertyType) {
+        ComponentType componentType = getCurrent();
+        List<PropertyType> propertyTypeList = componentType.getPropertyTypeList();
+        propertyTypeList.remove(propertyType);
+    }
+
+    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
+        ComponentType componentType = getCurrent();
+        List<PropertyType> componentTypePropertyTypeList = componentType.getPropertyTypeList();
+        componentTypePropertyTypeList.addAll(propertyTypeList);
     }
 
     @FacesConverter(value = "componentTypeConverter", forClass = ComponentType.class)
-    public static class ComponentTypeControllerConverter implements Converter
-    {
+    public static class ComponentTypeControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -219,8 +260,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
             if (object instanceof ComponentType) {
                 ComponentType o = (ComponentType) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ComponentType.class.getName());
             }
         }

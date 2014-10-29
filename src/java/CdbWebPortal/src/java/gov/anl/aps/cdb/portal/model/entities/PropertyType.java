@@ -7,7 +7,6 @@
 package gov.anl.aps.cdb.portal.model.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;

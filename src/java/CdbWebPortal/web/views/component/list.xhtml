@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+
+    <ui:define name="middleCenter">
+
+        <h:form id="viewComponentListForm">  
+            <div class="pageTitle">
+                <h1>Component Catalog</h1>
+            </div>
+            <ui:param name="entityController" value="#{componentController}"/>
+            <ui:include src="../common/commonListActionButtons.xhtml"/>
+
+            <h:panelGroup>
+
+                <ui:include src="componentListDataTable.xhtml"/>
+
+            </h:panelGroup>
+
+            <ui:include src="componentDestroyDialog.xhtml"/>
+
+            <ui:include src="componentListCustomizeDisplayDialog.xhtml"/>
+        </h:form>
+
+        <h:outputScript library="js/component" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
+
+    </ui:define>
+</ui:composition>
+
+

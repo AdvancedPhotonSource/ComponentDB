@@ -540,12 +540,13 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     }
 
     public DataModel createListDataModel() {
-        return new ListDataModel(getFacade().findAll());
+        listDataModel = new ListDataModel(getFacade().findAll());
+        return listDataModel;
     }
 
     public DataModel getListDataModel() {
         if (listDataModel == null) {
-            listDataModel = createListDataModel();
+            createListDataModel();
         }
         return listDataModel;
     }
@@ -556,12 +557,18 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     public DataModel createSelectDataModel() {
         List<EntityType> selectEntityList = getFacade().findAll();
         prepareEntityListForSelection(selectEntityList);
-        return new ListDataModel(selectEntityList);
+        selectDataModel = new ListDataModel(selectEntityList);
+        return selectDataModel;
     }
 
+    public DataModel createSelectDataModel(List<EntityType> selectEntityList) {
+        selectDataModel = new ListDataModel(selectEntityList);
+        return selectDataModel;
+    }
+    
     public DataModel getSelectDataModel() {
         if (selectDataModel == null) {
-            selectDataModel = createSelectDataModel();
+            createSelectDataModel();
         }
         return selectDataModel;
     }

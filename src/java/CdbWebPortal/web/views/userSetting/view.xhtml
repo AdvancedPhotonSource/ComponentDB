@@ -7,8 +7,9 @@
 
     <ui:include src="../common/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{userInfoController}"/>
-        <ui:param name="childEntityController" value="#{userSettingController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isUserWriteable(userInfoController.selected)}"/>
+        <ui:param name="childEntityController" value="#{userSettingController}"/>
+        <ui:param name="childEntityTypeName" value="#{userSettingController.entityTypeName}"/>
     </ui:include>    
     <ui:include src="userSettingListDataTable.xhtml"/>
 

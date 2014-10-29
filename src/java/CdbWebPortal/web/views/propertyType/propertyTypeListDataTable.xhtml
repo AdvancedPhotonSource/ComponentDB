@@ -3,18 +3,17 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:dataTable id="propertyTypeListDataTable"
-                 var="propertyTypeObject" 
+                 widgetVar="propertyTypeListWidget" 
+                 var="propertyTypeObject"
                  value="#{propertyTypeController.listDataModel}" 
                  filteredValue="#{propertyTypeController.filteredObjectList}"
+                 binding="#{propertyTypeController.listDataTable}"
+                 rows="#{propertyTypeController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{propertyTypeController.displayNumberOfItemsPerPage}"
-                 binding="#{propertyTypeController.listDataTable}"
-                 widgetVar="propertyTypeListWidget" 
                  emptyMessage="No property types found.">
 
         <p:column sortBy="#{propertyTypeObject.id}" headerText="Id"

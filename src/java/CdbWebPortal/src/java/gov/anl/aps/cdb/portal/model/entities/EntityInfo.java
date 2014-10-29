@@ -79,7 +79,7 @@ public class EntityInfo implements Serializable
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
     private UserInfo ownerUser;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Component> componentList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
     private List<ComponentInstance> componentInstanceList;

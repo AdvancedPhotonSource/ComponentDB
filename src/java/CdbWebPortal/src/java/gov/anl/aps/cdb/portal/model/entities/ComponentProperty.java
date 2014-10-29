@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -28,9 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentProperty.findByComponentId", query = "SELECT c FROM ComponentProperty c WHERE c.componentPropertyPK.componentId = :componentId"),
     @NamedQuery(name = "ComponentProperty.findByPropertyTypeId", query = "SELECT c FROM ComponentProperty c WHERE c.componentPropertyPK.propertyTypeId = :propertyTypeId"),
     @NamedQuery(name = "ComponentProperty.findByPropertyValueId", query = "SELECT c FROM ComponentProperty c WHERE c.componentPropertyPK.propertyValueId = :propertyValueId")})
-public class ComponentProperty implements Serializable
+public class ComponentProperty extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected ComponentPropertyPK componentPropertyPK;
     @JoinColumn(name = "property_value_id", referencedColumnName = "id", insertable = false, updatable = false)

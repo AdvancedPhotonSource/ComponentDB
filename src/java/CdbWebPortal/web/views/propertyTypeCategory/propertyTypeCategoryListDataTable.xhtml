@@ -3,20 +3,19 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 
     <p:dataTable id="propertyTypeCategoryListDataTable"
+                 widgetVar="propertyTypeCategoryListWidget" 
                  var="propertyTypeCategoryObject" 
                  value="#{propertyTypeCategoryController.listDataModel}" 
                  filteredValue="#{propertyTypeCategoryController.filteredObjectList}"
+                 binding="#{propertyTypeCategoryController.listDataTable}"
+                 rows="#{propertyTypeCategoryController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{propertyTypeCategoryController.displayNumberOfItemsPerPage}"
-                 binding="#{propertyTypeCategoryController.listDataTable}"
-                 widgetVar="propertyTypeCategoryListWidget" 
-                 emptyMessage="No property type categories found." > 
+                 emptyMessage="No property type categories found."> 
 
         <p:column sortBy="#{propertyTypeCategoryObject.id}" headerText="Id"
                   rendered="#{propertyTypeCategoryController.displayId}">

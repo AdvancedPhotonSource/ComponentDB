@@ -26,11 +26,9 @@
 
             </div>
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true">
+                <p:accordionPanel multiple="true" rendered="#{loginController.loggedIn}">
                     <p:tab title="Settings">
-
                         <ui:include src="../userSetting/view.xhtml"/>
-
                     </p:tab>
                 </p:accordionPanel>
             </div>

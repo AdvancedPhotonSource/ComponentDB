@@ -8,22 +8,25 @@
 
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
     <p:dataTable id="userSettingListDataTable" 
+                 widgetVar="userSettingListWidget"
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 
                  filteredValue="#{userSettingController.filteredObjectList}"
-                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
                  binding="#{userSettingController.listDataTable}"
+                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No user settings found.">
 
         <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name"
-                  filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains">
+                  filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains"
+                  filterValue="#{userSettingController.filterBySettingType}">
             <h:outputText value="#{userSettingObject.settingType.name}"/>
         </p:column>
 
         <p:column sortBy="#{userSettingObject.value}" headerText="Value"
-                  filterBy="#{userSettingObject.value}" filterMatchMode="contains">
+                  filterBy="#{userSettingObject.value}" filterMatchMode="contains"
+                  filterValue="#{userSettingController.filterByValue}">
             <h:outputText value="#{userSettingObject.value}"/>
         </p:column>
 

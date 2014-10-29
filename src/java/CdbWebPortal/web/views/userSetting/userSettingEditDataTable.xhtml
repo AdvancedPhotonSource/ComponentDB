@@ -8,22 +8,24 @@
 
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
     <p:dataTable id="userSettingEditDataTable" 
+                 widgetVar="userSettingEditWidget" 
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 
+                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
+                 editable="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
-                 widgetVar="userSettingEditWidget" 
-                 editable="true"
                  emptyMessage="No user settings found.">
 
         <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name"
-                  filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains">
+                  filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains"
+                  filterValue="#{userSettingController.filterBySettingType}">
             <h:outputText value="#{userSettingObject.settingType.name}"/>
         </p:column>
 
         <p:column sortBy="#{userSettingObject.value}" headerText="Value"
-                  filterBy="#{userSettingObject.value}" filterMatchMode="contains">
+                  filterBy="#{userSettingObject.value}" filterMatchMode="contains"
+                  filterValue="#{userSettingController.filterByValue}">
             <h:inputText value="#{userSettingObject.value}" styleClass="cellInput"/>
         </p:column>
 

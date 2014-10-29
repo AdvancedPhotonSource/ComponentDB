@@ -5,16 +5,16 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>Component Types</h1>
-        </div>
 
-        <h:form id="viewComponentTypeListForm">            
-            <c:set var="entityController" value="#{componentTypeController}"/>
+
+        <h:form id="viewComponentTypeListForm">     
+            <div class="pageTitle">
+                <h1>Component Types</h1>
+            </div>
+           <ui:param name="entityController" value="#{componentTypeController}"/>
             <ui:include src="../common/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>  
@@ -24,11 +24,11 @@
             </h:panelGroup>
 
             <ui:include src="componentTypeDestroyDialog.xhtml"/>
-            
+
             <ui:include src="componentTypeListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
-        <h:outputScript library="javascript/componentType" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
+        <h:outputScript library="js/componentType" name="list.filter.js" rendered="#{loginController.loggedIn}"/>
 
     </ui:define>
 

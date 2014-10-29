@@ -6,7 +6,8 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -21,6 +22,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -33,14 +35,14 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
+@Table(name = "log")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Log.findAll", query = "SELECT l FROM Log l"),
     @NamedQuery(name = "Log.findById", query = "SELECT l FROM Log l WHERE l.id = :id"),
     @NamedQuery(name = "Log.findByEnteredOnDateTime", query = "SELECT l FROM Log l WHERE l.enteredOnDateTime = :enteredOnDateTime")})
-public class Log implements Serializable
+public class Log extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -65,7 +67,9 @@ public class Log implements Serializable
     private List<Design> designList;
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserInfo enteredByUserId;
+    private UserInfo enteredByUser;
+
+    private static transient SimpleDateFormat shortDisplayDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
 
     public Log() {
     }
@@ -140,12 +144,12 @@ public class Log implements Serializable
         this.designList = designList;
     }
 
-    public UserInfo getEnteredByUserId() {
-        return enteredByUserId;
+    public UserInfo getEnteredByUser() {
+        return enteredByUser;
     }
 
-    public void setEnteredByUserId(UserInfo enteredByUserId) {
-        this.enteredByUserId = enteredByUserId;
+    public void setEnteredByUser(UserInfo enteredByUser) {
+        this.enteredByUser = enteredByUser;
     }
 
     @Override
@@ -155,22 +159,41 @@ public class Log implements Serializable
         return hash;
     }
 
+
+    public boolean equalsByText(Log other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.text, other.text);
+        }
+        return false;
+    }  
+    
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Log)) {
             return false;
         }
         Log other = (Log) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByText(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
+    }
+
+    public String getShortDisplayEnteredOnDateTime() {
+        if (enteredOnDateTime == null) {
+            return null;
+        }
+        return shortDisplayDateFormat.format(enteredOnDateTime);
+        
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.Log[ id=" + id + " ]";
+        return text;
     }
     
 }

@@ -9,11 +9,13 @@
 
     <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
     <p:dataTable id="allowedPropertyValueEditDataTable" 
+                 widgetVar="allowedPropertyValueEditWidget"
                  var="allowedPropertyValueObject" 
                  value="#{propertyTypeObject.allowedPropertyValueList}" 
+                 rows="#{allowedPropertyValueController.displayNumberOfItemsPerPage}"
+                 editable="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 editable="true"
                  emptyMessage="No allowed property values have been specified.">
 
         <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id">
@@ -21,24 +23,31 @@
             <p:tooltip for="valueId" value="Object id cannot be modified."/>
         </p:column>
 
-        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value">
+        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value"
+                  filterBy="#{allowedPropertyValueObject.value}" filterMatchMode="contains"
+                  filterValue="#{allowedPropertyValueController.filterByValue}">
             <h:inputText id="value" value="#{allowedPropertyValueObject.value}" styleClass="cellInput"/>
             <p:tooltip for="value" value="Allowed property value string can be null."/>
         </p:column>
 
-        <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units">
+        <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units"
+                  filterBy="#{allowedPropertyValueObject.units}" filterMatchMode="contains"
+                  filterValue="#{allowedPropertyValueController.filterByUnits}">
             <h:inputText id="valueUnits" value="#{allowedPropertyValueObject.units}" styleClass="cellInput"/>
             <p:tooltip for="valueUnits" value="Units specification is optional."/>
-
         </p:column>
 
-        <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order">
-            <h:inputText id="valueSortOrder" value="#{allowedPropertyValueObject.sortOrder}" styleClass="shortCellInput"/>
+        <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order"
+                  filterBy="#{allowedPropertyValueObject.sortOrder}" filterMatchMode="contains"
+                  filterValue="#{allowedPropertyValueController.filterBySortOrder}">
+            <h:inputText id="valueSortOrder" value="#{allowedPropertyValueObject.sortOrder}" styleClass="cellInput"/>
             <p:tooltip for="valueSortOrder" value="Sort order is optional."/>
 
         </p:column>
 
-        <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description">
+        <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description"
+                  filterBy="#{allowedPropertyValueObject.description}" filterMatchMode="contains"
+                  filterValue="#{allowedPropertyValueController.filterByDescription}">
             <h:inputText id="valueDescription" value="#{allowedPropertyValueObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="valueDescription" value="Description is optional."/>
         </p:column>

@@ -7,7 +7,10 @@
     <ui:include src="../common/commonChildEditActionButtons.xhtml" rendered="#{loginController.loggedInAsAdmin}">
         <ui:param name="parentEntityController" value="#{propertyTypeController}"/>
         <ui:param name="childEntityController" value="#{allowedPropertyValueController}"/>
+        <ui:param name="childEntityTypeName" value="#{allowedPropertyValueController.entityTypeName}"/>
+        <ui:param name="addActionController" value="#{propertyTypeController}"/>
         <ui:param name="addAction" value="prepareAddAllowedPropertyValue"/>
+        <ui:param name="addActionParameter" value=""/>
         <ui:param name="saveAction" value="saveAllowedPropertyValueList"/>
         <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin}"/>
     </ui:include>    

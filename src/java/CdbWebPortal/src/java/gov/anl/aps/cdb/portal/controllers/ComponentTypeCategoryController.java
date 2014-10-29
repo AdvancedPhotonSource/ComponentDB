@@ -17,16 +17,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypeCategoryController")
 @SessionScoped
-public class ComponentTypeCategoryController extends CrudEntityController<ComponentTypeCategory, ComponentTypeCategoryFacade> implements Serializable
-{
+public class ComponentTypeCategoryController extends CrudEntityController<ComponentTypeCategory, ComponentTypeCategoryFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypeCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentTypeCategory.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "ComponentTypeCategory.List.Display.Description";
+
+    private static final String FilterByNameSettingTypeKey = "ComponentTypeCategory.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "ComponentTypeCategory.List.FilterBy.Description";
 
     private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
 
@@ -105,6 +106,9 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -116,6 +120,10 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+
     }
 
     @Override
@@ -127,11 +135,13 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     @FacesConverter(forClass = ComponentTypeCategory.class)
-    public static class ComponentCategoryControllerConverter implements Converter
-    {
+    public static class ComponentCategoryControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -163,8 +173,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
             if (object instanceof ComponentTypeCategory) {
                 ComponentTypeCategory o = (ComponentTypeCategory) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ComponentTypeCategory.class.getName());
             }
         }

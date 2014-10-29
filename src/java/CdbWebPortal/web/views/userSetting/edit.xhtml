@@ -7,6 +7,7 @@
     <ui:include src="../common/commonChildEditActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{userInfoController}"/>
         <ui:param name="childEntityController" value="#{userSettingController}"/>
+        <ui:param name="childEntityTypeName" value="#{userSettingController.entityTypeName}"/>
         <ui:param name="saveAction" value="saveSettingList"/>
         <ui:param name="displayAddButton" value="false"/>
     </ui:include>

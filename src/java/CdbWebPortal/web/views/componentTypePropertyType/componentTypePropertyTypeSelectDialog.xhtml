@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="componentTypePropertyTypeSelectDialog" 
+              widgetVar="componentTypePropertyTypeSelectWidget" 
+              header="Select Component Type Property Types" 
+              styleClass="dialog">
+        <div class="dialog">
+
+            <div class="actionButton">
+                <p:commandButton id="componentTypePropertyTypeSelectCustomizeDisplay" 
+                                 onclick="componentTypePropertyTypeSelectWidget.hide(); componentTypePropertyTypeSelectCustomizeDisplayWidget.show()"
+                                 alt="Customize selection view." 
+                                 icon="ui-icon-wrench" 
+                                 styleClass="actionButtonRight">
+                    <p:tooltip for="componentTypePropertyTypeSelectCustomizeDisplay" value="Customize selection view."/>
+                </p:commandButton>
+            </div>
+            <ui:include src="componentTypePropertyTypeSelectDataTable.xhtml"/>   
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{componentTypeController.selectPropertyTypes(propertyTypeController.getSelectedObjectListAndResetSelectDataModel())}"
+                                 update="@form"
+                                 oncomplete="componentTypePropertyTypeSelectWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>
+
+

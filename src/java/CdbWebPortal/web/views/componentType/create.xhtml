@@ -9,19 +9,16 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <div class="pageTitle">
-            <h1>Add Component Type</h1>
-        </div>
-
-        <h:form id="addComponentTypeForm">
+        <h:form id="addComponentTypeForm" rendered="#{loginController.loggedInAsAdmin}">
+            <div class="pageTitle">
+                <h1>Add Component Type</h1>
+            </div>
 
             <ui:include src="componentTypeCreatePanelGrid.xhtml"/>
 
             <p/>
-            <div class="actionButton">
-                <p:commandButton action="#{componentTypeController.create()}" value="Save" alt="Save" icon="ui-icon-check" update="@form"/>
-                <p:commandButton action="#{componentTypeController.prepareList()}" immediate="true" value="Cancel" alt="Cancel" icon="ui-icon-cancel"/>
-            </div>
+            <ui:param name="entityController" value="#{componentTypeController}"/>
+            <ui:include src="../common/commonCreateActionButtons.xhtml"/>
         </h:form>
 
     </ui:define>

@@ -6,11 +6,14 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:dataTable id="userGroupListDataTable" 
+                 widgetVar="userGroupListWidget" 
                  var="userGroupObject" 
-                 value="#{userGroupController.listDataModel}" 
+                 value="#{userGroupController.listDataModel}"
+                 filteredValue="#{userGroupController.filteredObjectList}"
+                 binding="#{userGroupController.listDataTable}"
+                 rows="#{userGroupController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{userGroupController.displayNumberOfItemsPerPage}"
                  emptyMessage="No user groups found.">
 
         <p:column sortBy="#{userGroupObject.id}" headerText="Id"
@@ -19,12 +22,14 @@
         </p:column>
 
         <p:column sortBy="#{userGroupObject.name}" headerText="Name" 
-                  filterBy="#{userGroupObject.name}" filterMatchMode="contains">
+                  filterBy="#{userGroupObject.name}" filterMatchMode="contains"
+                  filterValue="#{userGroupController.filterByName}">
             <h:outputText value="#{userGroupObject.name}"/>
         </p:column>
 
         <p:column sortBy="#{userGroupObject.description}" headerText="Description" 
                   filterBy="#{userGroupObject.description}" filterMatchMode="contains"
+                  filterValue="#{userGroupController.filterByDescription}"
                   rendered="#{userGroupController.displayDescription}">
             <h:outputText value="#{userGroupObject.description}"/>
         </p:column>

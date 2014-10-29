@@ -3,14 +3,12 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{childEntityTypeName}EditAddButton" action="#{parentEntityController[addAction]}" rendered="#{displayAddButton}" alt="Add" icon="ui-icon-plus" update="@form">
+        <p:commandButton id="#{childEntityTypeName}EditAddButton" action="#{addActionController[addAction](addActionParameter)}" 
+                         oncomplete="#{addActionOnComplete}" rendered="#{displayAddButton}" alt="Add" icon="ui-icon-plus" update="@form">
             <p:tooltip for="#{childEntityTypeName}EditAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}EditSaveButton" action="#{parentEntityController[saveAction]}" ajax="false" alt="Save List" icon="ui-icon-check">

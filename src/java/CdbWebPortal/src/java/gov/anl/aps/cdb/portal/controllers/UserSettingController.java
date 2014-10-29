@@ -98,7 +98,7 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
         }
 
         Map<String, String> filters = dataTable.getFilters();
-        filterBySettingType = filters.get("SettingType");
+        filterBySettingType = filters.get("settingType");
         filterByValue = filters.get("value");
     }    
     
@@ -117,6 +117,22 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
         filterBySettingType = null;
         filterByValue = null;
     }    
+
+    public String getFilterBySettingType() {
+        return filterBySettingType;
+    }
+
+    public void setFilterBySettingType(String filterBySettingType) {
+        this.filterBySettingType = filterBySettingType;
+    }
+
+    public String getFilterByValue() {
+        return filterByValue;
+    }
+
+    public void setFilterByValue(String filterByValue) {
+        this.filterByValue = filterByValue;
+    }
     
     @FacesConverter(forClass = UserSetting.class)
     public static class UserSettingControllerConverter implements Converter

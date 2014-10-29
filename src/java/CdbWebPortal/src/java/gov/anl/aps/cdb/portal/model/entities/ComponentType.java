@@ -56,7 +56,7 @@ public class ComponentType extends CloneableEntity
     private List<ResourceType> resourceTypeList;
     @ManyToMany(mappedBy = "componentTypeList")
     private List<PropertyType> propertyTypeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentTypeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Component> componentList;
     @JoinColumn(name = "component_type_category_id", referencedColumnName = "id")
     @ManyToOne

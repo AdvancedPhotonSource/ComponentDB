@@ -3,19 +3,17 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <p:dataTable id="componentTypeListDataTable"
+                 widgetVar="componentTypeListWidget" 
                  var="componentTypeObject" 
                  value="#{componentTypeController.listDataModel}" 
                  filteredValue="#{componentTypeController.filteredObjectList}"
+                 binding="#{componentTypeController.listDataTable}"
+                 rows="#{componentTypeController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{componentTypeController.displayNumberOfItemsPerPage}"
-                 binding="#{componentTypeController.listDataTable}"
-                 widgetVar="componentTypeListWidget" 
                  emptyMessage="No component types found.">
 
         <p:column sortBy="#{componentTypeObject.id}" headerText="Id"
@@ -33,7 +31,7 @@
         <p:column sortBy="#{componentTypeObject.componentTypeCategory.name}" headerText="Category" 
                   filterBy="#{componentTypeObject.componentTypeCategory.name}" filterMatchMode="exact"
                   filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
-                  filterValue="#{componentTypeController.filterByTypeCategory}"
+                  filterValue="#{componentTypeController.filterByCategory}"
                   rendered="true">
             <h:outputText value="#{componentTypeObject.componentTypeCategory.name}"/>
         </p:column>
@@ -45,15 +43,12 @@
             <h:outputText value="#{componentTypeObject.description}"/>
         </p:column>
 
-        <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink action="#{componentTypeController.prepareView(componentTypeObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
-                <p:commandLink action="#{componentTypeController.prepareEdit(componentTypeObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="componentTypeDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-                    <f:setPropertyActionListener value="#{componentTypeObject}" target="#{componentTypeController.current}"/>
-                </p:commandLink>
-            </div>
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{componentTypeController}"/>
+                <ui:param name="entityObject" value="#{componentTypeObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
         </p:column>
     </p:dataTable>
 

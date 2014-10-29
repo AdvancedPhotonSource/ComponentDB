@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="componentTypeObject" value="#{componentTypeController.selected}"/>
+    <p:dataTable id="componentTypePropertyTypeEditDataTable" 
+                 widgetVar="componentTypePropertyTypeEditWidget"
+                 var="propertyTypeObject" 
+                 value="#{componentTypeObject.propertyTypeList}" 
+                 rows="#{componentTypePropertyTypeController.displayNumberOfItemsPerPage}"
+                 editable="true"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No property types have been specified.">
+
+        <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
+                  filterBy="name" filterMatchMode="contains"
+                  filterValue="#{componentTypePropertyTypeController.filterByPropertyTypeName}"
+                  rendered="true">
+            <h:outputText value="#{propertyTypeObject.name}"/>
+        </p:column>
+
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{componentTypeController.deletePropertyType(propertyTypeObject)}" 
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

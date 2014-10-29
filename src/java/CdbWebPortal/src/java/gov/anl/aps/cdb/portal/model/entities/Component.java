@@ -6,8 +6,10 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -21,6 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -31,15 +34,15 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
+@Table(name = "component")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Component.findAll", query = "SELECT c FROM Component c"),
     @NamedQuery(name = "Component.findById", query = "SELECT c FROM Component c WHERE c.id = :id"),
     @NamedQuery(name = "Component.findByName", query = "SELECT c FROM Component c WHERE c.name = :name"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
-public class Component implements Serializable
+public class Component extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -61,10 +64,10 @@ public class Component implements Serializable
     private List<ComponentConnector> componentConnectorList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private EntityInfo entityInfoId;
+    private EntityInfo entityInfo;
     @JoinColumn(name = "component_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private ComponentType componentTypeId;
+    private ComponentType componentType;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentInstance> componentInstanceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
@@ -73,7 +76,7 @@ public class Component implements Serializable
     private List<AssemblyComponent> assemblyComponentList1;
     @OneToMany(mappedBy = "componentId")
     private List<DesignElement> designElementList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentSource> componentSourceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentProperty> componentPropertyList;
@@ -143,20 +146,20 @@ public class Component implements Serializable
         this.componentConnectorList = componentConnectorList;
     }
 
-    public EntityInfo getEntityInfoId() {
-        return entityInfoId;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
-    public void setEntityInfoId(EntityInfo entityInfoId) {
-        this.entityInfoId = entityInfoId;
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
-    public ComponentType getComponentTypeId() {
-        return componentTypeId;
+    public ComponentType getComponentType() {
+        return componentType;
     }
 
-    public void setComponentTypeId(ComponentType componentTypeId) {
-        this.componentTypeId = componentTypeId;
+    public void setComponentType(ComponentType componentType) {
+        this.componentType = componentType;
     }
 
     @XmlTransient
@@ -229,22 +232,89 @@ public class Component implements Serializable
         return hash;
     }
 
+    public boolean equalsByName(Component other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.name, other.name);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Component)) {
             return false;
         }
         Component other = (Component) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.Component[ id=" + id + " ]";
+        return name;
     }
-    
+
+    @Override
+    public Component clone() throws CloneNotSupportedException {
+        Component cloned = (Component) super.clone();
+        cloned.id = null;
+        cloned.name = "Copy Of " + cloned.name;
+        //cloned.componentTypeList = null;
+        //cloned.componentTypeCategoryList = null;
+        //cloned.componentPropertyList = null;
+        //cloned.componentSourceList = null;
+        cloned.componentConnectorList = null;
+        //cloned.collectionComponentList = null;
+        cloned.componentInstanceList = null;
+        cloned.assemblyComponentList = null;
+        cloned.assemblyComponentList1 = null;
+        //cloned.designComponentList = null;
+        //cloned.designComponentList1 = null;
+        //for (ComponentProperty componentProperty : cloned.componentPropertyList) {
+        //    componentProperty.setId(null);
+        //    componentProperty.setComponent(cloned);
+        //}
+        for (ComponentSource componentSource : cloned.componentSourceList) {
+            componentSource.setId(null);
+            componentSource.setComponent(cloned);
+        }
+//        for (ComponentConnector componentConnector : cloned.componentConnectorList) {
+//            componentConnector.setId(null);
+//            componentConnector.setComponent(cloned);
+//        }
+        cloned.entityInfo = null;
+        return cloned;
+    }
+//
+//    public String getDisplayComponentTypeAndCategoryList() {
+//        if (componentTypeList == null || componentTypeList.isEmpty()) {
+//            return "";
+//        }
+//        
+//        String display = "";
+//        String delimiter = "";
+//        for (ComponentType componentType : componentTypeList) {
+//            display += delimiter + componentType.getNameWithCategory();
+//            delimiter = ", ";
+//        }
+//        return display;
+//    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        for (Log logEntry : logList) {
+            String logEntryKey = "logEntryId:" + logEntry.getId();
+            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
+        }
+        return searchResult;
+    }    
 }

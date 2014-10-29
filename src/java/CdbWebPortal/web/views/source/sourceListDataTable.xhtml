@@ -3,12 +3,17 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:dataTable id="sourceListDataTable" var="sourceObject" value="#{sourceController.listDataModel}" 
-                 paginator="true" paginatorAlwaysVisible="false" 
+    <p:dataTable id="sourceListDataTable" 
+                 widgetVar="sourceListWidget" 
+                 var="sourceObject" 
+                 value="#{sourceController.listDataModel}" 
+                 filteredValue="#{sourceController.filteredObjectList}"
+                 binding="#{sourceController.listDataTable}"
+                 rows="#{sourceController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
                  emptyMessage="No sources found.">
 
         <p:column sortBy="#{sourceObject.id}" headerText="Id"
@@ -17,16 +22,18 @@
         </p:column>
 
         <p:column sortBy="#{sourceObject.name}" headerText="Name" 
-                  filterBy="#{sourceObject.name}" filterMatchMode="contains">
+                  filterBy="#{sourceObject.name}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByName}">
             <h:outputText value="#{sourceObject.name}"/>
         </p:column>
 
-       <p:column sortBy="#{sourceObject.description}" headerText="Description" 
+        <p:column sortBy="#{sourceObject.description}" headerText="Description" 
                   filterBy="#{sourceObject.description}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByDescription}"
                   rendered="#{sourceController.displayDescription}">
             <h:outputText value="#{sourceObject.description}"/>
         </p:column>
-        
+
         <p:column headerText="Actions">
             <ui:include src="../common/commonListActionLinks.xhtml">
                 <ui:param name="entityController" value="#{sourceController}"/>

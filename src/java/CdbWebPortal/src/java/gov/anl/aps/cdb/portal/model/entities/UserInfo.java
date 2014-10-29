@@ -94,7 +94,7 @@ public class UserInfo extends CloneableEntity
     private List<UserSetting> userSettingList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUserId")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUserId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<Log> logList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUserId")
     private List<PropertyValue> propertyValueList;

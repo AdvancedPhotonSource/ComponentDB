@@ -41,7 +41,7 @@ public class Source extends CloneableEntity
     private String name;
     @Size(max = 256)
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sourceId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
     private List<ComponentSource> componentSourceList;
 
     public Source() {
