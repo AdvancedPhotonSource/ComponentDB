@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -56,17 +57,17 @@ public class Component extends CloneableEntity
     @JoinTable(name = "component_log", joinColumns = {
         @JoinColumn(name = "component_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
     @OneToMany(mappedBy = "linkComponentId")
     private List<DesignElementConnection> designElementConnectionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentConnector> componentConnectorList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
     @JoinColumn(name = "component_type_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ComponentType componentType;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentInstance> componentInstanceList;

@@ -13,7 +13,7 @@
             <ui:include src="componentTypeSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{componentController.selectComponentType(componentTypeController.selectedObjectList)}"
+                                 action="#{componentController.selectComponentType(componentTypeController.selectedObject)}"
                                  onclick="componentTypeSelectDataTableWidget.filter()" 
                                  oncomplete="componentTypeSelectDialogWidget.hide()" 
                                  update="@form"

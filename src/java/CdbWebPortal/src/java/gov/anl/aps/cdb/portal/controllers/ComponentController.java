@@ -219,6 +219,15 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
+    public void prepareAddLog(Component component) {
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        Log logEntry = new Log();
+        logEntry.setEnteredByUser(lastModifiedByUser);
+        logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
+        component.getLogList().add(logEntry);
+    }
+
     public void deleteLog(Log componentLog) {
         Component component = getCurrent();
         List<Log> componentLogList = component.getLogList();
@@ -367,10 +376,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         selectFilterByTypeCategory = null;
     }
 
-    public void selectComponentType(List<ComponentType> componentTypeList) {
+    public void selectComponentType(ComponentType componentType) {
         Component component = getCurrent();
-        if (componentTypeList != null && !componentTypeList.isEmpty())
-        component.setComponentType(componentTypeList.get(0));
+        if (componentType != null) {
+            component.setComponentType(componentType);
+        }
     }
 
     public Boolean getDisplayType() {

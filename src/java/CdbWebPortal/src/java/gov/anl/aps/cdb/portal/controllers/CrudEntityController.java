@@ -78,6 +78,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     private DataModel selectDataModel = null;
     private DataTable selectDataTable = null;
     private boolean selectDataModelReset = false;
+    private EntityType selectedObject = null;
     private List<EntityType> selectedObjectList = null;
 
     private String logText = null;
@@ -609,6 +610,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     public void setFilteredItems(List<EntityType> filteredItems) {
         this.filteredObjectList = filteredItems;
+    }
+
+    public EntityType getSelectedObject() {
+        return selectedObject;
+    }
+
+    public void setSelectedObject(EntityType selectedObject) {
+        this.selectedObject = selectedObject;
     }
 
     public void resetListDataModel() {

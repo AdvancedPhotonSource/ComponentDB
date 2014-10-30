@@ -3,71 +3,49 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <c:set var="componentObject" value="#{componentController.selected}"/>
+    <ui:param name="componentObject" value="#{componentController.selected}"/>
 
-    <p:panelGrid columns="3" styleClass="createEntityDetails">
+    <p:panelGrid columns="4" styleClass="createEntityDetails">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{componentObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
+        <p:tooltip for="name" value="Component name is required."/>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputText id="description" value="#{componentObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/> 
-
-        <h:outputLabel for="documentationUri" value="Documentation URI" styleClass="entityDataLabel"/>
-        <h:inputText id="documentationUri" value="#{componentObject.documentationUri}" title="Documentation URI" styleClass="entityDataText"/>
-        <p:message for="documentationUri"/> 
-
-        <h:outputLabel for="componentState" value="State" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="componentState" value="#{componentObject.componentState}" required="true" title="State" styleClass="entityDataSelectOne">
-            <f:selectItems var="componentState" value="#{componentStateController.availableItems}" itemLabel="#{componentState.name}" itemValue="#{componentState}"/>
-        </h:selectOneMenu>
-        <p:message for="componentState"/> 
+        <p:tooltip for="description" value="Description is optional."/>
 
         <p:column>
-            <h:outputLabel for="componentTypes" value="Type" styleClass="entityDataLabel"/>
+            <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
             <div class="actionButtonRight">
-                <p:commandButton id="selectComponentTypesButton"
+                <p:commandButton id="selectComponentTypeButton"
                                  action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
                                  oncomplete="componentTypeSelectDialogWidget.show()"
                                  update="@form"
                                  immediate="true"
-                                 alt="Select Component Types" icon="ui-icon-search">
-                    <p:tooltip for="selectComponentTypesButton" value="Select component types."/>
+                                 alt="Select Component Type" icon="ui-icon-search">
+                    <p:tooltip for="selectComponentTypeButton" value="Select component type."/>
                 </p:commandButton>
             </div>
         </p:column>
-        <h:outputText id="componentTypes" value="#{componentObject.displayComponentTypeAndCategoryList}" title="Type" styleClass="entityDataText"/>
-        <p:message for="componentTypes"/>
+        <h:outputText id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText"/>
+        <p:message for="componentType"/>
+        <p:tooltip for="componentType" value="Component type specification is required."/>
 
-        <h:outputLabel for="estimatedCost" value="Estimated Cost" styleClass="entityDataLabel"/>
-        <h:inputText id="estimatedCost" value="#{componentObject.estimatedCost}" title="Estimated Cost" styleClass="entityDataText"/>
-        <p:message for="estimatedCost"/> 
-
-        <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="ownerUser" value="#{componentObject.entityInfo.ownerUser}" title="Owner User" styleClass="entityDataSelectOne">
-            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-            <f:selectItems var="ownerUser" value="#{userController.availableItems}" itemLabel="#{ownerUser.username}" itemValue="#{ownerUser}"/>
-        </h:selectOneMenu>
-        <p:message for="ownerUser"/> 
-
-        <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="ownerGroup" value="#{componentObject.entityInfo.ownerUserGroup}" converter="userGroupConverter" title="Owner Group" styleClass="entityDataSelectOne">
-            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-            <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
-        </h:selectOneMenu>
-        <p:message for="ownerGroup"/> 
-
-        <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-        <h:inputText id="groupWriteable" value="#{componentObject.entityInfo.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText"/>
-        <p:message for="groupWriteable"/>
+        <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
+        <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
+        <p:message for="componentTypeCategory"/>
+        <p:tooltip for="componentTypeCategory" value="Component type category is inherited from component type."/>
+        
+        <ui:include src="../entityInfo/entityInfoEditObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
+        </ui:include>
 
         <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
-        <h:inputTextarea id="logEntry" value="#{componentController.logText}" immediate="false" title="Log Entry" styleClass="entityDataText"/>
+        <h:inputTextarea id="logEntry" value="#{componentController.logText}" title="Log Entry" styleClass="entityDataText"/>
         <p:message for="logEntry"/> 
     </p:panelGrid>
 

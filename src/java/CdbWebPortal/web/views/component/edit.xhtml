@@ -20,6 +20,7 @@
                 <ui:include src="componentEditPanelGrid.xhtml"/>
 
                 <p/>
+                <ui:param name="componentObject" value="#{componentController.selected}"/>
                 <ui:param name="entityController" value="#{componentController}"/>
                 <ui:include src="../common/commonEditActionButtons.xhtml"/>
 
@@ -33,20 +34,20 @@
 
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true">
-<!--                    <p:tab title="Properties">
-
-                        <ui:include src="../componentProperty/edit.xhtml"/>
-
-                    </p:tab>-->
+                    <!--                    <p:tab title="Properties">
+                    
+                                            <ui:include src="../componentProperty/edit.xhtml"/>
+                    
+                                        </p:tab>-->
 
                     <!--                    <p:tab title="Connectors">
                     
                                         </p:tab>-->
-<!--                    <p:tab title="Sources">
-
-                        <ui:include src="../componentSource/edit.xhtml"/>
-
-                    </p:tab>-->
+                    <!--                    <p:tab title="Sources">
+                    
+                                            <ui:include src="../componentSource/edit.xhtml"/>
+                    
+                                        </p:tab>-->
                 </p:accordionPanel>
             </div>
         </h:form>

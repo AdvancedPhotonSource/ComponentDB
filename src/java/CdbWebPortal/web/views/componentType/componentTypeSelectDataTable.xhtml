@@ -7,18 +7,18 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dataTable id="componentTypeSelectDataTable" 
+                 widgetVar="componentTypeSelectDataTableWidget"
                  var="componentTypeObject" 
                  value="#{componentTypeController.selectDataModel}" 
-                 selection="#{componentTypeController.selectedObjectList}"
-                 selectionMode="multiple"
                  filteredValue="#{componentTypeController.filteredObjectList}"
                  rowKey="#{componentTypeObject.id}"
+                 selection="#{componentTypeController.selectedObject}"
+                 selectionMode="single"
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="20"
-                 widgetVar="componentTypeSelectDataTableWidget"
                  emptyMessage="No available component types found.">
-        
+
         <p:column sortBy="#{componentTypeObject.id}" headerText="Id"
                   rendered="true">
             <h:outputText value="#{componentTypeObject.id}"/>

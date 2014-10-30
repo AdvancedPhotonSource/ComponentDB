@@ -7,7 +7,7 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}CreateSaveButton" action="#{entityTypeController.create()}" 
+        <p:commandButton id="#{entityTypeName}CreateSaveButton" action="#{entityController.create()}" 
                          value="Save" alt="Save" icon="ui-icon-check" update="@form">
             <p:tooltip for="#{entityTypeName}CreateSaveButton" value="Save new #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
