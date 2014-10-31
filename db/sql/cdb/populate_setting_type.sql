@@ -23,7 +23,6 @@ VALUES
 	('Component.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 	('Component.List.Display.OwnerUser', 'Display owner username.', 'true'),
 	('Component.List.Display.OwnerGroup', 'Display owner group name.', 'true'),
-	('Component.List.Display.State', 'Display component state.', 'false'),
 	('Component.List.Display.Type', 'Display component type.', 'true'),
 	('Component.List.Display.TypeCategory', 'Display component type category.', 'true'),
 
@@ -35,17 +34,28 @@ VALUES
 	('Component.List.FilterBy.Name', 'Find components by name.', NULL),
 	('Component.List.FilterBy.OwnerUser', 'Find components by owner username.', NULL),
 	('Component.List.FilterBy.OwnerGroup', 'Find components by owner group name.', NULL),
-	('Component.List.FilterBy.State', 'Find components by state.', NULL),
 	('Component.List.FilterBy.Type', 'Find components by type.', NULL),
 	('Component.List.FilterBy.TypeCategory', 'Find components by type category.', NULL),
 
+	('ComponentType.List.Display.Category','Display component type category.', true),
 	('ComponentType.List.Display.Description', 'Display component type description.', 'true'),
 	('ComponentType.List.Display.Id', 'Display component type id.', 'true'),
 	('ComponentType.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 
+	('ComponentType.List.FilterBy.Category','Filter for component type category.', NULL),
+	('ComponentType.List.FilterBy.Description','Filter for component type description.', NULL),
+	('ComponentType.List.FilterBy.Name','Filter for component type name.', NULL),
+
 	('ComponentTypeCategory.List.Display.Description', 'Display component type category description.', 'true'),
 	('ComponentTypeCategory.List.Display.Id', 'Display component type category id.', 'true'),
 	('ComponentTypeCategory.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
+
+	('ComponentTypeCategory.List.FilterBy.Description','Filter for component type category description.', NULL),
+	('ComponentTypeCategory.List.FilterBy.Name','Filter for component type category name.', NULL),
+
+	('ComponentTypePropertyType.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
+
+	('ComponentTypePropertyType.List.FilterBy.PropertyTypeName', 'Filter for component type property type name.', NULL),
 
 	('Design.List.Display.CreatedByUser', 'Display created by username.', 'false'),
 	('Design.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
@@ -78,10 +88,14 @@ VALUES
 	('DesignLink.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('DesignLink.List.Display.Tag','Display design link tag.', 'true'),
 
-	('Log.List.Display.CreatedOnDateTime','Display log entry created on date/time.', 'true'),
-	('Log.List.Display.CreatedByUser','Display log entry created by user.', 'true'),
+	('Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.', 'true'),
+	('Log.List.Display.EnteredByUser','Display log entry entered by user.', 'true'),
 	('Log.List.Display.Id','Display log entry id.', 'false'),
 	('Log.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('Log.List.FilterBy.EnteredOnDateTime','Filter for log entry entered on date/time.', NULL),
+	('Log.List.FilterBy.EnteredByUser','Filter for log entry entered by user.', NULL),
+	('Log.List.FilterBy.Text','Filter for log entry text.', NULL),
 
 	('PropertyType.List.Display.Category','Display property type category.', 'true'),
 	('PropertyType.List.Display.DefaultUnits','Display property type default units.', 'false'),

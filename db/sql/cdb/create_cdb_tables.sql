@@ -615,7 +615,6 @@ CREATE TABLE `component_instance` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `component_id` int(11) unsigned NOT NULL,
   `location_id` int(11) unsigned DEFAULT NULL,
-  `serial_number` varchar(16) DEFAULT NULL,
   `quantity` int(11) unsigned DEFAULT NULL,
   `location_details` varchar(256) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
