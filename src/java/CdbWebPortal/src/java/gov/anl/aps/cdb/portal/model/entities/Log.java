@@ -84,6 +84,7 @@ public class Log extends CloneableEntity
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

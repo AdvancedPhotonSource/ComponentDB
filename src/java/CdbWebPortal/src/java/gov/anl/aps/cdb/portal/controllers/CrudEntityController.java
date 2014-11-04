@@ -527,6 +527,11 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             // Do nothing if current item is not set.
             return null;
         }
+        else if (current.getId() == null) {
+            logger.warn("Current item id is null");
+            // Do nothing if there is no id.
+            return null;
+        }
         try {
             logger.debug("Destroying " + getCurrentEntityInstanceName());
             getFacade().remove(current);

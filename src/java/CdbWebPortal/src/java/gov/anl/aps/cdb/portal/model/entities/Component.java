@@ -59,9 +59,14 @@ public class Component extends CloneableEntity
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
+    @JoinTable(name = "component_property", joinColumns = {
+        @JoinColumn(name = "component_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<PropertyValue> propertyValueList;
     @OneToMany(mappedBy = "linkComponentId")
     private List<DesignElementConnection> designElementConnectionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentConnector> componentConnectorList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
@@ -69,18 +74,16 @@ public class Component extends CloneableEntity
     @JoinColumn(name = "component_type_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ComponentType componentType;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentInstance> componentInstanceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<AssemblyComponent> assemblyComponentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assemblyId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assembly")
     private List<AssemblyComponent> assemblyComponentList1;
-    @OneToMany(mappedBy = "componentId")
+    @OneToMany(mappedBy = "component")
     private List<DesignElement> designElementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentSource> componentSourceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
-    private List<ComponentProperty> componentPropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentResource> componentResourceList;
 
@@ -96,6 +99,7 @@ public class Component extends CloneableEntity
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -129,6 +133,15 @@ public class Component extends CloneableEntity
         this.logList = logList;
     }
 
+    @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+    
     @XmlTransient
     public List<DesignElementConnection> getDesignElementConnectionList() {
         return designElementConnectionList;
@@ -206,15 +219,6 @@ public class Component extends CloneableEntity
 
     public void setComponentSourceList(List<ComponentSource> componentSourceList) {
         this.componentSourceList = componentSourceList;
-    }
-
-    @XmlTransient
-    public List<ComponentProperty> getComponentPropertyList() {
-        return componentPropertyList;
-    }
-
-    public void setComponentPropertyList(List<ComponentProperty> componentPropertyList) {
-        this.componentPropertyList = componentPropertyList;
     }
 
     @XmlTransient

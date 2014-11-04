@@ -26,15 +26,15 @@
                     <h:outputText value="#{resources.ViewDesignElementLabel_sortOrder}"/>
                     <h:outputText value="#{designElementController.selected.sortOrder}" title="#{resources.ViewDesignElementTitle_sortOrder}"/>
                     <h:outputText value="#{resources.ViewDesignElementLabel_entityInfoId}"/>
-                    <h:outputText value="#{designElementController.selected.entityInfoId}" title="#{resources.ViewDesignElementTitle_entityInfoId}"/>
+                    <h:outputText value="#{designElementController.selected.entityInfo}" title="#{resources.ViewDesignElementTitle_entityInfoId}"/>
                     <h:outputText value="#{resources.ViewDesignElementLabel_locationId}"/>
-                    <h:outputText value="#{designElementController.selected.locationId}" title="#{resources.ViewDesignElementTitle_locationId}"/>
+                    <h:outputText value="#{designElementController.selected.location}" title="#{resources.ViewDesignElementTitle_locationId}"/>
                     <h:outputText value="#{resources.ViewDesignElementLabel_componentId}"/>
-                    <h:outputText value="#{designElementController.selected.componentId}" title="#{resources.ViewDesignElementTitle_componentId}"/>
+                    <h:outputText value="#{designElementController.selected.component}" title="#{resources.ViewDesignElementTitle_componentId}"/>
                     <h:outputText value="#{resources.ViewDesignElementLabel_childDesignId}"/>
-                    <h:outputText value="#{designElementController.selected.childDesignId}" title="#{resources.ViewDesignElementTitle_childDesignId}"/>
+                    <h:outputText value="#{designElementController.selected.childDesign}" title="#{resources.ViewDesignElementTitle_childDesignId}"/>
                     <h:outputText value="#{resources.ViewDesignElementLabel_parentDesignId}"/>
-                    <h:outputText value="#{designElementController.selected.parentDesignId}" title="#{resources.ViewDesignElementTitle_parentDesignId}"/>
+                    <h:outputText value="#{designElementController.selected.parentDesign}" title="#{resources.ViewDesignElementTitle_parentDesignId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{designElementController.destroyAndView}" value="#{resources.ViewDesignElementDestroyLink}"/>

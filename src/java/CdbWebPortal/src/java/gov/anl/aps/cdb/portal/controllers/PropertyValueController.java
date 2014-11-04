@@ -1,12 +1,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,202 +15,191 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController implements Serializable
-{
+public class PropertyValueController extends CrudEntityController<PropertyValue, PropertyValueFacade> implements Serializable {
 
-    private PropertyValue current;
-    private DataModel items = null;
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValue.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "PropertyValue.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "PropertyValue.List.Display.Description";
+    private static final String DisplayEnteredByUserSettingTypeKey = "PropertyValue.List.Display.EnteredByUser";
+    private static final String DisplayEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.Display.EnteredOnDateTime";
+    private static final String DisplayTypeCategorySettingTypeKey = "PropertyValue.List.Display.TypeCategory";
+    private static final String DisplayUnitsSettingTypeKey = "PropertyValue.List.Display.Units";
+
+    private static final String FilterByDescriptionSettingTypeKey = "PropertyValue.List.FilterBy.Description";
+    private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValue.List.FilterBy.EnteredByUser";
+    private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.FilterBy.EnteredOnDateTime";
+    private static final String FilterByTypeSettingTypeKey = "PropertyValue.List.FilterBy.Type";
+    private static final String FilterByTypeCategorySettingTypeKey = "PropertyValue.List.FilterBy.TypeCategory";
+    private static final String FilterByValueSettingTypeKey = "PropertyValue.List.FilterBy.Value";
+    private static final String FilterByUnitsSettingTypeKey = "PropertyValue.List.FilterBy.Units";
+
+    private Boolean displayEnteredByUser = null;
+    private Boolean displayEnteredOnDateTime = null;
+    private Boolean displayTypeCategory = null;
+    private Boolean displayUnits = null;
+
+    private String filterByEnteredByUser = null;
+    private String filterByEnteredOnDateTime = null;
+    private String filterByType = null;
+    private String filterByTypeCategory = null;
+    private String filterByValue = null;
+    private String filterByUnits = null;
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.PropertyValueFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private PropertyValueFacade propertyValueFacade;
+
+    private DataTable designPropertyValueListDataTable = null;
+    private DataTable componentPropertyValueListDataTable = null;
 
     public PropertyValueController() {
+        super();
     }
 
-    public PropertyValue getSelected() {
-        if (current == null) {
-            current = new PropertyValue();
-            selectedItemIndex = -1;
+    @Override
+    protected PropertyValueFacade getFacade() {
+        return propertyValueFacade;
+    }
+
+    @Override
+    protected PropertyValue createEntityInstance() {
+        return new PropertyValue();
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "propertyValue";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getId().toString();
         }
-        return current;
+        return "";
     }
 
-    private PropertyValueFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<PropertyValue> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
-        return pagination;
+
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayEnteredByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredByUserSettingTypeKey).getDefaultValue());
+        displayEnteredOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredOnDateTimeSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayTypeCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeCategorySettingTypeKey).getDefaultValue());
+        displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
+
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
+        filterByEnteredOnDateTime = settingTypeMap.get(FilterByEnteredOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
+        filterByTypeCategory = settingTypeMap.get(FilterByTypeCategorySettingTypeKey).getDefaultValue();
+        filterByUnits = settingTypeMap.get(FilterByUnitsSettingTypeKey).getDefaultValue();
+        filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();
+
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (PropertyValue) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new PropertyValue();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyValueCreated"));
-            return prepareCreate();
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayTypeCategory = sessionUser.getUserSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
+        filterByTypeCategory = sessionUser.getUserSettingValueAsString(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
+        Map<String, String> filters = dataTable.getFilters();
+        filterByEnteredByUser = filters.get("enteredByUser");
+        filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
+        filterByType = filters.get("type");
+        filterByTypeCategory = filters.get("typeCategory");
+        filterByUnits = filters.get("units");
+        filterByValue = filters.get("value");
     }
 
-    public String prepareEdit() {
-        current = (PropertyValue) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyValueUpdated"));
-            return "View";
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
+
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        sessionUser.setUserSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
+        sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
+
     }
 
-    public String destroy() {
-        current = (PropertyValue) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        }
-        else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyValueDeleted"));
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public PropertyValue getPropertyValue(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByEnteredByUser = null;
+        filterByEnteredOnDateTime = null;
+        filterByType = null;
+        filterByTypeCategory = null;
+        filterByUnits = null;
+        filterByValue = null;
     }
 
     @FacesConverter(forClass = PropertyValue.class)
-    public static class PropertyValueControllerConverter implements Converter
-    {
+    public static class PropertyValueControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            try {
+                if (value == null || value.length() == 0) {
+                    return null;
+                }
+                PropertyValueController controller = (PropertyValueController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "logController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // We cannot get this entity from given key.
                 return null;
             }
-            PropertyValueController controller = (PropertyValueController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyValueController");
-            return controller.getPropertyValue(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -232,12 +222,113 @@ public class PropertyValueController implements Serializable
             if (object instanceof PropertyValue) {
                 PropertyValue o = (PropertyValue) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyValue.class.getName());
             }
         }
 
+    }
+
+    public Boolean getDisplayEnteredByUser() {
+        return displayEnteredByUser;
+    }
+
+    public void setDisplayEnteredByUser(Boolean displayEnteredByUser) {
+        this.displayEnteredByUser = displayEnteredByUser;
+    }
+
+    public Boolean getDisplayEnteredOnDateTime() {
+        return displayEnteredOnDateTime;
+    }
+
+    public void setDisplayEnteredOnDateTime(Boolean displayEnteredOnDateTime) {
+        this.displayEnteredOnDateTime = displayEnteredOnDateTime;
+    }
+
+    public Boolean getDisplayTypeCategory() {
+        return displayTypeCategory;
+    }
+
+    public void setDisplayTypeCategory(Boolean displayTypeCategory) {
+        this.displayTypeCategory = displayTypeCategory;
+    }
+
+    public Boolean getDisplayUnits() {
+        return displayUnits;
+    }
+
+    public void setDisplayUnits(Boolean displayUnits) {
+        this.displayUnits = displayUnits;
+    }
+
+    public String getFilterByEnteredByUser() {
+        return filterByEnteredByUser;
+    }
+
+    public void setFilterByEnteredByUser(String filterByEnteredByUser) {
+        this.filterByEnteredByUser = filterByEnteredByUser;
+    }
+
+    public String getFilterByEnteredOnDateTime() {
+        return filterByEnteredOnDateTime;
+    }
+
+    public void setFilterByEnteredOnDateTime(String filterByEnteredOnDateTime) {
+        this.filterByEnteredOnDateTime = filterByEnteredOnDateTime;
+    }
+
+    public String getFilterByType() {
+        return filterByType;
+    }
+
+    public void setFilterByType(String filterByType) {
+        this.filterByType = filterByType;
+    }
+
+    public String getFilterByTypeCategory() {
+        return filterByTypeCategory;
+    }
+
+    public void setFilterByTypeCategory(String filterByTypeCategory) {
+        this.filterByTypeCategory = filterByTypeCategory;
+    }
+
+    public String getFilterByValue() {
+        return filterByValue;
+    }
+
+    public void setFilterByValue(String filterByValue) {
+        this.filterByValue = filterByValue;
+    }
+
+    public String getFilterByUnits() {
+        return filterByUnits;
+    }
+
+    public void setFilterByUnits(String filterByUnits) {
+        this.filterByUnits = filterByUnits;
+    }
+
+    public DataTable getDesignPropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            designPropertyValueListDataTable = new DataTable();
+        }
+        return designPropertyValueListDataTable;
+    }
+
+    public void setDesignPropertyValueListDataTable(DataTable designPropertyValueListDataTable) {
+        this.designPropertyValueListDataTable = designPropertyValueListDataTable;
+    }
+
+    public DataTable getComponentPropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            componentPropertyValueListDataTable = new DataTable();
+        }
+        return componentPropertyValueListDataTable;
+    }
+
+    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
+        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
     }
 
 }

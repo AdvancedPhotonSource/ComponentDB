@@ -6,6 +6,7 @@ import gov.anl.aps.cdb.portal.model.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.entities.AllowedPropertyValue;
+import gov.anl.aps.cdb.portal.model.entities.Component;
 import gov.anl.aps.cdb.portal.model.entities.ComponentType;
 
 import java.io.Serializable;
@@ -289,6 +290,13 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         List<PropertyType> selectPropertyTypeList = getFacade().findAll();
         List<PropertyType> componentTypePropertyList = componentType.getPropertyTypeList();
         selectPropertyTypeList.removeAll(componentTypePropertyList);
+        createSelectDataModel(selectPropertyTypeList);
+    }
+
+    public void prepareSelectPropertyTypesForComponent(Component component) {
+        clearSelectFilters();
+        resetSelectDataModel();
+        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
     

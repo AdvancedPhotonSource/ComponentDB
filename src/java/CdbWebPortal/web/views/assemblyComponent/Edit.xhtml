@@ -24,11 +24,11 @@
                     <h:outputLabel value="#{resources.EditAssemblyComponentLabel_sortOrder}" for="sortOrder" />
                     <h:inputText id="sortOrder" value="#{assemblyComponentController.selected.sortOrder}" title="#{resources.EditAssemblyComponentTitle_sortOrder}" />
                     <h:outputLabel value="#{resources.EditAssemblyComponentLabel_componentId}" for="componentId" />
-                    <h:selectOneMenu id="componentId" value="#{assemblyComponentController.selected.componentId}" title="#{resources.EditAssemblyComponentTitle_componentId}" required="true" requiredMessage="#{resources.EditAssemblyComponentRequiredMessage_componentId}">
+                    <h:selectOneMenu id="componentId" value="#{assemblyComponentController.selected.component}" title="#{resources.EditAssemblyComponentTitle_componentId}" required="true" requiredMessage="#{resources.EditAssemblyComponentRequiredMessage_componentId}">
                         <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.EditAssemblyComponentLabel_assemblyId}" for="assemblyId" />
-                    <h:selectOneMenu id="assemblyId" value="#{assemblyComponentController.selected.assemblyId}" title="#{resources.EditAssemblyComponentTitle_assemblyId}" required="true" requiredMessage="#{resources.EditAssemblyComponentRequiredMessage_assemblyId}">
+                    <h:selectOneMenu id="assemblyId" value="#{assemblyComponentController.selected.assembly}" title="#{resources.EditAssemblyComponentTitle_assemblyId}" required="true" requiredMessage="#{resources.EditAssemblyComponentRequiredMessage_assemblyId}">
                         <f:selectItems value="#{componentController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

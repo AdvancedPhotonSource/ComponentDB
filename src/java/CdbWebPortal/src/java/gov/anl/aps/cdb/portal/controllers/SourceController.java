@@ -116,9 +116,15 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
             if (value == null || value.length() == 0) {
                 return null;
             }
-            SourceController controller = (SourceController) facesContext.getApplication().getELResolver().
+            try {
+                SourceController controller = (SourceController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "sourceController");
-            return controller.getEntity(getKey(value));
+                return controller.getEntity(getKey(value));
+            }
+            catch (Exception ex) {
+                // We cannot get this entity from given key.
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {

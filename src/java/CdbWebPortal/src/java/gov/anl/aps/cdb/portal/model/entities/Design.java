@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -37,9 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Design.findById", query = "SELECT d FROM Design d WHERE d.id = :id"),
     @NamedQuery(name = "Design.findByName", query = "SELECT d FROM Design d WHERE d.name = :name"),
     @NamedQuery(name = "Design.findByDescription", query = "SELECT d FROM Design d WHERE d.description = :description")})
-public class Design implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class Design extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -50,24 +47,27 @@ public class Design implements Serializable
     private String name;
     @Size(max = 256)
     private String description;
+    @JoinTable(name = "design_property", joinColumns = {
+        @JoinColumn(name = "design_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<PropertyValue> propertyValueList;
     @JoinTable(name = "design_log", joinColumns = {
         @JoinColumn(name = "design_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
     private List<Log> logList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "designId")
-    private List<DesignProperty> designPropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childDesignId")
     private List<DesignLink> designLinkList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesignId")
     private List<DesignLink> designLinkList1;
-    @OneToMany(mappedBy = "childDesignId")
+    @OneToMany(mappedBy = "childDesign")
     private List<DesignElement> designElementList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesignId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
     private List<DesignElement> designElementList1;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private EntityInfo entityInfoId;
+    private EntityInfo entityInfo;
 
     public Design() {
     }
@@ -81,6 +81,7 @@ public class Design implements Serializable
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -106,21 +107,21 @@ public class Design implements Serializable
     }
 
     @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+
+    @XmlTransient
     public List<Log> getLogList() {
         return logList;
     }
 
     public void setLogList(List<Log> logList) {
         this.logList = logList;
-    }
-
-    @XmlTransient
-    public List<DesignProperty> getDesignPropertyList() {
-        return designPropertyList;
-    }
-
-    public void setDesignPropertyList(List<DesignProperty> designPropertyList) {
-        this.designPropertyList = designPropertyList;
     }
 
     @XmlTransient
@@ -159,12 +160,12 @@ public class Design implements Serializable
         this.designElementList1 = designElementList1;
     }
 
-    public EntityInfo getEntityInfoId() {
-        return entityInfoId;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
-    public void setEntityInfoId(EntityInfo entityInfoId) {
-        this.entityInfoId = entityInfoId;
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
     @Override
@@ -181,10 +182,7 @@ public class Design implements Serializable
             return false;
         }
         Design other = (Design) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

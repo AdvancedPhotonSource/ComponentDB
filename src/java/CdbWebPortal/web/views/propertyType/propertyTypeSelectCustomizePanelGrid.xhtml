@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:panelGrid columns="2">
+        <p:selectBooleanCheckbox id="selectDisplayCategory" value="#{propertyTypeController.selectDisplayCategory}"/>  
+        <h:outputLabel for="selectDisplayCategory" value="Display Category" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{propertyTypeController.selectDisplayDescription}"/>  
+        <h:outputLabel for="selectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayDefaultUnits" value="#{propertyTypeController.selectDisplayDefaultUnits}"/>  
+        <h:outputLabel for="selectDisplayDefaultUnits" value="Display Default Units" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayDefaultValue" value="#{propertyTypeController.selectDisplayDefaultValue}"/>  
+        <h:outputLabel for="selectDisplayDefaultValue" value="Display Default Value" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayId" value="#{propertyTypeController.selectDisplayId}"/>  
+        <h:outputLabel for="selectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayIsDynamic" value="#{propertyTypeController.selectDisplayIsDynamic}"/>  
+        <h:outputLabel for="selectDisplayIsDynamic" value="Display Is Dynamic" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayHandlerName" value="#{propertyTypeController.selectDisplayHandlerName}"/>  
+        <h:outputLabel for="selectDisplayHandlerName" value="Display Handler Name" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="selectDisplayIsUserWriteable" value="#{propertyTypeController.selectDisplayIsUserWriteable}"/>  
+        <h:outputLabel for="selectDisplayIsUserWriteable" value="Display Is User Writeable" styleClass="dialogDataLabel"/>
+    </p:panelGrid>
+
+</ui:composition>
+
+

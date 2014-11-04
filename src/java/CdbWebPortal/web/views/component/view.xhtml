@@ -28,7 +28,7 @@
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
                 <ui:include src="../common/commonViewActionButtons.xhtml"/>
                 <ui:include src="componentDestroyDialog.xhtml"/>
- 
+
 
                 <p/>
                 <p:accordionPanel multiple="false">
@@ -41,20 +41,13 @@
 
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true">
-<!--                    <p:tab title="Properties">
-
+                    <p:tab title="Properties">
                         <ui:include src="../componentProperty/view.xhtml"/>
+                    </p:tab>
 
-                    </p:tab>-->
-
-                    <!--                    <p:tab title="Connectors">
-                    
-                                        </p:tab>-->
-<!--                    <p:tab title="Sources">
-
+                    <p:tab title="Sources">
                         <ui:include src="../componentSource/view.xhtml"/>
-
-                    </p:tab>-->
+                    </p:tab>
                 </p:accordionPanel>
             </div>
         </h:form>

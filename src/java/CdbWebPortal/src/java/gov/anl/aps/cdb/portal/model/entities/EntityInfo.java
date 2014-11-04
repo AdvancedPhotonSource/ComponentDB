@@ -81,11 +81,11 @@ public class EntityInfo implements Serializable
     private UserInfo ownerUser;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Component> componentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<ComponentInstance> componentInstanceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<DesignElement> designElementList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfoId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private List<Design> designList;
 
     public EntityInfo() {

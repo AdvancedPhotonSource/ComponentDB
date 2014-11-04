@@ -16,7 +16,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -45,8 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findByDefaultUnits", query = "SELECT p FROM PropertyType p WHERE p.defaultUnits = :defaultUnits"),
     @NamedQuery(name = "PropertyType.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "PropertyType.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
-public class PropertyType extends CloneableEntity
-{
+public class PropertyType extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -74,31 +72,17 @@ public class PropertyType extends CloneableEntity
     @NotNull
     @Column(name = "is_dynamic")
     private boolean isDynamic;
-    @JoinTable(name = "connector_type_property_type", joinColumns = {
-        @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "connector_type_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(mappedBy = "propertyTypeList")
     private List<ConnectorType> connectorTypeList;
-    @JoinTable(name = "component_type_property_type", joinColumns = {
-        @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "component_type_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(mappedBy = "propertyTypeList")
     private List<ComponentType> componentTypeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyTypeId")
-    private List<DesignProperty> designPropertyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
-    private List<ComponentInstanceProperty> componentInstancePropertyList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<AllowedPropertyValue> allowedPropertyValueList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
-    private List<ComponentConnectorProperty> componentConnectorPropertyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
-    private List<ComponentProperty> componentPropertyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyTypeId")
-    private List<DesignElementProperty> designElementPropertyList;
     @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
     @ManyToOne
     private PropertyTypeCategory propertyTypeCategory;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
+    private List<PropertyValue> propertyValueList;
 
     public PropertyType() {
     }
@@ -114,6 +98,7 @@ public class PropertyType extends CloneableEntity
         this.isDynamic = isDynamic;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -197,57 +182,12 @@ public class PropertyType extends CloneableEntity
     }
 
     @XmlTransient
-    public List<DesignProperty> getDesignPropertyList() {
-        return designPropertyList;
-    }
-
-    public void setDesignPropertyList(List<DesignProperty> designPropertyList) {
-        this.designPropertyList = designPropertyList;
-    }
-
-    @XmlTransient
-    public List<ComponentInstanceProperty> getComponentInstancePropertyList() {
-        return componentInstancePropertyList;
-    }
-
-    public void setComponentInstancePropertyList(List<ComponentInstanceProperty> componentInstancePropertyList) {
-        this.componentInstancePropertyList = componentInstancePropertyList;
-    }
-
-    @XmlTransient
     public List<AllowedPropertyValue> getAllowedPropertyValueList() {
         return allowedPropertyValueList;
     }
 
     public void setAllowedPropertyValueList(List<AllowedPropertyValue> allowedPropertyValueList) {
         this.allowedPropertyValueList = allowedPropertyValueList;
-    }
-
-    @XmlTransient
-    public List<ComponentConnectorProperty> getComponentConnectorPropertyList() {
-        return componentConnectorPropertyList;
-    }
-
-    public void setComponentConnectorPropertyList(List<ComponentConnectorProperty> componentConnectorPropertyList) {
-        this.componentConnectorPropertyList = componentConnectorPropertyList;
-    }
-
-    @XmlTransient
-    public List<ComponentProperty> getComponentPropertyList() {
-        return componentPropertyList;
-    }
-
-    public void setComponentPropertyList(List<ComponentProperty> componentPropertyList) {
-        this.componentPropertyList = componentPropertyList;
-    }
-
-    @XmlTransient
-    public List<DesignElementProperty> getDesignElementPropertyList() {
-        return designElementPropertyList;
-    }
-
-    public void setDesignElementPropertyList(List<DesignElementProperty> designElementPropertyList) {
-        this.designElementPropertyList = designElementPropertyList;
     }
 
     public PropertyTypeCategory getPropertyTypeCategory() {
@@ -258,6 +198,19 @@ public class PropertyType extends CloneableEntity
         this.propertyTypeCategory = propertyTypeCategory;
     }
 
+    @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+    
+    public boolean hasAllowedPropertyValues() {
+        return !allowedPropertyValueList.isEmpty();
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

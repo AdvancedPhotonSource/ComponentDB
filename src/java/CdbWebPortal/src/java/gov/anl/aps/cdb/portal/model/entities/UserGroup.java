@@ -63,6 +63,7 @@ public class UserGroup extends CloneableEntity
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

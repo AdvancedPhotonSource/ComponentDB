@@ -63,6 +63,7 @@ public class ComponentTypeCategory extends CloneableEntity
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

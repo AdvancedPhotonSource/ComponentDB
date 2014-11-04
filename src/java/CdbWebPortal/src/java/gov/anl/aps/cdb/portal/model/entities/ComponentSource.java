@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,9 +31,11 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentSource.findAll", query = "SELECT c FROM ComponentSource c"),
     @NamedQuery(name = "ComponentSource.findById", query = "SELECT c FROM ComponentSource c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentSource.findByPartNumber", query = "SELECT c FROM ComponentSource c WHERE c.partNumber = :partNumber"),
-    @NamedQuery(name = "ComponentSource.findByCost", query = "SELECT c FROM ComponentSource c WHERE c.cost = :cost")})
-public class ComponentSource extends CloneableEntity
-{
+    @NamedQuery(name = "ComponentSource.findByCost", query = "SELECT c FROM ComponentSource c WHERE c.cost = :cost"),
+    @NamedQuery(name = "ComponentSource.findByDescription", query = "SELECT c FROM ComponentSource c WHERE c.description = :description"),
+    @NamedQuery(name = "ComponentSource.findAllByComponentId", query = "SELECT c FROM ComponentSource c WHERE c.component.id = :componentId")})
+public class ComponentSource extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -43,6 +45,8 @@ public class ComponentSource extends CloneableEntity
     private String partNumber;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     private Float cost;
+    @Size(max = 256)
+    private String description;
     @JoinColumn(name = "source_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Source source;
@@ -57,6 +61,7 @@ public class ComponentSource extends CloneableEntity
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -97,6 +102,14 @@ public class ComponentSource extends CloneableEntity
         this.component = component;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -104,19 +117,32 @@ public class ComponentSource extends CloneableEntity
         return hash;
     }
 
+    public boolean equalsBySource(ComponentSource other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.source, other.source);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof ComponentSource)) {
             return false;
         }
         ComponentSource other = (ComponentSource) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsBySource(other);
+        }
+
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.entities.ComponentSource[ id=" + id + " ]";
     }
-    
+
 }

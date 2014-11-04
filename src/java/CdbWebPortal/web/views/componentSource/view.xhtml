@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:include src="../common/commonChildListActionButtons.xhtml">
+        <ui:param name="parentEntityController" value="#{componentController}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
+        <ui:param name="childEntityController" value="#{componentSourceController}"/>
+        <ui:param name="childEntityTypeName" value="#{componentSourceController.entityTypeName}"/>
+    </ui:include>    
+    <ui:include src="componentSourceListDataTable.xhtml"/>
+
+    <ui:include src="componentSourceListCustomizeDisplayDialog.xhtml"/>
+    <h:outputScript library="js/componentSource" name="list.filter.js" rendered="#{componentSourceController.listDataModelReset}"/>    
+
+</ui:composition>
+
+

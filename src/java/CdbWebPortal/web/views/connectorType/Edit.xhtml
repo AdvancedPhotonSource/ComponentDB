@@ -22,11 +22,11 @@
                     <h:outputLabel value="#{resources.EditConnectorTypeLabel_description}" for="description" />
                     <h:inputText id="description" value="#{connectorTypeController.selected.description}" title="#{resources.EditConnectorTypeTitle_description}" />
                     <h:outputLabel value="#{resources.EditConnectorTypeLabel_resourceTypeId}" for="resourceTypeId" />
-                    <h:selectOneMenu id="resourceTypeId" value="#{connectorTypeController.selected.resourceTypeId}" title="#{resources.EditConnectorTypeTitle_resourceTypeId}" >
+                    <h:selectOneMenu id="resourceTypeId" value="#{connectorTypeController.selected.resourceType}" title="#{resources.EditConnectorTypeTitle_resourceTypeId}" >
                         <f:selectItems value="#{resourceTypeController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                     <h:outputLabel value="#{resources.EditConnectorTypeLabel_connectorTypeCategoryId}" for="connectorTypeCategoryId" />
-                    <h:selectOneMenu id="connectorTypeCategoryId" value="#{connectorTypeController.selected.connectorTypeCategoryId}" title="#{resources.EditConnectorTypeTitle_connectorTypeCategoryId}" >
+                    <h:selectOneMenu id="connectorTypeCategoryId" value="#{connectorTypeController.selected.connectorTypeCategory}" title="#{resources.EditConnectorTypeTitle_connectorTypeCategoryId}" >
                         <f:selectItems value="#{connectorTypeCategoryController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

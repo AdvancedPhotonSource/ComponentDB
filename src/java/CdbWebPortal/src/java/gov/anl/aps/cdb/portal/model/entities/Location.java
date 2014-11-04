@@ -60,9 +60,9 @@ public class Location implements Serializable
     @JoinColumn(name = "location_type_id", referencedColumnName = "id")
     @ManyToOne
     private LocationType locationTypeId;
-    @OneToMany(mappedBy = "locationId")
+    @OneToMany(mappedBy = "location")
     private List<ComponentInstance> componentInstanceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "locationId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "location")
     private List<DesignElement> designElementList;
 
     public Location() {

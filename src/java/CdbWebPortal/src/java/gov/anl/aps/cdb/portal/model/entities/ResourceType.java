@@ -77,7 +77,7 @@ public class ResourceType implements Serializable
     @JoinColumn(name = "resource_type_category_id", referencedColumnName = "id")
     @ManyToOne
     private ResourceTypeCategory resourceTypeCategoryId;
-    @OneToMany(mappedBy = "resourceTypeId")
+    @OneToMany(mappedBy = "resourceType")
     private List<ConnectorType> connectorTypeList;
 
     public ResourceType() {

@@ -17,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -52,9 +53,15 @@ public class ComponentType extends CloneableEntity
     private String name;
     @Size(max = 256)
     private String description;
-    @ManyToMany(mappedBy = "componentTypeList")
+    @JoinTable(name = "component_type_resource_type", joinColumns = {
+        @JoinColumn(name = "component_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "resource_type_id", referencedColumnName = "id")})
+    @ManyToMany
     private List<ResourceType> resourceTypeList;
-    @ManyToMany(mappedBy = "componentTypeList")
+    @JoinTable(name = "component_type_property_type", joinColumns = {
+        @JoinColumn(name = "component_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_type_id", referencedColumnName = "id")})
+    @ManyToMany
     private List<PropertyType> propertyTypeList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentType")
     private List<Component> componentList;
@@ -74,6 +81,7 @@ public class ComponentType extends CloneableEntity
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

@@ -24,9 +24,9 @@
                     <h:outputText value="#{resources.ViewAssemblyComponentLabel_sortOrder}"/>
                     <h:outputText value="#{assemblyComponentController.selected.sortOrder}" title="#{resources.ViewAssemblyComponentTitle_sortOrder}"/>
                     <h:outputText value="#{resources.ViewAssemblyComponentLabel_componentId}"/>
-                    <h:outputText value="#{assemblyComponentController.selected.componentId}" title="#{resources.ViewAssemblyComponentTitle_componentId}"/>
+                    <h:outputText value="#{assemblyComponentController.selected.component}" title="#{resources.ViewAssemblyComponentTitle_componentId}"/>
                     <h:outputText value="#{resources.ViewAssemblyComponentLabel_assemblyId}"/>
-                    <h:outputText value="#{assemblyComponentController.selected.assemblyId}" title="#{resources.ViewAssemblyComponentTitle_assemblyId}"/>
+                    <h:outputText value="#{assemblyComponentController.selected.assembly}" title="#{resources.ViewAssemblyComponentTitle_assemblyId}"/>
                 </h:panelGrid>
                 <br />
                 <h:commandLink action="#{assemblyComponentController.destroyAndView}" value="#{resources.ViewAssemblyComponentDestroyLink}"/>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="isValueRestricted" value="#{propertyValueObject.propertyType.hasAllowedPropertyValues()}"/>
+    <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
+              rendered="#{propertyValueController.displayId}">
+        <h:outputText id="id" value="#{propertyValueObject.id}"/>
+        <p:tooltip for="id" value="Property value id cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
+              filterBy="#{propertyValueObject.propertyType}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByType}">
+        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
+        <p:tooltip id="type" for="type" value="Property type cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
+              filterBy="#{propertyValueObject.propertyType.propertyTypeCategory}" filterMatchMode="exact"
+              filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
+              filterValue="#{propertyValueController.filterByTypeCategory}"
+              rendered="#{propertyValueController.displayTypeCategory}">
+        <h:outputText id="typeCategory" value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
+        <p:tooltip for="typeCategory" value="Property type category cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
+              filterBy="#{propertyValueObject.value}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByValue}">
+        <h:inputText id="freeFormValue" value="#{propertyValueObject.value}" styleClass="cellInput" 
+                     rendered="#{!isValueRestricted}"/>
+        <p:tooltip for="freeFormValue" value="Property value can be empty."/>
+        <h:selectOneMenu id="restrictedValue" value="#{propertyValueObject.value}" title="Value" styleClass="entityDataText"
+                         rendered="#{isValueRestricted}">
+            <f:selectItems var="value" value="#{propertyValueObject.propertyType.allowedPropertyValueList}"/>
+        </h:selectOneMenu>
+        <p:tooltip for="restrictedValue" value="Select property value."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
+              filterBy="#{propertyValueObject.units}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByUnits}">
+        <h:inputText id="units" value="#{propertyValueObject.units}" styleClass="cellInput"/>
+        <p:tooltip for="units" value="Units field is optional."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
+              filterBy="#{propertyValueObject.description}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByDescription}">
+        <h:inputText id="description" value="#{propertyValueObject.description}" styleClass="longCellInput"/>
+        <p:tooltip for="description" value="Description is optional."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
+              filterBy="#{propertyValueObject.enteredByUser.username}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByEnteredByUser}"
+              rendered="#{propertyValueController.displayEnteredByUser}">
+        <h:outputText id="enteredBy" value="#{propertyValueObject.enteredByUser.username}"/>
+        <p:tooltip for="enteredBy" value="Entered by user field cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
+              filterBy="#{propertyValueObject.enteredOnDateTime}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByEnteredOnDateTime}"
+              rendered="#{propertyValueController.displayEnteredOnDateTime}">
+        <h:outputText id="enteredOn" value="#{propertyValueObject.enteredOnDateTime}"/>
+        <p:tooltip for="enteredOn" value="Entered on date/time field cannot be modified."/>
+    </p:column>
+
+</ui:composition>
+
+

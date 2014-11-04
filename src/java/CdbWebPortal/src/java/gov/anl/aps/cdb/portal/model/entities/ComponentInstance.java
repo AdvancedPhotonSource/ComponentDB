@@ -39,8 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentInstance.findByQuantity", query = "SELECT c FROM ComponentInstance c WHERE c.quantity = :quantity"),
     @NamedQuery(name = "ComponentInstance.findByLocationDetails", query = "SELECT c FROM ComponentInstance c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstance.findByDescription", query = "SELECT c FROM ComponentInstance c WHERE c.description = :description")})
-public class ComponentInstance extends CloneableEntity
-{
+public class ComponentInstance extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -56,23 +55,26 @@ public class ComponentInstance extends CloneableEntity
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
     private List<Log> logList;
+    @JoinTable(name = "component_instance_property", joinColumns = {
+        @JoinColumn(name = "component_instance_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<PropertyValue> propertyValueList;
     @ManyToMany(mappedBy = "componentInstanceList")
     private List<DesignElement> designElementList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstance")
-    private List<ComponentInstanceProperty> componentInstancePropertyList;
     @OneToMany(mappedBy = "locationId")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstanceId")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList1;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private EntityInfo entityInfoId;
+    private EntityInfo entityInfo;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     @ManyToOne
-    private Location locationId;
+    private Location location;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
 
     public ComponentInstance() {
     }
@@ -81,6 +83,7 @@ public class ComponentInstance extends CloneableEntity
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -123,21 +126,21 @@ public class ComponentInstance extends CloneableEntity
     }
 
     @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+
+    @XmlTransient
     public List<DesignElement> getDesignElementList() {
         return designElementList;
     }
 
     public void setDesignElementList(List<DesignElement> designElementList) {
         this.designElementList = designElementList;
-    }
-
-    @XmlTransient
-    public List<ComponentInstanceProperty> getComponentInstancePropertyList() {
-        return componentInstancePropertyList;
-    }
-
-    public void setComponentInstancePropertyList(List<ComponentInstanceProperty> componentInstancePropertyList) {
-        this.componentInstancePropertyList = componentInstancePropertyList;
     }
 
     @XmlTransient
@@ -158,28 +161,28 @@ public class ComponentInstance extends CloneableEntity
         this.componentInstanceLocationHistoryList1 = componentInstanceLocationHistoryList1;
     }
 
-    public EntityInfo getEntityInfoId() {
-        return entityInfoId;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
-    public void setEntityInfoId(EntityInfo entityInfoId) {
-        this.entityInfoId = entityInfoId;
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
-    public Location getLocationId() {
-        return locationId;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLocationId(Location locationId) {
-        this.locationId = locationId;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
     @Override
@@ -196,10 +199,7 @@ public class ComponentInstance extends CloneableEntity
             return false;
         }
         ComponentInstance other = (ComponentInstance) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
@@ -208,3 +208,4 @@ public class ComponentInstance extends CloneableEntity
     }
     
 }
+

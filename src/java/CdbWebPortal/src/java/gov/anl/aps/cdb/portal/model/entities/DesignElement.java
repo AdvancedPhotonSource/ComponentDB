@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -42,9 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignElement.findByQuantity", query = "SELECT d FROM DesignElement d WHERE d.quantity = :quantity"),
     @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
     @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
-public class DesignElement implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class DesignElement extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -69,27 +66,30 @@ public class DesignElement implements Serializable
         @JoinColumn(name = "component_instance_id", referencedColumnName = "id")})
     @ManyToMany
     private List<ComponentInstance> componentInstanceList;
+    @JoinTable(name = "design_element_property", joinColumns = {
+        @JoinColumn(name = "design_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<PropertyValue> propertyValueList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
     private List<DesignElementConnection> designElementConnectionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstDesignElementId")
     private List<DesignElementConnection> designElementConnectionList1;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private EntityInfo entityInfoId;
+    private EntityInfo entityInfo;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Location locationId;
+    @ManyToOne
+    private Location location;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne
-    private Component componentId;
+    private Component component;
     @JoinColumn(name = "child_design_id", referencedColumnName = "id")
     @ManyToOne
-    private Design childDesignId;
+    private Design childDesign;
     @JoinColumn(name = "parent_design_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Design parentDesignId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "designElementId")
-    private List<DesignElementProperty> designElementPropertyList;
+    private Design parentDesign;
 
     public DesignElement() {
     }
@@ -103,6 +103,7 @@ public class DesignElement implements Serializable
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -162,6 +163,15 @@ public class DesignElement implements Serializable
     }
 
     @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+
+    @XmlTransient
     public List<DesignElementConnection> getDesignElementConnectionList() {
         return designElementConnectionList;
     }
@@ -179,53 +189,44 @@ public class DesignElement implements Serializable
         this.designElementConnectionList1 = designElementConnectionList1;
     }
 
-    public EntityInfo getEntityInfoId() {
-        return entityInfoId;
+    public EntityInfo getEntityInfo() {
+        return entityInfo;
     }
 
-    public void setEntityInfoId(EntityInfo entityInfoId) {
-        this.entityInfoId = entityInfoId;
+    public void setEntityInfo(EntityInfo entityInfo) {
+        this.entityInfo = entityInfo;
     }
 
-    public Location getLocationId() {
-        return locationId;
+    public Location getLocation() {
+        return location;
     }
 
-    public void setLocationId(Location locationId) {
-        this.locationId = locationId;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
-    public Design getChildDesignId() {
-        return childDesignId;
+    public Design getChildDesign() {
+        return childDesign;
     }
 
-    public void setChildDesignId(Design childDesignId) {
-        this.childDesignId = childDesignId;
+    public void setChildDesign(Design childDesign) {
+        this.childDesign = childDesign;
     }
 
-    public Design getParentDesignId() {
-        return parentDesignId;
+    public Design getParentDesign() {
+        return parentDesign;
     }
 
-    public void setParentDesignId(Design parentDesignId) {
-        this.parentDesignId = parentDesignId;
-    }
-
-    @XmlTransient
-    public List<DesignElementProperty> getDesignElementPropertyList() {
-        return designElementPropertyList;
-    }
-
-    public void setDesignElementPropertyList(List<DesignElementProperty> designElementPropertyList) {
-        this.designElementPropertyList = designElementPropertyList;
+    public void setParentDesign(Design parentDesign) {
+        this.parentDesign = parentDesign;
     }
 
     @Override
@@ -242,10 +243,7 @@ public class DesignElement implements Serializable
             return false;
         }
         DesignElement other = (DesignElement) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

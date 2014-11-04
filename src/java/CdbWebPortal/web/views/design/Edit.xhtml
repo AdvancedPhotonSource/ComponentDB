@@ -22,7 +22,7 @@
                     <h:outputLabel value="#{resources.EditDesignLabel_description}" for="description" />
                     <h:inputText id="description" value="#{designController.selected.description}" title="#{resources.EditDesignTitle_description}" />
                     <h:outputLabel value="#{resources.EditDesignLabel_entityInfoId}" for="entityInfoId" />
-                    <h:selectOneMenu id="entityInfoId" value="#{designController.selected.entityInfoId}" title="#{resources.EditDesignTitle_entityInfoId}" required="true" requiredMessage="#{resources.EditDesignRequiredMessage_entityInfoId}">
+                    <h:selectOneMenu id="entityInfoId" value="#{designController.selected.entityInfo}" title="#{resources.EditDesignTitle_entityInfoId}" required="true" requiredMessage="#{resources.EditDesignRequiredMessage_entityInfoId}">
                         <f:selectItems value="#{entityInfoController.itemsAvailableSelectOne}"/>
                     </h:selectOneMenu>
                 </h:panelGrid>

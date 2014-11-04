@@ -4,11 +4,12 @@ import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.entities.Component;
 import gov.anl.aps.cdb.portal.model.beans.ComponentFacade;
-import gov.anl.aps.cdb.portal.model.entities.ComponentProperty;
 import gov.anl.aps.cdb.portal.model.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.entities.ComponentType;
 import gov.anl.aps.cdb.portal.model.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.entities.Log;
+import gov.anl.aps.cdb.portal.model.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
@@ -166,6 +167,31 @@ public class ComponentController extends CrudEntityController<Component, Compone
             component.getLogList().add(logEntry);
             resetLogText();
         }
+
+        // Compare properties with what is in the db
+        List<PropertyValue> originalPropertyValueList = componentFacade.findById(component.getId()).getPropertyValueList();
+        List<PropertyValue> newPropertyValueList = component.getPropertyValueList();
+        logger.debug("Verifying properties for component " + component);
+        for (PropertyValue newPropertyValue : newPropertyValueList) {
+            int index = originalPropertyValueList.indexOf(newPropertyValue);
+            if (index >= 0) {
+                // Original property was there.
+                PropertyValue originalPropertyValue = originalPropertyValueList.get(index);
+                if (!newPropertyValue.equalsByValueAndUnitsAndDescription(originalPropertyValue)) {
+                    // Property value was modified.
+                    logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
+                            + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
+                    newPropertyValue.setEnteredByUser(lastModifiedByUser);
+                    newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+                }
+            } else {
+                // New property value.
+                logger.debug("Adding new property value for type " + newPropertyValue.getPropertyType()
+                        + ": " + newPropertyValue);
+                newPropertyValue.setEnteredByUser(lastModifiedByUser);
+                newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+            }
+        }
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
@@ -184,9 +210,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void prepareAddProperty() {
         Component component = getCurrent();
-        List<ComponentProperty> propertyList = component.getComponentPropertyList();
-        ComponentProperty property = new ComponentProperty();
-        property.setComponent(component);
+        List<PropertyValue> propertyList = component.getPropertyValueList();
+        PropertyValue property = new PropertyValue();
         propertyList.add(property);
     }
 
@@ -194,14 +219,29 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
-    public void deleteProperty(ComponentProperty componentProperty) {
+    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
         Component component = getCurrent();
-        List<ComponentProperty> componentPropertyList = component.getComponentPropertyList();
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        List<PropertyValue> propertyValueList = component.getPropertyValueList();
+        for (PropertyType propertyType : propertyTypeList) {
+            PropertyValue propertyValue = new PropertyValue();
+            propertyValue.setPropertyType(propertyType);
+            propertyValue.setValue(propertyType.getDefaultValue());
+            propertyValue.setUnits(propertyType.getDefaultUnits());
+            propertyValueList.add(propertyValue);
+            propertyValue.setEnteredByUser(lastModifiedByUser);
+            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+        }
+    }
+
+    public void deleteProperty(PropertyValue componentProperty) {
+        Component component = getCurrent();
+        List<PropertyValue> componentPropertyList = component.getPropertyValueList();
         componentPropertyList.remove(componentProperty);
     }
 
-    public void prepareAddSource() {
-        Component component = getCurrent();
+    public void prepareAddSource(Component component) {
         List<ComponentSource> sourceList = component.getComponentSourceList();
         ComponentSource source = new ComponentSource();
         source.setComponent(component);

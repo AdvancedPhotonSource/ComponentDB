@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -15,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -36,9 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentConnector.findById", query = "SELECT c FROM ComponentConnector c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentConnector.findByLabel", query = "SELECT c FROM ComponentConnector c WHERE c.label = :label"),
     @NamedQuery(name = "ComponentConnector.findByQuantity", query = "SELECT c FROM ComponentConnector c WHERE c.quantity = :quantity")})
-public class ComponentConnector implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class ComponentConnector extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -46,18 +45,21 @@ public class ComponentConnector implements Serializable
     @Size(max = 64)
     private String label;
     private Integer quantity;
+    @JoinTable(name = "component_connector_property", joinColumns = {
+        @JoinColumn(name = "component_connector_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<PropertyValue> propertyValueList;
     @OneToMany(mappedBy = "secondComponentConnectorId")
     private List<DesignElementConnection> designElementConnectionList;
     @OneToMany(mappedBy = "firstComponentConnectorId")
     private List<DesignElementConnection> designElementConnectionList1;
     @JoinColumn(name = "connector_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private ConnectorType connectorTypeId;
+    private ConnectorType connectorType;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentConnector")
-    private List<ComponentConnectorProperty> componentConnectorPropertyList;
+    private Component component;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondComponentConnectorId")
     private List<AssemblyComponentConnection> assemblyComponentConnectionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstComponentConnectorId")
@@ -97,6 +99,15 @@ public class ComponentConnector implements Serializable
     }
 
     @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+
+    @XmlTransient
     public List<DesignElementConnection> getDesignElementConnectionList() {
         return designElementConnectionList;
     }
@@ -114,29 +125,20 @@ public class ComponentConnector implements Serializable
         this.designElementConnectionList1 = designElementConnectionList1;
     }
 
-    public ConnectorType getConnectorTypeId() {
-        return connectorTypeId;
+    public ConnectorType getConnectorType() {
+        return connectorType;
     }
 
-    public void setConnectorTypeId(ConnectorType connectorTypeId) {
-        this.connectorTypeId = connectorTypeId;
+    public void setConnectorType(ConnectorType connectorType) {
+        this.connectorType = connectorType;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
-    }
-
-    @XmlTransient
-    public List<ComponentConnectorProperty> getComponentConnectorPropertyList() {
-        return componentConnectorPropertyList;
-    }
-
-    public void setComponentConnectorPropertyList(List<ComponentConnectorProperty> componentConnectorPropertyList) {
-        this.componentConnectorPropertyList = componentConnectorPropertyList;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
     @XmlTransient
@@ -180,10 +182,7 @@ public class ComponentConnector implements Serializable
             return false;
         }
         ComponentConnector other = (ComponentConnector) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override

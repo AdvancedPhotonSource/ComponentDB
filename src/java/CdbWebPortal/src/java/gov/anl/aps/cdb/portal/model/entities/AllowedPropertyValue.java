@@ -56,6 +56,7 @@ public class AllowedPropertyValue extends CloneableEntity
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

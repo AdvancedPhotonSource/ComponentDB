@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
+              rendered="#{propertyValueController.displayId}">
+        <h:outputText value="#{propertyValueObject.id}"/>
+    </p:column>
+    
+    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
+              filterBy="#{propertyValueObject.propertyType}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByType}">
+        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
+              filterBy="#{propertyValueObject.propertyType.propertyTypeCategory}" filterMatchMode="exact"
+              filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
+              filterValue="#{propertyValueController.filterByTypeCategory}"
+              rendered="#{propertyValueController.displayTypeCategory}">
+        <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
+              filterBy="#{propertyValueObject.value}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByValue}">
+        <h:outputText value="#{propertyValueObject.value}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
+              filterBy="#{propertyValueObject.units}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByUnits}"
+              rendered="#{propertyValueController.displayUnits}">
+        <h:outputText value="#{propertyValueObject.units}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
+              filterBy="#{propertyValueObject.description}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByDescription}"
+              rendered="#{propertyValueController.displayDescription}">
+        <h:outputText value="#{propertyValueObject.description}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
+              filterBy="#{propertyValueObject.enteredByUser.username}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByEnteredByUser}"
+              rendered="#{propertyValueController.displayEnteredByUser}">
+        <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
+              filterBy="#{propertyValueObject.enteredOnDateTime}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByEnteredOnDateTime}"
+              rendered="#{propertyValueController.displayEnteredOnDateTime}">
+        <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
+    </p:column>
+
+</ui:composition>
+
+

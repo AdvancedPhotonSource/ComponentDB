@@ -45,7 +45,7 @@ public class ConnectorTypeCategory extends CloneableEntity
     private String name;
     @Size(max = 256)
     private String description;
-    @OneToMany(mappedBy = "connectorTypeCategoryId")
+    @OneToMany(mappedBy = "connectorTypeCategory")
     private List<ConnectorType> connectorTypeList;
 
     public ConnectorTypeCategory() {

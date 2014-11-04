@@ -104,7 +104,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
 
         filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-         filterByText = sessionUser.getUserSettingValueAsString(FilterByTextSettingTypeKey, filterByText);
+        filterByText = sessionUser.getUserSettingValueAsString(FilterByTextSettingTypeKey, filterByText);
     }
 
     @Override
@@ -148,12 +148,17 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            try {
+                if (value == null || value.length() == 0) {
+                    return null;
+                }
+                LogController controller = (LogController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "logController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // We cannot get this entity from given key.
                 return null;
             }
-            LogController controller = (LogController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "logController");
-            return controller.getEntity(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -244,5 +249,5 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
     public void setComponentLogListDataTable(DataTable componentLogListDataTable) {
         this.componentLogListDataTable = componentLogListDataTable;
     }
-    
+
 }

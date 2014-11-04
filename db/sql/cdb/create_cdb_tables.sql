@@ -178,14 +178,17 @@ CREATE TABLE `allowed_property_value` (
 DROP TABLE IF EXISTS `property_value`;
 CREATE TABLE `property_value` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `property_type_id` int(11) unsigned NOT NULL,
   `value` varchar(64) DEFAULT NULL,
   `units` varchar(16) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `entered_on_date_time` datetime NOT NULL,
   `entered_by_user_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `property_value_k1` (`entered_by_user_id`),
-  CONSTRAINT `property_value_fk1` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
+  KEY `property_value_k1` (`property_type_id`),
+  CONSTRAINT `property_value_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `property_value_k2` (`entered_by_user_id`),
+  CONSTRAINT `property_value_fk2` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -441,6 +444,7 @@ CREATE TABLE `component_source` (
   `source_id` int(11) unsigned NOT NULL,
   `part_number` varchar(64) DEFAULT NULL,
   `cost` float(10,2) unsigned DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `component_source_u1` (`component_id`, `source_id`),
   KEY `component_source_k1` (`component_id`),
@@ -456,15 +460,12 @@ CREATE TABLE `component_source` (
 DROP TABLE IF EXISTS `component_property`;
 CREATE TABLE `component_property` (
   `component_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
   `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_id`, `property_type_id`, `property_value_id`),
+  PRIMARY KEY (`component_id`, `property_value_id`),
   KEY `component_property_k1` (`component_id`),
   CONSTRAINT `component_property_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_property_k2` (`property_type_id`),
-  CONSTRAINT `component_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_property_k3` (`property_value_id`),
-  CONSTRAINT `component_property_fk3` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  KEY `component_property_k2` (`property_value_id`),
+  CONSTRAINT `component_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -508,15 +509,12 @@ CREATE TABLE `component_connector` (
 DROP TABLE IF EXISTS `component_connector_property`;
 CREATE TABLE `component_connector_property` (
   `component_connector_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
   `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_connector_id`, `property_type_id`, `property_value_id`),
+  PRIMARY KEY (`component_connector_id`, `property_value_id`),
   KEY `component_connector_property_k1` (`component_connector_id`),
   CONSTRAINT `component_connector_property_fk1` FOREIGN KEY (`component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_connector_property_k2` (`property_type_id`),
-  CONSTRAINT `component_connector_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_connector_property_k3` (`property_value_id`),
-  CONSTRAINT `component_connector_property_fk3` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  KEY `component_connector_property_k2` (`property_value_id`),
+  CONSTRAINT `component_connector_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -641,15 +639,12 @@ CREATE TABLE `component_instance` (
 DROP TABLE IF EXISTS `component_instance_property`;
 CREATE TABLE `component_instance_property` (
   `component_instance_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
   `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_instance_id`, `property_type_id`, `property_value_id`),
+  PRIMARY KEY (`component_instance_id`, `property_value_id`),
   KEY `component_instance_property_k1` (`component_instance_id`),
   CONSTRAINT `component_instance_property_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_instance_property_k2` (`property_type_id`),
-  CONSTRAINT `component_instance_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_instance_property_k3` (`property_value_id`),
-  CONSTRAINT `component_instance_property_fk3` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  KEY `component_instance_property_k2` (`property_value_id`),
+  CONSTRAINT `component_instance_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -734,18 +729,14 @@ CREATE TABLE `design_link` (
 
 DROP TABLE IF EXISTS `design_property`;
 CREATE TABLE `design_property` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `design_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
   `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_property_u1` (`design_id`, `property_type_id`, `property_value_id`),
+  PRIMARY KEY (`design_id`, `property_value_id`),
+  UNIQUE KEY `design_property_u1` (`design_id`, `property_value_id`),
   KEY `design_property_k1` (`design_id`),
   CONSTRAINT `design_property_fk1` FOREIGN KEY (`design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_property_k2` (`property_type_id`),
-  CONSTRAINT `design_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_property_k3` (`property_value_id`),
-  CONSTRAINT `design_property_fk3` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  KEY `design_property_k2` (`property_value_id`),
+  CONSTRAINT `design_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -803,18 +794,14 @@ CREATE TABLE `design_element` (
 
 DROP TABLE IF EXISTS `design_element_property`;
 CREATE TABLE `design_element_property` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `design_element_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
   `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_element_property_u1` (`design_element_id`, `property_type_id`, `property_value_id`),
+  PRIMARY KEY (`design_element_id`, `property_value_id`),
+  UNIQUE KEY `design_element_property_u1` (`design_element_id`, `property_value_id`),
   KEY `design_element_property_k1` (`design_element_id`),
   CONSTRAINT `design_element_property_fk1` FOREIGN KEY (`design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_property_k2` (`property_type_id`),
-  CONSTRAINT `design_element_property_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_property_k3` (`property_value_id`),
-  CONSTRAINT `design_element_property_fk3` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  KEY `design_element_property_k2` (`property_value_id`),
+  CONSTRAINT `design_element_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

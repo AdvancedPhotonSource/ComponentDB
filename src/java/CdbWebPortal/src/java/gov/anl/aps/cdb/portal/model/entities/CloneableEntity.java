@@ -22,6 +22,10 @@ public class CloneableEntity implements Serializable, Cloneable
         return super.clone();
     }
     
+    public Object getId() {
+        return null;
+    }
+    
     public SearchResult search(Pattern searchPattern) {
         return null;
     }

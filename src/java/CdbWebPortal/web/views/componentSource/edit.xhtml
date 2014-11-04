@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+    <ui:include src="../common/commonChildEditActionButtons.xhtml" rendered="#{(loginController.loggedIn and loginController.isEntityWriteable(componentController.selected.entityInfo))}">
+        <ui:param name="parentEntityController" value="#{componentController}"/>
+        <ui:param name="childEntityController" value="#{componentSourceController}"/>
+        <ui:param name="childEntityTypeName" value="#{componentSourceController.entityTypeName}"/>
+        <ui:param name="addActionController" value="#{componentController}"/>
+        <ui:param name="addAction" value="prepareAddSource"/>
+        <ui:param name="addActionParameter" value="#{componentController.current}"/>
+        <ui:param name="addActionOnComplete" value=""/>
+        <ui:param name="saveAction" value="saveSourceList"/>
+        <ui:param name="displayAddButton" value="#{(loginController.loggedIn and loginController.isEntityWriteable(componentController.selected.entityInfo))}"/>
+    </ui:include>    
+
+    <ui:include src="componentSourceEditDataTable.xhtml"/>
+    
+    <ui:include src="componentSourceEditCustomizeDisplayDialog.xhtml"/>
+
+</ui:composition>
+
+

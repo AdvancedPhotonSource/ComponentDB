@@ -53,6 +53,7 @@ public class UserSetting extends CloneableEntity
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

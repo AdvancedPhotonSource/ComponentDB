@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -15,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -38,9 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorType.findById", query = "SELECT c FROM ConnectorType c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorType.findByName", query = "SELECT c FROM ConnectorType c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorType.findByDescription", query = "SELECT c FROM ConnectorType c WHERE c.description = :description")})
-public class ConnectorType implements Serializable
+public class ConnectorType extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -51,16 +50,19 @@ public class ConnectorType implements Serializable
     private String name;
     @Size(max = 256)
     private String description;
-    @ManyToMany(mappedBy = "connectorTypeList")
+    @JoinTable(name = "connector_type_property_type", joinColumns = {
+        @JoinColumn(name = "connector_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "property_type_id", referencedColumnName = "id")})
+    @ManyToMany
     private List<PropertyType> propertyTypeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorTypeId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorType")
     private List<ComponentConnector> componentConnectorList;
     @JoinColumn(name = "resource_type_id", referencedColumnName = "id")
     @ManyToOne
-    private ResourceType resourceTypeId;
+    private ResourceType resourceType;
     @JoinColumn(name = "connector_type_category_id", referencedColumnName = "id")
     @ManyToOne
-    private ConnectorTypeCategory connectorTypeCategoryId;
+    private ConnectorTypeCategory connectorTypeCategory;
 
     public ConnectorType() {
     }
@@ -74,6 +76,7 @@ public class ConnectorType implements Serializable
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -116,20 +119,20 @@ public class ConnectorType implements Serializable
         this.componentConnectorList = componentConnectorList;
     }
 
-    public ResourceType getResourceTypeId() {
-        return resourceTypeId;
+    public ResourceType getResourceType() {
+        return resourceType;
     }
 
-    public void setResourceTypeId(ResourceType resourceTypeId) {
-        this.resourceTypeId = resourceTypeId;
+    public void setResourceType(ResourceType resourceType) {
+        this.resourceType = resourceType;
     }
 
-    public ConnectorTypeCategory getConnectorTypeCategoryId() {
-        return connectorTypeCategoryId;
+    public ConnectorTypeCategory getConnectorTypeCategory() {
+        return connectorTypeCategory;
     }
 
-    public void setConnectorTypeCategoryId(ConnectorTypeCategory connectorTypeCategoryId) {
-        this.connectorTypeCategoryId = connectorTypeCategoryId;
+    public void setConnectorTypeCategory(ConnectorTypeCategory connectorTypeCategory) {
+        this.connectorTypeCategory = connectorTypeCategory;
     }
 
     @Override

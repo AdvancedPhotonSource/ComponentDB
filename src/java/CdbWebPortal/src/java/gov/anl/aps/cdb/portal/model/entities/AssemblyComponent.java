@@ -59,10 +59,10 @@ public class AssemblyComponent implements Serializable
     private List<AssemblyComponentConnection> assemblyComponentConnectionList2;
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component componentId;
+    private Component component;
     @JoinColumn(name = "assembly_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Component assemblyId;
+    private Component assembly;
 
     public AssemblyComponent() {
     }
@@ -130,20 +130,20 @@ public class AssemblyComponent implements Serializable
         this.assemblyComponentConnectionList2 = assemblyComponentConnectionList2;
     }
 
-    public Component getComponentId() {
-        return componentId;
+    public Component getComponent() {
+        return component;
     }
 
-    public void setComponentId(Component componentId) {
-        this.componentId = componentId;
+    public void setComponent(Component component) {
+        this.component = component;
     }
 
-    public Component getAssemblyId() {
-        return assemblyId;
+    public Component getAssembly() {
+        return assembly;
     }
 
-    public void setAssemblyId(Component assemblyId) {
-        this.assemblyId = assemblyId;
+    public void setAssembly(Component assembly) {
+        this.assembly = assembly;
     }
 
     @Override
