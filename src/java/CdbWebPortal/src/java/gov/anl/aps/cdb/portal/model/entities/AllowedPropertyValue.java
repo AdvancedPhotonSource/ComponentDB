@@ -142,7 +142,10 @@ public class AllowedPropertyValue extends CloneableEntity
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.AllowedPropertyValue[ id=" + id + " ]";
+        if (units != null && !units.isEmpty()) {
+            return value + " [" + units + "]";
+        }
+        return value;        
     }
     
 }

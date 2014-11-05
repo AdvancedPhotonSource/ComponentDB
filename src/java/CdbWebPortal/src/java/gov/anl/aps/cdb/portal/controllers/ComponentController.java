@@ -239,6 +239,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component component = getCurrent();
         List<PropertyValue> componentPropertyList = component.getPropertyValueList();
         componentPropertyList.remove(componentProperty);
+        update();
     }
 
     public void prepareAddSource(Component component) {
@@ -265,13 +266,15 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Log logEntry = new Log();
         logEntry.setEnteredByUser(lastModifiedByUser);
         logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
-        component.getLogList().add(logEntry);
+        List<Log> componentLogList = component.getLogList();
+        componentLogList.add(logEntry);
     }
 
     public void deleteLog(Log componentLog) {
         Component component = getCurrent();
         List<Log> componentLogList = component.getLogList();
         componentLogList.remove(componentLog);
+        update();
     }
 
     public List<Log> getLogList() {

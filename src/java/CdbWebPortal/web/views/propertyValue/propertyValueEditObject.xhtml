@@ -38,7 +38,8 @@
         <p:tooltip for="freeFormValue" value="Property value can be empty."/>
         <h:selectOneMenu id="restrictedValue" value="#{propertyValueObject.value}" title="Value" styleClass="entityDataText"
                          rendered="#{isValueRestricted}">
-            <f:selectItems var="value" value="#{propertyValueObject.propertyType.allowedPropertyValueList}"/>
+            <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.allowedPropertyValueList}" 
+                           itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
         </h:selectOneMenu>
         <p:tooltip for="restrictedValue" value="Select property value."/>
     </p:column>
