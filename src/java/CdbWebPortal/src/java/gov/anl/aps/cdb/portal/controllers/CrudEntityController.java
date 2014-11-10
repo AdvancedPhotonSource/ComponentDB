@@ -379,6 +379,15 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         this.selectDataTable = selectDataTable;
     }
 
+    public void clearAllListFilters() {
+        if (listDataTable == null) {
+            return;
+        }
+        Map<String, String> filterMap = listDataTable.getFilters();
+        for (String filterName : filterMap.keySet()) {
+            filterMap.put(filterName, "");
+        }        
+    }
     public boolean isAnyListFilterSet() {
         if (listDataTable == null) {
             return false;
@@ -537,6 +546,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             getFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
+            clearListFilters();
             return prepareList();
         }
         catch (Exception ex) {

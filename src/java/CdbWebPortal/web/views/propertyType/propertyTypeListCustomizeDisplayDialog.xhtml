@@ -8,7 +8,10 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
 
-    <p:dialog id="propertyTypeListCustomizeDisplayDialog" header="Customize Display" widgetVar="propertyTypeListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="propertyTypeListCustomizeDisplayDialog" 
+              widgetVar="propertyTypeListCustomizeDisplayDialogWidget" 
+              header="Customize Display" 
+              styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{propertyTypeController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -16,19 +19,19 @@
 
                 <p:selectBooleanCheckbox id="displayCategory" value="#{propertyTypeController.displayCategory}"/>  
                 <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
- 
+
                 <p:selectBooleanCheckbox id="displayDefaultUnits" value="#{propertyTypeController.displayDefaultUnits}"/>  
                 <h:outputLabel for="displayDefaultUnits" value="Display Default Units" styleClass="dialogDataLabel"/>
 
                 <p:selectBooleanCheckbox id="displayDefaultValue" value="#{propertyTypeController.displayDefaultValue}"/>  
                 <h:outputLabel for="displayDefaultValue" value="Display Default Value" styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="displayDescription" value="#{propertyTypeController.displayDescription}"/>  
                 <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayHandlerName" value="#{propertyTypeController.displayHandlerName}"/>  
-                <h:outputLabel for="displayHandlerName" value="Display Handler Name" styleClass="dialogDataLabel"/>
-                
+                <p:selectBooleanCheckbox id="displayHandler" value="#{propertyTypeController.displayHandler}"/>  
+                <h:outputLabel for="displayHandler" value="Display Handler" styleClass="dialogDataLabel"/>
+
                 <p:selectBooleanCheckbox id="displayId" value="#{propertyTypeController.displayId}"/>  
                 <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
@@ -37,14 +40,14 @@
 
                 <p:selectBooleanCheckbox id="displayIsUserWriteable" value="#{propertyTypeController.displayIsUserWriteable}"/>  
                 <h:outputLabel for="displayIsUserWriteable" value="Display User-Writeable Flag" styleClass="dialogDataLabel"/>
-                
+
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{propertyTypeController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="propertyTypeListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="propertyTypeListCustomizeDisplayDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

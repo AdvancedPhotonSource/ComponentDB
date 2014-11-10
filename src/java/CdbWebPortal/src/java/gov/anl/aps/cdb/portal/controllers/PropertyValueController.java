@@ -2,6 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 
@@ -183,7 +184,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         filterByUnits = null;
         filterByValue = null;
     }
-
+    
     @FacesConverter(forClass = PropertyValue.class)
     public static class PropertyValueControllerConverter implements Converter {
 
@@ -194,7 +195,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
                     return null;
                 }
                 PropertyValueController controller = (PropertyValueController) facesContext.getApplication().getELResolver().
-                        getValue(facesContext.getELContext(), null, "logController");
+                        getValue(facesContext.getELContext(), null, "propertyValueController");
                 return controller.getEntity(getKey(value));
             } catch (Exception ex) {
                 // We cannot get this entity from given key.

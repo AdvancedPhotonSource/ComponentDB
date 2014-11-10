@@ -8,7 +8,10 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
 
-    <p:dialog id="componentTypeCategoryListCustomizeDisplayDialog" header="Customize Display" widgetVar="componentTypeCategoryListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="componentTypeCategoryListCustomizeDisplayDialog" 
+              widgetVar="componentTypeCategoryListCustomizeDisplayDialogWidget" 
+              header="Customize Display" 
+              styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{componentTypeCategoryController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -26,7 +29,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentTypeCategoryController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="componentTypeCategoryListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="PF('componentTypeCategoryListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

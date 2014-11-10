@@ -98,7 +98,7 @@ public class UserInfo extends CloneableEntity
     private List<Log> logList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<PropertyValue> propertyValueList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUserId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<PropertyValueHistory> propertyValueHistoryList;
 
     private transient HashMap<String, UserSetting> userSettingMap = null;

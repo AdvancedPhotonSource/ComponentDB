@@ -4,11 +4,14 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:confirmDialog id="userInfoDestroyDialog" message="Destroy user #{userInfoController.getCurrentEntityInstanceName()}?"
-                     header="Destroy User" severity="alert" widgetVar="userInfoDestroyDialogWidget"
+    <p:confirmDialog id="userInfoDestroyDialog" 
+                     widgetVar="userInfoDestroyDialogWidget"
+                     message="Destroy user #{userInfoController.getCurrentEntityInstanceName()}?"
+                     header="Destroy User" 
+                     severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="userInfoDestroyDialogWidget.hide()" action="#{userInfoController.destroy()}"/>
-        <p:commandButton value="No" onclick="userInfoDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="Yes" oncomplete="PF('userInfoDestroyDialogWidget').hide()" action="#{userInfoController.destroy()}"/>
+        <p:commandButton value="No" onclick="PF('userInfoDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>  
 </ui:composition>
 

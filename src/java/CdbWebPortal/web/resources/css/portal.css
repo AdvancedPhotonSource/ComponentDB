@@ -164,6 +164,12 @@ a:link:hover, a:visited:hover  {
     margin-left: 5px;
 }
 
+.actionButtonLeft {
+    float: left;
+    margin-right: 5px;
+    margin-left: 0px;
+}
+
 .actionLink {
     display: none;
 }
@@ -267,6 +273,10 @@ tr:hover .actionLink {
     margin: 0;
     margin-left: auto;
     margin-right: auto;
+}
+
+.invisibleDialogText {
+    color: #6da5d8;
 }
 
 .dialogDataLabel {

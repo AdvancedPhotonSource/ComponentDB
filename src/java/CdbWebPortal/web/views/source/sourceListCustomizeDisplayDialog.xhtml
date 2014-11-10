@@ -7,7 +7,10 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <p:dialog id="sourceListCustomizeDisplayDialog" header="Customize List Display" widgetVar="sourceListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="sourceListCustomizeDisplayDialog" 
+              widgetVar="sourceListCustomizeDisplayDialogWidget" 
+              header="Customize List Display" 
+              styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{sourceController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -15,7 +18,7 @@
 
                 <p:selectBooleanCheckbox id="displayDescription" value="#{sourceController.displayDescription}"/>  
                 <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="displayId" value="#{sourceController.displayId}"/>  
                 <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
@@ -25,7 +28,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{sourceController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="sourceListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="PF('sourceListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

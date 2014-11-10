@@ -23,7 +23,8 @@
             <div class="actionLink">
                 <p:commandLink action="#{componentController.deleteLog(logObject)}" 
                                actionListener="#{logController.destroy(logObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               update="componentLogEditDataTable"/>
             </div>
         </p:column>
 

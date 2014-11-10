@@ -4,10 +4,14 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:confirmDialog id="userGroupDestroyDialog" message="Destroy user group #{userGroupController.getCurrentEntityInstanceName()}?"
-                     header="Destroy User Group" severity="alert" widgetVar="userGroupDestroyDialogWidget">
-        <p:commandButton value="Yes" oncomplete="userGroupDestroyDialogWidget.hide()" action="#{userGroupController.destroy()}"/>
-        <p:commandButton value="No" onclick="userGroupDestroyDialogWidget.hide()" type="button" />
+    <p:confirmDialog id="userGroupDestroyDialog" 
+                     widgetVar="userGroupDestroyDialogWidget"
+                     message="Destroy user group #{userGroupController.getCurrentEntityInstanceName()}?"
+                     header="Destroy User Group" 
+                     severity="alert" 
+                     styleClass="dialog">
+        <p:commandButton value="Yes" oncomplete="PF('userGroupDestroyDialogWidget').hide()" action="#{userGroupController.destroy()}"/>
+        <p:commandButton value="No" onclick="PF('userGroupDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>  
 
 </ui:composition>

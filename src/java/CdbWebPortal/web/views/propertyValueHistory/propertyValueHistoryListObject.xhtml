@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:column sortBy="#{propertyValueHistoryObject.id}" headerText="Id"
+              rendered="#{propertyValueHistoryController.displayId}">
+        <h:outputText value="#{propertyValueHistoryObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.value}" headerText="Value"
+              filterBy="#{propertyValueHistoryObject.value}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByValue}">
+        <h:outputText value="#{propertyValueHistoryObject.value}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"
+              filterBy="#{propertyValueHistoryObject.units}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByUnits}"
+              rendered="#{propertyValueHistoryController.displayUnits}">
+        <h:outputText value="#{propertyValueHistoryObject.units}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.description}" headerText="Description"
+              filterBy="#{propertyValueHistoryObject.description}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByDescription}"
+              rendered="#{propertyValueHistoryController.displayDescription}">
+        <h:outputText value="#{propertyValueHistoryObject.description}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.enteredByUser.username}" headerText="Entered By"
+              filterBy="#{propertyValueHistoryObject.enteredByUser.username}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByEnteredByUser}"
+              rendered="#{propertyValueHistoryController.displayEnteredByUser}">
+        <h:outputText value="#{propertyValueHistoryObject.enteredByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.enteredOnDateTime}" headerText="Entered On"
+              filterBy="#{propertyValueHistoryObject.enteredOnDateTime}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByEnteredOnDateTime}"
+              rendered="#{propertyValueHistoryController.displayEnteredOnDateTime}">
+        <h:outputText value="#{propertyValueHistoryObject.enteredOnDateTime}"/>
+    </p:column>
+
+</ui:composition>
+
+

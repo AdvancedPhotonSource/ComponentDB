@@ -8,7 +8,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
-    <p:dialog id="componentTypeSelectCustomizeDisplayDialog" header="Customize Select Display" widgetVar="componentTypeSelectCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="componentTypeSelectCustomizeDisplayDialog" header="Customize Select Display" widgetVar="componentTypeSelectCustomizeDisplayDialogWidget" styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{componentController.selectDisplayDescription}"/>  
@@ -23,7 +23,7 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  update="componentTypeSelectDialog"
-                                 onclick="componentTypeSelectCustomizeDisplayWidget.hide()"
+                                 onclick="componentTypeSelectCustomizeDisplayDialogWidget.hide()"
                                  oncomplete="componentTypeSelectWidget.show()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>

@@ -3,18 +3,17 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <c:set var="breadcrumb" value="#{searchController.currentViewId}"/>
-    <c:set var="searchString" value="#{searchController.searchString}"/>
-    <c:set var="caseInsensitive" value="#{searchController.caseInsensitive}"/>
+    <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
+    <ui:param name="searchString" value="#{searchController.searchString}"/>
+    <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
     <p:dataTable id="componentTypeCategorySearchDataTable" 
                  var="componentTypeCategorySearchResultObject" 
                  value="#{componentTypeCategoryController.getSearchResultList(searchString, caseInsensitive)}" 
+                 rows="#{searchController.displayNumberOfItemsPerPage}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{searchController.displayNumberOfItemsPerPage}" 
                  emptyMessage="No component type categories match.">
 
         <p:column sortBy="#{componentTypeCategorySearchResultObject.objectId}" headerText="Id">

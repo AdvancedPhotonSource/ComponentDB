@@ -8,17 +8,17 @@
 
 
     <p:dialog id="componentPropertyEditCustomizeDisplayDialog" 
-              widgetVar="componentPropertyEditCustomizeDisplayWidget" 
+              widgetVar="componentPropertyEditCustomizeDisplayDialogWidget" 
               header="Customize Display" 
               styleClass="dialog">
         <div class="dialog">
-            <ui:include src="../propertyValue/propertyValueEditCustomizeObject.xhtml"/>
+            <ui:include src="../propertyValue/propertyValueEditCustomizePanelGrid.xhtml"/>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{propertyValueController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="componentPropertyValueEditCustomizeDisplayWidget.hide()" 
+                                 oncomplete="componentPropertyValueEditCustomizeDisplayDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userController.saveSettingListForSessionUser()}"

@@ -8,7 +8,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="componentPropertySelectCustomizeDisplayDialog" 
-              widgetVar="componentPropertySelectCustomizeDisplayWidget" 
+              widgetVar="componentPropertySelectCustomizeDisplayDialogWidget" 
               header="Customize Selection Display" 
               styleClass="dialog">
         <div class="dialog">
@@ -16,7 +16,7 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  update="componentPropertySelectDialog"
-                                 onclick="componentPropertySelectCustomizeDisplayWidget.hide()"
+                                 onclick="componentPropertySelectCustomizeDisplayDialogWidget.hide()"
                                  oncomplete="componentTypePropertyTypeSelectWidget.show()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>

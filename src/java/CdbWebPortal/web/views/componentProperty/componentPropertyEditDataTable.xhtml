@@ -4,12 +4,14 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dataTable id="componentPropertyEditDataTable" 
                  widgetVar="componentPropertyEditWidget"
                  var="propertyValueObject" 
                  value="#{componentObject.propertyValueList}" 
+                 filteredValue="#{propertyValueController.filteredObjectList}"
                  rows="#{propertyValueController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
@@ -20,14 +22,30 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink action="#{componentController.deleteProperty(propertyValueObject)}" 
+                <p:commandLink id="propertyValueHistoryListViewButton" 
+                               oncomplete="propertyValueHistoryListWidget.show()" 
+                               styleClass="ui-icon ui-icon-info" title="View history."
+                               update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValueHistoryList}" 
+                                                 value="#{propertyValueObject.propertyValueHistoryList}"/>
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValueTypeName}" 
+                                                 value="#{propertyValueObject.propertyType.name}"/>
+                    <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                </p:commandLink>
+
+                <p:commandLink id="propertyValueDeleteButton" action="#{componentController.deleteProperty(propertyValueObject)}" 
                                actionListener="#{propertyValueController.destroy(propertyValueObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"/>
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                    <p:tooltip for="propertyValueDeleteButton" value="Delete property value."/>
+                </p:commandLink>
             </div>
         </p:column>
 
     </p:dataTable>
 
+    <ui:include src="../propertyValueHistory/propertyValueHistoryListDialog.xhtml"/>
+
+    <ui:include src="../propertyValueHistory/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 </ui:composition>
 
 

@@ -7,7 +7,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
 
-    <p:dialog id="componentSourceListCustomizeDisplayDialog" header="Customize Display" widgetVar="componentSourceListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="componentSourceListCustomizeDisplayDialog" header="Customize Display" widgetVar="componentSourceListCustomizeDisplayDialogWidget" styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{componentSourceController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -30,7 +30,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentSourceController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="componentSourceListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="componentSourceListCustomizeDisplayDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

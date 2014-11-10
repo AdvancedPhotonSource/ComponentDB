@@ -34,10 +34,13 @@
         <p:message for="category"/> 
         <p:tooltip for="category" value="Category specification is optional."/>
 
-        <h:outputLabel for="handlerName" value="Handler Name" styleClass="entityDataLabel"/>
-        <h:inputText id="handlerName" value="#{propertyTypeObject.handlerName}" title="Handler Name" styleClass="entityDataText"/>
-        <p:message for="handlerName"/> 
-        <p:tooltip for="handlerName" value="Property type handler class name is optional."/>
+        <h:outputLabel for="handler" value="Handler" styleClass="entityDataLabel"/>
+        <h:selectOneMenu id="handler" value="#{propertyTypeObject.propertyTypeHandler}" title="Handler" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="handler" value="#{propertyTypeHandlerController.availableItems}" itemLabel="#{handler.name}" itemValue="#{handler}"/>
+        </h:selectOneMenu>
+        <p:message for="handler"/> 
+        <p:tooltip for="handler" value="Handler class specification is optional."/>
 
         <h:outputLabel for="defaultValue" value="Default Value" styleClass="entityDataLabel"/>
         <h:inputText id="defaultValue" value="#{propertyTypeObject.defaultValue}" title="Default Value" styleClass="entityDataText"/>

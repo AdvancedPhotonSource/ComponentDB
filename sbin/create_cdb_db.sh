@@ -112,6 +112,7 @@ CDB_DB_TABLES="\
     entity_info \
     source \
     property_type_category \
+    property_type_handler \
     property_type \
     allowed_property_value \
     property_value \

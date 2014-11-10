@@ -4,11 +4,14 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:confirmDialog id="componentTypeCategoryDestroyDialog" message="Destroy component type #{componentTypeCategoryController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Component Type Category" severity="alert" widgetVar="componentTypeCategoryDestroyDialogWidget"
+    <p:confirmDialog id="componentTypeCategoryDestroyDialog" 
+                     widgetVar="componentTypeCategoryDestroyDialogWidget"
+                     message="Destroy component type #{componentTypeCategoryController.getCurrentEntityInstanceName()}?"
+                     header="Destroy Component Type Category" 
+                     severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="componentTypeCategoryDestroyDialogWidget.hide()" action="#{componentTypeCategoryController.destroy()}" update="@form"/>
-        <p:commandButton value="No" onclick="componentTypeCategoryDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="Yes" oncomplete="PF('componentTypeCategoryDestroyDialogWidget').hide()" action="#{componentTypeCategoryController.destroy()}" update="@form"/>
+        <p:commandButton value="No" onclick="PF('componentTypeCategoryDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>  
 
 </ui:composition>

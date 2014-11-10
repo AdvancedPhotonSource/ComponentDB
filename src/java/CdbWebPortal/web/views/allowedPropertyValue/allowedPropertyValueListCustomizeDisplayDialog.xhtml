@@ -8,7 +8,10 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
 
-    <p:dialog id="allowedPropertyValueListCustomizeDisplayDialog" header="Customize Display" widgetVar="allowedPropertyValueListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="allowedPropertyValueListCustomizeDisplayDialog" 
+              widgetVar="allowedPropertyValueListCustomizeDisplayDialogWidget" 
+              header="Customize Display" 
+              styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{allowedPropertyValueController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -32,7 +35,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{allowedPropertyValueController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="allowedPropertyValueListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="PF('allowedPropertyValueListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

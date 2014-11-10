@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.entities;
 
-import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -39,9 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PropertyValueHistory.findByUnits", query = "SELECT p FROM PropertyValueHistory p WHERE p.units = :units"),
     @NamedQuery(name = "PropertyValueHistory.findByDescription", query = "SELECT p FROM PropertyValueHistory p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyValueHistory.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValueHistory p WHERE p.enteredOnDateTime = :enteredOnDateTime")})
-public class PropertyValueHistory implements Serializable
+public class PropertyValueHistory extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -59,10 +57,10 @@ public class PropertyValueHistory implements Serializable
     private Date enteredOnDateTime;
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserInfo enteredByUserId;
+    private UserInfo enteredByUser;
     @JoinColumn(name = "property_value_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private PropertyValue propertyValueId;
+    private PropertyValue propertyValue;
 
     public PropertyValueHistory() {
     }
@@ -76,6 +74,7 @@ public class PropertyValueHistory implements Serializable
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -116,20 +115,20 @@ public class PropertyValueHistory implements Serializable
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
-    public UserInfo getEnteredByUserId() {
-        return enteredByUserId;
+    public UserInfo getEnteredByUser() {
+        return enteredByUser;
     }
 
-    public void setEnteredByUserId(UserInfo enteredByUserId) {
-        this.enteredByUserId = enteredByUserId;
+    public void setEnteredByUser(UserInfo enteredByUser) {
+        this.enteredByUser = enteredByUser;
     }
 
-    public PropertyValue getPropertyValueId() {
-        return propertyValueId;
+    public PropertyValue getPropertyValue() {
+        return propertyValue;
     }
 
-    public void setPropertyValueId(PropertyValue propertyValueId) {
-        this.propertyValueId = propertyValueId;
+    public void setPropertyValue(PropertyValue propertyValue) {
+        this.propertyValue = propertyValue;
     }
 
     @Override
@@ -146,15 +145,25 @@ public class PropertyValueHistory implements Serializable
             return false;
         }
         PropertyValueHistory other = (PropertyValueHistory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory[ id=" + id + " ]";
+        if (units != null && !units.isEmpty()) {
+            return value + " [" + units + "]";
+        }
+        else {
+            return value;
+        }
     }
     
+    public void updateFromPropertyValue(PropertyValue propertyValue) {
+        this.propertyValue = propertyValue;
+        this.value = propertyValue.getValue();
+        this.units = propertyValue.getUnits();
+        this.description = propertyValue.getDescription();
+        this.enteredByUser = propertyValue.getEnteredByUser();
+        this.enteredOnDateTime = propertyValue.getEnteredOnDateTime();
+    }
 }

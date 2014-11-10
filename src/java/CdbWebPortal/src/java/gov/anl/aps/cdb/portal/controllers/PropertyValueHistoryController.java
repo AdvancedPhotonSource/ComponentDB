@@ -1,12 +1,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.beans.PropertyValueHistoryFacade;
+import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
+import gov.anl.aps.cdb.portal.model.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,202 +15,173 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueHistoryController")
 @SessionScoped
-public class PropertyValueHistoryController implements Serializable
-{
+public class PropertyValueHistoryController extends CrudEntityController<PropertyValueHistory, PropertyValueHistoryFacade> implements Serializable {
 
-    private PropertyValueHistory current;
-    private DataModel items = null;
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValueHistory.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "PropertyValueHistory.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "PropertyValueHistory.List.Display.Description";
+    private static final String DisplayEnteredByUserSettingTypeKey = "PropertyValueHistory.List.Display.EnteredByUser";
+    private static final String DisplayEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.Display.EnteredOnDateTime";
+    private static final String DisplayUnitsSettingTypeKey = "PropertyValueHistory.List.Display.Units";
+
+    private static final String FilterByDescriptionSettingTypeKey = "PropertyValueHistory.List.FilterBy.Description";
+    private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredByUser";
+    private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredOnDateTime";
+    private static final String FilterByValueSettingTypeKey = "PropertyValueHistory.List.FilterBy.Value";
+    private static final String FilterByUnitsSettingTypeKey = "PropertyValueHistory.List.FilterBy.Units";
+
+    private Boolean displayEnteredByUser = null;
+    private Boolean displayEnteredOnDateTime = null;
+    private Boolean displayTypeCategory = null;
+    private Boolean displayUnits = null;
+
+    private String filterByEnteredByUser = null;
+    private String filterByEnteredOnDateTime = null;
+    private String filterByValue = null;
+    private String filterByUnits = null;
+
+    private List<PropertyValueHistory> selectedPropertyValueHistoryList;        
+    private String selectedPropertyValueTypeName = null;
+    
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.PropertyValueHistoryFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private PropertyValueHistoryFacade propertyValueHistoryFacade;
 
     public PropertyValueHistoryController() {
+        super();
     }
 
-    public PropertyValueHistory getSelected() {
-        if (current == null) {
-            current = new PropertyValueHistory();
-            selectedItemIndex = -1;
+    @Override
+    protected PropertyValueHistoryFacade getFacade() {
+        return propertyValueHistoryFacade;
+    }
+
+    @Override
+    protected PropertyValueHistory createEntityInstance() {
+        return new PropertyValueHistory();
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "propertyValueHistory";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getId().toString();
         }
-        return current;
+        return "";
     }
 
-    private PropertyValueHistoryFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<PropertyValueHistory> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
-        return pagination;
+
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayEnteredByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredByUserSettingTypeKey).getDefaultValue());
+        displayEnteredOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredOnDateTimeSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
+
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
+        filterByEnteredOnDateTime = settingTypeMap.get(FilterByEnteredOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByUnits = settingTypeMap.get(FilterByUnitsSettingTypeKey).getDefaultValue();
+        filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();
+
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (PropertyValueHistory) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new PropertyValueHistory();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyValueHistoryCreated"));
-            return prepareCreate();
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
+        Map<String, String> filters = dataTable.getFilters();
+        filterByEnteredByUser = filters.get("enteredByUser");
+        filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
+        filterByUnits = filters.get("units");
+        filterByValue = filters.get("value");
     }
 
-    public String prepareEdit() {
-        current = (PropertyValueHistory) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyValueHistoryUpdated"));
-            return "View";
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
+
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
+
     }
 
-    public String destroy() {
-        current = (PropertyValueHistory) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        }
-        else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyValueHistoryDeleted"));
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public PropertyValueHistory getPropertyValueHistory(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByEnteredByUser = null;
+        filterByEnteredOnDateTime = null;
+        filterByUnits = null;
+        filterByValue = null;
     }
 
     @FacesConverter(forClass = PropertyValueHistory.class)
-    public static class PropertyValueHistoryControllerConverter implements Converter
-    {
+    public static class PropertyValueHistoryControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            try {
+                if (value == null || value.length() == 0) {
+                    return null;
+                }
+                PropertyValueHistoryController controller = (PropertyValueHistoryController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "propertyValueHistoryController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // We cannot get this entity from given key.
                 return null;
             }
-            PropertyValueHistoryController controller = (PropertyValueHistoryController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyValueHistoryController");
-            return controller.getPropertyValueHistory(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -232,12 +204,92 @@ public class PropertyValueHistoryController implements Serializable
             if (object instanceof PropertyValueHistory) {
                 PropertyValueHistory o = (PropertyValueHistory) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyValueHistory.class.getName());
             }
         }
 
     }
+
+    public Boolean getDisplayEnteredByUser() {
+        return displayEnteredByUser;
+    }
+
+    public void setDisplayEnteredByUser(Boolean displayEnteredByUser) {
+        this.displayEnteredByUser = displayEnteredByUser;
+    }
+
+    public Boolean getDisplayEnteredOnDateTime() {
+        return displayEnteredOnDateTime;
+    }
+
+    public void setDisplayEnteredOnDateTime(Boolean displayEnteredOnDateTime) {
+        this.displayEnteredOnDateTime = displayEnteredOnDateTime;
+    }
+
+    public Boolean getDisplayTypeCategory() {
+        return displayTypeCategory;
+    }
+
+    public void setDisplayTypeCategory(Boolean displayTypeCategory) {
+        this.displayTypeCategory = displayTypeCategory;
+    }
+
+    public Boolean getDisplayUnits() {
+        return displayUnits;
+    }
+
+    public void setDisplayUnits(Boolean displayUnits) {
+        this.displayUnits = displayUnits;
+    }
+
+    public String getFilterByEnteredByUser() {
+        return filterByEnteredByUser;
+    }
+
+    public void setFilterByEnteredByUser(String filterByEnteredByUser) {
+        this.filterByEnteredByUser = filterByEnteredByUser;
+    }
+
+    public String getFilterByEnteredOnDateTime() {
+        return filterByEnteredOnDateTime;
+    }
+
+    public void setFilterByEnteredOnDateTime(String filterByEnteredOnDateTime) {
+        this.filterByEnteredOnDateTime = filterByEnteredOnDateTime;
+    }
+
+    public String getFilterByValue() {
+        return filterByValue;
+    }
+
+    public void setFilterByValue(String filterByValue) {
+        this.filterByValue = filterByValue;
+    }
+
+    public String getFilterByUnits() {
+        return filterByUnits;
+    }
+
+    public void setFilterByUnits(String filterByUnits) {
+        this.filterByUnits = filterByUnits;
+    }
+
+    public List<PropertyValueHistory> getSelectedPropertyValueHistoryList() {
+        return selectedPropertyValueHistoryList;
+    }
+
+    public void setSelectedPropertyValueHistoryList(List<PropertyValueHistory> selectedPropertyValueHistoryList) {
+        this.selectedPropertyValueHistoryList = selectedPropertyValueHistoryList;
+    }
+
+    public String getSelectedPropertyValueTypeName() {
+        return selectedPropertyValueTypeName;
+    }
+
+    public void setSelectedPropertyValueTypeName(String selectedPropertyValueTypeName) {
+        this.selectedPropertyValueTypeName = selectedPropertyValueTypeName;
+    }
+
 
 }

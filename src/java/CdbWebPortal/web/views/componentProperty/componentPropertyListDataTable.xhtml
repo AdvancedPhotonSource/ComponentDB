@@ -3,7 +3,9 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dataTable id="componentPropertyListDataTable" 
                  widgetVar="componentPropertyListWidget"
@@ -18,8 +20,26 @@
 
         <ui:include src="../propertyValue/propertyValueListObject.xhtml"/>
 
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink id="propertyValueHistoryListViewButton" 
+                               oncomplete="propertyValueHistoryListWidget.show()" 
+                               styleClass="ui-icon ui-icon-info" title="View history."
+                               update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValueHistoryList}" 
+                                                 value="#{propertyValueObject.propertyValueHistoryList}"/>
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValueTypeName}" 
+                                                 value="#{propertyValueObject.propertyType.name}"/>
+                    <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                </p:commandLink>
+            </div>
+        </p:column>       
+
     </p:dataTable>
 
-</ui:composition>
+    <ui:include src="../propertyValueHistory/propertyValueHistoryListDialog.xhtml"/>
 
+    <ui:include src="../propertyValueHistory/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
+
+</ui:composition>
 

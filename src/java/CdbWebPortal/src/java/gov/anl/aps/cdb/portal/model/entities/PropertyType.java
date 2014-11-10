@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -39,12 +38,12 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findById", query = "SELECT p FROM PropertyType p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyType.findByName", query = "SELECT p FROM PropertyType p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyType.findByDescription", query = "SELECT p FROM PropertyType p WHERE p.description = :description"),
-    @NamedQuery(name = "PropertyType.findByHandlerName", query = "SELECT p FROM PropertyType p WHERE p.handlerName = :handlerName"),
     @NamedQuery(name = "PropertyType.findByDefaultValue", query = "SELECT p FROM PropertyType p WHERE p.defaultValue = :defaultValue"),
     @NamedQuery(name = "PropertyType.findByDefaultUnits", query = "SELECT p FROM PropertyType p WHERE p.defaultUnits = :defaultUnits"),
     @NamedQuery(name = "PropertyType.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "PropertyType.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
 public class PropertyType extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -55,9 +54,6 @@ public class PropertyType extends CloneableEntity {
     private String name;
     @Size(max = 256)
     private String description;
-    @Size(max = 256)
-    @Column(name = "handler_name")
-    private String handlerName;
     @Size(max = 64)
     @Column(name = "default_value")
     private String defaultValue;
@@ -78,6 +74,9 @@ public class PropertyType extends CloneableEntity {
     private List<ComponentType> componentTypeList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<AllowedPropertyValue> allowedPropertyValueList;
+    @JoinColumn(name = "property_type_handler_id", referencedColumnName = "id")
+    @ManyToOne
+    private PropertyTypeHandler propertyTypeHandler;
     @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
     @ManyToOne
     private PropertyTypeCategory propertyTypeCategory;
@@ -121,14 +120,6 @@ public class PropertyType extends CloneableEntity {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getHandlerName() {
-        return handlerName;
-    }
-
-    public void setHandlerName(String handlerName) {
-        this.handlerName = handlerName;
     }
 
     public String getDefaultValue() {
@@ -190,6 +181,14 @@ public class PropertyType extends CloneableEntity {
         this.allowedPropertyValueList = allowedPropertyValueList;
     }
 
+    public PropertyTypeHandler getPropertyTypeHandler() {
+        return propertyTypeHandler;
+    }
+
+    public void setPropertyTypeHandler(PropertyTypeHandler propertyTypeHandler) {
+        this.propertyTypeHandler = propertyTypeHandler;
+    }
+
     public PropertyTypeCategory getPropertyTypeCategory() {
         return propertyTypeCategory;
     }
@@ -206,11 +205,11 @@ public class PropertyType extends CloneableEntity {
     public void setPropertyValueList(List<PropertyValue> propertyValueList) {
         this.propertyValueList = propertyValueList;
     }
-    
+
     public boolean hasAllowedPropertyValues() {
         return !allowedPropertyValueList.isEmpty();
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -247,5 +246,4 @@ public class PropertyType extends CloneableEntity {
         return name;
     }
 
-    
 }

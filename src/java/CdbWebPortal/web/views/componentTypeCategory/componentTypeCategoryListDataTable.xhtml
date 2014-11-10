@@ -4,11 +4,11 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 
     <p:dataTable id="componentTypeCategoryListDataTable"
+                 widgetVar="componentTypeCategoryListDataTableWidget" 
                  var="componentTypeCategoryObject" 
                  value="#{componentTypeCategoryController.listDataModel}" 
                  filteredValue="#{componentTypeCategoryController.filteredObjectList}"
@@ -16,7 +16,6 @@
                  paginatorAlwaysVisible="false" 
                  rows="#{componentTypeCategoryController.displayNumberOfItemsPerPage}"
                  binding="#{componentTypeCategoryController.listDataTable}"
-                 widgetVar="componentTypeCategoryListWidget" 
                  emptyMessage="No component type categories found." > 
 
         <p:column sortBy="#{componentTypeCategoryObject.id}" headerText="Id"
@@ -38,7 +37,7 @@
             <h:outputText value="#{componentTypeCategoryObject.description}"/>
         </p:column>
 
-        <c:set var="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+        <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
         <p:column headerText="Actions">
             <div class="actionLink">
                 <p:commandLink action="#{componentTypeCategoryController.prepareView(componentTypeCategoryObject)}" styleClass="ui-icon ui-icon-info" title="View"/>

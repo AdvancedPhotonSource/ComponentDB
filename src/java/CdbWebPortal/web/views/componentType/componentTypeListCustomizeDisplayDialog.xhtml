@@ -7,7 +7,7 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
 
-    <p:dialog id="componentTypeListCustomizeDisplayDialog" header="Customize Display" widgetVar="componentTypeListCustomizeDisplayWidget" styleClass="dialog">
+    <p:dialog id="componentTypeListCustomizeDisplayDialog" header="Customize Display" widgetVar="componentTypeListCustomizeDisplayDialogWidget" styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{componentTypeController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -25,7 +25,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentTypeController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="componentTypeListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="componentTypeListCustomizeDisplayDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

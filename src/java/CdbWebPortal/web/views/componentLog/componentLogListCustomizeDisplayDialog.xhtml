@@ -7,17 +7,17 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="componentLogListCustomizeDisplayDialog" 
-              widgetVar="componentLogListCustomizeDisplayWidget" 
+              widgetVar="componentLogListCustomizeDisplayDialogWidget" 
               header="Customize Display" 
               styleClass="dialog">
         <div class="dialog">
-            <ui:include src="../log/logListCustomizeObject.xhtml"/>
+            <ui:include src="../log/logListCustomizePanelGrid.xhtml"/>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{logController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="componentLogListCustomizeDisplayWidget.hide()" 
+                                 oncomplete="PF('componentLogListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userController.saveSettingListForSessionUser()}"

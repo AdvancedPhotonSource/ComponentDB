@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.entities.Log;
 import gov.anl.aps.cdb.portal.model.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
@@ -171,6 +172,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = componentFacade.findById(component.getId()).getPropertyValueList();
         List<PropertyValue> newPropertyValueList = component.getPropertyValueList();
+        ArrayList<PropertyValue> updatedPropertyValueList = new ArrayList<>();
         logger.debug("Verifying properties for component " + component);
         for (PropertyValue newPropertyValue : newPropertyValueList) {
             int index = originalPropertyValueList.indexOf(newPropertyValue);
@@ -183,6 +185,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
                     newPropertyValue.setEnteredByUser(lastModifiedByUser);
                     newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+
+                    // Save history
+                    List<PropertyValueHistory> propertyValueHistoryList = newPropertyValue.getPropertyValueHistoryList();
+                    PropertyValueHistory propertyValueHistory = new PropertyValueHistory();
+                    propertyValueHistory.updateFromPropertyValue(originalPropertyValue);
+                    propertyValueHistoryList.add(propertyValueHistory);
                 }
             } else {
                 // New property value.
@@ -192,6 +200,16 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
             }
         }
+
+//        // Save updated values in history table.
+//        for (PropertyValue updatedPropertyValue : updatedPropertyValueList) {
+//            logger.debug("Saving property value history for type " + updatedPropertyValue.getPropertyType()
+//                    + ": " + updatedPropertyValue);
+//            List<PropertyValueHistory> propertyValueHistoryList = updatedPropertyValue.getPropertyValueHistoryList();
+//            PropertyValueHistory propertyValueHistory = new PropertyValueHistory();
+//            propertyValueHistory.updateFromPropertyValue(updatedPropertyValue);
+//            propertyValueHistoryList.add(propertyValueHistory);
+//        }
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 

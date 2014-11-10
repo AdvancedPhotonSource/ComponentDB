@@ -7,17 +7,17 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="componentTypePropertyTypeSelectCustomizeDisplayDialog" 
-              widgetVar="componentTypePropertyTypeSelectCustomizeDisplayDialogWidget" 
-              header="Customize Selection Display" 
+    <p:dialog id="propertyValueHistoryListCustomizeDisplayDialog" 
+              widgetVar="propertyValueHistoryListCustomizeDisplayDialogWidget" 
+              header="Customize List Display" 
               styleClass="dialog">
         <div class="dialog">
-            <ui:include src="../propertyType/propertyTypeSelectCustomizePanelGrid.xhtml"/>
+            <ui:include src="propertyValueHistoryListCustomizePanelGrid.xhtml"/>
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 update="componentTypePropertyTypeSelectDialog"
-                                 onclick="componentTypePropertyTypeSelectCustomizeDisplayDialogWidget.hide()"
-                                 oncomplete="componentTypePropertyTypeSelectWidget.show()" 
+                                 update="propertyValueHistoryListDialog"
+                                 onclick="PF('propertyValueHistoryListCustomizeDisplayDialogWidget').hide()"
+                                 oncomplete="PF('propertyValueHistoryListWidget').show()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

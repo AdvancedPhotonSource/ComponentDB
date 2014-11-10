@@ -122,6 +122,19 @@ CREATE TABLE `log` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table `property_type_handler`
+--
+
+DROP TABLE IF EXISTS `property_type_handler`;
+CREATE TABLE `property_type_handler` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `property_type_handler_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
 -- Table `property_type_category`
 --
 
@@ -143,7 +156,7 @@ CREATE TABLE `property_type` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `property_type_category_id` int(11) unsigned DEFAULT NULL,
-  `handler_name` varchar(256) DEFAULT NULL,
+  `property_type_handler_id` int(11) unsigned DEFAULT NULL,
   `default_value` varchar(64) DEFAULT NULL,
   `default_units` varchar(16) DEFAULT NULL,
   `is_user_writeable` bool NOT NULL DEFAULT 0,
@@ -151,7 +164,9 @@ CREATE TABLE `property_type` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `property_type_u1` (`name`),
   KEY `property_type_k1` (`property_type_category_id`),
-  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_type_category_id`) REFERENCES `property_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_type_category_id`) REFERENCES `property_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  KEY `property_type_k2` (`property_type_handler_id`),
+  CONSTRAINT `property_type_fk2` FOREIGN KEY (`property_type_handler_id`) REFERENCES `property_type_handler` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

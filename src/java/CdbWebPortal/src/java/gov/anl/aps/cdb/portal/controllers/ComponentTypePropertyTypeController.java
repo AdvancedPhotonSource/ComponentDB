@@ -18,6 +18,7 @@ import org.primefaces.component.datatable.DataTable;
 public class ComponentTypePropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeFacade> implements Serializable
 {
 
+    private static final String DisplayIdSettingTypeKey = "ComponentTypePropertyType.List.Display.Id";    
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypePropertyType.List.Display.NumberOfItemsPerPage";
 
     private static final String FilterByPropertyTypeNameSettingTypeKey = "ComponentTypePropertyType.List.FilterBy.PropertyTypeName";
@@ -69,6 +70,7 @@ public class ComponentTypePropertyTypeController extends CrudEntityController<Pr
             return;
         }
 
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());        
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         filterByPropertyTypeName = settingTypeMap.get(FilterByPropertyTypeNameSettingTypeKey).getDefaultValue();                
     }
@@ -78,7 +80,7 @@ public class ComponentTypePropertyTypeController extends CrudEntityController<Pr
         if (sessionUser == null) {
             return;
         }
-
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         filterByPropertyTypeName = sessionUser.getUserSettingValueAsString(FilterByPropertyTypeNameSettingTypeKey, filterByPropertyTypeName);        
     }
@@ -99,6 +101,7 @@ public class ComponentTypePropertyTypeController extends CrudEntityController<Pr
             return;
         }
 
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(FilterByPropertyTypeNameSettingTypeKey, filterByPropertyTypeName);        
     }

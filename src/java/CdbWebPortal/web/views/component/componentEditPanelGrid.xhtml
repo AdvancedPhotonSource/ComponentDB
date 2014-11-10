@@ -54,6 +54,7 @@
         <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
         <h:inputTextarea id="logEntry" value="#{componentController.logText}" title="Log Entry" styleClass="entityDataText"/>
         <p:message for="logEntry"/> 
+        <p:tooltip for="logEntry" value="Log entry is optional."/>
     </p:panelGrid>
 
     <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>

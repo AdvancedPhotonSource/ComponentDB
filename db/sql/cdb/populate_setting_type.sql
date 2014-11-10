@@ -65,7 +65,7 @@ VALUES
 	('ComponentTypeCategory.List.FilterBy.Name','Filter for component type category name.', NULL),
 
 	('ComponentTypePropertyType.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
-
+	('ComponentTypePropertyType.List.Display.Id', 'Display component type property type id.', 'true'),
 	('ComponentTypePropertyType.List.FilterBy.PropertyTypeName', 'Filter for component type property type name.', NULL),
 
 	('Design.List.Display.CreatedByUser', 'Display created by username.', 'false'),
@@ -101,7 +101,7 @@ VALUES
 
 	('Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.', 'true'),
 	('Log.List.Display.EnteredByUser','Display log entry entered by user.', 'true'),
-	('Log.List.Display.Id','Display log entry id.', 'false'),
+	('Log.List.Display.Id','Display log entry id.', 'true'),
 	('Log.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('Log.List.FilterBy.EnteredOnDateTime','Filter for log entry entered on date/time.', NULL),
@@ -112,7 +112,7 @@ VALUES
 	('PropertyType.List.Display.DefaultUnits','Display property type default units.', 'false'),
 	('PropertyType.List.Display.DefaultValue','Display property type default value.', 'false'),
 	('PropertyType.List.Display.Description','Display property type description.', 'true'),
-	('PropertyType.List.Display.HandlerName','Display property type class handler name.', 'false'),
+	('PropertyType.List.Display.Handler','Display property type class handler.', 'false'),
 	('PropertyType.List.Display.Id','Display property type id.', 'true'),
 	('PropertyType.List.Display.IsDynamic','Display dynamic property type designation.', 'false'),
 	('PropertyType.List.Display.IsUserWriteable','Display user-writeable property type designation.', 'false'),
@@ -122,7 +122,7 @@ VALUES
 	('PropertyType.List.FilterBy.DefaultUnits','Filter for property type default units.', NULL),
 	('PropertyType.List.FilterBy.DefaultValue','Filter for property type default value.', NULL),
 	('PropertyType.List.FilterBy.Description','Filter for property type description.', NULL),
-	('PropertyType.List.FilterBy.HandlerName','Filter for property type class handler name.', NULL),
+	('PropertyType.List.FilterBy.Handler','Filter for property type class handler.', NULL),
 	('PropertyType.List.FilterBy.IsDynamic','Filter for dynamic property type designation.', NULL),
 	('PropertyType.List.FilterBy.IsUserWriteable','Filter for user-writeable property type designation.', NULL),
 	('PropertyType.List.FilterBy.Name','Filter for property type name.', NULL),
@@ -134,10 +134,17 @@ VALUES
 	('PropertyTypeCategory.List.FilterBy.Description','Filter for property type category description.', NULL),
 	('PropertyTypeCategory.List.FilterBy.Name','Filter for property type category name.', NULL),
 
+	('PropertyTypeHandler.List.Display.Description','Display property type handler description.', 'true'),
+	('PropertyTypeHandler.List.Display.Id','Display property type handler id.', 'true'),
+	('PropertyTypeHandler.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('PropertyTypeHandler.List.FilterBy.Description','Filter for property type handler description.', NULL),
+	('PropertyTypeHandler.List.FilterBy.Name','Filter for property type handler name.', NULL),
+
 	('PropertyValue.List.Display.Description', 'Display value entry description.', 'false'),
 	('PropertyValue.List.Display.EnteredOnDateTime','Display value entry entered on date/time.', 'false'),
 	('PropertyValue.List.Display.EnteredByUser','Display value entry entered by user.', 'false'),
-	('PropertyValue.List.Display.Id','Display property value entry id.', 'false'),
+	('PropertyValue.List.Display.Id','Display property value entry id.', 'true'),
 	('PropertyValue.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 	('PropertyValue.List.Display.TypeCategory', 'Display property value type category.', 'false'),
 	('PropertyValue.List.Display.Units', 'Display value units.', 'true'),
@@ -149,6 +156,19 @@ VALUES
 	('PropertyValue.List.FilterBy.TypeCategory', 'Filter for property value type category.', NULL),
 	('PropertyValue.List.FilterBy.Units', 'Filter for value units.', NULL),
 	('PropertyValue.List.FilterBy.Value','Filter for value entry.', NULL),
+
+	('PropertyValueHistory.List.Display.Description', 'Display value entry description.', 'true'),
+	('PropertyValueHistory.List.Display.EnteredOnDateTime','Display value entry entered on date/time.', 'true'),
+	('PropertyValueHistory.List.Display.EnteredByUser','Display value entry entered by user.', 'true'),
+	('PropertyValueHistory.List.Display.Id','Display property value entry id.', 'false'),
+	('PropertyValueHistory.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
+	('PropertyValueHistory.List.Display.Units', 'Display value units.', 'true'),
+
+	('PropertyValueHistory.List.FilterBy.Description','Filter for value description.', NULL),
+	('PropertyValueHistory.List.FilterBy.EnteredOnDateTime','Filter for value entry entered on date/time.', NULL),
+	('PropertyValueHistory.List.FilterBy.EnteredByUser','Filter for value entry entered by user.', NULL),
+	('PropertyValueHistory.List.FilterBy.Units', 'Filter for value units.', NULL),
+	('PropertyValueHistory.List.FilterBy.Value','Filter for value entry.', NULL),
 
 	('Search.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 

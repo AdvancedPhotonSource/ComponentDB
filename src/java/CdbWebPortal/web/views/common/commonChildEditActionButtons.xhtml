@@ -30,7 +30,7 @@
             <p:printer target="#{childEntityTypeName}EditDataTable"/>
             <p:tooltip for="#{childEntityTypeName}EditPrintButton" value="Print list."/>
         </p:commandButton> 
-        <p:commandButton id="#{childEntityTypeName}EditCustomizeDisplayButton" oncomplete="#{childEntityTypeName}EditCustomizeDisplayWidget.show()" alt="Customize Edit" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+        <p:commandButton id="#{childEntityTypeName}EditCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}EditCustomizeDisplayDialogWidget').show()" alt="Customize Edit" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
             <p:tooltip for="#{childEntityTypeName}EditCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}EditResetFiltersButton" action="#{childEntityController.resetListForEdit}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">

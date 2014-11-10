@@ -50,7 +50,7 @@ public class Log extends CloneableEntity
     @Basic(optional = false)
     @NotNull
     @Lob
-    @Size(min = 1, max = 65535)
+    @Size(max = 65535)
     private String text;
     @Basic(optional = false)
     @NotNull

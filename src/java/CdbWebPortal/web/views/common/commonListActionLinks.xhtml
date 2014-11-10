@@ -14,8 +14,8 @@
         <p:commandLink id="#{entityTypeName}ListEditLink" action="#{entityController.prepareEdit(entityObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit">
             <p:tooltip for="#{entityTypeName}ListEditLink" value="Edit #{entityController.displayEntityTypeName}."/>            
         </p:commandLink>
-        <p:commandLink id="#{entityTypeName}ListDeleteLink" oncomplete="#{entityTypeName}DestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
-            <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
+        <p:commandLink id="#{entityTypeName}ListDeleteLink" oncomplete="PF('#{entityTypeName}DestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+            <f:setPropertyActionListener target="#{entityController.current}" value="#{entityObject}"/>
             <p:tooltip for="#{entityTypeName}ListDeleteLink" value="Delete #{entityController.displayEntityTypeName}."/>
         </p:commandLink>
     </div>
