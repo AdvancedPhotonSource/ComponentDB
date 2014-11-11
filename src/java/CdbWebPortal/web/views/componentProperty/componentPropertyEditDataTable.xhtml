@@ -26,10 +26,8 @@
                                oncomplete="propertyValueHistoryListWidget.show()" 
                                styleClass="ui-icon ui-icon-info" title="View history."
                                update="@form">
-                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValueHistoryList}" 
-                                                 value="#{propertyValueObject.propertyValueHistoryList}"/>
-                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValueTypeName}" 
-                                                 value="#{propertyValueObject.propertyType.name}"/>
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
+                                                 value="#{propertyValueObject}"/>
                     <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
 

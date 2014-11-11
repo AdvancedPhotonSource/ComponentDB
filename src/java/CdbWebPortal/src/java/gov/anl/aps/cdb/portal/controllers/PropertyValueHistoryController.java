@@ -1,11 +1,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.beans.PropertyValueHistoryFacade;
+import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.entities.UserInfo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -46,6 +49,7 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
 
     private List<PropertyValueHistory> selectedPropertyValueHistoryList;        
     private String selectedPropertyValueTypeName = null;
+    private PropertyValue selectedPropertyValue = null;
     
     @EJB
     private PropertyValueHistoryFacade propertyValueHistoryFacade;
@@ -279,16 +283,26 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         return selectedPropertyValueHistoryList;
     }
 
-    public void setSelectedPropertyValueHistoryList(List<PropertyValueHistory> selectedPropertyValueHistoryList) {
-        this.selectedPropertyValueHistoryList = selectedPropertyValueHistoryList;
-    }
-
     public String getSelectedPropertyValueTypeName() {
         return selectedPropertyValueTypeName;
     }
 
-    public void setSelectedPropertyValueTypeName(String selectedPropertyValueTypeName) {
-        this.selectedPropertyValueTypeName = selectedPropertyValueTypeName;
+    public PropertyValue getSelectedPropertyValue() {
+        return selectedPropertyValue;
+    }
+
+    public void setSelectedPropertyValue(PropertyValue selectedPropertyValue) {
+        this.selectedPropertyValue = selectedPropertyValue;
+        
+        // Reset history list adding the current entry and reversing the order, set property type name
+        PropertyValueHistory currentEntry = new PropertyValueHistory();
+        currentEntry.updateFromPropertyValue(selectedPropertyValue);
+        selectedPropertyValueHistoryList = new ArrayList<>();
+        selectedPropertyValueHistoryList.addAll(selectedPropertyValue.getPropertyValueHistoryList());
+        selectedPropertyValueHistoryList.add(currentEntry);
+        Collections.reverse(selectedPropertyValueHistoryList);
+        selectedPropertyValueTypeName = selectedPropertyValue.getPropertyType().getName();
+        
     }
 
 

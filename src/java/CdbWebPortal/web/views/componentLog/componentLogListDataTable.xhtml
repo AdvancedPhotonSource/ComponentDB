@@ -19,29 +19,9 @@
 
         <ui:include src="../log/logListObject.xhtml"/>
 
-        <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink id="componentLogListEditLink" action="#{componentController.edit()}" 
-                               rendered="#{isEntityWriteable}" 
-                               styleClass="ui-icon ui-icon-pencil" 
-                               title="Edit">
-                    <p:tooltip for="componentLogListEditLink" value="Edit component log."/>            
-                </p:commandLink>
-                <p:commandLink id="componentLogListDeleteLink" 
-                               oncomplete="PF('componentLogDestroyDialogWidget').show()" 
-                               rendered="#{isEntityWriteable}" 
-                               styleClass="ui-icon ui-icon-trash" 
-                               title="Delete" 
-                               update="@form">
-                    <f:setPropertyActionListener target="#{logController.current}" value="#{logObject}"/>
-                    <p:tooltip for="componentLogListDeleteLink" value="Delete component log."/>
-                </p:commandLink>
-            </div>
-        </p:column>            
     </p:dataTable>
 
-    <ui:include src="componentLogDestroyDialog.xhtml"/>
-    
+
 </ui:composition>
 
 
