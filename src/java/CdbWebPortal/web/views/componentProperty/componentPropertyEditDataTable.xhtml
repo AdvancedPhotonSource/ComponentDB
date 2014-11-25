@@ -22,6 +22,12 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
+                <ui:param name="propertyTypeHandler" value="#{propertyValueController.getPropertyTypeHandler(propertyValueObject)}"/>
+                <ui:param name="displayEditActionButton" value="#{propertyTypeHandler.displayEditActionButton}"/>                
+                <ui:param name="editActionIcon" value="#{propertyTypeHandler.editActionIcon}"/>
+                <ui:param name="editActionOncomplete" value="#{propertyTypeHandler.editActionOncomplete}"/>
+                <ui:param name="editActionBean" value="#{propertyTypeHandler.editActionBean}"/>
+
                 <p:commandLink id="propertyValueHistoryListViewButton" 
                                oncomplete="propertyValueHistoryListWidget.show()" 
                                styleClass="ui-icon ui-icon-info" title="View history."
@@ -29,6 +35,15 @@
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>
                     <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                </p:commandLink>
+
+                <p:commandLink id="propertyValueActionButton" 
+                               rendered="#{displayEditActionButton}" 
+                               oncomplete="#{editActionOncomplete}" 
+                               styleClass="ui-icon #{editActionIcon}"
+                               update="@form">
+                    <f:setPropertyActionListener value="#{propertyValueObject}" target="#{propertyValueController.current}"/>
+                    <p:tooltip for="propertyValueActionButton" value="Upload file."/>
                 </p:commandLink>
 
                 <p:commandLink id="propertyValueDeleteButton" action="#{componentController.deleteProperty(propertyValueObject)}" 
@@ -42,6 +57,8 @@
     </p:dataTable>
 
     <ui:include src="../propertyValueHistory/propertyValueHistoryListDialog.xhtml"/>
+
+    <ui:include src="../propertyValue/propertyValueImageUploadDialog.xhtml"/>
 
     <ui:include src="../propertyValueHistory/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 </ui:composition>

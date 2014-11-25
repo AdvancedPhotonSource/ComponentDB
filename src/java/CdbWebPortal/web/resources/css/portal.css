@@ -389,6 +389,11 @@ h2 {
     width: 40px;
 }
 
+.imagePanel {
+    max-height: 200px;
+    max-width: 200px;
+}
+
 .ui-accordion .ui-accordion-content {
     background: #f2f4f7;    
 }

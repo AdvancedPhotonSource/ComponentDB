@@ -7,7 +7,6 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:param name="isValueRestricted" value="#{propertyValueObject.propertyType.hasAllowedPropertyValues()}"/>
     <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
               rendered="#{propertyValueController.displayId}">
         <h:outputText id="id" value="#{propertyValueObject.id}"/>
@@ -33,15 +32,22 @@
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
               filterBy="#{propertyValueObject.value}" filterMatchMode="contains"
               filterValue="#{propertyValueController.filterByValue}">
-        <h:inputText id="freeFormValue" value="#{propertyValueObject.value}" styleClass="cellInput" 
-                     rendered="#{!isValueRestricted}"/>
-        <p:tooltip for="freeFormValue" value="Property value can be empty."/>
-        <h:selectOneMenu id="restrictedValue" value="#{propertyValueObject.value}" title="Value" styleClass="entityDataText"
-                         rendered="#{isValueRestricted}">
+
+        <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="cellInput"
+                     rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
+        <p:tooltip for="freeFormTextValue" value="Property value can be empty."/>
+
+        <h:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" title="Value" styleClass="entityDataText"
+                         rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
             <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.allowedPropertyValueList}" 
                            itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
         </h:selectOneMenu>
-        <p:tooltip for="restrictedValue" value="Select property value."/>
+        <p:tooltip for="selectedTextValue" value="Select property value."/>
+
+        <h:outputText id="imageValue" value="#{propertyValueObject.value}"
+                      rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
+        <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
+
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"

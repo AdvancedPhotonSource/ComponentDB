@@ -9,7 +9,9 @@
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
     <ui:define name="middleCenter">
-        <h:form id="editComponentForm" rendered="#{(loginController.loggedIn and loginController.isEntityWriteable(componentController.selected.entityInfo))}">
+        <h:form id="editComponentForm" 
+                enctype="multipart/form-data"
+                rendered="#{(loginController.loggedIn and loginController.isEntityWriteable(componentController.selected.entityInfo))}">
 
             <div class="middleCenterLeftContent">
 

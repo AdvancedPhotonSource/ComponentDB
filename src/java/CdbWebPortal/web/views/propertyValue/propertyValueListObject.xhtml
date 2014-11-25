@@ -9,7 +9,7 @@
               rendered="#{propertyValueController.displayId}">
         <h:outputText value="#{propertyValueObject.id}"/>
     </p:column>
-    
+
     <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
               filterBy="#{propertyValueObject.propertyType}" filterMatchMode="contains"
               filterValue="#{propertyValueController.filterByType}">
@@ -27,8 +27,11 @@
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
               filterBy="#{propertyValueObject.value}" filterMatchMode="contains"
               filterValue="#{propertyValueController.filterByValue}">
-        <h:outputText value="#{propertyValueObject.value}"/>
+        <h:outputText value="#{propertyValueObject.value}"
+                      rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
     </p:column>
+
+
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
               filterBy="#{propertyValueObject.units}" filterMatchMode="contains"
