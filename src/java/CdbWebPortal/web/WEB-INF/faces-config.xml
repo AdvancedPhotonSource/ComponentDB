@@ -18,7 +18,7 @@
         <renderer>
             <component-family>org.primefaces.component</component-family>
             <renderer-type>org.primefaces.component.FileUploadRenderer</renderer-type>
-            <renderer-class>gov.anl.aps.cdb.portal.view.jsf.components.DmFileUploadRenderer</renderer-class>
+            <renderer-class>gov.anl.aps.cdb.portal.view.jsf.components.CdbFileUploadRenderer</renderer-class>
         </renderer>
     </render-kit>
     

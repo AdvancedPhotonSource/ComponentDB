@@ -3,17 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentLog/componentLogListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValueHistory/propertyValueHistoryListObject.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueHistoryController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/componentListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/cdb.portal.properties</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/beans/PropertyValueImageUploadBean.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentProperty/componentPropertyEditDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/common/commonListActionLinks.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/entities/Component.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValueHistory/propertyValueHistoryListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentProperty/componentPropertyListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/entities/PropertyValueHistory.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/WEB-INF/faces-config.xml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/ImagePropertyTypeHandler.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueImageUploadDialog.xhtml</file>
         </group>
     </open-files>
 </project-private>

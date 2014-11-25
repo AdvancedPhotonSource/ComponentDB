@@ -12,7 +12,7 @@ import org.primefaces.component.fileupload.FileUploadRenderer;
  * 
  * See: http://stackoverflow.com/questions/19262356/file-upload-doesnt-work-with-ajax-in-primefaces-4-0-jsf-2-2-x-javax-servlet-s/19752138#19752138
  */
-public class DmFileUploadRenderer extends FileUploadRenderer 
+public class CdbFileUploadRenderer extends FileUploadRenderer 
 {
     @Override
     public void decode(FacesContext context, UIComponent component) {
