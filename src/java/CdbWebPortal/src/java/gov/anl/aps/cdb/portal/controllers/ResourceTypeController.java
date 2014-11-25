@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.ResourceType;
+import gov.anl.aps.cdb.portal.model.db.entities.ResourceType;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.beans.ResourceTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ResourceTypeFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -26,7 +26,7 @@ public class ResourceTypeController implements Serializable
     private ResourceType current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.ResourceTypeFacade ejbFacade;
+    private gov.anl.aps.cdb.portal.model.db.beans.ResourceTypeFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

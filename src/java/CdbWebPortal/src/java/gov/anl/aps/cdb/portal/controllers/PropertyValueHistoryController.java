@@ -1,10 +1,10 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.beans.PropertyValueHistoryFacade;
-import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
 import java.util.ArrayList;

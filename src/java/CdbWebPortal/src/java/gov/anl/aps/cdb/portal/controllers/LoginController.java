@@ -5,13 +5,13 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.beans.SettingTypeFacade;
-import gov.anl.aps.cdb.portal.model.beans.UserInfoFacade;
-import gov.anl.aps.cdb.portal.model.entities.EntityInfo;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.entities.UserGroup;
-import gov.anl.aps.cdb.portal.model.entities.UserSetting;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;

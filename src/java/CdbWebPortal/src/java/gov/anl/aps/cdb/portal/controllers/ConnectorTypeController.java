@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.ConnectorType;
+import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.beans.ConnectorTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -26,7 +26,7 @@ public class ConnectorTypeController implements Serializable
     private ConnectorType current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.ConnectorTypeFacade ejbFacade;
+    private gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

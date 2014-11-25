@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.DesignElementConnection;
+import gov.anl.aps.cdb.portal.model.db.entities.DesignElementConnection;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.beans.DesignElementConnectionFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignElementConnectionFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -26,7 +26,7 @@ public class DesignElementConnectionController implements Serializable
     private DesignElementConnection current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.DesignElementConnectionFacade ejbFacade;
+    private gov.anl.aps.cdb.portal.model.db.beans.DesignElementConnectionFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

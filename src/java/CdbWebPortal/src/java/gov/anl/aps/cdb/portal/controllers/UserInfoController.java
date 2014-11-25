@@ -2,10 +2,10 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.beans.UserInfoFacade;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserSetting;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;

@@ -1,20 +1,24 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.entities.Component;
-import gov.anl.aps.cdb.portal.model.beans.ComponentFacade;
-import gov.anl.aps.cdb.portal.model.entities.ComponentSource;
-import gov.anl.aps.cdb.portal.model.entities.ComponentType;
-import gov.anl.aps.cdb.portal.model.entities.EntityInfo;
-import gov.anl.aps.cdb.portal.model.entities.Log;
-import gov.anl.aps.cdb.portal.model.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserGroup;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.Component;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -75,6 +79,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private String selectFilterByType = null;
     private String selectFilterByTypeCategory = null;
 
+    private String selectedComponentImage = null;
+    private List<PropertyValue> componentImageList = null;
+    private Boolean displayComponentImages = null;
+    
     public ComponentController() {
         super();
     }
@@ -123,6 +131,27 @@ public class ComponentController extends CrudEntityController<Component, Compone
             return getCurrent().getName();
         }
         return "";
+    }
+
+    @Override
+    public void prepareEntityView(Component component) {
+        selectedComponentImage = null;
+        displayComponentImages = false;
+        componentImageList = new ArrayList<>();
+        List<PropertyValue> propertyValueList = component.getPropertyValueList();
+        for (PropertyValue propertyValue : propertyValueList) {
+            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+            DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
+            if (valueDisplayType == DisplayType.IMAGE && !propertyValue.getValue().isEmpty()) {
+                componentImageList.add(propertyValue);
+            }
+        }
+        if (!componentImageList.isEmpty()) {
+            PropertyValue propertyValue = componentImageList.get(0);
+            selectedComponentImage = StorageUtility.getApplicationPropertyValueImagesDirectory() + "/"
+                    + propertyValue.getValue();
+            displayComponentImages = true;
+        }
     }
 
     @Override
@@ -551,6 +580,26 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setSelectFilterByTypeCategory(String selectFilterByTypeCategory) {
         this.selectFilterByTypeCategory = selectFilterByTypeCategory;
+    }
+
+    public String getSelectedComponentImage() {
+        return selectedComponentImage;
+    }
+
+    public void setSelectedComponentImage(String selectedComponentImage) {
+        this.selectedComponentImage = selectedComponentImage;
+    }
+
+    public Boolean getDisplayComponentImages() {
+        return displayComponentImages;
+    }
+
+    public void setDisplayComponentImages(Boolean displayComponentImages) {
+        this.displayComponentImages = displayComponentImages;
+    }
+
+    public List<PropertyValue> getComponentImageList() {
+        return componentImageList;
     }
 
 }

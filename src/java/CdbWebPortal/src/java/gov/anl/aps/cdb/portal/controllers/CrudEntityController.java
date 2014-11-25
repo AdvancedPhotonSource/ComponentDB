@@ -1,12 +1,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.model.beans.AbstractFacade;
-import gov.anl.aps.cdb.portal.model.beans.SettingTypeFacade;
-import gov.anl.aps.cdb.portal.model.entities.CloneableEntity;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.entities.UserSetting;
+import gov.anl.aps.cdb.portal.model.db.beans.AbstractFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CloneableEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -438,13 +438,17 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return current != null;
     }
 
+    protected void prepareEntityView(EntityType entity) {
+    }
+    
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
         updateViewSettings();
+        prepareEntityView(entity);
         return view();
     }
-
+        
     public String view() {
         currentActionType = ActionType.VIEW;
         return "view?faces-redirect=true";

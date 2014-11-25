@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.ComponentSource;
-import gov.anl.aps.cdb.portal.model.beans.ComponentSourceFacade;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentSourceFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
 import java.util.List;

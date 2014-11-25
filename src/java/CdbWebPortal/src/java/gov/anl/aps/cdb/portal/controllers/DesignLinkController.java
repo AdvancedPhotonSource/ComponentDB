@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.DesignLink;
+import gov.anl.aps.cdb.portal.model.db.entities.DesignLink;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.beans.DesignLinkFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignLinkFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -26,7 +26,7 @@ public class DesignLinkController implements Serializable
     private DesignLink current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.DesignLinkFacade ejbFacade;
+    private gov.anl.aps.cdb.portal.model.db.beans.DesignLinkFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

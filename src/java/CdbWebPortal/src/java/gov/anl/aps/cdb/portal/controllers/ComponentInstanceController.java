@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.ComponentInstance;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.beans.ComponentInstanceFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -26,7 +26,7 @@ public class ComponentInstanceController implements Serializable
     private ComponentInstance current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.ComponentInstanceFacade ejbFacade;
+    private gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

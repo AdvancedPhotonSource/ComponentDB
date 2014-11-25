@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.ComponentInstanceLocationHistory;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.beans.ComponentInstanceLocationHistoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceLocationHistoryFacade;
 
 import java.io.Serializable;
 import java.util.ResourceBundle;
@@ -26,7 +26,7 @@ public class ComponentInstanceLocationHistoryController implements Serializable
     private ComponentInstanceLocationHistory current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.beans.ComponentInstanceLocationHistoryFacade ejbFacade;
+    private gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceLocationHistoryFacade ejbFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 

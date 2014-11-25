@@ -1,10 +1,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.beans.PropertyValueFacade;
-import gov.anl.aps.cdb.portal.model.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
+import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 
 import java.io.Serializable;
 import java.util.List;
@@ -184,7 +187,45 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         filterByUnits = null;
         filterByValue = null;
     }
-    
+
+    public PropertyTypeHandlerInterface getPropertyTypeHandler(PropertyValue propertyValue) {
+        return PropertyTypeHandlerFactory.getHandler(propertyValue);
+    }
+
+    public DisplayType configurePropertyValueDisplay(PropertyValue propertyValue) {
+        PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+        PropertyType propertyType = propertyValue.getPropertyType();
+        DisplayType displayType = propertyTypeHandler.getValueDisplayType();
+        if (displayType == null) {
+            displayType = DisplayType.FREE_FORM_TEXT;
+            if (propertyType.hasAllowedPropertyValues()) {
+                displayType = DisplayType.SELECTED_TEXT;
+            }
+        }
+        propertyType.setDisplayType(displayType);
+        return displayType;
+    }
+
+    public DisplayType getPropertyValueDisplayType(PropertyValue propertyValue) {
+        DisplayType result = propertyValue.getPropertyType().getDisplayType();
+        if (result == null) {
+            result = configurePropertyValueDisplay(propertyValue);
+        }
+        return result;
+    }
+
+    public boolean displayFreeFormTextValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FREE_FORM_TEXT);
+    }
+
+    public boolean displaySelectedTextValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.SELECTED_TEXT);
+    }
+
+    public boolean displayImageValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.IMAGE);
+    }
+
     @FacesConverter(forClass = PropertyValue.class)
     public static class PropertyValueControllerConverter implements Converter {
 

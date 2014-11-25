@@ -1,13 +1,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.beans.PropertyTypeFacade;
-import gov.anl.aps.cdb.portal.model.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.entities.AllowedPropertyValue;
-import gov.anl.aps.cdb.portal.model.entities.Component;
-import gov.anl.aps.cdb.portal.model.entities.ComponentType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.Component;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 
 import java.io.Serializable;
 import java.util.List;
