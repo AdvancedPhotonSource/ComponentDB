@@ -1,10 +1,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,27 +32,31 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
     private static final String DisplayDescriptionSettingTypeKey = "PropertyValueHistory.List.Display.Description";
     private static final String DisplayEnteredByUserSettingTypeKey = "PropertyValueHistory.List.Display.EnteredByUser";
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.Display.EnteredOnDateTime";
+    private static final String DisplayTagSettingTypeKey = "PropertyValueHistory.List.Display.Tag";
     private static final String DisplayUnitsSettingTypeKey = "PropertyValueHistory.List.Display.Units";
 
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValueHistory.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredOnDateTime";
+    private static final String FilterByTagSettingTypeKey = "PropertyValueHistory.List.FilterBy.Tag";
     private static final String FilterByValueSettingTypeKey = "PropertyValueHistory.List.FilterBy.Value";
     private static final String FilterByUnitsSettingTypeKey = "PropertyValueHistory.List.FilterBy.Units";
 
     private Boolean displayEnteredByUser = null;
     private Boolean displayEnteredOnDateTime = null;
-    private Boolean displayTypeCategory = null;
+    private Boolean displayTag = null;
     private Boolean displayUnits = null;
 
     private String filterByEnteredByUser = null;
     private String filterByEnteredOnDateTime = null;
+    private String filterByTag = null;
     private String filterByValue = null;
     private String filterByUnits = null;
 
     private List<PropertyValueHistory> selectedPropertyValueHistoryList;        
     private String selectedPropertyValueTypeName = null;
     private PropertyValue selectedPropertyValue = null;
+    private DisplayType displayType = null;
     
     @EJB
     private PropertyValueHistoryFacade propertyValueHistoryFacade;
@@ -97,11 +104,13 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         displayEnteredOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredOnDateTimeSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
         displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
 
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
         filterByEnteredOnDateTime = settingTypeMap.get(FilterByEnteredOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
         filterByUnits = settingTypeMap.get(FilterByUnitsSettingTypeKey).getDefaultValue();
         filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();
 
@@ -118,11 +127,13 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
         displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
 
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByTag = sessionUser.getUserSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
         filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
         filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
     }
@@ -136,6 +147,7 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         Map<String, String> filters = dataTable.getFilters();
         filterByEnteredByUser = filters.get("enteredByUser");
         filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
+        filterByTag = filters.get("tag");
         filterByUnits = filters.get("units");
         filterByValue = filters.get("value");
     }
@@ -151,11 +163,13 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
         sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
 
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        sessionUser.setUserSettingValue(FilterByTagSettingTypeKey, filterByTag);
         sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
         sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
 
@@ -166,6 +180,7 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         super.clearListFilters();
         filterByEnteredByUser = null;
         filterByEnteredOnDateTime = null;
+        filterByTag = null;
         filterByUnits = null;
         filterByValue = null;
     }
@@ -231,12 +246,12 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         this.displayEnteredOnDateTime = displayEnteredOnDateTime;
     }
 
-    public Boolean getDisplayTypeCategory() {
-        return displayTypeCategory;
+    public Boolean getDisplayTag() {
+        return displayTag;
     }
 
-    public void setDisplayTypeCategory(Boolean displayTypeCategory) {
-        this.displayTypeCategory = displayTypeCategory;
+    public void setDisplayTag(Boolean displayTag) {
+        this.displayTag = displayTag;
     }
 
     public Boolean getDisplayUnits() {
@@ -261,6 +276,14 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
 
     public void setFilterByEnteredOnDateTime(String filterByEnteredOnDateTime) {
         this.filterByEnteredOnDateTime = filterByEnteredOnDateTime;
+    }
+
+    public String getFilterByTag() {
+        return filterByTag;
+    }
+
+    public void setFilterByTag(String filterByTag) {
+        this.filterByTag = filterByTag;
     }
 
     public String getFilterByValue() {
@@ -302,8 +325,23 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         selectedPropertyValueHistoryList.add(currentEntry);
         Collections.reverse(selectedPropertyValueHistoryList);
         selectedPropertyValueTypeName = selectedPropertyValue.getPropertyType().getName();
-        
+        displayType = selectedPropertyValue.getPropertyType().getDisplayType();
+        PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(selectedPropertyValue);
+        for (PropertyValueHistory propertyValueHistory : selectedPropertyValueHistoryList) {
+            propertyTypeHandler.setViewValue(propertyValueHistory);
+        }
     }
 
+    public boolean displayTextValue() {
+        return displayType.equals(DisplayType.FREE_FORM_TEXT) || displayType.equals(DisplayType.SELECTED_TEXT);
+    }
 
+    public boolean displayImageValue() {
+        return displayType.equals(DisplayType.IMAGE);
+    }
+
+    public boolean displayHttpLinkValue() {
+        return displayType.equals(DisplayType.HTTP_LINK);
+    } 
+    
 }

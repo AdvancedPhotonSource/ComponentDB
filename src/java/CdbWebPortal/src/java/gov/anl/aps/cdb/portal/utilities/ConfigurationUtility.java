@@ -23,6 +23,16 @@ public class ConfigurationUtility {
         return portalProperties.getProperty(propertyName, "");
     }
     
+    public static Integer getPortalPropertyAsInteger(String propertyName) {
+        String result = getPortalProperty(propertyName);
+        try {
+            return new Integer(Integer.parseInt(result));
+        }
+        catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+    
     public static String getPortalProperty(String propertyName, String defaultValue) {
         return portalProperties.getProperty(propertyName, defaultValue);
     }

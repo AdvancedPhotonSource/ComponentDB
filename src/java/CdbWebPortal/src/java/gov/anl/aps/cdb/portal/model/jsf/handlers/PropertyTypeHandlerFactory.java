@@ -1,6 +1,7 @@
 
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.HashMap;
 
@@ -38,10 +39,13 @@ public class PropertyTypeHandlerFactory
     };
 
     public static PropertyTypeHandlerInterface getHandler(PropertyValue propertyValue) {
-        String propertyTypeName = null;
+        String propertyTypeHandlerName = null;
         if (propertyValue != null) {
-            propertyTypeName = propertyValue.getPropertyType().getName();
+            PropertyTypeHandler propertyTypeHandler = propertyValue.getPropertyType().getPropertyTypeHandler();
+            if (propertyTypeHandler != null) {
+                propertyTypeHandlerName = propertyTypeHandler.getName();
+            }
         }
-        return getHandler(propertyTypeName);
+        return getHandler(propertyTypeHandlerName);
     }    
 }

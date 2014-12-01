@@ -2,6 +2,8 @@
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 
 /**
  *
@@ -18,4 +20,8 @@ public interface PropertyTypeHandlerInterface
     public abstract Boolean getDisplayEditActionButton();
     
     public abstract DisplayType getValueDisplayType();
+    
+    public abstract void setViewValue(PropertyValue propertyValue);
+    
+    public abstract void setViewValue(PropertyValueHistory propertyValueHistory);
 }

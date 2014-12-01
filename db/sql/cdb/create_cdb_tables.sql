@@ -107,6 +107,33 @@ CREATE TABLE `entity_info` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
+-- Table `attachment`
+--
+
+DROP TABLE IF EXISTS `attachment`;
+CREATE TABLE `attachment` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `file_path` varchar(128) NOT NULL,
+  `tag` varchar(64) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `attachment_u1` (`file_path`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `log_topic`
+--
+
+DROP TABLE IF EXISTS `log_topic`;
+CREATE TABLE `log_topic` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `log_topic_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
 -- Table `log`
 --
 
@@ -116,9 +143,27 @@ CREATE TABLE `log` (
   `text` text NOT NULL,
   `entered_on_date_time` datetime NOT NULL,
   `entered_by_user_id` int(11) unsigned NOT NULL,
+  `log_topic_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `log_k1` (`entered_by_user_id`),
-  CONSTRAINT `log_fk1` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
+  CONSTRAINT `log_fk1` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE, 
+  KEY `log_k2` (`log_topic_id`),
+  CONSTRAINT `log_fk2` FOREIGN KEY (`log_topic_id`) REFERENCES `log_topic` (`id`) ON UPDATE CASCADE 
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `log_attachment`
+--
+
+DROP TABLE IF EXISTS `log_attachment`;
+CREATE TABLE `log_attachment` (
+  `log_id` int(11) unsigned NOT NULL,
+  `attachment_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`log_id`, `attachment_id`),
+  KEY `log_attachment_k1` (`log_id`),
+  CONSTRAINT `log_attachment_fk1` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `log_attachment_k2` (`attachment_id`),
+  CONSTRAINT `log_attachment_fk2` FOREIGN KEY (`attachment_id`) REFERENCES `attachment` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -194,7 +239,8 @@ DROP TABLE IF EXISTS `property_value`;
 CREATE TABLE `property_value` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `property_type_id` int(11) unsigned NOT NULL,
-  `value` varchar(64) DEFAULT NULL,
+  `tag` varchar(64) DEFAULT NULL,
+  `value` varchar(128) DEFAULT NULL,
   `units` varchar(16) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `entered_on_date_time` datetime NOT NULL,
@@ -214,7 +260,8 @@ DROP TABLE IF EXISTS `property_value_history`;
 CREATE TABLE `property_value_history` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `property_value_id` int(11) unsigned NOT NULL,
-  `value` varchar(64) DEFAULT NULL,
+  `tag` varchar(64) DEFAULT NULL,
+  `value` varchar(128) DEFAULT NULL,
   `units` varchar(16) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `entered_on_date_time` datetime NOT NULL,

@@ -51,6 +51,8 @@ public class PropertyValue extends CloneableEntity {
     @Basic(optional = false)
     private Integer id;
     @Size(max = 64)
+    private String tag;
+    @Size(max = 64)
     private String value;
     @Size(max = 16)
     private String units;
@@ -80,6 +82,8 @@ public class PropertyValue extends CloneableEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
 
+    private transient String viewValue = null;
+    
     public PropertyValue() {
     }
 
@@ -99,6 +103,14 @@ public class PropertyValue extends CloneableEntity {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public String getValue() {
@@ -202,7 +214,19 @@ public class PropertyValue extends CloneableEntity {
     public void setPropertyValueHistoryList(List<PropertyValueHistory> propertyValueHistoryList) {
         this.propertyValueHistoryList = propertyValueHistoryList;
     }
+
+    public String getViewValue() {
+        return viewValue;
+    }
+
+    public void setViewValue(String viewValue) {
+        this.viewValue = viewValue;
+    }
     
+    public void setViewValueToValue() {
+        viewValue = value;
+    }
+            
     @Override
     public int hashCode() {
         int hash = 0;

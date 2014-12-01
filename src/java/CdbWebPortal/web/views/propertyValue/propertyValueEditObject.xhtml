@@ -29,13 +29,21 @@
         <p:tooltip for="typeCategory" value="Property type category cannot be modified."/>
     </p:column>
 
+    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
+              filterBy="#{propertyValueObject.tag}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByTag}"
+              rendered="#{propertyValueController.displayTag}">
+        <h:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
+        <p:tooltip for="name" value="Property value tag is optional."/>
+    </p:column>
+
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
               filterBy="#{propertyValueObject.value}" filterMatchMode="contains"
               filterValue="#{propertyValueController.filterByValue}">
 
         <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
-        <p:tooltip for="freeFormTextValue" value="Property value can be empty."/>
+        <p:tooltip for="freeFormTextValue" value="Enter property value."/>
 
         <h:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" title="Value" styleClass="entityDataText"
                          rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
@@ -44,10 +52,14 @@
         </h:selectOneMenu>
         <p:tooltip for="selectedTextValue" value="Select property value."/>
 
-        <h:outputText id="imageValue" value="#{propertyValueObject.value}"
-                      rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
+        <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
+                        alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
+                        rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
         <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
 
+        <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
+                     rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
+        <p:tooltip for="httpLinkValue" value="Enter HTTP link."/>              
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"

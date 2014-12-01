@@ -6,8 +6,11 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.constants.CdbProperty;
+import gov.anl.aps.cdb.portal.exceptions.ImageProcessingFailed;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import gov.anl.aps.cdb.portal.utilities.FileUtility;
+import gov.anl.aps.cdb.portal.utilities.ImageUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
@@ -52,23 +55,42 @@ public class PropertyValueImageUploadBean {
         Path uploadDirPath;
         try {
             if (uploadedFile != null && !uploadedFile.getFileName().isEmpty()) {
+                String uploadedExtension = FileUtility.getFileExtension(uploadedFile.getFileName());
+      
                 uploadDirPath = Paths.get(StorageUtility.getFileSystemPropertyValueImagesDirectory());
                 logger.debug("Using property value images directory: " + uploadDirPath.toString());
                 if (Files.notExists(uploadDirPath)) {
                     Files.createDirectory(uploadDirPath);
                 }
                 File uploadDir = uploadDirPath.toFile();
-                File tmpFile = File.createTempFile("tmp", ".tmp", uploadDir);
+                
+                String imageFormat = uploadedExtension;
+                String originalExtension = "." + uploadedExtension + ".original";
+                if (uploadedExtension.isEmpty()) {
+                    originalExtension = ".original";
+                    imageFormat = ImageUtility.DefaultImageFormat;
+                }
+                File originalFile = File.createTempFile("image.", originalExtension, uploadDir);
+                String baseName = originalFile.getName().replace(".original", "");
                 InputStream input = uploadedFile.getInputstream();
-                Files.copy(input, tmpFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                logger.debug("Saved file: " + tmpFile.toPath());
-                propertyValue.setValue(tmpFile.getName());
+                Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                logger.debug("Saved file: " + originalFile.toPath());
+                byte[] originalData = Files.readAllBytes(originalFile.toPath());
+                byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.ThumbnailImageSize, imageFormat);
+                String thumbFileName = originalFile.getAbsolutePath().replace("original", "thumbnail");
+                Path thumbPath = Paths.get(thumbFileName);
+                Files.write(thumbPath, thumbData); 
+                byte[] scaledData = ImageUtility.resizeImage(originalData, StorageUtility.ScaledImageSize, imageFormat);
+                String scaledFileName = originalFile.getAbsolutePath().replace("original", "scaled");
+                Path scaledPath = Paths.get(scaledFileName);
+                Files.write(scaledPath, scaledData);                 
+                propertyValue.setValue(baseName);
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + uploadedFile.getFileName() + ".");
             }
-        } catch (IOException ex) {
+        } 
+        catch (IOException | ImageProcessingFailed ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.toString());
         }
-
     }
 }

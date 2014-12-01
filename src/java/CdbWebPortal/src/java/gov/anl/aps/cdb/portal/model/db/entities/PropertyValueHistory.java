@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.Date;
@@ -38,12 +37,14 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PropertyValueHistory.findByUnits", query = "SELECT p FROM PropertyValueHistory p WHERE p.units = :units"),
     @NamedQuery(name = "PropertyValueHistory.findByDescription", query = "SELECT p FROM PropertyValueHistory p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyValueHistory.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValueHistory p WHERE p.enteredOnDateTime = :enteredOnDateTime")})
-public class PropertyValueHistory extends CloneableEntity
-{
+public class PropertyValueHistory extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
+    @Size(max = 64)
+    private String tag;
     @Size(max = 64)
     private String value;
     @Size(max = 16)
@@ -61,6 +62,8 @@ public class PropertyValueHistory extends CloneableEntity
     @JoinColumn(name = "property_value_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private PropertyValue propertyValue;
+
+    private transient String viewValue = null;
 
     public PropertyValueHistory() {
     }
@@ -81,6 +84,14 @@ public class PropertyValueHistory extends CloneableEntity
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public String getValue() {
@@ -131,6 +142,18 @@ public class PropertyValueHistory extends CloneableEntity
         this.propertyValue = propertyValue;
     }
 
+    public String getViewValue() {
+        return viewValue;
+    }
+
+    public void setViewValue(String viewValue) {
+        this.viewValue = viewValue;
+    }
+    
+    public void setViewValueToValue() {
+        viewValue = value;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -152,14 +175,14 @@ public class PropertyValueHistory extends CloneableEntity
     public String toString() {
         if (units != null && !units.isEmpty()) {
             return value + " [" + units + "]";
-        }
-        else {
+        } else {
             return value;
         }
     }
-    
+
     public void updateFromPropertyValue(PropertyValue propertyValue) {
         this.propertyValue = propertyValue;
+        this.tag = propertyValue.getTag();
         this.value = propertyValue.getValue();
         this.units = propertyValue.getUnits();
         this.description = propertyValue.getDescription();

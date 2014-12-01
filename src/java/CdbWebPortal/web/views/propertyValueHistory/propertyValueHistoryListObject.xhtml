@@ -10,10 +10,28 @@
         <h:outputText value="#{propertyValueHistoryObject.id}"/>
     </p:column>
 
+    <p:column sortBy="#{propertyValueHistoryObject.tag}" headerText="Tag"
+              filterBy="#{propertyValueHistoryObject.tag}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByTag}"
+              rendered="#{propertyValueHistoryController.displayTag}">
+        <h:outputText value="#{propertyValueHistoryObject.tag}"/>
+    </p:column>
+
     <p:column sortBy="#{propertyValueHistoryObject.value}" headerText="Value"
               filterBy="#{propertyValueHistoryObject.value}" filterMatchMode="contains"
               filterValue="#{propertyValueHistoryController.filterByValue}">
-        <h:outputText value="#{propertyValueHistoryObject.value}"/>
+
+        <h:outputText value="#{propertyValueHistoryObject.value}"
+                      rendered="#{propertyValueHistoryController.displayTextValue()}"/>
+
+        <p:graphicImage value="/propertyValue/images/#{propertyValueHistoryObject.value}.thumbnail" 
+                        alt="#{propertyValueHistoryObject.value}" title="#{propertyValueHistoryObject.value}"
+                        rendered="#{propertyValueHistoryController.displayImageValue()}"/>
+
+        <h:outputLink value="#{propertyValueHistoryObject.value}" target="_new_page_" title="#{propertyValueHistoryObject.value}"
+                      rendered="#{propertyValueHistoryController.displayHttpLinkValue()}">
+            <h:outputText value="#{propertyValueHistoryObject.viewValue}"/>
+        </h:outputLink>
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"

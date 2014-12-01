@@ -451,3 +451,8 @@ h2 {
     background-repeat: no-repeat;
     background-position: left
 }
+
+.ui-galleria-panel element.style {
+    width: 500px;
+    height: 313px;
+}

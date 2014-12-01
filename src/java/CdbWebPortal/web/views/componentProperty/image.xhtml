@@ -5,9 +5,14 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:galleria value="#{componentController.componentImageList}" var="propertyValueObject" panelWidth="500" panelHeight="313" showCaption="true"
+    <p:galleria value="#{componentController.componentImageList}" var="propertyValueObject" 
+                showCaption="false"
+                panelHeight="300" panelWidth="300"
                 rendered="#{componentController.displayComponentImages}">
-        <p:graphicImage value="/propertyValue/images/#{propertyValueObject.value}" alt="#{propertyValueObject.description}" title="#{propertyValueObject.value}"/>
+        <p:graphicImage value="/propertyValue/images/#{propertyValueObject.value}.scaled" 
+                        alt="#{propertyValueObject.description}" 
+                        title="#{propertyValueObject.value}"
+                        />
     </p:galleria>    
 </ui:composition>
 

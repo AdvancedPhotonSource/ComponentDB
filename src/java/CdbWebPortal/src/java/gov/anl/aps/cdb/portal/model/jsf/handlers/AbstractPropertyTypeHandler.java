@@ -1,6 +1,8 @@
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 
 /**
  *
@@ -42,4 +44,14 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     public DisplayType getValueDisplayType() {
         return null;
     }
+    
+    @Override
+    public void setViewValue(PropertyValue propertyValue) {
+        propertyValue.setViewValueToValue();
+    }    
+    
+    @Override
+    public void setViewValue(PropertyValueHistory propertyValueHistory) {
+        propertyValueHistory.setViewValueToValue();
+    }        
 }

@@ -82,7 +82,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private String selectedComponentImage = null;
     private List<PropertyValue> componentImageList = null;
     private Boolean displayComponentImages = null;
-    
+
     public ComponentController() {
         super();
     }
@@ -135,23 +135,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @Override
     public void prepareEntityView(Component component) {
-        selectedComponentImage = null;
-        displayComponentImages = false;
-        componentImageList = new ArrayList<>();
-        List<PropertyValue> propertyValueList = component.getPropertyValueList();
-        for (PropertyValue propertyValue : propertyValueList) {
-            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-            DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
-            if (valueDisplayType == DisplayType.IMAGE && !propertyValue.getValue().isEmpty()) {
-                componentImageList.add(propertyValue);
-            }
-        }
-        if (!componentImageList.isEmpty()) {
-            PropertyValue propertyValue = componentImageList.get(0);
-            selectedComponentImage = StorageUtility.getApplicationPropertyValueImagesDirectory() + "/"
-                    + propertyValue.getValue();
-            displayComponentImages = true;
-        }
+        prepareComponentImageList(component);
     }
 
     @Override
@@ -239,6 +223,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
 //            propertyValueHistory.updateFromPropertyValue(updatedPropertyValue);
 //            propertyValueHistoryList.add(propertyValueHistory);
 //        }
+        componentImageList = null;
+        displayComponentImages = false;
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
@@ -598,7 +584,29 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.displayComponentImages = displayComponentImages;
     }
 
+    public void prepareComponentImageList(Component component) {
+        displayComponentImages = false;
+        componentImageList = new ArrayList<>();
+        List<PropertyValue> propertyValueList = component.getPropertyValueList();
+        for (PropertyValue propertyValue : propertyValueList) {
+            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+            DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
+            if (valueDisplayType == DisplayType.IMAGE && !propertyValue.getValue().isEmpty()) {
+                componentImageList.add(propertyValue);
+            }
+        }
+        if (!componentImageList.isEmpty()) {
+            PropertyValue propertyValue = componentImageList.get(0);
+            selectedComponentImage = StorageUtility.getApplicationPropertyValueImagesDirectory() + "/"
+                    + propertyValue.getValue();
+            displayComponentImages = true;
+        }
+    }
+
     public List<PropertyValue> getComponentImageList() {
+        if (componentImageList == null) {
+            prepareComponentImageList(getCurrent());
+        }
         return componentImageList;
     }
 

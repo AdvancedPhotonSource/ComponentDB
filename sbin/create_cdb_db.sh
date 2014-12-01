@@ -125,6 +125,7 @@ CDB_DB_TABLES="\
     component_type_category \
     component_type \
     resource_type \
+    log_topic \
     log \
     component \
     component_source \

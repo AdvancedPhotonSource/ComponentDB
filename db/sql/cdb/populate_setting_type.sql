@@ -146,12 +146,14 @@ VALUES
 	('PropertyValue.List.Display.EnteredByUser','Display value entry entered by user.', 'false'),
 	('PropertyValue.List.Display.Id','Display property value entry id.', 'true'),
 	('PropertyValue.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
+	('PropertyValue.List.Display.Tag', 'Display property value tag.', 'true'),
 	('PropertyValue.List.Display.TypeCategory', 'Display property value type category.', 'false'),
 	('PropertyValue.List.Display.Units', 'Display value units.', 'true'),
 
 	('PropertyValue.List.FilterBy.Description','Filter for value description.', NULL),
 	('PropertyValue.List.FilterBy.EnteredOnDateTime','Filter for value entry entered on date/time.', NULL),
 	('PropertyValue.List.FilterBy.EnteredByUser','Filter for value entry entered by user.', NULL),
+	('PropertyValue.List.FilterBy.Tag', 'Filter for property value tag.', 'true'),
 	('PropertyValue.List.FilterBy.Type', 'Filter for property value type.', NULL),
 	('PropertyValue.List.FilterBy.TypeCategory', 'Filter for property value type category.', NULL),
 	('PropertyValue.List.FilterBy.Units', 'Filter for value units.', NULL),
@@ -162,11 +164,13 @@ VALUES
 	('PropertyValueHistory.List.Display.EnteredByUser','Display value entry entered by user.', 'true'),
 	('PropertyValueHistory.List.Display.Id','Display property value entry id.', 'false'),
 	('PropertyValueHistory.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
+	('PropertyValueHistory.List.Display.Tag', 'Display value tag.', 'true'),
 	('PropertyValueHistory.List.Display.Units', 'Display value units.', 'true'),
 
 	('PropertyValueHistory.List.FilterBy.Description','Filter for value description.', NULL),
 	('PropertyValueHistory.List.FilterBy.EnteredOnDateTime','Filter for value entry entered on date/time.', NULL),
 	('PropertyValueHistory.List.FilterBy.EnteredByUser','Filter for value entry entered by user.', NULL),
+	('PropertyValueHistory.List.FilterBy.Tag', 'Filter for value tag.', 'true'),
 	('PropertyValueHistory.List.FilterBy.Units', 'Filter for value units.', NULL),
 	('PropertyValueHistory.List.FilterBy.Value','Filter for value entry.', NULL),
 

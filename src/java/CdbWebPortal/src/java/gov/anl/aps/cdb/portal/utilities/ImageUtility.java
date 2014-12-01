@@ -1,6 +1,7 @@
 package gov.anl.aps.cdb.portal.utilities;
 
 import gov.anl.aps.cdb.portal.exceptions.ImageProcessingFailed;
+import java.awt.AlphaComposite;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import java.awt.Image;
@@ -16,18 +17,42 @@ import org.apache.log4j.Logger;
 //import java.nio.file.Path;
 public class ImageUtility {
 
+    public static final String DefaultImageFormat = "jpg";
+
     private static final Logger logger = Logger.getLogger(ImageUtility.class.getName());
 
-    public static byte[] resizeImage(byte[] orig, int maxDim) throws ImageProcessingFailed {
+    public static byte[] resizeImage(byte[] imageData, int maxDim) throws ImageProcessingFailed {
+        return resizeImage(imageData, maxDim, DefaultImageFormat);
+    }
+
+    public static byte[] resizeImage(byte[] imageData, int maxDim, String imageFormat) throws ImageProcessingFailed {
         try {
-            ImageIcon imageIcon = new ImageIcon(orig);
+            ImageIcon imageIcon = new ImageIcon(imageData);
             Image inImage = imageIcon.getImage();
-            double scale = (double) maxDim / (double) inImage.getWidth(null);
+            int origWidth = inImage.getWidth(null);
+            int origHeight = inImage.getHeight(null);
+
+            double scale = (double) maxDim / (double) (origWidth);
+            if (origHeight > origWidth) {
+                scale = (double) maxDim / (double) (origHeight);
+            }
 
             int scaledW = (int) (scale * inImage.getWidth(null));
             int scaledH = (int) (scale * inImage.getHeight(null));
 
-            BufferedImage outImage = new BufferedImage(scaledW, scaledH, BufferedImage.TYPE_INT_RGB);
+            // Chose image type based on incoming image format.
+            int imageType;
+            switch (imageFormat.toLowerCase()) {
+                case "png": {
+                    imageType = BufferedImage.TYPE_INT_ARGB;
+                    break;
+                }
+                default: {
+                    imageType = BufferedImage.TYPE_INT_RGB;
+                    break;
+                }
+            }
+            BufferedImage outImage = new BufferedImage(scaledW, scaledH, imageType);
             AffineTransform tx = new AffineTransform();
 
             if (scale < 1.0d) {
@@ -35,15 +60,29 @@ public class ImageUtility {
             }
 
             Graphics2D g2d = outImage.createGraphics();
+
+            // Prepare output image based on incoming image format.
+            switch (imageFormat.toLowerCase()) {
+                case "png": {
+                    g2d.setComposite(AlphaComposite.Clear);
+                    g2d.fillRect(0, 0, scaledW, scaledH);
+                    g2d.setComposite(AlphaComposite.Src);
+                    break;
+                }
+                default: {
+                    // Do nothing
+                    break;
+                }
+            }
+
             g2d.drawImage(inImage, tx, null);
             g2d.dispose();
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(outImage, "JPG", baos);
+            ImageIO.write(outImage, imageFormat, baos);
             byte[] bytesOut = baos.toByteArray();
             return bytesOut;
-        } 
-        catch (IOException ex) {
+        } catch (IOException ex) {
             logger.error("Could not process image: " + ex.getMessage());
             throw new ImageProcessingFailed(ex);
         }

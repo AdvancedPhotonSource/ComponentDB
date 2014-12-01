@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -17,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
@@ -41,8 +41,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Log.findAll", query = "SELECT l FROM Log l"),
     @NamedQuery(name = "Log.findById", query = "SELECT l FROM Log l WHERE l.id = :id"),
     @NamedQuery(name = "Log.findByEnteredOnDateTime", query = "SELECT l FROM Log l WHERE l.enteredOnDateTime = :enteredOnDateTime")})
-public class Log extends CloneableEntity
-{
+public class Log extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -68,6 +68,14 @@ public class Log extends CloneableEntity
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UserInfo enteredByUser;
+    @JoinTable(name = "log_attachment", joinColumns = {
+        @JoinColumn(name = "log_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "attachment_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<Attachment> attachmentList;
+    @JoinColumn(name = "log_topic_id", referencedColumnName = "id")
+    @ManyToOne
+    private LogTopic logTopicId;
 
     private static transient SimpleDateFormat shortDisplayDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
 
@@ -153,6 +161,23 @@ public class Log extends CloneableEntity
         this.enteredByUser = enteredByUser;
     }
 
+    @XmlTransient
+    public List<Attachment> getAttachmentList() {
+        return attachmentList;
+    }
+
+    public void setAttachmentList(List<Attachment> attachmentList) {
+        this.attachmentList = attachmentList;
+    }
+
+    public LogTopic getLogTopicId() {
+        return logTopicId;
+    }
+
+    public void setLogTopicId(LogTopic logTopicId) {
+        this.logTopicId = logTopicId;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -160,14 +185,13 @@ public class Log extends CloneableEntity
         return hash;
     }
 
-
     public boolean equalsByText(Log other) {
         if (other != null) {
             return ObjectUtility.equals(this.text, other.text);
         }
         return false;
-    }  
-    
+    }
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof Log)) {
@@ -189,12 +213,12 @@ public class Log extends CloneableEntity
             return null;
         }
         return shortDisplayDateFormat.format(enteredOnDateTime);
-        
+
     }
 
     @Override
     public String toString() {
         return text;
     }
-    
+
 }

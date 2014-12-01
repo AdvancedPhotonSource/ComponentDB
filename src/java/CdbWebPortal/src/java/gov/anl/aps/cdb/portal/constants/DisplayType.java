@@ -14,7 +14,8 @@ public enum DisplayType {
     FREE_FORM_TEXT(0),
     SELECTED_TEXT(1),
     HTTP_LINK(2),
-    IMAGE(3);
+    IMAGE(3),
+    DOCUMENT(4);
     
     private final int type;
     private DisplayType(int type) {
