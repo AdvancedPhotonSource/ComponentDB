@@ -19,7 +19,8 @@ public class PropertyTypeHandlerFactory
         hMap.put(NullPropertyTypeHandler.HANDLER_NAME, new NullPropertyTypeHandler());
         hMap.put(ImagePropertyTypeHandler.HANDLER_NAME, new ImagePropertyTypeHandler());
         hMap.put(HttpLinkPropertyTypeHandler.HANDLER_NAME, new HttpLinkPropertyTypeHandler());
-        hMap.put(ApsLinkPropertyTypeHandler.HANDLER_NAME, new ApsLinkPropertyTypeHandler());
+        hMap.put(IcmsLinkPropertyTypeHandler.HANDLER_NAME, new IcmsLinkPropertyTypeHandler());
+        hMap.put(EdpLinkPropertyTypeHandler.HANDLER_NAME, new EdpLinkPropertyTypeHandler());
         return hMap;
     }  
     

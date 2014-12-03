@@ -37,7 +37,6 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValue.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValue.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.FilterBy.EnteredOnDateTime";
-    private static final String FilterByNameSettingTypeKey = "PropertyValue.List.FilterBy.Name";
     private static final String FilterByTagSettingTypeKey = "PropertyValue.List.FilterBy.Tag";
     private static final String FilterByTypeSettingTypeKey = "PropertyValue.List.FilterBy.Type";
     private static final String FilterByTypeCategorySettingTypeKey = "PropertyValue.List.FilterBy.TypeCategory";
@@ -207,7 +206,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
 
     public DisplayType configurePropertyValueDisplay(PropertyValue propertyValue) {
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-        propertyTypeHandler.setViewValue(propertyValue);
+        propertyTypeHandler.setDisplayValue(propertyValue);
+        propertyTypeHandler.setTargetValue(propertyValue);
         PropertyType propertyType = propertyValue.getPropertyType();
         DisplayType displayType = propertyTypeHandler.getValueDisplayType();
         if (displayType == null) {

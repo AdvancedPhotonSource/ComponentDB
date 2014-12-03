@@ -45,9 +45,9 @@
                         alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
                         rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
         
-        <h:outputLink value="#{propertyValueObject.value}" target="_new_page_" title="#{propertyValueObject.value}"
+        <h:outputLink value="#{propertyValueObject.targetValue}" target="_new_page_" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
-            <h:outputText value="#{propertyValueObject.viewValue}"/>
+            <h:outputText value="#{propertyValueObject.displayValue}"/>
         </h:outputLink>
     </p:column>
 

@@ -25,6 +25,14 @@
         <h:outputText value="#{logObject.enteredByUser.username}"/>
     </p:column>
 
+    <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
+              filterBy="#{logObject.logTopic}" filterMatchMode="exact"
+              filterOptions="#{logTopicController.availableItemsForSelectOne}"
+              filterValue="#{logController.filterByTopic}"
+              rendered="#{logController.displayTopic}">
+        <h:outputText value="#{logObject.logTopic.name}"/>
+    </p:column>
+    
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"
               filterBy="#{logObject.text}" filterMatchMode="contains"
               filterValue="#{logController.filterByText}">

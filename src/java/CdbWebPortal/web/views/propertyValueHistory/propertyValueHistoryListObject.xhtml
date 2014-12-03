@@ -28,9 +28,9 @@
                         alt="#{propertyValueHistoryObject.value}" title="#{propertyValueHistoryObject.value}"
                         rendered="#{propertyValueHistoryController.displayImageValue()}"/>
 
-        <h:outputLink value="#{propertyValueHistoryObject.value}" target="_new_page_" title="#{propertyValueHistoryObject.value}"
+        <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_new_page_" title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayHttpLinkValue()}">
-            <h:outputText value="#{propertyValueHistoryObject.viewValue}"/>
+            <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
         </h:outputLink>
     </p:column>
 

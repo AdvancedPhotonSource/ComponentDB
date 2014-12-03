@@ -3,25 +3,13 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LogTopicController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/HttpLinkPropertyTypeHandler.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/beans/PropertyValueImageUploadBean.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/PropertyValue.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/FileUtility.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Log.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueEditObject.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Attachment.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/AbstractPropertyTypeHandler.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/PropertyValueHistory.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValueHistory/propertyValueHistoryListCustomizePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueEditCustomizePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValueHistory/propertyValueHistoryListObject.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueHistoryController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/ImageUtility.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueListCustomizePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueListObject.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/PropertyTypeHandlerInterface.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/log/logListObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/log/logEditObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/SearchController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LogController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/LogTopic.java</file>
         </group>
     </open-files>

@@ -21,21 +21,27 @@ import org.primefaces.component.datatable.DataTable;
 @SessionScoped
 public class LogController extends CrudEntityController<Log, LogFacade> implements Serializable {
 
+    private static final String DisplayAttachmentSettingTypeKey = "Log.List.Display.Attachment";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Log.List.Display.Id";
     private static final String DisplayEnteredByUserSettingTypeKey = "Log.List.Display.EnteredByUser";
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "Log.List.Display.EnteredOnDateTime";
+    private static final String DisplayTopicSettingTypeKey = "Log.List.Display.Topic";
 
     private static final String FilterByEnteredByUserSettingTypeKey = "Log.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "Log.List.FilterBy.EnteredOnDateTime";
     private static final String FilterByTextSettingTypeKey = "Log.List.FilterBy.Text";
+    private static final String FilterByTopicSettingTypeKey = "Log.List.FilterBy.Topic";
 
+    private Boolean displayAttachment = null;
     private Boolean displayEnteredByUser = null;
     private Boolean displayEnteredOnDateTime = null;
+    private Boolean displayTopic = null;
 
     private String filterByEnteredByUser = null;
     private String filterByEnteredOnDateTime = null;
     private String filterByText = null;
+    private String filterByTopic = null;
 
     @EJB
     private LogFacade logFacade;
@@ -81,14 +87,17 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             return;
         }
 
+        displayAttachment = Boolean.parseBoolean(settingTypeMap.get(DisplayAttachmentSettingTypeKey).getDefaultValue());
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayEnteredByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredByUserSettingTypeKey).getDefaultValue());
         displayEnteredOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredOnDateTimeSettingTypeKey).getDefaultValue());
+        displayTopic = Boolean.parseBoolean(settingTypeMap.get(DisplayTopicSettingTypeKey).getDefaultValue());
 
         filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
         filterByEnteredOnDateTime = settingTypeMap.get(FilterByEnteredOnDateTimeSettingTypeKey).getDefaultValue();
         filterByText = settingTypeMap.get(FilterByTextSettingTypeKey).getDefaultValue();
+        filterByTopic = settingTypeMap.get(FilterByTopicSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -97,14 +106,17 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             return;
         }
 
+        displayAttachment = sessionUser.getUserSettingValueAsBoolean(DisplayAttachmentSettingTypeKey, displayAttachment);
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        displayTopic = sessionUser.getUserSettingValueAsBoolean(DisplayTopicSettingTypeKey, displayTopic);
 
         filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
         filterByText = sessionUser.getUserSettingValueAsString(FilterByTextSettingTypeKey, filterByText);
+        filterByTopic = sessionUser.getUserSettingValueAsString(FilterByTopicSettingTypeKey, filterByTopic);
     }
 
     @Override
@@ -117,6 +129,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         filterByEnteredByUser = filters.get("enteredByUser");
         filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
         filterByText = filters.get("text");
+        filterByTopic = filters.get("topic");
     }
 
     @Override
@@ -125,14 +138,17 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             return;
         }
 
+        sessionUser.setUserSettingValue(DisplayAttachmentSettingTypeKey, displayAttachment);
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        sessionUser.setUserSettingValue(DisplayTopicSettingTypeKey, displayTopic);
 
         sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
         sessionUser.setUserSettingValue(FilterByTextSettingTypeKey, filterByText);
+        sessionUser.setUserSettingValue(FilterByTopicSettingTypeKey, filterByTopic);
     }
 
     @Override
@@ -141,6 +157,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         filterByEnteredByUser = null;
         filterByEnteredOnDateTime = null;
         filterByText = null;
+        filterByTopic = null;
     }
 
     @FacesConverter(forClass = Log.class)
@@ -204,6 +221,22 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         this.displayEnteredOnDateTime = displayEnteredOnDateTime;
     }
 
+    public Boolean getDisplayAttachment() {
+        return displayAttachment;
+    }
+
+    public void setDisplayAttachment(Boolean displayAttachment) {
+        this.displayAttachment = displayAttachment;
+    }
+
+    public Boolean getDisplayTopic() {
+        return displayTopic;
+    }
+
+    public void setDisplayTopic(Boolean displayTopic) {
+        this.displayTopic = displayTopic;
+    }
+
     public String getFilterByEnteredByUser() {
         return filterByEnteredByUser;
     }
@@ -226,6 +259,14 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
 
     public void setFilterByText(String filterByText) {
         this.filterByText = filterByText;
+    }
+
+    public String getFilterByTopic() {
+        return filterByTopic;
+    }
+
+    public void setFilterByTopic(String filterByTopic) {
+        this.filterByTopic = filterByTopic;
     }
 
     public DataTable getDesignLogListDataTable() {

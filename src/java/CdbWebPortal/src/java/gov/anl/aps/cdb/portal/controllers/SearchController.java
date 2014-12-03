@@ -24,18 +24,39 @@ import org.apache.log4j.Logger;
  */
 @Named("searchController")
 @SessionScoped
-public class SearchController implements Serializable
-{
+public class SearchController implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Search.List.Display.NumberOfItemsPerPage";
-    
+
+    private static final String DisplayComponentsSettingTypeKey = "Search.List.Display.Components";
+    private static final String DisplayComponentInstancesSettingTypeKey = "Search.List.Display.ComponentInstances";
+    private static final String DisplayComponentTypesSettingTypeKey = "Search.List.Display.ComponentTypes";
+    private static final String DisplayComponentTypeCategoriesSettingTypeKey = "Search.List.Display.ComponentTypeCategories";
+    private static final String DisplayPropertyTypesSettingTypeKey = "Search.List.Display.PropertyTypes";
+    private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.List.Display.PropertyTypeCategories";
+    private static final String DisplaySourcesSettingTypeKey = "Search.List.Display.Sources";
+    private static final String DisplayUsersSettingTypeKey = "Search.List.Display.Users";
+    private static final String DisplayUserGroupsSettingTypeKey = "Search.List.Display.UserGroups";
+
     @EJB
     private SettingTypeFacade settingTypeFacade;
-    
+
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
     private String searchString = null;
     private Boolean caseInsensitive = false;
+
     protected Integer displayNumberOfItemsPerPage = null;
+
+    protected Boolean displayComponents = null;
+    protected Boolean displayComponentInstances = null;
+    protected Boolean displayComponentTypes = null;
+    protected Boolean displayComponentTypeCategories = null;
+    protected Boolean displayPropertyTypes = null;
+    protected Boolean displayPropertyTypeCategories = null;
+    protected Boolean displaySources = null;
+    protected Boolean displayUsers = null;
+    protected Boolean displayUserGroups = null;
+
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
 
@@ -136,6 +157,70 @@ public class SearchController implements Serializable
 
     public void setDisplayNumberOfItemsPerPage(Integer displayNumberOfItemsPerPage) {
         this.displayNumberOfItemsPerPage = displayNumberOfItemsPerPage;
+    }
+
+    public Boolean getDisplayComponents() {
+        return displayComponents;
+    }
+
+    public void setDisplayComponents(Boolean displayComponents) {
+        this.displayComponents = displayComponents;
+    }
+
+    public Boolean getDisplayComponentInstances() {
+        return displayComponentInstances;
+    }
+
+    public void setDisplayComponentInstances(Boolean displayComponentInstances) {
+        this.displayComponentInstances = displayComponentInstances;
+    }
+
+    public Boolean getDisplayComponentTypes() {
+        return displayComponentTypes;
+    }
+
+    public void setDisplayComponentTypes(Boolean displayComponentTypes) {
+        this.displayComponentTypes = displayComponentTypes;
+    }
+
+    public Boolean getDisplayComponentTypeCategories() {
+        return displayComponentTypeCategories;
+    }
+
+    public void setDisplayComponentTypeCategories(Boolean displayComponentTypeCategories) {
+        this.displayComponentTypeCategories = displayComponentTypeCategories;
+    }
+
+    public Boolean getDisplayPropertyTypes() {
+        return displayPropertyTypes;
+    }
+
+    public void setDisplayPropertyTypes(Boolean displayPropertyTypes) {
+        this.displayPropertyTypes = displayPropertyTypes;
+    }
+
+    public Boolean getDisplayPropertyTypeCategories() {
+        return displayPropertyTypeCategories;
+    }
+
+    public void setDisplayPropertyTypeCategories(Boolean displayPropertyTypeCategories) {
+        this.displayPropertyTypeCategories = displayPropertyTypeCategories;
+    }
+
+    public Boolean getDisplaySources() {
+        return displaySources;
+    }
+
+    public void setDisplaySources(Boolean displaySources) {
+        this.displaySources = displaySources;
+    }
+
+    public Boolean getDisplayUsers() {
+        return displayUsers;
+    }
+
+    public void setDisplayUsers(Boolean displayUsers) {
+        this.displayUsers = displayUsers;
     }
 
 }

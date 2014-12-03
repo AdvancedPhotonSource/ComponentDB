@@ -56,12 +56,12 @@ INSERT INTO `property_value` VALUES
 (53,10,'','TBD','gpm','','2014-09-25 10:00:00',3),
 (54,10,'','TBD','gpm','','2014-09-25 10:00:00',3),
 (55,10,'','TBD','gpm','','2014-09-25 10:00:00',3),
-(56,11,'','https://edpstage.aps.anl.gov/browse/index/collection_id/1280','link','','2014-09-25 10:00:00',3),
-(57,11,'','https://edpstage.aps.anl.gov/browse/index/collection_id/1338','link','','2014-09-25 10:00:00',3),
-(58,11,'','https://edpstage.aps.anl.gov/browse/index/collection_id/1284','link','','2014-09-25 10:00:00',3),
-(59,11,'','https://edpstage.aps.anl.gov/browse/index/collection_id/1279','link','','2014-09-25 10:00:00',3),
-(60,11,'','https://edpstage.aps.anl.gov/browse/index/collection_id/1278','link','','2014-09-25 10:00:00',3),
-(61,12,'','APS_1661501','link','','2014-09-25 10:00:00',3),
-(62,13,'','APS_1661502','link','','2014-09-25 10:00:00',3);
+(56,1,'','1280','','EDP collection id','2014-09-25 10:00:00',3),
+(57,1,'','1338','','EDP collection id','2014-09-25 10:00:00',3),
+(58,1,'','1284','','EDP collection id','2014-09-25 10:00:00',3),
+(59,1,'','1279','','EDP collection id','2014-09-25 10:00:00',3),
+(60,1,'','1278','','EDP collection id','2014-09-25 10:00:00',3),
+(61,12,'','APS_1661501','','ICMS document','2014-09-25 10:00:00',3),
+(62,13,'','APS_1661502','','ICMS document','2014-09-25 10:00:00',3);
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;

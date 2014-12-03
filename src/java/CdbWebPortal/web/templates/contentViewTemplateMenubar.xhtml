@@ -11,6 +11,7 @@
         <p:menuitem value="Property Types" url="/views/propertyType/list.xhtml"/>
         <p:menuitem value="Sources" url="/views/source/list.xhtml"/>
         <p:menuitem value="Users" url="/views/userInfo/list.xhtml"/>  
+        <p:menuitem value="Search" url="/views/search/search.xhtml" icon="ui-icon-search"/>
         <p:menuitem value="Settings" action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit.xhtml')}" 
                     rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
         <p:menuitem value="Login" onclick="PF('loginDialog').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>

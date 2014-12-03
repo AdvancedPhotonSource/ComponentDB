@@ -21,24 +21,15 @@ public class HttpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         return DisplayType.HTTP_LINK;
     }    
     
-    public static String shortenLinkIfNeeded(String linkValue) {
-        int length = linkValue.length();
-        if (length > 32) {
-            linkValue = linkValue.substring(0,15) + "..." + linkValue.substring(length-15);
-        }
-        return linkValue;
-    }
-    
     @Override
-    public void setViewValue(PropertyValue propertyValue) {
-        // Shorten display if link is too large
-        String linkValue = shortenLinkIfNeeded(propertyValue.getValue());
-        propertyValue.setViewValue(linkValue);
+    public void setDisplayValue(PropertyValue propertyValue) {
+        String linkValue = shortenDisplayValueIfNeeded(propertyValue.getValue());
+        propertyValue.setDisplayValue(linkValue);
     } 
     
     @Override
-    public void setViewValue(PropertyValueHistory propertyValueHistory) {
-        String linkValue = shortenLinkIfNeeded(propertyValueHistory.getValue());
-        propertyValueHistory.setViewValue(linkValue);
+    public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
+        String linkValue = shortenDisplayValueIfNeeded(propertyValueHistory.getValue());
+        propertyValueHistory.setDisplayValue(linkValue);
     }     
 }

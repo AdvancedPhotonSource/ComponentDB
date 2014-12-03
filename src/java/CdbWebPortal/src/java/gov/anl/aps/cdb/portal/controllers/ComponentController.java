@@ -5,6 +5,7 @@ import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -48,6 +49,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
     private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Component.List.Display.CreatedOnDateTime";
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "Component.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "Component.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "Component.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "Component.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "Component.List.Display.PropertyTypeId5";
     private static final String DisplayLastModifiedByUserSettingTypeKey = "Component.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Component.List.Display.LastModifiedOnDateTime";
 
@@ -57,6 +63,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private static final String FilterByTypeCategorySettingTypeKey = "Component.List.FilterBy.TypeCategory";
     private static final String FilterByOwnerUserSettingTypeKey = "Component.List.FilterBy.OwnerUser";
     private static final String FilterByOwnerGroupSettingTypeKey = "Component.List.FilterBy.OwnerGroup";
+    private static final String FilterByPropertyValue1SettingTypeKey = "Component.List.FilterBy.PropertyValue1";
+    private static final String FilterByPropertyValue2SettingTypeKey = "Component.List.FilterBy.PropertyValue2";
+    private static final String FilterByPropertyValue3SettingTypeKey = "Component.List.FilterBy.PropertyValue3";
+    private static final String FilterByPropertyValue4SettingTypeKey = "Component.List.FilterBy.PropertyValue4";
+    private static final String FilterByPropertyValue5SettingTypeKey = "Component.List.FilterBy.PropertyValue5";
+
     private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
     private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
@@ -66,6 +78,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @EJB
     private ComponentFacade componentFacade;
+
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
 
     private Boolean displayType = null;
     private Boolean displayTypeCategory = null;
@@ -82,6 +97,18 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private String selectedComponentImage = null;
     private List<PropertyValue> componentImageList = null;
     private Boolean displayComponentImages = null;
+
+    private Integer displayPropertyTypeId1 = null;
+    private Integer displayPropertyTypeId2 = null;
+    private Integer displayPropertyTypeId3 = null;
+    private Integer displayPropertyTypeId4 = null;
+    private Integer displayPropertyTypeId5 = null;
+
+    private String filterByPropertyValue1 = null;
+    private String filterByPropertyValue2 = null;
+    private String filterByPropertyValue3 = null;
+    private String filterByPropertyValue4 = null;
+    private String filterByPropertyValue5 = null;
 
     public ComponentController() {
         super();
@@ -117,6 +144,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
             entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
         }
         clonedComponent.setEntityInfo(entityInfo);
+        super.setLogText("Cloned from " + component.getName());
         return clonedComponent;
     }
 
@@ -329,6 +357,28 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
+    public Integer parseSettingValueAsInteger(String settingValue) {
+        try {
+            return Integer.parseInt(settingValue);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public String customizeListDisplay() {
+        resetComponentPropertyTypeIdIndexMappings();
+        return super.customizeListDisplay();
+    }
+    
+    private void resetComponentPropertyTypeIdIndexMappings() {
+        Component.setPropertyTypeIdIndex(1, displayPropertyTypeId1);
+        Component.setPropertyTypeIdIndex(2, displayPropertyTypeId2);
+        Component.setPropertyTypeIdIndex(3, displayPropertyTypeId3);
+        Component.setPropertyTypeIdIndex(4, displayPropertyTypeId4);
+        Component.setPropertyTypeIdIndex(5, displayPropertyTypeId5);
+    }
+    
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
@@ -349,6 +399,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
 
+        displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
+        
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
@@ -359,6 +415,14 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
         filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
         filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
+
+        filterByPropertyValue1 = settingTypeMap.get(FilterByPropertyValue1SettingTypeKey).getDefaultValue();
+        filterByPropertyValue2 = settingTypeMap.get(FilterByPropertyValue2SettingTypeKey).getDefaultValue();
+        filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
+        filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
+        filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
+
+        resetComponentPropertyTypeIdIndexMappings();
     }
 
     @Override
@@ -381,6 +445,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
+        displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        displayPropertyTypeId4 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        displayPropertyTypeId5 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+
         filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
@@ -392,6 +462,13 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
 
+        filterByPropertyValue1 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
+        filterByPropertyValue2 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
+        filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
+        filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
+        filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+
+        resetComponentPropertyTypeIdIndexMappings();
     }
 
     @Override
@@ -404,6 +481,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Map<String, String> filters = dataTable.getFilters();
         filterByType = filters.get("componentType");
         filterByTypeCategory = filters.get("componentTypeCategory");
+
+        filterByPropertyValue1 = filters.get("propertyValue1");
+        filterByPropertyValue2 = filters.get("propertyValue2");
+        filterByPropertyValue3 = filters.get("propertyValue3");
+        filterByPropertyValue4 = filters.get("propertyValue4");
+        filterByPropertyValue5 = filters.get("propertyValue5");
     }
 
     @Override
@@ -425,6 +508,13 @@ public class ComponentController extends CrudEntityController<Component, Compone
         sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
         sessionUser.setUserSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
 
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+
         sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
@@ -436,6 +526,13 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
         sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
         sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+
+        sessionUser.setUserSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
+        sessionUser.setUserSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
+        sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
+        sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
+        sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+
     }
 
     @Override
@@ -443,6 +540,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         super.clearListFilters();
         filterByType = null;
         filterByTypeCategory = null;
+
+        filterByPropertyValue1 = null;
+        filterByPropertyValue2 = null;
+        filterByPropertyValue3 = null;
+        filterByPropertyValue4 = null;
+        filterByPropertyValue5 = null;
     }
 
     @Override
@@ -508,6 +611,19 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     }
 
+    public String getDisplayPropertyTypeName(Integer propertyTypeId) {
+        if (propertyTypeId != null) {
+
+            try {
+                PropertyType propertyType = propertyTypeFacade.find(propertyTypeId);
+                return propertyType.getName();
+            } catch (Exception ex) {
+                return "Unknown Property";
+            }
+        }
+        return null;
+    }
+
     public void setDisplayType(Boolean displayType) {
         this.displayType = displayType;
     }
@@ -566,6 +682,86 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setSelectFilterByTypeCategory(String selectFilterByTypeCategory) {
         this.selectFilterByTypeCategory = selectFilterByTypeCategory;
+    }
+
+    public Integer getDisplayPropertyTypeId1() {
+        return displayPropertyTypeId1;
+    }
+
+    public void setDisplayPropertyTypeId1(Integer displayPropertyTypeId1) {
+        this.displayPropertyTypeId1 = displayPropertyTypeId1;
+    }
+
+    public Integer getDisplayPropertyTypeId2() {
+        return displayPropertyTypeId2;
+    }
+
+    public void setDisplayPropertyTypeId2(Integer displayPropertyTypeId2) {
+        this.displayPropertyTypeId2 = displayPropertyTypeId2;
+    }
+
+    public Integer getDisplayPropertyTypeId3() {
+        return displayPropertyTypeId3;
+    }
+
+    public void setDisplayPropertyTypeId3(Integer displayPropertyTypeId3) {
+        this.displayPropertyTypeId3 = displayPropertyTypeId3;
+    }
+
+    public Integer getDisplayPropertyTypeId4() {
+        return displayPropertyTypeId4;
+    }
+
+    public void setDisplayPropertyTypeId4(Integer displayPropertyTypeId4) {
+        this.displayPropertyTypeId4 = displayPropertyTypeId4;
+    }
+
+    public Integer getDisplayPropertyTypeId5() {
+        return displayPropertyTypeId5;
+    }
+
+    public void setDisplayPropertyTypeId5(Integer displayPropertyTypeId5) {
+        this.displayPropertyTypeId5 = displayPropertyTypeId5;
+    }
+
+    public String getFilterByPropertyValue1() {
+        return filterByPropertyValue1;
+    }
+
+    public void setFilterByPropertyValue1(String filterByPropertyValue1) {
+        this.filterByPropertyValue1 = filterByPropertyValue1;
+    }
+
+    public String getFilterByPropertyValue2() {
+        return filterByPropertyValue2;
+    }
+
+    public void setFilterByPropertyValue2(String filterByPropertyValue2) {
+        this.filterByPropertyValue2 = filterByPropertyValue2;
+    }
+
+    public String getFilterByPropertyValue3() {
+        return filterByPropertyValue3;
+    }
+
+    public void setFilterByPropertyValue3(String filterByPropertyValue3) {
+        this.filterByPropertyValue3 = filterByPropertyValue3;
+    }
+
+    public String getFilterByPropertyValue4() {
+        return filterByPropertyValue4;
+    }
+
+    public void setFilterByPropertyValue4(String filterByPropertyValue4) {
+        this.filterByPropertyValue4 = filterByPropertyValue4;
+    }
+
+    public String getFilterByPropertyValue5() {
+        return filterByPropertyValue5;
+    }
+
+    public void setFilterByPropertyValue5(String filterByPropertyValue5) {
+        this.filterByPropertyValue5 = filterByPropertyValue5;
     }
 
     public String getSelectedComponentImage() {

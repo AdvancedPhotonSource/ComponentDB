@@ -8,12 +8,27 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
 
     <div class="actionLink">
-        <p:commandLink id="#{entityTypeName}ListViewLink" action="#{entityController.prepareView(entityObject)}" styleClass="ui-icon ui-icon-info" title="View">
+        <p:commandLink id="#{entityTypeName}ListViewLink" 
+                       action="#{entityController.prepareView(entityObject)}" 
+                       styleClass="ui-icon ui-icon-info" 
+                       title="View">
             <p:tooltip for="#{entityTypeName}ListViewLink" value="View #{entityController.displayEntityTypeName} details."/>
         </p:commandLink>
-        <p:commandLink id="#{entityTypeName}ListEditLink" action="#{entityController.prepareEdit(entityObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit">
+        <p:commandLink id="#{entityTypeName}ListEditLink" 
+                       action="#{entityController.prepareEdit(entityObject)}" 
+                       rendered="#{isEntityWriteable}" 
+                       styleClass="ui-icon ui-icon-pencil" 
+                       title="Edit">
             <p:tooltip for="#{entityTypeName}ListEditLink" value="Edit #{entityController.displayEntityTypeName}."/>            
         </p:commandLink>
+        <p:commandLink id="#{entityTypeName}ListCloneLink" 
+                       action="#{entityController.prepareClone(entityObject)}" 
+                       rendered="#{isEntityCloneable}" 
+                       styleClass="ui-icon ui-icon-copy" 
+                       title="Clone">
+        </p:commandLink>
+        <p:tooltip for="#{entityTypeName}ListCloneLink" value="Clone #{entityController.displayEntityTypeName}."/>            
+
         <p:commandLink id="#{entityTypeName}ListDeleteLink" oncomplete="PF('#{entityTypeName}DestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
             <f:setPropertyActionListener target="#{entityController.current}" value="#{entityObject}"/>
             <p:tooltip for="#{entityTypeName}ListDeleteLink" value="Delete #{entityController.displayEntityTypeName}."/>

@@ -75,7 +75,7 @@ public class Log extends CloneableEntity {
     private List<Attachment> attachmentList;
     @JoinColumn(name = "log_topic_id", referencedColumnName = "id")
     @ManyToOne
-    private LogTopic logTopicId;
+    private LogTopic logTopic;
 
     private static transient SimpleDateFormat shortDisplayDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
 
@@ -170,12 +170,12 @@ public class Log extends CloneableEntity {
         this.attachmentList = attachmentList;
     }
 
-    public LogTopic getLogTopicId() {
-        return logTopicId;
+    public LogTopic getLogTopic() {
+        return logTopic;
     }
 
-    public void setLogTopicId(LogTopic logTopicId) {
-        this.logTopicId = logTopicId;
+    public void setLogTopic(LogTopic logTopic) {
+        this.logTopic = logTopic;
     }
 
     @Override

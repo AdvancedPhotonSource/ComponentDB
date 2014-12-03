@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -34,8 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LogTopic.findById", query = "SELECT l FROM LogTopic l WHERE l.id = :id"),
     @NamedQuery(name = "LogTopic.findByName", query = "SELECT l FROM LogTopic l WHERE l.name = :name"),
     @NamedQuery(name = "LogTopic.findByDescription", query = "SELECT l FROM LogTopic l WHERE l.description = :description")})
-public class LogTopic implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class LogTopic extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -46,7 +44,7 @@ public class LogTopic implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
-    @OneToMany(mappedBy = "logTopicId")
+    @OneToMany(mappedBy = "logTopic")
     private List<Log> logList;
 
     public LogTopic() {
@@ -108,15 +106,12 @@ public class LogTopic implements Serializable {
             return false;
         }
         LogTopic other = (LogTopic) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.LogTopic[ id=" + id + " ]";
+        return name;
     }
     
 }

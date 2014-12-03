@@ -328,7 +328,8 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         displayType = selectedPropertyValue.getPropertyType().getDisplayType();
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(selectedPropertyValue);
         for (PropertyValueHistory propertyValueHistory : selectedPropertyValueHistoryList) {
-            propertyTypeHandler.setViewValue(propertyValueHistory);
+            propertyTypeHandler.setDisplayValue(propertyValueHistory);
+            propertyTypeHandler.setTargetValue(propertyValueHistory);
         }
     }
 

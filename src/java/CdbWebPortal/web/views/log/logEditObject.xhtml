@@ -4,7 +4,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:column sortBy="#{logObject.id}" headerText="Id">
         <h:outputText id="logId" value="#{logObject.id}"/>
@@ -26,12 +27,25 @@
         <p:tooltip for="user" value="Original user cannot be modified."/>
     </p:column>
 
+    <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
+              filterBy="#{logObject.logTopic}" filterMatchMode="exact"
+              filterOptions="#{logTopicController.availableItemsForSelectOne}"
+              filterValue="#{logController.filterByTopic}"
+              rendered="#{logController.displayTopic}">
+        <h:selectOneMenu id="topic" value="#{logObject.logTopic}" title="Topic" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+            <f:selectItems var="topic" value="#{logTopicController.availableItems}" itemLabel="#{topic.name}" itemValue="#{topic}"/>
+        </h:selectOneMenu>
+    </p:column>
+
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"
               filterBy="#{logObject.text}" filterMatchMode="contains"
               filterValue="#{logController.filterByText}">
         <h:inputTextarea id="logEntry" value="#{logObject.text}"/>
         <p:tooltip for="logEntry" value="Enter log entry text."/>
     </p:column>
+
+
 
 </ui:composition>
 

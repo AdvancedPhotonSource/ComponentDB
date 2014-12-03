@@ -12,6 +12,14 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
 
     protected String name;
 
+    public static String shortenDisplayValueIfNeeded(String displayValue) {
+        int length = displayValue.length();
+        if (length > 32) {
+            displayValue = displayValue.substring(0, 15) + "..." + displayValue.substring(length - 15);
+        }
+        return displayValue;
+    }
+
     public AbstractPropertyTypeHandler(String name) {
         this.name = name;
     }
@@ -44,14 +52,24 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     public DisplayType getValueDisplayType() {
         return null;
     }
+
+    @Override
+    public void setDisplayValue(PropertyValue propertyValue) {
+        propertyValue.setDisplayValueToValue();
+    }
+
+    @Override
+    public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
+        propertyValueHistory.setDisplayValueToValue();
+    }
     
     @Override
-    public void setViewValue(PropertyValue propertyValue) {
-        propertyValue.setViewValueToValue();
+    public void setTargetValue(PropertyValue propertyValue) {
+        propertyValue.setTargetValueToValue();
+    }
+
+    @Override
+    public void setTargetValue(PropertyValueHistory propertyValueHistory) {
+        propertyValueHistory.setTargetValueToValue();
     }    
-    
-    @Override
-    public void setViewValue(PropertyValueHistory propertyValueHistory) {
-        propertyValueHistory.setViewValueToValue();
-    }        
 }

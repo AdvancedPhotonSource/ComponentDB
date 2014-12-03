@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -42,8 +42,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findById", query = "SELECT c FROM Component c WHERE c.id = :id"),
     @NamedQuery(name = "Component.findByName", query = "SELECT c FROM Component c WHERE c.name = :name"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
-public class Component extends CloneableEntity
-{
+public class Component extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -86,6 +86,17 @@ public class Component extends CloneableEntity
     private List<ComponentSource> componentSourceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentResource> componentResourceList;
+
+    private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
+
+    // Used to map property type id to property value number
+    private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
+
+    public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
+        if (propertyTypeId != null) {
+            propertyTypeIdIndexMap.put(index, propertyTypeId);
+        }
+    }
 
     public Component() {
     }
@@ -141,7 +152,7 @@ public class Component extends CloneableEntity
     public void setPropertyValueList(List<PropertyValue> propertyValueList) {
         this.propertyValueList = propertyValueList;
     }
-    
+
     @XmlTransient
     public List<DesignElementConnection> getDesignElementConnectionList() {
         return designElementConnectionList;
@@ -230,6 +241,64 @@ public class Component extends CloneableEntity
         this.componentResourceList = componentResourceList;
     }
 
+    public String getPropertyValueByIndex(Integer index) {
+        Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
+        if (propertyTypeId != null) {
+            return propertyValueCacheMap.get(propertyTypeId);
+        }
+        return null;
+    }
+
+    public void setPropertyValueByIndex(Integer index, String propertyValue) {
+        if (index == null) {
+            return;
+        }
+        Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
+        if (propertyTypeId != null) {
+            propertyValueCacheMap.put(propertyTypeId, propertyValue);
+        }
+    }
+
+    public String getPropertyValue1() {
+        return getPropertyValueByIndex(1);
+    }
+
+    public void setPropertyValue1(String propertyValue1) {
+        setPropertyValueByIndex(1, propertyValue1);
+    }
+
+    public String getPropertyValue2() {
+        return getPropertyValueByIndex(2);
+    }
+
+    public void setPropertyValue2(String propertyValue2) {
+        setPropertyValueByIndex(2, propertyValue2);
+    }
+
+    public String getPropertyValue3() {
+        return getPropertyValueByIndex(3);
+    }
+
+    public void setPropertyValue3(String propertyValue3) {
+        setPropertyValueByIndex(3, propertyValue3);
+    }
+
+    public String getPropertyValue4() {
+        return getPropertyValueByIndex(4);
+    }
+
+    public void setPropertyValue4(String propertyValue4) {
+        setPropertyValueByIndex(4, propertyValue4);
+    }
+
+    public String getPropertyValue5() {
+        return getPropertyValueByIndex(5);
+    }
+
+    public void setPropertyValue5(String propertyValue5) {
+        setPropertyValueByIndex(5, propertyValue5);
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -270,29 +339,20 @@ public class Component extends CloneableEntity
         Component cloned = (Component) super.clone();
         cloned.id = null;
         cloned.name = "Copy Of " + cloned.name;
-        //cloned.componentTypeList = null;
-        //cloned.componentTypeCategoryList = null;
-        //cloned.componentPropertyList = null;
-        //cloned.componentSourceList = null;
         cloned.componentConnectorList = null;
-        //cloned.collectionComponentList = null;
         cloned.componentInstanceList = null;
         cloned.assemblyComponentList = null;
         cloned.assemblyComponentList1 = null;
-        //cloned.designComponentList = null;
-        //cloned.designComponentList1 = null;
-        //for (ComponentProperty componentProperty : cloned.componentPropertyList) {
-        //    componentProperty.setId(null);
-        //    componentProperty.setComponent(cloned);
-        //}
+        cloned.designElementList = null;
+        cloned.componentResourceList = null;
+        cloned.logList = null;
+        for (PropertyValue propertyValue : cloned.propertyValueList) {
+            propertyValue.setId(null);
+        }
         for (ComponentSource componentSource : cloned.componentSourceList) {
             componentSource.setId(null);
             componentSource.setComponent(cloned);
         }
-//        for (ComponentConnector componentConnector : cloned.componentConnectorList) {
-//            componentConnector.setId(null);
-//            componentConnector.setComponent(cloned);
-//        }
         cloned.entityInfo = null;
         return cloned;
     }
@@ -317,9 +377,41 @@ public class Component extends CloneableEntity
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
         for (Log logEntry : logList) {
-            String logEntryKey = "logEntryId:" + logEntry.getId();
+            String logEntryKey = "log/text/id:" + logEntry.getId();
             searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
         }
+        for (PropertyValue propertyValue : propertyValueList) {
+            String propertyValueKey = "propertyValue/value/id:" + propertyValue.getId();
+            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
+            propertyValueKey = "propertyValue/description/id:" + propertyValue.getId();
+            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
+        }
         return searchResult;
-    }    
+    }
+
+    public void clearPropertyValueCache() {
+        propertyValueCacheMap.clear();
+    }
+
+    public String getPropertyValue(Integer propertyTypeId) {
+        if (propertyTypeId == null) {
+            return null;
+        }
+        String cachedValue = propertyValueCacheMap.get(propertyTypeId);
+        if (cachedValue == null) {
+            String delimiter = "";
+            cachedValue = "";
+            for (PropertyValue propertyValue : propertyValueList) {
+                if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
+                    String value = propertyValue.getValue();
+                    if (value != null && !value.isEmpty()) {
+                        cachedValue += delimiter + value;
+                        delimiter = "|";
+                    }
+                }
+            }
+            propertyValueCacheMap.put(propertyTypeId, cachedValue);
+        }
+        return cachedValue;
+    }
 }

@@ -63,7 +63,8 @@ public class PropertyValueHistory extends CloneableEntity {
     @ManyToOne(optional = false)
     private PropertyValue propertyValue;
 
-    private transient String viewValue = null;
+    private transient String displayValue = null;
+    private transient String targetValue = null;
 
     public PropertyValueHistory() {
     }
@@ -142,18 +143,30 @@ public class PropertyValueHistory extends CloneableEntity {
         this.propertyValue = propertyValue;
     }
 
-    public String getViewValue() {
-        return viewValue;
+    public String getDisplayValue() {
+        return displayValue;
     }
 
-    public void setViewValue(String viewValue) {
-        this.viewValue = viewValue;
+    public void setDisplayValue(String displayValue) {
+        this.displayValue = displayValue;
     }
-    
-    public void setViewValueToValue() {
-        viewValue = value;
+
+    public void setDisplayValueToValue() {
+        displayValue = value;
     }
-    
+
+    public String getTargetValue() {
+        return targetValue;
+    }
+
+    public void setTargetValue(String targetValue) {
+        this.targetValue = targetValue;
+    }
+
+    public void setTargetValueToValue() {
+        targetValue = value;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
