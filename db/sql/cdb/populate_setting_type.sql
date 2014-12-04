@@ -109,7 +109,7 @@ VALUES
 	('DesignLink.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('DesignLink.List.Display.Tag','Display design link tag.', 'true'),
 
-	('Log.List.Display.Attachment','Display log entry attachment.', 'true'),
+	('Log.List.Display.Attachments','Display log entry attachments.', 'true'),
 	('Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.', 'true'),
 	('Log.List.Display.EnteredByUser','Display log entry entered by user.', 'true'),
 	('Log.List.Display.Id','Display log entry id.', 'true'),

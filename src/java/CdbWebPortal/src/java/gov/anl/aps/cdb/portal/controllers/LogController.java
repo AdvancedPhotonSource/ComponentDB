@@ -21,7 +21,7 @@ import org.primefaces.component.datatable.DataTable;
 @SessionScoped
 public class LogController extends CrudEntityController<Log, LogFacade> implements Serializable {
 
-    private static final String DisplayAttachmentSettingTypeKey = "Log.List.Display.Attachment";
+    private static final String DisplayAttachmentsSettingTypeKey = "Log.List.Display.Attachments";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Log.List.Display.Id";
     private static final String DisplayEnteredByUserSettingTypeKey = "Log.List.Display.EnteredByUser";
@@ -33,7 +33,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
     private static final String FilterByTextSettingTypeKey = "Log.List.FilterBy.Text";
     private static final String FilterByTopicSettingTypeKey = "Log.List.FilterBy.Topic";
 
-    private Boolean displayAttachment = null;
+    private Boolean displayAttachments = null;
     private Boolean displayEnteredByUser = null;
     private Boolean displayEnteredOnDateTime = null;
     private Boolean displayTopic = null;
@@ -87,7 +87,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             return;
         }
 
-        displayAttachment = Boolean.parseBoolean(settingTypeMap.get(DisplayAttachmentSettingTypeKey).getDefaultValue());
+        displayAttachments = Boolean.parseBoolean(settingTypeMap.get(DisplayAttachmentsSettingTypeKey).getDefaultValue());
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayEnteredByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredByUserSettingTypeKey).getDefaultValue());
@@ -106,7 +106,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             return;
         }
 
-        displayAttachment = sessionUser.getUserSettingValueAsBoolean(DisplayAttachmentSettingTypeKey, displayAttachment);
+        displayAttachments = sessionUser.getUserSettingValueAsBoolean(DisplayAttachmentsSettingTypeKey, displayAttachments);
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
@@ -138,7 +138,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayAttachmentSettingTypeKey, displayAttachment);
+        sessionUser.setUserSettingValue(DisplayAttachmentsSettingTypeKey, displayAttachments);
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
@@ -221,12 +221,12 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         this.displayEnteredOnDateTime = displayEnteredOnDateTime;
     }
 
-    public Boolean getDisplayAttachment() {
-        return displayAttachment;
+    public Boolean getDisplayAttachments() {
+        return displayAttachments;
     }
 
-    public void setDisplayAttachment(Boolean displayAttachment) {
-        this.displayAttachment = displayAttachment;
+    public void setDisplayAttachments(Boolean displayAttachments) {
+        this.displayAttachments = displayAttachments;
     }
 
     public Boolean getDisplayTopic() {

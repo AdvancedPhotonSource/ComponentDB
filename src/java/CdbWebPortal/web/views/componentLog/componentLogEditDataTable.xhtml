@@ -4,7 +4,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dataTable id="componentLogEditDataTable" 
                  widgetVar="componentLogEditWidget"
@@ -21,14 +22,26 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink action="#{componentController.deleteLog(logObject)}" 
+                <p:commandLink id="componentLogUploadAttachmentButton" 
+                               oncomplete="logAttachmentUploadDialogWidget.show()" 
+                               styleClass="ui-icon ui-icon-circle-arrow-n"
+                               update="@form">
+                    <f:setPropertyActionListener value="#{logObject}" target="#{logController.current}"/>
+                    <p:tooltip for="componentLogUploadAttachmentButton" value="Upload component log attachment."/>
+                </p:commandLink>
+                <p:commandLink id="componentLogDestroyButton" 
+                               action="#{componentController.deleteLog(logObject)}" 
                                actionListener="#{logController.destroy(logObject)}"
                                styleClass="ui-icon ui-icon-trash" title="Delete" 
-                               update="componentLogEditDataTable"/>
+                               update="componentLogEditDataTable">
+                    <p:tooltip for="componentLogDestroyButton" value="Delete component log entry."/>
+                </p:commandLink>
             </div>
         </p:column>
 
     </p:dataTable>
+
+    <ui:include src="../log/logAttachmentUploadDialog.xhtml"/>
 
 </ui:composition>
 

@@ -55,6 +55,15 @@
         <h:inputTextarea id="logEntry" value="#{componentController.logText}" title="Log Entry" styleClass="entityDataText"/>
         <p:message for="logEntry"/> 
         <p:tooltip for="logEntry" value="Log entry is optional."/>
+        
+        <h:outputLabel for="logTopic" value="Log Topic" styleClass="entityDataLabel"/>
+        <h:selectOneMenu id="logTopic" value="#{componentController.logTopicId}" title="Log Topic" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+            <f:selectItems var="logTopic" value="#{logTopicController.availableItems}" itemLabel="#{logTopic.name}" itemValue="#{logTopic.id}"/>
+        </h:selectOneMenu>
+        <p:message for="logTopic"/> 
+        <p:tooltip for="logTopic" value="Log topic is optional."/>
+        
     </p:panelGrid>
 
     <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>

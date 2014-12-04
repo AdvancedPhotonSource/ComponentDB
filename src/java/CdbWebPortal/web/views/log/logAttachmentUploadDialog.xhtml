@@ -6,23 +6,23 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dialog id="propertyValueImageUploadDialog" 
-              widgetVar="propertyValueImageUploadDialogWidget" 
-              header="Image Upload" 
+    <p:dialog id="logAttachmentUploadDialog" 
+              widgetVar="logAttachmentUploadDialogWidget" 
+              header="Log Attachment Upload" 
               styleClass="dialog">
         <div class="dialog">
 
-            <p:fileUpload value="#{propertyValueImageUploadBean.uploadedFile}" mode="simple"/>
+            <p:fileUpload value="#{logAttachmentUploadBean.uploadedFile}" mode="simple"/>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton id="uploadSubmitButton" value="Submit" alt="Submit" 
-                                 action="#{propertyValueImageUploadBean.upload}"
+                                 action="#{logAttachmentUploadBean.upload}"
                                  ajax="false"
                                  update="@form"
-                                 oncomplete="propertyValueImageUploadDialogWidget.hide()" 
+                                 oncomplete="logAttachmentUploadDialogWidget.hide()" 
                                  icon="ui-icon-check">
-                    <f:setPropertyActionListener value="#{propertyValueController.current}" target="#{propertyValueImageUploadBean.propertyValue}"/>
-                    <p:tooltip for="uploadSubmitButton" value="Submit image for upload."/>
+                    <f:setPropertyActionListener value="#{logController.current}" target="#{logAttachmentUploadBean.logEntry}"/>
+                    <p:tooltip for="uploadSubmitButton" value="Submit log attachment for upload."/>
                 </p:commandButton>
             </f:facet>
         </div>

@@ -21,7 +21,7 @@ public class ImagePropertyTypeHandler extends AbstractPropertyTypeHandler
     
     @Override
     public String getEditActionIcon() {
-        return "ui-icon-arrowthick-1-n";
+        return "ui-icon-circle-arrow-n";
     }
     
     @Override

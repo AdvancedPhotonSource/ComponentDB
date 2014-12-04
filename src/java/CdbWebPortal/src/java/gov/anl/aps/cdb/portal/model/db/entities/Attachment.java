@@ -6,7 +6,7 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
+import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,15 +27,15 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
+@Table(name = "attachment")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Attachment.findAll", query = "SELECT a FROM Attachment a"),
     @NamedQuery(name = "Attachment.findById", query = "SELECT a FROM Attachment a WHERE a.id = :id"),
-    @NamedQuery(name = "Attachment.findByFilePath", query = "SELECT a FROM Attachment a WHERE a.filePath = :filePath"),
+    @NamedQuery(name = "Attachment.findByName", query = "SELECT a FROM Attachment a WHERE a.name = :name"),
     @NamedQuery(name = "Attachment.findByTag", query = "SELECT a FROM Attachment a WHERE a.tag = :tag"),
     @NamedQuery(name = "Attachment.findByDescription", query = "SELECT a FROM Attachment a WHERE a.description = :description")})
-public class Attachment implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Attachment extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -42,7 +43,7 @@ public class Attachment implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 128)
-    private String filePath;
+    private String name;
     @Size(max = 64)
     private String tag;
     @Size(max = 256)
@@ -50,6 +51,8 @@ public class Attachment implements Serializable {
     @ManyToMany(mappedBy = "attachmentList")
     private List<Log> logList;
 
+    private transient String filePath = null;
+    
     public Attachment() {
     }
 
@@ -59,9 +62,10 @@ public class Attachment implements Serializable {
 
     public Attachment(Integer id, String path) {
         this.id = id;
-        this.filePath = path;
+        this.name = path;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -70,12 +74,12 @@ public class Attachment implements Serializable {
         this.id = id;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getName() {
+        return name;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getTag() {
@@ -125,4 +129,10 @@ public class Attachment implements Serializable {
         return "gov.anl.aps.cdb.portal.model.entities.Attachment[ id=" + id + " ]";
     }
     
+    public String getFilePath() {
+        if (filePath == null) {
+            filePath = StorageUtility.getFileSystemLogAttachmentPathDirectory(name);
+        }
+        return filePath;
+    }
 }

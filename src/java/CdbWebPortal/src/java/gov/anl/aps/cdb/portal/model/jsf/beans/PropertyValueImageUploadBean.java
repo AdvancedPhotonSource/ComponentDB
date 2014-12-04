@@ -5,10 +5,8 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
-import gov.anl.aps.cdb.portal.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.exceptions.ImageProcessingFailed;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.FileUtility;
 import gov.anl.aps.cdb.portal.utilities.ImageUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;

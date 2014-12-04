@@ -3,7 +3,10 @@
 <glassfish-web-app error-url="">
     <context-root>/cdb</context-root>
     <property name="alternatedocroot_1" value="from=/propertyValue/* dir=/cdb">
-        <description>Serve files and images./</description>
+        <description>Serve property value files and images./</description>
+    </property>
+    <property name="alternatedocroot_2" value="from=/log/* dir=/cdb">
+        <description>Serve log attachments.</description>
     </property>
     <class-loader delegate="true"/>
     <jsp-config>

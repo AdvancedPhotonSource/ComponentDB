@@ -2,8 +2,11 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.model.db.beans.AbstractFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CloneableEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
@@ -61,6 +64,8 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     
     @EJB
     private SettingTypeFacade settingTypeFacade;
+    @EJB
+    private LogTopicFacade logTopicFacade;
     
     private EntityType current = null;
     
@@ -81,6 +86,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     private List<EntityType> selectedObjectList = null;
     
     private String logText = null;
+    private Integer logTopicId = null;
     
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayId = null;
@@ -137,6 +143,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     
     public void resetLogText() {
         logText = "";
+        logTopicId = null;
     }
     
     public List<SettingType> getSettingTypeList() {
@@ -666,6 +673,22 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         resetSelectDataModel();
     }
     
+    public Log prepareLogEntry(UserInfo createdByUser, Date createdOnDateTime) {
+        Log logEntry = null;
+        if (logText != null && !logText.isEmpty()) {
+            logEntry = new Log();
+            logEntry.setText(logText);
+            logEntry.setEnteredByUser(createdByUser);
+            logEntry.setEnteredOnDateTime(createdOnDateTime);
+            if (logTopicId != null) {
+                LogTopic logTopic = logTopicFacade.find(logTopicId);
+                logEntry.setLogTopic(logTopic);
+            }
+            resetLogText();
+        }
+        return logEntry;
+    }
+    
     public List<EntityType> getAvailableItems() {
         return getFacade().findAll();
     }
@@ -741,6 +764,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     
     public void setLogText(String logText) {
         this.logText = logText;
+    }
+
+    public Integer getLogTopicId() {
+        return logTopicId;
+    }
+
+    public void setLogTopicId(Integer logTopicId) {
+        this.logTopicId = logTopicId;
     }
     
     public Integer getDisplayNumberOfItemsPerPage() {

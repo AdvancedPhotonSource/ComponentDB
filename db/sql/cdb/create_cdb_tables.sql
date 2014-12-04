@@ -113,11 +113,11 @@ CREATE TABLE `entity_info` (
 DROP TABLE IF EXISTS `attachment`;
 CREATE TABLE `attachment` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `file_path` varchar(128) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `tag` varchar(64) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `attachment_u1` (`file_path`)
+  UNIQUE KEY `attachment_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

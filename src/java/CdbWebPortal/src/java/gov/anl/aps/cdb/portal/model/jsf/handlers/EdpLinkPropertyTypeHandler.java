@@ -1,8 +1,10 @@
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
+import gov.anl.aps.cdb.portal.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 
 /**
  *
@@ -11,7 +13,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 public class EdpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static final String HANDLER_NAME = "EDP Link";
-
+    public static final String EdpUrl = ConfigurationUtility.getPortalProperty(
+            CdbProperty.EDP_URL_STRING_PROPERTY_NAME);
+    
     public EdpLinkPropertyTypeHandler() {
         super(HANDLER_NAME);
     }
@@ -21,9 +25,13 @@ public class EdpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         return DisplayType.HTTP_LINK;
     }    
     
-    public static String formatEdpLink(String edpCollectionId) {
+    public static String formatEdpLink(String collectionId) {
         // Format: https://edp.aps.anl.gov/browse/index/collection_id/96  
-        return "https://edp.aps.anl.gov/browse/index/collection_id/" + edpCollectionId;
+        if (collectionId == null) {
+            return null;
+        }
+        String url = EdpUrl.replace("COLLECTION_ID", collectionId);
+        return url;
     }
     
     @Override

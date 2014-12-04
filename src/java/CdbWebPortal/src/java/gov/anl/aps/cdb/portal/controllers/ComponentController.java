@@ -2,14 +2,17 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
+import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -81,7 +84,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
-
+    
     private Boolean displayType = null;
     private Boolean displayTypeCategory = null;
 
@@ -167,10 +170,13 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    public void prepareEntityInsert(Component component) throws ObjectAlreadyExists {
+    public void prepareEntityInsert(Component component) throws CdbPortalException {
         Component existingComponent = componentFacade.findByName(component.getName());
         if (existingComponent != null) {
             throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
+        }
+        if (component.getComponentType() == null) {
+            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");            
         }
         EntityInfo entityInfo = component.getEntityInfo();
         UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
@@ -179,35 +185,34 @@ public class ComponentController extends CrudEntityController<Component, Compone
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
-        String logText = getLogText();
-        if (logText != null && !logText.isEmpty()) {
-            Log logEntry = new Log();
-            logEntry.setText(logText);
-            logEntry.setEnteredByUser(createdByUser);
-            logEntry.setEnteredOnDateTime(createdOnDateTime);
+        Log logEntry = prepareLogEntry(createdByUser, createdOnDateTime);
+        if (logEntry != null) {
             List<Log> logList = new ArrayList<>();
             logList.add(logEntry);
             component.setLogList(logList);
-            resetLogText();
         }
         logger.debug("Inserting new component " + component.getName() + " (user: " + createdByUser.getUsername() + ")");
     }
 
     @Override
     public void prepareEntityUpdate(Component component) throws CdbPortalException {
+        Component existingComponent = componentFacade.findByName(component.getName());
+        if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
+            throw new ObjectAlreadyExists("Component " + component.getName() + " already exists with id " + existingComponent.getId() + ".");            
+        }
+        if (component.getComponentType() == null) {
+            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");            
+        }        
         EntityInfo entityInfo = component.getEntityInfo();
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
-        String logText = getLogText();
-        if (logText != null && !logText.isEmpty()) {
-            Log logEntry = new Log();
-            logEntry.setText(logText);
-            logEntry.setEnteredByUser(lastModifiedByUser);
-            logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
-            component.getLogList().add(logEntry);
-            resetLogText();
+        Log logEntry = prepareLogEntry(lastModifiedByUser, lastModifiedOnDateTime);
+        if (logEntry != null) {
+            List<Log> logList = component.getLogList();
+            logList.add(logEntry);
+            component.setLogList(logList);
         }
 
         // Compare properties with what is in the db

@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:param name="componentObject" value="#{componentController.selected}"/>
 
@@ -39,7 +40,7 @@
         <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
         <p:message for="componentTypeCategory"/>
         <p:tooltip for="componentTypeCategory" value="Component type category is inherited from component type."/>
-        
+
         <ui:include src="../entityInfo/entityInfoEditObject.xhtml">
             <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
         </ui:include>
@@ -47,6 +48,16 @@
         <h:outputLabel for="logEntry" value="Log Entry" styleClass="entityDataLabel"/>
         <h:inputTextarea id="logEntry" value="#{componentController.logText}" title="Log Entry" styleClass="entityDataText"/>
         <p:message for="logEntry"/> 
+        <p:tooltip for="logEntry" value="Log entry is optional."/>
+
+        <h:outputLabel for="logTopic" value="Log Topic" styleClass="entityDataLabel"/>
+        <h:selectOneMenu id="logTopic" value="#{componentController.logTopicId}" title="Log Topic" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+            <f:selectItems var="logTopic" value="#{logTopicController.availableItems}" itemLabel="#{logTopic.name}" itemValue="#{logTopic.id}"/>
+        </h:selectOneMenu>
+        <p:message for="logTopic"/> 
+        <p:tooltip for="logTopic" value="Log topic is optional."/>
+
     </p:panelGrid>
 
     <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>

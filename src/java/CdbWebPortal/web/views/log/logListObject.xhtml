@@ -32,11 +32,20 @@
               rendered="#{logController.displayTopic}">
         <h:outputText value="#{logObject.logTopic.name}"/>
     </p:column>
-    
+
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"
               filterBy="#{logObject.text}" filterMatchMode="contains"
               filterValue="#{logController.filterByText}">
         <h:outputText value="#{logObject.text}"/>
+    </p:column>
+
+    <p:column headerText="Attachments"
+              rendered="#{logController.displayAttachments}">
+        <ui:repeat var="attachment" value="#{logObject.attachmentList}">
+            <h:outputLink value="#{attachment.filePath}" target="_page_#{attachment.name}" title="#{attachment.name}" styleClass="entityDataIcon">
+                 <h:graphicImage alt="Attachment" url="../../resources/images/attachment.ico"/>
+            </h:outputLink>   
+        </ui:repeat>
     </p:column>
 
 </ui:composition>

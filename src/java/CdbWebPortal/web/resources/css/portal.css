@@ -206,6 +206,11 @@ a:link:hover, a:visited:hover  {
     font-weight: bold;
 }
 
+
+.entityDataIcon {
+    size: 50px;
+}
+
 .createEntityDetails td:nth-child(1) {
     vertical-align: top;
 }
