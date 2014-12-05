@@ -117,6 +117,19 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         return "";
     }
 
+    public PropertyType findById(Integer id) {
+        return propertyTypeFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            PropertyType propertyType = findById(idViewParam);
+            setCurrent(propertyType);
+            idViewParam = null;
+        }
+    }
+
     @Override
     public List<PropertyType> getAvailableItems() {
         return super.getAvailableItems();
@@ -283,7 +296,6 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         allowedPropertyValueList.remove(allowedPropertyValue);
     }
 
-
     public void prepareSelectPropertyTypesForComponentType(ComponentType componentType) {
         clearSelectFilters();
         resetSelectDataModel();
@@ -299,7 +311,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         List<PropertyType> selectPropertyTypeList = getFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
-    
+
     @FacesConverter(forClass = PropertyType.class)
     public static class PropertyTypeControllerConverter implements Converter {
 

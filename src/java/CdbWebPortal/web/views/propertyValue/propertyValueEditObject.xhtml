@@ -59,7 +59,11 @@
 
         <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
-        <p:tooltip for="httpLinkValue" value="Enter link value."/>              
+        <p:tooltip for="httpLinkValue" value="Enter link value."/>     
+        
+         <h:outputText id="documentValue" value="#{propertyValueObject.value}"
+                     rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>
+        <p:tooltip for="documentValue" value="Upload new document using upload action button."/>           
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"

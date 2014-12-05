@@ -15,10 +15,6 @@
                          ajax="false" value="Save" alt="Save List" icon="ui-icon-check">
             <p:tooltip for="#{childEntityTypeName}EditSaveButton" value="Save list."/>
         </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}EditDoneButton" action="#{parentEntityController.prepareList()}" 
-                         alt="Done" value="Done" icon="ui-icon-arrowreturnthick-1-w">
-            <p:tooltip for="#{childEntityTypeName}EditDoneButton" value="Return to #{parentEntityController.displayEntityTypeName} list page."/>
-        </p:commandButton>
         
         <p:commandButton id="#{childEntityTypeName}EditExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:dataExporter type="xls" target="#{childEntityTypeName}EditDataTable" fileName="#{childEntityTypeName}s"/>

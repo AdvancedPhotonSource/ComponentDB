@@ -24,7 +24,9 @@
         <p:column sortBy="#{userGroupObject.name}" headerText="Name" 
                   filterBy="#{userGroupObject.name}" filterMatchMode="contains"
                   filterValue="#{userGroupController.filterByName}">
-            <h:outputText value="#{userGroupObject.name}"/>
+            <h:outputLink value="view.xhtml?id=#{userGroupObject.id}" title="View user group details">
+                <h:outputText value="#{userGroupObject.name}"/>
+            </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{userGroupObject.description}" headerText="Description" 

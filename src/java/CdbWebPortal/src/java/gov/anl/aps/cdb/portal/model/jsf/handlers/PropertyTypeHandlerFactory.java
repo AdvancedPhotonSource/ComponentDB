@@ -21,6 +21,7 @@ public class PropertyTypeHandlerFactory {
         hMap.put(EdpLinkPropertyTypeHandler.HANDLER_NAME, new EdpLinkPropertyTypeHandler());
         hMap.put(AmosLinkPropertyTypeHandler.HANDLER_NAME, new AmosLinkPropertyTypeHandler());
         hMap.put(ParisLinkPropertyTypeHandler.HANDLER_NAME, new ParisLinkPropertyTypeHandler());
+        hMap.put(DocumentPropertyTypeHandler.HANDLER_NAME, new DocumentPropertyTypeHandler());
         return hMap;
     }
 

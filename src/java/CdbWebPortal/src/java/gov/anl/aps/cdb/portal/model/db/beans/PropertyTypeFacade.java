@@ -41,5 +41,15 @@ public class PropertyTypeFacade extends AbstractFacade<PropertyType>
         }
         return null;
     }
-    
+
+    public PropertyType findById(Integer id) {
+        try {
+            return (PropertyType) em.createNamedQuery("PropertyType.findById")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } 
+        catch (NoResultException ex) {
+        }
+        return null;
+    }        
 }

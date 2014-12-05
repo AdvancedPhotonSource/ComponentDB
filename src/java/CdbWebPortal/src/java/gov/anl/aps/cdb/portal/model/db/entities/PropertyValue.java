@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "PropertyValue.findAll", query = "SELECT p FROM PropertyValue p"),
     @NamedQuery(name = "PropertyValue.findById", query = "SELECT p FROM PropertyValue p WHERE p.id = :id"),
+    @NamedQuery(name = "PropertyValue.findByTag", query = "SELECT p FROM PropertyValue p WHERE p.tag = :tag"),
     @NamedQuery(name = "PropertyValue.findByValue", query = "SELECT p FROM PropertyValue p WHERE p.value = :value"),
     @NamedQuery(name = "PropertyValue.findByUnits", query = "SELECT p FROM PropertyValue p WHERE p.units = :units"),
     @NamedQuery(name = "PropertyValue.findByDescription", query = "SELECT p FROM PropertyValue p WHERE p.description = :description"),
@@ -258,6 +259,16 @@ public class PropertyValue extends CloneableEntity {
     public boolean equalsByValueAndUnitsAndDescription(PropertyValue other) {
         if (other != null) {
             return ( ObjectUtility.equals(this.value, other.value) 
+                    && ObjectUtility.equals(this.units, other.units) 
+                    && ObjectUtility.equals(this.description, other.description) );
+        }
+        return false;
+    }
+
+    public boolean equalsByTagAndValueAndUnitsAndDescription(PropertyValue other) {
+        if (other != null) {
+            return ( ObjectUtility.equals(this.tag, other.tag) 
+                    && ObjectUtility.equals(this.value, other.value) 
                     && ObjectUtility.equals(this.units, other.units) 
                     && ObjectUtility.equals(this.description, other.description) );
         }

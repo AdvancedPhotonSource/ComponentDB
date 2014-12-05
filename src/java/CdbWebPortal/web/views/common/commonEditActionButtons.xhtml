@@ -7,6 +7,10 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
 
     <div class="actionButton">
+        <p:commandButton id="#{entityTypeName}EditViewButton" action="#{entityController.view()}" 
+                         value="View" alt="View" icon="ui-icon-info" update="@form">
+            <p:tooltip for="#{entityTypeName}EditViewButton" value="View #{entityController.displayEntityTypeName}."/>
+        </p:commandButton>
         <p:commandButton id="#{entityTypeName}EditSaveButton" action="#{entityController.update()}" 
                          value="Save" alt="Save" icon="ui-icon-check" update="@form">
             <p:tooltip for="#{entityTypeName}EditSaveButton" value="Save #{entityController.displayEntityTypeName}."/>

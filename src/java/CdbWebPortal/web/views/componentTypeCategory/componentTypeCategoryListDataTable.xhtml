@@ -27,7 +27,9 @@
                   filterBy="name" filterMatchMode="contains"
                   filterValue="#{componentTypeCategoryController.filterByName}"
                   rendered="true">
-            <h:outputText value="#{componentTypeCategoryObject.name}"/>
+            <h:outputLink value="view.xhtml?id=#{componentTypeCategoryObject.id}" title="View component type category details">
+                <h:outputText value="#{componentTypeCategoryObject.name}"/>
+            </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{componentTypeCategoryObject.description}" headerText="Description" 

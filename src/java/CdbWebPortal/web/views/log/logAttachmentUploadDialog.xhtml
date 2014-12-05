@@ -15,14 +15,14 @@
             <p:fileUpload value="#{logAttachmentUploadBean.uploadedFile}" mode="simple"/>
 
             <f:facet name="footer" class="dialog">
-                <p:commandButton id="uploadSubmitButton" value="Submit" alt="Submit" 
+                <p:commandButton id="logAttachmentUploadSubmitButton" value="Submit" alt="Submit" 
                                  action="#{logAttachmentUploadBean.upload}"
                                  ajax="false"
                                  update="@form"
                                  oncomplete="logAttachmentUploadDialogWidget.hide()" 
                                  icon="ui-icon-check">
                     <f:setPropertyActionListener value="#{logController.current}" target="#{logAttachmentUploadBean.logEntry}"/>
-                    <p:tooltip for="uploadSubmitButton" value="Submit log attachment for upload."/>
+                    <p:tooltip for="logAttachmentUploadSubmitButton" value="Submit log attachment for upload."/>
                 </p:commandButton>
             </f:facet>
         </div>

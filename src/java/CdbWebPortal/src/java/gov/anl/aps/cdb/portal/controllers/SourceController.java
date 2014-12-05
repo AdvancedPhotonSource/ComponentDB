@@ -19,8 +19,7 @@ import org.apache.log4j.Logger;
 
 @Named("sourceController")
 @SessionScoped
-public class SourceController extends CrudEntityController<Source, SourceFacade> implements Serializable
-{
+public class SourceController extends CrudEntityController<Source, SourceFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
@@ -60,6 +59,19 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         return "";
     }
 
+    public Source findById(Integer id) {
+        return sourceFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            Source userGroup = findById(idViewParam);
+            setCurrent(userGroup);
+            idViewParam = null;
+        }
+    }
+
     @Override
     public List<Source> getAvailableItems() {
         return super.getAvailableItems();
@@ -75,7 +87,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
 
-        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();        
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
     }
 
@@ -89,7 +101,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);        
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
@@ -103,13 +115,12 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);        
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
-    
+
     @FacesConverter(forClass = Source.class)
-    public static class SourceControllerConverter implements Converter
-    {
+    public static class SourceControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -118,10 +129,9 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
             }
             try {
                 SourceController controller = (SourceController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "sourceController");
+                        getValue(facesContext.getELContext(), null, "sourceController");
                 return controller.getEntity(getKey(value));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 // We cannot get this entity from given key.
                 return null;
             }
@@ -147,8 +157,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
             if (object instanceof Source) {
                 Source o = (Source) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Source.class.getName());
             }
         }

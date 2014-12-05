@@ -7,6 +7,11 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../../templates/contentViewTemplate4x3.xhtml">
+    <f:metadata>
+        <ui:include src="../common/commonViewMetadata.xhtml">
+            <ui:param name="entityController" value="#{userInfoController}"/>
+        </ui:include>
+    </f:metadata>
 
     <ui:define name="middleCenter">
         <h:form id="viewUserInfoForm">

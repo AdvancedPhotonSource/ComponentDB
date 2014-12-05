@@ -6,13 +6,11 @@ import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -164,6 +162,20 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return "";
     }
 
+    public Component findById(Integer id) {
+        return componentFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            Component component = findById(idViewParam);
+            setCurrent(component);
+            prepareEntityView(component);
+            idViewParam = null;
+        }
+    }
+    
     @Override
     public void prepareEntityView(Component component) {
         prepareComponentImageList(component);
@@ -225,7 +237,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
             if (index >= 0) {
                 // Original property was there.
                 PropertyValue originalPropertyValue = originalPropertyValueList.get(index);
-                if (!newPropertyValue.equalsByValueAndUnitsAndDescription(originalPropertyValue)) {
+                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescription(originalPropertyValue)) {
                     // Property value was modified.
                     logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
@@ -246,32 +258,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
             }
         }
-
-//        // Save updated values in history table.
-//        for (PropertyValue updatedPropertyValue : updatedPropertyValueList) {
-//            logger.debug("Saving property value history for type " + updatedPropertyValue.getPropertyType()
-//                    + ": " + updatedPropertyValue);
-//            List<PropertyValueHistory> propertyValueHistoryList = updatedPropertyValue.getPropertyValueHistoryList();
-//            PropertyValueHistory propertyValueHistory = new PropertyValueHistory();
-//            propertyValueHistory.updateFromPropertyValue(updatedPropertyValue);
-//            propertyValueHistoryList.add(propertyValueHistory);
-//        }
         componentImageList = null;
         displayComponentImages = false;
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
-    }
-
-    public Component findById(Integer id) {
-        return componentFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            Component component = findById(idViewParam);
-            setCurrent(component);
-            idViewParam = null;
-        }
     }
 
     public void prepareAddProperty() {
@@ -576,6 +565,25 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return true;
     }
 
+//    public String getListOfOpenedTabs() {
+//        String openedTabs = "";
+//        Component component = getCurrent();
+//        if (displayComponentImages) {
+//            openedTabs += "0,";
+//        }
+//        if (!component.getPropertyValueList().isEmpty()) {
+//            openedTabs += "1,";
+//        }
+//        if (!component.getComponentSourceList().isEmpty()) {
+//            openedTabs += "2,";
+//        }
+//        int length = openedTabs.length();
+//        if (length > 0) {
+//            openedTabs = openedTabs.substring(0,length-1);
+//        }
+//        return openedTabs;
+//    } 
+    
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter {
 
@@ -792,8 +800,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
             DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
-            if (valueDisplayType == DisplayType.IMAGE && !propertyValue.getValue().isEmpty()) {
-                componentImageList.add(propertyValue);
+            if (valueDisplayType == DisplayType.IMAGE) {
+                String value = propertyValue.getValue();
+                if (value != null && !value.isEmpty()) {
+                    componentImageList.add(propertyValue);
+                }
             }
         }
         if (!componentImageList.isEmpty()) {

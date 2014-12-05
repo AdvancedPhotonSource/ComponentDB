@@ -8,6 +8,12 @@
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
+    <f:metadata>
+        <ui:include src="../common/commonViewMetadata.xhtml">
+            <ui:param name="entityController" value="#{userGroupController}"/>
+        </ui:include>
+    </f:metadata>
+
     <ui:define name="middleCenter">
 
         <h:form id="viewUserGroupForm">

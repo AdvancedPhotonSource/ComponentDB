@@ -344,5 +344,8 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
     public boolean displayHttpLinkValue() {
         return displayType.equals(DisplayType.HTTP_LINK);
     } 
-    
+ 
+    public boolean displayDocumentValue() {
+        return displayType.equals(DisplayType.DOCUMENT);
+    }     
 }

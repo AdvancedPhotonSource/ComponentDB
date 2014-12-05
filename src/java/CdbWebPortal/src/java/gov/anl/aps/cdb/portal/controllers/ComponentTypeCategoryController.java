@@ -78,7 +78,7 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
         }
         return "";
     }
-
+    
     @Override
     public List<ComponentTypeCategory> getAvailableItems() {
         return super.getAvailableItems();

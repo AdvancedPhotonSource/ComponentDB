@@ -7,8 +7,10 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -29,5 +31,14 @@ public class UserGroupFacade extends AbstractFacade<UserGroup>
     public UserGroupFacade() {
         super(UserGroup.class);
     }
-    
+
+    public UserGroup findById(Integer id) {
+        try {
+            return (UserGroup) em.createNamedQuery("UserGroup.findById")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }    
 }

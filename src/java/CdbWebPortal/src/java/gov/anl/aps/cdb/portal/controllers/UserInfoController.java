@@ -47,7 +47,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
-    private UserInfoFacade userFacade;
+    private UserInfoFacade userInfoFacade;
 
     private String passwordEntry = null;
 
@@ -69,7 +69,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
 
     @Override
     protected UserInfoFacade getFacade() {
-        return userFacade;
+        return userInfoFacade;
     }
 
     @Override
@@ -100,19 +100,32 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
         return "";
     }
 
+    public UserInfo findById(Integer id) {
+        return userInfoFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            UserInfo userInfo = findById(idViewParam);
+            setCurrent(userInfo);
+            idViewParam = null;
+        }
+    }
+    
     @Override
     public List<UserInfo> getAvailableItems() {
         return super.getAvailableItems();
     }
 
     @Override
-    public String prepareEdit(UserInfo user) {
+    public String prepareEdit(UserInfo userInfo) {
         ArrayList<UserSetting> userSettingList = new ArrayList<>();
         for (SettingType settingType : getSettingTypeList()) {
-            UserSetting setting = user.getUserSetting(settingType.getName());
+            UserSetting setting = userInfo.getUserSetting(settingType.getName());
             if (setting == null) {
                 setting = new UserSetting();
-                setting.setUser(user);
+                setting.setUser(userInfo);
                 setting.setSettingType(settingType);
             }
 
@@ -122,30 +135,30 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
             }
             userSettingList.add(setting);
         }
-        user.setUserSettingList(userSettingList);
+        userInfo.setUserSettingList(userSettingList);
         passwordEntry = null;
-        return super.prepareEdit(user);
+        return super.prepareEdit(userInfo);
     }
 
     @Override
-    public void prepareEntityInsert(UserInfo user) throws ObjectAlreadyExists {
-        UserInfo existingUser = userFacade.findByUsername(user.getUsername());
+    public void prepareEntityInsert(UserInfo userInfo) throws ObjectAlreadyExists {
+        UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
         if (existingUser != null) {
-            throw new ObjectAlreadyExists("User " + user.getUsername() + " already exists.");
+            throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
         }
-        logger.debug("Inserting new user " + user.getUsername());
+        logger.debug("Inserting new user " + userInfo.getUsername());
     }
 
     @Override
-    public void prepareEntityUpdate(UserInfo user) throws CdbPortalException {
-        logger.debug("Updating user " + user.getUsername());
-        List<UserSetting> userSettingList = user.getUserSettingList();
+    public void prepareEntityUpdate(UserInfo userInfo) throws CdbPortalException {
+        logger.debug("Updating user " + userInfo.getUsername());
+        List<UserSetting> userSettingList = userInfo.getUserSettingList();
         for (UserSetting userSetting : userSettingList) {
             if (userSetting.getValue() == null) {
                 userSetting.setValue(userSetting.getSettingType().getDefaultValue());
             }
             if (passwordEntry != null && !passwordEntry.isEmpty()) {
-                user.setPassword(passwordEntry);
+                userInfo.setPassword(passwordEntry);
             }
         }
     }

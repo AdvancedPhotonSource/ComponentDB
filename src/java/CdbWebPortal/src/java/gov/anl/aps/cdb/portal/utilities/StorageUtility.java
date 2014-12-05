@@ -30,4 +30,19 @@ public class StorageUtility {
         }
         return null;
     }    
+    
+    public static String getApplicationPropertyValueDocumentsDirectory() {
+        return "/propertyValue/documents";
+    }
+
+    public static String getFileSystemPropertyValueDocumentsDirectory() {
+        return StorageDirectory + getApplicationPropertyValueDocumentsDirectory();
+    }    
+    
+    public static String getFileSystemPropertyValueDocumentPathDirectory(String documentName) {
+        if (documentName != null) {
+            return getFileSystemPropertyValueDocumentsDirectory() + "/" + documentName;
+        }
+        return null;
+    }        
 }

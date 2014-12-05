@@ -7,6 +7,12 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
+    <f:metadata>
+        <ui:include src="../common/commonViewMetadata.xhtml">
+            <ui:param name="entityController" value="#{propertyTypeController}"/>
+        </ui:include>
+    </f:metadata>
+
     <ui:define name="middleCenter">
 
         <h:form id="viewPropertyTypeForm">

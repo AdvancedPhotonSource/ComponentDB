@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -20,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author sveseli
  */
 @Entity
+@Table(name = "location")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
@@ -37,9 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
     @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description"),
     @NamedQuery(name = "Location.findByIsPhysical", query = "SELECT l FROM Location l WHERE l.isPhysical = :isPhysical")})
-public class Location implements Serializable
+public class Location extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

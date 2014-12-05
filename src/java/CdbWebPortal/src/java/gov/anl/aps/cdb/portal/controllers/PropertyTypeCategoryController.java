@@ -20,8 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeCategoryController")
 @SessionScoped
-public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade> implements Serializable
-{
+public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeCategory.List.Display.Id";
@@ -29,7 +28,7 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
 
     private static final String FilterByNameSettingTypeKey = "PropertyTypeCategory.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "PropertyTypeCategory.List.FilterBy.Description";
-    
+
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
     @EJB
@@ -67,6 +66,19 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         return "";
     }
 
+    public PropertyTypeCategory findById(Integer id) {
+        return propertyTypeCategoryFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            PropertyTypeCategory propertyTypeCategory = findById(idViewParam);
+            setCurrent(propertyTypeCategory);
+            idViewParam = null;
+        }
+    }
+
     @Override
     public List<PropertyTypeCategory> getAvailableItems() {
         return super.getAvailableItems();
@@ -95,8 +107,8 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
 
-        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();        
-        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();        
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -109,8 +121,8 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);        
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);        
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     @Override
@@ -123,13 +135,12 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);        
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);        
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
-    
+
     @FacesConverter(forClass = PropertyTypeCategory.class)
-    public static class PropertyCategoryControllerConverter implements Converter
-    {
+    public static class PropertyCategoryControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -161,8 +172,7 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
             if (object instanceof PropertyTypeCategory) {
                 PropertyTypeCategory o = (PropertyTypeCategory) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyTypeCategory.class.getName());
             }
         }

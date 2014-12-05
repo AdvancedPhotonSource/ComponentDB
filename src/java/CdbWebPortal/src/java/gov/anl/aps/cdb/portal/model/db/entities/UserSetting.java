@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

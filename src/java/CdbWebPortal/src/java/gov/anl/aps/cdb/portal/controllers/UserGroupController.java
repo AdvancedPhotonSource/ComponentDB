@@ -29,14 +29,14 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
     private static final String FilterByDescriptionSettingTypeKey = "UserGroup.List.FilterBy.Description";
    
     @EJB
-    private UserGroupFacade ejbFacade;
+    private UserGroupFacade userGroupFacade;
 
     public UserGroupController() {
     }
 
     @Override
     protected UserGroupFacade getFacade() {
-        return ejbFacade;
+        return userGroupFacade;
     }
 
     @Override
@@ -62,6 +62,19 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
         return "";
     }
 
+    public UserGroup findById(Integer id) {
+        return userGroupFacade.findById(id);
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            UserGroup userGroup = findById(idViewParam);
+            setCurrent(userGroup);
+            idViewParam = null;
+        }
+    }
+    
     @Override
     public List<UserGroup> getAvailableItems() {
         return super.getAvailableItems();

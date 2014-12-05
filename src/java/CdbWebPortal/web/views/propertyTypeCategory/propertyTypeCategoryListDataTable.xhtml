@@ -26,7 +26,9 @@
                   filterBy="#{propertyTypeCategoryObject.name}" filterMatchMode="contains"
                   filterValue="#{propertyTypeCategoryController.filterByName}"
                   rendered="true">
-            <h:outputText value="#{propertyTypeCategoryObject.name}"/>
+            <h:outputLink value="view.xhtml?id=#{propertyTypeCategoryObject.id}" title="View property type category details">
+                <h:outputText value="#{propertyTypeCategoryObject.name}"/>
+            </h:outputLink> 
         </p:column>
 
         <p:column sortBy="#{propertyTypeCategoryObject.description}" headerText="Description" 

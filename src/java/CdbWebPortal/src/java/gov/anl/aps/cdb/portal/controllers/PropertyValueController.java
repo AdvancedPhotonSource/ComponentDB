@@ -244,6 +244,10 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.HTTP_LINK);
     }
 
+    public boolean displayDocumentValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DOCUMENT);
+    }
+    
     @FacesConverter(forClass = PropertyValue.class)
     public static class PropertyValueControllerConverter implements Converter {
 

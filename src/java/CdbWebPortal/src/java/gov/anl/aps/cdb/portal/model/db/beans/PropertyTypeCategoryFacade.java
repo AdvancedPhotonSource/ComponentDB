@@ -16,8 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCategory>
-{
+public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCategory> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -36,10 +35,18 @@ public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCateg
             return (PropertyTypeCategory) em.createNamedQuery("PropertyTypeCategory.findByName")
                     .setParameter("name", name)
                     .getSingleResult();
-        }
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
         }
         return null;
     }
 
+    public PropertyTypeCategory findById(Integer id) {
+        try {
+            return (PropertyTypeCategory) em.createNamedQuery("PropertyTypeCategory.findById")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
 }

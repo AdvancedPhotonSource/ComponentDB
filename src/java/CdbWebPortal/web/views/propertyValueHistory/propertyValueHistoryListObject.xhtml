@@ -28,10 +28,17 @@
                         alt="#{propertyValueHistoryObject.value}" title="#{propertyValueHistoryObject.value}"
                         rendered="#{propertyValueHistoryController.displayImageValue()}"/>
 
-        <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_new_page_" title="#{propertyValueHistoryObject.targetValue}"
+        <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
+                      title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayHttpLinkValue()}">
             <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
         </h:outputLink>
+        
+        <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
+                      title="#{propertyValueHistoryObject.targetValue}"
+                      rendered="#{propertyValueHistoryController.displayDocumentValue()}">
+            <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
+        </h:outputLink>        
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"

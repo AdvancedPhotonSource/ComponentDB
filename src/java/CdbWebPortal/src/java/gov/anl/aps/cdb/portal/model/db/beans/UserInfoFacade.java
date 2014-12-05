@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -18,8 +17,8 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class UserInfoFacade extends AbstractFacade<UserInfo>
-{
+public class UserInfoFacade extends AbstractFacade<UserInfo> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -32,21 +31,30 @@ public class UserInfoFacade extends AbstractFacade<UserInfo>
         super(UserInfo.class);
     }
 
-      public UserInfo findByUsername(String username) {
+    public UserInfo findByUsername(String username) {
         try {
-            return (UserInfo)em.createNamedQuery("UserInfo.findByUsername")
-                .setParameter("username", username)
-                .getSingleResult();
-        }
-        catch (NoResultException ex) {
+            return (UserInfo) em.createNamedQuery("UserInfo.findByUsername")
+                    .setParameter("username", username)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
         }
         return null;
     }
-    
+
+    public UserInfo findById(Integer id) {
+        try {
+            return (UserInfo) em.createNamedQuery("UserInfo.findById")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
     public boolean checkIfUsernameExists(String username) {
         return findByUsername(username) != null;
     }
-    
+
     public boolean isUserMemberOfUserGroup(String username, String groupName) {
         UserInfo user = findByUsername(username);
         if (user == null) {
@@ -58,5 +66,5 @@ public class UserInfoFacade extends AbstractFacade<UserInfo>
             }
         }
         return false;
-    }  
+    }
 }
