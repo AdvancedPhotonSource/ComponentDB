@@ -6,8 +6,8 @@
 
     <p:confirmDialog id="sourceDestroyDialog" 
                      widgetVar="sourceDestroyDialogWidget"
-                     message="Destroy source #{sourceController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Source" 
+                     message="Delete source #{sourceController.getCurrentEntityInstanceName()}?"
+                     header="Delete Source" 
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="PF('sourceDestroyDialogWidget').hide()" action="#{sourceController.destroy()}"/>

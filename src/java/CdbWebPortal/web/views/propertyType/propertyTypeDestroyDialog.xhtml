@@ -6,8 +6,8 @@
 
     <p:confirmDialog id="propertyTypeDestroyDialog" 
                      widgetVar="propertyTypeDestroyDialogWidget"
-                     message="Destroy property type #{propertyTypeController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Property Type" 
+                     message="Delete property type #{propertyTypeController.getCurrentEntityInstanceName()}?"
+                     header="Delete Property Type" 
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="propertyTypeDestroyDialogWidget.hide()" action="#{propertyTypeController.destroy()}" update="@form"/>

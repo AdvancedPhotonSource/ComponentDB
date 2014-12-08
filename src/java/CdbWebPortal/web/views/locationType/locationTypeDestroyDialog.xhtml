@@ -6,8 +6,8 @@
 
     <p:confirmDialog id="locationTypeDestroyDialog" 
                      widgetVar="locationTypeDestroyDialogWidget"
-                     message="Destroy location type #{locationTypeController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Location Type" 
+                     message="Delete location type #{locationTypeController.getCurrentEntityInstanceName()}?"
+                     header="Delete Location Type" 
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="locationTypeDestroyDialogWidget.hide()" action="#{locationTypeController.destroy()}" update="@form"/>

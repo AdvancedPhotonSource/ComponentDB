@@ -6,8 +6,8 @@
 
     <p:confirmDialog id="componentTypeCategoryDestroyDialog" 
                      widgetVar="componentTypeCategoryDestroyDialogWidget"
-                     message="Destroy component type #{componentTypeCategoryController.getCurrentEntityInstanceName()}?"
-                     header="Destroy Component Type Category" 
+                     message="Delete component type #{componentTypeCategoryController.getCurrentEntityInstanceName()}?"
+                     header="Delete Component Type Category" 
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="PF('componentTypeCategoryDestroyDialogWidget').hide()" action="#{componentTypeCategoryController.destroy()}" update="@form"/>

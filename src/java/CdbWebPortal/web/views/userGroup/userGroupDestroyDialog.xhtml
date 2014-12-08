@@ -6,8 +6,8 @@
 
     <p:confirmDialog id="userGroupDestroyDialog" 
                      widgetVar="userGroupDestroyDialogWidget"
-                     message="Destroy user group #{userGroupController.getCurrentEntityInstanceName()}?"
-                     header="Destroy User Group" 
+                     message="Delete user group #{userGroupController.getCurrentEntityInstanceName()}?"
+                     header="Delete User Group" 
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="PF('userGroupDestroyDialogWidget').hide()" action="#{userGroupController.destroy()}"/>

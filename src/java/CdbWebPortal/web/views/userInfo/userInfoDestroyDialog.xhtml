@@ -6,8 +6,8 @@
 
     <p:confirmDialog id="userInfoDestroyDialog" 
                      widgetVar="userInfoDestroyDialogWidget"
-                     message="Destroy user #{userInfoController.getCurrentEntityInstanceName()}?"
-                     header="Destroy User" 
+                     message="Delete user #{userInfoController.getCurrentEntityInstanceName()}?"
+                     header="Delete User" 
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="PF('userInfoDestroyDialogWidget').hide()" action="#{userInfoController.destroy()}"/>
