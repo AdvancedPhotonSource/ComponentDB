@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dataTable id="componentInstanceListDataTable" 
+                 widgetVar="componentInstanceListWidget"
+                 var="componentInstanceObject" 
+                 value="#{componentObject.componentInstanceList}" 
+                 filteredValue="#{componentInstanceController.filteredObjectList}"
+                 binding="#{componentInstanceController.listDataTable}"
+                 rows="#{componentInstanceController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No component instances found.">
+
+        <ui:include src="../componentInstance/componentInstanceListObject.xhtml"/>
+
+        <p:column headerText="Actions">
+
+        </p:column>       
+
+    </p:dataTable>
+
+
+</ui:composition>
+

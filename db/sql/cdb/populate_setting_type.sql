@@ -109,6 +109,13 @@ VALUES
 	('DesignLink.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('DesignLink.List.Display.Tag','Display design link tag.', 'true'),
 
+	('LocationType.List.Display.Description','Display location type description.', 'true'),
+	('LocationType.List.Display.Id','Display location type id.', 'true'),
+	('LocationType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+
+	('LocationType.List.FilterBy.Description','Filter for location type description.', NULL),
+	('LocationType.List.FilterBy.Name','Filter for location type name.', NULL),
+
 	('Log.List.Display.Attachments','Display log entry attachments.', 'true'),
 	('Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.', 'true'),
 	('Log.List.Display.EnteredByUser','Display log entry entered by user.', 'true'),
@@ -191,6 +198,8 @@ VALUES
 	('Search.List.Display.ComponentInstances','Display search result for component instances.', 'true'),
 	('Search.List.Display.ComponentTypes','Display search result for component types.', 'true'),
 	('Search.List.Display.ComponentTypeCategories','Display search result for component type categories.', 'true'),
+	('Search.List.Display.Locations','Display search result for locations.', 'true'),
+	('Search.List.Display.LocationTypes','Display search result for location types.', 'true'),
 	('Search.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('Search.List.Display.PropertyTypes','Display search result for property types.', 'true'),
 	('Search.List.Display.PropertyTypeCategories','Display search result for property type categories.', 'true'),

@@ -6,8 +6,9 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -34,9 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LocationType.findById", query = "SELECT l FROM LocationType l WHERE l.id = :id"),
     @NamedQuery(name = "LocationType.findByName", query = "SELECT l FROM LocationType l WHERE l.name = :name"),
     @NamedQuery(name = "LocationType.findByDescription", query = "SELECT l FROM LocationType l WHERE l.description = :description")})
-public class LocationType implements Serializable
+public class LocationType extends CloneableEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -62,6 +62,7 @@ public class LocationType implements Serializable
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -109,15 +110,20 @@ public class LocationType implements Serializable
             return false;
         }
         LocationType other = (LocationType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.LocationType[ id=" + id + " ]";
+        return name;
+    }
+ 
+   @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
     }
     
 }

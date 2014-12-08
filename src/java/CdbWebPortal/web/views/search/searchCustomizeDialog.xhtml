@@ -31,21 +31,27 @@
                 <h:selectBooleanCheckbox id="displayComponentTypeCategories" value="#{searchController.displayComponentTypeCategories}" title="Search Component Type Categories"/>
                 <h:outputLabel for="displayComponentTypeCategories" value="Search Component Type Categories" styleClass="dialogDataLabel"/>
 
+                <h:selectBooleanCheckbox id="displayLocations" value="#{searchController.displayLocations}" title="Search Locations"/>
+                <h:outputLabel for="displayLocations" value="Search Locations" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayLocationTypes" value="#{searchController.displayLocationTypes}" title="Search Location Types"/>
+                <h:outputLabel for="displayLocationTypes" value="Search Location Types" styleClass="dialogDataLabel"/>
+
                 <h:selectBooleanCheckbox id="displayPropertyTypes" value="#{searchController.displayPropertyTypes}" title="Search Property Types"/>
                 <h:outputLabel for="displayPropertyTypes" value="Search Property Types" styleClass="dialogDataLabel"/>
 
                 <h:selectBooleanCheckbox id="displayPropertyTypeCategories" value="#{searchController.displayPropertyTypeCategories}" title="Search Property Type Categories"/>
                 <h:outputLabel for="displayPropertyTypeCategories" value="Search Property Type Categories" styleClass="dialogDataLabel"/>
-                
+
                 <h:selectBooleanCheckbox id="displaySources" value="#{searchController.displaySources}" title="Search Sources"/>
                 <h:outputLabel for="displaySources" value="Search Sources" styleClass="dialogDataLabel"/>
 
                 <h:selectBooleanCheckbox id="displayUserGroups" value="#{searchController.displayUserGroups}" title="Search Users"/>
                 <h:outputLabel for="displayUserGroups" value="Search User Groups" styleClass="dialogDataLabel"/>
-                
+
                 <h:selectBooleanCheckbox id="displayUsers" value="#{searchController.displayUsers}" title="Search Users"/>
                 <h:outputLabel for="displayUsers" value="Search Users" styleClass="dialogDataLabel"/>
-                
+
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">

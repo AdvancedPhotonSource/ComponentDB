@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:dataTable id="locationTypeListDataTable"
+                 widgetVar="locationTypeListWidget" 
+                 var="locationTypeObject"
+                 value="#{locationTypeController.listDataModel}" 
+                 filteredValue="#{locationTypeController.filteredObjectList}"
+                 binding="#{locationTypeController.listDataTable}"
+                 rows="#{locationTypeController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No location types found.">
+
+        <p:column sortBy="#{locationTypeObject.id}" headerText="Id"
+                  rendered="#{locationTypeController.displayId}">
+            <h:outputText value="#{locationTypeObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationTypeObject.name}" headerText="Name" 
+                  filterBy="name" filterMatchMode="contains"
+                  filterValue="#{locationTypeController.filterByName}"
+                  rendered="true">
+            <h:outputLink value="view.xhtml?id=#{locationTypeObject.id}" title="View location type details">
+                <h:outputText value="#{locationTypeObject.name}"/>
+            </h:outputLink>             
+        </p:column>
+
+        <p:column sortBy="#{locationTypeObject.description}" headerText="Description" 
+                  filterBy="#{locationTypeObject.description}" filterMatchMode="contains"
+                  filterValue="#{locationTypeController.filterByDescription}"
+                  rendered="#{locationTypeController.displayDescription}">
+            <h:outputText value="#{locationTypeObject.description}"/>
+        </p:column>
+
+        <p:column headerText="Actions">
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{locationTypeController}"/>
+                <ui:param name="entityObject" value="#{locationTypeObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

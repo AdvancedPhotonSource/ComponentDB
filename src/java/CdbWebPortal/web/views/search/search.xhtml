@@ -64,6 +64,10 @@
                                 <ui:include src="../componentTypeCategory/componentTypeCategorySearchDataTable.xhtml"/>
                             </p:tab>    
 
+                            <p:tab title="Location Types" rendered="#{searchController.displayLocationTypes}">
+                                <ui:include src="../locationType/locationTypeSearchDataTable.xhtml"/>
+                            </p:tab>   
+                            
                             <p:tab title="Property Types" rendered="#{searchController.displayPropertyTypes}">
                                 <ui:include src="../propertyType/propertyTypeSearchDataTable.xhtml"/>
                             </p:tab>    
