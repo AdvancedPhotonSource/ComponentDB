@@ -22,6 +22,7 @@ public class PropertyTypeHandlerFactory {
         hMap.put(AmosLinkPropertyTypeHandler.HANDLER_NAME, new AmosLinkPropertyTypeHandler());
         hMap.put(ParisLinkPropertyTypeHandler.HANDLER_NAME, new ParisLinkPropertyTypeHandler());
         hMap.put(DocumentPropertyTypeHandler.HANDLER_NAME, new DocumentPropertyTypeHandler());
+        hMap.put(CurrencyPropertyTypeHandler.HANDLER_NAME, new CurrencyPropertyTypeHandler());
         return hMap;
     }
 

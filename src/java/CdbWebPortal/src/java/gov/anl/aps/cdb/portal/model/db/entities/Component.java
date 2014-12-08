@@ -87,6 +87,8 @@ public class Component extends CloneableEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentResource> componentResourceList;
 
+    private transient List<PropertyValue> imagePropertyList = null;  
+    
     private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
 
     // Used to map property type id to property value number
@@ -241,6 +243,18 @@ public class Component extends CloneableEntity {
         this.componentResourceList = componentResourceList;
     }
 
+    public List<PropertyValue> getImagePropertyList() {
+        return imagePropertyList;
+    }
+
+    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
+        this.imagePropertyList = imagePropertyList;
+    }
+
+    public void resetImagePropertyList() {
+        this.imagePropertyList = null;
+    }    
+    
     public String getPropertyValueByIndex(Integer index) {
         Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
         if (propertyTypeId != null) {

@@ -19,6 +19,7 @@ INSERT INTO `property_type` VALUES
 (16,'ICMS Document/Drawing',NULL,4,5,NULL,NULL,0,0),
 (17,'PDMLink Drawing',NULL,4,6,NULL,NULL,0,0),
 (18,'AMOS Order',NULL,4,7,NULL,NULL,0,0),
-(19,'Purchase Requisition',NULL,4,8,NULL,NULL,0,0);
+(19,'Purchase Requisition',NULL,4,8,NULL,NULL,0,0),
+(20,'Cost',NULL,4,9,NULL,NULL,0,0);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

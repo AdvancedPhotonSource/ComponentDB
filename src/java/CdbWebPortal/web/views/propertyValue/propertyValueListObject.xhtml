@@ -35,7 +35,7 @@
               filterBy="#{propertyValueObject.value}" filterMatchMode="contains"
               filterValue="#{propertyValueController.filterByValue}">
 
-        <h:outputText value="#{propertyValueObject.value}"
+        <h:outputText value="#{propertyValueObject.displayValue}"
                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
 
         <h:outputText value="#{propertyValueObject.value}"

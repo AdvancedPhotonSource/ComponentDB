@@ -23,13 +23,13 @@ public class HttpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
-        String linkValue = shortenDisplayValueIfNeeded(propertyValue.getValue());
+        String linkValue = shortenHttpLinkDisplayValueIfNeeded(propertyValue.getValue());
         propertyValue.setDisplayValue(linkValue);
     } 
     
     @Override
     public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
-        String linkValue = shortenDisplayValueIfNeeded(propertyValueHistory.getValue());
+        String linkValue = shortenHttpLinkDisplayValueIfNeeded(propertyValueHistory.getValue());
         propertyValueHistory.setDisplayValue(linkValue);
     }     
 }

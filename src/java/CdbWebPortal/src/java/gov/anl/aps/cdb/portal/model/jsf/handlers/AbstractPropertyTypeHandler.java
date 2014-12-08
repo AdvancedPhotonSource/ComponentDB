@@ -5,6 +5,7 @@ import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import java.text.DecimalFormat;
 
 /**
  *
@@ -17,7 +18,7 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
 
     protected String name;
 
-    public static String shortenDisplayValueIfNeeded(String displayValue) {
+    public static String shortenHttpLinkDisplayValueIfNeeded(String displayValue) {
         int length = displayValue.length();
         if (length > HttpLinkDisplayLength) {
             int partLength = HttpLinkDisplayLength/2 - 1;

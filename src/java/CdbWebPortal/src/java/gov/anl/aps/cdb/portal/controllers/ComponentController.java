@@ -96,7 +96,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private String selectFilterByTypeCategory = null;
 
     private String selectedComponentImage = null;
-    private List<PropertyValue> componentImageList = null;
     private Boolean displayComponentImages = null;
 
     private Integer displayPropertyTypeId1 = null;
@@ -258,8 +257,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
             }
         }
-        componentImageList = null;
-        displayComponentImages = false;
+        prepareComponentImageList(component);
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
@@ -793,9 +791,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.displayComponentImages = displayComponentImages;
     }
 
-    public void prepareComponentImageList(Component component) {
+    public List<PropertyValue> prepareComponentImageList(Component component) {
         displayComponentImages = false;
-        componentImageList = new ArrayList<>();
+        List<PropertyValue> componentImageList = new ArrayList<>();
         List<PropertyValue> propertyValueList = component.getPropertyValueList();
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
@@ -813,13 +811,17 @@ public class ComponentController extends CrudEntityController<Component, Compone
                     + propertyValue.getValue();
             displayComponentImages = true;
         }
+        component.setImagePropertyList(componentImageList);
+        return componentImageList;
     }
 
     public List<PropertyValue> getComponentImageList() {
+        Component component = getCurrent();
+        List<PropertyValue> componentImageList = component.getImagePropertyList();
         if (componentImageList == null) {
-            prepareComponentImageList(getCurrent());
+            componentImageList = prepareComponentImageList(component);
         }
-        return componentImageList;
+        return componentImageList; 
     }
 
 }

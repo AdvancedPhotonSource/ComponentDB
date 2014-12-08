@@ -8,6 +8,7 @@ INSERT INTO `property_type_handler` VALUES
 (5,'ICMS Link','Handler for ICMS links.'),
 (6,'PDMLink','Handler for PDMLink drawings.'),
 (7,'AMOS Link','Handler for AMOS purchasing links.'),
-(8,'PARIS Link','Handler for PARIS purchasing links.');
+(8,'PARIS Link','Handler for PARIS purchasing links.'),
+(9,'Currency','Handler for monetary values.');
 /*!40000 ALTER TABLE `property_type_handler` ENABLE KEYS */;
 UNLOCK TABLES;
