@@ -20,12 +20,19 @@
                     <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                     <p:panelGrid columns="3" styleClass="editEntityDetails">
                         <h:outputLabel for="searchString" value="Search String" styleClass="entityDataLabel"/>
-                        <h:inputText id="searchString" value="#{searchController.searchString}" required="true" title="Search String" styleClass="entityDataText"/>
-                        <p:message for="searchString"/>
+                        <h:inputText id="searchString" value="#{searchController.searchString}" title="Search String" styleClass="entityDataText"/>
+                        <p:message for="searchString"/> 
 
-                        <h:outputLabel for="caseInsensitiveButton" value="Case Insensitive" styleClass="entityDataLabel"/>
-                        <h:selectBooleanCheckbox id="caseInsensitiveButton" value="#{searchController.caseInsensitive}" title="Case Insensitive" style="width:10px"/>
-                        <p:message for="caseInsensitiveButton"/>                        
+                        <h:outputLabel for="searchCustomizeButton" value="Search Options" styleClass="entityDataLabel"/>
+                        <p:commandButton id="searchCustomizeButton" 
+                                         oncomplete="PF('searchCustomizeDialogWidget').show()" 
+                                         alt="Customize Search" 
+                                         styleClass="actionButtonLeft" 
+                                         update="@form" 
+                                         icon="ui-icon-wrench">
+                            <p:tooltip for="searchCustomizeButton" value="Customize search."/>
+                        </p:commandButton>
+                        <p:message for="searchCustomizeButton"/> 
 
                     </p:panelGrid>
 
@@ -41,20 +48,47 @@
                         </div>  
 
                         <p:accordionPanel multiple="true" activeIndex="0,1,2,3">
-                            <p:tab title="Components">
+                            <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
+                            <ui:param name="searchString" value="#{searchController.searchString}"/>
+                            <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
+
+                            <p:tab title="Components" rendered="#{searchController.displayComponents}">
                                 <ui:include src="../component/componentSearchDataTable.xhtml"/>
                             </p:tab>   
-             
-                            <p:tab title="Component Types">
+
+                            <p:tab title="Component Types" rendered="#{searchController.displayComponentTypes}">
                                 <ui:include src="../componentType/componentTypeSearchDataTable.xhtml"/>
                             </p:tab>  
-                            
-                            
-                            <p:tab title="Component Type Categories">
+
+                            <p:tab title="Component Type Categories" rendered="#{searchController.displayComponentTypeCategories}">
                                 <ui:include src="../componentTypeCategory/componentTypeCategorySearchDataTable.xhtml"/>
                             </p:tab>    
+
+                            <p:tab title="Property Types" rendered="#{searchController.displayPropertyTypes}">
+                                <ui:include src="../propertyType/propertyTypeSearchDataTable.xhtml"/>
+                            </p:tab>    
+
+                            <p:tab title="Property Type Categories" rendered="#{searchController.displayPropertyTypeCategories}">
+                                <ui:include src="../propertyTypeCategory/propertyTypeCategorySearchDataTable.xhtml"/>
+                            </p:tab>    
+
+                            <p:tab title="Sources" rendered="#{searchController.displaySources}">
+                                <ui:include src="../source/sourceSearchDataTable.xhtml"/>
+                            </p:tab>                                
+                            <p:tab title="User Groups" rendered="#{searchController.displayUserGroups}">
+                                <ui:include src="../userGroup/userGroupSearchDataTable.xhtml"/>
+                            </p:tab>    
+
+                            <p:tab title="Users" rendered="#{searchController.displayUsers}">
+                                <ui:include src="../userInfo/userInfoSearchDataTable.xhtml"/>
+                            </p:tab> 
+
+
                         </p:accordionPanel>
                     </ui:fragment>
+
+                    <ui:include src="searchCustomizeDialog.xhtml"/>
+
                 </h:form>
             </div>
 

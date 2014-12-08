@@ -4,19 +4,18 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:dataTable id="componentTypeSearchDataTable" 
+    <p:dataTable id="sourceSearchDataTable" 
                  var="searchResultObject" 
-                 value="#{componentTypeController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{sourceController.getSearchResultList(searchString, caseInsensitive)}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 
-                 emptyMessage="No component types match.">
+                 emptyMessage="No sources match.">
 
         <ui:include src="../search/searchResultListObject.xhtml">
-            <ui:param name="entityName" value="componentType"/>
-            <ui:param name="entityTitle" value="Component Type"/>
+            <ui:param name="entityName" value="source"/>
+            <ui:param name="entityTitle" value="Source"/>
         </ui:include>
- 
     </p:dataTable>
 
 </ui:composition>

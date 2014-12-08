@@ -1,34 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
-    <ui:param name="searchString" value="#{searchController.searchString}"/>
-    <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
     <p:dataTable id="componentTypeCategorySearchDataTable" 
-                 var="componentTypeCategorySearchResultObject" 
+                 var="searchResultObject" 
                  value="#{componentTypeCategoryController.getSearchResultList(searchString, caseInsensitive)}" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No component type categories match.">
 
-        <p:column sortBy="#{componentTypeCategorySearchResultObject.objectId}" headerText="Id">
-            <h:outputText value="#{componentTypeCategorySearchResultObject.objectId}"/>
-        </p:column>
-        
-        <p:column sortBy="#{componentTypeCategorySearchResultObject.objectName}" headerText="Name">
-            <h:outputLink value="../componentTypeCategory/view.xhtml?id=#{componentTypeCategorySearchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="Component">
-                <h:outputText value="#{componentTypeCategorySearchResultObject.objectName}"/>
-            </h:outputLink>
-        </p:column>
-
-        <p:column sortBy="#{componentTypeCategorySearchResultObject.display}" headerText="Match Description">
-            <h:outputText value="#{componentTypeCategorySearchResultObject.display}"/>
-        </p:column>
+        <ui:include src="../search/searchResultListObject.xhtml">
+            <ui:param name="entityName" value="componentTypeCategory"/>
+            <ui:param name="entityTitle" value="Component Type Category"/>
+        </ui:include>
+ 
     </p:dataTable>
 
 </ui:composition>

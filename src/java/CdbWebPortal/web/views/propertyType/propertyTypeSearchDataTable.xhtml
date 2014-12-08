@@ -4,19 +4,18 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:dataTable id="componentTypeSearchDataTable" 
+    <p:dataTable id="propertyTypeSearchDataTable" 
                  var="searchResultObject" 
-                 value="#{componentTypeController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{propertyTypeController.getSearchResultList(searchString, caseInsensitive)}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 
-                 emptyMessage="No component types match.">
+                 emptyMessage="No property types match.">
 
         <ui:include src="../search/searchResultListObject.xhtml">
-            <ui:param name="entityName" value="componentType"/>
-            <ui:param name="entityTitle" value="Component Type"/>
+            <ui:param name="entityName" value="propertyType"/>
+            <ui:param name="entityTitle" value="Property Type"/>
         </ui:include>
- 
     </p:dataTable>
 
 </ui:composition>

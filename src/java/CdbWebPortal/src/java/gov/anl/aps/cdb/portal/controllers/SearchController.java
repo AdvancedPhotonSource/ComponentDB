@@ -14,8 +14,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 
@@ -60,14 +62,25 @@ public class SearchController implements Serializable {
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
 
+    private Boolean settingsInitializedFromDefaults = false;
+
     /**
      * Constructor.
      */
     public SearchController() {
     }
 
-    public String search() {
+    @PostConstruct
+    public void initialize() {
         updateSettings();
+    }
+
+    public String search() {
+        if (searchString != null && !searchString.isEmpty()) {
+            updateSettings();
+        } else {
+            SessionUtility.addWarningMessage("Warning", "Search string is empty.");
+        }
         return null;
     }
 
@@ -107,8 +120,9 @@ public class SearchController implements Serializable {
             }
         }
 
-        if (!settingsUpdated) {
+        if (!settingsUpdated && !settingsInitializedFromDefaults) {
             updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+            settingsInitializedFromDefaults = true;
         }
     }
 
@@ -117,6 +131,16 @@ public class SearchController implements Serializable {
             return;
         }
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+
+        displayComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentsSettingTypeKey).getDefaultValue());
+        displayComponentInstances = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstancesSettingTypeKey).getDefaultValue());
+        displayComponentTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypesSettingTypeKey).getDefaultValue());
+        displayComponentTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeCategoriesSettingTypeKey).getDefaultValue());
+        displayPropertyTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypesSettingTypeKey).getDefaultValue());
+        displayPropertyTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypeCategoriesSettingTypeKey).getDefaultValue());
+        displaySources = Boolean.parseBoolean(settingTypeMap.get(DisplaySourcesSettingTypeKey).getDefaultValue());
+        displayUsers = Boolean.parseBoolean(settingTypeMap.get(DisplayUsersSettingTypeKey).getDefaultValue());
+        displayUserGroups = Boolean.parseBoolean(settingTypeMap.get(DisplayUserGroupsSettingTypeKey).getDefaultValue());
     }
 
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
@@ -125,6 +149,17 @@ public class SearchController implements Serializable {
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+
+        displayComponents = sessionUser.getUserSettingValueAsBoolean(DisplayComponentsSettingTypeKey, displayComponents);
+        displayComponentInstances = sessionUser.getUserSettingValueAsBoolean(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
+        displayComponentTypes = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
+        displayComponentTypeCategories = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypeCategoriesSettingTypeKey, displayComponentTypeCategories);
+        displayPropertyTypes = sessionUser.getUserSettingValueAsBoolean(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
+        displayPropertyTypeCategories = sessionUser.getUserSettingValueAsBoolean(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
+        displaySources = sessionUser.getUserSettingValueAsBoolean(DisplaySourcesSettingTypeKey, displaySources);
+        displayUsers = sessionUser.getUserSettingValueAsBoolean(DisplayUsersSettingTypeKey, displayUsers);
+        displayUserGroups = sessionUser.getUserSettingValueAsBoolean(DisplayUserGroupsSettingTypeKey, displayUserGroups);
+
     }
 
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
@@ -133,6 +168,31 @@ public class SearchController implements Serializable {
         }
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+
+        sessionUser.setUserSettingValue(DisplayComponentsSettingTypeKey, displayComponents);
+        sessionUser.setUserSettingValue(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
+        sessionUser.setUserSettingValue(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
+        sessionUser.setUserSettingValue(DisplayComponentTypeCategoriesSettingTypeKey, displayComponentTypeCategories);
+        sessionUser.setUserSettingValue(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
+        sessionUser.setUserSettingValue(DisplaySourcesSettingTypeKey, displaySources);
+        sessionUser.setUserSettingValue(DisplayUsersSettingTypeKey, displayUsers);
+        sessionUser.setUserSettingValue(DisplayUserGroupsSettingTypeKey, displayUserGroups);
+    }
+
+    public void saveSearchSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+        logger.debug("Saving settings");
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser != null) {
+            logger.debug("Updating search settings for session user");
+            saveSettingsForSessionUser(sessionUser);
+        }
+    }
+
+    public String customizeSearch() {
+        String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
+        logger.debug("Returning to page: " + returnPage);
+        return returnPage;
     }
 
     public String getSearchString() {
@@ -221,6 +281,14 @@ public class SearchController implements Serializable {
 
     public void setDisplayUsers(Boolean displayUsers) {
         this.displayUsers = displayUsers;
+    }
+
+    public Boolean getDisplayUserGroups() {
+        return displayUserGroups;
+    }
+
+    public void setDisplayUserGroups(Boolean displayUserGroups) {
+        this.displayUserGroups = displayUserGroups;
     }
 
 }

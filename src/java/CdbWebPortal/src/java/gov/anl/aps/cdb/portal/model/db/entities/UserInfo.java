@@ -7,10 +7,12 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -407,5 +409,16 @@ public class UserInfo extends CloneableEntity
         hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
-    
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, username);
+        searchResult.doesValueContainPattern("username", username, searchPattern);
+        searchResult.doesValueContainPattern("firstName", firstName, searchPattern);
+        searchResult.doesValueContainPattern("middleName", middleName, searchPattern);
+        searchResult.doesValueContainPattern("lastName", lastName, searchPattern);
+        searchResult.doesValueContainPattern("email", email, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }        
 }

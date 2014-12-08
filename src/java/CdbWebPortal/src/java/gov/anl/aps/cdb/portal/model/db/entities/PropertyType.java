@@ -27,6 +27,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -86,7 +88,7 @@ public class PropertyType extends CloneableEntity {
     private List<PropertyValue> propertyValueList;
 
     private transient DisplayType displayType = null;
-    
+
     public PropertyType() {
     }
 
@@ -258,4 +260,11 @@ public class PropertyType extends CloneableEntity {
         return name;
     }
 
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
 }

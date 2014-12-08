@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <p:dialog id="searchCustomizeDialog"
+              widgetVar="searchCustomizeDialogWidget" 
+              header="Customize Search" 
+              styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="displayNumberOfItemsPerPage" value="#{componentController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="caseInsensitiveButton" value="#{searchController.caseInsensitive}" title="Case Insensitive Search" />
+                <h:outputLabel for="caseInsensitiveButton" value="Case Insensitive Search" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayComponents" value="#{searchController.displayComponents}" title="Search Components"/>
+                <h:outputLabel for="displayComponents" value="Search Components" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayComponentInstances" value="#{searchController.displayComponentInstances}" title="Search Component Instances"/>
+                <h:outputLabel for="displayComponentInstances" value="Search Component Instances" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayComponentTypes" value="#{searchController.displayComponentTypes}" title="Search Component Types"/>
+                <h:outputLabel for="displayComponentTypes" value="Search Component Types" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayComponentTypeCategories" value="#{searchController.displayComponentTypeCategories}" title="Search Component Type Categories"/>
+                <h:outputLabel for="displayComponentTypeCategories" value="Search Component Type Categories" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayPropertyTypes" value="#{searchController.displayPropertyTypes}" title="Search Property Types"/>
+                <h:outputLabel for="displayPropertyTypes" value="Search Property Types" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayPropertyTypeCategories" value="#{searchController.displayPropertyTypeCategories}" title="Search Property Type Categories"/>
+                <h:outputLabel for="displayPropertyTypeCategories" value="Search Property Type Categories" styleClass="dialogDataLabel"/>
+                
+                <h:selectBooleanCheckbox id="displaySources" value="#{searchController.displaySources}" title="Search Sources"/>
+                <h:outputLabel for="displaySources" value="Search Sources" styleClass="dialogDataLabel"/>
+
+                <h:selectBooleanCheckbox id="displayUserGroups" value="#{searchController.displayUserGroups}" title="Search Users"/>
+                <h:outputLabel for="displayUserGroups" value="Search User Groups" styleClass="dialogDataLabel"/>
+                
+                <h:selectBooleanCheckbox id="displayUsers" value="#{searchController.displayUsers}" title="Search Users"/>
+                <h:outputLabel for="displayUsers" value="Search Users" styleClass="dialogDataLabel"/>
+                
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{searchController.customizeSearch()}"
+                                 update="@form"
+                                 oncomplete="searchCustomizeDialogWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userController.saveSettingListForSessionUser()}"
+                                 actionListener="#{searchController.saveSearchSettingsForSessionUserActionListener}"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+
+</ui:composition>
