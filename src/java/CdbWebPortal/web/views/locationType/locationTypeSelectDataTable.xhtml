@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dataTable id="locationTypeSelectDataTable" 
+                 widgetVar="locationTypeSelectDataTableWidget"
+                 var="locationTypeObject" 
+                 value="#{locationTypeController.selectDataModel}" 
+                 filteredValue="#{locationTypeController.filteredObjectList}"
+                 rowKey="#{locationTypeObject.id}"
+                 selection="#{locationTypeController.selectedObject}"
+                 selectionMode="single"
+                 paginator="true"
+                 paginatorAlwaysVisible="true"
+                 rows="20"
+                 emptyMessage="No available location types found.">
+
         <p:column sortBy="#{locationTypeObject.id}" headerText="Id"
-                  rendered="#{locationTypeController.selectDisplayId}">
+                  rendered="true">
             <h:outputText value="#{locationTypeObject.id}"/>
         </p:column>
 
         <p:column sortBy="#{locationTypeObject.name}" headerText="Name" 
-                  filterBy="#{locationTypeObject.name}" 
-                  filterMatchMode="contains"
+                  filterBy="#{locationTypeObject.name}" filterMatchMode="contains"
                   filterValue="#{locationTypeController.selectFilterByName}"
                   rendered="true">
             <h:outputText value="#{locationTypeObject.name}"/>
@@ -22,10 +34,11 @@
         <p:column sortBy="#{locationTypeObject.description}" headerText="Description" 
                   filterBy="#{locationTypeObject.description}" filterMatchMode="contains"
                   filterValue="#{locationTypeController.selectFilterByDescription}"
-                  rendered="#{locationTypeController.selectDisplayDescription}">
+                  rendered="true">
             <h:outputText value="#{locationTypeObject.description}"/>
         </p:column>
 
+    </p:dataTable>
 
 </ui:composition>
 

@@ -21,6 +21,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueHistoryController")
@@ -53,11 +54,13 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
     private String filterByValue = null;
     private String filterByUnits = null;
 
-    private List<PropertyValueHistory> selectedPropertyValueHistoryList;        
+    private List<PropertyValueHistory> selectedPropertyValueHistoryList;
     private String selectedPropertyValueTypeName = null;
     private PropertyValue selectedPropertyValue = null;
     private DisplayType displayType = null;
-    
+
+    private static final Logger logger = Logger.getLogger(PropertyValueHistoryController.class.getName());
+
     @EJB
     private PropertyValueHistoryFacade propertyValueHistoryFacade;
 
@@ -198,7 +201,8 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
                         getValue(facesContext.getELContext(), null, "propertyValueHistoryController");
                 return controller.getEntity(getKey(value));
             } catch (Exception ex) {
-                // We cannot get this entity from given key.
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to property value history object.");
                 return null;
             }
         }
@@ -316,7 +320,7 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
 
     public void setSelectedPropertyValue(PropertyValue selectedPropertyValue) {
         this.selectedPropertyValue = selectedPropertyValue;
-        
+
         // Reset history list adding the current entry and reversing the order, set property type name
         PropertyValueHistory currentEntry = new PropertyValueHistory();
         currentEntry.updateFromPropertyValue(selectedPropertyValue);
@@ -343,9 +347,9 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
 
     public boolean displayHttpLinkValue() {
         return displayType.equals(DisplayType.HTTP_LINK);
-    } 
- 
+    }
+
     public boolean displayDocumentValue() {
         return displayType.equals(DisplayType.DOCUMENT);
-    }     
+    }
 }

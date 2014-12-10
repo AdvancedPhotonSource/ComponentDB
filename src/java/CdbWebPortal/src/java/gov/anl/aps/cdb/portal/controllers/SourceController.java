@@ -1,5 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -28,9 +29,10 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
     private static final String FilterByNameSettingTypeKey = "Source.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "Source.List.FilterBy.Description";
 
+    private static final Logger logger = Logger.getLogger(SourceController.class.getName());
+
     @EJB
     private SourceFacade sourceFacade;
-    private static final Logger logger = Logger.getLogger(SourceController.class.getName());
 
     public SourceController() {
     }
@@ -77,6 +79,24 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         return super.getAvailableItems();
     }
 
+    @Override
+    public void prepareEntityInsert(Source source) throws ObjectAlreadyExists {
+        Source existingSource = sourceFacade.findByName(source.getName());
+        if (existingSource != null) {
+            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
+        }
+        logger.debug("Inserting new source " + source.getName());
+    }
+
+    @Override
+    public void prepareEntityUpdate(Source source) throws ObjectAlreadyExists {
+        Source existingSource = sourceFacade.findByName(source.getName());
+        if (existingSource != null && !existingSource.getId().equals(source.getId())) {
+            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
+        }
+        logger.debug("Updating source " + source.getName());
+    }
+    
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
@@ -132,7 +152,8 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
                         getValue(facesContext.getELContext(), null, "sourceController");
                 return controller.getEntity(getKey(value));
             } catch (Exception ex) {
-                // We cannot get this entity from given key.
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to source object.");
                 return null;
             }
         }

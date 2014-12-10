@@ -20,21 +20,18 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("userSettingController")
 @SessionScoped
-public class UserSettingController extends CrudEntityController<UserSetting, UserSettingFacade> implements Serializable
-{
+public class UserSettingController extends CrudEntityController<UserSetting, UserSettingFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserSetting.List.Display.NumberOfItemsPerPage";
 
-    
     @EJB
     private UserSettingFacade userSettingFacade;
     private static final Logger logger = Logger.getLogger(UserSettingController.class.getName());
-    
+
     // These do not correspond to setting types.
     private String filterBySettingType = null;
     private String filterByValue = null;
-    
-    
+
     public UserSettingController() {
     }
 
@@ -53,12 +50,12 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
     public String getEntityTypeName() {
         return "userSetting";
     }
-    
+
     @Override
     public String getDisplayEntityTypeName() {
         return "user setting";
     }
-    
+
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -72,7 +69,6 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
         return super.getAvailableItems();
     }
 
-
     @Override
     public void destroy(UserSetting userSetting) {
         if (userSetting.getId() != null) {
@@ -82,7 +78,7 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());   
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -100,8 +96,8 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
         Map<String, String> filters = dataTable.getFilters();
         filterBySettingType = filters.get("settingType");
         filterByValue = filters.get("value");
-    }    
-    
+    }
+
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -110,13 +106,13 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
-    
+
     @Override
     public void clearListFilters() {
         super.clearListFilters();
         filterBySettingType = null;
         filterByValue = null;
-    }    
+    }
 
     public String getFilterBySettingType() {
         return filterBySettingType;
@@ -133,19 +129,24 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
     public void setFilterByValue(String filterByValue) {
         this.filterByValue = filterByValue;
     }
-    
+
     @FacesConverter(forClass = UserSetting.class)
-    public static class UserSettingControllerConverter implements Converter
-    {
+    public static class UserSettingControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            UserSettingController controller = (UserSettingController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "userSettingController");
-            return controller.getEntity(getKey(value));
+            try {
+                UserSettingController controller = (UserSettingController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "userSettingController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to user setting object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -168,8 +169,7 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
             if (object instanceof UserSetting) {
                 UserSetting o = (UserSetting) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + UserSetting.class.getName());
             }
         }

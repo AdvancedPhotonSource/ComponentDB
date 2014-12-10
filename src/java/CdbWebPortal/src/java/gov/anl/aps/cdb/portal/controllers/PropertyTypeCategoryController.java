@@ -29,7 +29,7 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
     private static final String FilterByNameSettingTypeKey = "PropertyTypeCategory.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "PropertyTypeCategory.List.FilterBy.Description";
 
-    private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
+    private static final Logger logger = Logger.getLogger(PropertyTypeCategoryController.class.getName());
 
     @EJB
     private PropertyTypeCategoryFacade propertyTypeCategoryFacade;
@@ -90,11 +90,16 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         if (existingPropertyTypeCategory != null) {
             throw new ObjectAlreadyExists("Property type category " + propertyTypeCategory.getName() + " already exists.");
         }
-        logger.debug("Inserting new property type " + propertyTypeCategory.getName());
+        logger.debug("Inserting new property type category " + propertyTypeCategory.getName());
     }
 
     @Override
-    public void prepareEntityUpdate(PropertyTypeCategory propertyCategory) throws ObjectAlreadyExists {
+    public void prepareEntityUpdate(PropertyTypeCategory propertyTypeCategory) throws ObjectAlreadyExists {
+        PropertyTypeCategory existingPropertyTypeCategory = propertyTypeCategoryFacade.findByName(propertyTypeCategory.getName());
+        if (existingPropertyTypeCategory != null && !existingPropertyTypeCategory.getId().equals(propertyTypeCategory.getId())) {
+            throw new ObjectAlreadyExists("Property type category " + propertyTypeCategory.getName() + " already exists.");
+        }
+        logger.debug("Updating property type category " + propertyTypeCategory.getName());
     }
 
     @Override
@@ -147,9 +152,15 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
             if (value == null || value.length() == 0) {
                 return null;
             }
-            PropertyTypeCategoryController controller = (PropertyTypeCategoryController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyTypeCategoryController");
-            return controller.getEntity(getKey(value));
+            try {
+                PropertyTypeCategoryController controller = (PropertyTypeCategoryController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "propertyTypeCategoryController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to property type category object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {

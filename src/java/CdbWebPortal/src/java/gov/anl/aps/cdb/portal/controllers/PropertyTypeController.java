@@ -146,6 +146,11 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
 
     @Override
     public void prepareEntityUpdate(PropertyType propertyType) throws ObjectAlreadyExists {
+        PropertyType existingPropertyType = propertyTypeFacade.findByName(propertyType.getName());
+        if (existingPropertyType != null && !existingPropertyType.getId().equals(propertyType.getId())) {
+            throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
+        }
+        logger.debug("Updating property type " + propertyType.getName());
     }
 
     @Override
@@ -320,9 +325,16 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
             if (value == null || value.length() == 0) {
                 return null;
             }
-            PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
+            try {
+                PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "propertyTypeController");
-            return controller.getEntity(getKey(value));
+                return controller.getEntity(getKey(value));
+            }
+            catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + "cannot be converted to property type object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {

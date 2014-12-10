@@ -109,6 +109,17 @@ VALUES
 	('DesignLink.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('DesignLink.List.Display.Tag','Display design link tag.', 'true'),
 
+	('Location.List.Display.Description','Display location description.', 'true'),
+	('Location.List.Display.Id','Display location id.', 'true'),
+	('Location.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+	('Location.List.Display.Parent','Display location parent.', 'true'),
+	('Location.List.Display.Type','Display location type.', 'true'),
+
+	('Location.List.FilterBy.Description','Filter for location type description.', NULL),
+	('Location.List.FilterBy.Name','Filter for location type name.', NULL),
+	('Location.List.FilterBy.Parent','Filter for location parent.', NULL),
+	('Location.List.FilterBy.Type','Filter for location type.', NULL),
+
 	('LocationType.List.Display.Description','Display location type description.', 'true'),
 	('LocationType.List.Display.Id','Display location type id.', 'true'),
 	('LocationType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),

@@ -20,8 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
-public class PropertyTypeHandlerController extends CrudEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade> implements Serializable
-{
+public class PropertyTypeHandlerController extends CrudEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeHandler.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeHandler.List.Display.Id";
@@ -29,8 +28,8 @@ public class PropertyTypeHandlerController extends CrudEntityController<Property
 
     private static final String FilterByNameSettingTypeKey = "PropertyTypeHandler.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "PropertyTypeHandler.List.FilterBy.Description";
-    
-    private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
+
+    private static final Logger logger = Logger.getLogger(PropertyTypeHandlerController.class.getName());
 
     @EJB
     private PropertyTypeHandlerFacade propertyTypeHandlerFacade;
@@ -95,8 +94,8 @@ public class PropertyTypeHandlerController extends CrudEntityController<Property
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
 
-        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();        
-        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();        
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -109,8 +108,8 @@ public class PropertyTypeHandlerController extends CrudEntityController<Property
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);        
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);        
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     @Override
@@ -123,22 +122,27 @@ public class PropertyTypeHandlerController extends CrudEntityController<Property
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);        
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);        
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
-    
+
     @FacesConverter(forClass = PropertyTypeHandler.class)
-    public static class PropertyHandlerControllerConverter implements Converter
-    {
+    public static class PropertyHandlerControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            PropertyTypeHandlerController controller = (PropertyTypeHandlerController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyTypeHandlerController");
-            return controller.getEntity(getKey(value));
+            try {
+                PropertyTypeHandlerController controller = (PropertyTypeHandlerController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "propertyTypeHandlerController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to property type handler object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -161,8 +165,7 @@ public class PropertyTypeHandlerController extends CrudEntityController<Property
             if (object instanceof PropertyTypeHandler) {
                 PropertyTypeHandler o = (PropertyTypeHandler) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyTypeHandler.class.getName());
             }
         }

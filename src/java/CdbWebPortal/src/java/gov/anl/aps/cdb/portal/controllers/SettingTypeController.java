@@ -17,14 +17,17 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
 
 @Named("settingTypeController")
 @SessionScoped
-public class SettingTypeController implements Serializable
-{
+public class SettingTypeController implements Serializable {
 
     private SettingType current;
     private DataModel items = null;
+
+    private static final Logger logger = Logger.getLogger(SettingTypeController.class.getName());
+
     @EJB
     private gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade ejbFacade;
     private PaginationHelper pagination;
@@ -47,8 +50,7 @@ public class SettingTypeController implements Serializable
 
     public PaginationHelper getPagination() {
         if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
+            pagination = new PaginationHelper(10) {
 
                 @Override
                 public int getItemsCount() {
@@ -86,8 +88,7 @@ public class SettingTypeController implements Serializable
             getFacade().create(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("SettingTypeCreated"));
             return prepareCreate();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
             return null;
         }
@@ -104,8 +105,7 @@ public class SettingTypeController implements Serializable
             getFacade().edit(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("SettingTypeUpdated"));
             return "View";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
             return null;
         }
@@ -126,8 +126,7 @@ public class SettingTypeController implements Serializable
         updateCurrentItem();
         if (selectedItemIndex >= 0) {
             return "View";
-        }
-        else {
+        } else {
             // all items were removed - go back to list
             recreateModel();
             return "List";
@@ -138,8 +137,7 @@ public class SettingTypeController implements Serializable
         try {
             getFacade().remove(current);
             JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("SettingTypeDeleted"));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
         }
     }
@@ -199,17 +197,22 @@ public class SettingTypeController implements Serializable
     }
 
     @FacesConverter(forClass = SettingType.class)
-    public static class SettingTypeControllerConverter implements Converter
-    {
+    public static class SettingTypeControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            SettingTypeController controller = (SettingTypeController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "settingTypeController");
-            return controller.getSettingType(getKey(value));
+            try {
+                SettingTypeController controller = (SettingTypeController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "settingTypeController");
+                return controller.getSettingType(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to user group object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -232,8 +235,7 @@ public class SettingTypeController implements Serializable
             if (object instanceof SettingType) {
                 SettingType o = (SettingType) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + SettingType.class.getName());
             }
         }

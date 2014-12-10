@@ -94,8 +94,13 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
     }
 
     @Override
-    public void prepareEntityUpdate(ComponentTypeCategory componentCategory) throws ObjectAlreadyExists {
-    }
+    public void prepareEntityUpdate(ComponentTypeCategory componentTypeCategory) throws ObjectAlreadyExists {
+        ComponentTypeCategory existingComponentTypeCategory = componentTypeCategoryFacade.findByName(componentTypeCategory.getName());
+        if (existingComponentTypeCategory != null && !existingComponentTypeCategory.getId().equals(componentTypeCategory.getId())) {
+            throw new ObjectAlreadyExists("Component type category " + componentTypeCategory.getName() + " already exists.");
+        }
+        logger.debug("Updating component type category " + componentTypeCategory.getName());
+    }  
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {

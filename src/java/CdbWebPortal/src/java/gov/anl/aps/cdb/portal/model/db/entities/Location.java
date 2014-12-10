@@ -8,9 +8,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,8 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
-    @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description"),
-    @NamedQuery(name = "Location.findByIsPhysical", query = "SELECT l FROM Location l WHERE l.isPhysical = :isPhysical")})
+    @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description")})
 public class Location extends CloneableEntity
 {
     @Id
@@ -46,23 +44,21 @@ public class Location extends CloneableEntity
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String name;
     @Size(max = 256)
     private String description;
-    @Column(name = "is_physical")
-    private Boolean isPhysical;
-    @OneToMany(mappedBy = "parentLocationId")
+    @OneToMany(mappedBy = "parentLocation")
     private List<Location> locationList;
     @JoinColumn(name = "parent_location_id", referencedColumnName = "id")
     @ManyToOne
-    private Location parentLocationId;
+    private Location parentLocation;
     @JoinColumn(name = "location_type_id", referencedColumnName = "id")
-    @ManyToOne
-    private LocationType locationTypeId;
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    private LocationType locationType;
     @OneToMany(mappedBy = "location")
     private List<ComponentInstance> componentInstanceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "location")
+    @OneToMany(mappedBy = "location")
     private List<DesignElement> designElementList;
 
     public Location() {
@@ -77,6 +73,7 @@ public class Location extends CloneableEntity
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -101,14 +98,6 @@ public class Location extends CloneableEntity
         this.description = description;
     }
 
-    public Boolean getIsPhysical() {
-        return isPhysical;
-    }
-
-    public void setIsPhysical(Boolean isPhysical) {
-        this.isPhysical = isPhysical;
-    }
-
     @XmlTransient
     public List<Location> getLocationList() {
         return locationList;
@@ -118,20 +107,20 @@ public class Location extends CloneableEntity
         this.locationList = locationList;
     }
 
-    public Location getParentLocationId() {
-        return parentLocationId;
+    public Location getParentLocation() {
+        return parentLocation;
     }
 
-    public void setParentLocationId(Location parentLocationId) {
-        this.parentLocationId = parentLocationId;
+    public void setParentLocation(Location parentLocation) {
+        this.parentLocation = parentLocation;
     }
 
-    public LocationType getLocationTypeId() {
-        return locationTypeId;
+    public LocationType getLocationType() {
+        return locationType;
     }
 
-    public void setLocationTypeId(LocationType locationTypeId) {
-        this.locationTypeId = locationTypeId;
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
     }
 
     @XmlTransient
@@ -166,15 +155,12 @@ public class Location extends CloneableEntity
             return false;
         }
         Location other = (Location) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.Location[ id=" + id + " ]";
+        return name;
     }
     
 }

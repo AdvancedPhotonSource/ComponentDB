@@ -15,6 +15,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 @Named("logController")
@@ -42,6 +43,8 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
     private String filterByEnteredOnDateTime = null;
     private String filterByText = null;
     private String filterByTopic = null;
+
+    private static final Logger logger = Logger.getLogger(LogController.class.getName());
 
     @EJB
     private LogFacade logFacade;
@@ -173,7 +176,8 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
                         getValue(facesContext.getELContext(), null, "logController");
                 return controller.getEntity(getKey(value));
             } catch (Exception ex) {
-                // We cannot get this entity from given key.
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to log object.");
                 return null;
             }
         }

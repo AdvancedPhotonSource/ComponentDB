@@ -40,5 +40,17 @@ public class UserGroupFacade extends AbstractFacade<UserGroup>
         } catch (NoResultException ex) {
         }
         return null;
-    }    
+    }  
+    
+        public UserGroup findByName(String name) {
+        try {
+            return (UserGroup)em.createNamedQuery("UserGroup.findByName")
+                .setParameter("name", name)
+                .getSingleResult();
+        }
+        catch (NoResultException ex) {
+        }
+        return null;
+    }
+
 }

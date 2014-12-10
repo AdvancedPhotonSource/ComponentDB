@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:param name="locationObject" value="#{locationController.selected}"/>
+
+    <p:panelGrid columns="4" styleClass="createEntityDetails">
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="name" value="#{locationObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        <p:message for="name"/> 
+        <p:tooltip for="name" value="Location name is required."/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:inputText id="description" value="#{locationObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:message for="description"/> 
+        <p:tooltip for="description" value="Description is optional."/>
+
+        <h:outputLabel for="type" value="Type" styleClass="entityDataLabel"/>
+        <h:selectOneMenu id="type" value="#{locationObject.locationType}" title="Type" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="type" value="#{locationTypeController.availableItems}" itemLabel="#{type.name}" itemValue="#{type}"/>
+        </h:selectOneMenu>
+        <p:message for="type"/> 
+        <p:tooltip for="type" value="Select location type."/>
+
+        <p:column>
+            <h:outputLabel for="parent" value="Parent" styleClass="entityDataLabel"/>
+            <div class="actionButtonRight">
+                <p:commandButton id="selectParentButton"
+                                 action="#{locationController.clearSelectFiltersAndResetSelectDataModel()}" 
+                                 oncomplete="locationParentSelectDialogWidget.show()"
+                                 update="@form"
+                                 immediate="true"
+                                 alt="Select Parent Location" icon="ui-icon-search">
+                    <p:tooltip for="selectParentButton" value="Select parent location."/>
+                </p:commandButton>
+            </div>
+        </p:column>
+        <h:outputText id="parent" value="#{locationObject.parentLocation.name}" title="Parent" styleClass="entityDataText"/>
+        <p:message for="parent"/>
+        <p:tooltip for="parent" value="Parent location is optional."/>        
+    </p:panelGrid>
+
+    <ui:include src="locationParentSelectDialog.xhtml"/>
+
+    <ui:include src="locationParentSelectCustomizeDisplayDialog.xhtml"/>
+    
+</ui:composition>
+
+

@@ -1,8 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.LocationTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -11,7 +9,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -19,11 +16,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("locationTypeController")
 @SessionScoped
@@ -102,6 +95,11 @@ public class LocationTypeController extends CrudEntityController<LocationType, L
 
     @Override
     public void prepareEntityUpdate(LocationType locationType) throws ObjectAlreadyExists {
+        LocationType existingLocationType = locationTypeFacade.findByName(locationType.getName());
+        if (existingLocationType != null && !existingLocationType.getId().equals(locationType.getId())) {
+            throw new ObjectAlreadyExists("Location type " + locationType.getName() + " already exists.");
+        }
+        logger.debug("Updating location type " + locationType.getName());
     }
 
     @Override
@@ -133,7 +131,6 @@ public class LocationTypeController extends CrudEntityController<LocationType, L
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
-
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -148,19 +145,23 @@ public class LocationTypeController extends CrudEntityController<LocationType, L
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
-
     @FacesConverter(forClass = LocationType.class)
-    public static class LocationTypeControllerConverter implements Converter
-    {
+    public static class LocationTypeControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            LocationTypeController controller = (LocationTypeController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "locationTypeController");
-            return controller.getEntity(getKey(value));
+            try {
+                LocationTypeController controller = (LocationTypeController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "locationTypeController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to location type object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -183,8 +184,7 @@ public class LocationTypeController extends CrudEntityController<LocationType, L
             if (object instanceof LocationType) {
                 LocationType o = (LocationType) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + LocationType.class.getName());
             }
         }

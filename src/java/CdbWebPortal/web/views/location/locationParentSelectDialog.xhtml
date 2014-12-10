@@ -7,32 +7,30 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="locationTypeSelectDialog" 
-              widgetVar="locationTypeSelectDialogWidget" 
-              header="Select Location Type" 
+    <p:dialog id="locationParentSelectDialog" 
+              widgetVar="locationParentSelectDialogWidget" 
+              header="Select Parent Location" 
               styleClass="dialog">
         <div class="dialog">
 
             <div class="actionButton">
-                <p:commandButton id="locationTypeSelectCustomizeDisplay" 
-                                 onclick="locationTypeSelectDialogWidget.hide(); locationTypeSelectCustomizeDisplayDialogWidget.show()"
+                <p:commandButton id="locationParentSelectCustomizeDisplay" 
+                                 onclick="locationParentSelectDialogWidget.hide(); locationParentSelectCustomizeDisplayDialogWidget.show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
-                    <p:tooltip for="locationTypeSelectCustomizeDisplay" value="Customize selection view."/>
+                    <p:tooltip for="locationParentSelectCustomizeDisplay" value="Customize selection view."/>
                 </p:commandButton>
             </div>
-            <ui:include src="locationTypeSelectDataTable.xhtml"/>   
+            <ui:include src="locationParentSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{locationController.selectLocationType(locationTypeController.selectedObject)}"
                                  update="@form"
-                                 oncomplete="locationTypeSelectDialogWidget.hide()" 
+                                 oncomplete="locationParentSelectDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>
     </p:dialog>
 
 </ui:composition>
-
 

@@ -19,6 +19,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueController")
@@ -57,6 +58,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     private String filterByValue = null;
     private String filterByUnits = null;
 
+    private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
+    
     @EJB
     private PropertyValueFacade propertyValueFacade;
 
@@ -261,7 +264,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
                         getValue(facesContext.getELContext(), null, "propertyValueController");
                 return controller.getEntity(getKey(value));
             } catch (Exception ex) {
-                // We cannot get this entity from given key.
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to property value object.");
                 return null;
             }
         }

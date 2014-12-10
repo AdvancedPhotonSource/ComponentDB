@@ -39,5 +39,15 @@ public class SourceFacade extends AbstractFacade<Source>
         } catch (NoResultException ex) {
         }
         return null;
-    }        
+    }  
+    
+    public Source findByName(String name) {
+        try {
+            return (Source) em.createNamedQuery("Source.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }     
 }

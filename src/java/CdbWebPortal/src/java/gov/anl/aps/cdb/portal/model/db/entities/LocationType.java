@@ -47,7 +47,7 @@ public class LocationType extends CloneableEntity
     private String name;
     @Size(max = 256)
     private String description;
-    @OneToMany(mappedBy = "locationTypeId")
+    @OneToMany(mappedBy = "locationType")
     private List<Location> locationList;
 
     public LocationType() {

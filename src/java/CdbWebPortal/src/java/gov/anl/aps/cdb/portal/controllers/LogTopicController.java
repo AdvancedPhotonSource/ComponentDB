@@ -13,11 +13,13 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import org.apache.log4j.Logger;
 
 @Named("logTopicController")
 @SessionScoped
 public class LogTopicController extends CrudEntityController<LogTopic, LogTopicFacade> implements Serializable {
 
+    private static final Logger logger = Logger.getLogger(LogTopicController.class.getName());
 
     @EJB
     private LogTopicFacade logTopicFacade;
@@ -54,8 +56,6 @@ public class LogTopicController extends CrudEntityController<LogTopic, LogTopicF
         return super.getAvailableItems();
     }
 
- 
-
     @FacesConverter(forClass = LogTopic.class)
     public static class LogTopicControllerConverter implements Converter {
 
@@ -69,7 +69,8 @@ public class LogTopicController extends CrudEntityController<LogTopic, LogTopicF
                         getValue(facesContext.getELContext(), null, "logTopicController");
                 return controller.getEntity(getKey(value));
             } catch (Exception ex) {
-                // We cannot get this entity from given key.
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to log topic object.");
                 return null;
             }
         }
@@ -101,5 +102,4 @@ public class LogTopicController extends CrudEntityController<LogTopic, LogTopicF
 
     }
 
-  
 }

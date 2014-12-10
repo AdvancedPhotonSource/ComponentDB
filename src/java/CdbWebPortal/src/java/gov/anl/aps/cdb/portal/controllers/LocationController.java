@@ -3,9 +3,17 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
+import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
+import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -17,199 +25,223 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("locationController")
 @SessionScoped
-public class LocationController implements Serializable
-{
+public class LocationController extends CrudEntityController<Location, LocationFacade> implements Serializable {
 
-    private Location current;
-    private DataModel items = null;
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Location.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayDescriptionSettingTypeKey = "Location.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "Location.List.Display.Id";
+    private static final String DisplayParentSettingTypeKey = "Location.List.Display.Parent";
+    private static final String DisplayTypeSettingTypeKey = "Location.List.Display.Type";
+
+    private static final String FilterByNameSettingTypeKey = "Location.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "Location.List.FilterBy.Description";
+    private static final String FilterByParentSettingTypeKey = "Location.List.FilterBy.Parent";
+    private static final String FilterByTypeSettingTypeKey = "Location.List.FilterBy.Type";
+
+    private static final Logger logger = Logger.getLogger(LocationController.class.getName());
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.LocationFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private LocationFacade locationFacade;
 
+    private Boolean displayParent = null;
+    private Boolean displayType = null;
+
+    private String filterByParent = null;
+    private String filterByType = null;
+
+    private Boolean selectDisplayParent = true;
+    private Boolean selectDisplayType = true;
+
+    private String selectFilterByParent = null;
+    private String selectFilterByType = null;
+
+    private Location selectedParentLocation = null;
+    
     public LocationController() {
     }
 
-    public Location getSelected() {
-        if (current == null) {
-            current = new Location();
-            selectedItemIndex = -1;
+    @Override
+    protected LocationFacade getFacade() {
+        return locationFacade;
+    }
+
+    @Override
+    protected Location createEntityInstance() {
+        Location location = new Location();
+        return location;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "location";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "location";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getName();
         }
-        return current;
+        return "";
     }
 
-    private LocationFacade getFacade() {
-        return ejbFacade;
+    public Location findById(Integer id) {
+        return locationFacade.findById(id);
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (Location) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new Location();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("LocationCreated"));
-            return prepareCreate();
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            Location location = findById(idViewParam);
+            setCurrent(location);
+            idViewParam = null;
         }
     }
 
-    public String prepareEdit() {
-        current = (Location) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
+    @Override
+    public List<Location> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("LocationUpdated"));
-            return "View";
+    @Override
+    public void prepareEntityInsert(Location location) throws CdbPortalException {
+        Location existingLocation = locationFacade.findByName(location.getName());
+        if (existingLocation != null) {
+            throw new ObjectAlreadyExists("Location " + location.getName() + " already exists.");
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+        if (location.getLocationType() == null) {
+            throw new InvalidObjectState("Location type for " + location.getName() + " must be selected.");
         }
+        selectedParentLocation = null;
+        logger.debug("Inserting new location " + location.getName());
     }
 
-    public String destroy() {
-        current = (Location) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
+    @Override
+    public void prepareEntityUpdate(Location location) throws CdbPortalException {
+        Location existingLocation = locationFacade.findByName(location.getName());
+        if (existingLocation != null && !existingLocation.getId().equals(location.getId())) {
+            throw new ObjectAlreadyExists("Location " + location.getName() + " already exists.");
         }
-        else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+        if (location.getLocationType() == null) {
+            throw new InvalidObjectState("Location type for " + location.getName() + " must be selected.");
         }
+        selectedParentLocation = null;
+        logger.debug("Updating location " + location.getName());
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("LocationDeleted"));
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        displayParent = Boolean.parseBoolean(settingTypeMap.get(DisplayParentSettingTypeKey).getDefaultValue());
+        displayType = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+
+        filterByParent = settingTypeMap.get(FilterByParentSettingTypeKey).getDefaultValue();
+        filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
+    }
+
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        displayParent = sessionUser.getUserSettingValueAsBoolean(DisplayParentSettingTypeKey, displayParent);
+        displayType = sessionUser.getUserSettingValueAsBoolean(DisplayTypeSettingTypeKey, displayType);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        filterByParent = sessionUser.getUserSettingValueAsString(FilterByParentSettingTypeKey, filterByParent);
+        filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
     }
 
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
+        Map<String, String> filters = dataTable.getFilters();
+        filterByParent = filters.get("locationParent.name");
+        filterByType = filters.get("type");
+
+    }
+
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(DisplayParentSettingTypeKey, displayParent);
+        sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        sessionUser.setUserSettingValue(FilterByParentSettingTypeKey, filterByParent);
+        sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
+
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByParent = null;
+        filterByType = null;
     }
 
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public Location getLocation(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    @Override
+    public void clearSelectFilters() {
+        super.clearSelectFilters();
+        selectFilterByParent = null;
+        selectFilterByType = null;
     }
 
     @FacesConverter(forClass = Location.class)
-    public static class LocationControllerConverter implements Converter
-    {
+    public static class LocationControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            LocationController controller = (LocationController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "locationController");
-            return controller.getLocation(getKey(value));
+            try {
+                LocationController controller = (LocationController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "locationController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to location object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -232,12 +264,98 @@ public class LocationController implements Serializable
             if (object instanceof Location) {
                 Location o = (Location) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + Location.class.getName());
             }
         }
 
+    }
+
+    public void selectParentLocation(Location parentLocation) {
+        Location location = getCurrent();
+        if (parentLocation != null) {
+            location.setParentLocation(parentLocation);
+        }        
+    }
+    
+    public void selectLocationType(LocationType locationType) {
+        Location location = getCurrent();
+        if (locationType != null) {
+            location.setLocationType(locationType);
+        }
+    }
+
+    public Boolean getDisplayParent() {
+        return displayParent;
+    }
+
+    public void setDisplayParent(Boolean displayParent) {
+        this.displayParent = displayParent;
+    }
+
+    public Boolean getDisplayType() {
+        return displayType;
+    }
+
+    public void setDisplayType(Boolean displayType) {
+        this.displayType = displayType;
+    }
+
+    public String getFilterByParent() {
+        return filterByParent;
+    }
+
+    public void setFilterByParent(String filterByParent) {
+        this.filterByParent = filterByParent;
+    }
+
+    public String getFilterByType() {
+        return filterByType;
+    }
+
+    public void setFilterByType(String filterByType) {
+        this.filterByType = filterByType;
+    }
+
+    public Boolean getSelectDisplayParent() {
+        return selectDisplayParent;
+    }
+
+    public void setSelectDisplayParent(Boolean selectDisplayParent) {
+        this.selectDisplayParent = selectDisplayParent;
+    }
+
+    public Boolean getSelectDisplayType() {
+        return selectDisplayType;
+    }
+
+    public void setSelectDisplayType(Boolean selectDisplayType) {
+        this.selectDisplayType = selectDisplayType;
+    }
+
+    public String getSelectFilterByParent() {
+        return selectFilterByParent;
+    }
+
+    public void setSelectFilterByParent(String selectFilterByParent) {
+        this.selectFilterByParent = selectFilterByParent;
+    }
+
+    public String getSelectFilterByType() {
+        return selectFilterByType;
+    }
+
+    public void setSelectFilterByType(String selectFilterByType) {
+        this.selectFilterByType = selectFilterByType;
+    }
+
+    public Location getSelectedParentLocation() {
+        return selectedParentLocation;
+    }
+
+    public void setSelectedParentLocation(Location selectedParentLocation) {
+        this.selectedParentLocation = selectedParentLocation;
+        selectParentLocation(selectedParentLocation);
     }
 
 }

@@ -24,8 +24,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("userInfoController")
 @SessionScoped
-public class UserInfoController extends CrudEntityController<UserInfo, UserInfoFacade> implements Serializable
-{
+public class UserInfoController extends CrudEntityController<UserInfo, UserInfoFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserInfo.List.Display.Id";
@@ -43,8 +42,8 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     private static final String FilterByLastNameSettingTypeKey = "UserInfo.List.FilterBy.LastName";
     private static final String FilterByMiddleNameSettingTypeKey = "UserInfo.List.FilterBy.MiddleName";
     private static final String FilterByUsernameSettingTypeKey = "UserInfo.List.FilterBy.Username";
- 
-    private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
+
+    private static final Logger logger = Logger.getLogger(UserInfoController.class.getName());
 
     @EJB
     private UserInfoFacade userInfoFacade;
@@ -63,7 +62,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     private String filterByLastName = null;
     private String filterByMiddleName = null;
     private String filterByUsername = null;
-   
+
     public UserInfoController() {
     }
 
@@ -91,7 +90,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     public String getDisplayEntityTypeName() {
         return "user";
     }
-    
+
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -112,7 +111,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
             idViewParam = null;
         }
     }
-    
+
     @Override
     public List<UserInfo> getAvailableItems() {
         return super.getAvailableItems();
@@ -151,6 +150,11 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
 
     @Override
     public void prepareEntityUpdate(UserInfo userInfo) throws CdbPortalException {
+        UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
+        if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
+            throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
+        }
+        
         logger.debug("Updating user " + userInfo.getUsername());
         List<UserSetting> userSettingList = userInfo.getUserSettingList();
         for (UserSetting userSetting : userSettingList) {
@@ -211,7 +215,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
         displayGroups = Boolean.parseBoolean(settingTypeMap.get(DisplayGroupsSettingTypeKey).getDefaultValue());
         displayLastName = Boolean.parseBoolean(settingTypeMap.get(DisplayLastNameSettingTypeKey).getDefaultValue());
         displayMiddleName = Boolean.parseBoolean(settingTypeMap.get(DisplayMiddleNameSettingTypeKey).getDefaultValue());
- 
+
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByEmail = settingTypeMap.get(FilterByEmailSettingTypeKey).getDefaultValue();
         filterByFirstName = settingTypeMap.get(FilterByFirstNameSettingTypeKey).getDefaultValue();
@@ -235,7 +239,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
         displayGroups = sessionUser.getUserSettingValueAsBoolean(DisplayGroupsSettingTypeKey, displayGroups);
         displayLastName = sessionUser.getUserSettingValueAsBoolean(DisplayLastNameSettingTypeKey, displayLastName);
         displayMiddleName = sessionUser.getUserSettingValueAsBoolean(DisplayMiddleNameSettingTypeKey, displayMiddleName);
- 
+
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByEmail = sessionUser.getUserSettingValueAsString(FilterByEmailSettingTypeKey, filterByEmail);
         filterByFirstName = sessionUser.getUserSettingValueAsString(FilterByFirstNameSettingTypeKey, filterByFirstName);
@@ -383,12 +387,12 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     public void setFilterByUsername(String filterByUsername) {
         this.filterByUsername = filterByUsername;
     }
-    
+
     @Override
     public boolean entityHasGroups() {
         return true;
     }
-        
+
     public String getPasswordEntry() {
         return passwordEntry;
     }
@@ -398,17 +402,22 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     }
 
     @FacesConverter(forClass = UserInfo.class)
-    public static class UserInfoControllerConverter implements Converter
-    {
+    public static class UserInfoControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            UserInfoController controller = (UserInfoController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "userInfoController");
-            return controller.getEntity(getKey(value));
+            try {
+                UserInfoController controller = (UserInfoController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "userInfoController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to user info object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -431,8 +440,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
             if (object instanceof UserInfo) {
                 UserInfo o = (UserInfo) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + UserInfo.class.getName());
             }
         }
