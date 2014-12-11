@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,8 +37,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
     @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description")})
-public class Location extends CloneableEntity
-{
+public class Location extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -162,5 +163,12 @@ public class Location extends CloneableEntity
     public String toString() {
         return name;
     }
-    
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
 }

@@ -19,28 +19,36 @@
         <p:message for="description"/> 
         <p:tooltip for="description" value="Description is optional."/>
 
+        <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
         <p:column>
-            <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
-            <div class="actionButtonRight">
-                <p:commandButton id="selectComponentTypeButton"
-                                 action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
-                                 oncomplete="componentTypeSelectDialogWidget.show()"
-                                 update="@form"
-                                 immediate="true"
-                                 alt="Select Component Type" icon="ui-icon-search">
-                    <p:tooltip for="selectComponentTypeButton" value="Select component type."/>
-                </p:commandButton>
-            </div>
+            <h:selectOneMenu id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.name}" itemValue="#{componentType}"/>
+            </h:selectOneMenu>
+            <p:commandButton id="selectComponentTypeButton"
+                             action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
+                             oncomplete="componentTypeSelectDialogWidget.show()"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Component Type" 
+                             styleClass="actionButtonSmall"
+                             icon="ui-icon-search">
+                <p:tooltip for="selectComponentTypeButton" value="Search for component type."/>
+            </p:commandButton>
         </p:column>
-        <h:outputText id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText"/>
         <p:message for="componentType"/>
-        <p:tooltip for="componentType" value="Component type specification is required."/>
+        <p:tooltip for="componentType" value="Select component type."/> 
 
         <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
         <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
         <p:message for="componentTypeCategory"/>
         <p:tooltip for="componentTypeCategory" value="Component type category is inherited from component type."/>
 
+        <h:outputLabel for="componentType2" value="Type2" styleClass="entityDataLabel"/>
+        <h:outputText id="componentType2" value="#{componentObject.componentType.name}" title="Type2" styleClass="entityDataText"/>
+        <p:message for="componentType2"/>
+        <p:tooltip for="componentType2" value="Component type 2."/>
+        
         <ui:include src="../entityInfo/entityInfoEditObject.xhtml">
             <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
         </ui:include>

@@ -151,6 +151,16 @@ a:link:hover, a:visited:hover  {
     background-color: #6da5d8;
 }
 
+.actionButtonSmall {
+    height: 25px;
+    width: 25px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 10px;
+    margin-left: 10px;
+    border: 0px;
+}
+
 .actionButton {
     margin-top: 5px;
     margin-bottom: 5px;

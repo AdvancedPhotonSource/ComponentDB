@@ -24,8 +24,9 @@
             </div>
             <ui:include src="locationParentSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
+                <p:commandButton value="Done" alt="Done"
                                  update="@form"
+                                 onclick="locationParentSelectDataTableWidget.filter()" 
                                  oncomplete="locationParentSelectDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>

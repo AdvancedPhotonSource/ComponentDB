@@ -10,7 +10,7 @@
 
     <p:panelGrid columns="4" styleClass="createEntityDetails">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="name" value="#{propertyTypeObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        <h:inputText id="name" value="#{propertyTypeObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
         <p:tooltip for="name" value="Property type name is required."/>
 

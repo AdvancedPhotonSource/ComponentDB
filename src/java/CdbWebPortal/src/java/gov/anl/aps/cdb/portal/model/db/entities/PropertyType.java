@@ -54,7 +54,7 @@ public class PropertyType extends CloneableEntity {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String name;
     @Size(max = 256)
     private String description;

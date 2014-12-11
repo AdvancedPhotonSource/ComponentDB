@@ -1,8 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
@@ -14,7 +12,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -22,9 +19,9 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ValueChangeListener;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
@@ -271,6 +268,22 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     }
 
+    public void selectParentLocationValueChangeListener(ValueChangeEvent valueChangeEvent) {
+        Object newValue = valueChangeEvent.getNewValue();
+        if (newValue != null) {
+            Location parentLocation = (Location)newValue;
+            selectParentLocation(parentLocation);
+        }
+    }
+
+    public void selectParentLocationActionListener(ActionEvent actionEvent) {
+        Object newValue = actionEvent.getSource();
+        if (newValue != null) {
+            Location parentLocation = (Location)newValue;
+            selectParentLocation(parentLocation);
+        }
+    }
+    
     public void selectParentLocation(Location parentLocation) {
         Location location = getCurrent();
         if (parentLocation != null) {

@@ -27,15 +27,38 @@
         <p:tooltip for="id" value="Location id cannot be modified."/>
 
         <h:outputLabel for="type" value="Type" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="type" value="#{locationObject.locationType}" title="Type" styleClass="entityDataText">
+        <h:selectOneMenu id="type" value="#{locationObject.locationType}" title="Type" required="true" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="type" value="#{locationTypeController.availableItems}" itemLabel="#{type.name}" itemValue="#{type}"/>
         </h:selectOneMenu>
         <p:message for="type"/> 
         <p:tooltip for="type" value="Specify location type."/>
 
-        
+        <h:outputLabel for="parent" value="Parent" styleClass="entityDataLabel"/>        
+        <p:column>
+            <h:selectOneMenu id="parent" value="#{locationObject.parentLocation}" title="Parent" styleClass="entityDataText">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="parent" value="#{locationController.availableItems}" itemLabel="#{parent.name}" itemValue="#{parent}"/>
+            </h:selectOneMenu>
+            <p:commandButton id="selectParentButton"
+                             action="#{locationController.clearSelectFiltersAndResetSelectDataModel()}" 
+                             oncomplete="locationParentSelectDialogWidget.show()"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Parent Location" 
+                             styleClass="actionButtonSmall"
+                             icon="ui-icon-search">
+                <p:tooltip for="selectParentButton" value="Search for parent location."/>
+            </p:commandButton>
+        </p:column>
+        <p:message for="parent"/>
+        <p:tooltip for="parent" value="Select parent location."/>     
+
     </p:panelGrid>
+
+    <ui:include src="locationParentSelectDialog.xhtml"/>
+
+    <ui:include src="locationParentSelectCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 
