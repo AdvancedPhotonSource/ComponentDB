@@ -1,6 +1,6 @@
 
 TOP = ../..
-SUBDIRS = CmsWebPortal
+SUBDIRS = CdbWebPortal
 
-include $(TOP)/tools/make/RULES_CMS
+include $(TOP)/tools/make/RULES_CDB
 

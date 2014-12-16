@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# Run ant
+
+if [ -z $CDB_ROOT_DIR ]; then
+    cd `dirname $0` && myDir=`pwd`
+    setupFile=$myDir/../../setup.sh
+    if [ ! -f $setupFile ]; then
+        echo "Cannot find setup file: $setupFile"
+        exit 1
+    fi
+    source $setupFile
+fi
+
+CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+export JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
+export ANT_HOME=$CDB_SUPPORT_DIR/ant
+export PATH=$ANT_HOME/bin:$PATH
+ant $@
+
+

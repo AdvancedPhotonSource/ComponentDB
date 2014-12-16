@@ -1,53 +1,53 @@
 #!/bin/sh
 
-# CMS setup script for Bourne-type shells
+# CDB setup script for Bourne-type shells
 # This file is typically sourced in user's .bashrc file
 
 myDir=`dirname $BASH_SOURCE`
 currentDir=`pwd` && cd $myDir
-if [ ! -z "$CMS_ROOT_DIR" -a "$CMS_ROOT_DIR" != `pwd` ]; then
-    echo "WARNING: Resetting CMS_ROOT_DIR environment variable (old value: $CMS_ROOT_DIR)" 
+if [ ! -z "$CDB_ROOT_DIR" -a "$CDB_ROOT_DIR" != `pwd` ]; then
+    echo "WARNING: Resetting CDB_ROOT_DIR environment variable (old value: $CDB_ROOT_DIR)" 
 fi
-export CMS_ROOT_DIR=`pwd`
+export CDB_ROOT_DIR=`pwd`
 
-if [ -z $CMS_DATA_DIR ]; then
-    export CMS_DATA_DIR=$CMS_ROOT_DIR/../data
-    if [ -d $CMS_DATA_DIR ]; then
-        cd $CMS_DATA_DIR
-        export CMS_DATA_DIR=`pwd`
+if [ -z $CDB_DATA_DIR ]; then
+    export CDB_DATA_DIR=$CDB_ROOT_DIR/../data
+    if [ -d $CDB_DATA_DIR ]; then
+        cd $CDB_DATA_DIR
+        export CDB_DATA_DIR=`pwd`
     fi
 fi
-if [ ! -d $CMS_DATA_DIR ]; then
-    #echo "WARNING: $CMS_DATA_DIR directory does not exist. Developers should point CMS_DATA_DIR to the desired area." 
-    unset CMS_DATA_DIR
+if [ ! -d $CDB_DATA_DIR ]; then
+    #echo "WARNING: $CDB_DATA_DIR directory does not exist. Developers should point CDB_DATA_DIR to the desired area." 
+    unset CDB_DATA_DIR
 fi
 
-if [ -z $CMS_VAR_DIR ]; then
-    export CMS_VAR_DIR=$CMS_ROOT_DIR/../var
-    if [ -d $CMS_VAR_DIR ]; then
-        cd $CMS_VAR_DIR
-        export CMS_VAR_DIR=`pwd`
+if [ -z $CDB_VAR_DIR ]; then
+    export CDB_VAR_DIR=$CDB_ROOT_DIR/../var
+    if [ -d $CDB_VAR_DIR ]; then
+        cd $CDB_VAR_DIR
+        export CDB_VAR_DIR=`pwd`
     else
-    	unset CMS_VAR_DIR
+    	unset CDB_VAR_DIR
     fi
 fi
 
 # Establish machine architecture
-CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
+CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
 
 # Check support setup
-if [ -z $CMS_SUPPORT ]; then
-    export CMS_SUPPORT=$CMS_ROOT_DIR/../support 
-    if [ -d $CMS_SUPPORT ]; then
-        cd $CMS_SUPPORT
-        export CMS_SUPPORT=`pwd`
+if [ -z $CDB_SUPPORT_DIR ]; then
+    export CDB_SUPPORT_DIR=$CDB_ROOT_DIR/../support 
+    if [ -d $CDB_SUPPORT_DIR ]; then
+        cd $CDB_SUPPORT_DIR
+        export CDB_SUPPORT_DIR=`pwd`
     fi
 fi
-if [ ! -d $CMS_SUPPORT ]; then
-    echo "Warning: $CMS_SUPPORT directory does not exist. Developers should point CMS_SUPPORT to the desired area." 
-    unset CMS_SUPPORT
+if [ ! -d $CDB_SUPPORT_DIR ]; then
+    echo "Warning: $CDB_SUPPORT_DIR directory does not exist. Developers should point CDB_SUPPORT_DIR to the desired area." 
+    unset CDB_SUPPORT_DIR
 else
-    export CMS_GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
+    export CDB_GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
 fi
 
 # Add to path only if directory exists.
@@ -58,9 +58,9 @@ prependPathIfDirExists() {
     fi
 }
 
-prependPathIfDirExists $CMS_SUPPORT/java/$CMS_HOST_ARCH/bin
-prependPathIfDirExists $CMS_SUPPORT/ant/bin
-prependPathIfDirExists $CMS_ROOT_DIR/bin
+prependPathIfDirExists $CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH/bin
+prependPathIfDirExists $CDB_SUPPORT_DIR/ant/bin
+prependPathIfDirExists $CDB_ROOT_DIR/bin
 
 # Done
 cd $currentDir

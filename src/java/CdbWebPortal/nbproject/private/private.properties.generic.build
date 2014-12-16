@@ -1,2 +1,2 @@
-j2ee.server.home=CMS_GLASSFISH_DIR/glassfish
-j2ee.server.middleware=CMS_GLASSFISH_DIR
+j2ee.server.home=CDB_GLASSFISH_DIR/glassfish
+j2ee.server.middleware=CDB_GLASSFISH_DIR
