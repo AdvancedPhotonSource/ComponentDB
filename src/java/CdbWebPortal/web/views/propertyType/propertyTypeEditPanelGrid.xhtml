@@ -27,18 +27,18 @@
         <p:tooltip for="id" value="Property type id cannot be modified."/>
 
         <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="category" value="#{propertyTypeObject.propertyTypeCategory}" title="Category" styleClass="entityDataText">
+        <p:selectOneMenu id="category" value="#{propertyTypeObject.propertyTypeCategory}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="category" value="#{propertyTypeCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:message for="category"/> 
         <p:tooltip for="category" value="Category specification is optional."/>
 
         <h:outputLabel for="handler" value="Handler" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="handler" value="#{propertyTypeObject.propertyTypeHandler}" title="Handler" styleClass="entityDataText">
+        <p:selectOneMenu id="handler" value="#{propertyTypeObject.propertyTypeHandler}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="handler" value="#{propertyTypeHandlerController.availableItems}" itemLabel="#{handler.name}" itemValue="#{handler}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:message for="handler"/> 
         <p:tooltip for="handler" value="Handler class specification is optional."/>
 
@@ -53,12 +53,12 @@
         <p:tooltip for="defaultValue" value="Default units specification is optional."/>
 
         <h:outputLabel for="userWriteable" value="User Writeable" styleClass="entityDataLabel"/>        
-        <h:selectBooleanCheckbox id="userWriteable" value="#{propertyTypeObject.isUserWriteable}" title="User Writeable" styleClass="entityDataText"/>
+        <p:selectBooleanCheckbox id="userWriteable" value="#{propertyTypeObject.isUserWriteable}" styleClass="entityDataText"/>
         <p:message for="userWriteable"/>
         <p:tooltip for="userWriteable" value="Check this box if property value can be modified by any user."/>
 
         <h:outputLabel for="dynamic" value="Dynamic" styleClass="entityDataLabel"/>        
-        <h:selectBooleanCheckbox id="dynamic" value="#{propertyTypeObject.isDynamic}" title="Dynamic" styleClass="entityDataText"/>
+        <p:selectBooleanCheckbox id="dynamic" value="#{propertyTypeObject.isDynamic}" styleClass="entityDataText"/>
         <p:message for="dynamic"/>
         <p:tooltip for="dynamic" value="Check this box if inherited property value can be overriden."/>
         

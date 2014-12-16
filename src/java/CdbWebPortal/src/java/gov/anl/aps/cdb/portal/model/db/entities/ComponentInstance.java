@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.util.HashMap;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -36,15 +36,17 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "ComponentInstance.findAll", query = "SELECT c FROM ComponentInstance c"),
     @NamedQuery(name = "ComponentInstance.findById", query = "SELECT c FROM ComponentInstance c WHERE c.id = :id"),
-    @NamedQuery(name = "ComponentInstance.findByQuantity", query = "SELECT c FROM ComponentInstance c WHERE c.quantity = :quantity"),
+    @NamedQuery(name = "ComponentInstance.findByTag", query = "SELECT c FROM ComponentInstance c WHERE c.tag = :tag"),
     @NamedQuery(name = "ComponentInstance.findByLocationDetails", query = "SELECT c FROM ComponentInstance c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstance.findByDescription", query = "SELECT c FROM ComponentInstance c WHERE c.description = :description")})
 public class ComponentInstance extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    private Integer quantity;
+    @Size(max = 64)
+    private String tag;
     @Size(max = 256)
     @Column(name = "location_details")
     private String locationDetails;
@@ -67,7 +69,7 @@ public class ComponentInstance extends CloneableEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstanceId")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList1;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     @ManyToOne
@@ -75,6 +77,19 @@ public class ComponentInstance extends CloneableEntity {
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Component component;
+
+    private transient List<PropertyValue> imagePropertyList = null;
+
+    private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
+
+    // Used to map property type id to property value number
+    private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
+
+    public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
+        if (propertyTypeId != null) {
+            propertyTypeIdIndexMap.put(index, propertyTypeId);
+        }
+    }
 
     public ComponentInstance() {
     }
@@ -92,12 +107,12 @@ public class ComponentInstance extends CloneableEntity {
         this.id = id;
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public String getTag() {
+        return tag;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public String getLocationDetails() {
@@ -185,6 +200,76 @@ public class ComponentInstance extends CloneableEntity {
         this.component = component;
     }
 
+    public List<PropertyValue> getImagePropertyList() {
+        return imagePropertyList;
+    }
+
+    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
+        this.imagePropertyList = imagePropertyList;
+    }
+
+    public void resetImagePropertyList() {
+        this.imagePropertyList = null;
+    }
+
+    public String getPropertyValueByIndex(Integer index) {
+        Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
+        if (propertyTypeId != null) {
+            return propertyValueCacheMap.get(propertyTypeId);
+        }
+        return null;
+    }
+
+    public void setPropertyValueByIndex(Integer index, String propertyValue) {
+        if (index == null) {
+            return;
+        }
+        Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
+        if (propertyTypeId != null) {
+            propertyValueCacheMap.put(propertyTypeId, propertyValue);
+        }
+    }
+
+    public String getPropertyValue1() {
+        return getPropertyValueByIndex(1);
+    }
+
+    public void setPropertyValue1(String propertyValue1) {
+        setPropertyValueByIndex(1, propertyValue1);
+    }
+
+    public String getPropertyValue2() {
+        return getPropertyValueByIndex(2);
+    }
+
+    public void setPropertyValue2(String propertyValue2) {
+        setPropertyValueByIndex(2, propertyValue2);
+    }
+
+    public String getPropertyValue3() {
+        return getPropertyValueByIndex(3);
+    }
+
+    public void setPropertyValue3(String propertyValue3) {
+        setPropertyValueByIndex(3, propertyValue3);
+    }
+
+    public String getPropertyValue4() {
+        return getPropertyValueByIndex(4);
+    }
+
+    public void setPropertyValue4(String propertyValue4) {
+        setPropertyValueByIndex(4, propertyValue4);
+    }
+
+    public String getPropertyValue5() {
+        return getPropertyValueByIndex(5);
+    }
+
+    public void setPropertyValue5(String propertyValue5) {
+        setPropertyValueByIndex(5, propertyValue5);
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -206,6 +291,30 @@ public class ComponentInstance extends CloneableEntity {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.entities.ComponentInstance[ id=" + id + " ]";
     }
-    
-}
 
+    public void clearPropertyValueCache() {
+        propertyValueCacheMap.clear();
+    }
+
+    public String getPropertyValue(Integer propertyTypeId) {
+        if (propertyTypeId == null) {
+            return null;
+        }
+        String cachedValue = propertyValueCacheMap.get(propertyTypeId);
+        if (cachedValue == null) {
+            String delimiter = "";
+            cachedValue = "";
+            for (PropertyValue propertyValue : propertyValueList) {
+                if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
+                    String value = propertyValue.getValue();
+                    if (value != null && !value.isEmpty()) {
+                        cachedValue += delimiter + value;
+                        delimiter = "|";
+                    }
+                }
+            }
+            propertyValueCacheMap.put(propertyTypeId, cachedValue);
+        }
+        return cachedValue;
+    }
+}

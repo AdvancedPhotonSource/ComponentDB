@@ -12,7 +12,7 @@
                  value="#{componentTypeController.selectDataModel}" 
                  filteredValue="#{componentTypeController.filteredObjectList}"
                  rowKey="#{componentTypeObject.id}"
-                 selection="#{componentTypeController.selectedObject}"
+                 selection="#{componentTypeController.selectedComponentType}"
                  selectionMode="single"
                  paginator="true"
                  paginatorAlwaysVisible="true"
@@ -20,7 +20,7 @@
                  emptyMessage="No available component types found.">
 
         <p:column sortBy="#{componentTypeObject.id}" headerText="Id"
-                  rendered="true">
+                  rendered="#{componentTypeController.selectDisplayId}">
             <h:outputText value="#{componentTypeObject.id}"/>
         </p:column>
 
@@ -35,14 +35,14 @@
                   filterBy="#{componentTypeObject.componentTypeCategory.name}" filterMatchMode="exact"
                   filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
                   filterValue="#{componentTypeController.selectFilterByCategory}"
-                  rendered="true">
+                  rendered="#{componentTypeController.selectDisplayCategory}">
             <h:outputText value="#{componentTypeObject.componentTypeCategory.name}"/>
         </p:column>
 
         <p:column sortBy="#{componentTypeObject.description}" headerText="Description" 
                   filterBy="description" filterMatchMode="contains"
                   filterValue="#{componentTypeController.selectFilterByDescription}"
-                  rendered="true">
+                  rendered="#{componentTypeController.selectDisplayDescription}">
             <h:outputText value="#{componentTypeObject.description}"/>
         </p:column>
 

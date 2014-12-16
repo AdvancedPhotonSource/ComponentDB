@@ -36,7 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentInstanceLocationHistory.findAll", query = "SELECT c FROM ComponentInstanceLocationHistory c"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findById", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findByLocationDetails", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.locationDetails = :locationDetails"),
-    @NamedQuery(name = "ComponentInstanceLocationHistory.findByDescription", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.description = :description"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findByEnteredOnDateTime", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.enteredOnDateTime = :enteredOnDateTime")})
 public class ComponentInstanceLocationHistory implements Serializable
 {
@@ -48,8 +47,6 @@ public class ComponentInstanceLocationHistory implements Serializable
     @Size(max = 256)
     @Column(name = "location_details")
     private String locationDetails;
-    @Size(max = 256)
-    private String description;
     @Basic(optional = false)
     @NotNull
     @Column(name = "entered_on_date_time")
@@ -91,14 +88,6 @@ public class ComponentInstanceLocationHistory implements Serializable
 
     public void setLocationDetails(String locationDetails) {
         this.locationDetails = locationDetails;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Date getEnteredOnDateTime() {

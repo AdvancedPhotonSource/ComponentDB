@@ -163,6 +163,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return settingTypeMap;
     }
 
+    public static Integer parseSettingValueAsInteger(String settingValue) {
+        try {
+            return Integer.parseInt(settingValue);
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
     protected abstract FacadeType getFacade();
 
     protected abstract EntityType createEntityInstance();
@@ -598,6 +606,21 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return selectDataModel;
     }
 
+    public DataModel createSelectDataModelWithoutCurrent() {
+        List<EntityType> selectEntityList = getAvailableItemsWithoutCurrent();
+
+        prepareEntityListForSelection(selectEntityList);
+        selectDataModel = new ListDataModel(selectEntityList);
+        return selectDataModel;
+    }
+
+    public DataModel getSelectDataModelWithoutCurrent() {
+        if (selectDataModel == null) {
+            createSelectDataModelWithoutCurrent();
+        }
+        return selectDataModel;
+    }
+
     public DataModel getItems() {
         return getListDataModel();
     }
@@ -691,6 +714,14 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
 
     public List<EntityType> getAvailableItems() {
         return getFacade().findAll();
+    }
+
+    public List<EntityType> getAvailableItemsWithoutCurrent() {
+        List<EntityType> entityList = getFacade().findAll();
+        if (current.getId() != null) {
+            entityList.remove(current);
+        }
+        return entityList;
     }
 
     public EntityType getEntity(Integer id) {

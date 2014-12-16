@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -149,14 +150,27 @@ public class Location extends CloneableEntity {
         return hash;
     }
 
+    public boolean equalsByName(Location other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.name, other.name);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Location)) {
             return false;
         }
         Location other = (Location) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
     }
 
     @Override

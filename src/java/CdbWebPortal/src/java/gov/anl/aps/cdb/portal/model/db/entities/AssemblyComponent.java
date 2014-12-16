@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "AssemblyComponent.findAll", query = "SELECT a FROM AssemblyComponent a"),
     @NamedQuery(name = "AssemblyComponent.findById", query = "SELECT a FROM AssemblyComponent a WHERE a.id = :id"),
-    @NamedQuery(name = "AssemblyComponent.findByQuantity", query = "SELECT a FROM AssemblyComponent a WHERE a.quantity = :quantity"),
     @NamedQuery(name = "AssemblyComponent.findByDescription", query = "SELECT a FROM AssemblyComponent a WHERE a.description = :description"),
     @NamedQuery(name = "AssemblyComponent.findBySortOrder", query = "SELECT a FROM AssemblyComponent a WHERE a.sortOrder = :sortOrder")})
 public class AssemblyComponent implements Serializable
@@ -45,7 +44,6 @@ public class AssemblyComponent implements Serializable
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    private Integer quantity;
     @Size(max = 256)
     private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -77,14 +75,6 @@ public class AssemblyComponent implements Serializable
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     public String getDescription() {

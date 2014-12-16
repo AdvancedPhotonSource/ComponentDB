@@ -20,21 +20,23 @@
         <p:tooltip for="description" value="Description is optional."/>
 
         <h:outputLabel for="type" value="Type" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="type" value="#{locationObject.locationType}" title="Type" required="true" styleClass="entityDataText">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+        <p:selectOneMenu id="type" value="#{locationObject.locationType}" required="true" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="type" value="#{locationTypeController.availableItems}" itemLabel="#{type.name}" itemValue="#{type}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:message for="type"/> 
         <p:tooltip for="type" value="Select location type."/>
 
         <h:outputLabel for="parent" value="Parent" styleClass="entityDataLabel"/>        
         <p:column>
-            <h:selectOneMenu id="parent" value="#{locationController.selectedParentLocation}" title="Parent" styleClass="entityDataText" 
+            <p:selectOneMenu id="parent" value="#{locationObject.parentLocation}" 
+                             styleClass="entityDataText"
                              valueChangeListener="#{locationController.selectParentLocationValueChangeListener}">
                 <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                <f:selectItems var="parent" value="#{locationController.availableItems}" itemLabel="#{parent.name}" itemValue="#{parent}"/>
+                <f:selectItems var="parent" value="#{locationController.availableItemsWithoutCurrent}" itemLabel="#{parent.name}" itemValue="#{parent}"/>
                 <p:ajax event="valueChange" immediate="true" process="@this"/>
-            </h:selectOneMenu>
+            </p:selectOneMenu>
+
             <p:commandButton id="selectParentButton"
                              action="#{locationController.clearSelectFiltersAndResetSelectDataModel()}" 
                              oncomplete="locationParentSelectDialogWidget.show()"
@@ -43,12 +45,14 @@
                              alt="Select Parent Location" 
                              styleClass="actionButtonSmall"
                              icon="ui-icon-search">
+                <f:setPropertyActionListener target="#{locationController.selectedParentLocation}" value="#{locationObject.parentLocation}"/>
                 <p:tooltip for="selectParentButton" value="Search for parent location."/>
             </p:commandButton>
         </p:column>
         <p:message for="parent"/>
         <p:tooltip for="parent" value="Select parent location."/>        
     </p:panelGrid>
+
 
     <ui:include src="locationParentSelectDialog.xhtml"/>
 

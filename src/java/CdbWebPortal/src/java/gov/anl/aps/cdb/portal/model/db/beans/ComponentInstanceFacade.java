@@ -9,6 +9,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -29,5 +30,14 @@ public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance>
     public ComponentInstanceFacade() {
         super(ComponentInstance.class);
     }
-    
+ 
+    public ComponentInstance findById(Integer id) {
+        try {
+            return (ComponentInstance) em.createNamedQuery("ComponentInstance.findById")
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }    
 }

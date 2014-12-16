@@ -7,6 +7,7 @@ import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -19,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
@@ -34,34 +36,39 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 @Named("componentController")
 @SessionScoped
 public class ComponentController extends CrudEntityController<Component, ComponentFacade> implements Serializable {
 
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Component.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "Component.List.Display.Id";
-    private static final String DisplayDescriptionSettingTypeKey = "Component.List.Display.Description";
-    private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
-    private static final String DisplayTypeCategorySettingTypeKey = "Component.List.Display.TypeCategory";
-    private static final String DisplayOwnerUserSettingTypeKey = "Component.List.Display.OwnerUser";
-    private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
+    private static final String DisplayCategorySettingTypeKey = "Component.List.Display.Category";
     private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Component.List.Display.CreatedOnDateTime";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Component.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayDescriptionSettingTypeKey = "Component.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "Component.List.Display.Id";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "Component.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Component.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayOwnerUserSettingTypeKey = "Component.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
     private static final String DisplayPropertyTypeId1SettingTypeKey = "Component.List.Display.PropertyTypeId1";
     private static final String DisplayPropertyTypeId2SettingTypeKey = "Component.List.Display.PropertyTypeId2";
     private static final String DisplayPropertyTypeId3SettingTypeKey = "Component.List.Display.PropertyTypeId3";
     private static final String DisplayPropertyTypeId4SettingTypeKey = "Component.List.Display.PropertyTypeId4";
     private static final String DisplayPropertyTypeId5SettingTypeKey = "Component.List.Display.PropertyTypeId5";
-    private static final String DisplayLastModifiedByUserSettingTypeKey = "Component.List.Display.LastModifiedByUser";
-    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Component.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
 
-    private static final String FilterByNameSettingTypeKey = "Component.List.FilterBy.Name";
+    private static final String FilterByCategorySettingTypeKey = "Component.List.FilterBy.Category";
+    private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
+    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
     private static final String FilterByDescriptionSettingTypeKey = "Component.List.FilterBy.Description";
-    private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
-    private static final String FilterByTypeCategorySettingTypeKey = "Component.List.FilterBy.TypeCategory";
+    private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
+    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Component.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByNameSettingTypeKey = "Component.List.FilterBy.Name";
     private static final String FilterByOwnerUserSettingTypeKey = "Component.List.FilterBy.OwnerUser";
     private static final String FilterByOwnerGroupSettingTypeKey = "Component.List.FilterBy.OwnerGroup";
     private static final String FilterByPropertyValue1SettingTypeKey = "Component.List.FilterBy.PropertyValue1";
@@ -69,11 +76,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private static final String FilterByPropertyValue3SettingTypeKey = "Component.List.FilterBy.PropertyValue3";
     private static final String FilterByPropertyValue4SettingTypeKey = "Component.List.FilterBy.PropertyValue4";
     private static final String FilterByPropertyValue5SettingTypeKey = "Component.List.FilterBy.PropertyValue5";
-
-    private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
-    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
-    private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
-    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Component.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
 
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
@@ -82,20 +85,19 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
-    
+
     private Boolean displayType = null;
-    private Boolean displayTypeCategory = null;
+    private Boolean displayCategory = null;
 
     private String filterByType = null;
-    private String filterByTypeCategory = null;
+    private String filterByCategory = null;
 
     private Boolean selectDisplayType = true;
-    private Boolean selectDisplayTypeCategory = true;
+    private Boolean selectDisplayCategory = true;
 
     private String selectFilterByType = null;
-    private String selectFilterByTypeCategory = null;
+    private String selectFilterByCategory = null;
 
-    private String selectedComponentImage = null;
     private Boolean displayComponentImages = null;
 
     private Integer displayPropertyTypeId1 = null;
@@ -109,6 +111,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private String filterByPropertyValue3 = null;
     private String filterByPropertyValue4 = null;
     private String filterByPropertyValue5 = null;
+
+    // There seems to be a problem with primefaces framework, as select one menu does not
+    // recognize value change in some case, so we bind this variable to control the menu. 
+    private SelectOneMenu componentTypeSelectOneMenu;
 
     public ComponentController() {
         super();
@@ -174,7 +180,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
             idViewParam = null;
         }
     }
-    
+
     @Override
     public void prepareEntityView(Component component) {
         prepareComponentImageList(component);
@@ -187,7 +193,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
             throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
         }
         if (component.getComponentType() == null) {
-            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");            
+            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
         }
         EntityInfo entityInfo = component.getEntityInfo();
         UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
@@ -209,11 +215,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void prepareEntityUpdate(Component component) throws CdbPortalException {
         Component existingComponent = componentFacade.findByName(component.getName());
         if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
-            throw new ObjectAlreadyExists("Component " + component.getName() + " already exists with id " + existingComponent.getId() + ".");            
+            throw new ObjectAlreadyExists("Component " + component.getName() + " already exists with id " + existingComponent.getId() + ".");
         }
         if (component.getComponentType() == null) {
-            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");            
-        }        
+            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
+        }
         EntityInfo entityInfo = component.getEntityInfo();
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
@@ -313,6 +319,37 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
+    public void prepareAddComponentInstance(Component component) {
+        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        ComponentInstance componentInstance = new ComponentInstance();
+        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+        Date createdOnDateTime = new Date();
+        EntityInfo entityInfo = new EntityInfo();
+        entityInfo.setOwnerUser(createdByUser);
+        entityInfo.setCreatedOnDateTime(createdOnDateTime);
+        entityInfo.setCreatedByUser(createdByUser);
+        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
+        entityInfo.setLastModifiedByUser(createdByUser);
+        List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        componentInstance.setEntityInfo(entityInfo);
+        componentInstance.setComponent(component);
+        componentInstanceList.add(componentInstance);
+    }
+
+    public void saveComponentInstanceList() {
+        update();
+    }
+
+    public void deleteComponentInstance(ComponentInstance componentInstance) {
+        Component component = getCurrent();
+        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        componentInstanceList.remove(componentInstance);
+        update();
+    }
+
     public void prepareAddLog(Component component) {
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
@@ -349,20 +386,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         update();
     }
 
-    public Integer parseSettingValueAsInteger(String settingValue) {
-        try {
-            return Integer.parseInt(settingValue);
-        } catch (NumberFormatException ex) {
-            return null;
-        }
-    }
-
     @Override
     public String customizeListDisplay() {
         resetComponentPropertyTypeIdIndexMappings();
         return super.customizeListDisplay();
     }
-    
+
     private void resetComponentPropertyTypeIdIndexMappings() {
         Component.setPropertyTypeIdIndex(1, displayPropertyTypeId1);
         Component.setPropertyTypeIdIndex(2, displayPropertyTypeId2);
@@ -370,7 +399,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component.setPropertyTypeIdIndex(4, displayPropertyTypeId4);
         Component.setPropertyTypeIdIndex(5, displayPropertyTypeId5);
     }
-    
+
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
@@ -383,7 +412,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
         displayType = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeSettingTypeKey).getDefaultValue());
-        displayTypeCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeCategorySettingTypeKey).getDefaultValue());
+        displayCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayCategorySettingTypeKey).getDefaultValue());
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -396,11 +425,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
-        
+
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
-        filterByTypeCategory = settingTypeMap.get(FilterByTypeCategorySettingTypeKey).getDefaultValue();
+        filterByCategory = settingTypeMap.get(FilterByCategorySettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
         filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
         filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
@@ -429,7 +458,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
         displayType = sessionUser.getUserSettingValueAsBoolean(DisplayTypeSettingTypeKey, displayType);
-        displayTypeCategory = sessionUser.getUserSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+        displayCategory = sessionUser.getUserSettingValueAsBoolean(DisplayCategorySettingTypeKey, displayCategory);
         displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -446,7 +475,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
-        filterByTypeCategory = sessionUser.getUserSettingValueAsString(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+        filterByCategory = sessionUser.getUserSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
         filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
         filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
         filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
@@ -472,7 +501,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
         Map<String, String> filters = dataTable.getFilters();
         filterByType = filters.get("componentType");
-        filterByTypeCategory = filters.get("componentTypeCategory");
+        filterByCategory = filters.get("componentTypeCategory");
 
         filterByPropertyValue1 = filters.get("propertyValue1");
         filterByPropertyValue2 = filters.get("propertyValue2");
@@ -498,10 +527,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
         sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
-        sessionUser.setUserSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+        sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
 
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
-        
+
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
@@ -517,7 +546,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
 
         sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
-        sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+        sessionUser.setUserSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
 
         sessionUser.setUserSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         sessionUser.setUserSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
@@ -531,7 +560,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void clearListFilters() {
         super.clearListFilters();
         filterByType = null;
-        filterByTypeCategory = null;
+        filterByCategory = null;
 
         filterByPropertyValue1 = null;
         filterByPropertyValue2 = null;
@@ -544,14 +573,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void clearSelectFilters() {
         super.clearSelectFilters();
         selectFilterByType = null;
-        selectFilterByTypeCategory = null;
-    }
-
-    public void selectComponentType(ComponentType componentType) {
-        Component component = getCurrent();
-        if (componentType != null) {
-            component.setComponentType(componentType);
-        }
+        selectFilterByCategory = null;
     }
 
     public Boolean getDisplayType() {
@@ -581,7 +603,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
 //        }
 //        return openedTabs;
 //    } 
-    
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter {
 
@@ -590,9 +611,15 @@ public class ComponentController extends CrudEntityController<Component, Compone
             if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
-            ComponentController controller = (ComponentController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componentController");
-            return controller.getEntity(getKey(value));
+            try {
+                ComponentController controller = (ComponentController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "componentController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to component object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -622,6 +649,38 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     }
 
+    public void selectComponentType(ComponentType componentType) {
+        Component component = getCurrent();
+        component.setComponentType(componentType);
+        componentTypeSelectOneMenu.setSubmittedValue(componentType);
+    }
+
+    // This listener is accessed either after selection made in dialog,
+    // or from selection menu.
+    public void selectComponentTypeValueChangeListener(ValueChangeEvent valueChangeEvent) {
+        Component component = getCurrent();
+        ComponentType existingComponentType = component.getComponentType();
+        ComponentType newEventComponentType = null;
+        ComponentType oldEventComponentType = null;
+
+        Object newValue = valueChangeEvent.getNewValue();
+        if (newValue != null) {
+            newEventComponentType = (ComponentType) newValue;
+        }
+        Object oldValue = valueChangeEvent.getOldValue();
+        if (oldValue != null) {
+            oldEventComponentType = (ComponentType) oldValue;
+        }
+
+        if (ObjectUtility.equals(existingComponentType, oldEventComponentType)) {
+            // change via menu
+            component.setComponentType(newEventComponentType);
+        } else {
+            // change via dialog
+            component.setComponentType(oldEventComponentType);
+        }
+    }
+
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         if (propertyTypeId != null) {
 
@@ -639,12 +698,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.displayType = displayType;
     }
 
-    public Boolean getDisplayTypeCategory() {
-        return displayTypeCategory;
+    public Boolean getDisplayCategory() {
+        return displayCategory;
     }
 
-    public void setDisplayTypeCategory(Boolean displayTypeCategory) {
-        this.displayTypeCategory = displayTypeCategory;
+    public void setDisplayCategory(Boolean displayCategory) {
+        this.displayCategory = displayCategory;
     }
 
     public String getFilterByType() {
@@ -655,12 +714,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.filterByType = filterByType;
     }
 
-    public String getFilterByTypeCategory() {
-        return filterByTypeCategory;
+    public String getFilterByCategory() {
+        return filterByCategory;
     }
 
-    public void setFilterByTypeCategory(String filterByTypeCategory) {
-        this.filterByTypeCategory = filterByTypeCategory;
+    public void setFilterByCategory(String filterByCategory) {
+        this.filterByCategory = filterByCategory;
     }
 
     public Boolean getSelectDisplayType() {
@@ -671,12 +730,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.selectDisplayType = selectDisplayType;
     }
 
-    public Boolean getSelectDisplayTypeCategory() {
-        return selectDisplayTypeCategory;
+    public Boolean getSelectDisplayCategory() {
+        return selectDisplayCategory;
     }
 
-    public void setSelectDisplayTypeCategory(Boolean selectDisplayTypeCategory) {
-        this.selectDisplayTypeCategory = selectDisplayTypeCategory;
+    public void setSelectDisplayCategory(Boolean selectDisplayCategory) {
+        this.selectDisplayCategory = selectDisplayCategory;
     }
 
     public String getSelectFilterByType() {
@@ -687,12 +746,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.selectFilterByType = selectFilterByType;
     }
 
-    public String getSelectFilterByTypeCategory() {
-        return selectFilterByTypeCategory;
+    public String getSelectFilterByCategory() {
+        return selectFilterByCategory;
     }
 
-    public void setSelectFilterByTypeCategory(String selectFilterByTypeCategory) {
-        this.selectFilterByTypeCategory = selectFilterByTypeCategory;
+    public void setSelectFilterByCategory(String selectFilterByCategory) {
+        this.selectFilterByCategory = selectFilterByCategory;
     }
 
     public Integer getDisplayPropertyTypeId1() {
@@ -775,20 +834,20 @@ public class ComponentController extends CrudEntityController<Component, Compone
         this.filterByPropertyValue5 = filterByPropertyValue5;
     }
 
-    public String getSelectedComponentImage() {
-        return selectedComponentImage;
-    }
-
-    public void setSelectedComponentImage(String selectedComponentImage) {
-        this.selectedComponentImage = selectedComponentImage;
-    }
-
     public Boolean getDisplayComponentImages() {
         return displayComponentImages;
     }
 
     public void setDisplayComponentImages(Boolean displayComponentImages) {
         this.displayComponentImages = displayComponentImages;
+    }
+
+    public SelectOneMenu getComponentTypeSelectOneMenu() {
+        return componentTypeSelectOneMenu;
+    }
+
+    public void setComponentTypeSelectOneMenu(SelectOneMenu componentTypeSelectOneMenu) {
+        this.componentTypeSelectOneMenu = componentTypeSelectOneMenu;
     }
 
     public List<PropertyValue> prepareComponentImageList(Component component) {
@@ -806,9 +865,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
             }
         }
         if (!componentImageList.isEmpty()) {
-            PropertyValue propertyValue = componentImageList.get(0);
-            selectedComponentImage = StorageUtility.getApplicationPropertyValueImagesDirectory() + "/"
-                    + propertyValue.getValue();
             displayComponentImages = true;
         }
         component.setImagePropertyList(componentImageList);
@@ -821,7 +877,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         if (componentImageList == null) {
             componentImageList = prepareComponentImageList(component);
         }
-        return componentImageList; 
+        return componentImageList;
     }
 
 }

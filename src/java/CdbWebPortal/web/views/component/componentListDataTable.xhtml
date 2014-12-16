@@ -57,8 +57,8 @@
         <p:column sortBy="#{componentObject.componentType.componentTypeCategory}" headerText="Category" 
                   filterBy="#{componentObject.componentType.componentTypeCategory}" filterMatchMode="exact"
                   filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
-                  filterValue="#{componentController.filterByTypeCategory}"
-                  rendered="#{componentController.displayTypeCategory}">
+                  filterValue="#{componentController.filterByCategory}"
+                  rendered="#{componentController.displayCategory}">
             <h:outputText value="#{componentObject.componentType.componentTypeCategory.name}"/>
         </p:column>
 

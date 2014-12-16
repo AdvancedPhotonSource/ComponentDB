@@ -2,61 +2,67 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dataTable id="componentInstanceListDataTable" 
-                 widgetVar="componentInstanceListWidget"
+    <ui:param name="componentObject" value="#{componentController.selected}"/>
+    <p:dataTable id="componentInstanceEditDataTable" 
+                 widgetVar="componentInstanceEditWidget"
                  var="componentInstanceObject" 
                  value="#{componentObject.componentInstanceList}" 
-                 filteredValue="#{componentInstanceController.filteredObjectList}"
-                 binding="#{componentInstanceController.listDataTable}"
                  rows="#{componentInstanceController.displayNumberOfItemsPerPage}"
                  paginator="true" 
-                 paginatorAlwaysVisible="false"
+                 paginatorAlwaysVisible="false" 
+                 editable="true"
                  emptyMessage="No component instances found.">
 
-        <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
-                  rendered="#{componentController.displayId}">
+        <p:column sortBy="#{componentInstanceObject.id}" headerText="Id">
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location"
                   filterBy="#{componentInstanceObject.location.name}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByLocation}">
-             <h:outputText value="#{componentInstanceObject.location.name}"/>
+            <p:selectOneMenu id="location" value="#{componentInstanceObject.location}" required="true" 
+                             styleClass="cellSelect">
+                <f:selectItem itemLabel="Select" itemValue="{componentInstanceObject.location}"/>
+                <f:selectItems var="location" value="#{locationController.availableItems}" itemLabel="#{location.name}" itemValue="#{location}"/>
+            </p:selectOneMenu>
+            <p:tooltip for="location" value="Select location."/>
         </p:column>
 
 
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag"
                   filterBy="#{componentInstanceObject.tag}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByTag}">
-            <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
+            <h:inputText id="tag" value="#{componentInstanceObject.tag}" styleClass="cellInput"/>
+            <p:tooltip for="tag" value="Enter tag."/>
         </p:column>
         
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
                   filterBy="#{componentInstanceObject.locationDetails}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByLocationDetails}">
-            <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}"/>
+            <h:inputText id="locationDetails" value="#{componentInstanceObject.locationDetails}" styleClass="cellInput"/>
+            <p:tooltip for="locationDetails" value="Enter location details."/>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.description}" headerText="Description"
                   filterBy="#{componentInstanceObject.description}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByDescription}">
-            <h:outputText id="description" value="#{componentInstanceObject.description}"/>
+            <h:inputText id="description" value="#{componentInstanceObject.description}" styleClass="longCellInput"/>
+            <p:tooltip for="description" value="Description is optional."/>
         </p:column>
 
         <p:column headerText="Actions">
             <div class="actionLink">
-
+                <p:commandLink action="#{componentController.deleteComponentInstance(componentInstanceObject)}" 
+                               actionListener="#{componentInstanceController.destroy(componentInstanceObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form" immediate="true"/>
             </div>
         </p:column>
-
-       
-
     </p:dataTable>
-
-
 </ui:composition>
+
 

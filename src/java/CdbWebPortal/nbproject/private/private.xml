@@ -3,14 +3,58 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LocationController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/beans/ComponentInstanceFacade.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentType/componentTypeCreatePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceEditDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/locationEditPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/resources/css/portal.css</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/componentListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/componentCreatePanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentType/componentTypeCreatePanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentProperty/componentPropertyEditDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentSource/componentSourceEditCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/userInfoCreatePanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/locationType/locationTypeEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/beans/ComponentFacade.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/userInfo/userInfoEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceEditCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/propertyTypeCreatePanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentSource/componentSourceListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyType/propertyTypeEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentSource/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentSource/componentSourceEditDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/DesignElement.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/ComponentInstance.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/log/logEditObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/entityInfo/entityInfoEditObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentSource/componentSourceListCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceListCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Attachment.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Component.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/AssemblyComponent.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/CloneableEntity.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentType/componentTypeEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentProperty/image.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/entityInfo/entityInfoCreateObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentProperty/componentPropertyEditCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/componentListObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentConnectorController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/ComponentInstanceLocationHistory.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyTypeController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/componentListCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueEditObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/component/componentEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/locationCreatePanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentType/componentTypeSelectDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Location.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueListObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/search/searchCustomizeDialog.xhtml</file>
         </group>
     </open-files>
 </project-private>

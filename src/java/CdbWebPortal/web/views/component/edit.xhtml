@@ -35,14 +35,18 @@
             </div>
 
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true">
+                <p:accordionPanel multiple="true" activeIndex="0,1,2">
                     <p:tab title="Properties">
                         <ui:include src="../componentProperty/edit.xhtml"/>
                     </p:tab>
 
+                    <p:tab title="Instances">
+                        <ui:include src="../componentInstance/edit.xhtml"/>
+                    </p:tab>  
+
                     <p:tab title="Sources">
                         <ui:include src="../componentSource/edit.xhtml"/>
-                    </p:tab>
+                    </p:tab>                  
                 </p:accordionPanel>
             </div>
         </h:form>

@@ -4,8 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <ui:param name="componentObject" value="#{componentController.selected}"/>
 
@@ -25,22 +24,34 @@
         <p:message for="id"/> 
         <p:tooltip for="id" value="Component id cannot be modified."/>
 
+        <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
         <p:column>
-            <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
-            <div class="actionButtonRight">
-                <p:commandButton id="selectComponentTypeButton"
-                                 action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
-                                 oncomplete="componentTypeSelectDialogWidget.show()"
-                                 update="@form"
-                                 immediate="true"
-                                 alt="Select Component Type" icon="ui-icon-search">
-                    <p:tooltip for="selectComponentTypeButton" value="Select component type."/>
-                </p:commandButton>
-            </div>
+            <p:selectOneMenu id="componentType" 
+                             widgetVar="componentTypeSelectOneMenuWidget"
+                             value="#{componentObject.componentType}" 
+                             styleClass="entityDataText"
+                             converter="componentTypeConverter"
+                             binding="#{componentController.componentTypeSelectOneMenu}">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.name}" 
+                               itemValue="#{componentType}"/>
+                <p:ajax update="componentTypeCategory"/>       
+            </p:selectOneMenu>
+
+            <p:commandButton id="selectComponentTypeButton"
+                             action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
+                             oncomplete="componentTypeSelectDialogWidget.show()"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Component Type" 
+                             styleClass="actionButtonSmall"
+                             icon="ui-icon-search">
+                <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{componentObject.componentType}"/>
+                <p:tooltip for="selectComponentTypeButton" value="Search for component type."/>
+            </p:commandButton>
         </p:column>
-        <h:outputText id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText"/>
         <p:message for="componentType"/>
-        <p:tooltip for="componentType" value="Component type specification is required."/>
+        <p:tooltip for="componentType" value="Select component type."/> 
 
         <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
         <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
@@ -57,16 +68,19 @@
         <p:tooltip for="logEntry" value="Log entry is optional."/>
         
         <h:outputLabel for="logTopic" value="Log Topic" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="logTopic" value="#{componentController.logTopicId}" title="Log Topic" styleClass="entityDataText">
+        <p:selectOneMenu id="logTopic" value="#{componentController.logTopicId}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="logTopic" value="#{logTopicController.availableItems}" itemLabel="#{logTopic.name}" itemValue="#{logTopic.id}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:message for="logTopic"/> 
         <p:tooltip for="logTopic" value="Log topic is optional."/>
         
     </p:panelGrid>
 
     <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>
+    
+    <ui:include src="../componentType/componentTypeSelectCustomizeDisplayDialog.xhtml"/>
+    
 </ui:composition>
 
 

@@ -27,10 +27,10 @@
         <p:tooltip for="id" value="Component type id cannot be modified."/>
 
         <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
-        <h:selectOneMenu id="category" value="#{componentTypeObject.componentTypeCategory}" title="Category" styleClass="entityDataText">
+        <p:selectOneMenu id="category" value="#{componentTypeObject.componentTypeCategory}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="category" value="#{componentTypeCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:message for="category"/> 
         <p:tooltip for="category" value="Category specification is optional."/>
 

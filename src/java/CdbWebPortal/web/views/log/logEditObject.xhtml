@@ -31,10 +31,10 @@
               filterBy="#{logObject.logTopic}" filterMatchMode="exact"
               filterOptions="#{logTopicController.availableItemsForSelectOne}"
               filterValue="#{logController.filterByTopic}">
-        <h:selectOneMenu id="topic" value="#{logObject.logTopic}" title="Topic" styleClass="entityDataText">
+        <p:selectOneMenu id="topic" value="#{logObject.logTopic}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="topic" value="#{logTopicController.availableItems}" itemLabel="#{topic.name}" itemValue="#{topic}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
     </p:column>
 
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"

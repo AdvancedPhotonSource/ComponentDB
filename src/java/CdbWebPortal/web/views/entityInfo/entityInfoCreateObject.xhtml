@@ -7,18 +7,18 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
     <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-    <h:selectOneMenu id="ownerUser" value="#{entityInfoObject.ownerUser}" title="Owner User" styleClass="entityDataSelectOne">
+    <p:selectOneMenu id="ownerUser" value="#{entityInfoObject.ownerUser}" styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
         <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.username}" itemValue="#{ownerUser}"/>
-    </h:selectOneMenu>
+    </p:selectOneMenu>
     <p:message for="ownerUser"/> 
     <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>
 
     <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-    <h:selectOneMenu id="ownerGroup" value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" title="Owner Group" styleClass="entityDataSelectOne">
+    <p:selectOneMenu id="ownerGroup" value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
         <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
-    </h:selectOneMenu>
+    </p:selectOneMenu>
     <p:message for="ownerGroup"/> 
     <p:tooltip for="ownerGroup" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
 

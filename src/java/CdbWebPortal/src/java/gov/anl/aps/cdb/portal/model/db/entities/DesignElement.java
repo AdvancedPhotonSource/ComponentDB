@@ -38,7 +38,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignElement.findAll", query = "SELECT d FROM DesignElement d"),
     @NamedQuery(name = "DesignElement.findById", query = "SELECT d FROM DesignElement d WHERE d.id = :id"),
     @NamedQuery(name = "DesignElement.findByName", query = "SELECT d FROM DesignElement d WHERE d.name = :name"),
-    @NamedQuery(name = "DesignElement.findByQuantity", query = "SELECT d FROM DesignElement d WHERE d.quantity = :quantity"),
     @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
     @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
 public class DesignElement extends CloneableEntity {
@@ -50,7 +49,6 @@ public class DesignElement extends CloneableEntity {
     @NotNull
     @Size(min = 1, max = 64)
     private String name;
-    private Integer quantity;
     @Size(max = 256)
     private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -118,14 +116,6 @@ public class DesignElement extends CloneableEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     public String getDescription() {

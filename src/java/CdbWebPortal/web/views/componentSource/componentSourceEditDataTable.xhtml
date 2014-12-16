@@ -25,11 +25,11 @@
         <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name"
                   filterBy="#{componentSourceObject.source.name}" filterMatchMode="contains"
                   filterValue="#{componentSourceController.filterBySourceName}">
-            <h:selectOneMenu id="source" value="#{componentSourceObject.source}" title="Source" required="true" 
+            <p:selectOneMenu id="source" value="#{componentSourceObject.source}" required="true" 
                              styleClass="cellSelect">
                 <f:selectItem itemLabel="Select" itemValue="{componentSourceObject.source}"/>
                 <f:selectItems var="source" value="#{sourceController.availableItems}" itemLabel="#{source.name}" itemValue="#{source}"/>
-            </h:selectOneMenu>
+            </p:selectOneMenu>
             <p:tooltip for="source" value="Select source name."/>
         </p:column>
 

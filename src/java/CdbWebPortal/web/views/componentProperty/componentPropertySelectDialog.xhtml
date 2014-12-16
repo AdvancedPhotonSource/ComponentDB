@@ -8,14 +8,14 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="componentPropertySelectDialog" 
-              widgetVar="componentPropertySelectWidget" 
+              widgetVar="componentPropertySelectDialogWidget" 
               header="Select Component Property Types" 
               styleClass="dialog">
         <div class="dialog">
 
             <div class="actionButton">
                 <p:commandButton id="componentPropertySelectCustomizeDisplay" 
-                                 onclick="componentPropertySelectWidget.hide(); componentPropertySelectCustomizeDisplayDialogWidget.show()"
+                                 onclick="componentPropertySelectDialogWidget.hide(); componentPropertySelectCustomizeDisplayDialogWidget.show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
@@ -27,7 +27,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentController.selectPropertyTypes(propertyTypeController.getSelectedObjectListAndResetSelectDataModel())}"
                                  update="@form"
-                                 oncomplete="componentPropertySelectWidget.hide()" 
+                                 oncomplete="componentPropertySelectDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

@@ -25,24 +25,6 @@
         <h:outputText value="#{componentObject.description}"/>
     </p:column>
 
-    <p:column sortBy="#{componentObject.documentationUriShortDisplay}" headerText="Uri" 
-              filterBy="#{componentObject.documentationUriShortDisplay}" filterMatchMode="contains"
-              filterValue="#{componentController.selectFilterByDocumentationUri}"
-              filterStyle="width:30px" filterStyleClass="shortFilterColumn"
-              rendered="#{componentController.selectDisplayDocumentationUri}">
-        <h:outputLink value="#{componentObject.documentationUri}" title="Documentation URI" target="_new" styleClass="entityDataText">
-            <h:outputText value="#{componentObject.documentationUriShortDisplay}"/>
-        </h:outputLink>                      
-    </p:column>
-
-    <p:column sortBy="#{componentObject.componentState.name}" headerText="State" 
-              filterBy="#{componentObject.componentState.name}" filterMatchMode="exact"
-              filterValue="#{componentController.selectFilterByState}"
-              filterOptions="#{componentStateController.availableItemsForSelectOne}"
-              rendered="#{componentController.selectDisplayState}">
-        <h:outputText value="#{componentObject.componentState.name}"/>
-    </p:column>
-
     <p:column sortBy="#{componentObject.componentTypeList.toString()}" headerText="Type" 
               filterBy="#{componentObject.componentTypeList}" filterMatchMode="contains"
               filterValue="#{componentController.selectFilterByType}"
@@ -52,8 +34,8 @@
 
     <p:column sortBy="#{componentObject.componentTypeCategoryList.toString()}" headerText="Category" 
               filterBy="#{componentObject.componentTypeCategoryList}" filterMatchMode="contains"
-              filterValue="#{componentController.selectFilterByTypeCategory}"
-              rendered="#{componentController.selectDisplayTypeCategory}">
+              filterValue="#{componentController.selectFilterByCategory}"
+              rendered="#{componentController.selectDisplayCategory}">
         <h:outputText value="#{componentController.displayEntityList(componentObject.componentTypeCategoryList)}"/>
     </p:column>
 

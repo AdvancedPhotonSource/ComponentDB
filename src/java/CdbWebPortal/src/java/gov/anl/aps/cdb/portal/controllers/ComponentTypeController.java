@@ -19,6 +19,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 @Named("componentTypeController")
 @SessionScoped
@@ -39,9 +40,14 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     private ComponentTypeFacade componentTypeFacade;
 
     private Boolean displayCategory = null;
-
+    
+    private Boolean selectDisplayCategory = true;
+    
     private String filterByCategory = null;
+    
     private String selectFilterByCategory = null;
+
+    private ComponentType selectedComponentType = null;
 
     public ComponentTypeFacade getComponentTypeFacade() {
         return componentTypeFacade;
@@ -88,7 +94,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     public String getEntityTypeCategoryName() {
         return "componentTypeCategory";
     }
-    
+
     @Override
     public String getDisplayEntityTypeName() {
         return "component type";
@@ -123,7 +129,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
             throw new ObjectAlreadyExists("Component type " + componentType.getName() + " already exists.");
         }
         logger.debug("Updating component type " + componentType.getName());
-    }    
+    }
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -221,6 +227,22 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         this.selectFilterByCategory = selectFilterByCategory;
     }
 
+    public Boolean getDisplayCategory() {
+        return displayCategory;
+    }
+
+    public void setDisplayCategory(Boolean displayCategory) {
+        this.displayCategory = displayCategory;
+    }
+
+    public Boolean getSelectDisplayCategory() {
+        return selectDisplayCategory;
+    }
+
+    public void setSelectDisplayCategory(Boolean selectDisplayCategory) {
+        this.selectDisplayCategory = selectDisplayCategory;
+    }
+
     public void savePropertyTypeList() {
         update();
     }
@@ -241,15 +263,25 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     public static class ComponentTypeControllerConverter implements Converter {
 
         @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+        public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String value) {
+            SelectOneMenu menu = (SelectOneMenu)uiComponent;
+            Object localValue = menu.getLocalValue();
             if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
-            ComponentTypeController controller = (ComponentTypeController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componentTypeController");
-            return controller.getEntity(getKey(value));
+            try {
+                ComponentTypeController controller = (ComponentTypeController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "componentTypeController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to component type object.");
+                return null;
+            }
         }
 
+
+        
         java.lang.Integer getKey(String value) {
             java.lang.Integer key;
             key = Integer.valueOf(value);
@@ -263,7 +295,9 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         }
 
         @Override
-        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+        public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object object) {
+            SelectOneMenu menu = (SelectOneMenu)uiComponent;
+            Object localValue = menu.getLocalValue();
             if (object == null) {
                 return null;
             }
@@ -275,6 +309,14 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
             }
         }
 
+    }
+
+    public ComponentType getSelectedComponentType() {
+        return selectedComponentType;
+    }
+
+    public void setSelectedComponentType(ComponentType selectedComponentType) {
+        this.selectedComponentType = selectedComponentType;
     }
 
 }

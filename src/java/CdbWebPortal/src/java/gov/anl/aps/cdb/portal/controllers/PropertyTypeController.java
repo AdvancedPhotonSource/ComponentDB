@@ -36,7 +36,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     private static final String DisplayHandlerSettingTypeKey = "PropertyType.List.Display.Handler";
     private static final String DisplayIsDynamicSettingTypeKey = "PropertyType.List.Display.IsDynamic";
     private static final String DisplayIsUserWriteableSettingTypeKey = "PropertyType.List.Display.IsUserWriteable";
-
+    
     private static final String FilterByNameSettingTypeKey = "PropertyType.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "PropertyType.List.FilterBy.Description";
 

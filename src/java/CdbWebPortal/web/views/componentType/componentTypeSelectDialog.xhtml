@@ -8,21 +8,36 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="componentTypeSelectDialog" header="Select Component Types" widgetVar="componentTypeSelectDialogWidget" styleClass="dialog">
+    <p:dialog id="componentTypeSelectDialog" 
+              widgetVar="componentTypeSelectDialogWidget" 
+              header="Select Component Types" 
+              styleClass="dialog">
         <div class="dialog">
+            <div class="actionButton">
+                <p:commandButton id="componentTypeSelectCustomizeDisplay" 
+                                 onclick="componentTypeSelectDialogWidget.hide();
+                                         componentTypeSelectCustomizeDisplayDialogWidget.show()"
+                                 alt="Customize selection view." 
+                                 immediate="true"                                 
+                                 icon="ui-icon-wrench" 
+                                 styleClass="actionButtonRight">
+                    <p:tooltip for="componentTypeSelectCustomizeDisplay" value="Customize selection view."/>
+                </p:commandButton>
+            </div>
             <ui:include src="componentTypeSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{componentController.selectComponentType(componentTypeController.selectedObject)}"
+                                 action="#{componentController.selectComponentType(componentTypeController.selectedComponentType)}"
                                  onclick="componentTypeSelectDataTableWidget.filter()" 
                                  oncomplete="componentTypeSelectDialogWidget.hide()" 
                                  update="@form"
                                  immediate="true"
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                                 icon="ui-icon-arrowreturnthick-1-w">
+                    <p:ajax update="componentType"/>
+                </p:commandButton>
             </f:facet>
         </div>
-        
-        
+
     </p:dialog>
 
 </ui:composition>

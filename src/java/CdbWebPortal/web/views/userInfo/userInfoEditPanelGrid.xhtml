@@ -56,12 +56,12 @@
         <p:tooltip for="description" value="User description is optional."/>
 
         <h:outputLabel for="userGroups" value="Groups" styleClass="entityDataLabel"/>
-        <h:selectManyMenu id="userGroups" value="#{userInfoObject.userGroupList}" rendered="#{isFieldWriteable}"
-                          converter="userGroupConverter" title="Groups" 
+        <p:selectManyMenu id="userGroups" value="#{userInfoObject.userGroupList}" rendered="#{isFieldWriteable}"
+                          converter="userGroupConverter"
                           styleClass="entityDataSelectMany">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="userGroup" value="#{userGroupController.availableItems}" itemLabel="#{userGroup.name}" itemValue="#{userGroup}"/>
-        </h:selectManyMenu>
+        </p:selectManyMenu>
         <h:outputText id="userGroupsOutput" value="#{userInfoController.displayEntityList(userInfoObject.userGroupList)}" rendered="#{!isFieldWriteable}" title="Group" styleClass="entityDataText"/>
         <p:message for="userGroups"/>
         <p:tooltip for="userGroups" value="User group specification is optional. More than one group may be selected."/>

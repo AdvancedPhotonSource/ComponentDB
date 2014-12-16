@@ -45,11 +45,11 @@
                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
         <p:tooltip for="freeFormTextValue" value="Enter property value."/>
 
-        <h:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" title="Value" styleClass="entityDataText"
+        <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText"
                          rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
             <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.allowedPropertyValueList}" 
                            itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
-        </h:selectOneMenu>
+        </p:selectOneMenu>
         <p:tooltip for="selectedTextValue" value="Select property value."/>
 
         <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 

@@ -1,12 +1,21 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
+import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,202 +23,329 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("componentInstanceController")
 @SessionScoped
-public class ComponentInstanceController implements Serializable
-{
+public class ComponentInstanceController extends CrudEntityController<ComponentInstance, ComponentInstanceFacade> implements Serializable {
 
-    private ComponentInstance current;
-    private DataModel items = null;
+    private static final String DisplayCreatedByUserSettingTypeKey = "ComponentInstance.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.Display.CreatedOnDateTime";
+    private static final String DisplayDescriptionSettingTypeKey = "ComponentInstance.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "ComponentInstance.List.Display.Id";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "ComponentInstance.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ComponentInstance.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayLocationDetailsSettingTypeKey = "ComponentInstance.List.Display.LocationDetails";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentInstance.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayOwnerUserSettingTypeKey = "ComponentInstance.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "ComponentInstance.List.Display.OwnerGroup";
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId5";
+
+    private static final String FilterByCreatedByUserSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedByUser";
+    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedOnDateTime";
+    private static final String FilterByDescriptionSettingTypeKey = "ComponentInstance.List.FilterBy.Description";
+    private static final String FilterByLastModifiedByUserSettingTypeKey = "ComponentInstance.List.FilterBy.LastModifiedByUser";
+    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "ComponentInstance.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByLocationSettingTypeKey = "ComponentInstance.List.FilterBy.Location";
+    private static final String FilterByLocationDetailsSettingTypeKey = "ComponentInstance.List.FilterBy.LocationDetails";
+    private static final String FilterByOwnerUserSettingTypeKey = "ComponentInstance.List.FilterBy.OwnerUser";
+    private static final String FilterByOwnerGroupSettingTypeKey = "ComponentInstance.List.FilterBy.OwnerGroup";
+    private static final String FilterByPropertyValue1SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue1";
+    private static final String FilterByPropertyValue2SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue2";
+    private static final String FilterByPropertyValue3SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue3";
+    private static final String FilterByPropertyValue4SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue4";
+    private static final String FilterByPropertyValue5SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue5";
+    private static final String FilterByTagSettingTypeKey = "ComponentInstance.List.FilterBy.Tag";
+
+    private static final Logger logger = Logger.getLogger(ComponentInstanceController.class.getName());
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private ComponentInstanceFacade componentInstanceFacade;
+
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
+    
+    private Boolean displayLocationDetails = null;
+
+    private String filterByLocation = null;
+    private String filterByLocationDetails = null;
+    private String filterByTag = null;
+
+    private Integer displayPropertyTypeId1 = null;
+    private Integer displayPropertyTypeId2 = null;
+    private Integer displayPropertyTypeId3 = null;
+    private Integer displayPropertyTypeId4 = null;
+    private Integer displayPropertyTypeId5 = null;
+
+    private String filterByPropertyValue1 = null;
+    private String filterByPropertyValue2 = null;
+    private String filterByPropertyValue3 = null;
+    private String filterByPropertyValue4 = null;
+    private String filterByPropertyValue5 = null;
+
+    private Boolean displayComponentInstanceImages = null;
 
     public ComponentInstanceController() {
     }
 
-    public ComponentInstance getSelected() {
-        if (current == null) {
-            current = new ComponentInstance();
-            selectedItemIndex = -1;
+    @Override
+    protected ComponentInstanceFacade getFacade() {
+        return componentInstanceFacade;
+    }
+
+    @Override
+    protected ComponentInstance createEntityInstance() {
+        ComponentInstance componentInstance = new ComponentInstance();
+        return componentInstance;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "componentInstance";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "component instance";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getId().toString();
         }
-        return current;
+        return "";
     }
 
-    private ComponentInstanceFacade getFacade() {
-        return ejbFacade;
+    public ComponentInstance findById(Integer id) {
+        return componentInstanceFacade.findById(id);
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (ComponentInstance) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new ComponentInstance();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ComponentInstanceCreated"));
-            return prepareCreate();
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            ComponentInstance componentInstance = findById(idViewParam);
+            setCurrent(componentInstance);
+            idViewParam = null;
         }
     }
 
-    public String prepareEdit() {
-        current = (ComponentInstance) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
+    @Override
+    public List<ComponentInstance> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ComponentInstanceUpdated"));
-            return "View";
+    @Override
+    public void prepareEntityInsert(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+    }
+
+    @Override
+    public void prepareEntityUpdate(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+    }
+
+    private void resetComponentInstancePropertyTypeIdIndexMappings() {
+        ComponentInstance.setPropertyTypeIdIndex(1, displayPropertyTypeId1);
+        ComponentInstance.setPropertyTypeIdIndex(2, displayPropertyTypeId2);
+        ComponentInstance.setPropertyTypeIdIndex(3, displayPropertyTypeId3);
+        ComponentInstance.setPropertyTypeIdIndex(4, displayPropertyTypeId4);
+        ComponentInstance.setPropertyTypeIdIndex(5, displayPropertyTypeId5);
+    }
+
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
+        displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
+        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
+        displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
+
+        displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
+
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+
+        filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
+        filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
+        filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
+        filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
+        filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
+
+        filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
+        filterByLocationDetails = settingTypeMap.get(FilterByLocationDetailsSettingTypeKey).getDefaultValue();
+        filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
+
+        filterByPropertyValue1 = settingTypeMap.get(FilterByPropertyValue1SettingTypeKey).getDefaultValue();
+        filterByPropertyValue2 = settingTypeMap.get(FilterByPropertyValue2SettingTypeKey).getDefaultValue();
+        filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
+        filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
+        filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
+
+    }
+
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+
+        displayLocationDetails = sessionUser.getUserSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+
+        displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        displayPropertyTypeId4 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        displayPropertyTypeId5 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+        filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+
+        filterByLocation = sessionUser.getUserSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
+        filterByLocationDetails = sessionUser.getUserSettingValueAsString(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
+        filterByTag = sessionUser.getUserSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
+
+        filterByPropertyValue1 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
+        filterByPropertyValue2 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
+        filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
+        filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
+        filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+
+        resetComponentInstancePropertyTypeIdIndexMappings();
+
     }
 
-    public String destroy() {
-        current = (ComponentInstance) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
-        else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+        Map<String, String> filters = dataTable.getFilters();
+        filterByLocation = filters.get("location.name");
+        filterByLocationDetails = filters.get("locationDetails");
+        filterByTag = filters.get("tag");
+
+        filterByPropertyValue1 = filters.get("propertyValue1");
+        filterByPropertyValue2 = filters.get("propertyValue2");
+        filterByPropertyValue3 = filters.get("propertyValue3");
+        filterByPropertyValue4 = filters.get("propertyValue4");
+        filterByPropertyValue5 = filters.get("propertyValue5");
+    }
+
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        sessionUser.setUserSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+
+        sessionUser.setUserSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        sessionUser.setUserSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        sessionUser.setUserSettingValue(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+
+        sessionUser.setUserSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
+        sessionUser.setUserSettingValue(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
+        sessionUser.setUserSettingValue(FilterByTagSettingTypeKey, filterByTag);
+
+        sessionUser.setUserSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
+        sessionUser.setUserSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
+        sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
+        sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
+        sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ComponentInstanceDeleted"));
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByLocation = null;
+        filterByLocationDetails = null;
+        filterByTag = null;
+        filterByPropertyValue1 = null;
+        filterByPropertyValue2 = null;
+        filterByPropertyValue3 = null;
+        filterByPropertyValue4 = null;
+        filterByPropertyValue5 = null;
     }
 
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public ComponentInstance getComponentInstance(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    @Override
+    public void clearSelectFilters() {
+        super.clearSelectFilters();
     }
 
     @FacesConverter(forClass = ComponentInstance.class)
-    public static class ComponentInstanceControllerConverter implements Converter
-    {
+    public static class ComponentInstanceControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ComponentInstanceController controller = (ComponentInstanceController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componentInstanceController");
-            return controller.getComponentInstance(getKey(value));
+            try {
+                ComponentInstanceController controller = (ComponentInstanceController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "componentInstanceController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to component instance object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -232,12 +368,166 @@ public class ComponentInstanceController implements Serializable
             if (object instanceof ComponentInstance) {
                 ComponentInstance o = (ComponentInstance) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ComponentInstance.class.getName());
             }
         }
 
+    }
+
+    public Boolean getDisplayLocationDetails() {
+        return displayLocationDetails;
+    }
+
+    public void setDisplayLocationDetails(Boolean displayLocationDetails) {
+        this.displayLocationDetails = displayLocationDetails;
+    }
+
+    public String getFilterByLocation() {
+        return filterByLocation;
+    }
+
+    public void setFilterByLocation(String filterByLocation) {
+        this.filterByLocation = filterByLocation;
+    }
+
+    public String getFilterByLocationDetails() {
+        return filterByLocationDetails;
+    }
+
+    public void setFilterByLocationDetails(String filterByLocationDetails) {
+        this.filterByLocationDetails = filterByLocationDetails;
+    }
+
+    public String getFilterByTag() {
+        return filterByTag;
+    }
+
+    public void setFilterByTag(String filterByTag) {
+        this.filterByTag = filterByTag;
+    }
+
+        public String getDisplayPropertyTypeName(Integer propertyTypeId) {
+        if (propertyTypeId != null) {
+
+            try {
+                PropertyType propertyType = propertyTypeFacade.find(propertyTypeId);
+                return propertyType.getName();
+            } catch (Exception ex) {
+                return "Unknown Property";
+            }
+        }
+        return null;
+    }
+
+    public Integer getDisplayPropertyTypeId1() {
+        return displayPropertyTypeId1;
+    }
+
+    public void setDisplayPropertyTypeId1(Integer displayPropertyTypeId1) {
+        this.displayPropertyTypeId1 = displayPropertyTypeId1;
+    }
+
+    public Integer getDisplayPropertyTypeId2() {
+        return displayPropertyTypeId2;
+    }
+
+    public void setDisplayPropertyTypeId2(Integer displayPropertyTypeId2) {
+        this.displayPropertyTypeId2 = displayPropertyTypeId2;
+    }
+
+    public Integer getDisplayPropertyTypeId3() {
+        return displayPropertyTypeId3;
+    }
+
+    public void setDisplayPropertyTypeId3(Integer displayPropertyTypeId3) {
+        this.displayPropertyTypeId3 = displayPropertyTypeId3;
+    }
+
+    public Integer getDisplayPropertyTypeId4() {
+        return displayPropertyTypeId4;
+    }
+
+    public void setDisplayPropertyTypeId4(Integer displayPropertyTypeId4) {
+        this.displayPropertyTypeId4 = displayPropertyTypeId4;
+    }
+
+    public Integer getDisplayPropertyTypeId5() {
+        return displayPropertyTypeId5;
+    }
+
+    public void setDisplayPropertyTypeId5(Integer displayPropertyTypeId5) {
+        this.displayPropertyTypeId5 = displayPropertyTypeId5;
+    }
+
+    public String getFilterByPropertyValue1() {
+        return filterByPropertyValue1;
+    }
+
+    public void setFilterByPropertyValue1(String filterByPropertyValue1) {
+        this.filterByPropertyValue1 = filterByPropertyValue1;
+    }
+
+    public String getFilterByPropertyValue2() {
+        return filterByPropertyValue2;
+    }
+
+    public void setFilterByPropertyValue2(String filterByPropertyValue2) {
+        this.filterByPropertyValue2 = filterByPropertyValue2;
+    }
+
+    public String getFilterByPropertyValue3() {
+        return filterByPropertyValue3;
+    }
+
+    public void setFilterByPropertyValue3(String filterByPropertyValue3) {
+        this.filterByPropertyValue3 = filterByPropertyValue3;
+    }
+
+    public String getFilterByPropertyValue4() {
+        return filterByPropertyValue4;
+    }
+
+    public void setFilterByPropertyValue4(String filterByPropertyValue4) {
+        this.filterByPropertyValue4 = filterByPropertyValue4;
+    }
+
+    public String getFilterByPropertyValue5() {
+        return filterByPropertyValue5;
+    }
+
+    public void setFilterByPropertyValue5(String filterByPropertyValue5) {
+        this.filterByPropertyValue5 = filterByPropertyValue5;
+    }
+
+    public List<PropertyValue> prepareComponentInstanceImageList(ComponentInstance componentInstance) {
+        displayComponentInstanceImages = false;
+        List<PropertyValue> componentInstanceImageList = new ArrayList<>();
+        List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
+        for (PropertyValue propertyValue : propertyValueList) {
+            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+            DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
+            if (valueDisplayType == DisplayType.IMAGE) {
+                String value = propertyValue.getValue();
+                if (value != null && !value.isEmpty()) {
+                    componentInstanceImageList.add(propertyValue);
+                }
+            }
+        }
+        if (!componentInstanceImageList.isEmpty()) {
+            displayComponentInstanceImages = true;
+        }
+        componentInstance.setImagePropertyList(componentInstanceImageList);
+        return componentInstanceImageList;
+    }
+
+    public List<PropertyValue> getComponentInstanceImageList() {
+        ComponentInstance componentInstance = getCurrent();
+        List<PropertyValue> componentInstanceImageList = componentInstance.getImagePropertyList();
+        if (componentInstanceImageList == null) {
+            componentInstanceImageList = prepareComponentInstanceImageList(componentInstance);
+        }
+        return componentInstanceImageList;
     }
 
 }

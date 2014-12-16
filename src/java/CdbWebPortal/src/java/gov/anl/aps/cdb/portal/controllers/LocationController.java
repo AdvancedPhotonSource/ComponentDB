@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,7 +22,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
-import javax.faces.event.ValueChangeListener;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
@@ -58,7 +58,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     private String selectFilterByType = null;
 
     private Location selectedParentLocation = null;
-    
+
     public LocationController() {
     }
 
@@ -268,29 +268,47 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     }
 
+    // This listener is accessed either after selection made in dialog,
+    // or from selection menu.
     public void selectParentLocationValueChangeListener(ValueChangeEvent valueChangeEvent) {
+        Location location = getCurrent();
+        Location existingParentLocation = location.getParentLocation();
+        Location newEventParentLocation = null;
+        Location oldEventParentLocation = null;
+
         Object newValue = valueChangeEvent.getNewValue();
         if (newValue != null) {
-            Location parentLocation = (Location)newValue;
-            selectParentLocation(parentLocation);
+            newEventParentLocation = (Location) newValue;
+        }
+        Object oldValue = valueChangeEvent.getOldValue();
+        if (oldValue != null) {
+            oldEventParentLocation = (Location) oldValue;
+        }
+
+        if (ObjectUtility.equals(existingParentLocation, oldEventParentLocation)) {
+            // change via menu
+            location.setParentLocation(newEventParentLocation);
+        } else {
+            // change via dialog
+            location.setParentLocation(oldEventParentLocation);
         }
     }
 
     public void selectParentLocationActionListener(ActionEvent actionEvent) {
         Object newValue = actionEvent.getSource();
         if (newValue != null) {
-            Location parentLocation = (Location)newValue;
-            selectParentLocation(parentLocation);
+            Location parentLocation = (Location) newValue;
+            setSelectedParentLocation(parentLocation);
         }
     }
-    
+
     public void selectParentLocation(Location parentLocation) {
         Location location = getCurrent();
         if (parentLocation != null) {
             location.setParentLocation(parentLocation);
-        }        
+        }
     }
-    
+
     public void selectLocationType(LocationType locationType) {
         Location location = getCurrent();
         if (locationType != null) {
@@ -368,7 +386,6 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     public void setSelectedParentLocation(Location selectedParentLocation) {
         this.selectedParentLocation = selectedParentLocation;
-        selectParentLocation(selectedParentLocation);
     }
 
 }
