@@ -22,7 +22,6 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -263,6 +262,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
             }
         }
+        component.clearPropertyValueCache();
         prepareComponentImageList(component);
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
