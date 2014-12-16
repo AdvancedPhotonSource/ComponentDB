@@ -52,6 +52,10 @@ if [ ! -f $CDB_DIST_DIR/$CDB_BUILD_WAR_FILE ]; then
     exit 1
 fi
 
+# Create needed data directories
+mkdir -p $CDB_DATA_DIR/propertyValue
+mkdir -p $CDB_DATA_DIR/log
+
 # Modify war file for proper settings and repackage it into new war 
 echo "Repackaging war file for context root $CDB_CONTEXT_ROOT"
 cd $CDB_DIST_DIR
