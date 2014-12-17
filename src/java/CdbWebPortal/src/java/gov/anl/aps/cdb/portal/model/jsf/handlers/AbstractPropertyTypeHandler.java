@@ -19,6 +19,9 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     protected String name;
 
     public static String shortenHttpLinkDisplayValueIfNeeded(String displayValue) {
+	if (displayValue == null) {
+	    return null;
+	}
         int length = displayValue.length();
         if (length > HttpLinkDisplayLength) {
             int partLength = HttpLinkDisplayLength/2 - 1;
