@@ -119,6 +119,7 @@ CDB_DB_TABLES="\
     property_value_history \
     location_type \
     location \
+    location_link \
     resource_type_category \
     connector_type_category \
     connector_type \

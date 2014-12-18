@@ -10,12 +10,15 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -37,7 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
-    @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description")})
+    @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description"),
+    @NamedQuery(name = "Location.findByIsUserWriteable", query = "SELECT l FROM Location l WHERE l.isUserWriteable = :isUserWriteable")})
 public class Location extends CloneableEntity {
 
     @Id
@@ -50,11 +54,17 @@ public class Location extends CloneableEntity {
     private String name;
     @Size(max = 256)
     private String description;
-    @OneToMany(mappedBy = "parentLocation")
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_user_writeable")
+    private boolean isUserWriteable;
+    @JoinTable(name = "location_link", joinColumns = {
+        @JoinColumn(name = "parent_location_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "child_location_id", referencedColumnName = "id")})
+    @ManyToMany
     private List<Location> locationList;
-    @JoinColumn(name = "parent_location_id", referencedColumnName = "id")
-    @ManyToOne
-    private Location parentLocation;
+    @ManyToMany(mappedBy = "locationList")
+    private List<Location> locationList1;
     @JoinColumn(name = "location_type_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private LocationType locationType;
@@ -63,6 +73,8 @@ public class Location extends CloneableEntity {
     @OneToMany(mappedBy = "location")
     private List<DesignElement> designElementList;
 
+    private transient Location parentLocation;
+    
     public Location() {
     }
 
@@ -99,7 +111,15 @@ public class Location extends CloneableEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+    
+    public boolean getIsUserWriteable() {
+        return isUserWriteable;
+    }
 
+    public void setIsUserWriteable(boolean isUserWriteable) {
+        this.isUserWriteable = isUserWriteable;
+    }
+    
     @XmlTransient
     public List<Location> getLocationList() {
         return locationList;
@@ -109,12 +129,13 @@ public class Location extends CloneableEntity {
         this.locationList = locationList;
     }
 
-    public Location getParentLocation() {
-        return parentLocation;
+    @XmlTransient
+    public List<Location> getLocationList1() {
+        return locationList1;
     }
 
-    public void setParentLocation(Location parentLocation) {
-        this.parentLocation = parentLocation;
+    public void setLocationList1(List<Location> locationList1) {
+        this.locationList1 = locationList1;
     }
 
     public LocationType getLocationType() {
@@ -143,6 +164,15 @@ public class Location extends CloneableEntity {
         this.designElementList = designElementList;
     }
 
+    public Location getParentLocation() {
+        return parentLocation;
+    }
+
+    public void setParentLocation(Location parentLocation) {
+        this.parentLocation = parentLocation;
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 0;

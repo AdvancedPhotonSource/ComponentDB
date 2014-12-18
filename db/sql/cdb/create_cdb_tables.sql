@@ -429,13 +429,26 @@ CREATE TABLE `location` (
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
   `location_type_id` int(11) unsigned NOT NULL,
-  `parent_location_id` int(11) unsigned DEFAULT NULL,
+  `is_user_writeable` bool NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `location_u1` (`name`),
   KEY `location_k1` (`location_type_id`),
-  CONSTRAINT `location_fk1` FOREIGN KEY (`location_type_id`) REFERENCES `location_type` (`id`) ON UPDATE CASCADE,
-  KEY `location_k2` (`parent_location_id`),
-  CONSTRAINT `location_fk2` FOREIGN KEY (`parent_location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  CONSTRAINT `location_fk1` FOREIGN KEY (`location_type_id`) REFERENCES `location_type` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `location_link`
+--
+
+DROP TABLE IF EXISTS `location_link`;
+CREATE TABLE `location_link` (
+  `parent_location_id` int(11) unsigned NOT NULL,
+  `child_location_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`parent_location_id`, `child_location_id`),
+  KEY `location_link_k1` (`parent_location_id`),
+  CONSTRAINT `location_link_fk1` FOREIGN KEY (`parent_location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `location_link_k2` (`child_location_id`),
+  CONSTRAINT `location_link_fk2` FOREIGN KEY (`child_location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
