@@ -7,7 +7,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:column sortBy="#{logObject.id}" headerText="Id">
+    <p:column sortBy="#{logObject.id}" headerText="Id"
+              rendered="#{logController.displayId}">
         <h:outputText id="logId" value="#{logObject.id}"/>
         <p:tooltip for="logId" value="Log entry id cannot be modified."/>
     </p:column>

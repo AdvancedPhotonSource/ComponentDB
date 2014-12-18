@@ -18,7 +18,8 @@
                  editable="true"
                  emptyMessage="No component instances found.">
 
-        <p:column sortBy="#{componentInstanceObject.id}" headerText="Id">
+        <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
+                  rendered="#{componentInstanceController.displayId}">
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>
 

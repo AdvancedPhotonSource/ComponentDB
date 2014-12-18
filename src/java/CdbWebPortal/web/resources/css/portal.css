@@ -247,10 +247,6 @@ a:link:hover, a:visited:hover  {
     width: 300px;
 }
 
-.entityLogList td:last-child {
-    width: 195px;
-}
-
 .commandLink {
 
 }
@@ -346,6 +342,26 @@ input, textarea {
 
 select {
     width: 150px;
+}
+
+.logDataTable {
+    width: 300px;
+}
+
+.logTimestampColumn {
+    width: 50px;
+}
+
+.logUserColumn {
+    width: 50px;
+}
+
+.logTextColumn {
+    width: 150px;
+}
+
+.logAttachmentsColumn {
+    width: 50px;
 }
 
 h1 {

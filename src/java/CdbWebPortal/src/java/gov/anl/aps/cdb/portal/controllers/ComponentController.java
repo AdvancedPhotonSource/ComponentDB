@@ -357,7 +357,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         logEntry.setEnteredByUser(lastModifiedByUser);
         logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
         List<Log> componentLogList = component.getLogList();
-        componentLogList.add(logEntry);
+        componentLogList.add(0,logEntry);
     }
 
     public void deleteLog(Log componentLog) {

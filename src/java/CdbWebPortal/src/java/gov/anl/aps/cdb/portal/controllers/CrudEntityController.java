@@ -335,6 +335,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         return "list?faces-redirect=true";
     }
 
+    public String prepareListFromViewPath(String viewPath) {
+        return viewPath + "/" + prepareList();
+    }
+    
     public String resetListForView() {
         logger.debug("Resetting list for view");
         clearListFilters();

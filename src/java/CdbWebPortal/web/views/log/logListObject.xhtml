@@ -4,16 +4,19 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:column sortBy="#{logObject.id}" headerText="Id" 
               rendered="#{logController.displayId}">
         <h:outputText value="#{logObject.id}"/>
     </p:column>
 
-    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Timestamp"
+    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Time"
               filterBy="#{logObject.enteredOnDateTime}" filterMatchMode="contains"
               filterValue="#{logController.filterByEnteredOnDateTime}"
+              filterStyle="width:60px"
+              style="width:85px"
               rendered="#{logController.displayEnteredOnDateTime}">
         <h:outputText value="#{logObject.shortDisplayEnteredOnDateTime}"/>
     </p:column>
@@ -21,6 +24,8 @@
     <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User"
               filterBy="#{logObject.enteredByUser}" filterMatchMode="contains"
               filterValue="#{logController.filterByEnteredByUser}"
+              filterStyle="width:40px"
+              style="width:50px"
               rendered="#{logController.displayEnteredByUser}">
         <h:outputText value="#{logObject.enteredByUser.username}"/>
     </p:column>
@@ -29,18 +34,26 @@
               filterBy="#{logObject.logTopic}" filterMatchMode="exact"
               filterOptions="#{logTopicController.availableItemsForSelectOne}"
               filterValue="#{logController.filterByTopic}"
+              filterStyle="width:40px"
+              style="width:50px"
               rendered="#{logController.displayTopic}">
         <h:outputText value="#{logObject.logTopic.name}"/>
     </p:column>
 
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"
               filterBy="#{logObject.text}" filterMatchMode="contains"
-              filterValue="#{logController.filterByText}">
+              filterValue="#{logController.filterByText}"
+              filterStyle="width:80px"
+              style="width:200px">
         <h:outputText value="#{logObject.text}"/>
     </p:column>
 
-    <p:column headerText="Attachments"
+    <p:column 
+              style="width:35px"
               rendered="#{logController.displayAttachments}">
+        <f:facet name="header">
+           <h:graphicImage alt="Attachment" url="../../resources/images/attachment.ico"/>
+        </f:facet>
         <ui:repeat var="attachment" value="#{logObject.attachmentList}">
             <h:outputLink value="#{attachment.filePath}" target="_page_#{attachment.name}" title="#{attachment.name}" styleClass="entityDataIcon">
                  <h:graphicImage alt="Attachment" url="../../resources/images/attachment.ico"/>

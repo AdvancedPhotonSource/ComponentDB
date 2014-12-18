@@ -18,7 +18,8 @@
                  editable="true"
                  emptyMessage="No component sources found.">
 
-        <p:column sortBy="#{componentSourceObject.id}" headerText="Id">
+        <p:column sortBy="#{componentSourceObject.id}" headerText="Id"
+                  rendered="#{componentSourceController.displayId}">
             <h:outputText value="#{componentSourceObject.id}"/>
         </p:column>
 

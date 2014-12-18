@@ -31,7 +31,10 @@
 
 
                 <p/>
-                <p:accordionPanel multiple="false">
+                <p:accordionPanel multiple="true" activeIndex="0,1">
+                    <p:tab title="Images">
+                        <ui:include src="../componentProperty/image.xhtml"/>
+                    </p:tab>   
                     <p:tab title="Log Entries">
                         <ui:include src="../componentLog/view.xhtml"/>
                     </p:tab>
@@ -40,22 +43,19 @@
             </div>
 
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1,2,3">
-                     <p:tab title="Images">
-                        <ui:include src="../componentProperty/image.xhtml"/>
-                     </p:tab>                   
+                <p:accordionPanel multiple="true" activeIndex="0,1,2">                
                     <p:tab title="Properties">
                         <ui:include src="../componentProperty/view.xhtml"/>
+                    </p:tab>
+
+                    <p:tab title="Sources">
+                        <ui:include src="../componentSource/view.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Instances">
                         <ui:include src="../componentInstance/view.xhtml"/>
                     </p:tab>       
-                    
-                    <p:tab title="Sources">
-                        <ui:include src="../componentSource/view.xhtml"/>
-                    </p:tab>
-                                 
+
                 </p:accordionPanel>
             </div>
         </h:form>

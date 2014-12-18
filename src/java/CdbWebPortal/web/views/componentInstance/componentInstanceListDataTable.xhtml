@@ -18,32 +18,26 @@
                  emptyMessage="No component instances found.">
 
         <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
-                  rendered="#{componentController.displayId}">
+                  rendered="#{componentInstanceController.displayId}">
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location"
-                  filterBy="#{componentInstanceObject.location.name}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByLocation}">
+        <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
              <h:outputText value="#{componentInstanceObject.location.name}"/>
         </p:column>
 
 
-        <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag"
-                  filterBy="#{componentInstanceObject.tag}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByTag}">
+        <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
             <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
         </p:column>
         
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
-                  filterBy="#{componentInstanceObject.locationDetails}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByLocationDetails}">
+                  rendered="#{componentInstanceController.displayLocationDetails}">
             <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}"/>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.description}" headerText="Description"
-                  filterBy="#{componentInstanceObject.description}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByDescription}">
+                  rendered="#{componentInstanceController.displayDescription}">
             <h:outputText id="description" value="#{componentInstanceObject.description}"/>
         </p:column>
 

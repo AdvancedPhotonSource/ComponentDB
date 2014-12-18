@@ -25,6 +25,16 @@ public class AmosLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         return DisplayType.HTTP_LINK;
     }
 
+   public static String formatOrderId(String orderId) {
+        if (orderId == null) {
+            return null;
+        }
+        String formattedId = orderId.replace("MO", "");
+        formattedId = formattedId.replace("_", "");
+        formattedId = "MO_" + formattedId;
+        return formattedId;
+    }
+   
     public static String formatAmosLink(String orderId) {
         // For a AMOS order # like MOnnnnnn , create link ... 
         // https://apps.anl.gov/webcompadapter/viewrpt.cwr?id=10211&apsuser=irisuser&apspassword=irisuser2a&apsauthtype=secEnterprise&cmd=EXPORT&EXPORT_FMT=U2FPDF%3A0&promptex-ORDER_NO=nnnnnn
@@ -34,6 +44,7 @@ public class AmosLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         }
         
         String docId = orderId.replace("MO", "");
+        docId = docId.replace("_", "");
         String url = AmosUrl.replace("ORDER_ID", docId);
         return url;
     }
@@ -49,4 +60,16 @@ public class AmosLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         String targetLink = formatAmosLink(propertyValueHistory.getValue());
         propertyValueHistory.setTargetValue(targetLink);
     }
+    
+    @Override
+    public void setDisplayValue(PropertyValue propertyValue) {
+        String displayValue = formatOrderId(propertyValue.getValue());
+        propertyValue.setDisplayValue(displayValue);
+    }
+
+    @Override
+    public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
+        String displayValue = formatOrderId(propertyValueHistory.getValue());
+        propertyValueHistory.setDisplayValue(displayValue);
+    }    
 }

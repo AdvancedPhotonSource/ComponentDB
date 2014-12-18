@@ -40,7 +40,7 @@
             <ui:include src="../common/commonListActionLinks.xhtml">
                 <ui:param name="entityController" value="#{sourceController}"/>
                 <ui:param name="entityObject" value="#{sourceObject}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedIn}"/>
             </ui:include>
         </p:column>
     </p:dataTable>

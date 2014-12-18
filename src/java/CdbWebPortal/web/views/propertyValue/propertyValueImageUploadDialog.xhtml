@@ -16,12 +16,12 @@
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton id="propertyValueImageUploadSubmitButton" value="Submit" alt="Submit" 
-                                 action="#{propertyValueImageUploadBean.upload}"
+                                 actionListener="#{propertyValueImageUploadBean.upload(propertyValueController.current)}"
+                                 action="#{parentEntityController[saveAction]}"
                                  ajax="false"
                                  update="@form"
                                  oncomplete="propertyValueImageUploadDialogWidget.hide()" 
                                  icon="ui-icon-check">
-                    <f:setPropertyActionListener value="#{propertyValueController.current}" target="#{propertyValueImageUploadBean.propertyValue}"/>
                     <p:tooltip for="propertyValueImageUploadSubmitButton" value="Submit image for upload."/>
                 </p:commandButton>
             </f:facet>

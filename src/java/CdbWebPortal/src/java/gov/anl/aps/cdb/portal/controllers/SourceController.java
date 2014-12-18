@@ -184,5 +184,10 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         }
 
     }
-
+    
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+    
 }

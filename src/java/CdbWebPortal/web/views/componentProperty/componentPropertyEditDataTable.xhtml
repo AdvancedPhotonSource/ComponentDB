@@ -58,10 +58,16 @@
 
     <ui:include src="../propertyValueHistory/propertyValueHistoryListDialog.xhtml"/>
 
-    <ui:include src="../propertyValue/propertyValueImageUploadDialog.xhtml"/>
+    <ui:include src="../propertyValue/propertyValueImageUploadDialog.xhtml">
+        <ui:param name="parentEntityController" value="#{componentController}"/>
+        <ui:param name="saveAction" value="savePropertyList"/>
+    </ui:include>
 
-    <ui:include src="../propertyValue/propertyValueDocumentUploadDialog.xhtml"/>
-    
+    <ui:include src="../propertyValue/propertyValueDocumentUploadDialog.xhtml">
+        <ui:param name="parentEntityController" value="#{componentController}"/>
+        <ui:param name="saveAction" value="savePropertyList"/>
+    </ui:include>
+
     <ui:include src="../propertyValueHistory/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 </ui:composition>
 

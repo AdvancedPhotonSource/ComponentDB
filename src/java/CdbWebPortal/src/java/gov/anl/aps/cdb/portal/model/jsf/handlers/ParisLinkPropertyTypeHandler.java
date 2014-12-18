@@ -26,8 +26,8 @@ public class ParisLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     }
 
     public static String formatParisLink(String poId) {
-        // Property Handler:  For a purchase req number such as Fy-nnnnnn , create link ... https://apps.anl.gov/paris/req.jsp?reqNbr=Fy-nnnnnn
-        // Example: F3-326054  https://apps.anl.gov/paris/req.jsp?reqNbr=F3-326054          
+        // Property Handler:  For a purchase req number such as Fy-nnnnnn , create link ... https://apps.inside.anl.gov/paris/req.jsp?reqNbr=Fy-nnnnnn
+        // Example: F3-326054  https://apps.inside.anl.gov/paris/req.jsp?reqNbr=F3-326054          
         if (poId == null) {
             return null;
         }

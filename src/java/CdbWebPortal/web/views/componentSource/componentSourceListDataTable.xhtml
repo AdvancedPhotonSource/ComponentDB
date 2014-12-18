@@ -22,29 +22,21 @@
             <h:outputText value="#{componentSourceObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name"
-                  filterBy="#{componentSourceObject.source.name}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterBySourceName}">
+        <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name">
             <h:outputText value="#{componentSourceObject.source.name}"/>
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.partNumber}" headerText="Part Number"
-                  filterBy="#{componentSourceObject.partNumber}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByPartNumber}"
                   rendered="#{componentSourceController.displayPartNumber}">
             <h:outputText value="#{componentSourceObject.partNumber}"/>
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.cost}" headerText="Cost [$]"
-                  filterBy="#{componentSourceObject.cost}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByCost}"
                   rendered="#{componentSourceController.displayCost}">
             <h:outputText value="#{componentSourceObject.cost}"/>
         </p:column>
         
         <p:column sortBy="#{componentSourceObject.description}" headerText="Description"
-                  filterBy="#{componentSourceObject.description}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByDescription}"
                   rendered="#{componentSourceController.displayDescription}">
             <h:outputText value="#{componentSourceObject.description}"/>
         </p:column>        

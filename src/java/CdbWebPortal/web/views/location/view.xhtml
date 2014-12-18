@@ -24,7 +24,7 @@
 
                 <p/>
                 <ui:param name="entityController" value="#{locationController}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedIn}"/>
                 <ui:include src="../common/commonViewActionButtons.xhtml"/>
                 <ui:include src="locationDestroyDialog.xhtml"/>
             </div>

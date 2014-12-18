@@ -49,7 +49,8 @@ public class PropertyValueImageUploadBean {
         this.propertyValue = propertyValue;
     }
 
-    public void upload() {
+    public void upload(PropertyValue propertyValue) {
+        this.propertyValue = propertyValue;
         Path uploadDirPath;
         try {
             if (uploadedFile != null && !uploadedFile.getFileName().isEmpty()) {

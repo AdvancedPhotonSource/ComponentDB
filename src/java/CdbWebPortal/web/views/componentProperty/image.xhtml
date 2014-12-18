@@ -7,12 +7,11 @@
 
     <p:galleria value="#{componentController.componentImageList}" var="propertyValueObject" 
                 showCaption="false"
-                panelHeight="300" panelWidth="300"
+                panelHeight="200" panelWidth="200"
                 rendered="#{componentController.displayComponentImages}">
         <p:graphicImage value="/propertyValue/images/#{propertyValueObject.value}.scaled" 
                         alt="#{propertyValueObject.description}" 
-                        title="#{propertyValueObject.value}"
-                        />
+                        title="#{propertyValueObject.value}"/>
     </p:galleria>    
 </ui:composition>
 

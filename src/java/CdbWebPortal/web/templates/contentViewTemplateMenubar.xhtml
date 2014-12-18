@@ -6,13 +6,13 @@
 
     <p:menubar>
         <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home"/>
-        <p:menuitem value="Components" url="/views/component/list.xhtml"/>
-        <p:menuitem value="Component Types" url="/views/componentType/list.xhtml"/>
-        <p:menuitem value="Locations" url="/views/location/list.xhtml"/>
-        <p:menuitem value="Location Types" url="/views/locationType/list.xhtml"/>
-        <p:menuitem value="Property Types" url="/views/propertyType/list.xhtml"/>
-        <p:menuitem value="Sources" url="/views/source/list.xhtml"/>
-        <p:menuitem value="Users" url="/views/userInfo/list.xhtml"/>  
+        <p:menuitem value="Components" action="#{componentController.prepareListFromViewPath('/views/component')}"/>
+        <p:menuitem value="Component Types" action="#{componentTypeController.prepareListFromViewPath('/views/componentType')}"/>
+        <p:menuitem value="Locations" action="#{locationController.prepareListFromViewPath('/views/location')}"/>
+        <p:menuitem value="Location Types" action="#{locationTypeController.prepareListFromViewPath('/views/locationType')}"/>
+        <p:menuitem value="Property Types" action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
+        <p:menuitem value="Sources" action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
+        <p:menuitem value="Users" action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>  
         <p:menuitem value="Search" url="/views/search/search.xhtml" icon="ui-icon-search"/>
         <p:menuitem value="Settings" action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit.xhtml')}" 
                     rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>

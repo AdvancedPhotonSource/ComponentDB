@@ -4,7 +4,7 @@ LOCK TABLES `setting_type` WRITE;
 INSERT INTO `setting_type` (`name`, `description`, `default_value`)
 VALUES
 	('AllowedPropertyValue.List.Display.Description','Display allowed property value description.', 'false'),
-	('AllowedPropertyValue.List.Display.Id','Display allowed property value id.', 'true'),
+	('AllowedPropertyValue.List.Display.Id','Display allowed property value id.', 'false'),
 	('AllowedPropertyValue.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('AllowedPropertyValue.List.Display.SortOrder','Display allowed property value sort order.', 'true'),
 	('AllowedPropertyValue.List.Display.Units','Display allowed property value units.', 'true'),
@@ -17,7 +17,7 @@ VALUES
 	('Component.List.Display.CreatedByUser', 'Display created by username.', 'false'),
 	('Component.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
 	('Component.List.Display.Description', 'Display component description.', 'true'),
-	('Component.List.Display.Id', 'Display component id.', 'true'),
+	('Component.List.Display.Id', 'Display component id.', 'false'),
 	('Component.List.Display.LastModifiedByUser', 'Display last modified by username.', 'false'),
 	('Component.List.Display.LastModifiedOnDateTime', 'Display last modified on date/time.', 'false'),
 	('Component.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
@@ -50,7 +50,7 @@ VALUES
 	('ComponentInstance.List.Display.CreatedByUser', 'Display created by username.', 'false'),
 	('ComponentInstance.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
 	('ComponentInstance.List.Display.Description', 'Display component instance description.', 'true'),
-	('ComponentInstance.List.Display.Id', 'Display component instance id.', 'true'),
+	('ComponentInstance.List.Display.Id', 'Display component instance id.', 'false'),
 	('ComponentInstance.List.Display.LastModifiedByUser', 'Display last modified by username.', 'false'),
 	('ComponentInstance.List.Display.LastModifiedOnDateTime', 'Display last modified on date/time.', 'false'),
 	('ComponentInstance.List.Display.LocationDetails', 'Display component instance location details.', 'false'),
@@ -81,7 +81,7 @@ VALUES
 
 	('ComponentSource.List.Display.Cost', 'Display component cost.', 'true'),
 	('ComponentSource.List.Display.Description', 'Display component source description.', 'true'),
-	('ComponentSource.List.Display.Id', 'Display component source id.', 'true'),
+	('ComponentSource.List.Display.Id', 'Display component source id.', 'false'),
 	('ComponentSource.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 	('ComponentSource.List.Display.PartNumber', 'Display component part number.', 'true'),
 
@@ -92,7 +92,7 @@ VALUES
 
 	('ComponentType.List.Display.Category','Display component type category.', true),
 	('ComponentType.List.Display.Description', 'Display component type description.', 'true'),
-	('ComponentType.List.Display.Id', 'Display component type id.', 'true'),
+	('ComponentType.List.Display.Id', 'Display component type id.', 'false'),
 	('ComponentType.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 
 	('ComponentType.List.FilterBy.Category','Filter for component type category.', NULL),
@@ -100,20 +100,20 @@ VALUES
 	('ComponentType.List.FilterBy.Name','Filter for component type name.', NULL),
 
 	('ComponentTypeCategory.List.Display.Description', 'Display component type category description.', 'true'),
-	('ComponentTypeCategory.List.Display.Id', 'Display component type category id.', 'true'),
+	('ComponentTypeCategory.List.Display.Id', 'Display component type category id.', 'false'),
 	('ComponentTypeCategory.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 
 	('ComponentTypeCategory.List.FilterBy.Description','Filter for component type category description.', NULL),
 	('ComponentTypeCategory.List.FilterBy.Name','Filter for component type category name.', NULL),
 
 	('ComponentTypePropertyType.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
-	('ComponentTypePropertyType.List.Display.Id', 'Display component type property type id.', 'true'),
+	('ComponentTypePropertyType.List.Display.Id', 'Display component type property type id.', 'false'),
 	('ComponentTypePropertyType.List.FilterBy.PropertyTypeName', 'Filter for component type property type name.', NULL),
 
 	('Design.List.Display.CreatedByUser', 'Display created by username.', 'false'),
 	('Design.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
 	('Design.List.Display.Description', 'Display design description.', 'true'),
-	('Design.List.Display.Id', 'Display design id.', 'true'),
+	('Design.List.Display.Id', 'Display design id.', 'false'),
 	('Design.List.Display.LastModifiedByUser', 'Display last modified by username.', 'false'),
 	('Design.List.Display.LastModifiedOnDateTime', 'Display last modified on date/time.', 'false'),
 	('Design.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
@@ -130,19 +130,19 @@ VALUES
 	('Design.List.FilterBy.OwnerGroup', 'Filter for designs by owner group name.', NULL),
 
 	('DesignComponent.List.Display.Description','Display design component description.', 'false'),
-	('DesignComponent.List.Display.Id','Display design component id.', 'true'),
+	('DesignComponent.List.Display.Id','Display design component id.', 'false'),
 	('DesignComponent.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('DesignComponent.List.Display.Priority','Display design component priority.', 'true'),
 	('DesignComponent.List.Display.Quantity','Display design component quantity.', 'true'),
 	('DesignComponent.List.Display.Tag','Display design component tag.', 'true'),
 
 	('DesignLink.List.Display.Description','Display design link description.', 'false'),
-	('DesignLink.List.Display.Id','Display design link id.', 'true'),
+	('DesignLink.List.Display.Id','Display design link id.', 'false'),
 	('DesignLink.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('DesignLink.List.Display.Tag','Display design link tag.', 'true'),
 
 	('Location.List.Display.Description','Display location description.', 'true'),
-	('Location.List.Display.Id','Display location id.', 'true'),
+	('Location.List.Display.Id','Display location id.', 'false'),
 	('Location.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('Location.List.Display.Parent','Display location parent.', 'true'),
 	('Location.List.Display.Type','Display location type.', 'true'),
@@ -153,7 +153,7 @@ VALUES
 	('Location.List.FilterBy.Type','Filter for location type.', NULL),
 
 	('LocationType.List.Display.Description','Display location type description.', 'true'),
-	('LocationType.List.Display.Id','Display location type id.', 'true'),
+	('LocationType.List.Display.Id','Display location type id.', 'false'),
 	('LocationType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('LocationType.List.FilterBy.Description','Filter for location type description.', NULL),
@@ -162,9 +162,9 @@ VALUES
 	('Log.List.Display.Attachments','Display log entry attachments.', 'true'),
 	('Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.', 'true'),
 	('Log.List.Display.EnteredByUser','Display log entry entered by user.', 'true'),
-	('Log.List.Display.Id','Display log entry id.', 'true'),
+	('Log.List.Display.Id','Display log entry id.', 'false'),
 	('Log.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
-	('Log.List.Display.Topic','Display log topic.', 'true'),
+	('Log.List.Display.Topic','Display log topic.', 'false'),
 
 	('Log.List.FilterBy.EnteredOnDateTime','Filter for log entry entered on date/time.', NULL),
 	('Log.List.FilterBy.EnteredByUser','Filter for log entry entered by user.', NULL),
@@ -176,7 +176,7 @@ VALUES
 	('PropertyType.List.Display.DefaultValue','Display property type default value.', 'false'),
 	('PropertyType.List.Display.Description','Display property type description.', 'true'),
 	('PropertyType.List.Display.Handler','Display property type class handler.', 'true'),
-	('PropertyType.List.Display.Id','Display property type id.', 'true'),
+	('PropertyType.List.Display.Id','Display property type id.', 'false'),
 	('PropertyType.List.Display.IsDynamic','Display dynamic property type designation.', 'false'),
 	('PropertyType.List.Display.IsUserWriteable','Display user-writeable property type designation.', 'false'),
 	('PropertyType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
@@ -191,14 +191,14 @@ VALUES
 	('PropertyType.List.FilterBy.Name','Filter for property type name.', NULL),
 
 	('PropertyTypeCategory.List.Display.Description','Display property type category description.', 'true'),
-	('PropertyTypeCategory.List.Display.Id','Display property type category id.', 'true'),
+	('PropertyTypeCategory.List.Display.Id','Display property type category id.', 'false'),
 	('PropertyTypeCategory.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('PropertyTypeCategory.List.FilterBy.Description','Filter for property type category description.', NULL),
 	('PropertyTypeCategory.List.FilterBy.Name','Filter for property type category name.', NULL),
 
 	('PropertyTypeHandler.List.Display.Description','Display property type handler description.', 'true'),
-	('PropertyTypeHandler.List.Display.Id','Display property type handler id.', 'true'),
+	('PropertyTypeHandler.List.Display.Id','Display property type handler id.', 'false'),
 	('PropertyTypeHandler.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('PropertyTypeHandler.List.FilterBy.Description','Filter for property type handler description.', NULL),
@@ -207,7 +207,7 @@ VALUES
 	('PropertyValue.List.Display.Description', 'Display value entry description.', 'false'),
 	('PropertyValue.List.Display.EnteredOnDateTime','Display value entry entered on date/time.', 'false'),
 	('PropertyValue.List.Display.EnteredByUser','Display value entry entered by user.', 'false'),
-	('PropertyValue.List.Display.Id','Display property value entry id.', 'true'),
+	('PropertyValue.List.Display.Id','Display property value entry id.', 'false'),
 	('PropertyValue.List.Display.NumberOfItemsPerPage', 'Display specified number of items per page.', '25'),
 	('PropertyValue.List.Display.Tag', 'Display property value tag.', 'true'),
 	('PropertyValue.List.Display.TypeCategory', 'Display property value type category.', 'false'),
@@ -251,7 +251,7 @@ VALUES
 	('Search.List.Display.UserGroups','Display search result for user groups.', 'true'),
 
 	('Source.List.Display.Description','Display source description.', 'true'),
-	('Source.List.Display.Id','Display source id.', 'true'),
+	('Source.List.Display.Id','Display source id.', 'false'),
 	('Source.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('Source.List.FilterBy.Description','Filter for source description.', NULL),
@@ -260,7 +260,7 @@ VALUES
 	('UserInfo.List.Display.Description','Display user description.', 'false'),
 	('UserInfo.List.Display.Email','Display user email.', 'true'),
 	('UserInfo.List.Display.FirstName','Display user first name.', 'true'),
-	('UserInfo.List.Display.Id','Display user id.', 'true'),
+	('UserInfo.List.Display.Id','Display user id.', 'false'),
 	('UserInfo.List.Display.Groups','Display user groups.', 'true'),
 	('UserInfo.List.Display.LastName','Display user last name.', 'true'),
 	('UserInfo.List.Display.MiddleName','Display user middle name.', 'false'),
@@ -275,7 +275,7 @@ VALUES
 	('UserInfo.List.FilterBy.Username','Filter for username.', NULL),
 
 	('UserGroup.List.Display.Description','Display user group description.', 'true'),
-	('UserGroup.List.Display.Id','Display user group id.', 'true'),
+	('UserGroup.List.Display.Id','Display user group id.', 'false'),
 	('UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 
 	('UserGroup.List.FilterBy.Description','Filter for user group description.', NULL),

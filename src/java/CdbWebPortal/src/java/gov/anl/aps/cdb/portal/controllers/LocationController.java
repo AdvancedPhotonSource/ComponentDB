@@ -267,7 +267,12 @@ public class LocationController extends CrudEntityController<Location, LocationF
         }
 
     }
-
+    
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+    
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.
     public void selectParentLocationValueChangeListener(ValueChangeEvent valueChangeEvent) {

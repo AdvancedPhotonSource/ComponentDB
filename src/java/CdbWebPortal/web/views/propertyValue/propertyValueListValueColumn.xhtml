@@ -5,25 +5,6 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
-              rendered="#{propertyValueController.displayId}">
-        <h:outputText value="#{propertyValueObject.id}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type">
-        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
-              rendered="#{propertyValueController.displayTypeCategory}">
-        <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
-              rendered="#{propertyValueController.displayTag}">
-        <h:outputText value="#{propertyValueObject.tag}"/>
-    </p:column>
-    
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value">
 
         <h:outputText value="#{propertyValueObject.displayValue}"
@@ -45,26 +26,6 @@
                       rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
             <h:outputText value="#{propertyValueObject.displayValue}"/>
         </h:outputLink>        
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
-              rendered="#{propertyValueController.displayUnits}">
-        <h:outputText value="#{propertyValueObject.units}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
-              rendered="#{propertyValueController.displayDescription}">
-        <h:outputText value="#{propertyValueObject.description}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
-              rendered="#{propertyValueController.displayEnteredByUser}">
-        <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
-              rendered="#{propertyValueController.displayEnteredOnDateTime}">
-        <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
     </p:column>
 
 </ui:composition>

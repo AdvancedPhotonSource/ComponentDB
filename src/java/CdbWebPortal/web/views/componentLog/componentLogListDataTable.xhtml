@@ -3,8 +3,7 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="componentLogListDataTable"
                  widgetVar="componentLogListDataTableWidget" 
@@ -14,8 +13,7 @@
                  binding="#{logController.componentLogListDataTable}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
-                 emptyMessage="No log entries found." 
-                 styleClass="entityLogList">
+                 emptyMessage="No log entries found.">
 
         <ui:include src="../log/logListObject.xhtml"/>
 

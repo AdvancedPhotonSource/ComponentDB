@@ -7,9 +7,6 @@
     <ui:param name="parentObject" value="#{parentEntityController.selected}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{childEntityTypeName}ListEditButton" value="Edit" action="#{parentEntityController.prepareEdit(parentObject)}" rendered="#{isParentEntityWriteable}" alt="Edit" icon="ui-icon-pencil">
-            <p:tooltip for="#{childEntityTypeName}ListEditButton" value="Edit list."/>
-        </p:commandButton>
         
         <p:commandButton id="#{childEntityTypeName}ListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:dataExporter type="xls" target="#{childEntityTypeName}ListDataTable" fileName="#{childEntityTypeName}s"/>

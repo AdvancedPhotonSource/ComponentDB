@@ -27,26 +27,29 @@
                 <ui:include src="../common/commonEditActionButtons.xhtml"/>
 
                 <p/>
-                <p:accordionPanel multiple="false">
+                <p:accordionPanel multiple="true" activeIndex="0,1,2,3">
                     <p:tab title="Log Entries">
                         <ui:include src="../componentLog/edit.xhtml"/>
                     </p:tab>
-                </p:accordionPanel>  
-            </div>
 
-            <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1,2">
                     <p:tab title="Properties">
                         <ui:include src="../componentProperty/edit.xhtml"/>
                     </p:tab>
+
+                    <p:tab title="Sources">
+                        <ui:include src="../componentSource/edit.xhtml"/>
+                    </p:tab> 
 
                     <p:tab title="Instances">
                         <ui:include src="../componentInstance/edit.xhtml"/>
                     </p:tab>  
 
-                    <p:tab title="Sources">
-                        <ui:include src="../componentSource/edit.xhtml"/>
-                    </p:tab>                  
+                </p:accordionPanel>  
+            </div>
+
+            <div class="middleCenterRightContent">
+                <p:accordionPanel multiple="true" activeIndex=""> 
+
                 </p:accordionPanel>
             </div>
         </h:form>
