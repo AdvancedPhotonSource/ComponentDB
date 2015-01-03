@@ -23,7 +23,9 @@
         <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
             <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+        <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" 
+                         alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"
+                         rendered="#{displayListResetFiltersButton}">
             <p:tooltip for="#{childEntityTypeName}ListResetFiltersButton" value="Reset filters."/>
         </p:commandButton>
 

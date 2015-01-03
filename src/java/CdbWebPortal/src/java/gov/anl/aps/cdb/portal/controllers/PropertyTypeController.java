@@ -7,6 +7,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 
 import java.io.Serializable;
@@ -36,7 +37,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     private static final String DisplayHandlerSettingTypeKey = "PropertyType.List.Display.Handler";
     private static final String DisplayIsDynamicSettingTypeKey = "PropertyType.List.Display.IsDynamic";
     private static final String DisplayIsUserWriteableSettingTypeKey = "PropertyType.List.Display.IsUserWriteable";
-    
+
     private static final String FilterByNameSettingTypeKey = "PropertyType.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "PropertyType.List.FilterBy.Description";
 
@@ -79,6 +80,9 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     private String selectFilterByHandler = null;
     private String selectFilterByIsDynamic = null;
     private String selectFilterByIsUserWriteable = null;
+
+    private DataTable componentSelectDataTable = null;
+    private DataTable componentInstanceSelectDataTable = null;
 
     public PropertyTypeController() {
     }
@@ -317,6 +321,13 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         createSelectDataModel(selectPropertyTypeList);
     }
 
+    public void prepareSelectPropertyTypesForComponentInstance(ComponentInstance componentInstance) {
+        clearSelectFilters();
+        resetSelectDataModel();
+        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        createSelectDataModel(selectPropertyTypeList);
+    }
+    
     @FacesConverter(forClass = PropertyType.class)
     public static class PropertyTypeControllerConverter implements Converter {
 
@@ -327,10 +338,9 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
             }
             try {
                 PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyTypeController");
+                        getValue(facesContext.getELContext(), null, "propertyTypeController");
                 return controller.getEntity(getKey(value));
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + "cannot be converted to property type object.");
                 return null;
@@ -362,6 +372,22 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
             }
         }
 
+    }
+
+    public DataTable getComponentSelectDataTable() {
+        return componentSelectDataTable;
+    }
+
+    public void setComponentSelectDataTable(DataTable componentSelectDataTable) {
+        this.componentSelectDataTable = componentSelectDataTable;
+    }
+
+    public DataTable getComponentInstanceSelectDataTable() {
+        return componentInstanceSelectDataTable;
+    }
+
+    public void setComponentInstanceSelectDataTable(DataTable componentInstanceSelectDataTable) {
+        this.componentInstanceSelectDataTable = componentInstanceSelectDataTable;
     }
 
     public Boolean getDisplayCategory() {

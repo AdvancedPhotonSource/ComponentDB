@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
+    <p:panelGrid columns="2" styleClass="viewEntityDetails">
+  
+        <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="location" value="#{componentInstanceObject.location.name}" title="Location" styleClass="entityDataEmphasizedText"/>
+        
+        <h:outputLabel for="tag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="tag" value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>
+
+        <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
+        
+        <h:outputLabel for="qrId" value="QR Id" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="qrId" value="#{componentInstanceObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+        
+        <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
+        <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}" title="Location Details" styleClass="entityDataText"/>
+        
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:outputText id="description" value="#{componentInstanceObject.description}" title="Description" styleClass="entityDataText"/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{componentInstanceObject.id}" title="Id" styleClass="entityDataText"/>
+
+        <h:outputLabel for="component" value="Component" styleClass="entityDataLabel"/>
+        <h:outputText id="component" value="#{componentInstanceObject.component.name}" title="Component" styleClass="entityDataText"/>
+        
+        <ui:include src="../entityInfo/entityInfoViewObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{componentInstanceObject.entityInfo}"/>
+        </ui:include>
+
+    </p:panelGrid>
+
+</ui:composition>
+
+

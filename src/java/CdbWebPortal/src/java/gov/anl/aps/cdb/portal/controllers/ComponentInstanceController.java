@@ -4,18 +4,29 @@ import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Component;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.Location;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -23,8 +34,10 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 @Named("componentInstanceController")
 @SessionScoped
@@ -45,6 +58,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private static final String DisplayPropertyTypeId3SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId3";
     private static final String DisplayPropertyTypeId4SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId4";
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId5";
+    private static final String DisplayQrIdSettingTypeKey = "ComponentInstance.List.Display.QrId";
+    private static final String DisplaySerialNumberSettingTypeKey = "ComponentInstance.List.Display.SerialNumber";
 
     private static final String FilterByCreatedByUserSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedOnDateTime";
@@ -61,6 +76,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private static final String FilterByPropertyValue4SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue4";
     private static final String FilterByPropertyValue5SettingTypeKey = "ComponentInstance.List.FilterBy.PropertyValue5";
     private static final String FilterByTagSettingTypeKey = "ComponentInstance.List.FilterBy.Tag";
+    private static final String FilterByQrIdSettingTypeKey = "ComponentInstance.List.FilterBy.QrId";
+    private static final String FilterBySerialNumberSettingTypeKey = "ComponentInstance.List.FilterBy.SerialNumber";
 
     private static final Logger logger = Logger.getLogger(ComponentInstanceController.class.getName());
 
@@ -69,11 +86,18 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
-    
+
+    @EJB
+    private LocationFacade locationFacade;
+
     private Boolean displayLocationDetails = null;
+    private Boolean displayQrId = null;
+    private Boolean displaySerialNumber = null;
 
     private String filterByLocation = null;
     private String filterByLocationDetails = null;
+    private String filterByQrId = null;
+    private String filterBySerialNumber = null;
     private String filterByTag = null;
 
     private Integer displayPropertyTypeId1 = null;
@@ -88,7 +112,11 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private String filterByPropertyValue4 = null;
     private String filterByPropertyValue5 = null;
 
-    private Boolean displayComponentInstanceImages = null;
+    private List<Location> locationList = null;
+
+    private Integer qrIdViewParam = null;
+
+    private SelectOneMenu componentSelectOneMenu;
 
     public ComponentInstanceController() {
     }
@@ -101,6 +129,28 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     @Override
     protected ComponentInstance createEntityInstance() {
         ComponentInstance componentInstance = new ComponentInstance();
+        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+        Date createdOnDateTime = new Date();
+        EntityInfo entityInfo = new EntityInfo();
+        entityInfo.setOwnerUser(createdByUser);
+        entityInfo.setCreatedOnDateTime(createdOnDateTime);
+        entityInfo.setCreatedByUser(createdByUser);
+        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
+        entityInfo.setLastModifiedByUser(createdByUser);
+        List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        componentInstance.setEntityInfo(entityInfo);
+
+        if (qrIdViewParam != null) {
+            componentInstance.setQrId(qrIdViewParam);
+            qrIdViewParam = null;
+        }
+
+        // clear locaation list
+        locationList = locationFacade.findAll();
+
         return componentInstance;
     }
 
@@ -126,12 +176,41 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         return componentInstanceFacade.findById(id);
     }
 
+    public ComponentInstance findByQrId(Integer qrId) {
+        return componentInstanceFacade.findByQrId(qrId);
+    }
+
     @Override
     public void selectByRequestParams() {
         if (idViewParam != null) {
             ComponentInstance componentInstance = findById(idViewParam);
             setCurrent(componentInstance);
             idViewParam = null;
+        } else {
+            try {
+                // Due to bug in primefaces, we cannot have more than one
+                // f:viewParam on the web page, so process qrId here
+                qrIdViewParam = null;
+                String paramValue = SessionUtility.getRequestParameterValue("qrId");
+                if (paramValue != null) {
+                    qrIdViewParam = Integer.parseInt(paramValue);
+                    if (qrIdViewParam != null) {
+                        ComponentInstance componentInstance = findByQrId(qrIdViewParam);
+                        setCurrent(componentInstance);
+                        if (componentInstance == null) {
+                            UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+                            if (sessionUser != null) {
+                                SessionUtility.navigateTo("/views/componentInstance/create.xhtml?faces-redirect=true");
+                            } else {
+                                SessionUtility.pushViewOnStack("/views/componentInstance/create.xhtml");
+                                SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
+                            }
+                        }
+                    }
+                }
+            } catch (NumberFormatException ex) {
+                logger.warn("Invalid value supplied for QR id: " + ex);
+            }
         }
     }
 
@@ -141,11 +220,165 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     @Override
-    public void prepareEntityInsert(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+    public String prepareEdit(ComponentInstance componentInstance) {
+        locationList = locationFacade.findAll();
+        return super.prepareEdit(componentInstance);
     }
 
     @Override
+    public void prepareEntityView(ComponentInstance componentInstance) {
+        prepareComponentInstanceImageList(componentInstance);
+    }
+
+    @Override
+    public void prepareEntityInsert(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+        componentInstance.resetAttributesToNullIfEmpty();
+    }
+
+    @Override
+    public String update() {
+        ComponentInstance componentInstance = getCurrent();
+        componentInstance.resetAttributesToNullIfEmpty();
+        return super.update();
+    }
+    
+    @Override
     public void prepareEntityUpdate(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+        EntityInfo entityInfo = componentInstance.getEntityInfo();
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
+        entityInfo.setLastModifiedByUser(lastModifiedByUser);
+
+        // Compare properties with what is in the db
+        List<PropertyValue> originalPropertyValueList = componentInstanceFacade.findById(componentInstance.getId()).getPropertyValueList();
+        List<PropertyValue> newPropertyValueList = componentInstance.getPropertyValueList();
+        logger.debug("Verifying properties for component instance id " + componentInstance.getId());
+        for (PropertyValue newPropertyValue : newPropertyValueList) {
+            int index = originalPropertyValueList.indexOf(newPropertyValue);
+            if (index >= 0) {
+                // Original property was there.
+                PropertyValue originalPropertyValue = originalPropertyValueList.get(index);
+                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescription(originalPropertyValue)) {
+                    // Property value was modified.
+                    logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
+                            + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
+                    newPropertyValue.setEnteredByUser(lastModifiedByUser);
+                    newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+
+                    // Save history
+                    List<PropertyValueHistory> propertyValueHistoryList = newPropertyValue.getPropertyValueHistoryList();
+                    PropertyValueHistory propertyValueHistory = new PropertyValueHistory();
+                    propertyValueHistory.updateFromPropertyValue(originalPropertyValue);
+                    propertyValueHistoryList.add(propertyValueHistory);
+                }
+            } else {
+                // New property value.
+                logger.debug("Adding new property value for type " + newPropertyValue.getPropertyType()
+                        + ": " + newPropertyValue);
+                newPropertyValue.setEnteredByUser(lastModifiedByUser);
+                newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+            }
+        }
+        componentInstance.resetAttributesToNullIfEmpty();
+        componentInstance.clearPropertyValueCache();
+        prepareComponentInstanceImageList(componentInstance);
+        logger.debug("Updating component instance id " + componentInstance.getId() + " (user: " + lastModifiedByUser.getUsername() + ")");
+    }
+
+    public String prepareViewFromComponent(ComponentInstance componentInstance) {
+        logger.debug("Preparing component instance view from component view page");
+        prepareView(componentInstance);
+        return "/views/componentInstance/view.xhtml?faces-redirect=true";
+    }
+
+    public String prepareViewToComponent(ComponentInstance componentInstance) {
+        return "/views/component/view.xhtml?id=" + componentInstance.getComponent().getId();
+    }
+
+    public void prepareAddLog(ComponentInstance componentInstance) {
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        Log logEntry = new Log();
+        logEntry.setEnteredByUser(lastModifiedByUser);
+        logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
+        List<Log> componentInstanceLogList = componentInstance.getLogList();
+        componentInstanceLogList.add(0, logEntry);
+    }
+
+    public List<Log> getLogList() {
+        ComponentInstance componentInstance = getCurrent();
+        List<Log> componentInstanceLogList = componentInstance.getLogList();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser != null) {
+            Date settingsTimestamp = getSettingsTimestamp();
+            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
+                updateSettingsFromSessionUser(sessionUser);
+                settingsTimestamp = new Date();
+                setSettingsTimestamp(settingsTimestamp);
+            }
+        }
+        return componentInstanceLogList;
+    }
+
+    public void saveLogList() {
+        update();
+    }
+
+    public void deleteLog(Log componentInstanceLog) {
+        ComponentInstance componentInstance = getCurrent();
+        List<Log> componentInstanceLogList = componentInstance.getLogList();
+        componentInstanceLogList.remove(componentInstanceLog);
+        update();
+    }
+
+    public void prepareAddProperty() {
+        ComponentInstance componentInstance = getCurrent();
+        List<PropertyValue> propertyList = componentInstance.getPropertyValueList();
+        PropertyValue property = new PropertyValue();
+        propertyList.add(property);
+        componentInstance.resetImagePropertyList();
+    }
+
+    public void savePropertyList() {
+        update();
+    }
+
+    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
+        ComponentInstance componentInstance = getCurrent();
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
+        for (PropertyType propertyType : propertyTypeList) {
+            PropertyValue propertyValue = new PropertyValue();
+            propertyValue.setPropertyType(propertyType);
+            propertyValue.setValue(propertyType.getDefaultValue());
+            propertyValue.setUnits(propertyType.getDefaultUnits());
+            propertyValueList.add(propertyValue);
+            propertyValue.setEnteredByUser(lastModifiedByUser);
+            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+        }
+    }
+
+    public void deleteProperty(PropertyValue componentInstanceProperty) {
+        ComponentInstance componentInstance = getCurrent();
+        List<PropertyValue> componentInstancePropertyList = componentInstance.getPropertyValueList();
+        componentInstancePropertyList.remove(componentInstanceProperty);
+        update();
+    }
+
+    public String destroyAndReturnComponentView(ComponentInstance componentInstance) {
+        Component component = componentInstance.getComponent();
+        setCurrent(componentInstance);
+        try {
+            logger.debug("Destroying " + getCurrentEntityInstanceName());
+            getFacade().remove(componentInstance);
+            SessionUtility.addInfoMessage("Success", "Deleted component instance id " + componentInstance.getId() + ".");
+            return "/views/component/view.xhtml?id=" + component.getId();
+        } catch (Exception ex) {
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            return null;
+        }
     }
 
     private void resetComponentInstancePropertyTypeIdIndexMappings() {
@@ -174,6 +407,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
 
+        displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
+        displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
+
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
@@ -191,6 +427,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
         filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
         filterByLocationDetails = settingTypeMap.get(FilterByLocationDetailsSettingTypeKey).getDefaultValue();
+        filterByQrId = settingTypeMap.get(FilterByQrIdSettingTypeKey).getDefaultValue();
+        filterBySerialNumber = settingTypeMap.get(FilterBySerialNumberSettingTypeKey).getDefaultValue();
         filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
 
         filterByPropertyValue1 = settingTypeMap.get(FilterByPropertyValue1SettingTypeKey).getDefaultValue();
@@ -218,6 +456,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
         displayLocationDetails = sessionUser.getUserSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        displayQrId = sessionUser.getUserSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
+        displaySerialNumber = sessionUser.getUserSettingValueAsBoolean(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
 
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -236,6 +476,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
         filterByLocation = sessionUser.getUserSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
         filterByLocationDetails = sessionUser.getUserSettingValueAsString(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
+        filterByQrId = sessionUser.getUserSettingValueAsString(FilterByQrIdSettingTypeKey, filterByQrId);
+        filterBySerialNumber = sessionUser.getUserSettingValueAsString(FilterBySerialNumberSettingTypeKey, filterBySerialNumber);
         filterByTag = sessionUser.getUserSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
 
         filterByPropertyValue1 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
@@ -257,6 +499,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         Map<String, String> filters = dataTable.getFilters();
         filterByLocation = filters.get("location.name");
         filterByLocationDetails = filters.get("locationDetails");
+        filterByQrId = filters.get("qrId");
+        filterBySerialNumber = filters.get("serialNumber");
         filterByTag = filters.get("tag");
 
         filterByPropertyValue1 = filters.get("propertyValue1");
@@ -283,9 +527,10 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
         sessionUser.setUserSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        sessionUser.setUserSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
+        sessionUser.setUserSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
 
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
-
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
@@ -301,6 +546,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
         sessionUser.setUserSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
         sessionUser.setUserSettingValue(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
+        sessionUser.setUserSettingValue(FilterByQrIdSettingTypeKey, filterByQrId);
+        sessionUser.setUserSettingValue(FilterBySerialNumberSettingTypeKey, filterBySerialNumber);
         sessionUser.setUserSettingValue(FilterByTagSettingTypeKey, filterByTag);
 
         sessionUser.setUserSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
@@ -316,6 +563,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         super.clearListFilters();
         filterByLocation = null;
         filterByLocationDetails = null;
+        filterByQrId = null;
+        filterBySerialNumber = null;
         filterByTag = null;
         filterByPropertyValue1 = null;
         filterByPropertyValue2 = null;
@@ -375,12 +624,83 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     }
 
+    public List<Location> completeLocation(String query) {
+        Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
+
+        List<Location> completedList = new ArrayList<>();
+        for (Location location : locationList) {
+            boolean nameContainsQuery = searchPattern.matcher(location.getName()).find();
+            if (nameContainsQuery) {
+                completedList.add(location);
+            }
+        }
+        return completedList;
+    }
+
+    public void selectLocation(Location location) {
+        ComponentInstance componentInstance = getCurrent();
+        if (componentInstance != null) {
+            componentInstance.setLocation(location);
+        }
+    }
+
+    public void selectComponent(Component component) {
+        ComponentInstance componentInstance = getCurrent();
+        componentInstance.setComponent(component);
+        componentSelectOneMenu.setSubmittedValue(component);
+    }
+
+    // This listener is accessed either after selection made in dialog,
+    // or from selection menu.    
+    public void selectLocationValueChangeListener(ValueChangeEvent valueChangeEvent) {
+        ComponentInstance componentInstance = getCurrent();
+        if (componentInstance == null) {
+            return;
+        }
+        Location existingLocation = componentInstance.getLocation();
+        Location newEventLocation = null;
+        Location oldEventLocation = null;
+
+        Object newValue = valueChangeEvent.getNewValue();
+        if (newValue != null) {
+            newEventLocation = (Location) newValue;
+        }
+        Object oldValue = valueChangeEvent.getOldValue();
+        if (oldValue != null) {
+            oldEventLocation = (Location) oldValue;
+        }
+
+        if (ObjectUtility.equals(existingLocation, oldEventLocation)) {
+            // change via menu
+            componentInstance.setLocation(newEventLocation);
+        } else {
+            // change via dialog
+            componentInstance.setLocation(oldEventLocation);
+        }
+    }
+
     public Boolean getDisplayLocationDetails() {
         return displayLocationDetails;
     }
 
     public void setDisplayLocationDetails(Boolean displayLocationDetails) {
         this.displayLocationDetails = displayLocationDetails;
+    }
+
+    public Boolean getDisplayQrId() {
+        return displayQrId;
+    }
+
+    public void setDisplayQrId(Boolean displayQrId) {
+        this.displayQrId = displayQrId;
+    }
+
+    public Boolean getDisplaySerialNumber() {
+        return displaySerialNumber;
+    }
+
+    public void setDisplaySerialNumber(Boolean displaySerialNumber) {
+        this.displaySerialNumber = displaySerialNumber;
     }
 
     public String getFilterByLocation() {
@@ -399,6 +719,22 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         this.filterByLocationDetails = filterByLocationDetails;
     }
 
+    public String getFilterByQrId() {
+        return filterByQrId;
+    }
+
+    public void setFilterByQrId(String filterByQrId) {
+        this.filterByQrId = filterByQrId;
+    }
+
+    public String getFilterBySerialNumber() {
+        return filterBySerialNumber;
+    }
+
+    public void setFilterBySerialNumber(String filterBySerialNumber) {
+        this.filterBySerialNumber = filterBySerialNumber;
+    }
+
     public String getFilterByTag() {
         return filterByTag;
     }
@@ -407,7 +743,12 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         this.filterByTag = filterByTag;
     }
 
-        public String getDisplayPropertyTypeName(Integer propertyTypeId) {
+    public Boolean getDisplayComponentInstanceImages() {
+        List<PropertyValue> componentInstanceImageList = getComponentInstanceImageList();
+        return (componentInstanceImageList != null && !componentInstanceImageList.isEmpty());
+    }
+
+    public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         if (propertyTypeId != null) {
 
             try {
@@ -500,23 +841,30 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         this.filterByPropertyValue5 = filterByPropertyValue5;
     }
 
+    public Integer getQrIdViewParam() {
+        return qrIdViewParam;
+    }
+
+    public void setQrIdViewParam(Integer qrIdViewParam) {
+        this.qrIdViewParam = qrIdViewParam;
+    }
+
     public List<PropertyValue> prepareComponentInstanceImageList(ComponentInstance componentInstance) {
-        displayComponentInstanceImages = false;
         List<PropertyValue> componentInstanceImageList = new ArrayList<>();
         List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
-        for (PropertyValue propertyValue : propertyValueList) {
-            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-            DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
-            if (valueDisplayType == DisplayType.IMAGE) {
-                String value = propertyValue.getValue();
-                if (value != null && !value.isEmpty()) {
-                    componentInstanceImageList.add(propertyValue);
+        if (propertyValueList != null) {
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
+                if (valueDisplayType == DisplayType.IMAGE) {
+                    String value = propertyValue.getValue();
+                    if (value != null && !value.isEmpty()) {
+                        componentInstanceImageList.add(propertyValue);
+                    }
                 }
             }
         }
-        if (!componentInstanceImageList.isEmpty()) {
-            displayComponentInstanceImages = true;
-        }
+
         componentInstance.setImagePropertyList(componentInstanceImageList);
         return componentInstanceImageList;
     }
@@ -530,4 +878,11 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         return componentInstanceImageList;
     }
 
+    public SelectOneMenu getComponentSelectOneMenu() {
+        return componentSelectOneMenu;
+    }
+
+    public void setComponentSelectOneMenu(SelectOneMenu componentTypeSelectOneMenu) {
+        this.componentSelectOneMenu = componentTypeSelectOneMenu;
+    }
 }

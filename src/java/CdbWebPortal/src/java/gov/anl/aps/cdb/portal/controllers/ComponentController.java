@@ -6,11 +6,13 @@ import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -85,6 +88,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
 
+    @EJB
+    private LocationFacade locationFacade;
+
     private Boolean displayType = null;
     private Boolean displayCategory = null;
 
@@ -96,8 +102,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     private String selectFilterByType = null;
     private String selectFilterByCategory = null;
-
-    private Boolean displayComponentImages = null;
 
     private Integer displayPropertyTypeId1 = null;
     private Integer displayPropertyTypeId2 = null;
@@ -114,6 +118,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
     // There seems to be a problem with primefaces framework, as select one menu does not
     // recognize value change in some case, so we bind this variable to control the menu. 
     private SelectOneMenu componentTypeSelectOneMenu;
+
+    private Component selectedComponent = null;
+
+    private List<Location> locationList = null;
 
     public ComponentController() {
         super();
@@ -234,7 +242,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = componentFacade.findById(component.getId()).getPropertyValueList();
         List<PropertyValue> newPropertyValueList = component.getPropertyValueList();
-        ArrayList<PropertyValue> updatedPropertyValueList = new ArrayList<>();
         logger.debug("Verifying properties for component " + component);
         for (PropertyValue newPropertyValue : newPropertyValueList) {
             int index = originalPropertyValueList.indexOf(newPropertyValue);
@@ -265,6 +272,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         component.clearPropertyValueCache();
         prepareComponentImageList(component);
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
+    }
+
+    @Override
+    public String prepareEdit(Component component) {
+        locationList = locationFacade.findAll();
+        return super.prepareEdit(component);
     }
 
     public void prepareAddProperty() {
@@ -337,12 +350,52 @@ public class ComponentController extends CrudEntityController<Component, Compone
         componentInstance.setEntityInfo(entityInfo);
         componentInstance.setComponent(component);
         componentInstanceList.add(componentInstance);
+
+        List<PropertyValue> componentInstancePropertyList = new ArrayList<>();
+        List<PropertyValue> componentPropertyList = component.getPropertyValueList();
+        for (PropertyValue propertyValue : componentPropertyList) {
+            if (propertyValue.getIsDynamic()) {
+                try {
+                    PropertyValue propertyValue2 = (PropertyValue) propertyValue.clone();
+                    propertyValue2.setId(null);
+                    componentInstancePropertyList.add(propertyValue2);
+                } catch (CloneNotSupportedException ex) {
+                    logger.error("Could not clone property value: " + ex);
+                }
+            }
+        }
+        componentInstance.setPropertyValueList(componentInstancePropertyList);
     }
 
+    
     public void saveComponentInstanceList() {
+        Component component = getCurrent();
+        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        if (componentInstanceList != null) {
+            for (ComponentInstance componentInstance : componentInstanceList) {
+                componentInstance.resetAttributesToNullIfEmpty();
+            }
+        }
         update();
     }
 
+    public String addComponentInstance(ComponentInstance componentInstance) throws InvalidObjectState {
+        Component component = componentInstance.getComponent();
+        if (component == null) {
+            SessionUtility.addWarningMessage("Warning", "Component must be selected.");
+            return null;            
+        }
+        
+        // Reset some attributes to null.
+        componentInstance.resetAttributesToNullIfEmpty();
+            
+        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        componentInstanceList.add(componentInstance);
+        setCurrent(component);
+        update();
+        return view();
+    }
+    
     public void deleteComponentInstance(ComponentInstance componentInstance) {
         Component component = getCurrent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
@@ -357,7 +410,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         logEntry.setEnteredByUser(lastModifiedByUser);
         logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
         List<Log> componentLogList = component.getLogList();
-        componentLogList.add(0,logEntry);
+        componentLogList.add(0, logEntry);
     }
 
     public void deleteLog(Log componentLog) {
@@ -649,6 +702,32 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     }
 
+    public List<String> completeLocationName(String query) {
+        Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
+
+        List<String> completedList = new ArrayList<>();
+        for (Location location : locationList) {
+            boolean nameContainsQuery = searchPattern.matcher(location.getName()).find();
+            if (nameContainsQuery) {
+                completedList.add(location.getName());
+            }
+        }
+        return completedList;
+    }
+
+    public List<Location> completeLocation(String query) {
+        Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
+
+        List<Location> completedList = new ArrayList<>();
+        for (Location location : locationList) {
+            boolean nameContainsQuery = searchPattern.matcher(location.getName()).find();
+            if (nameContainsQuery) {
+                completedList.add(location);
+            }
+        }
+        return completedList;
+    }
+
     public void selectComponentType(ComponentType componentType) {
         Component component = getCurrent();
         component.setComponentType(componentType);
@@ -835,14 +914,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     public Boolean getDisplayComponentImages() {
-        return displayComponentImages;
-    }
-
-    public void setDisplayComponentImages(Boolean displayComponentImages) {
-        this.displayComponentImages = displayComponentImages;
+        List<PropertyValue> componentImageList = getComponentImageList();
+        return (componentImageList != null && !componentImageList.isEmpty());
     }
 
     public SelectOneMenu getComponentTypeSelectOneMenu() {
+
         return componentTypeSelectOneMenu;
     }
 
@@ -851,7 +928,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     public List<PropertyValue> prepareComponentImageList(Component component) {
-        displayComponentImages = false;
         List<PropertyValue> componentImageList = new ArrayList<>();
         List<PropertyValue> propertyValueList = component.getPropertyValueList();
         for (PropertyValue propertyValue : propertyValueList) {
@@ -863,9 +939,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
                     componentImageList.add(propertyValue);
                 }
             }
-        }
-        if (!componentImageList.isEmpty()) {
-            displayComponentImages = true;
         }
         component.setImagePropertyList(componentImageList);
         return componentImageList;
@@ -880,4 +953,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return componentImageList;
     }
 
+    public Component getSelectedComponent() {
+        return selectedComponent;
+    }
+
+    public void setSelectedComponent(Component selectedComponent) {
+        this.selectedComponent = selectedComponent;
+    }
 }

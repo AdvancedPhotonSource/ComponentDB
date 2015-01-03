@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -41,9 +42,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
     @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description"),
-    @NamedQuery(name = "Location.findByIsUserWriteable", query = "SELECT l FROM Location l WHERE l.isUserWriteable = :isUserWriteable")})
+    @NamedQuery(name = "Location.findByIsUserWriteable", query = "SELECT l FROM Location l WHERE l.isUserWriteable = :isUserWriteable"),
+    @NamedQuery(name = "Location.findBySortOrder", query = "SELECT l FROM Location l WHERE l.sortOrder = :sortOrder"),
+    @NamedQuery(name = "Location.findLocationsWithoutParents", query = "SELECT l FROM Location l WHERE l.id NOT IN (SELECT l2.id FROM Location l2 JOIN l2.parentLocationList cll2)")})
 public class Location extends CloneableEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -58,13 +60,16 @@ public class Location extends CloneableEntity {
     @NotNull
     @Column(name = "is_user_writeable")
     private boolean isUserWriteable;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Column(name = "sort_order")
+    private Float sortOrder;
     @JoinTable(name = "location_link", joinColumns = {
         @JoinColumn(name = "parent_location_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "child_location_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<Location> locationList;
-    @ManyToMany(mappedBy = "locationList")
-    private List<Location> locationList1;
+    private List<Location> childLocationList;
+    @ManyToMany(mappedBy = "childLocationList")
+    private List<Location> parentLocationList;
     @JoinColumn(name = "location_type_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private LocationType locationType;
@@ -72,8 +77,6 @@ public class Location extends CloneableEntity {
     private List<ComponentInstance> componentInstanceList;
     @OneToMany(mappedBy = "location")
     private List<DesignElement> designElementList;
-
-    private transient Location parentLocation;
     
     public Location() {
     }
@@ -119,23 +122,31 @@ public class Location extends CloneableEntity {
     public void setIsUserWriteable(boolean isUserWriteable) {
         this.isUserWriteable = isUserWriteable;
     }
+
+    public Float getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Float sortOrder) {
+        this.sortOrder = sortOrder;
+    }
     
     @XmlTransient
-    public List<Location> getLocationList() {
-        return locationList;
+    public List<Location> getChildLocationList() {
+        return childLocationList;
     }
 
-    public void setLocationList(List<Location> locationList) {
-        this.locationList = locationList;
+    public void setChildLocationList(List<Location> childLocationList) {
+        this.childLocationList = childLocationList;
     }
 
     @XmlTransient
-    public List<Location> getLocationList1() {
-        return locationList1;
+    public List<Location> getParentLocationList() {
+        return parentLocationList;
     }
 
-    public void setLocationList1(List<Location> locationList1) {
-        this.locationList1 = locationList1;
+    public void setParentLocationList(List<Location> parentLocationList) {
+        this.parentLocationList = parentLocationList;
     }
 
     public LocationType getLocationType() {
@@ -165,11 +176,17 @@ public class Location extends CloneableEntity {
     }
 
     public Location getParentLocation() {
-        return parentLocation;
+        if (parentLocationList == null || parentLocationList.isEmpty()) {
+            return null;
+        }
+        return parentLocationList.get(0);
     }
 
     public void setParentLocation(Location parentLocation) {
-        this.parentLocation = parentLocation;
+        if (parentLocation != null) {
+            parentLocationList = new ArrayList<>();
+            parentLocationList.add(parentLocation);
+        }
     }
 
     

@@ -108,7 +108,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
     protected String filterByLastModifiedOnDateTime = null;
 
     protected Integer selectDisplayNumberOfItemsPerPage = null;
-    protected Boolean selectDisplayId = true;
+    protected Boolean selectDisplayId = false;
     protected Boolean selectDisplayDescription = false;
     protected Boolean selectDisplayOwnerUser = true;
     protected Boolean selectDisplayOwnerGroup = true;
@@ -517,6 +517,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         }
     }
 
+    
     public String prepareEdit(EntityType entity) {
         resetLogText();
         current = entity;

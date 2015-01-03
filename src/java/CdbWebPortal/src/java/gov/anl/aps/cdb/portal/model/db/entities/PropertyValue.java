@@ -45,7 +45,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByValue", query = "SELECT p FROM PropertyValue p WHERE p.value = :value"),
     @NamedQuery(name = "PropertyValue.findByUnits", query = "SELECT p FROM PropertyValue p WHERE p.units = :units"),
     @NamedQuery(name = "PropertyValue.findByDescription", query = "SELECT p FROM PropertyValue p WHERE p.description = :description"),
-    @NamedQuery(name = "PropertyValue.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValue p WHERE p.enteredOnDateTime = :enteredOnDateTime")})
+    @NamedQuery(name = "PropertyValue.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValue p WHERE p.enteredOnDateTime = :enteredOnDateTime"),
+    @NamedQuery(name = "PropertyValue.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
+    @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
 public class PropertyValue extends CloneableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -77,6 +79,14 @@ public class PropertyValue extends CloneableEntity {
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UserInfo enteredByUser;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_user_writeable")
+    private boolean isUserWriteable;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_dynamic")
+    private boolean isDynamic;
     @JoinColumn(name = "property_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private PropertyType propertyType;
@@ -200,6 +210,22 @@ public class PropertyValue extends CloneableEntity {
         this.enteredByUser = enteredByUser;
     }
 
+    public boolean getIsUserWriteable() {
+        return isUserWriteable;
+    }
+
+    public void setIsUserWriteable(boolean isUserWriteable) {
+        this.isUserWriteable = isUserWriteable;
+    }
+
+    public boolean getIsDynamic() {
+        return isDynamic;
+    }
+
+    public void setIsDynamic(boolean isDynamic) {
+        this.isDynamic = isDynamic;
+    }
+    
     public PropertyType getPropertyType() {
         return propertyType;
     }

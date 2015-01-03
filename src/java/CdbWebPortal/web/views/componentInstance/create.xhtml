@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../../templates/contentViewTemplate4x3.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="middleCenter">
+
+        <h:form id="addComponentInstanceForm" rendered="#{loginController.loggedIn}">
+            <div class="pageTitle">
+                <h1>Add Component Instance</h1>
+            </div>
+
+            <ui:include src="componentInstanceCreatePanelGrid.xhtml"/>
+
+            <p/>
+            <div class="actionButton">
+                <p:commandButton id="componentInstanceCreateSaveButton" 
+                                 action="#{componentController.addComponentInstance(componentInstanceController.current)}" 
+                                 value="Save" alt="Save" icon="ui-icon-check" update="@form">
+                    <p:tooltip for="componentInstanceCreateSaveButton" value="Save new component instance."/>
+                </p:commandButton>
+                <p:commandButton id="componentInstanceCreateCancelButton" action="#{componentController.prepareList()}" immediate="true" 
+                                 value="Cancel" alt="Cancel" icon="ui-icon-cancel">
+                    <p:tooltip for="componentInstanceCreateCancelButton" value="Cancel and display component list page."/>
+                </p:commandButton>
+            </div>
+
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>
+
+

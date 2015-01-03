@@ -20,6 +20,12 @@
         <p:selectBooleanCheckbox id="propertyValueListDisplayId" value="#{propertyValueController.displayId}"/>  
         <h:outputLabel for="propertyValueListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
+        <p:selectBooleanCheckbox id="displayIsDynamic" value="#{propertyValueController.displayIsDynamic}"/>  
+        <h:outputLabel for="displayIsDynamic" value="Display Dynamic Flag" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="displayIsUserWriteable" value="#{propertyValueController.displayIsUserWriteable}"/>  
+        <h:outputLabel for="displayIsUserWriteable" value="Display User-Writeable Flag" styleClass="dialogDataLabel"/>
+        
         <p:selectBooleanCheckbox id="propertyValueListDisplayTag" value="#{propertyValueController.displayTag}"/>  
         <h:outputLabel for="propertyValueListDisplayTag" value="Display Tag" styleClass="dialogDataLabel"/>
         

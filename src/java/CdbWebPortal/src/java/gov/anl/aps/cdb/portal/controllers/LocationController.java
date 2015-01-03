@@ -24,6 +24,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.DefaultSubMenu;
+import org.primefaces.model.menu.MenuModel;
 
 @Named("locationController")
 @SessionScoped
@@ -51,13 +55,17 @@ public class LocationController extends CrudEntityController<Location, LocationF
     private String filterByParent = null;
     private String filterByType = null;
 
-    private Boolean selectDisplayParent = true;
+    private Boolean selectDisplayParent = false;
     private Boolean selectDisplayType = true;
-
+    private Boolean selectDisplayFlatTableView = false;
+    private Boolean selectDisplayMenuView = false;
+    
     private String selectFilterByParent = null;
     private String selectFilterByType = null;
 
     private Location selectedParentLocation = null;
+
+    private MenuModel locationMenu = null;
 
     public LocationController() {
     }
@@ -222,7 +230,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
         selectFilterByType = null;
     }
 
-    @FacesConverter(forClass = Location.class)
+    @FacesConverter(value = "locationConverter", forClass = Location.class)
     public static class LocationControllerConverter implements Converter {
 
         @Override
@@ -267,12 +275,12 @@ public class LocationController extends CrudEntityController<Location, LocationF
         }
 
     }
-    
+
     @Override
     public boolean entityCanBeCreatedByUsers() {
         return true;
     }
-    
+
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.
     public void selectParentLocationValueChangeListener(ValueChangeEvent valueChangeEvent) {
@@ -320,6 +328,41 @@ public class LocationController extends CrudEntityController<Location, LocationF
             location.setLocationType(locationType);
         }
     }
+        
+    public MenuModel createLocationMenu() {
+        locationMenu = new DefaultMenuModel();
+        List<Location> locationsWithoutParents = locationFacade.findLocationsWithoutParents();
+        for (Location location : locationsWithoutParents) {
+            if (location.getChildLocationList().isEmpty()) {
+                locationMenu.addElement(new DefaultMenuItem(location.getName()));
+            } else {
+                DefaultSubMenu subMenu = new DefaultSubMenu(location.getName());
+                populateLocationSubMenu(subMenu, location);
+                locationMenu.addElement(subMenu);
+            }
+        }
+        return locationMenu;
+    }
+
+    private void populateLocationSubMenu(DefaultSubMenu subMenu, Location location) {
+        for (Location childLocation : location.getChildLocationList()) {
+            if (childLocation.getChildLocationList().isEmpty()) {
+                subMenu.addElement(new DefaultMenuItem(childLocation.getName()));
+            }
+            else {
+                DefaultSubMenu childSubMenu = new DefaultSubMenu(childLocation.getName());
+                populateLocationSubMenu(childSubMenu, childLocation);
+                subMenu.addElement(childSubMenu);
+            }
+        }
+    }
+
+    public MenuModel getLocationMenu() {
+        if (locationMenu == null) {
+            createLocationMenu();
+        }
+        return locationMenu;
+    }
 
     public Boolean getDisplayParent() {
         return displayParent;
@@ -335,6 +378,22 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     public void setDisplayType(Boolean displayType) {
         this.displayType = displayType;
+    }
+
+    public Boolean getSelectDisplayFlatTableView() {
+        return selectDisplayFlatTableView;
+    }
+
+    public void setSelectDisplayFlatTableView(Boolean selectDisplayFlatTableView) {
+        this.selectDisplayFlatTableView = selectDisplayFlatTableView;
+    }
+
+    public Boolean getSelectDisplayMenuView() {
+        return selectDisplayMenuView;
+    }
+
+    public void setSelectDisplayMenuView(Boolean selectDisplayMenuView) {
+        this.selectDisplayMenuView = selectDisplayMenuView;
     }
 
     public String getFilterByParent() {

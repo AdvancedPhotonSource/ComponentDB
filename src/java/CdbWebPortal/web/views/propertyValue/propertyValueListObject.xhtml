@@ -23,24 +23,24 @@
               rendered="#{propertyValueController.displayTag}">
         <h:outputText value="#{propertyValueObject.tag}"/>
     </p:column>
-    
+
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value">
 
         <h:outputText value="#{propertyValueObject.displayValue}"
-                     rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
+                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
 
         <h:outputText value="#{propertyValueObject.value}"
-                     rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
-        
+                      rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
+
         <p:graphicImage value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
                         alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
                         rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
-        
+
         <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
             <h:outputText value="#{propertyValueObject.displayValue}"/>
         </h:outputLink>
-        
+
         <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
             <h:outputText value="#{propertyValueObject.displayValue}"/>
@@ -65,6 +65,16 @@
     <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
               rendered="#{propertyValueController.displayEnteredOnDateTime}">
         <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Is Dynamic" 
+              rendered="#{propertyValueController.displayIsDynamic}">
+        <h:outputText value="#{propertyValueObject.isDynamic}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="Is User Writeable" 
+              rendered="#{propertyValueController.displayIsUserWriteable}">
+        <h:outputText value="#{propertyValueObject.isUserWriteable}"/>
     </p:column>
 
 </ui:composition>

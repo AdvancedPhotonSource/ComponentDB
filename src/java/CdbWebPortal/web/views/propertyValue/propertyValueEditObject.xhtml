@@ -96,6 +96,22 @@
         <p:tooltip for="enteredOn" value="Entered on date/time field cannot be modified."/>
     </p:column>
 
+    <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Is Dynamic"
+              filterBy="#{propertyValueObject.isDynamic}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByIsDynamic}"
+              rendered="#{propertyValueController.displayIsDynamic}">
+        <p:selectBooleanCheckbox id="dynamic" value="#{propertyValueObject.isDynamic}" styleClass="entityDataText"/>
+        <p:tooltip for="dynamic" value="Check this box if inherited property value can be overriden."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="Is User-Writeable"
+              filterBy="#{propertyValueObject.isUserWriteable}" filterMatchMode="contains"
+              filterValue="#{propertyValueController.filterByIsUserWriteable}"
+              rendered="#{propertyValueController.displayIsUserWriteable}">
+        <p:selectBooleanCheckbox id="userWriteable" value="#{propertyValueObject.isUserWriteable}" styleClass="entityDataText"/>
+        <p:tooltip for="userWriteable" value="Check this box if property value can be modified by any user."/>
+    </p:column>
+            
 </ui:composition>
 
 

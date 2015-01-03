@@ -3,6 +3,7 @@ package gov.anl.aps.cdb.portal.utilities;
 import java.util.Map;
 import java.util.Stack;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 
 /**
@@ -129,5 +130,11 @@ public class SessionUtility
     public static void clearSession() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         sessionMap.clear();
+    }
+    
+    public static void navigateTo(String url) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        NavigationHandler navigationHandler = context.getApplication().getNavigationHandler();
+        navigationHandler.handleNavigation(context, null, url);
     }
 }

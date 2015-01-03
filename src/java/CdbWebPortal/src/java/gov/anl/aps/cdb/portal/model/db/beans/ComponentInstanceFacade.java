@@ -40,4 +40,14 @@ public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance>
         }
         return null;
     }    
+    
+    public ComponentInstance findByQrId(Integer qrId) {
+        try {
+            return (ComponentInstance) em.createNamedQuery("ComponentInstance.findByQrId")
+                    .setParameter("qrId", qrId)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }      
 }

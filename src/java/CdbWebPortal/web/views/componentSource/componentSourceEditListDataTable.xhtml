@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="componentObject" value="#{componentController.selected}"/>
+    <p:dataTable id="componentSourceEditListDataTable" 
+                 widgetVar="componentSourceEditListDataTableWidget"
+                 var="componentSourceObject" 
+                 value="#{componentObject.componentSourceList}" 
+                 rows="#{componentSourceController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 editable="true"
+                 emptyMessage="No component sources found.">
+
+        <p:column sortBy="#{componentSourceObject.id}" headerText="Id"
+                  rendered="#{componentSourceController.displayId}">
+            <h:outputText value="#{componentSourceObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name"
+                  filterBy="#{componentSourceObject.source.name}" filterMatchMode="contains"
+                  filterValue="#{componentSourceController.filterBySourceName}">
+            <p:selectOneMenu id="source" value="#{componentSourceObject.source}" required="true" 
+                             styleClass="cellSelect">
+                <f:selectItem itemLabel="Select" itemValue="{componentSourceObject.source}"/>
+                <f:selectItems var="source" value="#{sourceController.availableItems}" itemLabel="#{source.name}" itemValue="#{source}"/>
+            </p:selectOneMenu>
+            <p:tooltip for="source" value="Select source name."/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.partNumber}" headerText="Part Number"
+                  filterBy="#{componentSourceObject.partNumber}" filterMatchMode="contains"
+                  filterValue="#{componentSourceController.filterByPartNumber}">
+            <h:inputText id="partNumber" value="#{componentSourceObject.partNumber}" styleClass="cellInput"/>
+            <p:tooltip for="partNumber" value="Part number is optional."/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.cost}" headerText="Cost [$]"
+                  filterBy="#{componentSourceObject.cost}" filterMatchMode="contains"
+                  filterValue="#{componentSourceController.filterByCost}">
+            <h:inputText id="cost" value="#{componentSourceObject.cost}" styleClass="cellInput"/>
+            <p:tooltip for="cost" value="Cost is optional."/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.description}" headerText="Description"
+                  filterBy="#{componentSourceObject.description}" filterMatchMode="contains"
+                  filterValue="#{componentSourceController.filterByDescription}">
+            <h:inputText id="description" value="#{componentSourceObject.description}" styleClass="longCellInput"/>
+            <p:tooltip for="description" value="Description is optional."/>
+        </p:column>
+
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{componentController.deleteSource(componentSourceObject)}" 
+                               actionListener="#{componentSourceController.destroy(componentSourceObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form" immediate="true"/>
+            </div>
+        </p:column>
+    </p:dataTable>
+</ui:composition>
+
+

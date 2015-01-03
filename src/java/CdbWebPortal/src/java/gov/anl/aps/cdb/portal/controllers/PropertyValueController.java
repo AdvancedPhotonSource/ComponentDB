@@ -31,6 +31,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     private static final String DisplayDescriptionSettingTypeKey = "PropertyValue.List.Display.Description";
     private static final String DisplayEnteredByUserSettingTypeKey = "PropertyValue.List.Display.EnteredByUser";
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.Display.EnteredOnDateTime";
+    private static final String DisplayIsDynamicSettingTypeKey = "PropertyValue.List.Display.IsDynamic";
+    private static final String DisplayIsUserWriteableSettingTypeKey = "PropertyValue.List.Display.IsUserWriteable";
     private static final String DisplayTagSettingTypeKey = "PropertyValue.List.Display.Tag";
     private static final String DisplayTypeCategorySettingTypeKey = "PropertyValue.List.Display.TypeCategory";
     private static final String DisplayUnitsSettingTypeKey = "PropertyValue.List.Display.Units";
@@ -38,6 +40,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValue.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValue.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.FilterBy.EnteredOnDateTime";
+    private static final String FilterByIsDynamicSettingTypeKey = "PropertyValue.List.FilterBy.IsDynamic";
+    private static final String FilterByIsUserWriteableSettingTypeKey = "PropertyValue.List.FilterBy.IsUserWriteable";
     private static final String FilterByTagSettingTypeKey = "PropertyValue.List.FilterBy.Tag";
     private static final String FilterByTypeSettingTypeKey = "PropertyValue.List.FilterBy.Type";
     private static final String FilterByTypeCategorySettingTypeKey = "PropertyValue.List.FilterBy.TypeCategory";
@@ -46,12 +50,16 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
 
     private Boolean displayEnteredByUser = null;
     private Boolean displayEnteredOnDateTime = null;
+    private Boolean displayIsDynamic = null;
+    private Boolean displayIsUserWriteable = null;
     private Boolean displayTag = null;
     private Boolean displayTypeCategory = null;
     private Boolean displayUnits = null;
 
     private String filterByEnteredByUser = null;
     private String filterByEnteredOnDateTime = null;
+    private String filterByIsDynamic = null;
+    private String filterByIsUserWriteable = null;
     private String filterByTag = null;
     private String filterByType = null;
     private String filterByTypeCategory = null;
@@ -65,6 +73,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
 
     private DataTable designPropertyValueListDataTable = null;
     private DataTable componentPropertyValueListDataTable = null;
+    private DataTable componentInstancePropertyValueListDataTable = null;
 
     public PropertyValueController() {
         super();
@@ -108,6 +117,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         displayEnteredByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredByUserSettingTypeKey).getDefaultValue());
         displayEnteredOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredOnDateTimeSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayIsDynamic = Boolean.parseBoolean(settingTypeMap.get(DisplayIsDynamicSettingTypeKey).getDefaultValue());
+        displayIsUserWriteable = Boolean.parseBoolean(settingTypeMap.get(DisplayIsUserWriteableSettingTypeKey).getDefaultValue());
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
         displayTypeCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeCategorySettingTypeKey).getDefaultValue());
@@ -116,6 +127,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
         filterByEnteredOnDateTime = settingTypeMap.get(FilterByEnteredOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByIsDynamic = settingTypeMap.get(FilterByIsDynamicSettingTypeKey).getDefaultValue();
+        filterByIsUserWriteable = settingTypeMap.get(FilterByIsUserWriteableSettingTypeKey).getDefaultValue();
         filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
         filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
         filterByTypeCategory = settingTypeMap.get(FilterByTypeCategorySettingTypeKey).getDefaultValue();
@@ -134,6 +147,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayIsDynamic = sessionUser.getUserSettingValueAsBoolean(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
+        displayIsUserWriteable = sessionUser.getUserSettingValueAsBoolean(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
         displayTypeCategory = sessionUser.getUserSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
@@ -142,6 +157,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByIsDynamic = sessionUser.getUserSettingValueAsString(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
+        filterByIsUserWriteable = sessionUser.getUserSettingValueAsString(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
         filterByTag = sessionUser.getUserSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
         filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
         filterByTypeCategory = sessionUser.getUserSettingValueAsString(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
@@ -158,6 +175,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         Map<String, String> filters = dataTable.getFilters();
         filterByEnteredByUser = filters.get("enteredByUser");
         filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
+        filterByIsDynamic = filters.get("isDynamic");
+        filterByIsUserWriteable = filters.get("isUserWriteable");
         filterByTag = filters.get("tag");
         filterByType = filters.get("type");
         filterByTypeCategory = filters.get("typeCategory");
@@ -176,6 +195,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        sessionUser.setUserSettingValue(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
+        sessionUser.setUserSettingValue(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
         sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
         sessionUser.setUserSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
         sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
@@ -183,6 +204,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        sessionUser.setUserSettingValue(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
+        sessionUser.setUserSettingValue(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
         sessionUser.setUserSettingValue(FilterByTagSettingTypeKey, filterByTag);
         sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
         sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
@@ -196,6 +219,8 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         super.clearListFilters();
         filterByEnteredByUser = null;
         filterByEnteredOnDateTime = null;
+        filterByIsDynamic = null;
+        filterByIsUserWriteable = null;
         filterByTag = null;
         filterByType = null;
         filterByTypeCategory = null;
@@ -316,6 +341,22 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         this.displayEnteredOnDateTime = displayEnteredOnDateTime;
     }
 
+    public Boolean getDisplayIsDynamic() {
+        return displayIsDynamic;
+    }
+
+    public void setDisplayIsDynamic(Boolean displayIsDynamic) {
+        this.displayIsDynamic = displayIsDynamic;
+    }
+
+    public Boolean getDisplayIsUserWriteable() {
+        return displayIsUserWriteable;
+    }
+
+    public void setDisplayIsUserWriteable(Boolean displayIsUserWriteable) {
+        this.displayIsUserWriteable = displayIsUserWriteable;
+    }
+    
     public Boolean getDisplayTypeCategory() {
         return displayTypeCategory;
     }
@@ -348,6 +389,22 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         this.filterByEnteredOnDateTime = filterByEnteredOnDateTime;
     }
 
+    public String getFilterByIsDynamic() {
+        return filterByIsDynamic;
+    }
+
+    public void setFilterByIsDynamic(String filterByIsDynamic) {
+        this.filterByIsDynamic = filterByIsDynamic;
+    }
+
+    public String getFilterByIsUserWriteable() {
+        return filterByIsUserWriteable;
+    }
+
+    public void setFilterByIsUserWriteable(String filterByIsUserWriteable) {
+        this.filterByIsUserWriteable = filterByIsUserWriteable;
+    }
+    
     public Boolean getDisplayTag() {
         return displayTag;
     }
@@ -418,4 +475,14 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
     }
 
+    public DataTable getComponentInstancePropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            componentInstancePropertyValueListDataTable = new DataTable();
+        }
+        return componentInstancePropertyValueListDataTable;
+    }
+
+    public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
+        this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
+    }    
 }

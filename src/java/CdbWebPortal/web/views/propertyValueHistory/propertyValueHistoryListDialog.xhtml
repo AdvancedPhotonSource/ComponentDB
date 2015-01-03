@@ -8,7 +8,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="propertyValueHistoryListDialog" 
-              widgetVar="propertyValueHistoryListWidget" 
+              widgetVar="propertyValueHistoryListDialogWidget" 
               header="Property Value History: #{propertyValueHistoryController.selectedPropertyValueTypeName}" 
               dynamic="true"
               styleClass="dialog">
@@ -16,7 +16,7 @@
 
             <div class="actionButtonLeft">
                 <p:commandButton id="propertyValueHistoryListDoneButton" 
-                                 onclick="PF('propertyValueHistoryListWidget').hide()" 
+                                 onclick="PF('propertyValueHistoryListDialogWidget').hide()" 
                                  alt="Done" icon="ui-icon-arrowreturnthick-1-w"
                                  styleClass="actionButtonLeft">
                     <p:tooltip for="propertyValueHistoryListDoneButton" value="Close property value history display."/>
@@ -39,14 +39,15 @@
                     <p:tooltip for="propertyValueHistoryPrintButton" value="Print list."/>
                 </p:commandButton> 
                 <p:commandButton id="propertyValueHistoryCustomizeDisplayButton" 
-                                 oncomplete="PF('propertyValueHistoryListWidget').hide(); PF('propertyValueHistoryListCustomizeDisplayDialogWidget').show()" 
+                                 oncomplete="PF('propertyValueHistoryListDialogWidget').hide(); PF('propertyValueHistoryListCustomizeDisplayDialogWidget').show()" 
                                  alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
                     <p:tooltip for="propertyValueHistoryCustomizeDisplayButton" value="Customize list view."/>
                 </p:commandButton>
                 <p:commandButton id="propertyValueHistoryResetFiltersButton" 
                                  action="#{propertyValueHistoryController.clearListFiltersAndResetListDataModel()}" 
-                                 onclick="PF('propertyValueHistoryListWidget').hide(); PF('propertyValueHistoryListDataTableWidget').clearFilters()" 
-                                 oncomplete="PF('propertyValueHistoryListWidget').show()" 
+                                 onclick="PF('propertyValueHistoryListDialogWidget').hide();
+                                         PF('propertyValueHistoryListDataTableWidget').clearFilters()" 
+                                 oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
                                  update="propertyValueHistoryListDialog" 
                                  alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
                     <p:tooltip for="propertyValueHistoryResetFiltersButton" value="Reset filters."/>
@@ -54,11 +55,12 @@
             </div>
             <h:outputText value="invisible spacer" styleClass="invisibleDialogText"/>
             <p/>
+
+            <ui:include src="propertyValueHistoryListDataTable.xhtml"/>
             
-            <ui:include src="propertyValueHistoryListDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton id="propertyValueHistoryDoneButton" value="Done" alt="Done" 
-                                 oncomplete="PF('propertyValueHistoryListWidget').hide()" 
+                                 oncomplete="PF('propertyValueHistoryListDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:tooltip for="propertyValueHistoryDoneButton" value="Close property value history display."/>
             </f:facet>

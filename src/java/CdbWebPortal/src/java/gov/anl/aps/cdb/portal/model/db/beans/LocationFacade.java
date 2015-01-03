@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -48,5 +49,10 @@ public class LocationFacade extends AbstractFacade<Location> {
         } catch (NoResultException ex) {
         }
         return null;
+    }
+
+    public List<Location> findLocationsWithoutParents() {
+        return (List<Location>)em.createNamedQuery("Location.findLocationsWithoutParents")
+                .getResultList();
     }
 }

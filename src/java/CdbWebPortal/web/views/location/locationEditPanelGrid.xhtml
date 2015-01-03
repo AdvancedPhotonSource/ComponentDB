@@ -34,11 +34,13 @@
         <p:message for="type"/> 
         <p:tooltip for="type" value="Specify location type."/>
 
-       <h:outputLabel for="parent" value="Parent" styleClass="entityDataLabel"/>        
+        <h:outputLabel for="parent" value="Parent" styleClass="entityDataLabel"/>        
         <p:column>
-            <p:selectOneMenu id="parent" value="#{locationObject.parentLocation}" 
-                             styleClass="entityDataText"
-                             valueChangeListener="#{locationController.selectParentLocationValueChangeListener}">
+            <p:selectOneMenu id="parent" 
+                             value="#{locationObject.parentLocation}" 
+                             converter="locationConverter"
+                             valueChangeListener="#{locationController.selectParentLocationValueChangeListener}"
+                             styleClass="entityDataText">
                 <f:selectItem itemLabel="Select" noSelectionOption="true"/>
                 <f:selectItems var="parent" value="#{locationController.availableItemsWithoutCurrent}" itemLabel="#{parent.name}" itemValue="#{parent}"/>
                 <p:ajax event="valueChange" immediate="true" process="@this"/>

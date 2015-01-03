@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    
+    <ui:param name="isEntityWriteable" value="#{(loginController.loggedIn and loginController.isEntityWriteable(componentInstanceController.selected.entityInfo))}"/>
+    <ui:include src="../common/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
+        <ui:param name="parentEntityController" value="#{componentInstanceController}"/>
+        <ui:param name="childEntityController" value="#{propertyValueController}"/>
+        <ui:param name="childEntityTypeName" value="componentInstanceProperty"/>
+        <ui:param name="addActionController" value="#{propertyTypeController}"/>
+        <ui:param name="addAction" value="prepareSelectPropertyTypesForComponentInstance"/>
+        <ui:param name="addActionParameter" value="#{componentInstanceController.current}"/>
+        <ui:param name="addActionOnComplete" value="componentInstancePropertySelectDialogWidget.show()"/>
+        <ui:param name="saveAction" value="savePropertyList"/>
+        <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
+    </ui:include>    
+
+    <ui:include src="componentInstancePropertyEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+    
+    <ui:include src="componentInstancePropertyEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+    <ui:include src="componentInstancePropertySelectDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+    <ui:include src="componentInstancePropertySelectCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+</ui:composition>
+
+

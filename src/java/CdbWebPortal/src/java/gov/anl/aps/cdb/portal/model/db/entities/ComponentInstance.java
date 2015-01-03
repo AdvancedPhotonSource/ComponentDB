@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import java.util.HashMap;
 import java.util.List;
 import javax.persistence.Basic;
@@ -21,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -36,6 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "ComponentInstance.findAll", query = "SELECT c FROM ComponentInstance c"),
     @NamedQuery(name = "ComponentInstance.findById", query = "SELECT c FROM ComponentInstance c WHERE c.id = :id"),
+    @NamedQuery(name = "ComponentInstance.findBySerialNumber", query = "SELECT c FROM ComponentInstance c WHERE c.serialNumber = :serialNumber"),
+    @NamedQuery(name = "ComponentInstance.findByQrId", query = "SELECT c FROM ComponentInstance c WHERE c.qrId = :qrId"),
     @NamedQuery(name = "ComponentInstance.findByTag", query = "SELECT c FROM ComponentInstance c WHERE c.tag = :tag"),
     @NamedQuery(name = "ComponentInstance.findByLocationDetails", query = "SELECT c FROM ComponentInstance c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstance.findByDescription", query = "SELECT c FROM ComponentInstance c WHERE c.description = :description")})
@@ -47,6 +51,11 @@ public class ComponentInstance extends CloneableEntity {
     private Integer id;
     @Size(max = 64)
     private String tag;
+    @Size(max = 32)
+    @Column(name = "serial_number")
+    private String serialNumber;
+    @Column(name = "qr_id")
+    private Integer qrId;
     @Size(max = 256)
     @Column(name = "location_details")
     private String locationDetails;
@@ -55,12 +64,13 @@ public class ComponentInstance extends CloneableEntity {
     @JoinTable(name = "component_instance_log", joinColumns = {
         @JoinColumn(name = "component_instance_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @OrderBy("id DESC")
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
     @JoinTable(name = "component_instance_property", joinColumns = {
         @JoinColumn(name = "component_instance_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<PropertyValue> propertyValueList;
     @ManyToMany(mappedBy = "componentInstanceList")
     private List<DesignElement> designElementList;
@@ -91,6 +101,8 @@ public class ComponentInstance extends CloneableEntity {
         }
     }
 
+    private transient String selectedLocationName = null;
+    
     public ComponentInstance() {
     }
 
@@ -200,6 +212,22 @@ public class ComponentInstance extends CloneableEntity {
         this.component = component;
     }
 
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
+    public Integer getQrId() {
+        return qrId;
+    }
+
+    public void setQrId(Integer qrId) {
+        this.qrId = qrId;
+    }
+
     public List<PropertyValue> getImagePropertyList() {
         return imagePropertyList;
     }
@@ -277,6 +305,14 @@ public class ComponentInstance extends CloneableEntity {
         return hash;
     }
 
+    public boolean equalsByLocationAndTag(ComponentInstance other) {
+        if (other != null) {
+            return ( ObjectUtility.equals(this.location, other.location)
+                    && ObjectUtility.equals(this.tag, other.tag) );
+        }
+        return false;
+    }
+  
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -284,7 +320,14 @@ public class ComponentInstance extends CloneableEntity {
             return false;
         }
         ComponentInstance other = (ComponentInstance) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsByLocationAndTag(other);
+        }
+
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);    
     }
 
     @Override
@@ -316,5 +359,22 @@ public class ComponentInstance extends CloneableEntity {
             propertyValueCacheMap.put(propertyTypeId, cachedValue);
         }
         return cachedValue;
+    }
+
+    public String getSelectedLocationName() {
+        return selectedLocationName;
+    }
+
+    public void setSelectedLocationName(String selectedLocationName) {
+        this.selectedLocationName = selectedLocationName;
+    }
+    
+    public void resetAttributesToNullIfEmpty() {
+        if (tag != null && tag.isEmpty()) {
+            tag = null;
+        }
+        if (serialNumber != null && serialNumber.isEmpty()) {
+            serialNumber = null;
+        }
     }
 }

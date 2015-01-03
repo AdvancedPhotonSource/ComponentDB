@@ -10,18 +10,12 @@
     <p:dialog id="locationSelectDialog" 
               widgetVar="locationSelectDialogWidget" 
               header="Select Location" 
-              styleClass="dialog">
+              styleClass="dialog"
+              width="800"
+              height="500">
         <div class="dialog">
-
-            <div class="actionButton">
-                <p:commandButton id="locationSelectCustomizeDisplay" 
-                                 onclick="locationSelectDialogWidget.hide(); locationSelectCustomizeDisplayDialogWidget.show()"
-                                 alt="Customize selection view." 
-                                 icon="ui-icon-wrench" 
-                                 styleClass="actionButtonRight">
-                    <p:tooltip for="locationSelectCustomizeDisplay" value="Customize selection view."/>
-                </p:commandButton>
-            </div>
+            
+<!--                        <ui:include src="locationSelectMenu.xhtml"/>-->
             <ui:include src="locationSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 

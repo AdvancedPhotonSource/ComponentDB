@@ -217,10 +217,14 @@ public class LoginController implements Serializable
     }
 
     public String getLandingPage() {
-        String landingPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
+        String landingPage = SessionUtility.getCurrentViewId();
         if (landingPage.contains("login")) {
-            landingPage = "/views/home?faces-redirect=true";
+            landingPage = SessionUtility.popViewFromStack();
+            if (landingPage == null) {
+                landingPage = "/views/home";
+            }
         }
+        landingPage += "?faces-redirect=true";
         logger.debug("Landing page: " + landingPage);
         return landingPage;
     }

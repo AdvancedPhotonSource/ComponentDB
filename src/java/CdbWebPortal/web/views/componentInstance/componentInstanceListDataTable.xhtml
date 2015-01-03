@@ -7,7 +7,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dataTable id="componentInstanceListDataTable" 
-                 widgetVar="componentInstanceListWidget"
+                 widgetVar="componentInstanceListDataTableWidget"
                  var="componentInstanceObject" 
                  value="#{componentObject.componentInstanceList}" 
                  filteredValue="#{componentInstanceController.filteredObjectList}"
@@ -23,12 +23,22 @@
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
-             <h:outputText value="#{componentInstanceObject.location.name}"/>
+            <h:outputText value="#{componentInstanceObject.location.name}"/>
         </p:column>
 
 
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
             <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentInstanceObject.serialNumber}" headerText="Serial Number"
+                  rendered="#{componentInstanceController.displaySerialNumber}">
+            <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}"/>
+        </p:column>
+
+         <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
+                   rendered="#{componentInstanceController.displayQrId}">
+            <h:outputText id="qrId" value="#{componentInstanceObject.qrId}"/>
         </p:column>
         
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
@@ -43,11 +53,16 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-
+                <p:commandLink id="componentInstanceListViewLink" 
+                               action="#{componentInstanceController.prepareViewFromComponent(componentInstanceObject)}" 
+                               styleClass="ui-icon ui-icon-info" 
+                               title="View">
+                    <p:tooltip for="componentInstanceListViewLink" value="View #{componentInstanceController.displayEntityTypeName} details."/>
+                </p:commandLink>
             </div>
         </p:column>
 
-       
+
 
     </p:dataTable>
 

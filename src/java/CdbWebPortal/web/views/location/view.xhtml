@@ -29,6 +29,16 @@
                 <ui:include src="locationDestroyDialog.xhtml"/>
             </div>
 
+            <div class="middleCenterRightContent">
+
+                <p:accordionPanel multiple="true" activeIndex="0">                
+                    <p:tab title="Child Locations">
+
+                        <ui:include src="viewChildLocationList.xhtml"/>
+                    </p:tab>
+
+                </p:accordionPanel>
+            </div>     
         </h:form>
 
     </ui:define>

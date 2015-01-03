@@ -244,7 +244,7 @@ a:link:hover, a:visited:hover  {
 }
 
 .editEntityDetails td:nth-child(2) {
-    width: 300px;
+    width: 450px;
 }
 
 .commandLink {
@@ -284,6 +284,18 @@ tr:hover .actionLink {
     margin: 0;
     margin-left: auto;
     margin-right: auto;
+}
+
+.locationSelectDialog {
+    background: #6da5d8;
+    box-shadow: 0px 3px 5px #d5d5d5;    
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+    height: 500px;
+    width: 800px;
 }
 
 .invisibleDialogText {
@@ -486,4 +498,13 @@ h2 {
 .ui-galleria-panel element.style {
     width: 500px;
     height: 313px;
+}
+
+.autocomplete input {
+    width: 123px;
+}
+
+.autocomplete button {
+    height: 25px;
+    width: 25px;
 }

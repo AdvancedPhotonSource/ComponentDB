@@ -7,17 +7,20 @@
 
     <p:panelGrid columns="2">
 
-        <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{locationController.selectDisplayDescription}"/>  
-        <h:outputLabel for="selectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+        <p:selectBooleanCheckbox id="locationSelectDisplayDescription" value="#{locationController.selectDisplayDescription}"/>  
+        <h:outputLabel for="locationSelectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="selectDisplayId" value="#{locationController.selectDisplayId}"/>  
-        <h:outputLabel for="selectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+        <p:selectBooleanCheckbox id="locationSelectDisplayId" value="#{locationController.selectDisplayId}"/>  
+        <h:outputLabel for="locationSelectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="selectDisplayParent" value="#{locationController.selectDisplayParent}"/>  
-        <h:outputLabel for="selectDisplayParent" value="Display Parent" styleClass="dialogDataLabel"/>
+        <p:selectBooleanCheckbox id="locationSelectDisplayParent" value="#{locationController.selectDisplayParent}"/>  
+        <h:outputLabel for="locationSelectDisplayParent" value="Display Parent" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="selectDisplayType" value="#{locationController.selectDisplayType}"/>  
-        <h:outputLabel for="selectDisplayType" value="Display Type" styleClass="dialogDataLabel"/>
+        <p:selectBooleanCheckbox id="locationSelectDisplayType" value="#{locationController.selectDisplayType}"/>  
+        <h:outputLabel for="locationSelectDisplayType" value="Display Type" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="locationSelectDisplayFlatTableView" value="#{locationController.selectDisplayFlatTableView}"/>  
+        <h:outputLabel for="locationSelectDisplayFlatTableView" value="Display Flat Table View" styleClass="dialogDataLabel"/>
 
     </p:panelGrid>
 

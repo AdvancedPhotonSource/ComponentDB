@@ -8,7 +8,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:dataTable id="componentPropertyListDataTable" 
-                 widgetVar="componentPropertyListWidget"
+                 widgetVar="componentPropertyListDataTableWidget"
                  var="propertyValueObject" 
                  value="#{componentObject.propertyValueList}" 
                  filteredValue="#{propertyValueController.filteredObjectList}"
@@ -22,14 +22,14 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink id="propertyValueHistoryListViewButton" 
-                               oncomplete="propertyValueHistoryListWidget.show()" 
+                <p:commandLink id="componentPropertyValueHistoryListViewButton" 
+                               oncomplete="propertyValueHistoryListDialogWidget.show()" 
                                styleClass="ui-icon ui-icon-info" 
                                title="View history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>
-                    <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                    <p:tooltip for="componentPropertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
             </div>
         </p:column>       

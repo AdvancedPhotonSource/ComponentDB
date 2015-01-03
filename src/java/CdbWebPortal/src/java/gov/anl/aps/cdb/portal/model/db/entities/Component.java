@@ -76,7 +76,7 @@ public class Component extends CloneableEntity {
     @JoinColumn(name = "component_type_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private ComponentType componentType;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentInstance> componentInstanceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<AssemblyComponent> assemblyComponentList;

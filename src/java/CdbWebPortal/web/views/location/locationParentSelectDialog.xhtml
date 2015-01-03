@@ -10,8 +10,8 @@
     <p:dialog id="locationParentSelectDialog" 
               widgetVar="locationParentSelectDialogWidget" 
               header="Select Parent Location" 
-              styleClass="dialog">
-        <div class="dialog">
+              styleClass="locationSelectDialog">
+        <div class="locationSelectDialog">
 
             <div class="actionButton">
                 <p:commandButton id="locationParentSelectCustomizeDisplay" 
@@ -23,15 +23,30 @@
                     <p:tooltip for="locationParentSelectCustomizeDisplay" value="Customize selection view."/>
                 </p:commandButton>
             </div>
-            <ui:include src="locationParentSelectDataTable.xhtml"/>   
-            <f:facet name="footer" class="dialog">
+
+            <ui:fragment rendered="#{locationController.selectDisplayFlatTableView}">
+                <ui:include src="locationParentSelectDataTable.xhtml" />
+            </ui:fragment>
+            <ui:fragment rendered="#{!locationController.selectDisplayFlatTableView}">
+                <ui:include src="locationParentSelectTreeTable.xhtml"/>   
+            </ui:fragment>
+            
+            <f:facet name="footer" class="locationSelectDialog">
                 <p:commandButton value="Done" alt="Done"
                                  action="#{locationController.selectParentLocation(locationController.selectedParentLocation)}"
                                  update="@form"
                                  onclick="locationParentSelectDataTableWidget.filter()" 
                                  oncomplete="locationParentSelectDialogWidget.hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 rendered="#{locationController.selectDisplayFlatTableView}"/>
+                <p:commandButton value="Done" alt="Done"
+                                 action="#{locationController.selectParentLocation(locationSelectTreeViewBean.selectedLocation)}"
+                                 update="@form"
+                                 oncomplete="locationParentSelectDialogWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 rendered="#{!locationController.selectDisplayFlatTableView}"/>
             </f:facet>
+
         </div>
     </p:dialog>
 

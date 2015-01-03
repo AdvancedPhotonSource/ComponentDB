@@ -9,7 +9,7 @@
     <ui:param name="entityObject" value="#{entityController.selected}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}ViewEditButton" action="#{entityController.edit()}" 
+        <p:commandButton id="#{entityTypeName}ViewEditButton" action="#{entityController.prepareEdit(entityObject)}" 
                          rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil">
             <p:tooltip for="#{entityTypeName}ViewEditButton" value="Edit #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
