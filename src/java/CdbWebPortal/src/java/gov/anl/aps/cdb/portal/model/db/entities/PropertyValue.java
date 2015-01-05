@@ -327,5 +327,16 @@ public class PropertyValue extends CloneableEntity {
         }
     }
     
+    public PropertyValue copy() {
+        PropertyValue propertyValue = new PropertyValue();
+        propertyValue.propertyType = propertyType;
+        propertyValue.tag = tag;
+        propertyValue.value = value;
+        propertyValue.description = description;
+        propertyValue.units = units;
+        propertyValue.isDynamic = isDynamic;
+        propertyValue.isUserWriteable = isUserWriteable;
+        return propertyValue;
+    }
 }
 

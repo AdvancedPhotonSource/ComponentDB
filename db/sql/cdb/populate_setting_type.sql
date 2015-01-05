@@ -62,7 +62,7 @@ VALUES
 	('ComponentInstance.List.Display.PropertyTypeId3', 'Display property value for property type id #3.', ''),
 	('ComponentInstance.List.Display.PropertyTypeId4', 'Display property value for property type id #4.', ''),
 	('ComponentInstance.List.Display.PropertyTypeId5', 'Display property value for property type id #5.', ''),
-	('ComponentInstance.List.Display.QrId', 'Display component instance QR id.', 'false'),
+	('ComponentInstance.List.Display.QrId', 'Display component instance QR id.', 'true'),
 	('ComponentInstance.List.Display.SerialNumber', 'Display component instance serial number.', 'false'),
 
 	('ComponentInstance.List.FilterBy.CreatedByUser', 'Filter for components that were created by username.', NULL),

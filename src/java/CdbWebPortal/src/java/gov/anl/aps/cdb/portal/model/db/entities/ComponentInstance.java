@@ -6,6 +6,8 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import javax.persistence.Basic;
@@ -376,5 +378,23 @@ public class ComponentInstance extends CloneableEntity {
         if (serialNumber != null && serialNumber.isEmpty()) {
             serialNumber = null;
         }
+    }
+    
+    public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
+        List<PropertyValue> componentInstancePropertyList = getPropertyValueList();
+        if (componentInstancePropertyList == null) {
+            componentInstancePropertyList = new ArrayList<>();
+        }
+        List<PropertyValue> componentPropertyList = component.getPropertyValueList();
+        for (PropertyValue propertyValue : componentPropertyList) {
+            if (propertyValue.getIsDynamic()) {
+                PropertyValue propertyValue2 = propertyValue.copy();
+                propertyValue2.setId(null);
+                propertyValue2.setEnteredByUser(enteredByUser);
+                propertyValue2.setEnteredOnDateTime(enteredOnDateTime);
+                componentInstancePropertyList.add(propertyValue2);
+            }
+        }
+        setPropertyValueList(componentInstancePropertyList);
     }
 }

@@ -349,31 +349,23 @@ public class ComponentController extends CrudEntityController<Component, Compone
         }
         componentInstance.setEntityInfo(entityInfo);
         componentInstance.setComponent(component);
+        componentInstance.updateDynamicProperties(createdByUser, createdOnDateTime);
         componentInstanceList.add(componentInstance);
-
-        List<PropertyValue> componentInstancePropertyList = new ArrayList<>();
-        List<PropertyValue> componentPropertyList = component.getPropertyValueList();
-        for (PropertyValue propertyValue : componentPropertyList) {
-            if (propertyValue.getIsDynamic()) {
-                try {
-                    PropertyValue propertyValue2 = (PropertyValue) propertyValue.clone();
-                    propertyValue2.setId(null);
-                    componentInstancePropertyList.add(propertyValue2);
-                } catch (CloneNotSupportedException ex) {
-                    logger.error("Could not clone property value: " + ex);
-                }
-            }
-        }
-        componentInstance.setPropertyValueList(componentInstancePropertyList);
     }
 
-    
     public void saveComponentInstanceList() {
         Component component = getCurrent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
         if (componentInstanceList != null) {
+            UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+            Date createdOnDateTime = new Date();
             for (ComponentInstance componentInstance : componentInstanceList) {
                 componentInstance.resetAttributesToNullIfEmpty();
+
+                // If id is null, this is a new component instance; check its properties
+                if (componentInstance.getId() == null) {
+                    componentInstance.updateDynamicProperties(createdByUser, createdOnDateTime);
+                }
             }
         }
         update();
@@ -383,19 +375,23 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component component = componentInstance.getComponent();
         if (component == null) {
             SessionUtility.addWarningMessage("Warning", "Component must be selected.");
-            return null;            
+            return null;
         }
-        
+
+        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+        Date createdOnDateTime = new Date();
+
         // Reset some attributes to null.
         componentInstance.resetAttributesToNullIfEmpty();
-            
+        componentInstance.updateDynamicProperties(createdByUser, createdOnDateTime);
+
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
         componentInstanceList.add(componentInstance);
         setCurrent(component);
         update();
         return view();
     }
-    
+
     public void deleteComponentInstance(ComponentInstance componentInstance) {
         Component component = getCurrent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
