@@ -430,4 +430,9 @@ public class Component extends CloneableEntity {
         }
         return cachedValue;
     }
+
+    public String getDisplayNameWithTypeAndCategory() {
+        String result = name + " [" + componentType.getNameWithCategory() + "]";
+        return result;
+    }
 }

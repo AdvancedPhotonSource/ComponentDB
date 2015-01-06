@@ -97,6 +97,8 @@ public class ComponentInstance extends CloneableEntity {
     // Used to map property type id to property value number
     private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
 
+    private transient String qrIdDisplay;
+    
     public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
         if (propertyTypeId != null) {
             propertyTypeIdIndexMap.put(index, propertyTypeId);
@@ -228,6 +230,7 @@ public class ComponentInstance extends CloneableEntity {
 
     public void setQrId(Integer qrId) {
         this.qrId = qrId;
+        qrIdDisplay = null;
     }
 
     public List<PropertyValue> getImagePropertyList() {
@@ -396,5 +399,21 @@ public class ComponentInstance extends CloneableEntity {
             }
         }
         setPropertyValueList(componentInstancePropertyList);
+    }
+    
+    public static String formatQrIdDisplay(Integer qrId) {
+        String qrIdDisplay = null;
+        if (qrId != null) {
+            qrIdDisplay = String.format("%09d", qrId);
+            qrIdDisplay = qrIdDisplay.substring(0,3) + " " + qrIdDisplay.substring(3,6) + " " + qrIdDisplay.substring(6,9);
+        }        
+        return qrIdDisplay;
+    }
+    
+    public String getQrIdDisplay() {
+        if (qrId != null && qrIdDisplay == null) {
+            qrIdDisplay = formatQrIdDisplay(qrId);
+        }
+        return qrIdDisplay;
     }
 }

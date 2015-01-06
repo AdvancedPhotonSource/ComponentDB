@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -63,13 +64,15 @@ public class Location extends CloneableEntity {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "sort_order")
     private Float sortOrder;
-    @JoinTable(name = "location_link", joinColumns = {
-        @JoinColumn(name = "parent_location_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "child_location_id", referencedColumnName = "id")})
-    @ManyToMany
-    private List<Location> childLocationList;
-    @ManyToMany(mappedBy = "childLocationList")
+    @JoinTable(name = "location_link", 
+            joinColumns = {
+        @JoinColumn(name = "child_location_id", referencedColumnName = "id")}, 
+            inverseJoinColumns = {
+        @JoinColumn(name = "parent_location_id", referencedColumnName = "id")})
+        @ManyToMany(cascade = CascadeType.ALL)
     private List<Location> parentLocationList;
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "parentLocationList")
+    private List<Location> childLocationList;
     @JoinColumn(name = "location_type_id", referencedColumnName = "id")
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private LocationType locationType;
@@ -182,10 +185,26 @@ public class Location extends CloneableEntity {
         return parentLocationList.get(0);
     }
 
+    public void resetParentLocation() {
+        parentLocationList = null;
+    }
+    
     public void setParentLocation(Location parentLocation) {
+        Location oldParentLocation = getParentLocation();
+        if (oldParentLocation != null) {
+            List<Location> oldParentLocationChildList = oldParentLocation.getChildLocationList();
+            oldParentLocationChildList.remove(this);
+        }
+        
+        parentLocationList = new ArrayList<>();
         if (parentLocation != null) {
-            parentLocationList = new ArrayList<>();
             parentLocationList.add(parentLocation);
+            List<Location> newParentLocationChildList = parentLocation.getChildLocationList();
+            if (newParentLocationChildList == null) {
+                newParentLocationChildList = new ArrayList<>();
+                parentLocation.setChildLocationList(newParentLocationChildList);
+            }
+            newParentLocationChildList.add(this);
         }
     }
 

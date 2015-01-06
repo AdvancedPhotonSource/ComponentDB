@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -59,7 +60,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     private Boolean selectDisplayType = true;
     private Boolean selectDisplayFlatTableView = false;
     private Boolean selectDisplayMenuView = false;
-    
+
     private String selectFilterByParent = null;
     private String selectFilterByType = null;
 
@@ -328,7 +329,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
             location.setLocationType(locationType);
         }
     }
-        
+
     public MenuModel createLocationMenu() {
         locationMenu = new DefaultMenuModel();
         List<Location> locationsWithoutParents = locationFacade.findLocationsWithoutParents();
@@ -348,8 +349,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
         for (Location childLocation : location.getChildLocationList()) {
             if (childLocation.getChildLocationList().isEmpty()) {
                 subMenu.addElement(new DefaultMenuItem(childLocation.getName()));
-            }
-            else {
+            } else {
                 DefaultSubMenu childSubMenu = new DefaultSubMenu(childLocation.getName());
                 populateLocationSubMenu(childSubMenu, childLocation);
                 subMenu.addElement(childSubMenu);

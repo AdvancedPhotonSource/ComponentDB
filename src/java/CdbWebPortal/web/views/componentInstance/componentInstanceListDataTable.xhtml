@@ -22,11 +22,11 @@
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
-            <h:outputText value="#{componentInstanceObject.location.name}"/>
+         <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
+                   rendered="#{componentInstanceController.displayQrId}">
+            <h:outputText id="qrId" value="#{componentInstanceObject.qrId}"/>
         </p:column>
-
-
+        
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
             <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
         </p:column>
@@ -35,10 +35,9 @@
                   rendered="#{componentInstanceController.displaySerialNumber}">
             <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}"/>
         </p:column>
-
-         <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
-                   rendered="#{componentInstanceController.displayQrId}">
-            <h:outputText id="qrId" value="#{componentInstanceObject.qrId}"/>
+        
+        <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
+            <h:outputText value="#{componentInstanceObject.location.name}"/>
         </p:column>
         
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"

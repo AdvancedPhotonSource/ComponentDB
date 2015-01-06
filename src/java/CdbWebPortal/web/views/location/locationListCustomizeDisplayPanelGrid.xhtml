@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <p:panelGrid columns="2">
+        <p:inputText id="displayNumberOfItemsPerPage" value="#{locationController.displayNumberOfItemsPerPage}" style="width:20px"/>
+        <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="displayType" value="#{locationController.displayType}"/>  
+        <h:outputLabel for="displayType" value="Display Type" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="displayDescription" value="#{locationController.displayDescription}"/>  
+        <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="displayId" value="#{locationController.displayId}"/>  
+        <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="displayParent" value="#{locationController.displayParent}"/>  
+        <h:outputLabel for="displayParent" value="Display Parent" styleClass="dialogDataLabel"/>
+
+    </p:panelGrid>
+
+</ui:composition>
