@@ -24,7 +24,7 @@
 
          <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
                    rendered="#{componentInstanceController.displayQrId}">
-            <h:outputText id="qrId" value="#{componentInstanceObject.qrId}"/>
+            <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}"/>
         </p:column>
         
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
