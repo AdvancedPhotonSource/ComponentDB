@@ -63,7 +63,7 @@ public abstract class AbstractFacade<T>
     }
     
     public void flush() {
-        getEntityManager().getEntityManagerFactory().getCache().evictAll();
+        getEntityManager().flush(); // to clear cache: getEntityManager().getEntityManagerFactory().getCache().evictAll();
     }
     
 }

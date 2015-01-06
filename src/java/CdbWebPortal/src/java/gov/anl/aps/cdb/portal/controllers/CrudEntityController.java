@@ -640,7 +640,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         filteredObjectList = null;
         current = null;
         // Flush cache 
-        getFacade().flush();
+        //getFacade().flush();
     }
 
     public void resetSelectDataModel() {
@@ -649,7 +649,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         selectedObjectList = null;
         selectDataModelReset = true;
         // Flush cache 
-        getFacade().flush();
+        //getFacade().flush();
     }
 
     public void clearListFiltersAndResetListDataModel() {
