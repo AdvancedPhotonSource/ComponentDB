@@ -860,7 +860,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         componentInstance.setImagePropertyList(componentInstanceImageList);
         return componentInstanceImageList;
     }
-    
+
     public void prepareComponentInstancePropertyValueDisplay(ComponentInstance componentInstance) {
         List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
         for (PropertyValue propertyValue : propertyValueList) {
@@ -895,7 +895,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
         this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
     }
-    
+
     public DataTable getComponentPropertyValueListDataTable() {
         if (userSettingsChanged() || isListDataModelReset()) {
             componentPropertyValueListDataTable = new DataTable();
@@ -905,7 +905,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
         this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
-    }  
+    }
 
     public List<PropertyValue> getFilteredPropertyValueList() {
         return filteredPropertyValueList;
@@ -914,5 +914,5 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
     }
-    
+
 }

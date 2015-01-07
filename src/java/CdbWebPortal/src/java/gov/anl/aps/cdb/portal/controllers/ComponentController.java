@@ -141,6 +141,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
     protected Component createEntityInstance() {
         Component component = new Component();
         UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
+        if (ownerUser == null) {
+            return null;
+        }
         EntityInfo entityInfo = new EntityInfo();
         entityInfo.setOwnerUser(ownerUser);
         List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
