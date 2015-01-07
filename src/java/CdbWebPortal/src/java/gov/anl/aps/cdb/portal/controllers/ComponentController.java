@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -119,9 +120,13 @@ public class ComponentController extends CrudEntityController<Component, Compone
     // recognize value change in some case, so we bind this variable to control the menu. 
     private SelectOneMenu componentTypeSelectOneMenu;
 
+    private DataTable componentPropertyValueListDataTable = null;
+
     private Component selectedComponent = null;
 
     private List<Location> locationList = null;
+    
+    private List<PropertyValue> filteredPropertyValueList;
 
     public ComponentController() {
         super();
@@ -271,6 +276,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         }
         component.clearPropertyValueCache();
         prepareComponentImageList(component);
+
+        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        for (ComponentInstance componentInstance : componentInstanceList) {
+            componentInstance.resetAttributesToNullIfEmpty();
+        }
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
 
@@ -924,18 +934,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     public List<PropertyValue> prepareComponentImageList(Component component) {
-        List<PropertyValue> componentImageList = new ArrayList<>();
-        List<PropertyValue> propertyValueList = component.getPropertyValueList();
-        for (PropertyValue propertyValue : propertyValueList) {
-            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-            DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
-            if (valueDisplayType == DisplayType.IMAGE) {
-                String value = propertyValue.getValue();
-                if (value != null && !value.isEmpty()) {
-                    componentImageList.add(propertyValue);
-                }
-            }
-        }
+        List<PropertyValue> componentImageList = PropertyValueUtility.prepareImagePropertyValueList(component.getPropertyValueList());
         component.setImagePropertyList(componentImageList);
         return componentImageList;
     }
@@ -955,5 +954,24 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setSelectedComponent(Component selectedComponent) {
         this.selectedComponent = selectedComponent;
+    }
+
+    public DataTable getComponentPropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            componentPropertyValueListDataTable = new DataTable();
+        }
+        return componentPropertyValueListDataTable;
+    }
+
+    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
+        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
+    }
+
+    public List<PropertyValue> getFilteredPropertyValueList() {
+        return filteredPropertyValueList;
+    }
+
+    public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
+        this.filteredPropertyValueList = filteredPropertyValueList;
     }
 }

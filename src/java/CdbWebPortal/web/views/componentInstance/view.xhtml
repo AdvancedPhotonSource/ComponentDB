@@ -12,7 +12,7 @@
         <f:viewParam id="id" name="id" value="#{componentInstanceController.idViewParam}"/>
         <f:event type="preRenderComponent" listener="#{componentInstanceController.processViewRequestParams()}"/>
     </f:metadata>
-    
+
     <ui:define name="middleCenter">
         <h:form id="viewComponentInstanceForm">
 
@@ -59,13 +59,22 @@
             </div>
 
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0">                
-                    <p:tab title="Properties">
+                <p:accordionPanel multiple="true" activeIndex="0,1">                
+                    <p:tab title="Component Instance Properties">
                         <ui:include src="../componentInstanceProperty/list.xhtml"/>
+                    </p:tab>
+
+                    <p:tab title="Component Properties">
+                        <ui:include src="../componentInstanceProperty/componentPropertyList.xhtml"/>
                     </p:tab>
 
                 </p:accordionPanel>
             </div>
+
+            <ui:include src="../propertyValueHistory/propertyValueHistoryListDialog.xhtml"/>
+
+            <ui:include src="../propertyValueHistory/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
+
         </h:form>
 
     </ui:define>

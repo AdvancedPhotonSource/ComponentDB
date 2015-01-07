@@ -192,6 +192,9 @@ public class Location extends CloneableEntity {
     public void setParentLocation(Location parentLocation) {
         Location oldParentLocation = getParentLocation();
         if (oldParentLocation != null) {
+            if (oldParentLocation.equals(parentLocation)) {
+                return;
+            }
             List<Location> oldParentLocationChildList = oldParentLocation.getChildLocationList();
             oldParentLocationChildList.remove(this);
         }

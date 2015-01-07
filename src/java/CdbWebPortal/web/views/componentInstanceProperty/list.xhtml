@@ -12,7 +12,9 @@
     </ui:include>    
     <ui:include src="componentInstancePropertyListDataTable.xhtml"/>
 
-    <ui:include src="componentInstancePropertyListCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="componentInstancePropertyListCustomizeDisplayDialog.xhtml">
+        <ui:param name="childEntityTypeName" value="componentInstanceProperty"/>
+    </ui:include>
 
 
 </ui:composition>

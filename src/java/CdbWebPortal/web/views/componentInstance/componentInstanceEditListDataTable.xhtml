@@ -23,6 +23,28 @@
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>
 
+        <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
+                  filterBy="#{componentInstanceObject.qrId}" filterMatchMode="contains"
+                  filterValue="#{componentInstanceController.filterByQrId}">
+            <h:inputText id="qrId" value="#{componentInstanceObject.qrId}" styleClass="cellInput"/>
+            <p:tooltip for="qrId" value="Enter QR id."/>
+        </p:column>
+        
+        <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag"
+                  filterBy="#{componentInstanceObject.tag}" filterMatchMode="contains"
+                  filterValue="#{componentInstanceController.filterByTag}">
+            <h:inputText id="tag" value="#{componentInstanceObject.tag}" styleClass="cellInput"/>
+            <p:tooltip for="tag" value="Enter tag."/>
+        </p:column>
+
+        <p:column sortBy="#{componentInstanceObject.serialNumber}" headerText="Serial Number"
+                  filterBy="#{componentInstanceObject.serialNumber}" filterMatchMode="contains"
+                  filterValue="#{componentInstanceController.filterBySerialNumber}">
+            <h:inputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" styleClass="cellInput"/>
+            <p:tooltip for="serialNumber" value="Enter serial number."/>
+        </p:column>
+       
+               
         <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location"
                   filterBy="#{componentInstanceObject.location.name}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByLocation}">
@@ -49,27 +71,6 @@
             <p:tooltip for="location" value="Select location."/>
         </p:column>        
 
-        <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag"
-                  filterBy="#{componentInstanceObject.tag}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByTag}">
-            <h:inputText id="tag" value="#{componentInstanceObject.tag}" styleClass="cellInput"/>
-            <p:tooltip for="tag" value="Enter tag."/>
-        </p:column>
-
-        <p:column sortBy="#{componentInstanceObject.serialNumber}" headerText="Serial Number"
-                  filterBy="#{componentInstanceObject.serialNumber}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterBySerialNumber}">
-            <h:inputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" styleClass="cellInput"/>
-            <p:tooltip for="serialNumber" value="Enter serial number."/>
-        </p:column>
-        
-        <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
-                  filterBy="#{componentInstanceObject.qrId}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByQrId}">
-            <h:inputText id="qrId" value="#{componentInstanceObject.qrId}" styleClass="cellInput"/>
-            <p:tooltip for="tag" value="Enter QR id."/>
-        </p:column>
-        
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
                   filterBy="#{componentInstanceObject.locationDetails}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByLocationDetails}">

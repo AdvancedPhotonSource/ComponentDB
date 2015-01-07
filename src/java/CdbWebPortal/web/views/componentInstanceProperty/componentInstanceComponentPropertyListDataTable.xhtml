@@ -7,29 +7,29 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <p:dataTable id="componentInstancePropertyListDataTable" 
-                 widgetVar="componentInstancePropertyListDataTableWidget"
+    <p:dataTable id="componentInstanceComponentPropertyListDataTable" 
+                 widgetVar="componentInstanceComponentPropertyListDataTableWidget"
                  var="propertyValueObject" 
-                 value="#{componentInstanceObject.propertyValueList}" 
-                 filteredValue="#{componentInstanceController.filteredPropertyValueList}"
-                 binding="#{componentInstanceController.componentInstancePropertyValueListDataTable}"
+                 value="#{componentObject.propertyValueList}" 
+                 filteredValue="#{componentController.filteredPropertyValueList}"
+                 binding="#{componentInstanceController.componentPropertyValueListDataTable}"
                  rows="#{propertyValueController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
-                 emptyMessage="No component instance properties found.">
+                 emptyMessage="No component properties found.">
 
         <ui:include src="../propertyValue/propertyValueListObject.xhtml"/>
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink id="propertyValueHistoryListViewButton" 
+                <p:commandLink id="componentInstanceComponentPropertyValueHistoryListViewButton" 
                                oncomplete="propertyValueHistoryListDialogWidget.show()" 
                                styleClass="ui-icon ui-icon-info" 
                                title="View history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>
-                    <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                    <p:tooltip for="componentInstanceComponentPropertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
             </div>
         </p:column>       

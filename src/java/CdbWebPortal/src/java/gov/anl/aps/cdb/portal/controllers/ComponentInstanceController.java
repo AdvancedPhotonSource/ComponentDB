@@ -1,6 +1,5 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
@@ -16,8 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
@@ -117,6 +115,10 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private Integer qrIdViewParam = null;
 
     private SelectOneMenu componentSelectOneMenu;
+    private DataTable componentInstancePropertyValueListDataTable = null;
+    private DataTable componentPropertyValueListDataTable = null;
+
+    private List<PropertyValue> filteredPropertyValueList = null;
 
     public ComponentInstanceController() {
     }
@@ -227,7 +229,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     @Override
     public void prepareEntityView(ComponentInstance componentInstance) {
+        componentInstance.clearPropertyValueCache();
         prepareComponentInstanceImageList(componentInstance);
+        prepareComponentInstancePropertyValueDisplay(componentInstance);
     }
 
     @Override
@@ -241,7 +245,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         componentInstance.resetAttributesToNullIfEmpty();
         return super.update();
     }
-    
+
     @Override
     public void prepareEntityUpdate(ComponentInstance componentInstance) throws ObjectAlreadyExists {
         EntityInfo entityInfo = componentInstance.getEntityInfo();
@@ -850,23 +854,18 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     public List<PropertyValue> prepareComponentInstanceImageList(ComponentInstance componentInstance) {
-        List<PropertyValue> componentInstanceImageList = new ArrayList<>();
-        List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
-        if (propertyValueList != null) {
-            for (PropertyValue propertyValue : propertyValueList) {
-                PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-                DisplayType valueDisplayType = propertyTypeHandler.getValueDisplayType();
-                if (valueDisplayType == DisplayType.IMAGE) {
-                    String value = propertyValue.getValue();
-                    if (value != null && !value.isEmpty()) {
-                        componentInstanceImageList.add(propertyValue);
-                    }
-                }
-            }
-        }
-
+        List<PropertyValue> componentInstanceImageList = PropertyValueUtility.prepareImagePropertyValueList(componentInstance.getPropertyValueList());
+        List<PropertyValue> componentImageList = PropertyValueUtility.prepareImagePropertyValueList(componentInstance.getComponent().getPropertyValueList());
+        componentInstanceImageList.addAll(componentImageList);
         componentInstance.setImagePropertyList(componentInstanceImageList);
         return componentInstanceImageList;
+    }
+    
+    public void prepareComponentInstancePropertyValueDisplay(ComponentInstance componentInstance) {
+        List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
+        for (PropertyValue propertyValue : propertyValueList) {
+            PropertyValueUtility.configurePropertyValueDisplay(propertyValue);
+        }
     }
 
     public List<PropertyValue> getComponentInstanceImageList() {
@@ -885,4 +884,35 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     public void setComponentSelectOneMenu(SelectOneMenu componentTypeSelectOneMenu) {
         this.componentSelectOneMenu = componentTypeSelectOneMenu;
     }
+
+    public DataTable getComponentInstancePropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            componentInstancePropertyValueListDataTable = new DataTable();
+        }
+        return componentInstancePropertyValueListDataTable;
+    }
+
+    public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
+        this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
+    }
+    
+    public DataTable getComponentPropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            componentPropertyValueListDataTable = new DataTable();
+        }
+        return componentPropertyValueListDataTable;
+    }
+
+    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
+        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
+    }  
+
+    public List<PropertyValue> getFilteredPropertyValueList() {
+        return filteredPropertyValueList;
+    }
+
+    public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
+        this.filteredPropertyValueList = filteredPropertyValueList;
+    }
+    
 }
