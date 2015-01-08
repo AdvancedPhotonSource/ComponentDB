@@ -7,12 +7,12 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/contentViewTemplate4x3.xhtml">
 
-     <f:metadata>
+    <f:metadata>
         <ui:include src="../common/commonViewMetadata.xhtml">
             <ui:param name="entityController" value="#{locationController}"/>
         </ui:include>
     </f:metadata>
-    
+
     <ui:define name="middleCenter">
 
         <h:form id="viewLocationListForm"> 
@@ -21,13 +21,21 @@
             </div>
 
             <ui:param name="entityController" value="#{locationController}"/>
-            <ui:include src="../common/commonListActionButtons.xhtml"/>
+            <ui:fragment rendered="#{locationController.displayFlatTableView}">
+                <ui:include src="../common/commonListActionButtons.xhtml"/>
 
-            <h:panelGroup>  
+                <h:panelGroup>  
+                    <ui:include src="locationListDataTable.xhtml"/>
+                </h:panelGroup>
+            </ui:fragment>
 
-                <ui:include src="locationListDataTable.xhtml"/>
+            <ui:fragment rendered="#{!locationController.displayFlatTableView}">
+                <ui:include src="../common/commonListTreeTableActionButtons.xhtml"/>
 
-            </h:panelGroup>
+                <h:panelGroup>  
+                    <ui:include src="locationListTreeTable.xhtml"/>
+                </h:panelGroup>
+            </ui:fragment>
 
             <ui:include src="locationDestroyDialog.xhtml"/>
 

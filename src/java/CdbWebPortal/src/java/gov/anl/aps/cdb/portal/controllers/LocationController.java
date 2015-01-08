@@ -36,6 +36,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Location.List.Display.NumberOfItemsPerPage";
     private static final String DisplayDescriptionSettingTypeKey = "Location.List.Display.Description";
+    private static final String DisplayFlatTableViewSettingTypeKey = "Location.List.Display.FlatTableView";
     private static final String DisplayIdSettingTypeKey = "Location.List.Display.Id";
     private static final String DisplayParentSettingTypeKey = "Location.List.Display.Parent";
     private static final String DisplayTypeSettingTypeKey = "Location.List.Display.Type";
@@ -50,6 +51,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     @EJB
     private LocationFacade locationFacade;
 
+    private Boolean displayFlatTableView = null;
     private Boolean displayParent = null;
     private Boolean displayType = null;
 
@@ -69,6 +71,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     private MenuModel locationMenu = null;
 
     public LocationController() {
+        selectDisplayDescription = true;
     }
 
     @Override
@@ -153,6 +156,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayFlatTableView = Boolean.parseBoolean(settingTypeMap.get(DisplayFlatTableViewSettingTypeKey).getDefaultValue());
 
         displayParent = Boolean.parseBoolean(settingTypeMap.get(DisplayParentSettingTypeKey).getDefaultValue());
         displayType = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeSettingTypeKey).getDefaultValue());
@@ -173,6 +177,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayFlatTableView = sessionUser.getUserSettingValueAsBoolean(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
 
         displayParent = sessionUser.getUserSettingValueAsBoolean(DisplayParentSettingTypeKey, displayParent);
         displayType = sessionUser.getUserSettingValueAsBoolean(DisplayTypeSettingTypeKey, displayType);
@@ -205,6 +210,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
 
         sessionUser.setUserSettingValue(DisplayParentSettingTypeKey, displayParent);
         sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
@@ -378,6 +384,14 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     public void setDisplayType(Boolean displayType) {
         this.displayType = displayType;
+    }
+
+    public Boolean getDisplayFlatTableView() {
+        return displayFlatTableView;
+    }
+
+    public void setDisplayFlatTableView(Boolean displayFlatTableView) {
+        this.displayFlatTableView = displayFlatTableView;
     }
 
     public Boolean getSelectDisplayFlatTableView() {

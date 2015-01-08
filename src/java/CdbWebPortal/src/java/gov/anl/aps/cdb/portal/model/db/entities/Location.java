@@ -69,7 +69,7 @@ public class Location extends CloneableEntity {
         @JoinColumn(name = "child_location_id", referencedColumnName = "id")}, 
             inverseJoinColumns = {
         @JoinColumn(name = "parent_location_id", referencedColumnName = "id")})
-        @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.REFRESH})
     private List<Location> parentLocationList;
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "parentLocationList")
     private List<Location> childLocationList;

@@ -2,8 +2,4 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
   xsi:schemaLocation="http://ocpsoft.org/schema/rewrite-config-prettyfaces
                       http://ocpsoft.org/xml/ns/prettyfaces/rewrite-config-prettyfaces.xsd">
-    <url-mapping id="view">
-        <pattern value="views/componentInstance/view?qrId=#{qrId}" />
-        <view-id value="views/componentInstance/view.xhtml?qrId=#{qrId}"/>
-    </url-mapping>
 </pretty-config>

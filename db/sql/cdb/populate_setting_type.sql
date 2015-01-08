@@ -146,6 +146,7 @@ VALUES
 	('DesignLink.List.Display.Tag','Display design link tag.', 'true'),
 
 	('Location.List.Display.Description','Display location description.', 'true'),
+	('Location.List.Display.FlatTableView','Display flat table view for location list.', 'false'),
 	('Location.List.Display.Id','Display location id.', 'false'),
 	('Location.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 	('Location.List.Display.Parent','Display location parent.', 'true'),

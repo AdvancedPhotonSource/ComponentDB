@@ -27,6 +27,9 @@
                 </library>
                 <library dirs="200">
                     <file>${file.reference.rewrite-servlet-2.0.12.Final.jar}</file>
+                </library>
+                <library dirs="200">
+                    <file>${file.reference.omnifaces-2.0.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>

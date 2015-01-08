@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
+
+    <div class="actionButton">
+        <p:commandButton id="#{entityTypeName}ListTreeTableAddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
+            <p:tooltip for="#{entityTypeName}ListTreeTableAddButton" value="Add new #{entityController.displayEntityTypeName}."/>
+        </p:commandButton>
+         <p:commandButton id="#{entityTypeName}ListTreeTableCustomizeDisplayButton" oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:tooltip for="#{entityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize list view."/>
+        </p:commandButton>
+
+        <p:commandButton id="#{entityTypeName}ListTreeTableNoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{entityTypeName}ListTreeTableNoOp"/>
+    </div>
+
+</ui:composition>
