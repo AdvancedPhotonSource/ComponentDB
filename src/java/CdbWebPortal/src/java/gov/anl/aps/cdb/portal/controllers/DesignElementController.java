@@ -1,12 +1,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,188 +16,161 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
 
 @Named("designElementController")
 @SessionScoped
-public class DesignElementController implements Serializable
+public class DesignElementController extends CrudEntityController<DesignElement, DesignElementFacade> implements Serializable
 {
 
-    private DesignElement current;
-    private DataModel items = null;
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "DesignElement.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "DesignElement.List.Display.Id";
+    private static final String DisplayTagSettingTypeKey = "DesignElement.List.Display.Tag";
+    private static final String DisplayQuantitySettingTypeKey = "DesignElement.List.Display.Quantity";
+    private static final String DisplayPrioritySettingTypeKey = "DesignElement.List.Display.Priority";
+    private static final String DisplayDescriptionSettingTypeKey = "DesignElement.List.Display.Description";
+
+    private static final String DisplayChildDesignSettingTypeKey = "DesignElement.List.Display.ChildDesign";
+    
+    private static final String DisplayComponentSettingTypeKey = "DesignElement.List.Display.Component";
+    
+//    ('DesignElement.List.Display.CreatedByUser', 'Display created by username.', 'false'),
+//    ('DesignElement.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
+//    ('DesignElement.List.Display.Description','Display design element description.', 'false'),
+//    ('DesignElement.List.Display.Id','Display design element id.', 'false'),
+//    ('DesignElement.List.Display.LastModifiedByUser', 'Display last modified by username.', 'false'),
+//    ('DesignElement.List.Display.LastModifiedOnDateTime', 'Display last modified on date/time.', 'false'),
+//    ('DesignElement.List.Display.Location', 'Display location.', 'true'),
+//    ('DesignElement.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
+//    ('DesignElement.List.Display.OwnerUser', 'Display owner username.', 'true'),
+//    ('DesignElement.List.Display.OwnerGroup', 'Display owner group name.', 'true'),
+//    ('DesignElement.List.Display.SortOrder','Display design element sort order.', 'true'),
+//
+//    ('DesignElement.List.FilterBy.ChildDesign', 'Filter for child design.', NULL),
+//    ('DesignElement.List.FilterBy.Component', 'Filter for component.', NULL),
+//    ('DesignElement.List.FilterBy.CreatedByUser', 'Filter for design elements that were created by username.', NULL),
+//    ('DesignElement.List.FilterBy.CreatedOnDateTime', 'Filter for design elements that were created on date/time.', NULL),
+//    ('DesignElement.List.FilterBy.Description', 'Filter for design elements by description.', NULL),
+//    ('DesignElement.List.FilterBy.LastModifiedByUser', 'Filter for design elements that were last modified by username.', NULL),
+//    ('DesignElement.List.FilterBy.LastModifiedOnDateTime', 'Filter for design elements that were last modified on date/time.', NULL),
+//    ('DesignElement.List.FilterBy.Location', 'Filter for component.', NULL),
+//    ('DesignElement.List.FilterBy.Name', 'Filter for design elements by name.', NULL),
+//    ('DesignElement.List.FilterBy.OwnerUser', 'Filter for design elements by owner username.', NULL),
+//    ('DesignElement.List.FilterBy.OwnerGroup', 'Filter for design elements by owner group name.', NULL),
+//    ('DesignElement.List.FilterBy.SortOrder', 'Filter for design elements by sort order.', NULL),
+
+
+       
+    private static final Logger logger = Logger.getLogger(DesignElementController.class.getName());
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private DesignElementFacade designElementFacade;
+
+    private Boolean displayTag = null;
+    private Boolean displayQuantity = null;
+    private Boolean displayPriority = null;
 
     public DesignElementController() {
     }
 
-    public DesignElement getSelected() {
-        if (current == null) {
-            current = new DesignElement();
-            selectedItemIndex = -1;
+    @Override
+    protected DesignElementFacade getFacade() {
+        return designElementFacade;
+    }
+
+    @Override
+    protected DesignElement createEntityInstance() {
+        DesignElement designElement = new DesignElement();
+        return designElement;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "designElement";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "design element";
+    }
+    
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getComponent().getName();
         }
-        return current;
+        return "";
     }
 
-    private DesignElementFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<DesignElement> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
+    @Override
+    public void prepareEntityInsert(DesignElement designElement) throws ObjectAlreadyExists {
+    }
 
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
+    @Override
+    public void prepareEntityUpdate(DesignElement designElement) throws ObjectAlreadyExists {
+    }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
+        displayQuantity = Boolean.parseBoolean(settingTypeMap.get(DisplayQuantitySettingTypeKey).getDefaultValue());
+        displayPriority = Boolean.parseBoolean(settingTypeMap.get(DisplayPrioritySettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+    }
+
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
+        displayQuantity = sessionUser.getUserSettingValueAsBoolean(DisplayQuantitySettingTypeKey, displayQuantity);
+        displayPriority = sessionUser.getUserSettingValueAsBoolean(DisplayPrioritySettingTypeKey, displayPriority);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+    }
+
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        return pagination;
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
+        sessionUser.setUserSettingValue(DisplayQuantitySettingTypeKey, displayQuantity);
+        sessionUser.setUserSettingValue(DisplayPrioritySettingTypeKey, displayPriority);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+    }
+    
+    public Boolean getDisplayTag() {
+        return displayTag;
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
+    public void setDisplayTag(Boolean displayTag) {
+        this.displayTag = displayTag;
     }
 
-    public String prepareView() {
-        current = (DesignElement) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
+    public Boolean getDisplayQuantity() {
+        return displayQuantity;
     }
 
-    public String prepareCreate() {
-        current = new DesignElement();
-        selectedItemIndex = -1;
-        return "Create";
+    public void setDisplayQuantity(Boolean displayQuantity) {
+        this.displayQuantity = displayQuantity;
     }
 
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("DesignElementCreated"));
-            return prepareCreate();
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
+    public Boolean getDisplayPriority() {
+        return displayPriority;
     }
 
-    public String prepareEdit() {
-        current = (DesignElement) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("DesignElementUpdated"));
-            return "View";
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (DesignElement) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        }
-        else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("DesignElementDeleted"));
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public DesignElement getDesignElement(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    public void setDisplayPriority(Boolean displayPriority) {
+        this.displayPriority = displayPriority;
     }
 
     @FacesConverter(forClass = DesignElement.class)
@@ -207,9 +182,17 @@ public class DesignElementController implements Serializable
             if (value == null || value.length() == 0) {
                 return null;
             }
+            try {
             DesignElementController controller = (DesignElementController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "designElementController");
-            return controller.getDesignElement(getKey(value));
+            return controller.getEntity(getKey(value));
+            }
+            catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to design element object.");
+                return null;
+            }
+
         }
 
         java.lang.Integer getKey(String value) {
