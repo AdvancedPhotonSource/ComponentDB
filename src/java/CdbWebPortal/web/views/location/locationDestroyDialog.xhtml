@@ -10,7 +10,7 @@
                      header="Delete Location" 
                      severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="locationDestroyDialogWidget.hide()" action="#{locationController.destroy()}" update="@form"/>
+        <p:commandButton value="Yes" oncomplete="locationDestroyDialogWidget.hide()" actionListener="#{locationListTreeViewBean.resetRootNode()}" action="#{locationController.destroy()}" update="@form"/>
         <p:commandButton value="No" onclick="locationDestroyDialogWidget.hide()" type="button"/>
     </p:confirmDialog>  
 

@@ -4,8 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LocationController.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/common/commonListTreeTableActionLinks.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/componentInstance/editList.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/locationEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/PropertyValue.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/common/commonListActionLinks.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/locationDestroyDialog.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/edit.xhtml</file>
@@ -15,6 +18,7 @@
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/beans/LocationListTreeViewBean.java</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/locationSelectCustomizeDisplayPanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Location.java</file>
+            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/propertyValue/propertyValueListObject.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/list.xhtml</file>
             <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/web/views/location/locationListDataTable.xhtml</file>
         </group>

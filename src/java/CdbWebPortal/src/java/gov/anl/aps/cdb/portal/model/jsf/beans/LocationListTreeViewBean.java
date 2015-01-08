@@ -30,7 +30,14 @@ public class LocationListTreeViewBean implements Serializable {
         rootNode = createLocationRoot();
     }
 
+    public void resetRootNode() {
+        rootNode = null;
+    }
+    
     public TreeNode getRootNode() {
+        if (rootNode == null) {
+            rootNode = createLocationRoot(); 
+        }
         return rootNode;
     }
 

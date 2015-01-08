@@ -510,6 +510,9 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         }
     }
 
+    protected void prepareEntityDestroy(EntityType entity) throws CdbPortalException {
+    }
+    
     public void destroy(EntityType entity) {
         current = entity;
         destroy();
@@ -527,6 +530,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         }
         try {
             logger.debug("Destroying " + getCurrentEntityInstanceName());
+            prepareEntityDestroy(current);
             getFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();

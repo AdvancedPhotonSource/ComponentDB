@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -49,14 +48,21 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
 public class PropertyValue extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     @Size(max = 64)
     private String tag;
-    @Size(max = 64)
+    @Size(max = 128)
     private String value;
+    @Size(max = 128)
+    @Column(name = "display_value")
+    private String displayValue;
+    @Size(max = 128)
+    @Column(name = "target_value")
+    private String targetValue;
     @Size(max = 16)
     private String units;
     @Size(max = 256)
@@ -93,9 +99,6 @@ public class PropertyValue extends CloneableEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
 
-    private transient String displayValue = null;
-    private transient String targetValue = null;
-    
     public PropertyValue() {
     }
 
@@ -225,7 +228,7 @@ public class PropertyValue extends CloneableEntity {
     public void setIsDynamic(boolean isDynamic) {
         this.isDynamic = isDynamic;
     }
-    
+
     public PropertyType getPropertyType() {
         return propertyType;
     }
@@ -250,7 +253,7 @@ public class PropertyValue extends CloneableEntity {
     public void setDisplayValue(String displayValue) {
         this.displayValue = displayValue;
     }
-    
+
     public void setDisplayValueToValue() {
         displayValue = value;
     }
@@ -262,11 +265,11 @@ public class PropertyValue extends CloneableEntity {
     public void setTargetValue(String targetValue) {
         this.targetValue = targetValue;
     }
-    
+
     public void setTargetValueToValue() {
         targetValue = value;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -274,33 +277,33 @@ public class PropertyValue extends CloneableEntity {
         return hash;
     }
 
-   public boolean equalsByValueAndUnits(PropertyValue other) {
+    public boolean equalsByValueAndUnits(PropertyValue other) {
         if (other != null) {
-            return ( ObjectUtility.equals(this.value, other.value) 
-                    && ObjectUtility.equals(this.units, other.units) );
+            return (ObjectUtility.equals(this.value, other.value)
+                    && ObjectUtility.equals(this.units, other.units));
         }
         return false;
     }
-   
+
     public boolean equalsByValueAndUnitsAndDescription(PropertyValue other) {
         if (other != null) {
-            return ( ObjectUtility.equals(this.value, other.value) 
-                    && ObjectUtility.equals(this.units, other.units) 
-                    && ObjectUtility.equals(this.description, other.description) );
+            return (ObjectUtility.equals(this.value, other.value)
+                    && ObjectUtility.equals(this.units, other.units)
+                    && ObjectUtility.equals(this.description, other.description));
         }
         return false;
     }
 
     public boolean equalsByTagAndValueAndUnitsAndDescription(PropertyValue other) {
         if (other != null) {
-            return ( ObjectUtility.equals(this.tag, other.tag) 
-                    && ObjectUtility.equals(this.value, other.value) 
-                    && ObjectUtility.equals(this.units, other.units) 
-                    && ObjectUtility.equals(this.description, other.description) );
+            return (ObjectUtility.equals(this.tag, other.tag)
+                    && ObjectUtility.equals(this.value, other.value)
+                    && ObjectUtility.equals(this.units, other.units)
+                    && ObjectUtility.equals(this.description, other.description));
         }
         return false;
     }
-    
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof PropertyValue)) {
@@ -321,12 +324,11 @@ public class PropertyValue extends CloneableEntity {
     public String toString() {
         if (units != null && !units.isEmpty()) {
             return value + " [" + units + "]";
-        }
-        else {
+        } else {
             return value;
         }
     }
-    
+
     public PropertyValue copy() {
         PropertyValue propertyValue = new PropertyValue();
         propertyValue.propertyType = propertyType;
@@ -339,4 +341,3 @@ public class PropertyValue extends CloneableEntity {
         return propertyValue;
     }
 }
-

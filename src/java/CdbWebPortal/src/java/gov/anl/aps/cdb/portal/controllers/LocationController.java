@@ -148,6 +148,16 @@ public class LocationController extends CrudEntityController<Location, LocationF
     }
 
     @Override
+    public void prepareEntityDestroy(Location location) throws CdbPortalException {
+        Location parentLocation = location.getParentLocation();
+        if (parentLocation != null) {
+            List<Location> parentChildLocationList = parentLocation.getChildLocationList();
+            parentChildLocationList.remove(location);
+        }
+        logger.debug("Updating location " + location.getName());
+    }
+
+    @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;

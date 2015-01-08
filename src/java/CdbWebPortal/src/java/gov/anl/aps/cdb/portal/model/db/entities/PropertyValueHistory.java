@@ -46,8 +46,14 @@ public class PropertyValueHistory extends CloneableEntity {
     private Integer id;
     @Size(max = 64)
     private String tag;
-    @Size(max = 64)
+    @Size(max = 128)
     private String value;
+        @Size(max = 128)
+    @Column(name = "display_value")
+    private String displayValue;
+    @Size(max = 128)
+    @Column(name = "target_value")
+    private String targetValue;
     @Size(max = 16)
     private String units;
     @Size(max = 256)
@@ -63,9 +69,6 @@ public class PropertyValueHistory extends CloneableEntity {
     @JoinColumn(name = "property_value_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private PropertyValue propertyValue;
-
-    private transient String displayValue = null;
-    private transient String targetValue = null;
 
     public PropertyValueHistory() {
     }
