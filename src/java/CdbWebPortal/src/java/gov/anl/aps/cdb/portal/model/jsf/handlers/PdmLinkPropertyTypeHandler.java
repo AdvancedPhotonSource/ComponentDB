@@ -30,7 +30,8 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             return null;
         }
         
-        String url = PdmLinkUrl.replace("PDMLINK_ID", pdmLinkId);
+        String idValue = pdmLinkId.trim();
+        String url = PdmLinkUrl.replace("PDMLINK_ID", idValue);
         return url;
     }
 

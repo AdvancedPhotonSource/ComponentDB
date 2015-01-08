@@ -46,12 +46,12 @@ public class PropertyValueHistory extends CloneableEntity {
     private Integer id;
     @Size(max = 64)
     private String tag;
-    @Size(max = 128)
+    @Size(max = 256)
     private String value;
-        @Size(max = 128)
+    @Size(max = 256)
     @Column(name = "display_value")
     private String displayValue;
-    @Size(max = 128)
+    @Size(max = 256)
     @Column(name = "target_value")
     private String targetValue;
     @Size(max = 16)
