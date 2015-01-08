@@ -139,9 +139,11 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
-        List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        if (createdByUser != null) {
+            List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
+            if (!ownerUserGroupList.isEmpty()) {
+                entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+            }
         }
         componentInstance.setEntityInfo(entityInfo);
 
