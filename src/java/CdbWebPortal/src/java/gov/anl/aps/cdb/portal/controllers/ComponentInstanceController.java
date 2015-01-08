@@ -855,8 +855,11 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     public List<PropertyValue> prepareComponentInstanceImageList(ComponentInstance componentInstance) {
         List<PropertyValue> componentInstanceImageList = PropertyValueUtility.prepareImagePropertyValueList(componentInstance.getPropertyValueList());
-        List<PropertyValue> componentImageList = PropertyValueUtility.prepareImagePropertyValueList(componentInstance.getComponent().getPropertyValueList());
-        componentInstanceImageList.addAll(componentImageList);
+        Component component = componentInstance.getComponent();
+        if (component != null) {
+            List<PropertyValue> componentImageList = PropertyValueUtility.prepareImagePropertyValueList(component.getPropertyValueList());
+            componentInstanceImageList.addAll(componentImageList);
+        }
         componentInstance.setImagePropertyList(componentInstanceImageList);
         return componentInstanceImageList;
     }
