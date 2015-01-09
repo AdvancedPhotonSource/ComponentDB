@@ -17,58 +17,53 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("designElementController")
 @SessionScoped
-public class DesignElementController extends CrudEntityController<DesignElement, DesignElementFacade> implements Serializable
-{
-
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "DesignElement.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "DesignElement.List.Display.Id";
-    private static final String DisplayTagSettingTypeKey = "DesignElement.List.Display.Tag";
-    private static final String DisplayQuantitySettingTypeKey = "DesignElement.List.Display.Quantity";
-    private static final String DisplayPrioritySettingTypeKey = "DesignElement.List.Display.Priority";
-    private static final String DisplayDescriptionSettingTypeKey = "DesignElement.List.Display.Description";
+public class DesignElementController extends CrudEntityController<DesignElement, DesignElementFacade> implements Serializable {
 
     private static final String DisplayChildDesignSettingTypeKey = "DesignElement.List.Display.ChildDesign";
-    
     private static final String DisplayComponentSettingTypeKey = "DesignElement.List.Display.Component";
-    
-//    ('DesignElement.List.Display.CreatedByUser', 'Display created by username.', 'false'),
-//    ('DesignElement.List.Display.CreatedOnDateTime', 'Display created on date/time.', 'false'),
-//    ('DesignElement.List.Display.Description','Display design element description.', 'false'),
-//    ('DesignElement.List.Display.Id','Display design element id.', 'false'),
-//    ('DesignElement.List.Display.LastModifiedByUser', 'Display last modified by username.', 'false'),
-//    ('DesignElement.List.Display.LastModifiedOnDateTime', 'Display last modified on date/time.', 'false'),
-//    ('DesignElement.List.Display.Location', 'Display location.', 'true'),
-//    ('DesignElement.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
-//    ('DesignElement.List.Display.OwnerUser', 'Display owner username.', 'true'),
-//    ('DesignElement.List.Display.OwnerGroup', 'Display owner group name.', 'true'),
-//    ('DesignElement.List.Display.SortOrder','Display design element sort order.', 'true'),
-//
-//    ('DesignElement.List.FilterBy.ChildDesign', 'Filter for child design.', NULL),
-//    ('DesignElement.List.FilterBy.Component', 'Filter for component.', NULL),
-//    ('DesignElement.List.FilterBy.CreatedByUser', 'Filter for design elements that were created by username.', NULL),
-//    ('DesignElement.List.FilterBy.CreatedOnDateTime', 'Filter for design elements that were created on date/time.', NULL),
-//    ('DesignElement.List.FilterBy.Description', 'Filter for design elements by description.', NULL),
-//    ('DesignElement.List.FilterBy.LastModifiedByUser', 'Filter for design elements that were last modified by username.', NULL),
-//    ('DesignElement.List.FilterBy.LastModifiedOnDateTime', 'Filter for design elements that were last modified on date/time.', NULL),
-//    ('DesignElement.List.FilterBy.Location', 'Filter for component.', NULL),
-//    ('DesignElement.List.FilterBy.Name', 'Filter for design elements by name.', NULL),
-//    ('DesignElement.List.FilterBy.OwnerUser', 'Filter for design elements by owner username.', NULL),
-//    ('DesignElement.List.FilterBy.OwnerGroup', 'Filter for design elements by owner group name.', NULL),
-//    ('DesignElement.List.FilterBy.SortOrder', 'Filter for design elements by sort order.', NULL),
+    private static final String DisplayCreatedByUserSettingTypeKey = "DesignElement.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "DesignElement.List.Display.CreatedOnDateTime";
+    private static final String DisplayDescriptionSettingTypeKey = "DesignElement.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "DesignElement.List.Display.Id";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "DesignElement.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "DesignElement.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayLocationSettingTypeKey = "DesignElement.List.Display.Location";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "DesignElement.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayOwnerUserSettingTypeKey = "DesignElement.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "DesignElement.List.Display.OwnerGroup";
+    private static final String DisplaySortOrderSettingTypeKey = "DesignElement.List.Display.SortOrder";
 
+    private static final String FilterByChildDesignSettingTypeKey = "DesignElement.List.FilterBy.ChildDesign";
+    private static final String FilterByComponentSettingTypeKey = "DesignElement.List.FilterBy.Component";
+    private static final String FilterByCreatedByUserSettingTypeKey = "DesignElement.List.FilterBy.CreatedByUser";
+    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "DesignElement.List.FilterBy.CreatedOnDateTime";
+    private static final String FilterByDescriptionSettingTypeKey = "DesignElement.List.FilterBy.Description";
+    private static final String FilterByLastModifiedByUserSettingTypeKey = "DesignElement.List.FilterBy.LastModifiedByUser";
+    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "DesignElement.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByLocationSettingTypeKey = "DesignElement.List.FilterBy.Location";
+    private static final String FilterByNameSettingTypeKey = "DesignElement.List.FilterBy.Name";
+    private static final String FilterByOwnerUserSettingTypeKey = "DesignElement.List.FilterBy.OwnerUser";
+    private static final String FilterByOwnerGroupSettingTypeKey = "DesignElement.List.FilterBy.OwnerGroup";
+    private static final String FilterBySortOrderSettingTypeKey = "DesignElement.List.FilterBy.SortOrder";
 
-       
     private static final Logger logger = Logger.getLogger(DesignElementController.class.getName());
 
     @EJB
     private DesignElementFacade designElementFacade;
 
-    private Boolean displayTag = null;
-    private Boolean displayQuantity = null;
-    private Boolean displayPriority = null;
+    private Boolean displayChildDesign = null;
+    private Boolean displayComponent = null;
+    private Boolean displayLocation = null;
+    private Boolean displaySortOrder = null;
+
+    private String filterByChildDesign = null;
+    private String filterByComponent = null;
+    private String filterByLocation = null;
+    private String filterBySortOrder = null;
 
     public DesignElementController() {
     }
@@ -93,7 +88,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     public String getDisplayEntityTypeName() {
         return "design element";
     }
-    
+
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -119,22 +114,82 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
-        displayQuantity = Boolean.parseBoolean(settingTypeMap.get(DisplayQuantitySettingTypeKey).getDefaultValue());
-        displayPriority = Boolean.parseBoolean(settingTypeMap.get(DisplayPrioritySettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
+        displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
+        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
+        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
+        displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());     
+    
+        displayChildDesign = Boolean.parseBoolean(settingTypeMap.get(DisplayChildDesignSettingTypeKey).getDefaultValue());
+        displayComponent = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentSettingTypeKey).getDefaultValue());
+        displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
+        displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
+        filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
+        filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
+        filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
+        filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
+        filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();        
+
+        filterByChildDesign = settingTypeMap.get(FilterByChildDesignSettingTypeKey).getDefaultValue();
+        filterByComponent = settingTypeMap.get(FilterByComponentSettingTypeKey).getDefaultValue();
+        filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
+        filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
+        
     }
 
     @Override
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
-        displayQuantity = sessionUser.getUserSettingValueAsBoolean(DisplayQuantitySettingTypeKey, displayQuantity);
-        displayPriority = sessionUser.getUserSettingValueAsBoolean(DisplayPrioritySettingTypeKey, displayPriority);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+ 
+        displayChildDesign = sessionUser.getUserSettingValueAsBoolean(DisplayChildDesignSettingTypeKey, displayChildDesign);
+        displayComponent = sessionUser.getUserSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
+        displayLocation = sessionUser.getUserSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
+        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+
+        filterByChildDesign = sessionUser.getUserSettingValueAsString(FilterByChildDesignSettingTypeKey, filterByChildDesign);
+        filterByComponent = sessionUser.getUserSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);
+        filterByLocation = sessionUser.getUserSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
+        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        
     }
 
+   @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
+        }
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterByChildDesign = filters.get("childDesign");
+        filterByComponent = filters.get("component");
+        filterByLocation = filters.get("location");
+        filterBySortOrder = filters.get("sortOrder");
+    }
+    
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -143,39 +198,45 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
-        sessionUser.setUserSettingValue(DisplayQuantitySettingTypeKey, displayQuantity);
-        sessionUser.setUserSettingValue(DisplayPrioritySettingTypeKey, displayPriority);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        sessionUser.setUserSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+
+        sessionUser.setUserSettingValue(DisplayChildDesignSettingTypeKey, displayChildDesign);
+        sessionUser.setUserSettingValue(DisplayComponentSettingTypeKey, displayComponent);
+        sessionUser.setUserSettingValue(DisplayLocationSettingTypeKey, displayLocation);
+        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);       
+    
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        sessionUser.setUserSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        sessionUser.setUserSettingValue(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+   
+        sessionUser.setUserSettingValue(FilterByChildDesignSettingTypeKey, filterByChildDesign);
+        sessionUser.setUserSettingValue(FilterByComponentSettingTypeKey, filterByComponent);
+        sessionUser.setUserSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
+        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+    }
+
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByChildDesign = null;
+        filterByComponent = null;
+        filterByLocation = null;
+        filterBySortOrder = null;
     }
     
-    public Boolean getDisplayTag() {
-        return displayTag;
-    }
-
-    public void setDisplayTag(Boolean displayTag) {
-        this.displayTag = displayTag;
-    }
-
-    public Boolean getDisplayQuantity() {
-        return displayQuantity;
-    }
-
-    public void setDisplayQuantity(Boolean displayQuantity) {
-        this.displayQuantity = displayQuantity;
-    }
-
-    public Boolean getDisplayPriority() {
-        return displayPriority;
-    }
-
-    public void setDisplayPriority(Boolean displayPriority) {
-        this.displayPriority = displayPriority;
-    }
-
     @FacesConverter(forClass = DesignElement.class)
-    public static class DesignElementControllerConverter implements Converter
-    {
+    public static class DesignElementControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -183,11 +244,10 @@ public class DesignElementController extends CrudEntityController<DesignElement,
                 return null;
             }
             try {
-            DesignElementController controller = (DesignElementController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "designElementController");
-            return controller.getEntity(getKey(value));
-            }
-            catch (Exception ex) {
+                DesignElementController controller = (DesignElementController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "designElementController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to design element object.");
                 return null;
@@ -215,12 +275,75 @@ public class DesignElementController extends CrudEntityController<DesignElement,
             if (object instanceof DesignElement) {
                 DesignElement o = (DesignElement) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + DesignElement.class.getName());
             }
         }
 
+    }
+
+    public Boolean getDisplayChildDesign() {
+        return displayChildDesign;
+    }
+
+    public void setDisplayChildDesign(Boolean displayChildDesign) {
+        this.displayChildDesign = displayChildDesign;
+    }
+
+    public Boolean getDisplayComponent() {
+        return displayComponent;
+    }
+
+    public void setDisplayComponent(Boolean displayComponent) {
+        this.displayComponent = displayComponent;
+    }
+
+    public Boolean getDisplayLocation() {
+        return displayLocation;
+    }
+
+    public void setDisplayLocation(Boolean displayLocation) {
+        this.displayLocation = displayLocation;
+    }
+
+    public Boolean getDisplaySortOrder() {
+        return displaySortOrder;
+    }
+
+    public void setDisplaySortOrder(Boolean displaySortOrder) {
+        this.displaySortOrder = displaySortOrder;
+    }
+
+    public String getFilterByChildDesign() {
+        return filterByChildDesign;
+    }
+
+    public void setFilterByChildDesign(String filterByChildDesign) {
+        this.filterByChildDesign = filterByChildDesign;
+    }
+
+    public String getFilterByComponent() {
+        return filterByComponent;
+    }
+
+    public void setFilterByComponent(String filterByComponent) {
+        this.filterByComponent = filterByComponent;
+    }
+
+    public String getFilterByLocation() {
+        return filterByLocation;
+    }
+
+    public void setFilterByLocation(String filterByLocation) {
+        this.filterByLocation = filterByLocation;
+    }
+
+    public String getFilterBySortOrder() {
+        return filterBySortOrder;
+    }
+
+    public void setFilterBySortOrder(String filterBySortOrder) {
+        this.filterBySortOrder = filterBySortOrder;
     }
 
 }

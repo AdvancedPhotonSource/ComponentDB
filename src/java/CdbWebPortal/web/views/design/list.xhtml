@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="../../templates/contentViewTemplate4x3.xhtml">
+
+    <ui:define name="middleCenter">
+
+        <div class="pageTitle">
+            <h1>Design Catalog</h1>
+        </div>
+
+        <h:form id="viewDesignListForm">    
+
+            <ui:param name="entityController" value="#{designController}"/>
+            <ui:include src="../common/commonListActionButtons.xhtml"/>
+                        
+            <h:panelGroup>  
+
+                <ui:include src="designListDataTable.xhtml"/>
+
+            </h:panelGroup>
+
+            <ui:include src="designDestroyDialog.xhtml"/>
+
+            <ui:include src="designListCustomizeDisplayDialog.xhtml"/>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

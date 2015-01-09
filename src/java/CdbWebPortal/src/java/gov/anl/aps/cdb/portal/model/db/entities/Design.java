@@ -59,16 +59,14 @@ public class Design extends CloneableEntity {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
     private List<Log> logList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childDesignId")
-    private List<DesignLink> designLinkList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesignId")
-    private List<DesignLink> designLinkList1;
-    @OneToMany(mappedBy = "childDesign")
-    private List<DesignElement> designElementList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childDesign")
+    private List<DesignLink> parentDesignLinkList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
-    private List<DesignElement> designElementList1;
+    private List<DesignLink> childDesignLinkList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
+    private List<DesignElement> designElementList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
 
     public Design() {
@@ -127,21 +125,21 @@ public class Design extends CloneableEntity {
     }
 
     @XmlTransient
-    public List<DesignLink> getDesignLinkList() {
-        return designLinkList;
+    public List<DesignLink> getParentDesignLinkList() {
+        return parentDesignLinkList;
     }
 
-    public void setDesignLinkList(List<DesignLink> designLinkList) {
-        this.designLinkList = designLinkList;
+    public void setParentDesignLinkList(List<DesignLink> parentDesignLinkList) {
+        this.parentDesignLinkList = parentDesignLinkList;
     }
 
     @XmlTransient
-    public List<DesignLink> getDesignLinkList1() {
-        return designLinkList1;
+    public List<DesignLink> getChildDesignLinkList() {
+        return childDesignLinkList;
     }
 
-    public void setDesignLinkList1(List<DesignLink> designLinkList1) {
-        this.designLinkList1 = designLinkList1;
+    public void setChildDesignLinkList(List<DesignLink> childDesignLinkList) {
+        this.childDesignLinkList = childDesignLinkList;
     }
 
     @XmlTransient
@@ -151,15 +149,6 @@ public class Design extends CloneableEntity {
 
     public void setDesignElementList(List<DesignElement> designElementList) {
         this.designElementList = designElementList;
-    }
-
-    @XmlTransient
-    public List<DesignElement> getDesignElementList1() {
-        return designElementList1;
-    }
-
-    public void setDesignElementList1(List<DesignElement> designElementList1) {
-        this.designElementList1 = designElementList1;
     }
 
     public EntityInfo getEntityInfo() {

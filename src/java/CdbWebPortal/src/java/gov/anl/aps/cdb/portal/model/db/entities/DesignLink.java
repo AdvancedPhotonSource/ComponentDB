@@ -45,10 +45,10 @@ public class DesignLink implements Serializable
     private String description;
     @JoinColumn(name = "child_design_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Design childDesignId;
+    private Design childDesign;
     @JoinColumn(name = "parent_design_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Design parentDesignId;
+    private Design parentDesign;
 
     public DesignLink() {
     }
@@ -81,20 +81,20 @@ public class DesignLink implements Serializable
         this.description = description;
     }
 
-    public Design getChildDesignId() {
-        return childDesignId;
+    public Design getChildDesign() {
+        return childDesign;
     }
 
-    public void setChildDesignId(Design childDesignId) {
-        this.childDesignId = childDesignId;
+    public void setChildDesign(Design childDesign) {
+        this.childDesign = childDesign;
     }
 
-    public Design getParentDesignId() {
-        return parentDesignId;
+    public Design getParentDesign() {
+        return parentDesign;
     }
 
-    public void setParentDesignId(Design parentDesignId) {
-        this.parentDesignId = parentDesignId;
+    public void setParentDesign(Design parentDesign) {
+        this.parentDesign = parentDesign;
     }
 
     @Override
