@@ -22,11 +22,11 @@
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>
 
-         <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
-                   rendered="#{componentInstanceController.displayQrId}">
+        <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
+                  rendered="#{componentInstanceController.displayQrId}">
             <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}"/>
         </p:column>
-        
+
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
             <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
         </p:column>
@@ -35,11 +35,11 @@
                   rendered="#{componentInstanceController.displaySerialNumber}">
             <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}"/>
         </p:column>
-        
+
         <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
             <h:outputText value="#{componentInstanceObject.location.name}"/>
         </p:column>
-        
+
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
                   rendered="#{componentInstanceController.displayLocationDetails}">
             <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}"/>
@@ -49,6 +49,10 @@
                   rendered="#{componentInstanceController.displayDescription}">
             <h:outputText id="description" value="#{componentInstanceObject.description}"/>
         </p:column>
+
+        <ui:include src="../entityInfo/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{componentInstanceObject.entityInfo}"/>
+        </ui:include>
 
         <p:column headerText="Actions">
             <div class="actionLink">

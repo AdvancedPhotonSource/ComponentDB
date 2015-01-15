@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:param name="breadcrumb" value="#{designElementController.currentViewId}"/>
+    <ui:param name="design" value="#{designController.selected}"/>    
+    <p:dataTable id="designElementListDataTable" 
+                 widgetVar="designElementListDataTableWidget"
+                 var="designElementObject" 
+                 value="#{designObject.designElementList}" 
+                 filteredValue="#{designElementController.filteredObjectList}"
+                 binding="#{designElementController.listDataTable}"
+                 rows="#{designElementController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No design elements found.">
+
+        <p:column sortBy="#{designElementObject.id}" headerText="Id"
+                  rendered="#{designElementController.displayId}">
+            <h:outputText value="#{designElementObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.name}" headerText="Name">
+            <h:outputText value="#{designElementObject.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
+                  rendered="#{designElementController.displayComponent}">
+            <h:outputText value="#{designElementObject.component.name}"/>
+        </p:column>
+        
+        <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
+                  rendered="#{designElementController.displayChildDesign}">
+            <h:outputText value="#{designElementObject.childDesign.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.location.name}" headerText="Location">
+            <h:outputText value="#{designElementObject.location.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.description}" headerText="Description"
+                  rendered="#{designElementController.displayDescription}">
+            <h:outputText value="#{designElementObject.description}"/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.sortOrder}" headerText="Sort Order"
+                  rendered="#{designElementController.displaySortOrder}">
+            <h:outputText value="#{designElementObject.sortOrder}"/>
+        </p:column>
+
+        <ui:include src="../entityInfo/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{designElementObject.entityInfo}"/>
+        </ui:include>
+
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink id="designElementListViewLink" 
+                               action="#{designElementController.prepareViewFromDesign(designElementObject)}" 
+                               styleClass="ui-icon ui-icon-info" 
+                               title="View">
+                    <p:tooltip for="designElementListViewLink" value="View #{designElementController.displayEntityTypeName} details."/>
+                </p:commandLink>
+            </div>
+        </p:column>
+
+
+
+    </p:dataTable>
+
+
+</ui:composition>
+

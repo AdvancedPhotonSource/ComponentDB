@@ -15,16 +15,15 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -152,7 +151,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
             qrIdViewParam = null;
         }
 
-        // clear locaation list
+        // clear location list
         locationList = locationFacade.findAll();
 
         return componentInstance;
@@ -631,16 +630,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     public List<Location> completeLocation(String query) {
-        Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
-
-        List<Location> completedList = new ArrayList<>();
-        for (Location location : locationList) {
-            boolean nameContainsQuery = searchPattern.matcher(location.getName()).find();
-            if (nameContainsQuery) {
-                completedList.add(location);
-            }
-        }
-        return completedList;
+        return LocationUtility.filterLocation(query, locationList);
     }
 
     public void selectLocation(Location location) {

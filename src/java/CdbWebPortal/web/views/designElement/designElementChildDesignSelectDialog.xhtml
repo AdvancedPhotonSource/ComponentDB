@@ -8,32 +8,31 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="componentInstanceComponentSelectDialog" 
-              widgetVar="componentInstanceComponentSelectDialogWidget" 
-              header="Select Component" 
+    <p:dialog id="designElementChildDesignSelectDialog" 
+              widgetVar="designElementChildDesignSelectDialogWidget" 
+              header="Select Child Design" 
               styleClass="dialog">
         <div class="dialog">
             <div class="actionButton">
-                <p:commandButton id="componentSelectCustomizeDisplay" 
-                                 onclick="componentInstanceComponentSelectDialogWidget.hide();
-                                         componentInstanceComponentSelectCustomizeDisplayDialogWidget.show()"
+                <p:commandButton id="childDesignSelectCustomizeDisplay" 
+                                 onclick="designElementChildDesignSelectDialogWidget.hide();
+                                         designElementChildDesignSelectCustomizeDisplayDialogWidget.show()"
                                  alt="Customize selection view." 
                                  immediate="true"                                 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
-                    <p:tooltip for="componentSelectCustomizeDisplay" value="Customize selection view."/>
+                    <p:tooltip for="childDesignSelectCustomizeDisplay" value="Customize selection view."/>
                 </p:commandButton>
             </div>
-            <ui:include src="../component/componentSelectDataTable.xhtml"/>   
+            <ui:include src="designElementChildDesignSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{componentInstanceController.selectComponent(componentController.selectedComponent)}"
-                                 onclick="componentInstanceComponentSelectDataTableWidget.filter()" 
-                                 oncomplete="componentInstanceComponentSelectDialogWidget.hide()" 
-                                 update="@form"
+                                 action="#{designElementController.selectChildDesign(designController.selectedObject)}"
+                                 onclick="designElementChildDesignSelectDataTableWidget.filter()" 
+                                 oncomplete="designElementChildDesignSelectDialogWidget.hide()" 
+                                 update="designElementEditListDataTable"
                                  immediate="true"
                                  icon="ui-icon-arrowreturnthick-1-w">
-                    <p:ajax update="componentInstanceComponentSelectOneMenu"/>
                 </p:commandButton>
             </f:facet>
         </div>

@@ -9,10 +9,15 @@
     <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
     <p:panelGrid columns="4" styleClass="createEntityDetails">
 
+        <h:outputLabel for="qrId" value="QR Id" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="qrId" value="#{componentInstanceObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+        <p:message for="qrId"/> 
+        <p:tooltip for="qrId" value="Enter component instance QR id."/>
+        
         <h:outputLabel for="component" value="Component" styleClass="entityDataEmphasizedLabel"/>
         <p:column>
-            <p:selectOneMenu id="component" 
-                             widgetVar="componentSelectOneMenuWidget"
+            <p:selectOneMenu id="componentInstanceComponentSelectOneMenu" 
+                             widgetVar="componentInstanceComponentSelectOneMenuWidget"
                              value="#{componentInstanceObject.component}" 
                              styleClass="entityDataText"
                              converter="componentConverter"
@@ -26,7 +31,7 @@
 
             <p:commandButton id="selectComponentButton"
                              action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
-                             oncomplete="componentSelectDialogWidget.show()"
+                             oncomplete="componentInstanceComponentSelectDialogWidget.show()"
                              update="@form"
                              immediate="true"
                              alt="Select Component" 
@@ -36,8 +41,8 @@
                 <p:tooltip for="selectComponentButton" value="Search for component."/>
             </p:commandButton>
         </p:column>
-        <p:message for="component"/>
-        <p:tooltip for="component" value="Select component."/> 
+        <p:message for="componentInstanceComponentSelectOneMenu"/>
+        <p:tooltip for="componentInstanceComponentSelectOneMenu" value="Select component."/> 
 
         <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
         <h:outputText id="componentType" value="#{componentInstanceObject.component.componentType.name}" title="Type" styleClass="entityDataText"/>
@@ -49,6 +54,16 @@
         <p:message for="componentTypeCategory"/>
         <p:tooltip for="componentTypeCategory" value="Selected component type category."/>
 
+        <h:outputLabel for="tag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="tag" value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>
+        <p:message for="tag"/> 
+        <p:tooltip for="tag" value="Enter component instance tag."/>
+
+        <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
+        <p:message for="serialNumber"/> 
+        <p:tooltip for="serialNumber" value="Enter component instance serial number."/>
+        
         <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>        
         <p:column>
             <p:autoComplete id="locationDropdown" 
@@ -76,21 +91,6 @@
         <p:message for="location"/>
         <p:tooltip for="location" value="Select location."/>
 
-        <h:outputLabel for="tag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="tag" value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>
-        <p:message for="tag"/> 
-        <p:tooltip for="tag" value="Enter component instance tag."/>
-
-        <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
-        <p:message for="serialNumber"/> 
-        <p:tooltip for="serialNumber" value="Enter component instance serial number."/>
-
-        <h:outputLabel for="qrId" value="QR Id" styleClass="entityDataEmphasizedLabel"/>
-        <h:inputText id="qrId" value="#{componentInstanceObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
-        <p:message for="qrId"/> 
-        <p:tooltip for="qrId" value="Enter component instance QR id."/>
-
         <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
         <h:inputText id="locationDetails" value="#{componentInstanceObject.locationDetails}" title="Location Details" styleClass="entityDataText"/>
         <p:message for="locationDetails"/> 
@@ -108,9 +108,9 @@
     </p:panelGrid>
 
 
-    <ui:include src="../component/componentSelectDialog.xhtml"/>
+    <ui:include src="componentInstanceComponentSelectDialog.xhtml"/>
 
-    <ui:include src="../component/componentSelectCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="componentInstanceComponentSelectCustomizeDisplayDialog.xhtml"/>
         
     <ui:include src="componentInstanceLocationSelectDialog.xhtml"/>
 

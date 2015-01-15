@@ -22,7 +22,12 @@
 
                 <p:selectBooleanCheckbox id="selectDisplayId" value="#{componentController.selectDisplayId}"/>  
                 <h:outputLabel for="selectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
-             </p:panelGrid>
+             
+                <ui:include src="../entityInfo/entityInfoSelectCustomizeDisplayObject.xhtml">
+                    <ui:param name="entityTypeName" value="component"/>
+                    <ui:param name="entityController" value="componentController"/>
+                </ui:include>
+           </p:panelGrid>
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  update="componentSelectDataTable"

@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -58,7 +59,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
     private boolean selectChildDesigns = false;
 
     private DataTable designPropertyValueListDataTable = null;
-    
+
     private List<PropertyValue> filteredPropertyValueList;
 
     @EJB
@@ -178,14 +179,23 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         }
     }
 
-    public void prepareAddComponent() {
-        Design design = getCurrent();
+    
+    public void prepareAddDesignElement(Design design) {
         List<DesignElement> designElementList = design.getDesignElementList();
         DesignElement designElement = new DesignElement();
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        designElement.setEntityInfo(entityInfo);
         designElement.setParentDesign(design);
         designElementList.add(designElement);
     }
 
+    public void deleteDesignElement(DesignElement designElement) {
+        Design design = getCurrent();
+        List<DesignElement> designElementList = design.getDesignElementList();
+        designElementList.remove(designElement);
+        update();
+    }
+    
     public void selectComponents(List<Component> componentList) {
         Design design = getCurrent();
         List<DesignElement> designElementList = design.getDesignElementList();
@@ -307,6 +317,10 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         Design design = getCurrent();
         List<DesignLink> parentDesignLinkList = design.getParentDesignLinkList();
         parentDesignLinkList.remove(parentDesignLink);
+    }
+
+    public void saveDesignElementList() {
+        update();
     }
 
     @Override
@@ -462,6 +476,5 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
     }
-    
-    
+
 }

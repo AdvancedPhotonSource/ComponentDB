@@ -34,6 +34,7 @@ public class SearchController implements Serializable {
     private static final String DisplayComponentInstancesSettingTypeKey = "Search.List.Display.ComponentInstances";
     private static final String DisplayComponentTypesSettingTypeKey = "Search.List.Display.ComponentTypes";
     private static final String DisplayComponentTypeCategoriesSettingTypeKey = "Search.List.Display.ComponentTypeCategories";
+    private static final String DisplayDesignsSettingTypeKey = "Search.List.Display.Designs";
     private static final String DisplayLocationsSettingTypeKey = "Search.List.Display.Locations";
     private static final String DisplayLocationTypesSettingTypeKey = "Search.List.Display.LocationTypes";
     private static final String DisplayPropertyTypesSettingTypeKey = "Search.List.Display.PropertyTypes";
@@ -55,6 +56,7 @@ public class SearchController implements Serializable {
     protected Boolean displayComponentInstances = null;
     protected Boolean displayComponentTypes = null;
     protected Boolean displayComponentTypeCategories = null;
+    protected Boolean displayDesigns = null;
     protected Boolean displayLocations = null;
     protected Boolean displayLocationTypes = null;
     protected Boolean displayPropertyTypes = null;
@@ -140,6 +142,7 @@ public class SearchController implements Serializable {
         displayComponentInstances = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstancesSettingTypeKey).getDefaultValue());
         displayComponentTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypesSettingTypeKey).getDefaultValue());
         displayComponentTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeCategoriesSettingTypeKey).getDefaultValue());
+        displayDesigns = Boolean.parseBoolean(settingTypeMap.get(DisplayDesignsSettingTypeKey).getDefaultValue());
         displayLocations = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationsSettingTypeKey).getDefaultValue());
         displayLocationTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationTypesSettingTypeKey).getDefaultValue());
         displayPropertyTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypesSettingTypeKey).getDefaultValue());
@@ -160,6 +163,7 @@ public class SearchController implements Serializable {
         displayComponentInstances = sessionUser.getUserSettingValueAsBoolean(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
         displayComponentTypes = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
         displayComponentTypeCategories = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypeCategoriesSettingTypeKey, displayComponentTypeCategories);
+        displayDesigns = sessionUser.getUserSettingValueAsBoolean(DisplayDesignsSettingTypeKey, displayDesigns);
         displayLocations = sessionUser.getUserSettingValueAsBoolean(DisplayLocationsSettingTypeKey, displayLocations);
         displayLocationTypes = sessionUser.getUserSettingValueAsBoolean(DisplayLocationTypesSettingTypeKey, displayLocationTypes);
         displayPropertyTypes = sessionUser.getUserSettingValueAsBoolean(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
@@ -181,6 +185,7 @@ public class SearchController implements Serializable {
         sessionUser.setUserSettingValue(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
         sessionUser.setUserSettingValue(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
         sessionUser.setUserSettingValue(DisplayComponentTypeCategoriesSettingTypeKey, displayComponentTypeCategories);
+        sessionUser.setUserSettingValue(DisplayDesignsSettingTypeKey, displayDesigns);
         sessionUser.setUserSettingValue(DisplayLocationsSettingTypeKey, displayLocations);
         sessionUser.setUserSettingValue(DisplayLocationTypesSettingTypeKey, displayLocationTypes);
         sessionUser.setUserSettingValue(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
@@ -259,6 +264,14 @@ public class SearchController implements Serializable {
 
     public void setDisplayComponentTypeCategories(Boolean displayComponentTypeCategories) {
         this.displayComponentTypeCategories = displayComponentTypeCategories;
+    }
+
+    public Boolean getDisplayDesigns() {
+        return displayDesigns;
+    }
+
+    public void setDisplayDesigns(Boolean displayDesigns) {
+        this.displayDesigns = displayDesigns;
     }
 
     public Boolean getDisplayLocations() {

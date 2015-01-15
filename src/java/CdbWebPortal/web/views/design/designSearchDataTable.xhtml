@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
+    <ui:param name="searchString" value="#{searchController.searchString}"/>
+    <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
+    <p:dataTable id="designSearchDataTable" 
+                 var="designSearchResultObject" 
+                 value="#{designController.getSearchResultList(searchString, caseInsensitive)}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{searchController.displayNumberOfItemsPerPage}" 
+                 emptyMessage="No designs match.">
+
+        <p:column sortBy="#{designSearchResultObject.objectId}" headerText="Id">
+            <h:outputText value="#{designSearchResultObject.objectId}"/>
+        </p:column>
+        
+        <p:column sortBy="#{designSearchResultObject.objectName}" headerText="Name">
+            <h:outputLink value="../design/view.xhtml?id=#{designSearchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="Component">
+                <h:outputText value="#{designSearchResultObject.objectName}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{designSearchResultObject.display}" headerText="Match Description">
+            <h:outputText value="#{designSearchResultObject.display}"/>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>
+
+

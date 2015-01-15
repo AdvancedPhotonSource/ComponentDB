@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <p:dialog id="designElementListCustomizeDisplayDialog" header="Customize Display" widgetVar="designElementListCustomizeDisplayDialogWidget" styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="designElementDisplayNumberOfItemsPerPage" value="#{designElementController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="designElementDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+               <p:selectBooleanCheckbox id="designElementDisplayChildDesign" value="#{designElementController.displayChildDesign}"/>  
+                <h:outputLabel for="designElementDisplayChildDesign" value="Display Child Design" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayComponent" value="#{designElementController.displayComponent}"/>  
+                <h:outputLabel for="designElementDisplayComponent" value="Display Component" styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="designElementDisplayCreatedByUser" value="#{designElementController.displayCreatedByUser}"/>  
+                <h:outputLabel for="designElementDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayCreatedOnDateTime" value="#{designElementController.displayCreatedOnDateTime}"/>  
+                <h:outputLabel for="designElementDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayDescription" value="#{designElementController.displayDescription}"/>  
+                <h:outputLabel for="designElementDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayId" value="#{designElementController.displayId}"/>  
+                <h:outputLabel for="designElementDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayLastModifiedByUser" value="#{designElementController.displayLastModifiedByUser}"/>  
+                <h:outputLabel for="designElementDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayLastModifiedOnDateTime" value="#{designElementController.displayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="designElementDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayLocation" value="#{designElementController.displayLocation}"/>  
+                <h:outputLabel for="designElementDisplayLocation" value="Display Location" styleClass="dialogDataLabel"/>
+  
+                <p:selectBooleanCheckbox id="designElementDisplayOwnerUser" value="#{designElementController.displayOwnerUser}"/>  
+                <h:outputLabel for="designElementDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayOwnerGroup" value="#{designElementController.displayOwnerGroup}"/>  
+                <h:outputLabel for="designElementDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+
+              <p:selectBooleanCheckbox id="designElementDisplaySortOrder" value="#{designElementController.displaySortOrder}"/>  
+                <h:outputLabel for="designElementDisplaySortOrder" value="Display Sort Order" styleClass="dialogDataLabel"/>
+                  
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{designElementController.customizeListDisplay()}"
+                                 update="@form"
+                                 oncomplete="designElementListCustomizeDisplayDialogWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userInfoController.saveSettingListForSessionUser()}"
+                                 actionListener="#{designElementController.saveListSettingsForSessionUserActionListener}"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>

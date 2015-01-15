@@ -37,48 +37,9 @@
             <h:outputText value="#{designObject.description}"/>
         </p:column>
 
-        <p:column sortBy="#{designObject.entityInfo.ownerUser.username}" headerText="Owner"
-                  filterBy="#{designObject.entityInfo.ownerUser.username}" filterMatchMode="contains"
-                  filterValue="#{designController.filterByOwnerUser}"
-                  rendered="#{designController.displayOwnerUser}">
-            <h:outputText value="#{designObject.entityInfo.ownerUser.username}"/>
-        </p:column>
-
-        <p:column sortBy="#{designObject.entityInfo.ownerUserGroup.name}" headerText="Group"
-                  filterBy="#{designObject.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
-                  filterOptions="#{userGroupController.availableItemsForSelectOne}"
-                  filterValue="#{designController.filterByOwnerGroup}"
-                  rendered="#{designController.displayOwnerGroup}">
-            <h:outputText value="#{designObject.entityInfo.ownerUserGroup.name}"/>
-        </p:column>
-
-        <p:column sortBy="#{designObject.entityInfo.createdByUser.username}" headerText="Created By"
-                  filterBy="#{designObject.entityInfo.createdByUser.username}" filterMatchMode="contains"
-                  filterValue="#{designController.filterByCreatedByUser}"
-                  rendered="#{designController.displayCreatedByUser}">
-            <h:outputText value="#{designObject.entityInfo.createdByUser.username}"/>
-        </p:column>
-
-        <p:column sortBy="#{designObject.entityInfo.createdOnDateTime}" headerText="Created On"
-                  filterBy="#{designObject.entityInfo.createdOnDateTime}" filterMatchMode="contains"
-                  filterValue="#{designController.filterByCreatedOnDateTime}"
-                  rendered="#{designController.displayCreatedOnDateTime}">
-            <h:outputText value="#{designObject.entityInfo.createdOnDateTime}"/>
-        </p:column>
-
-        <p:column sortBy="#{designObject.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
-                  filterBy="#{designObject.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains"
-                  filterValue="#{designController.filterByLastModifiedByUser}"
-                  rendered="#{designController.displayLastModifiedByUser}">
-            <h:outputText value="#{designObject.entityInfo.lastModifiedByUser.username}"/>
-        </p:column>
-
-        <p:column sortBy="#{designObject.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
-                  filterBy="#{designObject.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains"
-                  filterValue="#{designController.filterByLastModifiedOnDateTime}"
-                  rendered="#{designController.displayLastModifiedOnDateTime}">
-            <h:outputText value="#{designObject.entityInfo.lastModifiedOnDateTime}"/>
-        </p:column>
+        <ui:include src="../entityInfo/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{designObject.entityInfo}"/>
+        </ui:include>
 
         <p:column headerText="Actions">
             <ui:include src="../common/commonListActionLinks.xhtml">

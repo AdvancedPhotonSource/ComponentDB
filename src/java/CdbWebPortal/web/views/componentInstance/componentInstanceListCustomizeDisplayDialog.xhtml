@@ -13,14 +13,32 @@
                 <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{componentInstanceController.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="componentInstanceDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{componentInstanceController.displayCreatedByUser}"/>  
+                <h:outputLabel for="componentInstanceDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedOnDateTime" value="#{componentInstanceController.displayCreatedOnDateTime}"/>  
+                <h:outputLabel for="componentInstanceDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
                 <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{componentInstanceController.displayDescription}"/>  
                 <h:outputLabel for="componentInstanceDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
                 <p:selectBooleanCheckbox id="componentInstanceDisplayId" value="#{componentInstanceController.displayId}"/>  
                 <h:outputLabel for="componentInstanceDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+ 
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedByUser" value="#{componentInstanceController.displayLastModifiedByUser}"/>  
+                <h:outputLabel for="componentInstanceDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedOnDateTime" value="#{componentInstanceController.displayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="componentInstanceDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+ 
                 <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{componentInstanceController.displayLocationDetails}"/>  
                 <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
+           
+                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerUser" value="#{componentInstanceController.displayOwnerUser}"/>  
+                <h:outputLabel for="componentInstanceDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerGroup" value="#{componentInstanceController.displayOwnerGroup}"/>  
+                <h:outputLabel for="componentInstanceDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>                
 
                 <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{componentInstanceController.displayQrId}"/>  
                 <h:outputLabel for="componentInstanceDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>

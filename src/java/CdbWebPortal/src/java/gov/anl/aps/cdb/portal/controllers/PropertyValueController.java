@@ -252,8 +252,9 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         if (propertyValue == null) {
             return DisplayType.FREE_FORM_TEXT;
         }
+        String displayValue = propertyValue.getDisplayValue();
         DisplayType result = propertyValue.getPropertyType().getDisplayType();
-        if (result == null) {
+        if (result == null || displayValue == null || displayValue.isEmpty()) {
             result = configurePropertyValueDisplay(propertyValue);
         }
         return result;

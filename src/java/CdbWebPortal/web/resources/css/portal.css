@@ -60,7 +60,7 @@ a:link:hover, a:visited:hover  {
     width: 170px;
     vertical-align: central;
     text-align: center;
-    margin-left: 35px;
+    margin-left: 25px;
 }
 
 .topCenterContent {
@@ -93,7 +93,7 @@ a:link:hover, a:visited:hover  {
 
 .menuLeftContent {
     float: left;
-    width: 50px;
+    width: 40px;
     height: fit-content;
     text-align: center;
     background-color: #6da5d8;
@@ -110,7 +110,7 @@ a:link:hover, a:visited:hover  {
 
 .menuRightContent {
     float: right;
-    width: 50px;
+    width: 40px;
     vertical-align: central;
     text-align: center;
     background-color: #6da5d8;
@@ -118,7 +118,7 @@ a:link:hover, a:visited:hover  {
 
 .middleLeftContent {
     float: left;
-    width: 50px;
+    width: 40px;
     height: fit-content;
     text-align: center;
     background-color: #6da5d8;
@@ -128,7 +128,7 @@ a:link:hover, a:visited:hover  {
     position: relative;
     vertical-align: central;
     text-align: left;
-    margin: 50px;
+    margin: 40px;
     color: white;
 }
 
@@ -145,7 +145,7 @@ a:link:hover, a:visited:hover  {
 
 .middleRightContent {
     float: right;
-    width: 50px;
+    width: 40px;
     vertical-align: central;
     text-align: center;
     background-color: #6da5d8;
@@ -161,8 +161,8 @@ a:link:hover, a:visited:hover  {
     width: 25px;
     margin-top: 0px;
     margin-bottom: 0px;
-    margin-right: 10px;
-    margin-left: 10px;
+    margin-right: 0px;
+    margin-left: 5px;
     border: 0px;
 }
 
@@ -346,7 +346,7 @@ input, textarea {
 }
 
 .longCellInput {
-    width: 250px;
+    width: 240px;
 }
 
 .threeDigitCellInput {

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="designObject" value="#{designController.selected}"/>
+    <p:dataTable id="designElementEditListDataTable" 
+                 widgetVar="designElementEditListDataTableWidget"
+                 var="designElementObject" 
+                 value="#{designObject.designElementList}" 
+                 rows="#{designElementController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 editable="true"
+                 emptyMessage="No design instances found.">
+
+        <p:column sortBy="#{designElementObject.id}" headerText="Id"
+                  rendered="#{designElementController.displayId}">
+            <h:outputText value="#{designElementObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.name}" headerText="Name"
+                  filterBy="#{designElementObject.name}" filterMatchMode="contains"
+                  filterValue="#{designElementController.filterByName}">
+            <h:inputText id="designElementObjectName" value="#{designElementObject.name}" styleClass="cellInput"/>
+            <p:tooltip for="designElementObjectName" value="Enter name."/>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
+                  filterBy="#{designElementObject.component.name}" filterMatchMode="contains"
+                  filterValue="#{designElementController.filterByComponent}">
+            <p:autoComplete id="componentDropdown" 
+                            value="#{designElementObject.component}" 
+                            var="componentObject"
+                            converter="componentConverter" 
+                            completeMethod="#{designElementController.completeComponent}" 
+                            itemLabel="#{componentObject.name}"
+                            itemValue="#{componentObject}"
+                            valueChangeListener="#{designElementController.selectComponentValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete">
+                <p:ajax event="valueChange" immediate="true" process="@this"/>
+            </p:autoComplete>
+
+            <p:commandButton id="designElementComponentSelectButton"
+                             action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
+                             oncomplete="designElementComponentSelectDialogWidget.show()"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Component" 
+                             styleClass="actionButtonSmall"
+                             icon="ui-icon-search">
+                <f:setPropertyActionListener target="#{componentController.selectedComponent}" value="#{designElementObject.component}"/>
+                <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
+                <p:tooltip for="designElementComponentSelectButton" value="Search for component."/>
+            </p:commandButton>
+        </p:column>
+
+        <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
+                  filterBy="#{designElementObject.childDesign.name}" filterMatchMode="contains"
+                  filterValue="#{designElementController.filterByChildDesign}">
+            <p:autoComplete id="childDesignDropdown" 
+                            value="#{designElementObject.childDesign}" 
+                            var="childDesignObject"
+                            converter="designConverter" 
+                            completeMethod="#{designElementController.completeChildDesign}" 
+                            itemLabel="#{childDesignObject.name}"
+                            itemValue="#{childDesignObject}"
+                            valueChangeListener="#{designElementController.selectChildDesignValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete">
+                <p:ajax event="valueChange" immediate="true" process="@this"/>
+            </p:autoComplete>
+
+            <p:commandButton id="designElementChildDesignSelectButton"
+                             action="#{designController.clearSelectFiltersAndResetSelectDataModel()}" 
+                             oncomplete="designElementChildDesignSelectDialogWidget.show()"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Child Design" 
+                             styleClass="actionButtonSmall"
+                             icon="ui-icon-search">
+                <f:setPropertyActionListener target="#{designController.selectedObject}" value="#{designElementObject.childDesign}"/>
+                <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
+                <p:tooltip for="designElementChildDesignSelectButton" value="Search for child design."/>
+            </p:commandButton>
+        </p:column>
+        
+        <p:column sortBy="#{designElementObject.location.name}" headerText="Location"
+                  filterBy="#{designElementObject.location.name}" filterMatchMode="contains"
+                  filterValue="#{designElementController.filterByLocation}">
+            <p:autoComplete id="locationDropdown" 
+                            value="#{designElementObject.location}" 
+                            var="location"
+                            converter="locationConverter" 
+                            completeMethod="#{designElementController.completeLocation}" 
+                            itemLabel="#{location.name}"
+                            itemValue="#{location}"
+                            valueChangeListener="#{designElementController.selectLocationValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete">
+                <p:ajax event="valueChange" immediate="true" process="@this"/>
+            </p:autoComplete>
+            <p:commandButton id="location" onclick="PF('designElementLocationSelectDialogWidget').show();" 
+                             alt="Select" icon="ui-icon-search"
+                             styleClass="actionButtonSmall"
+                             immediate="true">
+                <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
+            </p:commandButton>
+            <p:tooltip for="location" value="Select location."/>
+        </p:column>        
+
+        <p:column sortBy="#{designElementObject.sortOrder}" headerText="Sort Order"
+                  filterBy="#{designElementObject.sortOrder}" filterMatchMode="contains"
+                  filterValue="#{designElementController.filterBySortOrder}"
+                  filterStyle="width:60px">
+            <h:inputText id="sortOrder" value="#{designElementObject.sortOrder}" styleClass="shortCellInput"/>
+            <p:tooltip for="sortOrder" value="Enter sort order."/>
+        </p:column>
+
+
+        <p:column sortBy="#{designElementObject.description}" headerText="Description"
+                  filterBy="#{designElementObject.description}" filterMatchMode="contains"
+                  filterValue="#{designElementController.filterByDescription}">
+            <h:inputText id="description" value="#{designElementObject.description}" styleClass="longCellInput"/>
+            <p:tooltip for="description" value="Enter description."/>
+        </p:column>
+
+        <p:column headerText="Actions">
+            <div class="actionLink">
+                <p:commandLink action="#{designController.deleteDesignElement(designElementObject)}" 
+                               actionListener="#{designElementController.destroy(designElementObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form" immediate="true"
+                               rendered="#{loginController.isEntityWriteable(designElementObject.entityInfo)}"/>
+            </div>
+        </p:column>
+    </p:dataTable>
+
+    <ui:include src="designElementComponentSelectDialog.xhtml"/>
+    <ui:include src="designElementComponentSelectCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="designElementChildDesignSelectDialog.xhtml"/>
+    <ui:include src="designElementChildDesignSelectCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="designElementLocationSelectDialog.xhtml"/>
+
+</ui:composition>
+
+
