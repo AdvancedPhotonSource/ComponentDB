@@ -79,6 +79,10 @@ configFile=WEB-INF/classes/cdb.portal.properties
 cmd="cat $configFile | sed 's?storageDirectory=.*?storageDirectory=${CDB_DATA_DIR}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
+configFile=WEB-INF/classes/resources.properties
+cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+
 jar cf ../$CDB_WAR_FILE *
 
 export AS_JAVA=$JAVA_HOME
