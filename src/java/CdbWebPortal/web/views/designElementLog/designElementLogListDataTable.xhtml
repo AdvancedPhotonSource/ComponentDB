@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="designElementLogListDataTable"
+                 widgetVar="designElementLogListDataTableWidget" 
+                 var="logObject"
+                 value="#{designElementObject.logList}" 
+                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 binding="#{logController.designElementLogListDataTable}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No log entries found.">
+
+        <ui:include src="../log/logListObject.xhtml"/>
+
+    </p:dataTable>
+
+
+</ui:composition>
+
+

@@ -137,4 +137,9 @@ public class SessionUtility
         NavigationHandler navigationHandler = context.getApplication().getNavigationHandler();
         navigationHandler.handleNavigation(context, null, url);
     }
+    
+    public static String getContextRoot() {
+        String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
+        return contextPath;
+    }
 }

@@ -39,13 +39,13 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler
     
     @Override
     public void setTargetValue(PropertyValue propertyValue) {
-        String targetLink = StorageUtility.getFileSystemPropertyValueDocumentPathDirectory(propertyValue.getValue());
+        String targetLink = StorageUtility.getApplicationPropertyValueDocumentPathDirectory(propertyValue.getValue());
         propertyValue.setTargetValue(targetLink);
     }
 
     @Override
     public void setTargetValue(PropertyValueHistory propertyValueHistory) {
-        String targetLink = StorageUtility.getFileSystemPropertyValueDocumentPathDirectory(propertyValueHistory.getValue());
+        String targetLink = StorageUtility.getApplicationPropertyValueDocumentPathDirectory(propertyValueHistory.getValue());
         propertyValueHistory.setTargetValue(targetLink);
     }    
 }

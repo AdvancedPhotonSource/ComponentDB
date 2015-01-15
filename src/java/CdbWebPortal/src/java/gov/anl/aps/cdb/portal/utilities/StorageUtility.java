@@ -20,6 +20,13 @@ public class StorageUtility {
         return "/log/attachments";
     }
 
+    public static String getApplicationLogAttachmentPathDirectory(String attachmentName) {
+        if (attachmentName != null) {
+            return SessionUtility.getContextRoot() + getApplicationLogAttachmentsDirectory() + "/" + attachmentName;
+        }
+        return null;
+    } 
+    
     public static String getFileSystemLogAttachmentsDirectory() {
         return StorageDirectory + getApplicationLogAttachmentsDirectory();
     }    
@@ -35,6 +42,13 @@ public class StorageUtility {
         return "/propertyValue/documents";
     }
 
+    public static String getApplicationPropertyValueDocumentPathDirectory(String documentName) {
+        if (documentName != null) {
+            return SessionUtility.getContextRoot() + getApplicationPropertyValueDocumentsDirectory() + "/" + documentName;
+        }
+        return null;
+    }   
+    
     public static String getFileSystemPropertyValueDocumentsDirectory() {
         return StorageDirectory + getApplicationPropertyValueDocumentsDirectory();
     }    
