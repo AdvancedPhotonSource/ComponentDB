@@ -8,11 +8,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignLink;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -179,6 +181,39 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         }
     }
 
+        public void prepareAddProperty() {
+        Design design = getCurrent();
+        List<PropertyValue> propertyList = design.getPropertyValueList();
+        PropertyValue property = new PropertyValue();
+        propertyList.add(property);
+    }
+
+    public void savePropertyList() {
+        update();
+    }
+
+    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
+        Design design = getCurrent();
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        List<PropertyValue> propertyValueList = design.getPropertyValueList();
+        for (PropertyType propertyType : propertyTypeList) {
+            PropertyValue propertyValue = new PropertyValue();
+            propertyValue.setPropertyType(propertyType);
+            propertyValue.setValue(propertyType.getDefaultValue());
+            propertyValue.setUnits(propertyType.getDefaultUnits());
+            propertyValueList.add(propertyValue);
+            propertyValue.setEnteredByUser(lastModifiedByUser);
+            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+        }
+    }
+
+    public void deleteProperty(PropertyValue designProperty) {
+        Design design = getCurrent();
+        List<PropertyValue> designPropertyList = design.getPropertyValueList();
+        designPropertyList.remove(designProperty);
+        update();
+    }
     
     public void prepareAddDesignElement(Design design) {
         List<DesignElement> designElementList = design.getDesignElementList();
@@ -195,7 +230,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         designElementList.remove(designElement);
         update();
     }
-    
+
     public void selectComponents(List<Component> componentList) {
         Design design = getCurrent();
         List<DesignElement> designElementList = design.getDesignElementList();
@@ -216,6 +251,12 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         Design design = getCurrent();
         List<DesignElement> designElementList = design.getDesignElementList();
         designElementList.remove(designElement);
+    }
+
+    public void prepareAddLog(Design design) {
+        Log logEntry = LogUtility.createLogEntry();
+        List<Log> componentLogList = design.getLogList();
+        componentLogList.add(0, logEntry);
     }
 
     public void deleteLog(Log designLog) {

@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -410,11 +411,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     public void prepareAddLog(Component component) {
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        Log logEntry = new Log();
-        logEntry.setEnteredByUser(lastModifiedByUser);
-        logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
+        Log logEntry = LogUtility.createLogEntry();
         List<Log> componentLogList = component.getLogList();
         componentLogList.add(0, logEntry);
     }
