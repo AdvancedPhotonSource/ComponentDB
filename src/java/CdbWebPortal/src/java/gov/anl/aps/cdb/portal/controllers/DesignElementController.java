@@ -222,9 +222,9 @@ public class DesignElementController extends CrudEntityController<DesignElement,
             propertyValue.setPropertyType(propertyType);
             propertyValue.setValue(propertyType.getDefaultValue());
             propertyValue.setUnits(propertyType.getDefaultUnits());
-            propertyValueList.add(propertyValue);
             propertyValue.setEnteredByUser(lastModifiedByUser);
             propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+            propertyValueList.add(propertyValue);
         }
     }
 

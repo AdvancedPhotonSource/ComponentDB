@@ -56,7 +56,7 @@ a:link:hover, a:visited:hover  {
 }
 
 .title {
-    color: #f2f4f7;
+    color: #f2f4f7;   // set via CDB_CSS_TITLE_COLOR env variable
 }
 
 .topLeftContent {
