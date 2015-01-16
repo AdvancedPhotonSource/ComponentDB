@@ -83,6 +83,14 @@ configFile=WEB-INF/classes/resources.properties
 cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
+configFile=resources/css/login.css
+cmd="cat $configFile | sed 's?color:.*CDB_CSS_PORTAL_TITLE_COLOR.*?color: ${CDB_CSS_PORTAL_TITLE_COLOR};?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+
+configFile=resources/css/portal.css
+cmd="cat $configFile | sed 's?color:.*CDB_CSS_PORTAL_TITLE_COLOR.*?color: ${CDB_CSS_PORTAL_TITLE_COLOR};?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+
 jar cf ../$CDB_WAR_FILE *
 
 export AS_JAVA=$JAVA_HOME
@@ -95,7 +103,7 @@ cp $CDB_DIST_DIR/$CDB_WAR_FILE $CDB_DEPLOY_DIR
 
 # wait on deployment
 echo "Waiting on war deployment..."
-WAIT_TIME=30
+WAIT_TIME=60
 cd $CDB_DEPLOY_DIR
 t=0
 while [ $t -lt $WAIT_TIME ]; do

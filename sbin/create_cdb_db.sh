@@ -134,10 +134,16 @@ CDB_DB_TABLES="\
     component_connector \
     component_resource \
     component_log \
+    component_instance \
+    component_instance_property \
+    component_instance_log \
     design \
-    design_element \
+    design_property \
     design_link \
     design_log \
+    design_element \
+    design_element_property \
+    design_element_log \
 "
 for dbTable in $CDB_DB_TABLES; do
     dbFile=populate_$dbTable.sql
