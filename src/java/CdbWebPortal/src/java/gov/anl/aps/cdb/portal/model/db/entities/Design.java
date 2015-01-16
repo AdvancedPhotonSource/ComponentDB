@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -22,6 +23,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -59,7 +61,8 @@ public class Design extends CloneableEntity {
     @JoinTable(name = "design_log", joinColumns = {
         @JoinColumn(name = "design_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @OrderBy("id DESC")
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "childDesign")
     private List<DesignLink> parentDesignLinkList;
@@ -168,20 +171,29 @@ public class Design extends CloneableEntity {
         return hash;
     }
 
+    public boolean equalsByName(Design other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.name, other.name);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Design)) {
             return false;
         }
         Design other = (Design) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
     }
 
-    @Override
-    public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.Design[ id=" + id + " ]";
-    }
     
     @Override
     public SearchResult search(Pattern searchPattern) {

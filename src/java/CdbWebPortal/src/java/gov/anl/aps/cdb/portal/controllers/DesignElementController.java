@@ -100,7 +100,9 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     private Design selectedParentDesign = null;
 
     private SelectOneMenu componentSelectOneMenu;
-
+    private DataTable designElementPropertyValueListDataTable = null;
+    private List<PropertyValue> filteredPropertyValueList = null;
+    
     public DesignElementController() {
     }
 
@@ -153,6 +155,16 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     public void prepareEntityUpdate(DesignElement designElement) throws ObjectAlreadyExists {
     }
 
+    public String prepareViewFromDesign(DesignElement designElement) {
+        logger.debug("Preparing design element view from design view page");
+        prepareView(designElement);
+        return "/views/designElement/view.xhtml?faces-redirect=true";
+    }
+
+    public String prepareViewToDesign(DesignElement designElement) {
+        return "/views/design/view.xhtml?id=" + designElement.getComponent().getId();
+    }
+    
     public void prepareAddLog(DesignElement designElement) {
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
@@ -634,4 +646,25 @@ public class DesignElementController extends CrudEntityController<DesignElement,
             designElement.setChildDesign(childDesign);
         }
     }
+    
+    public DataTable getDesignElementPropertyValueListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            designElementPropertyValueListDataTable = new DataTable();
+        }
+        return designElementPropertyValueListDataTable;
+    }
+
+    public void setDesignElementPropertyValueListDataTable(DataTable designElementPropertyValueListDataTable) {
+        this.designElementPropertyValueListDataTable = designElementPropertyValueListDataTable;
+    }
+
+
+    public List<PropertyValue> getFilteredPropertyValueList() {
+        return filteredPropertyValueList;
+    }
+
+    public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
+        this.filteredPropertyValueList = filteredPropertyValueList;
+    }
+    
 }

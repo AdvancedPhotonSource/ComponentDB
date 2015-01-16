@@ -30,12 +30,16 @@
 
         <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
                   rendered="#{designElementController.displayComponent}">
-            <h:outputText value="#{designElementObject.component.name}"/>
+            <h:outputLink value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}" title="Component: #{designElementObject.component.name}">
+                <h:outputText value="#{designElementObject.component.name}"/>
+            </h:outputLink>
         </p:column>
-        
+
         <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
                   rendered="#{designElementController.displayChildDesign}">
-            <h:outputText value="#{designElementObject.childDesign.name}"/>
+            <h:outputLink value="../design/view.xhtml?id=#{designElementObject.childDesign.id}&amp;breadcrumb=#{breadcrumb}" title="Child Design: #{designElementObject.childDesign.name}">
+                <h:outputText value="#{designElementObject.childDesign.name}"/>
+            </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.location.name}" headerText="Location">

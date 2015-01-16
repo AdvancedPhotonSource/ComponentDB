@@ -83,6 +83,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
 
     private DataTable componentSelectDataTable = null;
     private DataTable componentInstanceSelectDataTable = null;
+    private DataTable designElementSelectDataTable = null;
 
     public PropertyTypeController() {
     }
@@ -388,6 +389,14 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
 
     public void setComponentInstanceSelectDataTable(DataTable componentInstanceSelectDataTable) {
         this.componentInstanceSelectDataTable = componentInstanceSelectDataTable;
+    }
+
+    public DataTable getDesignElementSelectDataTable() {
+        return designElementSelectDataTable;
+    }
+
+    public void setDesignElementSelectDataTable(DataTable designElementSelectDataTable) {
+        this.designElementSelectDataTable = designElementSelectDataTable;
     }
 
     public Boolean getDisplayCategory() {

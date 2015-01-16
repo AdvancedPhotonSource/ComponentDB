@@ -6,6 +6,7 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -21,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -57,7 +59,8 @@ public class DesignElement extends CloneableEntity {
     @JoinTable(name = "design_element_log", joinColumns = {
         @JoinColumn(name = "design_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @OrderBy("id DESC")
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
     @JoinTable(name = "design_element_component_instance", joinColumns = {
         @JoinColumn(name = "design_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
@@ -226,19 +229,32 @@ public class DesignElement extends CloneableEntity {
         return hash;
     }
 
+    public boolean equalsByName(DesignElement other) {
+        if (other != null) {
+            return ObjectUtility.equals(this.name, other.name);
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof DesignElement)) {
             return false;
         }
         DesignElement other = (DesignElement) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if (this.id == null && other.id == null) {
+            return equalsByName(other);
+        }
+
+        if (this.id == null || other.id == null) {
+            return false;
+        }
+        return this.id.equals(other.id);
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.DesignElement[ id=" + id + " ]";
+        return name;
     }
     
 }

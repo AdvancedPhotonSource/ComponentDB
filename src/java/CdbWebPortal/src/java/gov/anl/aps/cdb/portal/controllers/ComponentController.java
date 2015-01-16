@@ -123,7 +123,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private Component selectedComponent = null;
 
     private List<Location> locationList = null;
-    
+
     private List<PropertyValue> filteredPropertyValueList;
 
     public ComponentController() {
@@ -205,9 +205,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         if (existingComponent != null) {
             throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
         }
-        if (component.getComponentType() == null) {
+        ComponentType componentType = component.getComponentType();
+        if (componentType == null) {
             throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
         }
+
         EntityInfo entityInfo = component.getEntityInfo();
         UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
         Date createdOnDateTime = new Date();
@@ -221,6 +223,18 @@ public class ComponentController extends CrudEntityController<Component, Compone
             logList.add(logEntry);
             component.setLogList(logList);
         }
+
+        ArrayList<PropertyValue> propertyValueList = new ArrayList<>();
+        for (PropertyType propertyType : componentType.getPropertyTypeList()) {
+            PropertyValue propertyValue = new PropertyValue();
+            propertyValue.setPropertyType(propertyType);
+            propertyValue.setValue(propertyType.getDefaultValue());
+            propertyValue.setUnits(propertyType.getDefaultUnits());
+            propertyValue.setEnteredByUser(createdByUser);
+            propertyValue.setEnteredOnDateTime(createdOnDateTime);
+            propertyValueList.add(propertyValue);
+        }
+        component.setPropertyValueList(propertyValueList);
         logger.debug("Inserting new component " + component.getName() + " (user: " + createdByUser.getUsername() + ")");
     }
 

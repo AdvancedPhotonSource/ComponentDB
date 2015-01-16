@@ -264,8 +264,6 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String value) {
-            SelectOneMenu menu = (SelectOneMenu)uiComponent;
-            Object localValue = menu.getLocalValue();
             if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
@@ -296,8 +294,6 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 
         @Override
         public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object object) {
-            SelectOneMenu menu = (SelectOneMenu)uiComponent;
-            Object localValue = menu.getLocalValue();
             if (object == null) {
                 return null;
             }

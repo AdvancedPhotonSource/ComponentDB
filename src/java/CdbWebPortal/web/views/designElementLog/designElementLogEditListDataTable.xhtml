@@ -7,34 +7,34 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dataTable id="componentInstanceLogEditListDataTable" 
-                 widgetVar="componentInstanceLogEditListDataTableWidget"
+    <p:dataTable id="designElementLogEditListDataTable" 
+                 widgetVar="designElementLogEditListDataTableWidget"
                  var="logObject" 
-                 value="#{componentInstanceObject.logList}"
+                 value="#{designElementObject.logList}"
                  filteredValue="#{logController.filteredObjectList}"
                  rows="#{logController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  editable="true"
-                 emptyMessage="No component instance log entries found.">
+                 emptyMessage="No design element log entries found.">
 
         <ui:include src="../log/logEditObject.xhtml"/>
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink id="componentInstanceLogUploadAttachmentButton" 
+                <p:commandLink id="designElementLogUploadAttachmentButton" 
                                oncomplete="logAttachmentUploadDialogWidget.show()" 
                                styleClass="ui-icon ui-icon-circle-arrow-n"
                                update="@form">
                     <f:setPropertyActionListener value="#{logObject}" target="#{logController.current}"/>
-                    <p:tooltip for="componentInstanceLogUploadAttachmentButton" value="Upload component instance log attachment."/>
+                    <p:tooltip for="designElementLogUploadAttachmentButton" value="Upload design element log attachment."/>
                 </p:commandLink>
-                <p:commandLink id="componentInstanceLogDestroyButton" 
-                               action="#{componentInstanceController.deleteLog(logObject)}" 
+                <p:commandLink id="designElementLogDestroyButton" 
+                               action="#{designElementController.deleteLog(logObject)}" 
                                actionListener="#{logController.destroy(logObject)}"
                                styleClass="ui-icon ui-icon-trash" title="Delete" 
-                               update="componentInstanceLogEditListDataTable">
-                    <p:tooltip for="componentInstanceLogDestroyButton" value="Delete component instance log entry."/>
+                               update="designElementLogEditListDataTable">
+                    <p:tooltip for="designElementLogDestroyButton" value="Delete design element log entry."/>
                 </p:commandLink>
             </div>
         </p:column>

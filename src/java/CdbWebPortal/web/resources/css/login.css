@@ -79,6 +79,9 @@ a:link:hover, a:visited:hover  {
     padding: 100px;
 }
 
+.title {
+    color: #f2f4f7;
+}
 
 input {
     background: #6da5d8;

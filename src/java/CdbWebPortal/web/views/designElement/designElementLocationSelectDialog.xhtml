@@ -37,7 +37,7 @@
                                  rendered="#{locationController.selectDisplayFlatTableView}"/>
                 <p:commandButton value="Done" alt="Done"
                                  action="#{designElementController.selectLocation(locationSelectTreeViewBean.selectedLocation)}"
-                                 update="@form"
+                                 update="#{updateTarget}"
                                  oncomplete="designElementLocationSelectDialogWidget.hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{!locationController.selectDisplayFlatTableView}"/>

@@ -59,6 +59,7 @@ public class LogTopic extends CloneableEntity {
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }

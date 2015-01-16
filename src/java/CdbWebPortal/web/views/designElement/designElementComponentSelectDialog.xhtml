@@ -30,7 +30,7 @@
                                  action="#{designElementController.selectComponent(componentController.selectedComponent)}"
                                  onclick="componentSelectDataTableWidget.filter()" 
                                  oncomplete="designElementComponentSelectDialogWidget.hide()" 
-                                 update="designElementEditListDataTable"
+                                 update="#{updateTarget}"
                                  immediate="true"
                                  icon="ui-icon-arrowreturnthick-1-w">
                 </p:commandButton>

@@ -52,6 +52,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
     private DataTable designLogListDataTable = null;
     private DataTable componentLogListDataTable = null;
     private DataTable componentInstanceLogListDataTable = null;
+    private DataTable designElementLogListDataTable = null;
 
     public LogController() {
         super();
@@ -305,5 +306,18 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
 
     public void setComponentInstanceLogListDataTable(DataTable componentInstanceLogListDataTable) {
         this.componentInstanceLogListDataTable = componentInstanceLogListDataTable;
+    } 
+    
+    public DataTable getDesignElementLogListDataTable() {
+        if (userSettingsChanged() || isListDataModelReset()) {
+            designElementLogListDataTable = new DataTable();
+        }
+        return designElementLogListDataTable;
+    }
+
+    public void setDesignElementLogListDataTable(DataTable designElementLogListDataTable) {
+        this.designElementLogListDataTable = designElementLogListDataTable;
     }    
 }
+    
+

@@ -7,13 +7,15 @@
     <ui:include src="../common/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{designElementController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(designElementObject.entityInfo)}"/>
-        <ui:param name="childEntityController" value="#{logController}"/>
-        <ui:param name="childEntityTypeName" value="designElementLog"/>
-        <ui:param name="displayListResetFiltersButton" value="true"/>
+        <ui:param name="childEntityController" value="#{propertyValueController}"/>
+        <ui:param name="childEntityTypeName" value="designElementProperty"/>
     </ui:include>    
-    <ui:include src="designElementLogListDataTable.xhtml"/>
+    <ui:include src="designElementPropertyListDataTable.xhtml"/>
 
-    <ui:include src="designElementLogListCustomizeDisplayDialog.xhtml"/>
+    <ui:include src="designElementPropertyListCustomizeDisplayDialog.xhtml">
+        <ui:param name="childEntityTypeName" value="designElementProperty"/>
+    </ui:include>
+
 
 </ui:composition>
 

@@ -30,7 +30,7 @@
                                  action="#{designElementController.selectChildDesign(designController.selectedObject)}"
                                  onclick="designElementChildDesignSelectDataTableWidget.filter()" 
                                  oncomplete="designElementChildDesignSelectDialogWidget.hide()" 
-                                 update="designElementEditListDataTable"
+                                 update="#{updateTarget}"
                                  immediate="true"
                                  icon="ui-icon-arrowreturnthick-1-w">
                 </p:commandButton>

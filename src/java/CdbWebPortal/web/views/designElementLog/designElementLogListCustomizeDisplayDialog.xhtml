@@ -6,8 +6,8 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dialog id="componentInstanceLogListCustomizeDisplayDialog" 
-              widgetVar="componentInstanceLogListCustomizeDisplayDialogWidget" 
+    <p:dialog id="designElementLogListCustomizeDisplayDialog" 
+              widgetVar="designElementLogListCustomizeDisplayDialogWidget" 
               header="Customize Display" 
               styleClass="dialog">
         <div class="dialog">
@@ -17,7 +17,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{logController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="PF('componentInstanceLogListCustomizeDisplayDialogWidget').hide()" 
+                                 oncomplete="PF('designElementLogListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userController.saveSettingListForSessionUser()}"

@@ -55,6 +55,10 @@ a:link:hover, a:visited:hover  {
     height: 100%
 }
 
+.title {
+    color: #f2f4f7;
+}
+
 .topLeftContent {
     float: left;
     width: 170px;
@@ -512,4 +516,5 @@ h2 {
 .autocomplete button {
     height: 25px;
     width: 25px;
+    vertical-align: bottom;
 }

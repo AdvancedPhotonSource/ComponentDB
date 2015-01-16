@@ -26,6 +26,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -82,6 +83,7 @@ public class UserInfo extends CloneableEntity
     @JoinTable(name = "user_user_group", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
+    @OrderBy("id DESC")
     @ManyToMany
     private List<UserGroup> userGroupList;
     @OneToMany(mappedBy = "obsoletedByUser")
