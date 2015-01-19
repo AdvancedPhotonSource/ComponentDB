@@ -424,7 +424,7 @@ public class ComponentInstance extends CloneableEntity {
         SearchResult searchResult = new SearchResult(id, id.toString());
         searchResult.doesValueContainPattern("tag", tag, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
-        searchResult.doesValueContainPattern("qrId", qrId.toString(), searchPattern);
+        searchResult.doesValueContainPattern("qrId", qrId, searchPattern);
         searchResult.doesValueContainPattern("serialNumber", serialNumber, searchPattern);
         for (Log logEntry : logList) {
             String logEntryKey = "log/text/id:" + logEntry.getId();

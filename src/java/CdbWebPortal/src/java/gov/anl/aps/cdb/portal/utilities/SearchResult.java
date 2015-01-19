@@ -48,6 +48,13 @@ public class SearchResult
         return objectAttributeMatchMap.isEmpty();
     }
 
+    public boolean doesValueContainPattern(String key, Object value, Pattern searchPattern) {
+        if (value != null) {
+            return doesValueContainPattern(key, value.toString(), searchPattern);
+        }
+        return false;
+    }
+    
     public boolean doesValueContainPattern(String key, String value, Pattern searchPattern) {
         if (value == null || value.isEmpty()) {
             return false;
