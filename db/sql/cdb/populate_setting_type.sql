@@ -271,6 +271,7 @@ VALUES
 	('Search.List.Display.ComponentTypes','Display search result for component types.', 'true'),
 	('Search.List.Display.ComponentTypeCategories','Display search result for component type categories.', 'true'),
 	('Search.List.Display.Designs','Display search result for designs.', 'true'),
+	('Search.List.Display.DesignElements','Display search result for design elements.', 'true'),
 	('Search.List.Display.Locations','Display search result for locations.', 'true'),
 	('Search.List.Display.LocationTypes','Display search result for location types.', 'true'),
 	('Search.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),

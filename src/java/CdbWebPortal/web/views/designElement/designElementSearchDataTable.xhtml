@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
+    <ui:param name="searchString" value="#{searchController.searchString}"/>
+    <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
+    <p:dataTable id="designElementSearchDataTable" 
+                 var="designElementSearchResultObject" 
+                 value="#{designElementController.getSearchResultList(searchString, caseInsensitive)}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{searchController.displayNumberOfItemsPerPage}" 
+                 emptyMessage="No designElements match.">
+
+        <p:column sortBy="#{designElementSearchResultObject.objectId}" headerText="Id">
+            <h:outputText value="#{designElementSearchResultObject.objectId}"/>
+        </p:column>
+        
+        <p:column sortBy="#{designElementSearchResultObject.objectName}" headerText="Name">
+            <h:outputLink value="../designElement/view.xhtml?id=#{designElementSearchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="Component">
+                <h:outputText value="#{designElementSearchResultObject.objectName}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{designElementSearchResultObject.display}" headerText="Match Description">
+            <h:outputText value="#{designElementSearchResultObject.display}"/>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>
+
+
