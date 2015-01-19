@@ -6,10 +6,12 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -98,7 +100,7 @@ public class ComponentInstance extends CloneableEntity {
     private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
 
     private transient String qrIdDisplay;
-    
+
     public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
         if (propertyTypeId != null) {
             propertyTypeIdIndexMap.put(index, propertyTypeId);
@@ -106,7 +108,7 @@ public class ComponentInstance extends CloneableEntity {
     }
 
     private transient String selectedLocationName = null;
-    
+
     public ComponentInstance() {
     }
 
@@ -312,12 +314,12 @@ public class ComponentInstance extends CloneableEntity {
 
     public boolean equalsByLocationAndTag(ComponentInstance other) {
         if (other != null) {
-            return ( ObjectUtility.equals(this.location, other.location)
-                    && ObjectUtility.equals(this.tag, other.tag) );
+            return (ObjectUtility.equals(this.location, other.location)
+                    && ObjectUtility.equals(this.tag, other.tag));
         }
         return false;
     }
-  
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -332,7 +334,7 @@ public class ComponentInstance extends CloneableEntity {
         if (this.id == null || other.id == null) {
             return false;
         }
-        return this.id.equals(other.id);    
+        return this.id.equals(other.id);
     }
 
     @Override
@@ -373,7 +375,7 @@ public class ComponentInstance extends CloneableEntity {
     public void setSelectedLocationName(String selectedLocationName) {
         this.selectedLocationName = selectedLocationName;
     }
-    
+
     public void resetAttributesToNullIfEmpty() {
         if (tag != null && tag.isEmpty()) {
             tag = null;
@@ -382,7 +384,7 @@ public class ComponentInstance extends CloneableEntity {
             serialNumber = null;
         }
     }
-    
+
     public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
         List<PropertyValue> componentInstancePropertyList = getPropertyValueList();
         if (componentInstancePropertyList == null) {
@@ -400,20 +402,40 @@ public class ComponentInstance extends CloneableEntity {
         }
         setPropertyValueList(componentInstancePropertyList);
     }
-    
+
     public static String formatQrIdDisplay(Integer qrId) {
         String qrIdDisplay = null;
         if (qrId != null) {
             qrIdDisplay = String.format("%09d", qrId);
-            qrIdDisplay = qrIdDisplay.substring(0,3) + " " + qrIdDisplay.substring(3,6) + " " + qrIdDisplay.substring(6,9);
-        }        
+            qrIdDisplay = qrIdDisplay.substring(0, 3) + " " + qrIdDisplay.substring(3, 6) + " " + qrIdDisplay.substring(6, 9);
+        }
         return qrIdDisplay;
     }
-    
+
     public String getQrIdDisplay() {
         if (qrId != null && qrIdDisplay == null) {
             qrIdDisplay = formatQrIdDisplay(qrId);
         }
         return qrIdDisplay;
+    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, id.toString());
+        searchResult.doesValueContainPattern("tag", tag, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        searchResult.doesValueContainPattern("qrId", qrId.toString(), searchPattern);
+        searchResult.doesValueContainPattern("serialNumber", serialNumber, searchPattern);
+        for (Log logEntry : logList) {
+            String logEntryKey = "log/text/id:" + logEntry.getId();
+            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
+        }
+        for (PropertyValue propertyValue : propertyValueList) {
+            String propertyValueKey = "propertyValue/value/id:" + propertyValue.getId();
+            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
+            propertyValueKey = "propertyValue/description/id:" + propertyValue.getId();
+            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
+        }
+        return searchResult;
     }
 }
