@@ -44,7 +44,13 @@
         <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
             <h:outputText value="#{propertyValueObject.displayValue}"/>
-        </h:outputLink>        
+        </h:outputLink>
+
+        <h:outputText value="#{propertyValueObject.displayValue}"
+                      rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>        
+
+        <h:outputText value="#{propertyValueObject.displayValue}"
+                      rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>         
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"

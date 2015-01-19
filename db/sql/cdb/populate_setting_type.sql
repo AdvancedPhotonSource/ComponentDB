@@ -202,7 +202,7 @@ VALUES
 	('PropertyType.List.Display.Description','Display property type description.', 'true'),
 	('PropertyType.List.Display.Handler','Display property type class handler.', 'true'),
 	('PropertyType.List.Display.Id','Display property type id.', 'false'),
-	('PropertyType.List.Display.IsDynamic','Display dynamic property type designation.', 'true'),
+	('PropertyType.List.Display.IsDynamic','Display dynamic property type designation.', 'false'),
 	('PropertyType.List.Display.IsUserWriteable','Display user-writeable property type designation.', 'false'),
 	('PropertyType.List.Display.NumberOfItemsPerPage','Display specified number of items per page.', '25'),
 

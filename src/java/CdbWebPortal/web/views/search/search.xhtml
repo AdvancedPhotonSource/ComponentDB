@@ -56,6 +56,10 @@
                                 <ui:include src="../component/componentSearchDataTable.xhtml"/>
                             </p:tab>   
 
+                            <p:tab title="Component Instances" rendered="#{searchController.displayComponentInstances}">
+                                <ui:include src="../componentInstance/componentInstanceSearchDataTable.xhtml"/>
+                            </p:tab>
+
                             <p:tab title="Component Types" rendered="#{searchController.displayComponentTypes}">
                                 <ui:include src="../componentType/componentTypeSearchDataTable.xhtml"/>
                             </p:tab>  
@@ -67,15 +71,15 @@
                             <p:tab title="Designs" rendered="#{searchController.displayDesigns}">
                                 <ui:include src="../design/designSearchDataTable.xhtml"/>
                             </p:tab> 
-                            
+
                             <p:tab title="Locations" rendered="#{searchController.displayLocations}">
                                 <ui:include src="../location/locationSearchDataTable.xhtml"/>
                             </p:tab>   
-                            
+
                             <p:tab title="Location Types" rendered="#{searchController.displayLocationTypes}">
                                 <ui:include src="../locationType/locationTypeSearchDataTable.xhtml"/>
                             </p:tab>   
-                            
+
                             <p:tab title="Property Types" rendered="#{searchController.displayPropertyTypes}">
                                 <ui:include src="../propertyType/propertyTypeSearchDataTable.xhtml"/>
                             </p:tab>    

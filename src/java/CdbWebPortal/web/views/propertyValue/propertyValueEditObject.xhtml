@@ -63,7 +63,15 @@
         
          <h:outputText id="documentValue" value="#{propertyValueObject.value}"
                      rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>
-        <p:tooltip for="documentValue" value="Upload new document using upload action button."/>           
+        <p:tooltip for="documentValue" value="Upload new document using upload action button."/>    
+        
+        <h:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
+                     rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>
+        <p:tooltip for="booleanValue" value="Use checkbox to set property value to true."/>           
+
+        <p:calendar id="dateValue" value="#{propertyValueObject.dateValue}"
+                     rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
+        <p:tooltip for="dateValue" value="Use calendar to set date."/>         
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"

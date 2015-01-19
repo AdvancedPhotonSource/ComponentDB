@@ -67,7 +67,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     private String filterByUnits = null;
 
     private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
-    
+
     @EJB
     private PropertyValueFacade propertyValueFacade;
 
@@ -279,7 +279,15 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     public boolean displayDocumentValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DOCUMENT);
     }
-    
+
+    public boolean displayBooleanValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.BOOLEAN);
+    }
+
+    public boolean displayDateValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DATE);
+    }
+
     @FacesConverter(forClass = PropertyValue.class)
     public static class PropertyValueControllerConverter implements Converter {
 
@@ -357,7 +365,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     public void setDisplayIsUserWriteable(Boolean displayIsUserWriteable) {
         this.displayIsUserWriteable = displayIsUserWriteable;
     }
-    
+
     public Boolean getDisplayTypeCategory() {
         return displayTypeCategory;
     }
@@ -405,7 +413,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     public void setFilterByIsUserWriteable(String filterByIsUserWriteable) {
         this.filterByIsUserWriteable = filterByIsUserWriteable;
     }
-    
+
     public Boolean getDisplayTag() {
         return displayTag;
     }
@@ -485,5 +493,5 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
 
     public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
         this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
-    }    
+    }
 }

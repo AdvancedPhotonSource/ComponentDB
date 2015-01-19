@@ -3,11 +3,10 @@ LOCK TABLES `user_info` WRITE;
 
 INSERT INTO `user_info` (`id`, `username`, `first_name`, `last_name`, `middle_name`, `email`, `password`, `description`)
 VALUES
-
-(1,'cdb','CDB','System Account',NULL,'cdb@aps.anl.gov','cdb',NULL),
+(1,'cdb','CDB','System Account',NULL,'cdb@aps.anl.gov',NULL,NULL),
 (2,'bstill','Ben','Stillwell','','bstill@aps.anl.gov',NULL,NULL),
 (3,'nda','Ned','Arnold','','nda@aps.anl.gov',NULL,NULL),
-(4,'sveseli','Sinisa','Veseli','','sveseli@aps.anl.gov','sv',NULL),
+(4,'sveseli','Sinisa','Veseli','','sveseli@aps.anl.gov',NULL,NULL),
 (5,'benes','Scott','Benes','','benes@aps.anl.gov',NULL,NULL),
 (6,'nschwarz','Nicholas','Schwarz','','nschwarz@aps.anl.gov',NULL,NULL),
 (7,'cease','Herman','Cease','','cease@aps.anl.gov',NULL,NULL),

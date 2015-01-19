@@ -24,6 +24,8 @@ public class PropertyTypeHandlerFactory {
         hMap.put(PdmLinkPropertyTypeHandler.HANDLER_NAME, new PdmLinkPropertyTypeHandler());
         hMap.put(DocumentPropertyTypeHandler.HANDLER_NAME, new DocumentPropertyTypeHandler());
         hMap.put(CurrencyPropertyTypeHandler.HANDLER_NAME, new CurrencyPropertyTypeHandler());
+        hMap.put(DatePropertyTypeHandler.HANDLER_NAME, new DatePropertyTypeHandler());
+        hMap.put(BooleanPropertyTypeHandler.HANDLER_NAME, new BooleanPropertyTypeHandler());
         return hMap;
     }
 

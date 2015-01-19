@@ -9,6 +9,8 @@ INSERT INTO `property_type_handler` VALUES
 (6,'PDMLink','Handler for PDMLink drawings.'),
 (7,'AMOS Link','Handler for AMOS purchasing links.'),
 (8,'PARIS Link','Handler for PARIS purchasing links.'),
-(9,'Currency','Handler for monetary values.');
+(9,'Currency','Handler for monetary values.'),
+(10,'Boolean','Handler for boolean values.'),
+(11,'Date','Handler for date values.');
 /*!40000 ALTER TABLE `property_type_handler` ENABLE KEYS */;
 UNLOCK TABLES;

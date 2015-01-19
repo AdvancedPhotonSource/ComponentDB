@@ -99,6 +99,9 @@ public class PropertyValue extends CloneableEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
 
+    private transient Boolean booleanValue;
+    private transient Date dateValue;
+    
     public PropertyValue() {
     }
 
@@ -270,6 +273,29 @@ public class PropertyValue extends CloneableEntity {
         targetValue = value;
     }
 
+    public Boolean getBooleanValue() {
+        return booleanValue;
+    }
+
+    public void setBooleanValue(Boolean booleanValue) {
+        this.booleanValue = booleanValue;
+        if (booleanValue != null) {
+            this.value = booleanValue.toString();
+        }
+    }
+
+    public Date getDateValue() {
+        return dateValue;
+    }
+
+    public void setDateValue(Date dateValue) {
+        this.dateValue = dateValue;
+        if (dateValue != null) {
+            this.value = dateValue.toString();
+        }
+    }
+
+    
     @Override
     public int hashCode() {
         int hash = 0;

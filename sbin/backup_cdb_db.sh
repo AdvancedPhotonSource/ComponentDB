@@ -104,7 +104,9 @@ while [ $lockCnt -lt $nTableLocks ]; do
     firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
     lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`
     echo "Creating sql script for $dbTable"
-    cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $CDB_DB_BACKUP_DIR/populate_$dbTable.sql
+    targetFile=$CDB_DB_BACKUP_DIR/populate_$dbTable.sql
+    cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $targetFile
+    cat $targetFile | sed 's?VALUES ?VALUES\n?g' | sed 's?),(?),\n(?g' > $targetFile.2 && mv $targetFile.2 $targetFile
 done
 rm -f $processingFile
 

@@ -15,7 +15,9 @@ public enum DisplayType {
     SELECTED_TEXT(1),
     HTTP_LINK(2),
     IMAGE(3),
-    DOCUMENT(4);
+    DOCUMENT(4),
+    BOOLEAN(5),
+    DATE(6);
     
     private final int type;
     private DisplayType(int type) {
