@@ -1,8 +1,6 @@
-
 LOCK TABLES `user_info` WRITE;
-
-INSERT INTO `user_info` (`id`, `username`, `first_name`, `last_name`, `middle_name`, `email`, `password`, `description`)
-VALUES
+/*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
+INSERT INTO `user_info` VALUES
 (1,'cdb','CDB','System Account',NULL,'cdb@aps.anl.gov',NULL,NULL),
 (2,'bstill','Ben','Stillwell','','bstill@aps.anl.gov',NULL,NULL),
 (3,'nda','Ned','Arnold','','nda@aps.anl.gov',NULL,NULL),
@@ -24,7 +22,9 @@ VALUES
 (19,'preissner','Curt','Preissner','','preissner@aps.anl.gov',NULL,NULL),
 (20,'lhm','Leonard','Morrison','','lhm@aps.anl.gov',NULL,NULL),
 (21,'jieliu','Jie','Liu','','jieliu@aps.anl.gov',NULL,NULL),
-(22,'doose','Charles','Doose','','doose@aps.anl.gov',NULL,NULL);
-
+(22,'doose','Charles','Doose','','doose@aps.anl.gov',NULL,NULL),
+(23,'tfors','Tom','Fors','','tfors@aps.anl.gov','',''),
+(24,'bran','Bran','Brajuskovic','','bran@aps.anl.gov','',''),
+(25,'jzientek','John','Zientek','','jzientek@aps.anl.gov','','');
+/*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
-

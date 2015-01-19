@@ -1,10 +1,6 @@
-# ------------------------------------------------------------
-
 LOCK TABLES `user_user_group` WRITE;
-
-INSERT INTO `user_user_group` (`user_id`, `user_group_id`)
-VALUES
-
+/*!40000 ALTER TABLE `user_user_group` DISABLE KEYS */;
+INSERT INTO `user_user_group` VALUES
 (1,1),
 (2,5),
 (2,12),
@@ -31,7 +27,11 @@ VALUES
 (19,5),
 (20,5),
 (21,5),
-(22,11); 
-
+(22,11),
+(23,8),
+(24,5),
+(24,12),
+(25,5),
+(25,12);
+/*!40000 ALTER TABLE `user_user_group` ENABLE KEYS */;
 UNLOCK TABLES;
-

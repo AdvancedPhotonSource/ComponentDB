@@ -1,6 +1,6 @@
 LOCK TABLES `property_type` WRITE;
 /*!40000 ALTER TABLE `property_type` DISABLE KEYS */;
-INSERT INTO `property_type` VALUES 
+INSERT INTO `property_type` VALUES
 (1,'EDP Collection',NULL,4,4,NULL,NULL,0,0),
 (2,'QA Level','',2,NULL,'D',NULL,0,0),
 (3,'QA Inspection Template','Inspection Procedure Document',2,NULL,NULL,NULL,0,0),

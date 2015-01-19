@@ -1,6 +1,7 @@
 LOCK TABLES `design_element` WRITE;
 /*!40000 ALTER TABLE `design_element` DISABLE KEYS */;
-INSERT INTO `design_element` VALUES (1,'S01A:GV1',1,NULL,1,NULL,'Upstream end of arc',1.00,210),
+INSERT INTO `design_element` VALUES
+(1,'S01A:GV1',1,NULL,1,NULL,'Upstream end of arc',1.00,210),
 (2,'S01A:VC1',1,NULL,3,NULL,'Inside A:Q1',2.00,211),
 (3,'S01A:BPM1',1,NULL,28,NULL,'Between A:Q1 and A:Q2',3.00,212),
 (4,'S01A:VC2',1,NULL,4,NULL,'Inside A:Q2',4.00,213),

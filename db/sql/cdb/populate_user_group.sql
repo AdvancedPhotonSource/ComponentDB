@@ -1,9 +1,6 @@
-
 LOCK TABLES `user_group` WRITE;
-
-INSERT INTO `user_group` (`id`, `name`, `description`)
-VALUES
-
+/*!40000 ALTER TABLE `user_group` DISABLE KEYS */;
+INSERT INTO `user_group` VALUES
 (1,'CDB_ADMIN','System Admin Group'),
 (2,'CS',NULL),
 (3,'SSG','Software Services Group'),
@@ -16,8 +13,5 @@ VALUES
 (10,'DIAG','Diagnostics'),
 (11,'MD','Magnetic Devices'),
 (12,'APSU_VAC','Those working on vacuum for APSU');
-
+/*!40000 ALTER TABLE `user_group` ENABLE KEYS */;
 UNLOCK TABLES;
-
-
-

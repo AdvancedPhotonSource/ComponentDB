@@ -1,7 +1,7 @@
 LOCK TABLES `property_value` WRITE;
 /*!40000 ALTER TABLE `property_value` DISABLE KEYS */;
-INSERT INTO `property_value` VALUES 
-(1,9,'','72','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
+INSERT INTO `property_value` VALUES
+(1,9,'','72','mm','','2014-09-25 10:00:00',3,0,0,'72','72'),
 (2,9,'','72','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (3,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (4,9,'','407','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
@@ -9,8 +9,8 @@ INSERT INTO `property_value` VALUES
 (6,9,'','397','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (7,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (8,9,'','2253','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
-(9,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
-(10,9,'','252','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
+(9,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,'TBD','TBD'),
+(10,9,'','252','mm','','2014-09-25 10:00:00',3,0,0,'252','252'),
 (11,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (12,9,'','275','mm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (13,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
@@ -56,12 +56,33 @@ INSERT INTO `property_value` VALUES
 (53,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (54,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (55,10,'','TBD','gpm','','2014-09-25 10:00:00',3,0,0,NULL,NULL),
-(56,1,'','1280','','EDP collection id','2014-09-25 10:00:00',3,0,0,NULL,NULL),
-(57,1,'','1338','','EDP collection id','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (58,1,'','1284','','EDP collection id','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (59,1,'','1279','','EDP collection id','2014-09-25 10:00:00',3,0,0,NULL,NULL),
 (60,1,'','1278','','EDP collection id','2014-09-25 10:00:00',3,0,0,NULL,NULL),
-(61,12,'','APS_1661501','','ICMS document','2014-09-25 10:00:00',3,0,0,NULL,NULL),
-(62,13,'','APS_1661502','','ICMS document','2014-09-25 10:00:00',3,0,0,NULL,NULL);
+(61,12,'','APS_1661501','','ICMS document','2014-09-25 10:00:00',3,0,0,'APS_1661501','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_1661501'),
+(63,17,'VACCHAMBERASSY4.DRW','3185243400','','','2015-01-12 18:04:51',3,0,0,'3185243400','https://windchill-vm.aps.anl.gov/Windchill/app/#ptc1/tcomp/infoPage?ContainerOid=OR:wt.pdmlink.PDMLinkProduct:8418&oid=VR:wt.epm.EPMDocument:3185243400&u8=1'),
+(64,5,'','NRTL Approved','','','2015-01-08 15:58:07',3,0,0,NULL,NULL),
+(65,2,'','D','','','2015-01-08 15:58:07',3,0,0,'D','D'),
+(66,14,'','image.8670491593557040319.jpg','','','2015-01-08 15:58:07',3,0,0,NULL,NULL),
+(69,14,'','image.6741355283767935981.jpg','','','2015-01-12 16:33:01',3,0,0,'image.6741355283767935981.jpg','image.6741355283767935981.jpg'),
+(70,11,'','U2.03.03.04.03','','','2015-01-12 17:18:53',3,0,0,'U2.03.03.04.03','U2.03.03.04.03'),
+(71,2,'','B','','','2015-01-15 10:25:45',3,0,0,'C','C'),
+(72,7,'Vendor Website','http://www.vatvalve.com/','','','2015-01-12 17:20:06',3,0,0,'http://www.vatvalve.com/','http://www.vatvalve.com/'),
+(74,13,'','','','','2015-01-12 17:36:22',3,0,1,'','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_'),
+(78,13,'','APS_1661502','','','2015-01-12 17:42:35',3,0,1,'APS_1661502','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_1661502'),
+(79,5,'','Not Required','','','2015-01-12 17:53:02',3,0,0,'Not Required','Not Required'),
+(80,18,'','MO_352645','','USB 3.0 cables','2015-01-12 17:54:58',3,0,0,'MO_352645','https://apps.anl.gov/webcompadapter/viewrpt.cwr?id=10211&apsuser=irisuser&apspassword=irisuser2a&apsauthtype=secEnterprise&cmd=EXPORT&EXPORT_FMT=U2FPDF%3A0&promptex-ORDER_NO=352645'),
+(81,19,'','F4-283064','','','2015-01-12 17:53:40',3,0,0,'F4-283064','https://apps.inside.anl.gov/paris/req.jsp?reqNbr=F4-283064'),
+(82,14,'','image.2730397244288105810.jpg','','','2015-01-12 17:55:31',3,0,0,'image.2730397244288105810.jpg','image.2730397244288105810.jpg'),
+(83,11,'','U2.02.01.02.04','','','2015-01-12 17:56:06',3,0,0,'U2.02.01.02.04','U2.02.01.02.04'),
+(84,7,'Vendor Product Website','http://www.opalkelly.com/products/xem7350/','','','2015-01-12 17:58:02',3,0,0,NULL,NULL),
+(85,1,'','516','','','2015-01-12 17:58:02',3,0,0,NULL,NULL),
+(86,7,'Versions/Revisions','http://aodpc77.aps.anl.gov:8080/pdm?DrawingNumber=VACCHAMBERASSY4','','','2015-01-12 18:04:51',3,0,0,'http://aodpc77....VACCHAMBERASSY4','http://aodpc77.aps.anl.gov:8080/pdm?DrawingNumber=VACCHAMBERASSY4'),
+(88,2,'','C','','','2015-01-12 18:12:06',3,0,0,'D','D'),
+(89,2,'','D','','','2015-01-13 09:06:20',3,0,0,'D','D'),
+(90,11,'','U2.02.01.02.02.01','','','2015-01-13 09:08:14',3,0,0,'U2.02.01.02.02.01','U2.02.01.02.02.01'),
+(91,7,'Revisions / Versions','http://aodpc77.aps.anl.gov:8080/pdm?DrawingNumber=U221020202-104210.DRW','','','2015-01-13 09:06:42',3,0,0,'http://aodpc77....0202-104210.DRW','http://aodpc77.aps.anl.gov:8080/pdm?DrawingNumber=U221020202-104210.DRW'),
+(92,17,'U221020202-104210','3205859842','','','2015-01-13 12:35:36',3,0,0,NULL,NULL),
+(95,15,'Inspections','document.3986872797731036940.txt','','','2015-01-15 11:15:20',3,0,0,'document.8899036870631503508.txt','/net/oxygen/apsu/cdb/data/propertyValue/documents/document.8899036870631503508.txt');
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;
