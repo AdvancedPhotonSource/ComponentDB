@@ -298,7 +298,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     public String prepareViewToComponent(ComponentInstance componentInstance) {
-        return "/views/component/view.xhtml?id=" + componentInstance.getComponent().getId();
+        return "/views/component/view.xhtml?faces-redirect=true?id=" + componentInstance.getComponent().getId();
     }
 
     public void prepareAddLog(ComponentInstance componentInstance) {
