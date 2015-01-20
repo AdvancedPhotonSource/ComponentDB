@@ -143,6 +143,7 @@ CDB_DB_TABLES="\
     design_log \
     design_element \
     design_element_property \
+    design_element_link \
     design_element_log \
 "
 for dbTable in $CDB_DB_TABLES; do
