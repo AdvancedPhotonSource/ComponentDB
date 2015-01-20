@@ -17,6 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -47,6 +48,19 @@ public class ComponentSource extends CloneableEntity {
     private Float cost;
     @Size(max = 256)
     private String description;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_vendor")
+    private boolean isVendor;
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "is_manufacturer")
+    private boolean isManufacturer;
+    @Size(max = 64)
+    @Column(name = "contact_info")
+    private String contactInfo;
+    @Size(max = 256)
+    private String url;
     @JoinColumn(name = "source_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Source source;
@@ -110,6 +124,38 @@ public class ComponentSource extends CloneableEntity {
         this.description = description;
     }
 
+    public boolean getIsVendor() {
+        return isVendor;
+    }
+
+    public void setIsVendor(boolean isVendor) {
+        this.isVendor = isVendor;
+    }
+
+    public boolean getIsManufacturer() {
+        return isManufacturer;
+    }
+
+    public void setIsManufacturer(boolean isManufacturer) {
+        this.isManufacturer = isManufacturer;
+    }
+
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

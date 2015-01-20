@@ -1,19 +1,19 @@
 LOCK TABLES `source` WRITE;
 /*!40000 ALTER TABLE `source` DISABLE KEYS */;
 INSERT INTO `source` VALUES
-(1,'TBD',NULL),
-(2,'VAT Valve',NULL),
-(3,'Gamma Vacuum',NULL),
-(4,'Ametek',NULL),
-(5,'Televac',NULL),
-(6,'APS/VAC',NULL),
-(7,'APS/CTL',NULL),
-(8,'APS/PSG',NULL),
-(9,'APS/MED',NULL),
-(10,'APS/RF',NULL),
-(11,'FID GmbH',''),
-(12,'ATF',''),
-(13,'Keysight',''),
-(14,'Moose Hill Enterprises','');
+(1,'TBD',NULL,NULL,NULL),
+(2,'VAT Valve',NULL,NULL,NULL),
+(3,'Gamma Vacuum',NULL,NULL,NULL),
+(4,'Ametek',NULL,NULL,NULL),
+(5,'Televac',NULL,NULL,NULL),
+(6,'APS/VAC',NULL,NULL,NULL),
+(7,'APS/CTL',NULL,NULL,NULL),
+(8,'APS/PSG',NULL,NULL,NULL),
+(9,'APS/MED',NULL,NULL,NULL),
+(10,'APS/RF',NULL,NULL,NULL),
+(11,'FID GmbH',NULL,NULL,NULL),
+(12,'ATF',NULL,NULL,NULL),
+(13,'Keysight',NULL,NULL,NULL),
+(14,'Moose Hill Enterprises',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

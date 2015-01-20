@@ -22,6 +22,16 @@
         <h:outputText id="id" value="#{sourceObject.id}" title="Id" styleClass="entityDataText"/>
         <p:message for="id"/>
         <p:tooltip for="id" value="Source id cannot be modified."/>
+        
+        <h:outputLabel for="contactInfo" value="Contact Info" styleClass="entityDataLabel"/>
+        <h:inputText id="contactInfo" value="#{sourceObject.contactInfo}" title="Description" styleClass="entityDataText"/>
+        <p:message for="contactInfo"/>  
+        <p:tooltip for="contactInfo" value="Enter source contact info."/>
+
+        <h:outputLabel for="url" value="URL" styleClass="entityDataLabel"/>
+        <h:inputText id="url" value="#{sourceObject.url}" title="URL" styleClass="entityDataText"/>
+        <p:message for="url"/>  
+        <p:tooltip for="url" value="Enter source url."/>          
     </p:panelGrid>
 
 </ui:composition>

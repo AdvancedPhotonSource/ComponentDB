@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -74,6 +75,16 @@ public class DesignElement extends CloneableEntity {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
     @ManyToMany
     private List<PropertyValue> propertyValueList;
+    
+    @JoinTable(name = "design_element_link", joinColumns = {
+        @JoinColumn(name = "child_design_element_id", referencedColumnName = "id")}, 
+            inverseJoinColumns = {
+        @JoinColumn(name = "parent_design_element_id", referencedColumnName = "id")})
+    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.REFRESH})
+    private List<DesignElement> parentDesignElementList;
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "parentDesignElementList")
+    private List<DesignElement> childDesignElementList;
+    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
     private List<DesignElementConnection> designElementConnectionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstDesignElementId")
@@ -222,6 +233,55 @@ public class DesignElement extends CloneableEntity {
 
     public void setParentDesign(Design parentDesign) {
         this.parentDesign = parentDesign;
+    }
+
+    public List<DesignElement> getParentDesignElementList() {
+        return parentDesignElementList;
+    }
+
+    public void setParentDesignElementList(List<DesignElement> parentDesignElementList) {
+        this.parentDesignElementList = parentDesignElementList;
+    }
+
+    public List<DesignElement> getChildDesignElementList() {
+        return childDesignElementList;
+    }
+
+    public void setChildDesignElementList(List<DesignElement> childDesignElementList) {
+        this.childDesignElementList = childDesignElementList;
+    }
+
+    public DesignElement getParentDesignElement() {
+        if (parentDesignElementList == null || parentDesignElementList.isEmpty()) {
+            return null;
+        }
+        return parentDesignElementList.get(0);
+    }
+
+    public void resetParentDesignElement() {
+        parentDesignElementList = null;
+    }
+    
+    public void setParentDesignElement(DesignElement parentDesignElement) {
+        DesignElement oldParentDesignElement = getParentDesignElement();
+        if (oldParentDesignElement != null) {
+            if (oldParentDesignElement.equals(parentDesignElement)) {
+                return;
+            }
+            List<DesignElement> oldParentDesignElementChildList = oldParentDesignElement.getChildDesignElementList();
+            oldParentDesignElementChildList.remove(this);
+        }
+        
+        parentDesignElementList = new ArrayList<>();
+        if (parentDesignElement != null) {
+            parentDesignElementList.add(parentDesignElement);
+            List<DesignElement> newParentDesignElementChildList = parentDesignElement.getChildDesignElementList();
+            if (newParentDesignElementChildList == null) {
+                newParentDesignElementChildList = new ArrayList<>();
+                parentDesignElement.setChildDesignElementList(newParentDesignElementChildList);
+            }
+            newParentDesignElementChildList.add(this);
+        }
     }
 
     @Override

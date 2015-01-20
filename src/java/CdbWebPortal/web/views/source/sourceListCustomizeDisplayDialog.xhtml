@@ -16,12 +16,17 @@
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{sourceController.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayContactInfo" value="#{sourceController.displayContactInfo}"/>  
+                <h:outputLabel for="displayContactInfo" value="Display Contact Info" styleClass="dialogDataLabel"/>
+
                 <p:selectBooleanCheckbox id="displayDescription" value="#{sourceController.displayDescription}"/>  
                 <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
                 <p:selectBooleanCheckbox id="displayId" value="#{sourceController.displayId}"/>  
                 <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayUrl" value="#{sourceController.displayUrl}"/>  
+                <h:outputLabel for="displayUrl" value="Display URL" styleClass="dialogDataLabel"/>
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">

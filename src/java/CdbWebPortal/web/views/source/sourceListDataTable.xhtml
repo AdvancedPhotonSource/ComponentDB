@@ -36,6 +36,20 @@
             <h:outputText value="#{sourceObject.description}"/>
         </p:column>
 
+        <p:column sortBy="#{sourceObject.contactInfo}" headerText="Contact Info" 
+                  filterBy="#{sourceObject.contactInfo}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByContactInfo}"
+                  rendered="#{sourceController.displayContactInfo}">
+            <h:outputText value="#{sourceObject.contactInfo}"/>
+        </p:column>
+ 
+        <p:column sortBy="#{sourceObject.url}" headerText="URL" 
+                  filterBy="#{sourceObject.url}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByUrl}"
+                  rendered="#{sourceController.displayUrl}">
+            <h:outputText value="#{sourceObject.url}"/>
+        </p:column>
+        
         <p:column headerText="Actions">
             <ui:include src="../common/commonListActionLinks.xhtml">
                 <ui:param name="entityController" value="#{sourceController}"/>

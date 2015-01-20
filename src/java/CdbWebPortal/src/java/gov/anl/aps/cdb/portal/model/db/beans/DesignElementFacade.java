@@ -29,5 +29,4 @@ public class DesignElementFacade extends AbstractFacade<DesignElement>
     public DesignElementFacade() {
         super(DesignElement.class);
     }
-    
 }

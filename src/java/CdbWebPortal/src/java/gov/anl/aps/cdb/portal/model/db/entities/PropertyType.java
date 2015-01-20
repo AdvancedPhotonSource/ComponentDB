@@ -43,9 +43,7 @@ import java.util.regex.Pattern;
     @NamedQuery(name = "PropertyType.findByName", query = "SELECT p FROM PropertyType p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyType.findByDescription", query = "SELECT p FROM PropertyType p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyType.findByDefaultValue", query = "SELECT p FROM PropertyType p WHERE p.defaultValue = :defaultValue"),
-    @NamedQuery(name = "PropertyType.findByDefaultUnits", query = "SELECT p FROM PropertyType p WHERE p.defaultUnits = :defaultUnits"),
-    @NamedQuery(name = "PropertyType.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
-    @NamedQuery(name = "PropertyType.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
+    @NamedQuery(name = "PropertyType.findByDefaultUnits", query = "SELECT p FROM PropertyType p WHERE p.defaultUnits = :defaultUnits")})
 public class PropertyType extends CloneableEntity {
 
     @Id
@@ -64,14 +62,6 @@ public class PropertyType extends CloneableEntity {
     @Size(max = 16)
     @Column(name = "default_units")
     private String defaultUnits;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "is_user_writeable")
-    private boolean isUserWriteable;
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "is_dynamic")
-    private boolean isDynamic;
     @ManyToMany(mappedBy = "propertyTypeList")
     private List<ConnectorType> connectorTypeList;
     @ManyToMany(mappedBy = "propertyTypeList")
@@ -96,11 +86,9 @@ public class PropertyType extends CloneableEntity {
         this.id = id;
     }
 
-    public PropertyType(Integer id, String name, boolean isUserWriteable, boolean isDynamic) {
+    public PropertyType(Integer id, String name) {
         this.id = id;
         this.name = name;
-        this.isUserWriteable = isUserWriteable;
-        this.isDynamic = isDynamic;
     }
 
     @Override
@@ -142,22 +130,6 @@ public class PropertyType extends CloneableEntity {
 
     public void setDefaultUnits(String defaultUnits) {
         this.defaultUnits = defaultUnits;
-    }
-
-    public boolean getIsUserWriteable() {
-        return isUserWriteable;
-    }
-
-    public void setIsUserWriteable(boolean isUserWriteable) {
-        this.isUserWriteable = isUserWriteable;
-    }
-
-    public boolean getIsDynamic() {
-        return isDynamic;
-    }
-
-    public void setIsDynamic(boolean isDynamic) {
-        this.isDynamic = isDynamic;
     }
 
     @XmlTransient

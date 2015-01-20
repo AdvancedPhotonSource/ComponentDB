@@ -45,8 +45,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByUnits", query = "SELECT p FROM PropertyValue p WHERE p.units = :units"),
     @NamedQuery(name = "PropertyValue.findByDescription", query = "SELECT p FROM PropertyValue p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyValue.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValue p WHERE p.enteredOnDateTime = :enteredOnDateTime"),
-    @NamedQuery(name = "PropertyValue.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
-    @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic")})
+    @NamedQuery(name = "PropertyValue.findByIsUserWriteable", query = "SELECT p FROM PropertyValue p WHERE p.isUserWriteable = :isUserWriteable"),
+    @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyValue p WHERE p.isDynamic = :isDynamic")})
 public class PropertyValue extends CloneableEntity {
 
     @Id

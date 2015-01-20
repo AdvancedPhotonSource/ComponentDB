@@ -44,16 +44,6 @@
         <h:inputText id="defaultUnits" value="#{propertyTypeObject.defaultUnits}" title="Default Units" styleClass="entityDataText"/>
         <p:message for="defaultUnits"/> 
         <p:tooltip for="defaultValue" value="Default units specification is optional."/>
-
-        <h:outputLabel for="userWriteable" value="User Writeable" styleClass="entityDataLabel"/>        
-        <p:selectBooleanCheckbox id="userWriteable" value="#{propertyTypeObject.isUserWriteable}" styleClass="entityDataText"/>
-        <p:message for="userWriteable"/>
-        <p:tooltip for="userWriteable" value="Check this box if property value can be modified by any user."/>
-
-        <h:outputLabel for="dynamic" value="Dynamic" styleClass="entityDataLabel"/>        
-        <p:selectBooleanCheckbox id="dynamic" value="#{propertyTypeObject.isDynamic}" styleClass="entityDataText"/>
-        <p:message for="dynamic"/>
-        <p:tooltip for="dynamic" value="Check this box if inherited property value can be overriden."/>
         
     </p:panelGrid>
 

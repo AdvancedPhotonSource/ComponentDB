@@ -25,26 +25,42 @@ import org.primefaces.component.datatable.DataTable;
 public class ComponentSourceController extends CrudEntityController<ComponentSource, ComponentSourceFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentSource.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "ComponentSource.List.Display.Id";
-    private static final String DisplayDescriptionSettingTypeKey = "ComponentSource.List.Display.Description";
+    private static final String DisplayContactInfoSettingTypeKey = "ComponentSource.List.Display.ContactInfo";
     private static final String DisplayCostSettingTypeKey = "ComponentSource.List.Display.Cost";
+    private static final String DisplayDescriptionSettingTypeKey = "ComponentSource.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "ComponentSource.List.Display.Id";
+    private static final String DisplayIsManufacturerSettingTypeKey = "ComponentSource.List.Display.IsManufacturer";
+    private static final String DisplayIsVendorSettingTypeKey = "ComponentSource.List.Display.IsVendor";
     private static final String DisplayPartNumberSettingTypeKey = "ComponentSource.List.Display.PartNumber";
+    private static final String DisplayUrlSettingTypeKey = "ComponentSource.List.Display.Url";
 
+    private static final String FilterByContactInfoSettingTypeKey = "ComponentSource.List.FilterBy.ContactInfo";
     private static final String FilterByCostSettingTypeKey = "ComponentSource.List.FilterBy.Cost";
     private static final String FilterByDescriptionSettingTypeKey = "ComponentSource.List.FilterBy.Description";
+    private static final String FilterByIsManufacturerSettingTypeKey = "ComponentSource.List.FilterBy.IsManufacturer";
+    private static final String FilterByIsVendorSettingTypeKey = "ComponentSource.List.FilterBy.IsVendor";
     private static final String FilterByPartNumberSettingTypeKey = "ComponentSource.List.FilterBy.PartNumber";
     private static final String FilterBySourceNameSettingTypeKey = "ComponentSource.List.FilterBy.SourceName";
+    private static final String FilterByUrlSettingTypeKey = "ComponentSource.List.FilterBy.Url";
 
     @EJB
     private ComponentSourceFacade componentSourceFacade;
     private static final Logger logger = Logger.getLogger(ComponentSourceController.class.getName());
 
+    private Boolean displayContactInfo = null;
     private Boolean displayCost = null;
+    private Boolean displayIsManufacturer = null;
+    private Boolean displayIsVendor = null;
     private Boolean displayPartNumber = null;
+    private Boolean displayUrl = null;
 
+    private String filterByContactInfo = null;
     private String filterByCost = null;
+    private String filterByIsManufacturer = null;
+    private String filterByIsVendor = null;
     private String filterByPartNumber = null;
     private String filterBySourceName = null;
+    private String filterByUrl = null;
 
     public ComponentSourceController() {
     }
@@ -99,15 +115,22 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayContactInfo = Boolean.parseBoolean(settingTypeMap.get(DisplayContactInfoSettingTypeKey).getDefaultValue());
         displayCost = Boolean.parseBoolean(settingTypeMap.get(DisplayCostSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayIsManufacturer = Boolean.parseBoolean(settingTypeMap.get(DisplayIsManufacturerSettingTypeKey).getDefaultValue());
+        displayIsVendor = Boolean.parseBoolean(settingTypeMap.get(DisplayIsVendorSettingTypeKey).getDefaultValue());
         displayPartNumber = Boolean.parseBoolean(settingTypeMap.get(DisplayPartNumberSettingTypeKey).getDefaultValue());
+        displayUrl = Boolean.parseBoolean(settingTypeMap.get(DisplayUrlSettingTypeKey).getDefaultValue());
 
+        filterByContactInfo = settingTypeMap.get(FilterByContactInfoSettingTypeKey).getDefaultValue();
         filterByCost = settingTypeMap.get(FilterByCostSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByIsManufacturer = settingTypeMap.get(FilterByIsManufacturerSettingTypeKey).getDefaultValue();
+        filterByIsVendor = settingTypeMap.get(FilterByIsVendorSettingTypeKey).getDefaultValue();
         filterByPartNumber = settingTypeMap.get(FilterByPartNumberSettingTypeKey).getDefaultValue();
         filterBySourceName = settingTypeMap.get(FilterBySourceNameSettingTypeKey).getDefaultValue();
-
+        filterByUrl = settingTypeMap.get(FilterByUrlSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -118,15 +141,23 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayContactInfo = sessionUser.getUserSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
         displayCost = sessionUser.getUserSettingValueAsBoolean(DisplayCostSettingTypeKey, displayCost);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayIsManufacturer = sessionUser.getUserSettingValueAsBoolean(DisplayIsManufacturerSettingTypeKey, displayIsManufacturer);
+        displayIsVendor = sessionUser.getUserSettingValueAsBoolean(DisplayIsVendorSettingTypeKey, displayIsVendor);
         displayPartNumber = sessionUser.getUserSettingValueAsBoolean(DisplayPartNumberSettingTypeKey, displayPartNumber);
+        displayUrl = sessionUser.getUserSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
 
+        filterByContactInfo = sessionUser.getUserSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
         filterByCost = sessionUser.getUserSettingValueAsString(FilterByCostSettingTypeKey, filterByCost);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByIsManufacturer = sessionUser.getUserSettingValueAsString(FilterByIsManufacturerSettingTypeKey, filterByIsManufacturer);
+        filterByIsVendor = sessionUser.getUserSettingValueAsString(FilterByIsVendorSettingTypeKey, filterByIsVendor);
+
         filterByPartNumber = sessionUser.getUserSettingValueAsString(FilterByPartNumberSettingTypeKey, filterByPartNumber);
         filterBySourceName = sessionUser.getUserSettingValueAsString(FilterBySourceNameSettingTypeKey, filterBySourceName);
-
+        filterByUrl = sessionUser.getUserSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
     @Override
@@ -138,8 +169,12 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
 
         Map<String, String> filters = dataTable.getFilters();
         filterByCost = filters.get("cost");
+        filterByContactInfo = filters.get("contactInfo");
+        filterByIsManufacturer = filters.get("isManufacturer");
+        filterByIsVendor = filters.get("isVendor");
         filterByPartNumber = filters.get("partNumber");
         filterBySourceName = filters.get("source.name");
+        filterByUrl = filters.get("url");
     }
 
     @Override
@@ -150,23 +185,34 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
         sessionUser.setUserSettingValue(DisplayCostSettingTypeKey, displayCost);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayIsManufacturerSettingTypeKey, displayIsManufacturer);
+        sessionUser.setUserSettingValue(DisplayIsVendorSettingTypeKey, displayIsVendor);
         sessionUser.setUserSettingValue(DisplayPartNumberSettingTypeKey, displayPartNumber);
+        sessionUser.setUserSettingValue(DisplayUrlSettingTypeKey, displayUrl);
 
+        sessionUser.setUserSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
         sessionUser.setUserSettingValue(FilterByCostSettingTypeKey, filterByCost);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByIsManufacturerSettingTypeKey, filterByIsManufacturer);
+        sessionUser.setUserSettingValue(FilterByIsVendorSettingTypeKey, filterByIsVendor);
         sessionUser.setUserSettingValue(FilterByPartNumberSettingTypeKey, filterByPartNumber);
         sessionUser.setUserSettingValue(FilterBySourceNameSettingTypeKey, filterBySourceName);
-
+        sessionUser.setUserSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
     @Override
     public void clearListFilters() {
         super.clearListFilters();
         filterByCost = null;
+        filterByContactInfo = null;
+        filterByIsManufacturer = null;
+        filterByIsVendor = null;
         filterByPartNumber = null;
         filterBySourceName = null;
+        filterByUrl = null;
     }
 
     @FacesConverter(forClass = ComponentSource.class)
@@ -247,6 +293,70 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
 
     public void setFilterBySourceName(String filterBySourceName) {
         this.filterBySourceName = filterBySourceName;
+    }
+
+    public Boolean getDisplayContactInfo() {
+        return displayContactInfo;
+    }
+
+    public void setDisplayContactInfo(Boolean displayContactInfo) {
+        this.displayContactInfo = displayContactInfo;
+    }
+
+    public Boolean getDisplayIsManufacturer() {
+        return displayIsManufacturer;
+    }
+
+    public void setDisplayIsManufacturer(Boolean displayIsManufacturer) {
+        this.displayIsManufacturer = displayIsManufacturer;
+    }
+
+    public Boolean getDisplayIsVendor() {
+        return displayIsVendor;
+    }
+
+    public void setDisplayIsVendor(Boolean displayIsVendor) {
+        this.displayIsVendor = displayIsVendor;
+    }
+
+    public Boolean getDisplayUrl() {
+        return displayUrl;
+    }
+
+    public void setDisplayUrl(Boolean displayUrl) {
+        this.displayUrl = displayUrl;
+    }
+
+    public String getFilterByContactInfo() {
+        return filterByContactInfo;
+    }
+
+    public void setFilterByContactInfo(String filterByContactInfo) {
+        this.filterByContactInfo = filterByContactInfo;
+    }
+
+    public String getFilterByIsManufacturer() {
+        return filterByIsManufacturer;
+    }
+
+    public void setFilterByIsManufacturer(String filterByIsManufacturer) {
+        this.filterByIsManufacturer = filterByIsManufacturer;
+    }
+
+    public String getFilterByIsVendor() {
+        return filterByIsVendor;
+    }
+
+    public void setFilterByIsVendor(String filterByIsVendor) {
+        this.filterByIsVendor = filterByIsVendor;
+    }
+
+    public String getFilterByUrl() {
+        return filterByUrl;
+    }
+
+    public void setFilterByUrl(String filterByUrl) {
+        this.filterByUrl = filterByUrl;
     }
 
 }

@@ -204,8 +204,6 @@ CREATE TABLE `property_type` (
   `property_type_handler_id` int(11) unsigned DEFAULT NULL,
   `default_value` varchar(64) DEFAULT NULL,
   `default_units` varchar(16) DEFAULT NULL,
-  `is_user_writeable` bool NOT NULL DEFAULT 0,
-  `is_dynamic` bool NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `property_type_u1` (`name`),
   KEY `property_type_k1` (`property_type_category_id`),
@@ -468,6 +466,8 @@ CREATE TABLE `source` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `contact_info` varchar(64) DEFAULT NULL,
+  `url` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `source_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -525,6 +525,10 @@ CREATE TABLE `component_source` (
   `part_number` varchar(64) DEFAULT NULL,
   `cost` float(10,2) unsigned DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `is_vendor` bool NOT NULL DEFAULT 0,
+  `is_manufacturer` bool NOT NULL DEFAULT 0,
+  `contact_info` varchar(64) DEFAULT NULL,
+  `url` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `component_source_u1` (`component_id`, `source_id`),
   KEY `component_source_k1` (`component_id`),
@@ -869,6 +873,21 @@ CREATE TABLE `design_element` (
 --
 -- Note: Need trigger to prevent changing entity_info_id
 --
+
+--
+-- Table `design_element_link`
+--
+
+DROP TABLE IF EXISTS `design_element_link`;
+CREATE TABLE `design_element_link` (
+  `parent_design_element_id` int(11) unsigned NOT NULL,
+  `child_design_element_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`parent_design_element_id`, `child_design_element_id`),
+  KEY `design_element_link_k1` (`parent_design_element_id`),
+  CONSTRAINT `design_element_link_fk1` FOREIGN KEY (`parent_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  KEY `design_element_link_k2` (`child_design_element_id`),
+  CONSTRAINT `design_element_link_fk2` FOREIGN KEY (`child_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 -- Table `design_element_property`

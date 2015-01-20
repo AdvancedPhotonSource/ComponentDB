@@ -17,20 +17,31 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("sourceController")
 @SessionScoped
 public class SourceController extends CrudEntityController<Source, SourceFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
+    private static final String DisplayContactInfoSettingTypeKey = "Source.List.Display.ContactInfo";
     private static final String DisplayDescriptionSettingTypeKey = "Source.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
+    private static final String DisplayUrlSettingTypeKey = "Source.List.Display.Url";
 
     private static final String FilterByNameSettingTypeKey = "Source.List.FilterBy.Name";
+    private static final String FilterByContactInfoSettingTypeKey = "Source.List.FilterBy.ContactInfo";
     private static final String FilterByDescriptionSettingTypeKey = "Source.List.FilterBy.Description";
+    private static final String FilterByUrlSettingTypeKey = "Source.List.FilterBy.Url";
 
     private static final Logger logger = Logger.getLogger(SourceController.class.getName());
 
+    private Boolean displayContactInfo = null;
+    private Boolean displayUrl = null;
+    
+    private String filterByContactInfo = null;
+    private String filterByUrl = null;
+    
     @EJB
     private SourceFacade sourceFacade;
 
@@ -105,10 +116,14 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayContactInfo = Boolean.parseBoolean(settingTypeMap.get(DisplayContactInfoSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayUrl = Boolean.parseBoolean(settingTypeMap.get(DisplayUrlSettingTypeKey).getDefaultValue());
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByContactInfo = settingTypeMap.get(FilterByContactInfoSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByUrl = settingTypeMap.get(FilterByUrlSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -119,12 +134,27 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayContactInfo = sessionUser.getUserSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayUrl = sessionUser.getUserSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
 
         filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByContactInfo = sessionUser.getUserSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByUrl = sessionUser.getUserSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
+        }
+        Map<String, String> filters = dataTable.getFilters();
+        filterByContactInfo = filters.get("contactInfo");
+        filterByUrl = filters.get("url");
+    }
+    
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -133,12 +163,23 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayUrlSettingTypeKey, displayUrl);
 
         sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByContactInfo = null;
+        filterByUrl = null;
+    }
+    
     @FacesConverter(forClass = Source.class)
     public static class SourceControllerConverter implements Converter {
 
@@ -188,6 +229,38 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
     @Override
     public boolean entityCanBeCreatedByUsers() {
         return true;
+    }
+
+    public Boolean getDisplayContactInfo() {
+        return displayContactInfo;
+    }
+
+    public void setDisplayContactInfo(Boolean displayContactInfo) {
+        this.displayContactInfo = displayContactInfo;
+    }
+
+    public Boolean getDisplayUrl() {
+        return displayUrl;
+    }
+
+    public void setDisplayUrl(Boolean displayUrl) {
+        this.displayUrl = displayUrl;
+    }
+
+    public String getFilterByContactInfo() {
+        return filterByContactInfo;
+    }
+
+    public void setFilterByContactInfo(String filterByContactInfo) {
+        this.filterByContactInfo = filterByContactInfo;
+    }
+
+    public String getFilterByUrl() {
+        return filterByUrl;
+    }
+
+    public void setFilterByUrl(String filterByUrl) {
+        this.filterByUrl = filterByUrl;
     }
     
 }
