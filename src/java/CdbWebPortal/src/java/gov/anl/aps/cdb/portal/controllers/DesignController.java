@@ -443,7 +443,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
     }
 
-    public boolean isSelectChildDesigns() {
+    public boolean getSelectChildDesigns() {
         return selectChildDesigns;
     }
 

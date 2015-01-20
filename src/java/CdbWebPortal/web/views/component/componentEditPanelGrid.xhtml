@@ -8,7 +8,7 @@
 
     <ui:param name="componentObject" value="#{componentController.selected}"/>
 
-    <p:panelGrid columns="4" styleClass="editEntityDetails">
+    <p:panelGrid id="componentEditPanelGrid" columns="4" styleClass="editEntityDetails">
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{componentObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
@@ -25,33 +25,37 @@
         <p:tooltip for="id" value="Component id cannot be modified."/>
 
         <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
-        <p:column>
-            <p:selectOneMenu id="componentType" 
-                             widgetVar="componentTypeSelectOneMenuWidget"
-                             value="#{componentObject.componentType}" 
-                             styleClass="entityDataText"
-                             converter="componentTypeConverter"
-                             binding="#{componentController.componentTypeSelectOneMenu}">
-                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                <f:selectItems var="componentType" value="#{componentTypeController.availableItems}" itemLabel="#{componentType.name}" 
-                               itemValue="#{componentType}"/>
+        <p:column id="componentType">
+            <p:autoComplete id="componentTypeDropdown" 
+                            value="#{componentObject.componentType}" 
+                            var="componentTypeObject"
+                            converter="componentTypeConverter" 
+                            completeMethod="#{componentController.completeComponentType}" 
+                            itemLabel="#{componentTypeObject.name}"
+                            itemValue="#{componentTypeObject}"
+                            valueChangeListener="#{componentController.selectComponentTypeValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete">
+                <p:ajax event="valueChange" immediate="true" process="@this"/>
                 <p:ajax update="componentTypeCategory"/>       
-            </p:selectOneMenu>
+            </p:autoComplete>
 
-            <p:commandButton id="selectComponentTypeButton"
+            <p:commandButton id="componentTypeSelectButton"
                              action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
                              oncomplete="componentTypeSelectDialogWidget.show()"
                              update="@form"
                              immediate="true"
-                             alt="Select Component Type" 
+                             alt="Select Component" 
                              styleClass="actionButtonSmall"
                              icon="ui-icon-search">
-                <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{componentObject.componentType}"/>
-                <p:tooltip for="selectComponentTypeButton" value="Search for component type."/>
+                <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{designElementObject.component}"/>
+                <p:tooltip for="componentTypeSelectButton" value="Search for component type."/>
             </p:commandButton>
         </p:column>
         <p:message for="componentType"/>
-        <p:tooltip for="componentType" value="Select component type."/> 
+        <p:tooltip for="componentTypeDropdown" value="Select component type."/>  
 
         <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
         <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
@@ -64,8 +68,9 @@
         
     </p:panelGrid>
 
-    <ui:include src="../componentType/componentTypeSelectDialog.xhtml"/>
-    
+    <ui:include src="../componentType/componentTypeSelectDialog.xhtml">
+        <ui:param name="updateTarget" value="componentEditPanelGrid"/>
+    </ui:include>    
     <ui:include src="../componentType/componentTypeSelectCustomizeDisplayDialog.xhtml"/>
     
 </ui:composition>

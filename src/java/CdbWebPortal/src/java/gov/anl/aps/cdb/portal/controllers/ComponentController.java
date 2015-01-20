@@ -5,6 +5,7 @@ import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
@@ -19,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -85,6 +87,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private ComponentFacade componentFacade;
 
     @EJB
+    private ComponentTypeFacade componentTypeFacade;
+    
+    @EJB
     private PropertyTypeFacade propertyTypeFacade;
 
     @EJB
@@ -125,6 +130,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private List<Location> locationList = null;
 
     private List<PropertyValue> filteredPropertyValueList;
+    private List<ComponentType> selectComponentTypeCandidateList = null;
 
     public ComponentController() {
         super();
@@ -149,6 +155,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
             entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
         }
         component.setEntityInfo(entityInfo);
+        
+        selectComponentTypeCandidateList = null;
         return component;
     }
 
@@ -293,8 +301,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
         prepareComponentImageList(component);
 
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
-        for (ComponentInstance componentInstance : componentInstanceList) {
-            componentInstance.resetAttributesToNullIfEmpty();
+        if (componentInstanceList != null) {
+            for (ComponentInstance componentInstance : componentInstanceList) {
+                componentInstance.resetAttributesToNullIfEmpty();
+            }
         }
         logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
     }
@@ -748,9 +758,19 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void selectComponentType(ComponentType componentType) {
         Component component = getCurrent();
         component.setComponentType(componentType);
-        componentTypeSelectOneMenu.setSubmittedValue(componentType);
     }
 
+    public List<ComponentType> getSelectComponentTypeCandidateList() {
+        if (selectComponentTypeCandidateList == null) {
+            selectComponentTypeCandidateList = componentTypeFacade.findAll();
+        }
+        return selectComponentTypeCandidateList;
+    }
+
+    public List<ComponentType> completeComponentType(String query) {
+        return ComponentTypeUtility.filterComponentType(query, getSelectComponentTypeCandidateList());
+    }
+    
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.
     public void selectComponentTypeValueChangeListener(ValueChangeEvent valueChangeEvent) {
