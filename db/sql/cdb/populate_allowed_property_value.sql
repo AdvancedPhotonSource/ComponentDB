@@ -348,6 +348,18 @@ INSERT INTO `allowed_property_value` VALUES
 (345,8,'PCI',NULL,'',15.00),
 (346,8,'PCIe',NULL,'',16.00),
 (347,8,'Rack Mount',NULL,'',17.00),
-(348,8,'SO-DIMM',NULL,'',18.00);
+(348,8,'SO-DIMM',NULL,'',18.00),
+(349,33,'Pending','','',2.00),
+(350,33,'WIP','','',1.00),
+(351,33,'Released','','',3.00),
+(352,34,'Under Fabrication','','',2.00),
+(353,34,'Under Receipt Inspection','','',4.00),
+(354,34,'On-site Non-Operational Spare','','',8.00),
+(355,34,'Under Procurement','','',1.00),
+(356,34,'Under Delivery','','',3.00),
+(357,34,'In Storage','','',5.00),
+(358,34,'Under Maintenance','','',9.00),
+(359,34,'On-site Operational Spare','','',7.00),
+(360,34,'Under Installation','','',6.00);
 /*!40000 ALTER TABLE `allowed_property_value` ENABLE KEYS */;
 UNLOCK TABLES;

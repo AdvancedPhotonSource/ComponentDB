@@ -4,7 +4,7 @@ INSERT INTO `property_type` VALUES
 (1,'EDP Collection',NULL,4,4,NULL,NULL,0,0),
 (2,'QA Level','',2,NULL,'D',NULL,0,0),
 (3,'QA Inspection Template','Inspection Procedure Document',2,NULL,NULL,NULL,0,0),
-(4,'QA Inspection Report','Inspection Result Document',2,NULL,NULL,NULL,0,0),
+(4,'QA Inspection Report','Inspection Result Document',2,NULL,'','',1,1),
 (5,'Electrical Equipment Status','NRTL Approved or APS Inspection Required or Not Required',2,NULL,NULL,NULL,0,0),
 (6,'Electrical Inspection #','Inspection # from DEEI (use desc of Status?)',2,NULL,NULL,NULL,0,0),
 (7,'Documentation URI','',4,3,NULL,NULL,0,0),
@@ -20,6 +20,21 @@ INSERT INTO `property_type` VALUES
 (17,'PDMLink Drawing',NULL,4,6,NULL,NULL,0,0),
 (18,'AMOS Order',NULL,4,7,NULL,NULL,0,0),
 (19,'Purchase Requisition',NULL,4,8,NULL,NULL,0,0),
-(20,'Cost',NULL,4,9,NULL,NULL,0,0);
+(20,'Cost',NULL,4,9,NULL,NULL,0,0),
+(21,'QA Inspection Complete','',2,10,'false','',1,1),
+(22,'Pressure System Component','',2,10,'','',0,0),
+(23,'Custodian','',NULL,NULL,'','',1,0),
+(24,'Date of Manufacture','',5,11,'','',0,0),
+(25,'Date In Service','',5,11,'','',0,0),
+(26,'Date Next Maintenance Due','',5,11,'','',0,0),
+(27,'Maintenance Record Template','',5,5,'','',0,0),
+(28,'Maintenance Record','',5,5,'','',0,0),
+(29,'Fiducialization Record Template','',5,5,'','',0,0),
+(30,'Fiducialization Record','',5,5,'','',0,0),
+(31,'Alignment Record Template','',5,5,'','',0,0),
+(32,'Alignment Record','',5,5,'','',0,0),
+(33,'Design Status','',6,NULL,'','',0,0),
+(34,'Component Instance Status','',6,NULL,'','',0,0),
+(35,'Length','',3,NULL,'','',0,0);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

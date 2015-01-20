@@ -81,6 +81,12 @@ INSERT INTO `component_property` VALUES
 (182,89),
 (182,90),
 (182,91),
-(182,92);
+(182,92),
+(183,110),
+(183,133),
+(183,134),
+(184,97),
+(184,135),
+(186,96);
 /*!40000 ALTER TABLE `component_property` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -10,6 +10,10 @@ INSERT INTO `source` VALUES
 (7,'APS/CTL',NULL),
 (8,'APS/PSG',NULL),
 (9,'APS/MED',NULL),
-(10,'APS/RF',NULL);
+(10,'APS/RF',NULL),
+(11,'FID GmbH',''),
+(12,'ATF',''),
+(13,'Keysight',''),
+(14,'Moose Hill Enterprises','');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

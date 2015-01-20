@@ -177,6 +177,10 @@ INSERT INTO `component` VALUES
 (179,'VERTEX-POINT','',116,208),
 (180,'Generic: Laptop/Tablet','',121,382),
 (181,'XEM7350-K70T','Xilinx Kintex-7 board with USB 3.0',43,388),
-(182,'MULTIPLET R&D MOLD CAVITY ASSEMBLY','U221020202-104210',61,390);
+(182,'MULTIPLET R&D MOLD CAVITY ASSEMBLY','U221020202-104210',61,390),
+(183,'FID HV Pulser for MBA Injection','Model #FPG 20-01MC2N6',122,392),
+(184,'DSO-S204A Oscilloscope','Infiniium S Series 2 GHz 4 channel\r\n',44,393),
+(185,'ATF HV Attenuator','Model # 20-025N\r\n',123,394),
+(186,'FID High Voltage Coax Cable','Describe length in Instance Property ',34,395);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;
