@@ -97,9 +97,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     private Boolean displayType = null;
     private Boolean displayCategory = null;
+    private Boolean displaySources = true;
 
     private String filterByType = null;
     private String filterByCategory = null;
+    private String filterBySources = null;
 
     private Boolean selectDisplayType = true;
     private Boolean selectDisplayCategory = true;
@@ -384,7 +386,6 @@ public class ComponentController extends CrudEntityController<Component, Compone
         }
         componentInstance.setEntityInfo(entityInfo);
         componentInstance.setComponent(component);
-        componentInstance.updateDynamicProperties(createdByUser, createdOnDateTime);
         componentInstanceList.add(componentInstance);
     }
 
@@ -868,6 +869,22 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void setSelectFilterByCategory(String selectFilterByCategory) {
         this.selectFilterByCategory = selectFilterByCategory;
+    }
+
+    public Boolean getDisplaySources() {
+        return displaySources;
+    }
+
+    public void setDisplaySources(Boolean displaySources) {
+        this.displaySources = displaySources;
+    }
+
+    public String getFilterBySources() {
+        return filterBySources;
+    }
+
+    public void setFilterBySources(String filterBySources) {
+        this.filterBySources = filterBySources;
     }
 
     public Integer getDisplayPropertyTypeId1() {

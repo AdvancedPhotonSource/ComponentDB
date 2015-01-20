@@ -38,13 +38,6 @@
             <h:outputText value="#{locationObject.description}"/>
         </p:column>
 
-        <p:column headerText="Actions">
-            <ui:include src="../common/commonListTreeTableActionLinks.xhtml">
-                <ui:param name="entityController" value="#{locationController}"/>
-                <ui:param name="entityObject" value="#{locationObject}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.loggedIn}"/>
-            </ui:include>
-        </p:column>
     </p:treeTable>
 
 </ui:composition>

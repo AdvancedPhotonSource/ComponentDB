@@ -111,7 +111,7 @@ public class Source extends CloneableEntity
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.Source[ id=" + id + " ]";
+        return name;
     }
     
     @Override

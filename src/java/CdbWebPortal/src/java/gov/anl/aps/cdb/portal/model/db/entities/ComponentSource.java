@@ -142,7 +142,7 @@ public class ComponentSource extends CloneableEntity {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ComponentSource[ id=" + id + " ]";
+        return source.getName();
     }
 
 }

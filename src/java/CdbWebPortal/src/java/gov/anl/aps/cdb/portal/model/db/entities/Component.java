@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.HashMap;
@@ -434,5 +435,12 @@ public class Component extends CloneableEntity {
     public String getDisplayNameWithTypeAndCategory() {
         String result = name + " [" + componentType.getNameWithCategory() + "]";
         return result;
+    }
+    
+    public String getComponentSources() {
+        if (componentSourceList == null) {
+            return "";
+        }
+        return CollectionUtility.displayItemListWithoutOutsideDelimiters(componentSourceList, ";");
     }
 }

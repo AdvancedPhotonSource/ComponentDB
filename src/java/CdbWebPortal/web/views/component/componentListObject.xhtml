@@ -41,6 +41,13 @@
         <h:outputText value="#{componentObject.componentType.componentTypeCategory.name}"/>
     </p:column>
 
+    <p:column sortBy="#{componentObject.componentSources}" headerText="Sources" 
+              filterBy="#{componentObject.componentSources}" filterMatchMode="contains"
+              filterValue="#{componentController.filterBySources}"
+              rendered="#{componentController.displaySources}">
+        <h:outputText value="#{componentObject.componentSources}"/>
+    </p:column>
+    
     <ui:param name="propertyValue1" value="#{componentObject.getPropertyValue(propertyTypeId1)}"/>
     <p:column sortBy="#{propertyValue1}" headerText="Property: #{propertyTypeName1}" 
               filterBy="#{propertyValue1}" filterMatchMode="contains"

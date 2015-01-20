@@ -494,4 +494,5 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
         this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
     }
+
 }
