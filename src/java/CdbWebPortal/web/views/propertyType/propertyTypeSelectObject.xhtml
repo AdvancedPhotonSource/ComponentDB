@@ -48,20 +48,6 @@
             <h:outputText value="#{propertyTypeObject.propertyTypeHandler.name}"/>
         </p:column>
 
-        <p:column sortBy="#{propertyTypeObject.isDynamic}" headerText="Is Dynamic" 
-                  filterBy="#{propertyTypeObject.isDynamic}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.selectFilterByIsDynamic}"
-                  rendered="#{propertyTypeController.selectDisplayIsDynamic}">
-            <h:outputText value="#{propertyTypeObject.isDynamic}"/>
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.isUserWriteable}" headerText="Is User Writeable" 
-                  filterBy="#{propertyTypeObject.isUserWriteable}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.selectFilterByIsUserWriteable}"
-                  rendered="#{propertyTypeController.selectDisplayIsUserWriteable}">
-            <h:outputText value="#{propertyTypeObject.isUserWriteable}"/>
-        </p:column>
-
         <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
                   filterBy="#{propertyTypeObject.description}" filterMatchMode="contains"
                   filterValue="#{propertyTypeController.selectFilterByDescription}"

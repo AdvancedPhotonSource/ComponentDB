@@ -518,3 +518,7 @@ h2 {
     width: 25px;
     vertical-align: bottom;
 }
+
+.dataTableCheckbox {
+    text-align: center;
+}

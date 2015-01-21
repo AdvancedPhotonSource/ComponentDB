@@ -13,6 +13,9 @@
                 <p:inputText id="displayNumberOfItemsPerPage" value="#{componentSourceController.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayContactInfo" value="#{componentSourceController.displayContactInfo}"/>  
+                <h:outputLabel for="displayContactInfo" value="Display Contact Info" styleClass="dialogDataLabel"/>
+
                 <p:selectBooleanCheckbox id="displayCost" value="#{componentSourceController.displayCost}"/>  
                 <h:outputLabel for="displayCost" value="Display Cost" styleClass="dialogDataLabel"/>
 
@@ -22,8 +25,17 @@
                 <p:selectBooleanCheckbox id="displayId" value="#{componentSourceController.displayId}"/>  
                 <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
+                <p:selectBooleanCheckbox id="displayIsManufacturer" value="#{componentSourceController.displayIsManufacturer}"/>  
+                <h:outputLabel for="displayIsManufacturer" value="Display Manufacturer Designation" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayIsVendor" value="#{componentSourceController.displayIsVendor}"/>  
+                <h:outputLabel for="displayIsVendor" value="Display Vendor Designation" styleClass="dialogDataLabel"/>
+
                 <p:selectBooleanCheckbox id="displayPartNumber" value="#{componentSourceController.displayPartNumber}"/>  
                 <h:outputLabel for="displayPartNumber" value="Display Part Number" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayUrl" value="#{componentSourceController.displayUrl}"/>  
+                <h:outputLabel for="displayUrl" value="Display URL" styleClass="dialogDataLabel"/>
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">

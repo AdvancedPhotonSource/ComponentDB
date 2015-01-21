@@ -73,12 +73,12 @@
         <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
     </p:column>
 
-    <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Is Dynamic" 
+    <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic" 
               rendered="#{propertyValueController.displayIsDynamic}">
         <h:outputText value="#{propertyValueObject.isDynamic}"/>
     </p:column>
 
-    <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="Is User Writeable" 
+    <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User Writeable" 
               rendered="#{propertyValueController.displayIsUserWriteable}">
         <h:outputText value="#{propertyValueObject.isUserWriteable}"/>
     </p:column>

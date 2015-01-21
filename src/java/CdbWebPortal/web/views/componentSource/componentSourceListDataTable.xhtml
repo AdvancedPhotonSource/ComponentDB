@@ -35,11 +35,35 @@
                   rendered="#{componentSourceController.displayCost}">
             <h:outputText value="#{componentSourceObject.cost}"/>
         </p:column>
-        
+
         <p:column sortBy="#{componentSourceObject.description}" headerText="Description"
                   rendered="#{componentSourceController.displayDescription}">
             <h:outputText value="#{componentSourceObject.description}"/>
-        </p:column>        
+        </p:column>    
+
+        <p:column sortBy="#{componentSourceObject.contactInfo}" headerText="Contact Info"
+                  rendered="#{componentSourceController.displayContactInfo}">
+            <h:outputText value="#{componentSourceObject.contactInfo}"/>
+        </p:column>    
+
+        <p:column sortBy="#{componentSourceObject.url}" headerText="URL"
+                  rendered="#{componentSourceController.displayUrl}">
+            <h:outputLink value="#{componentSourceObject.url}" target="_page_#{componentSourceObject.url}" 
+                          title="#{componentSourceObject.url}">
+                <h:outputText value="#{componentSourceObject.url}"/>
+            </h:outputLink>
+        </p:column>         
+
+        <p:column sortBy="#{componentSourceObject.isManufacturer}" headerText="Is Manufacturer"
+                  rendered="#{componentSourceController.displayIsManufacturer}">
+            <h:outputText value="#{componentSourceObject.isManufacturer}"/>
+        </p:column>   
+        
+        <p:column sortBy="#{componentSourceObject.isVendor}" headerText="Is Vendor"
+                  rendered="#{componentSourceController.displayIsVendor}">
+            <h:outputText value="#{componentSourceObject.isVendor}"/>
+        </p:column> 
+        
     </p:dataTable>
 
 </ui:composition>
