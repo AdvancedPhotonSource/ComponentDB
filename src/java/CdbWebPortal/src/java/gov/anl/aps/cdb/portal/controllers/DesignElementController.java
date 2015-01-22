@@ -47,6 +47,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     private static final String DisplayCreatedByUserSettingTypeKey = "DesignElement.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "DesignElement.List.Display.CreatedOnDateTime";
     private static final String DisplayDescriptionSettingTypeKey = "DesignElement.List.Display.Description";
+    private static final String DisplayFlatTableViewSettingTypeKey = "DesignElement.List.Display.FlatTableView";
     private static final String DisplayIdSettingTypeKey = "DesignElement.List.Display.Id";
     private static final String DisplayLastModifiedByUserSettingTypeKey = "DesignElement.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "DesignElement.List.Display.LastModifiedOnDateTime";
@@ -85,6 +86,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     private Boolean displayChildDesign = null;
     private Boolean displayComponent = null;
+    private Boolean displayFlatTableView = null;
     private Boolean displayLocation = null;
     private Boolean displaySortOrder = null;
 
@@ -102,7 +104,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     private SelectOneMenu componentSelectOneMenu;
     private DataTable designElementPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
-    
+
     public DesignElementController() {
     }
 
@@ -122,6 +124,20 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         selectChildDesignCandidateList = null;
         selectComponentCandidateList = null;
         return designElement;
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            DesignElement designElement = findById(idViewParam);
+            setCurrent(designElement);
+            prepareEntityView(designElement);
+            idViewParam = null;
+        }
+    }
+
+    public DesignElement findById(Integer id) {
+        return designElementFacade.findById(id);
     }
 
     @Override
@@ -164,7 +180,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     public String prepareViewToDesign(DesignElement designElement) {
         return "/views/design/view.xhtml?id=" + designElement.getComponent().getId();
     }
-    
+
     public void prepareAddLog(DesignElement designElement) {
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
@@ -254,6 +270,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayFlatTableView = Boolean.parseBoolean(settingTypeMap.get(DisplayFlatTableViewSettingTypeKey).getDefaultValue());
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -287,6 +304,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayFlatTableView = sessionUser.getUserSettingValueAsBoolean(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
         displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -338,6 +356,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
         sessionUser.setUserSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         sessionUser.setUserSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -435,6 +454,14 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     public void setDisplayComponent(Boolean displayComponent) {
         this.displayComponent = displayComponent;
+    }
+
+    public Boolean getDisplayFlatTableView() {
+        return displayFlatTableView;
+    }
+
+    public void setDisplayFlatTableView(Boolean displayFlatTableView) {
+        this.displayFlatTableView = displayFlatTableView;
     }
 
     public Boolean getDisplayLocation() {
@@ -646,7 +673,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
             designElement.setChildDesign(childDesign);
         }
     }
-    
+
     public DataTable getDesignElementPropertyValueListDataTable() {
         if (userSettingsChanged() || isListDataModelReset()) {
             designElementPropertyValueListDataTable = new DataTable();
@@ -658,7 +685,6 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         this.designElementPropertyValueListDataTable = designElementPropertyValueListDataTable;
     }
 
-
     public List<PropertyValue> getFilteredPropertyValueList() {
         return filteredPropertyValueList;
     }
@@ -666,5 +692,5 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
     }
-    
+
 }

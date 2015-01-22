@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -68,6 +69,7 @@ public class Design extends CloneableEntity {
     private List<DesignLink> parentDesignLinkList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
     private List<DesignLink> childDesignLinkList;
+    @OrderBy("sortOrder ASC")
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
     private List<DesignElement> designElementList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
@@ -164,6 +166,28 @@ public class Design extends CloneableEntity {
         this.entityInfo = entityInfo;
     }
 
+    @XmlTransient
+    public List<DesignElement> getComponentNodes() {
+        ArrayList<DesignElement> componentNodes = new ArrayList<>();
+        for (DesignElement designElement : designElementList) {
+            if (designElement.getComponent() != null) {
+                componentNodes.add(designElement);
+            }
+        }
+        return componentNodes;
+    }
+
+    @XmlTransient
+    public List<DesignElement> getChildDesignNodes() {
+        ArrayList<DesignElement> childDesignNodes = new ArrayList<>();
+        for (DesignElement designElement : designElementList) {
+            if (designElement.getChildDesign()!= null) {
+                childDesignNodes.add(designElement);
+            }
+        }
+        return childDesignNodes;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

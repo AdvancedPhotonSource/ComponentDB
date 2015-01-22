@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -46,6 +45,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
     @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
 public class DesignElement extends CloneableEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -75,16 +75,16 @@ public class DesignElement extends CloneableEntity {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
     @ManyToMany
     private List<PropertyValue> propertyValueList;
-    
+
     @JoinTable(name = "design_element_link", joinColumns = {
-        @JoinColumn(name = "child_design_element_id", referencedColumnName = "id")}, 
+        @JoinColumn(name = "child_design_element_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-        @JoinColumn(name = "parent_design_element_id", referencedColumnName = "id")})
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.REFRESH})
+                @JoinColumn(name = "parent_design_element_id", referencedColumnName = "id")})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private List<DesignElement> parentDesignElementList;
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "parentDesignElementList")
     private List<DesignElement> childDesignElementList;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
     private List<DesignElementConnection> designElementConnectionList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstDesignElementId")
@@ -261,7 +261,7 @@ public class DesignElement extends CloneableEntity {
     public void resetParentDesignElement() {
         parentDesignElementList = null;
     }
-    
+
     public void setParentDesignElement(DesignElement parentDesignElement) {
         DesignElement oldParentDesignElement = getParentDesignElement();
         if (oldParentDesignElement != null) {
@@ -271,7 +271,7 @@ public class DesignElement extends CloneableEntity {
             List<DesignElement> oldParentDesignElementChildList = oldParentDesignElement.getChildDesignElementList();
             oldParentDesignElementChildList.remove(this);
         }
-        
+
         parentDesignElementList = new ArrayList<>();
         if (parentDesignElement != null) {
             parentDesignElementList.add(parentDesignElement);
@@ -284,6 +284,36 @@ public class DesignElement extends CloneableEntity {
         }
     }
 
+    public String getContainedObjectName() {
+        if (component != null) {
+            return component.getName();
+        }
+        if (childDesign != null) {
+            return childDesign.getName();
+        }
+        return null;
+    }
+
+   public String getContainedObjectType() {
+        if (component != null) {
+            return "component";
+        }
+        if (childDesign != null) {
+            return "design";
+        }
+        return null;
+    }
+ 
+   public Integer getContainedObjectId() {
+        if (component != null) {
+            return component.getId();
+        }
+        if (childDesign != null) {
+            return childDesign.getId();
+        }
+        return null;
+    }
+   
     @Override
     public int hashCode() {
         int hash = 0;
@@ -318,7 +348,7 @@ public class DesignElement extends CloneableEntity {
     public String toString() {
         return name;
     }
-  
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);
@@ -335,5 +365,5 @@ public class DesignElement extends CloneableEntity {
             searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
         }
         return searchResult;
-    }    
+    }
 }

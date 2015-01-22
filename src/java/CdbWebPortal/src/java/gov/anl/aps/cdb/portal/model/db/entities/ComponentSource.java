@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -67,6 +68,9 @@ public class ComponentSource extends CloneableEntity {
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Component component;
+
+    private transient String targetUrl;
+    private transient String displayUrl;
 
     public ComponentSource() {
     }
@@ -152,10 +156,26 @@ public class ComponentSource extends CloneableEntity {
         return url;
     }
 
+    public String getTargetUrl() {
+        if (targetUrl == null && url != null) {
+            targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        }
+        return targetUrl;
+    }
+
+    public String getDisplayUrl() {
+        if (displayUrl == null && url != null) {
+            displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
+        }
+        return displayUrl;
+    }
+
     public void setUrl(String url) {
         this.url = url;
+        this.targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        this.displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;

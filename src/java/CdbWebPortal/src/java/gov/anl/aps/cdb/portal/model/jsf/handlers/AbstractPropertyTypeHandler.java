@@ -1,11 +1,9 @@
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
-import gov.anl.aps.cdb.portal.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
-import java.text.DecimalFormat;
+import gov.anl.aps.cdb.portal.utilities.HttpLinkUtility;
 
 /**
  *
@@ -13,21 +11,10 @@ import java.text.DecimalFormat;
  */
 public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandlerInterface {
 
-    public static final int HttpLinkDisplayLength = ConfigurationUtility.getPortalPropertyAsInteger(
-            CdbProperty.HTTP_LINK_DISPLAY_LENGTH_PROPERTY_NAME);
-
     protected String name;
 
     public static String shortenHttpLinkDisplayValueIfNeeded(String displayValue) {
-	if (displayValue == null) {
-	    return null;
-	}
-        int length = displayValue.length();
-        if (length > HttpLinkDisplayLength) {
-            int partLength = HttpLinkDisplayLength/2 - 1;
-            displayValue = displayValue.substring(0, partLength) + "..." + displayValue.substring(length - partLength);
-        }
-        return displayValue;
+        return HttpLinkUtility.prepareHttpLinkDisplayValue(displayValue);
     }
 
     public AbstractPropertyTypeHandler(String name) {

@@ -1,5 +1,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -51,6 +52,9 @@ public class Source extends CloneableEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
     private List<ComponentSource> componentSourceList;
 
+    private transient String targetUrl;
+    private transient String displayUrl;
+    
     public Source() {
     }
 
@@ -100,8 +104,24 @@ public class Source extends CloneableEntity {
         return url;
     }
 
+    public String getTargetUrl() {
+        if (targetUrl == null && url != null) {
+            targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        }
+        return targetUrl;
+    }
+
+    public String getDisplayUrl() {
+        if (displayUrl == null && url != null) {
+            displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
+        }
+        return displayUrl;
+    }
+    
     public void setUrl(String url) {
         this.url = url;
+        this.targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        this.displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
     }
 
     @XmlTransient

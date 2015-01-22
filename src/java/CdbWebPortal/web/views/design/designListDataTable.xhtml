@@ -82,7 +82,7 @@
 
         <p:column headerText="Actions">
             <ui:include src="../common/commonListActionLinks.xhtml">
-                <ui:param name="componentController" value="#{designController}"/>
+                <ui:param name="entityController" value="#{designController}"/>
                 <ui:param name="entityObject" value="#{designObject}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
                 <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>

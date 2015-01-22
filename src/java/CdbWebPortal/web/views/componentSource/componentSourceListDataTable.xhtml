@@ -48,9 +48,8 @@
 
         <p:column sortBy="#{componentSourceObject.url}" headerText="URL"
                   rendered="#{componentSourceController.displayUrl}">
-            <h:outputLink value="#{componentSourceObject.url}" target="_page_#{componentSourceObject.url}" 
-                          title="#{componentSourceObject.url}">
-                <h:outputText value="#{componentSourceObject.url}"/>
+            <h:outputLink value="#{componentSourceObject.targetUrl}" target="_page_#{componentSourceObject.url}">
+                <h:outputText value="#{componentSourceObject.displayUrl}"/>
             </h:outputLink>
         </p:column>         
 

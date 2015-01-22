@@ -31,7 +31,8 @@
     <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
               filterBy="#{logObject.logTopic}" filterMatchMode="exact"
               filterOptions="#{logTopicController.availableItemsForSelectOne}"
-              filterValue="#{logController.filterByTopic}">
+              filterValue="#{logController.filterByTopic}"
+              rendered="#{logController.displayTopic}">
         <p:selectOneMenu id="topic" value="#{logObject.logTopic}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="topic" value="#{logTopicController.availableItems}" itemLabel="#{topic.name}" itemValue="#{topic}"/>

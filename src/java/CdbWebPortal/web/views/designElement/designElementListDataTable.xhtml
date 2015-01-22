@@ -25,7 +25,9 @@
         </p:column>
 
         <p:column sortBy="#{designElementObject.name}" headerText="Name">
-            <h:outputText value="#{designElementObject.name}"/>
+            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Component: #{designElementObject.component.name}">
+                <h:outputText value="#{designElementObject.name}"/>
+            </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
@@ -42,7 +44,8 @@
             </h:outputLink>
         </p:column>
 
-        <p:column sortBy="#{designElementObject.location.name}" headerText="Location">
+        <p:column sortBy="#{designElementObject.location.name}" headerText="Location"
+                  rendered="#{designElementController.displayLocation}">
             <h:outputText value="#{designElementObject.location.name}"/>
         </p:column>
 
@@ -57,6 +60,7 @@
         </p:column>
 
         <ui:include src="../entityInfo/entityInfoListObject.xhtml">
+            <ui:param name="entityController" value="#{designElementController}"/>
             <ui:param name="entityInfoObject" value="#{designElementObject.entityInfo}"/>
         </ui:include>
 

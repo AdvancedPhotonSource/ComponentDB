@@ -4,14 +4,21 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-    <ui:include src="../common/commonChildListActionButtons.xhtml">
-        <ui:param name="parentEntityController" value="#{designController}"/>
-        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
-        <ui:param name="childEntityController" value="#{designElementController}"/>
-        <ui:param name="childEntityTypeName" value="#{designElementController.entityTypeName}"/>
-    </ui:include>    
-    <ui:include src="designElementListDataTable.xhtml"/>
+    <ui:param name="childEntityController" value="#{designElementController}"/>    
+    <ui:fragment rendered="#{designElementController.displayFlatTableView}">
+        <ui:include src="../common/commonChildListActionButtons.xhtml">
+            <ui:param name="parentEntityController" value="#{designController}"/>
+            <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
+            <ui:param name="childEntityTypeName" value="#{designElementController.entityTypeName}"/>
+        </ui:include>
 
+        <ui:include src="designElementListDataTable.xhtml"/>
+    </ui:fragment>
+
+    <ui:fragment rendered="#{!designElementController.displayFlatTableView}">
+        <ui:include src="../common/commonChildListTreeTableActionButtons.xhtml"/>
+        <ui:include src="designElementListTreeTable.xhtml"/>
+    </ui:fragment>
     <ui:include src="designElementListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>

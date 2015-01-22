@@ -379,7 +379,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
             logger.debug("Destroying " + getCurrentEntityInstanceName());
             getFacade().remove(componentInstance);
             SessionUtility.addInfoMessage("Success", "Deleted component instance id " + componentInstance.getId() + ".");
-            return "/views/component/view.xhtml?id=" + component.getId();
+            return "/views/component/view.xhtml?faces-redirect=true?id=" + component.getId();
         } catch (Exception ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;

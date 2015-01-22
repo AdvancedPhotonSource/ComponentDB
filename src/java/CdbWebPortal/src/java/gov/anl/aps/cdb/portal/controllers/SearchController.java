@@ -28,28 +28,28 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class SearchController implements Serializable {
 
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Search.List.Display.NumberOfItemsPerPage";
-
-    private static final String DisplayComponentsSettingTypeKey = "Search.List.Display.Components";
-    private static final String DisplayComponentInstancesSettingTypeKey = "Search.List.Display.ComponentInstances";
-    private static final String DisplayComponentTypesSettingTypeKey = "Search.List.Display.ComponentTypes";
-    private static final String DisplayComponentTypeCategoriesSettingTypeKey = "Search.List.Display.ComponentTypeCategories";
-    private static final String DisplayDesignsSettingTypeKey = "Search.List.Display.Designs";
-    private static final String DisplayDesignElementsSettingTypeKey = "Search.List.Display.DesignElements";
-    private static final String DisplayLocationsSettingTypeKey = "Search.List.Display.Locations";
-    private static final String DisplayLocationTypesSettingTypeKey = "Search.List.Display.LocationTypes";
-    private static final String DisplayPropertyTypesSettingTypeKey = "Search.List.Display.PropertyTypes";
-    private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.List.Display.PropertyTypeCategories";
-    private static final String DisplaySourcesSettingTypeKey = "Search.List.Display.Sources";
-    private static final String DisplayUsersSettingTypeKey = "Search.List.Display.Users";
-    private static final String DisplayUserGroupsSettingTypeKey = "Search.List.Display.UserGroups";
+    private static final String CaseInsensitiveSettingTypeKey = "Search.CaseInsensitive";  
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Search.Display.NumberOfItemsPerPage";
+    private static final String DisplayComponentsSettingTypeKey = "Search.Display.Components";
+    private static final String DisplayComponentInstancesSettingTypeKey = "Search.Display.ComponentInstances";
+    private static final String DisplayComponentTypesSettingTypeKey = "Search.Display.ComponentTypes";
+    private static final String DisplayComponentTypeCategoriesSettingTypeKey = "Search.Display.ComponentTypeCategories";
+    private static final String DisplayDesignsSettingTypeKey = "Search.Display.Designs";
+    private static final String DisplayDesignElementsSettingTypeKey = "Search.Display.DesignElements";
+    private static final String DisplayLocationsSettingTypeKey = "Search.Display.Locations";
+    private static final String DisplayLocationTypesSettingTypeKey = "Search.Display.LocationTypes";
+    private static final String DisplayPropertyTypesSettingTypeKey = "Search.Display.PropertyTypes";
+    private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.Display.PropertyTypeCategories";
+    private static final String DisplaySourcesSettingTypeKey = "Search.Display.Sources";
+    private static final String DisplayUsersSettingTypeKey = "Search.Display.Users";
+    private static final String DisplayUserGroupsSettingTypeKey = "Search.Display.UserGroups";
 
     @EJB
     private SettingTypeFacade settingTypeFacade;
 
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
     private String searchString = null;
-    private Boolean caseInsensitive = false;
+    private Boolean caseInsensitive = true;
 
     protected Integer displayNumberOfItemsPerPage = null;
 
@@ -138,8 +138,9 @@ public class SearchController implements Serializable {
         if (settingTypeMap == null) {
             return;
         }
+        
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-
+        caseInsensitive = Boolean.parseBoolean(settingTypeMap.get(CaseInsensitiveSettingTypeKey).getDefaultValue());
         displayComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentsSettingTypeKey).getDefaultValue());
         displayComponentInstances = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstancesSettingTypeKey).getDefaultValue());
         displayComponentTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypesSettingTypeKey).getDefaultValue());
@@ -161,7 +162,7 @@ public class SearchController implements Serializable {
         }
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-
+        caseInsensitive = sessionUser.getUserSettingValueAsBoolean(CaseInsensitiveSettingTypeKey, caseInsensitive);
         displayComponents = sessionUser.getUserSettingValueAsBoolean(DisplayComponentsSettingTypeKey, displayComponents);
         displayComponentInstances = sessionUser.getUserSettingValueAsBoolean(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
         displayComponentTypes = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
@@ -184,7 +185,7 @@ public class SearchController implements Serializable {
         }
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-
+        sessionUser.setUserSettingValue(CaseInsensitiveSettingTypeKey, caseInsensitive);
         sessionUser.setUserSettingValue(DisplayComponentsSettingTypeKey, displayComponents);
         sessionUser.setUserSettingValue(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
         sessionUser.setUserSettingValue(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
