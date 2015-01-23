@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LogTopic.findById", query = "SELECT l FROM LogTopic l WHERE l.id = :id"),
     @NamedQuery(name = "LogTopic.findByName", query = "SELECT l FROM LogTopic l WHERE l.name = :name"),
     @NamedQuery(name = "LogTopic.findByDescription", query = "SELECT l FROM LogTopic l WHERE l.description = :description")})
-public class LogTopic extends CloneableEntity {
+public class LogTopic extends CdbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

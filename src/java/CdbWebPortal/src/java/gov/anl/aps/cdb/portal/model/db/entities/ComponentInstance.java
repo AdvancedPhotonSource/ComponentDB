@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentInstance.findByTag", query = "SELECT c FROM ComponentInstance c WHERE c.tag = :tag"),
     @NamedQuery(name = "ComponentInstance.findByLocationDetails", query = "SELECT c FROM ComponentInstance c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstance.findByDescription", query = "SELECT c FROM ComponentInstance c WHERE c.description = :description")})
-public class ComponentInstance extends CloneableEntity {
+public class ComponentInstance extends CdbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -194,6 +194,7 @@ public class ComponentInstance extends CloneableEntity {
         this.componentInstanceLocationHistoryList1 = componentInstanceLocationHistoryList1;
     }
 
+    @Override
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }

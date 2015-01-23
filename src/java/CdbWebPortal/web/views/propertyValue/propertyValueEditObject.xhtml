@@ -66,6 +66,7 @@
         <p:tooltip for="documentValue" value="Upload new document using upload action button."/>    
 
         <h:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
+                                 styleClass="dataTableCheckbox"
                                  rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>
         <p:tooltip for="booleanValue" value="Use checkbox to set property value to true."/>           
 

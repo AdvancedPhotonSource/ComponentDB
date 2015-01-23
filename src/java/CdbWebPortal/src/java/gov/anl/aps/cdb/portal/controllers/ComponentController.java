@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -227,7 +228,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
-        Log logEntry = prepareLogEntry(createdByUser, createdOnDateTime);
+        Log logEntry = prepareLogEntry();
         if (logEntry != null) {
             List<Log> logList = new ArrayList<>();
             logList.add(logEntry);
@@ -258,11 +259,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
             throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
         }
         EntityInfo entityInfo = component.getEntityInfo();
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
-        entityInfo.setLastModifiedByUser(lastModifiedByUser);
-        Log logEntry = prepareLogEntry(lastModifiedByUser, lastModifiedOnDateTime);
+        EntityInfoUtility.updateEntityInfo(entityInfo);
+        Log logEntry = prepareLogEntry();
         if (logEntry != null) {
             List<Log> logList = component.getLogList();
             logList.add(logEntry);
@@ -282,8 +280,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
                     // Property value was modified.
                     logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
-                    newPropertyValue.setEnteredByUser(lastModifiedByUser);
-                    newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+                    newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
+                    newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
 
                     // Save history
                     List<PropertyValueHistory> propertyValueHistoryList = newPropertyValue.getPropertyValueHistoryList();
@@ -295,8 +293,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 // New property value.
                 logger.debug("Adding new property value for type " + newPropertyValue.getPropertyType()
                         + ": " + newPropertyValue);
-                newPropertyValue.setEnteredByUser(lastModifiedByUser);
-                newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+                newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
+                newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
             }
         }
         component.clearPropertyValueCache();
@@ -308,9 +306,16 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 componentInstance.resetAttributesToNullIfEmpty();
             }
         }
-        logger.debug("Updating component " + component.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
+        logger.debug("Updating component " + component.getName() 
+                + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
     }
 
+    @Override
+    public void prepareEntityUpdateOnRemoval(Component component) {
+        EntityInfo entityInfo = component.getEntityInfo();
+        EntityInfoUtility.updateEntityInfo(entityInfo);
+    }
+    
     @Override
     public String prepareEdit(Component component) {
         locationList = locationFacade.findAll();
@@ -348,7 +353,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component component = getCurrent();
         List<PropertyValue> componentPropertyList = component.getPropertyValueList();
         componentPropertyList.remove(componentProperty);
-        update();
+        updateOnRemoval();
     }
 
     public void prepareAddSource(Component component) {
@@ -366,7 +371,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component component = getCurrent();
         List<ComponentSource> sourceList = component.getComponentSourceList();
         sourceList.remove(source);
-        update();
+        updateOnRemoval();
     }
 
     public void prepareAddComponentInstance(Component component) {
@@ -432,7 +437,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component component = getCurrent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
         componentInstanceList.remove(componentInstance);
-        update();
+        updateOnRemoval();
     }
 
     public void prepareAddLog(Component component) {
@@ -445,7 +450,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         Component component = getCurrent();
         List<Log> componentLogList = component.getLogList();
         componentLogList.remove(componentLog);
-        update();
+        updateOnRemoval();
     }
 
     public List<Log> getLogList() {

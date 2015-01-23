@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentTypeCategory.findById", query = "SELECT c FROM ComponentTypeCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentTypeCategory.findByName", query = "SELECT c FROM ComponentTypeCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentTypeCategory.findByDescription", query = "SELECT c FROM ComponentTypeCategory c WHERE c.description = :description")})
-public class ComponentTypeCategory extends CloneableEntity
+public class ComponentTypeCategory extends CdbEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -28,8 +28,8 @@
                   filterValue="#{componentSourceController.filterBySourceName}">
             <p:selectOneMenu id="source" value="#{componentSourceObject.source}" required="true" 
                              styleClass="cellSelect">
-                <f:selectItem itemLabel="Select" itemValue="{componentSourceObject.source}"/>
-                <f:selectItems var="source" value="#{sourceController.availableItems}" itemLabel="#{source.name}" itemValue="#{source}"/>
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="source" value="#{sourceController.availableSourcesSortedByName}" itemLabel="#{source.name}" itemValue="#{source}"/>
             </p:selectOneMenu>
             <p:tooltip for="source" value="Select source name."/>
         </p:column>
@@ -92,9 +92,10 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink action="#{componentController.deleteSource(componentSourceObject)}" 
-                               actionListener="#{componentSourceController.destroy(componentSourceObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form" immediate="true"/>
+                <p:commandLink action="#{componentSourceController.destroy(componentSourceObject)}"
+                               actionListener="#{componentController.deleteSource(componentSourceObject)}" 
+                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               update="componentSourceEditListDataTable"/>
             </div>
         </p:column>
     </p:dataTable>

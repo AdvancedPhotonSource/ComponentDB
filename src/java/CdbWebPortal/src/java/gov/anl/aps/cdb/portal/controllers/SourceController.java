@@ -38,10 +38,10 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
 
     private Boolean displayContactInfo = null;
     private Boolean displayUrl = null;
-    
+
     private String filterByContactInfo = null;
     private String filterByUrl = null;
-    
+
     @EJB
     private SourceFacade sourceFacade;
 
@@ -90,6 +90,10 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         return super.getAvailableItems();
     }
 
+    public List<Source> getAvailableSourcesSortedByName() {
+        return sourceFacade.findAllSortedByName();
+    }
+
     @Override
     public void prepareEntityInsert(Source source) throws ObjectAlreadyExists {
         Source existingSource = sourceFacade.findByName(source.getName());
@@ -107,7 +111,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         }
         logger.debug("Updating source " + source.getName());
     }
-    
+
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
@@ -154,7 +158,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         filterByContactInfo = filters.get("contactInfo");
         filterByUrl = filters.get("url");
     }
-    
+
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -179,7 +183,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         filterByContactInfo = null;
         filterByUrl = null;
     }
-    
+
     @FacesConverter(forClass = Source.class)
     public static class SourceControllerConverter implements Converter {
 
@@ -225,7 +229,7 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         }
 
     }
-    
+
     @Override
     public boolean entityCanBeCreatedByUsers() {
         return true;
@@ -262,5 +266,5 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
     public void setFilterByUrl(String filterByUrl) {
         this.filterByUrl = filterByUrl;
     }
-    
+
 }

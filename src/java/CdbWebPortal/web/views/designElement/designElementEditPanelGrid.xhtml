@@ -9,14 +9,17 @@
     <ui:param name="designElementObject" value="#{designElementController.selected}"/>
 
     <p:panelGrid id="designElementEditPanelGrid" columns="4" styleClass="editEntityDetails">
-        
+
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{designElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
         <p:tooltip for="name" value="Enter QR id."/>
-        
-        <h:outputLabel for="designElementComponent" value="Component" styleClass="entityDataEmphasizedLabel"/>
-        <p:column id="designElementComponent">
+
+        <h:outputLabel for="designElementComponent" value="Component" 
+                       styleClass="entityDataEmphasizedLabel"
+                       rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}"/>
+        <p:column id="designElementComponent"
+                  rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}">
             <p:autoComplete id="designElementComponentDropdown" 
                             value="#{designElementObject.component}" 
                             var="componentObject"
@@ -24,19 +27,18 @@
                             completeMethod="#{designElementController.completeComponent}" 
                             itemLabel="#{componentObject.name}"
                             itemValue="#{componentObject}"
-                            valueChangeListener="#{designElementController.selectComponentValueChangeListener}"
                             forceSelection="true"
                             scrollHeight="200"
                             dropdown="true" 
                             styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
+                <p:ajax event="itemSelect" listener="#{designElementController.selectComponentListener}"/>
+                <p:ajax event="itemUnselect" listener="#{designElementController.unselectComponentListener}"/>
             </p:autoComplete>
 
             <p:commandButton id="designElementComponentSelectButton"
                              action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
                              oncomplete="designElementComponentSelectDialogWidget.show()"
                              update="@form"
-                             immediate="true"
                              alt="Select Component" 
                              styleClass="actionButtonSmall"
                              icon="ui-icon-search">
@@ -45,11 +47,16 @@
                 <p:tooltip for="designElementComponentSelectButton" value="Search for component."/>
             </p:commandButton>
         </p:column>
-        <p:message for="designElementComponent"/>
-        <p:tooltip for="designElementComponentDropdown" value="Select component."/> 
+        <p:message for="designElementComponent"
+                   rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}"/>
+        <p:tooltip for="designElementComponentDropdown" value="Select component."
+                   rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}"/> 
 
-     <h:outputLabel for="designElementChildDesign" value="Component" styleClass="entityDataEmphasizedLabel"/>
-        <p:column id="designElementChildDesign">
+        <h:outputLabel for="designElementChildDesign" value="Child Design" 
+                       styleClass="entityDataEmphasizedLabel"
+                       rendered="#{designElementController.getDisplayChildDesignSelection(designElementObject)}"/>
+        <p:column id="designElementChildDesign"
+                  rendered="#{designElementController.getDisplayChildDesignSelection(designElementObject)}">
             <p:autoComplete id="designElementChildDesignDropdown" 
                             value="#{designElementObject.childDesign}" 
                             var="childDesignObject"
@@ -57,19 +64,18 @@
                             completeMethod="#{designElementController.completeChildDesign}" 
                             itemLabel="#{childDesignObject.name}"
                             itemValue="#{childDesignObject}"
-                            valueChangeListener="#{designElementController.selectChildDesignValueChangeListener}"
                             forceSelection="true"
                             scrollHeight="200"
                             dropdown="true" 
                             styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
+                <p:ajax event="itemSelect" listener="#{designElementController.selectChildDesignListener}"/>
+                <p:ajax event="itemUnselect" listener="#{designElementController.unselectChildDesignListener}"/>
             </p:autoComplete>
 
             <p:commandButton id="designElementChildDesignSelectButton"
                              action="#{designController.clearSelectFiltersAndResetSelectDataModel()}" 
                              oncomplete="designElementChildDesignSelectDialogWidget.show()"
                              update="@form"
-                             immediate="true"
                              alt="Select Child Design" 
                              styleClass="actionButtonSmall"
                              icon="ui-icon-search">
@@ -77,8 +83,10 @@
                 <p:tooltip for="designElementChildDesignSelectButton" value="Search for child design."/>
             </p:commandButton>
         </p:column>
-        <p:message for="designElementChildDesign"/>
-        <p:tooltip for="designElementChildDesignDropdown" value="Select child design."/> 
+        <p:message for="designElementChildDesign"
+                   rendered="#{designElementController.getDisplayChildDesignSelection(designElementObject)}"/>
+        <p:tooltip for="designElementChildDesignDropdown" value="Select child design."
+                   rendered="#{designElementController.getDisplayChildDesignSelection(designElementObject)}"/> 
 
         <h:outputLabel for="designElementLocation" value="Location" styleClass="entityDataEmphasizedLabel"/>
         <p:column id="designElementLocation">
@@ -105,12 +113,12 @@
         </p:column>        
         <p:message for="designElementLocation"/> 
         <p:tooltip for="designElementLocationDropdown" value="Select location."/>
-   
+
         <h:outputLabel for="sortOrder" value="Sort Order" styleClass="entityDataLabel"/>
         <h:inputText id="sortOrder" value="#{designElementObject.sortOrder}" title="Sort Order" styleClass="entityDataText"/>
         <p:message for="sortOrder"/> 
         <p:tooltip for="sortOrder" value="Enter sort order."/>
-        
+
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputTextarea id="description" value="#{designElementObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/> 
@@ -120,11 +128,11 @@
         <h:outputText id="id" value="#{designElementObject.id}" title="Id" styleClass="entityDataText"/>
         <p:message for="id"/> 
         <p:tooltip for="id" value="Design element id cannot be modified."/>
-       
+
         <ui:include src="../entityInfo/entityInfoEditObject.xhtml">
             <ui:param name="entityInfoObject" value="#{designElementObject.entityInfo}"/>
         </ui:include>
-        
+
     </p:panelGrid>
 
     <ui:include src="designElementComponentSelectDialog.xhtml">
@@ -138,7 +146,7 @@
     <ui:include src="designElementLocationSelectDialog.xhtml">
         <ui:param name="updateTarget" value="designElementEditPanelGrid"/>
     </ui:include>
-    
+
 </ui:composition>
 
 

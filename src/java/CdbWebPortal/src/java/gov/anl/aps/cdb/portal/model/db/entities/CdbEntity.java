@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  *
  * @author sveseli
  */
-public class CloneableEntity implements Serializable, Cloneable
+public class CdbEntity implements Serializable, Cloneable
 {
     protected static final long serialVersionUID = 1L;
     @Override
@@ -23,6 +23,10 @@ public class CloneableEntity implements Serializable, Cloneable
     }
     
     public Object getId() {
+        return null;
+    }
+    
+    public Object getEntityInfo() {
         return null;
     }
     

@@ -15,6 +15,24 @@
             <p:panelGrid columns="2">
                 <p:inputText id="designElementDisplayNumberOfItemsPerPage" value="#{designElementController.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="designElementDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayChildDesign" value="#{designElementController.displayChildDesign}"/>  
+                <h:outputLabel for="designElementDisplayChildDesign" value="Display Child Design" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayComponent" value="#{designElementController.displayComponent}"/>  
+                <h:outputLabel for="designElementDisplayComponent" value="Display Component" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayDescription" value="#{designElementController.displayDescription}"/>  
+                <h:outputLabel for="designElementDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayId" value="#{designElementController.displayId}"/>  
+                <h:outputLabel for="designElementDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplayLocation" value="#{designElementController.displayLocation}"/>  
+                <h:outputLabel for="designElementDisplayLocation" value="Display Location" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementDisplaySortOrder" value="#{designElementController.displaySortOrder}"/>  
+                <h:outputLabel for="designElementDisplaySortOrder" value="Display Sort Order" styleClass="dialogDataLabel"/>
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">

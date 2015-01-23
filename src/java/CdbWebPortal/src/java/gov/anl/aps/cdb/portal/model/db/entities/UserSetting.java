@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserSetting.findAll", query = "SELECT u FROM UserSetting u"),
     @NamedQuery(name = "UserSetting.findById", query = "SELECT u FROM UserSetting u WHERE u.id = :id"),
     @NamedQuery(name = "UserSetting.findByValue", query = "SELECT u FROM UserSetting u WHERE u.value = :value")})
-public class UserSetting extends CloneableEntity
+public class UserSetting extends CdbEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

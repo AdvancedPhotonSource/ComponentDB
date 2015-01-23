@@ -91,9 +91,9 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink action="#{componentController.deleteComponentInstance(componentInstanceObject)}" 
-                               actionListener="#{componentInstanceController.destroy(componentInstanceObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form" immediate="true"
+                <p:commandLink action="#{componentInstanceController.destroy(componentInstanceObject)}"
+                               actionListener="#{componentController.deleteComponentInstance(componentInstanceObject)}" 
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="componentInstanceEditListDataTable" 
                                rendered="#{loginController.isEntityWriteable(componentInstanceObject.entityInfo)}"/>
             </div>
         </p:column>

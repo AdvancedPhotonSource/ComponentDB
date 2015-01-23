@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findById", query = "SELECT c FROM Component c WHERE c.id = :id"),
     @NamedQuery(name = "Component.findByName", query = "SELECT c FROM Component c WHERE c.name = :name"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
-public class Component extends CloneableEntity {
+public class Component extends CdbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -177,6 +177,7 @@ public class Component extends CloneableEntity {
         this.componentConnectorList = componentConnectorList;
     }
 
+    @Override
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }

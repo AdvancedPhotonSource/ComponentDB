@@ -6,6 +6,7 @@
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="breadcrumb" value="#{componentSourceController.currentViewId}"/>
     <p:dataTable id="componentSourceListDataTable" 
                  widgetVar="componentSourceListWidget"
                  var="componentSourceObject" 
@@ -23,7 +24,9 @@
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name">
-            <h:outputText value="#{componentSourceObject.source.name}"/>
+            <h:outputLink value="../source/view.xhtml?id=#{componentSourceObject.source.id}&amp;breadcrumb=#{breadcrumb}" title="View design details">
+                <h:outputText value="#{componentSourceObject.source.name}"/>
+            </h:outputLink>  
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.partNumber}" headerText="Part Number"
@@ -53,16 +56,18 @@
             </h:outputLink>
         </p:column>         
 
-        <p:column sortBy="#{componentSourceObject.isManufacturer}" headerText="Is Manufacturer"
+        <p:column sortBy="#{componentSourceObject.isManufacturer}" headerText="Manufacturer"
                   rendered="#{componentSourceController.displayIsManufacturer}">
-            <h:outputText value="#{componentSourceObject.isManufacturer}"/>
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{componentSourceObject.isManufacturer}"/>
         </p:column>   
-        
-        <p:column sortBy="#{componentSourceObject.isVendor}" headerText="Is Vendor"
+
+        <p:column sortBy="#{componentSourceObject.isVendor}" headerText="Vendor"
                   rendered="#{componentSourceController.displayIsVendor}">
-            <h:outputText value="#{componentSourceObject.isVendor}"/>
+            <h:outputText value="" styleClass="ui-icon ui-icon-check"
+                          rendered="#{componentSourceObject.isVendor}"/>
         </p:column> 
-        
+
     </p:dataTable>
 
 </ui:composition>

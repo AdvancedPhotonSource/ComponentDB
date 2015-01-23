@@ -12,7 +12,7 @@
                      styleClass="dialog">
         <p:commandButton value="Yes" oncomplete="designElementDestroyDialogWidget.hide()" 
                          actionListener="#{designController.deleteDesignElement(designElementObject)}"
-                         action="#{designElementController.destroyAndReturnComponentView(designElementObject)}"
+                         action="#{designElementController.destroyAndReturnDesignView(designElementObject)}"
                          update="@form"/>
         <p:commandButton value="No" onclick="designElementDestroyDialogWidget.hide()" type="button" />
     </p:confirmDialog>

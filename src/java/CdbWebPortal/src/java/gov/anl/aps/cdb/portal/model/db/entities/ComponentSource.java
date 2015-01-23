@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentSource.findByCost", query = "SELECT c FROM ComponentSource c WHERE c.cost = :cost"),
     @NamedQuery(name = "ComponentSource.findByDescription", query = "SELECT c FROM ComponentSource c WHERE c.description = :description"),
     @NamedQuery(name = "ComponentSource.findAllByComponentId", query = "SELECT c FROM ComponentSource c WHERE c.component.id = :componentId")})
-public class ComponentSource extends CloneableEntity {
+public class ComponentSource extends CdbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,12 +4,13 @@ import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.model.db.beans.AbstractFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CloneableEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -31,7 +32,7 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-public abstract class CrudEntityController<EntityType extends CloneableEntity, FacadeType extends AbstractFacade<EntityType>> implements Serializable {
+public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeType extends AbstractFacade<EntityType>> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(CrudEntityController.class.getName());
 
@@ -510,6 +511,25 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         }
     }
 
+    protected void prepareEntityUpdateOnRemoval(EntityType entity) throws CdbPortalException {
+    }
+
+    public String updateOnRemoval() {
+        try {
+            logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
+            prepareEntityUpdateOnRemoval(current);
+            EntityType updatedEntity = getFacade().edit(current);
+            SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            resetListDataModel();
+            resetLogText();
+            current = updatedEntity;
+            return view();
+        } catch (CdbPortalException | RuntimeException ex) {
+            SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            return null;
+        }
+    }
+    
     protected void prepareEntityDestroy(EntityType entity) throws CdbPortalException {
     }
     
@@ -536,7 +556,7 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
             resetListDataModel();
             clearListFilters();
             return prepareList();
-        } catch (Exception ex) {
+        } catch (CdbPortalException ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
@@ -670,13 +690,10 @@ public abstract class CrudEntityController<EntityType extends CloneableEntity, F
         resetSelectDataModel();
     }
 
-    public Log prepareLogEntry(UserInfo createdByUser, Date createdOnDateTime) {
+    public Log prepareLogEntry() {
         Log logEntry = null;
         if (logText != null && !logText.isEmpty()) {
-            logEntry = new Log();
-            logEntry.setText(logText);
-            logEntry.setEnteredByUser(createdByUser);
-            logEntry.setEnteredOnDateTime(createdOnDateTime);
+            logEntry = LogUtility.createLogEntry(logText);
             if (logTopicId != null) {
                 LogTopic logTopic = logTopicFacade.find(logTopicId);
                 logEntry.setLogTopic(logTopic);

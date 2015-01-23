@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignElement.findByName", query = "SELECT d FROM DesignElement d WHERE d.name = :name"),
     @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
     @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
-public class DesignElement extends CloneableEntity {
+public class DesignElement extends CdbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +53,7 @@ public class DesignElement extends CloneableEntity {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String name;
     @Size(max = 256)
     private String description;
@@ -195,6 +196,7 @@ public class DesignElement extends CloneableEntity {
         this.designElementConnectionList1 = designElementConnectionList1;
     }
 
+    @Override
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }
@@ -294,12 +296,12 @@ public class DesignElement extends CloneableEntity {
         return null;
     }
 
-   public String getContainedObjectType() {
+   public DesignElementType getContainedObjectType() {
         if (component != null) {
-            return "component";
+            return DesignElementType.COMPONENT;
         }
         if (childDesign != null) {
-            return "design";
+            return DesignElementType.DESIGN;
         }
         return null;
     }
@@ -321,9 +323,12 @@ public class DesignElement extends CloneableEntity {
         return hash;
     }
 
-    public boolean equalsByName(DesignElement other) {
+    public boolean equalsByNameAndComponentAndChildDesignAndLocation(DesignElement other) {
         if (other != null) {
-            return ObjectUtility.equals(this.name, other.name);
+            return (ObjectUtility.equals(this.name, other.name)
+                    && ObjectUtility.equals(this.component, other.component)
+                    && ObjectUtility.equals(this.childDesign, other.childDesign)
+                    && ObjectUtility.equals(this.location, other.location));
         }
         return false;
     }
@@ -335,7 +340,7 @@ public class DesignElement extends CloneableEntity {
         }
         DesignElement other = (DesignElement) object;
         if (this.id == null && other.id == null) {
-            return equalsByName(other);
+            return equalsByNameAndComponentAndChildDesignAndLocation(other);
         }
 
         if (this.id == null || other.id == null) {

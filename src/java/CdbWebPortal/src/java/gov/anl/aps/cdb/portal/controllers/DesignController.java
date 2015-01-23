@@ -1,11 +1,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
-import gov.anl.aps.cdb.portal.model.db.entities.DesignLink;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -29,7 +30,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.component.UIComponent;
 import javax.faces.convert.FacesConverter;
-import javax.faces.event.ActionEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
@@ -58,14 +58,15 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
 
     private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
-    private boolean selectChildDesigns = false;
-
     private DataTable designPropertyValueListDataTable = null;
 
     private List<PropertyValue> filteredPropertyValueList;
 
     @EJB
     private DesignFacade designFacade;
+
+    @EJB
+    private DesignElementFacade designElementFacade;
 
     public DesignController() {
         super();
@@ -79,13 +80,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
     @Override
     protected Design createEntityInstance() {
         Design design = new Design();
-        EntityInfo entityInfo = new EntityInfo();
-        UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
-        entityInfo.setOwnerUser(ownerUser);
-        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-        }
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         design.setEntityInfo(entityInfo);
         return design;
     }
@@ -129,45 +124,61 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             throw new ObjectAlreadyExists("Design " + design.getName() + " already exists.");
         }
         EntityInfo entityInfo = design.getEntityInfo();
-        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
-        Date createdOnDateTime = new Date();
-        entityInfo.setCreatedOnDateTime(createdOnDateTime);
-        entityInfo.setCreatedByUser(createdByUser);
-        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
-        entityInfo.setLastModifiedByUser(createdByUser);
         String logText = getLogText();
         if (logText != null && !logText.isEmpty()) {
-            Log logEntry = new Log();
-            logEntry.setText(logText);
-            logEntry.setEnteredByUser(createdByUser);
-            logEntry.setEnteredOnDateTime(createdOnDateTime);
+            Log logEntry = LogUtility.createLogEntry(logText);
             List<Log> logList = new ArrayList<>();
             logList.add(logEntry);
             design.setLogList(logList);
             resetLogText();
         }
-        logger.debug("Inserting new design " + design.getName() + " (user: " + createdByUser.getUsername() + ")");
+        logger.debug("Inserting new design " + design.getName() + " (user: " 
+                + entityInfo.getCreatedByUser().getUsername() + ")");
     }
 
     @Override
-    public void prepareEntityUpdate(Design design) throws ObjectAlreadyExists {
+    public void prepareEntityUpdate(Design design) throws ObjectAlreadyExists, InvalidObjectState {
+        String designName = design.getName();
+        if (designName == null || designName.isEmpty()) {
+            throw new ObjectAlreadyExists("Design name cannot be empty.");
+        }
+        Design existingDesign = designFacade.findByName(design.getName());
+        if (existingDesign != null && !existingDesign.getId().equals(design.getId())) {
+            throw new ObjectAlreadyExists("Design " + design.getName() + " already exists.");
+        }
+
         EntityInfo entityInfo = design.getEntityInfo();
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
-        entityInfo.setLastModifiedByUser(lastModifiedByUser);
+        EntityInfoUtility.updateEntityInfo(entityInfo);
         String logText = getLogText();
         if (logText != null && !logText.isEmpty()) {
-            Log logEntry = new Log();
-            logEntry.setText(logText);
-            logEntry.setEnteredByUser(lastModifiedByUser);
-            logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
+            Log logEntry = LogUtility.createLogEntry(logText);
             design.getLogList().add(logEntry);
             resetLogText();
         }
-        logger.debug("Updating design " + design.getName() + " (user: " + lastModifiedByUser.getUsername() + ")");
+        for (DesignElement designElement : design.getDesignElementList()) {
+            String designElementName = designElement.getName();
+            if (designElementName == null || designElementName.isEmpty()) {
+                throw new InvalidObjectState("Design element name cannot be empty.");
+            }
+            if (designElement.getComponent() != null && designElement.getChildDesign() != null) {
+                throw new InvalidObjectState("Design element cannot have both component and child design.");
+            }
+            DesignElement existingDesignElement = designElementFacade.findByName(designElementName);
+            if (existingDesignElement != null && !existingDesignElement.getId().equals(designElement.getId())) {
+                throw new ObjectAlreadyExists("Design element with name " + designElementName
+                        + " already exists.");
+            }
+        }
+        logger.debug("Updating design " + design.getName() 
+                + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
     }
 
+    @Override
+    public void prepareEntityUpdateOnRemoval(Design design) {
+        EntityInfo entityInfo = design.getEntityInfo();
+        EntityInfoUtility.updateEntityInfo(entityInfo);
+    }
+    
     public Design findById(Integer id) {
         return designFacade.findById(id);
     }
@@ -181,7 +192,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         }
     }
 
-        public void prepareAddProperty() {
+    public void prepareAddProperty() {
         Design design = getCurrent();
         List<PropertyValue> propertyList = design.getPropertyValueList();
         PropertyValue property = new PropertyValue();
@@ -212,9 +223,9 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         Design design = getCurrent();
         List<PropertyValue> designPropertyList = design.getPropertyValueList();
         designPropertyList.remove(designProperty);
-        update();
+        updateOnRemoval();
     }
-    
+
     public void prepareAddDesignElement(Design design) {
         List<DesignElement> designElementList = design.getDesignElementList();
         DesignElement designElement = new DesignElement();
@@ -228,6 +239,10 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         Design design = getCurrent();
         List<DesignElement> designElementList = design.getDesignElementList();
         designElementList.remove(designElement);
+        updateOnRemoval();
+    }
+
+    public void saveDesignElementList() {
         update();
     }
 
@@ -242,16 +257,6 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         }
     }
 
-    public void saveElementList() {
-        update();
-    }
-
-    public void deleteElement(DesignElement designElement) {
-        logger.debug("Removing element " + designElement.getName() + " from design " + designElement.getParentDesign().getName());
-        Design design = getCurrent();
-        List<DesignElement> designElementList = design.getDesignElementList();
-        designElementList.remove(designElement);
-    }
 
     public void prepareAddLog(Design design) {
         Log logEntry = LogUtility.createLogEntry();
@@ -290,78 +295,6 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         Design currentDesign = getCurrent();
         selectEntityList.remove(currentDesign);
 
-    }
-
-    public void selectDesigns(List<Design> designList) {
-        if (selectChildDesigns) {
-            selectChildDesigns(designList);
-        } else {
-            selectParentDesigns(designList);
-        }
-    }
-
-    public void prepareSelectChildDesignsActionListener(ActionEvent actionEvent) {
-        prepareSelectChildDesigns();
-    }
-
-    public void prepareSelectChildDesigns() {
-        clearSelectFiltersAndResetSelectDataModel();
-        selectChildDesigns = true;
-    }
-
-    public void selectChildDesigns(List<Design> childDesignList) {
-        Design design = getCurrent();
-        List<DesignLink> childDesignLinkList = design.getChildDesignLinkList();
-        for (Design childDesign : childDesignList) {
-            DesignLink designLink = new DesignLink();
-            designLink.setParentDesign(design);
-            designLink.setChildDesign(childDesign);
-            childDesignLinkList.add(designLink);
-        }
-    }
-
-    public void saveChildDesignList() {
-        update();
-    }
-
-    public void deleteChildDesignLink(DesignLink childDesignLink) {
-        Design design = getCurrent();
-        List<DesignLink> childDesignLinkList = design.getChildDesignLinkList();
-        childDesignLinkList.remove(childDesignLink);
-    }
-
-    public void prepareSelectParentDesignsActionListener(ActionEvent actionEvent) {
-        prepareSelectParentDesigns();
-    }
-
-    public void prepareSelectParentDesigns() {
-        clearSelectFiltersAndResetSelectDataModel();
-        selectChildDesigns = false;
-    }
-
-    public void selectParentDesigns(List<Design> parentDesignList) {
-        Design design = getCurrent();
-        List<DesignLink> parentDesignLinkList = design.getParentDesignLinkList();
-        for (Design parentDesign : parentDesignList) {
-            DesignLink designLink = new DesignLink();
-            designLink.setParentDesign(parentDesign);
-            designLink.setChildDesign(design);
-            parentDesignLinkList.add(designLink);
-        }
-    }
-
-    public void saveParentDesignList() {
-        update();
-    }
-
-    public void deleteParentDesignLink(DesignLink parentDesignLink) {
-        Design design = getCurrent();
-        List<DesignLink> parentDesignLinkList = design.getParentDesignLinkList();
-        parentDesignLinkList.remove(parentDesignLink);
-    }
-
-    public void saveDesignElementList() {
-        update();
     }
 
     @Override
@@ -441,14 +374,6 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-    }
-
-    public boolean getSelectChildDesigns() {
-        return selectChildDesigns;
-    }
-
-    public void setSelectChildDesigns(boolean selectChildDesigns) {
-        this.selectChildDesigns = selectChildDesigns;
     }
 
     @Override

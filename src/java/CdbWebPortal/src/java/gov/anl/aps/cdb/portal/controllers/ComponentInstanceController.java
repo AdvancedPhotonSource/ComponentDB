@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -130,20 +131,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     @Override
     protected ComponentInstance createEntityInstance() {
         ComponentInstance componentInstance = new ComponentInstance();
-        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
-        Date createdOnDateTime = new Date();
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(createdByUser);
-        entityInfo.setCreatedOnDateTime(createdOnDateTime);
-        entityInfo.setCreatedByUser(createdByUser);
-        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
-        entityInfo.setLastModifiedByUser(createdByUser);
-        if (createdByUser != null) {
-            List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
-            if (!ownerUserGroupList.isEmpty()) {
-                entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-            }
-        }
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         componentInstance.setEntityInfo(entityInfo);
 
         if (qrIdViewParam != null) {
@@ -250,10 +238,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     @Override
     public void prepareEntityUpdate(ComponentInstance componentInstance) throws ObjectAlreadyExists {
         EntityInfo entityInfo = componentInstance.getEntityInfo();
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
-        entityInfo.setLastModifiedByUser(lastModifiedByUser);
+        EntityInfoUtility.updateEntityInfo(entityInfo);
 
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = componentInstanceFacade.findById(componentInstance.getId()).getPropertyValueList();
@@ -268,8 +253,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
                     // Property value was modified.
                     logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
-                    newPropertyValue.setEnteredByUser(lastModifiedByUser);
-                    newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+                    newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
+                    newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
 
                     // Save history
                     List<PropertyValueHistory> propertyValueHistoryList = newPropertyValue.getPropertyValueHistoryList();
@@ -281,14 +266,21 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
                 // New property value.
                 logger.debug("Adding new property value for type " + newPropertyValue.getPropertyType()
                         + ": " + newPropertyValue);
-                newPropertyValue.setEnteredByUser(lastModifiedByUser);
-                newPropertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+                newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
+                newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
             }
         }
         componentInstance.resetAttributesToNullIfEmpty();
         componentInstance.clearPropertyValueCache();
         prepareComponentInstanceImageList(componentInstance);
-        logger.debug("Updating component instance id " + componentInstance.getId() + " (user: " + lastModifiedByUser.getUsername() + ")");
+        logger.debug("Updating component instance id " + componentInstance.getId()
+                + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
+    }
+
+    @Override
+    public void prepareEntityUpdateOnRemoval(ComponentInstance componentInstance) {
+        EntityInfo entityInfo = componentInstance.getEntityInfo();
+        EntityInfoUtility.updateEntityInfo(entityInfo);
     }
 
     public String prepareViewFromComponent(ComponentInstance componentInstance) {
@@ -334,7 +326,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         ComponentInstance componentInstance = getCurrent();
         List<Log> componentInstanceLogList = componentInstance.getLogList();
         componentInstanceLogList.remove(componentInstanceLog);
-        update();
+        updateOnRemoval();
     }
 
     public void prepareAddProperty() {
@@ -369,7 +361,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         ComponentInstance componentInstance = getCurrent();
         List<PropertyValue> componentInstancePropertyList = componentInstance.getPropertyValueList();
         componentInstancePropertyList.remove(componentInstanceProperty);
-        update();
+        updateOnRemoval();
     }
 
     public String destroyAndReturnComponentView(ComponentInstance componentInstance) {

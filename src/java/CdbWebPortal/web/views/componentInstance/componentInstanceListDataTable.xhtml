@@ -52,6 +52,7 @@
 
         <ui:include src="../entityInfo/entityInfoListObject.xhtml">
             <ui:param name="entityInfoObject" value="#{componentInstanceObject.entityInfo}"/>
+            <ui:param name="entityController" value="#{componentInstanceController}"/>
         </ui:include>
 
         <p:column headerText="Actions">

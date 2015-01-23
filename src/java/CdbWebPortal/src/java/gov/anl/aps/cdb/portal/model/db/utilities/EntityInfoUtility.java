@@ -26,4 +26,14 @@ public class EntityInfoUtility {
         }
         return entityInfo;
     }
+
+    public static void updateEntityInfo(EntityInfo entityInfo) {
+        if (entityInfo == null) {
+            return;
+        }
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        Date lastModifiedOnDateTime = new Date();
+        entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
+        entityInfo.setLastModifiedByUser(lastModifiedByUser);
+    }
 }

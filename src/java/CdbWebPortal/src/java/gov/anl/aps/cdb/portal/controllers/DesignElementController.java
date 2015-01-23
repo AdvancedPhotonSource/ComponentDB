@@ -1,5 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
@@ -37,6 +38,8 @@ import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
+import org.primefaces.component.autocomplete.AutoComplete;
+import org.primefaces.event.SelectEvent;
 
 @Named("designElementController")
 @SessionScoped
@@ -153,7 +156,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
-            return getCurrent().getComponent().getName();
+            return getCurrent().getName();
         }
         return "";
     }
@@ -169,8 +172,16 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     @Override
     public void prepareEntityUpdate(DesignElement designElement) throws ObjectAlreadyExists {
+        EntityInfo entityInfo = designElement.getEntityInfo();
+        EntityInfoUtility.updateEntityInfo(entityInfo);
     }
 
+    @Override
+    public void prepareEntityUpdateOnRemoval(DesignElement designElement) {
+        EntityInfo entityInfo = designElement.getEntityInfo();
+        EntityInfoUtility.updateEntityInfo(entityInfo);
+    }
+    
     public String prepareViewFromDesign(DesignElement designElement) {
         logger.debug("Preparing design element view from design view page");
         prepareView(designElement);
@@ -214,7 +225,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         DesignElement designElement = getCurrent();
         List<Log> designElementLogList = designElement.getLogList();
         designElementLogList.remove(designElementLog);
-        update();
+        updateOnRemoval();
     }
 
     public void prepareAddProperty() {
@@ -248,17 +259,17 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         DesignElement designElement = getCurrent();
         List<PropertyValue> designElementPropertyList = designElement.getPropertyValueList();
         designElementPropertyList.remove(designElementProperty);
-        update();
+        updateOnRemoval();
     }
 
-    public String destroyAndReturnComponentView(DesignElement designElement) {
-        Component component = designElement.getComponent();
+    public String destroyAndReturnDesignView(DesignElement designElement) {
+        Design parentDesign = designElement.getParentDesign();
         setCurrent(designElement);
         try {
-            logger.debug("Destroying " + getCurrentEntityInstanceName());
+            logger.debug("Destroying " + designElement.getName());
             getFacade().remove(designElement);
-            SessionUtility.addInfoMessage("Success", "Deleted component instance id " + designElement.getId() + ".");
-            return "/views/component/view.xhtml?id=" + component.getId();
+            SessionUtility.addInfoMessage("Success", "Deleted design element id " + designElement.getId() + ".");
+            return "/views/design/view.xhtml?faces-redirect=true?id=" + parentDesign.getId();
         } catch (Exception ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
@@ -537,7 +548,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     // or from selection menu.    
     public void selectLocationValueChangeListener(ValueChangeEvent valueChangeEvent) {
         DesignElement designElement = getCurrent();
-        if (designElement == null) {
+        if (designElement == null || valueChangeEvent == null) {
             return;
         }
         Location existingLocation = designElement.getLocation();
@@ -584,9 +595,10 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     // or from selection menu.    
     public void selectComponentValueChangeListener(ValueChangeEvent valueChangeEvent) {
         DesignElement designElement = getCurrent();
-        if (designElement == null) {
+        if (designElement == null || valueChangeEvent == null) {
             return;
         }
+        
         Component existingComponent = designElement.getComponent();
         Component newEventComponent = null;
         Component oldEventComponent = null;
@@ -609,6 +621,28 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         }
     }
 
+    public void selectComponentListener(SelectEvent selectEvent) {
+        DesignElement designElement = getCurrent();
+        if (designElement == null) {
+            return;
+        }
+        AutoComplete autoComplete = (AutoComplete) selectEvent.getSource();
+        Object itemValue = autoComplete.getItemValue();
+        if (itemValue != null) {
+            Component component = (Component) itemValue;
+            designElement.setComponent(component);
+            designElement.setChildDesign(null);
+        }
+    }
+
+    public void unselectComponentListener(SelectEvent selectEvent) {
+        DesignElement designElement = getCurrent();
+        if (designElement == null) {
+            return;
+        }
+        designElement.setComponent(null);
+    }
+
     public List<Component> getSelectComponentCandidateList() {
         if (selectComponentCandidateList == null) {
             selectComponentCandidateList = componentFacade.findAll();
@@ -624,6 +658,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         DesignElement designElement = getCurrent();
         if (designElement != null) {
             designElement.setComponent(component);
+            designElement.setChildDesign(null);
         }
     }
 
@@ -631,7 +666,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     // or from selection menu.    
     public void selectChildDesignValueChangeListener(ValueChangeEvent valueChangeEvent) {
         DesignElement designElement = getCurrent();
-        if (designElement == null) {
+        if (designElement == null|| valueChangeEvent == null) {
             return;
         }
         Design existingChildDesign = designElement.getChildDesign();
@@ -656,6 +691,28 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         }
     }
 
+    public void selectChildDesignListener(SelectEvent selectEvent) {
+        DesignElement designElement = getCurrent();
+        if (designElement == null) {
+            return;
+        }
+        AutoComplete autoComplete = (AutoComplete) selectEvent.getSource();
+        Object itemValue = autoComplete.getItemValue();
+        if (itemValue != null) {
+            Design childDesign = (Design) itemValue;
+            designElement.setChildDesign(childDesign);
+            designElement.setComponent(null);
+        }
+    }
+
+    public void unselectChildDesignListener(SelectEvent selectEvent) {
+        DesignElement designElement = getCurrent();
+        if (designElement == null) {
+            return;
+        }
+        designElement.setChildDesign(null);
+    }
+    
     public List<Design> getSelectChildDesignCandidateList() {
         if (selectChildDesignCandidateList == null) {
             selectChildDesignCandidateList = designFacade.findAll();
@@ -671,6 +728,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         DesignElement designElement = getCurrent();
         if (designElement != null) {
             designElement.setChildDesign(childDesign);
+            designElement.setComponent(null);
         }
     }
 
@@ -693,4 +751,13 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         this.filteredPropertyValueList = filteredPropertyValueList;
     }
 
+    public Boolean getDisplayChildDesignSelection(DesignElement designElement) {
+        DesignElementType designElementType = designElement.getContainedObjectType();
+        return (designElementType == null || designElementType.equals(DesignElementType.DESIGN));
+    }
+
+    public Boolean getDisplayComponentSelection(DesignElement designElement) {
+        DesignElementType designElementType = designElement.getContainedObjectType();
+        return (designElementType == null || designElementType.equals(DesignElementType.COMPONENT));
+    }
 }

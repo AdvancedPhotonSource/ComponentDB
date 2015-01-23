@@ -57,7 +57,7 @@ public class DesignElementListTreeViewBean implements Serializable {
         }
         return rootNode;
     }
-    
+
     public TreeNode getRootNode() {
         if (rootNode == null) {
             rootNode = createDesignElementRoot();
@@ -84,15 +84,18 @@ public class DesignElementListTreeViewBean implements Serializable {
     }
 
     private void populateDesignNode(TreeNode designElementNode, Design design, List<Design> designTreeBranch) {
-        designTreeBranch.add(design);
         List<DesignElement> designElementList = design.getDesignElementList();
+        if (designElementList == null) {
+            return;
+        }
+        designTreeBranch.add(design);
         for (DesignElement designElement : designElementList) {
             Component component = designElement.getComponent();
             Design childDesign = designElement.getChildDesign();
             if (component == null && childDesign == null) {
                 continue;
             }
-            
+
             TreeNode childDesignElementNode = new DefaultTreeNode(designElement, designElementNode);
             if (childDesign != null) {
                 if (designTreeBranch.contains(childDesign)) {

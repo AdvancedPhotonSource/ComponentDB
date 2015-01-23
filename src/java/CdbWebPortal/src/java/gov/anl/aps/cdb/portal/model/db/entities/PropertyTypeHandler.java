@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyTypeHandler.findById", query = "SELECT p FROM PropertyTypeHandler p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyTypeHandler.findByName", query = "SELECT p FROM PropertyTypeHandler p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyTypeHandler.findByDescription", query = "SELECT p FROM PropertyTypeHandler p WHERE p.description = :description")})
-public class PropertyTypeHandler extends CloneableEntity {
+public class PropertyTypeHandler extends CdbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

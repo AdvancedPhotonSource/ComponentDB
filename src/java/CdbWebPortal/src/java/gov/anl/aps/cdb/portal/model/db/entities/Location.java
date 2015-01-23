@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findByIsUserWriteable", query = "SELECT l FROM Location l WHERE l.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "Location.findBySortOrder", query = "SELECT l FROM Location l WHERE l.sortOrder = :sortOrder"),
     @NamedQuery(name = "Location.findLocationsWithoutParents", query = "SELECT l FROM Location l WHERE l.id NOT IN (SELECT l2.id FROM Location l2 JOIN l2.parentLocationList cll2)")})
-public class Location extends CloneableEntity {
+public class Location extends CdbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

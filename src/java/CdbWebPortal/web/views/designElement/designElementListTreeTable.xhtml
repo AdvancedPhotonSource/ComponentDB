@@ -14,9 +14,9 @@
                  emptyMessage="No design elements found.">
 
         <p:column sortBy="#{designElementObject.name}" headerText="Name">
-            <h:outputLink value="view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="View design element details">
+            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Component: #{designElementObject.component.name}">
                 <h:outputText value="#{designElementObject.name}"/>
-            </h:outputLink>             
+            </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.id}" headerText="Id"

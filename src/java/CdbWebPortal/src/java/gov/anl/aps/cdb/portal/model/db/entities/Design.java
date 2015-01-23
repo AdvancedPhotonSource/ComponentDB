@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,14 +44,14 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Design.findById", query = "SELECT d FROM Design d WHERE d.id = :id"),
     @NamedQuery(name = "Design.findByName", query = "SELECT d FROM Design d WHERE d.name = :name"),
     @NamedQuery(name = "Design.findByDescription", query = "SELECT d FROM Design d WHERE d.description = :description")})
-public class Design extends CloneableEntity {
+public class Design extends CdbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String name;
     @Size(max = 256)
     private String description;
@@ -65,12 +66,8 @@ public class Design extends CloneableEntity {
     @OrderBy("id DESC")
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Log> logList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "childDesign")
-    private List<DesignLink> parentDesignLinkList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
-    private List<DesignLink> childDesignLinkList;
     @OrderBy("sortOrder ASC")
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentDesign")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "parentDesign")
     private List<DesignElement> designElementList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
@@ -132,24 +129,6 @@ public class Design extends CloneableEntity {
     }
 
     @XmlTransient
-    public List<DesignLink> getParentDesignLinkList() {
-        return parentDesignLinkList;
-    }
-
-    public void setParentDesignLinkList(List<DesignLink> parentDesignLinkList) {
-        this.parentDesignLinkList = parentDesignLinkList;
-    }
-
-    @XmlTransient
-    public List<DesignLink> getChildDesignLinkList() {
-        return childDesignLinkList;
-    }
-
-    public void setChildDesignLinkList(List<DesignLink> childDesignLinkList) {
-        this.childDesignLinkList = childDesignLinkList;
-    }
-
-    @XmlTransient
     public List<DesignElement> getDesignElementList() {
         return designElementList;
     }
@@ -158,6 +137,7 @@ public class Design extends CloneableEntity {
         this.designElementList = designElementList;
     }
 
+    @Override
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }

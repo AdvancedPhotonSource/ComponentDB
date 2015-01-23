@@ -7,6 +7,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -49,5 +50,14 @@ public class SourceFacade extends AbstractFacade<Source>
         } catch (NoResultException ex) {
         }
         return null;
-    }     
+    }   
+    
+    public List<Source> findAllSortedByName() {
+        javax.persistence.criteria.CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
+        javax.persistence.criteria.CriteriaQuery cq = cb.createQuery();
+        javax.persistence.criteria.Root<Source> s = cq.from(Source.class);
+        cq.select(s);
+        cq.orderBy(cb.asc(s.get("name")));
+        return getEntityManager().createQuery(cq).getResultList();
+    }
 }

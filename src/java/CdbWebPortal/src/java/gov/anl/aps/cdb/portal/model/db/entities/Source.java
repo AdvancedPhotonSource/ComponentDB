@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Source.findById", query = "SELECT s FROM Source s WHERE s.id = :id"),
     @NamedQuery(name = "Source.findByName", query = "SELECT s FROM Source s WHERE s.name = :name"),
     @NamedQuery(name = "Source.findByDescription", query = "SELECT s FROM Source s WHERE s.description = :description")})
-public class Source extends CloneableEntity {
+public class Source extends CdbEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +40,7 @@ public class Source extends CloneableEntity {
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 1, max = 64)
+    @Size(max = 64)
     private String name;
     @Size(max = 256)
     private String description;

@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Attachment.findByName", query = "SELECT a FROM Attachment a WHERE a.name = :name"),
     @NamedQuery(name = "Attachment.findByTag", query = "SELECT a FROM Attachment a WHERE a.tag = :tag"),
     @NamedQuery(name = "Attachment.findByDescription", query = "SELECT a FROM Attachment a WHERE a.description = :description")})
-public class Attachment extends CloneableEntity {
+public class Attachment extends CdbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

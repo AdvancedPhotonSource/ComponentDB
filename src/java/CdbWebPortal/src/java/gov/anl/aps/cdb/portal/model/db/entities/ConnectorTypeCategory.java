@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorTypeCategory.findById", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorTypeCategory.findByName", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorTypeCategory.findByDescription", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.description = :description")})
-public class ConnectorTypeCategory extends CloneableEntity
+public class ConnectorTypeCategory extends CdbEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

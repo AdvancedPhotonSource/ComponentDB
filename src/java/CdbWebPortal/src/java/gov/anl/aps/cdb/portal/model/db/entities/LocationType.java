@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LocationType.findById", query = "SELECT l FROM LocationType l WHERE l.id = :id"),
     @NamedQuery(name = "LocationType.findByName", query = "SELECT l FROM LocationType l WHERE l.name = :name"),
     @NamedQuery(name = "LocationType.findByDescription", query = "SELECT l FROM LocationType l WHERE l.description = :description")})
-public class LocationType extends CloneableEntity
+public class LocationType extends CdbEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
