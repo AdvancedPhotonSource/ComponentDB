@@ -58,14 +58,18 @@
 
         <p:column sortBy="#{componentSourceObject.isManufacturer}" headerText="Manufacturer"
                   rendered="#{componentSourceController.displayIsManufacturer}">
-            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
-                          rendered="#{componentSourceObject.isManufacturer}"/>
+            <div class="dataTableCheckbox">
+                <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                              rendered="#{componentSourceObject.isManufacturer}"/>
+            </div>
         </p:column>   
 
         <p:column sortBy="#{componentSourceObject.isVendor}" headerText="Vendor"
                   rendered="#{componentSourceController.displayIsVendor}">
-            <h:outputText value="" styleClass="ui-icon ui-icon-check"
-                          rendered="#{componentSourceObject.isVendor}"/>
+            <div class="dataTableCheckbox">
+                <h:outputText value="" styleClass="ui-icon ui-icon-check"
+                              rendered="#{componentSourceObject.isVendor}"/>
+            </div>
         </p:column> 
 
     </p:dataTable>

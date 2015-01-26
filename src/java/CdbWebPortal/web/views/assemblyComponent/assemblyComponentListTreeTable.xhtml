@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <ui:param name="breadcrumb" value="#{assemblyComponentController.currentViewId}"/>
+    <ui:param name="assemblyObject" value="#{componentController.current}"/>
+    <p:treeTable id="assemblyComponentListTreeTable"
+                 widgetVar="assemblyComponentListTreeTableWidget" 
+                 value="#{assemblyComponentListTreeViewBean.createRootNodeForAssembly(assemblyObject)}"
+                 var="assemblyComponentObject"
+                 emptyMessage="No assembly components found.">
+
+        <ui:param name="breadcrumbObjectId" value="#{assemblyObject.id}"/>                
+        <p:column sortBy="#{assemblyComponentObject.component.name}" headerText="Component">
+            <h:outputLink value="../component/view.xhtml?id=#{assemblyComponentObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
+                          title="Component: #{assemblyComponentObject.component.name}">
+                <h:outputText value="#{assemblyComponentObject.component.name}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{assemblyComponentObject.id}" headerText="Id"
+                  rendered="#{assemblyComponentController.displayId}">
+            <h:outputText value="#{assemblyComponentObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{assemblyComponentObject.description}" headerText="Description"
+                  rendered="#{assemblyComponentController.displayDescription}">
+            <h:outputText value="#{assemblyComponentObject.description}"/>
+        </p:column>
+
+        <p:column sortBy="#{assemblyComponentObject.sortOrder}" headerText="Sort Order"
+                  rendered="#{assemblyComponentController.displaySortOrder}">
+            <h:outputText value="#{assemblyComponentObject.sortOrder}"/>
+        </p:column>
+
+    </p:treeTable>
+
+</ui:composition>

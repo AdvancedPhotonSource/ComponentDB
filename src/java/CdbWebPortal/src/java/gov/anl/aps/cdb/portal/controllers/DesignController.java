@@ -1,5 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
 import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade;
@@ -14,8 +15,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.DesignElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -132,12 +135,12 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             design.setLogList(logList);
             resetLogText();
         }
-        logger.debug("Inserting new design " + design.getName() + " (user: " 
+        logger.debug("Inserting new design " + design.getName() + " (user: "
                 + entityInfo.getCreatedByUser().getUsername() + ")");
     }
 
     @Override
-    public void prepareEntityUpdate(Design design) throws ObjectAlreadyExists, InvalidObjectState {
+    public void prepareEntityUpdate(Design design) throws CdbPortalException {
         String designName = design.getName();
         if (designName == null || designName.isEmpty()) {
             throw new ObjectAlreadyExists("Design name cannot be empty.");
@@ -169,7 +172,11 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
                         + " already exists.");
             }
         }
-        logger.debug("Updating design " + design.getName() 
+        
+        // Catch circular dependency issues.
+        DesignElementUtility.createDesignElementRoot(design);
+        prepareDesignImageList(design);
+        logger.debug("Updating design " + design.getName()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
     }
 
@@ -177,8 +184,9 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
     public void prepareEntityUpdateOnRemoval(Design design) {
         EntityInfo entityInfo = design.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
+        prepareDesignImageList(design);
     }
-    
+
     public Design findById(Integer id) {
         return designFacade.findById(id);
     }
@@ -256,7 +264,6 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             designElementList.add(designElement);
         }
     }
-
 
     public void prepareAddLog(Design design) {
         Log logEntry = LogUtility.createLogEntry();
@@ -425,6 +432,26 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             }
         }
 
+    }
+
+    public Boolean getDisplayDesignImages() {
+        List<PropertyValue> designImageList = getDesignImageList();
+        return (designImageList != null && !designImageList.isEmpty());
+    }
+
+    public List<PropertyValue> prepareDesignImageList(Design design) {
+        List<PropertyValue> designImageList = PropertyValueUtility.prepareImagePropertyValueList(design.getPropertyValueList());
+        design.setImagePropertyList(designImageList);
+        return designImageList;
+    }
+
+    public List<PropertyValue> getDesignImageList() {
+        Design design = getCurrent();
+        List<PropertyValue> designImageList = design.getImagePropertyList();
+        if (designImageList == null) {
+            designImageList = prepareDesignImageList(design);
+        }
+        return designImageList;
     }
 
     public DataTable getDesignPropertyValueListDataTable() {

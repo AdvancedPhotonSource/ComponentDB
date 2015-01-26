@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
@@ -45,6 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Design.findByName", query = "SELECT d FROM Design d WHERE d.name = :name"),
     @NamedQuery(name = "Design.findByDescription", query = "SELECT d FROM Design d WHERE d.description = :description")})
 public class Design extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -72,6 +72,8 @@ public class Design extends CdbEntity {
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
+
+    private transient List<PropertyValue> imagePropertyList = null;
 
     public Design() {
     }
@@ -161,13 +163,13 @@ public class Design extends CdbEntity {
     public List<DesignElement> getChildDesignNodes() {
         ArrayList<DesignElement> childDesignNodes = new ArrayList<>();
         for (DesignElement designElement : designElementList) {
-            if (designElement.getChildDesign()!= null) {
+            if (designElement.getChildDesign() != null) {
                 childDesignNodes.add(designElement);
             }
         }
         return childDesignNodes;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -198,7 +200,18 @@ public class Design extends CdbEntity {
         return this.id.equals(other.id);
     }
 
-    
+    public List<PropertyValue> getImagePropertyList() {
+        return imagePropertyList;
+    }
+
+    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
+        this.imagePropertyList = imagePropertyList;
+    }
+
+    public void resetImagePropertyList() {
+        this.imagePropertyList = null;
+    }
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);
@@ -215,5 +228,5 @@ public class Design extends CdbEntity {
             searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
         }
         return searchResult;
-    }    
+    }
 }

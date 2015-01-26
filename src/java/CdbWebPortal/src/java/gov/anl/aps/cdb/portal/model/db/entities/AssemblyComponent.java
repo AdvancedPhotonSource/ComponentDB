@@ -6,8 +6,11 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -37,9 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AssemblyComponent.findById", query = "SELECT a FROM AssemblyComponent a WHERE a.id = :id"),
     @NamedQuery(name = "AssemblyComponent.findByDescription", query = "SELECT a FROM AssemblyComponent a WHERE a.description = :description"),
     @NamedQuery(name = "AssemblyComponent.findBySortOrder", query = "SELECT a FROM AssemblyComponent a WHERE a.sortOrder = :sortOrder")})
-public class AssemblyComponent implements Serializable
+public class AssemblyComponent extends CdbEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -69,6 +71,7 @@ public class AssemblyComponent implements Serializable
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -143,22 +146,40 @@ public class AssemblyComponent implements Serializable
         return hash;
     }
 
+    public boolean equalsByAssemblyAndComponent(AssemblyComponent other) {
+        if (other != null) {
+            return (ObjectUtility.equals(this.assembly, other.assembly)
+                    && ObjectUtility.equals(this.component, other.component));
+        }
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AssemblyComponent)) {
             return false;
         }
         AssemblyComponent other = (AssemblyComponent) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if (this.id == null && other.id == null) {
+            return equalsByAssemblyAndComponent(other);
+        }
+
+        if (this.id == null || other.id == null) {
             return false;
         }
-        return true;
-    }
+        return this.id.equals(other.id);
+    }    
 
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.entities.AssemblyComponent[ id=" + id + " ]";
     }
+
     
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, component.getName());
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
 }

@@ -20,6 +20,8 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.DesignUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
@@ -174,14 +176,16 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     public void prepareEntityUpdate(DesignElement designElement) throws ObjectAlreadyExists {
         EntityInfo entityInfo = designElement.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
+        prepareDesignElementImageList(designElement);
     }
 
     @Override
     public void prepareEntityUpdateOnRemoval(DesignElement designElement) {
         EntityInfo entityInfo = designElement.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
+        prepareDesignElementImageList(designElement);
     }
-    
+
     public String prepareViewFromDesign(DesignElement designElement) {
         logger.debug("Preparing design element view from design view page");
         prepareView(designElement);
@@ -189,15 +193,11 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     }
 
     public String prepareViewToDesign(DesignElement designElement) {
-        return "/views/design/view.xhtml?id=" + designElement.getComponent().getId();
+        return "/views/design/view.xhtml?faces-redirect=true?id=" + designElement.getParentDesign().getId();
     }
 
     public void prepareAddLog(DesignElement designElement) {
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        Log logEntry = new Log();
-        logEntry.setEnteredByUser(lastModifiedByUser);
-        logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
+        Log logEntry = LogUtility.createLogEntry();
         List<Log> designElementLogList = designElement.getLogList();
         designElementLogList.add(0, logEntry);
     }
@@ -598,7 +598,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         if (designElement == null || valueChangeEvent == null) {
             return;
         }
-        
+
         Component existingComponent = designElement.getComponent();
         Component newEventComponent = null;
         Component oldEventComponent = null;
@@ -666,7 +666,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     // or from selection menu.    
     public void selectChildDesignValueChangeListener(ValueChangeEvent valueChangeEvent) {
         DesignElement designElement = getCurrent();
-        if (designElement == null|| valueChangeEvent == null) {
+        if (designElement == null || valueChangeEvent == null) {
             return;
         }
         Design existingChildDesign = designElement.getChildDesign();
@@ -712,7 +712,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         }
         designElement.setChildDesign(null);
     }
-    
+
     public List<Design> getSelectChildDesignCandidateList() {
         if (selectChildDesignCandidateList == null) {
             selectChildDesignCandidateList = designFacade.findAll();
@@ -752,12 +752,46 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     }
 
     public Boolean getDisplayChildDesignSelection(DesignElement designElement) {
+        if (designElement == null) {
+            return true;
+        }
         DesignElementType designElementType = designElement.getContainedObjectType();
         return (designElementType == null || designElementType.equals(DesignElementType.DESIGN));
     }
 
     public Boolean getDisplayComponentSelection(DesignElement designElement) {
+        if (designElement == null) {
+            return true;
+        }
         DesignElementType designElementType = designElement.getContainedObjectType();
         return (designElementType == null || designElementType.equals(DesignElementType.COMPONENT));
     }
+
+    public Boolean getDisplayDesignElementImages() {
+        List<PropertyValue> designElementImageList = getDesignElementImageList();
+        return (designElementImageList != null && !designElementImageList.isEmpty());
+    }
+
+    public List<PropertyValue> prepareDesignElementImageList(DesignElement designElement) {
+        List<PropertyValue> componentInstanceImageList = PropertyValueUtility.prepareImagePropertyValueList(designElement.getPropertyValueList());
+        designElement.setImagePropertyList(componentInstanceImageList);
+        return componentInstanceImageList;
+    }
+
+    public void prepareComponentInstancePropertyValueDisplay(DesignElement designElement) {
+        List<PropertyValue> propertyValueList = designElement.getPropertyValueList();
+        for (PropertyValue propertyValue : propertyValueList) {
+            PropertyValueUtility.configurePropertyValueDisplay(propertyValue);
+        }
+    }
+
+    public List<PropertyValue> getDesignElementImageList() {
+        DesignElement designElement = getCurrent();
+        List<PropertyValue> designElementImageList = designElement.getImagePropertyList();
+        if (designElementImageList == null) {
+            designElementImageList = prepareDesignElementImageList(designElement);
+        }
+        return designElementImageList;
+    }
+
 }

@@ -65,7 +65,7 @@
                       rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>
         <p:tooltip for="documentValue" value="Upload new document using upload action button."/>    
 
-        <h:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
+        <p:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
                                  styleClass="dataTableCheckbox"
                                  rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>
         <p:tooltip for="booleanValue" value="Use checkbox to set property value to true."/>           
@@ -108,17 +108,17 @@
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
               rendered="#{propertyValueController.displayIsDynamic}">
         <div class="dataTableCheckbox">
-            <p:selectBooleanCheckbox id="dynamic" value="#{propertyValueObject.isDynamic}" styleClass="entityDataText"/>
-            <p:tooltip for="dynamic" value="Check this box if inherited property value can be overriden."/>
+            <p:selectBooleanCheckbox id="dynamic" value="#{propertyValueObject.isDynamic}"/>
         </div>
+        <p:tooltip for="dynamic" value="Check this box if inherited property value can be overriden."/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User-Writeable"
               rendered="#{propertyValueController.displayIsUserWriteable}">
         <div class="dataTableCheckbox">
-            <p:selectBooleanCheckbox id="userWriteable" value="#{propertyValueObject.isUserWriteable}" styleClass="entityDataText"/>
-            <p:tooltip for="userWriteable" value="Check this box if property value can be modified by any user."/>
+            <p:selectBooleanCheckbox id="userWriteable" value="#{propertyValueObject.isUserWriteable}"/>
         </div>
+        <p:tooltip for="userWriteable" value="Check this box if property value can be modified by any user."/>
     </p:column>
 
 </ui:composition>

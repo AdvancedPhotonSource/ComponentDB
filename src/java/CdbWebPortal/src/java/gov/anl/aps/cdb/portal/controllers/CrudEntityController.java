@@ -102,6 +102,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
 
     protected Integer idViewParam = null;
     protected String breadcrumbViewParam = null;
+    protected String breadcrumbObjectIdViewParam = null;
 
     private boolean searchHasResults = false;
 
@@ -173,6 +174,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
 
     public void processViewRequestParams() {
         breadcrumbViewParam = SessionUtility.getRequestParameterValue("breadcrumb");
+        breadcrumbObjectIdViewParam = SessionUtility.getRequestParameterValue("breadcrumbObjectId");
         selectByRequestParams();
     }
 
@@ -304,7 +306,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     public String prepareListFromViewPath(String viewPath) {
         return viewPath + "/" + prepareList();
     }
-    
+
     public String resetListForView() {
         logger.debug("Resetting list for view");
         clearListFilters();
@@ -323,6 +325,11 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         String loadView = breadcrumbViewParam;
         if (loadView == null) {
             loadView = prepareList();
+        } else {
+            if (breadcrumbObjectIdViewParam != null) {
+                Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
+                loadView = prepareView(getFacade().find(entityId));
+            }
         }
         return loadView;
     }
@@ -480,7 +487,6 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         }
     }
 
-    
     public String prepareEdit(EntityType entity) {
         resetLogText();
         current = entity;
@@ -529,10 +535,10 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             return null;
         }
     }
-    
+
     protected void prepareEntityDestroy(EntityType entity) throws CdbPortalException {
     }
-    
+
     public void destroy(EntityType entity) {
         current = entity;
         destroy();

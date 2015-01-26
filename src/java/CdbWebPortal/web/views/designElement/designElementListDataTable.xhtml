@@ -25,7 +25,7 @@
         </p:column>
 
         <p:column sortBy="#{designElementObject.name}" headerText="Name">
-            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Component: #{designElementObject.component.name}">
+            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Design Element: #{designElementObject.name}">
                 <h:outputText value="#{designElementObject.name}"/>
             </h:outputLink>
         </p:column>

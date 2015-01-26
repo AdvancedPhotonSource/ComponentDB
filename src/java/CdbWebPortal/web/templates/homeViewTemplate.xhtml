@@ -14,7 +14,7 @@
     </h:head>
 
     <h:body>
-        
+
         <div id="top" class="topContent">
             <div id="topLeft" class="topLeftContent">
                 <ui:insert name="topLeft">
@@ -85,9 +85,13 @@
                     <h:form prependId="false">
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                     </h:form>
+                    <footer>
+                        <h:outputText value="Copyright &#169; 2014-2015 UChicago Argonne, LLC"/>   
+                    </footer>
                 </ui:insert>
             </div>
         </ui:fragment>
+
 
         <h:form id="loginForm">
             <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialog">

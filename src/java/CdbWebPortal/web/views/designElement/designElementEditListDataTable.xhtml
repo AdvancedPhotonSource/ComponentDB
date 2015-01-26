@@ -16,7 +16,7 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  editable="true"
-                 emptyMessage="No design instances found.">
+                 emptyMessage="No design elements found.">
 
         <p:column sortBy="#{designElementObject.id}" headerText="Id"
                   rendered="#{designElementController.displayId}">
@@ -34,60 +34,65 @@
                   filterBy="#{designElementObject.component.name}" filterMatchMode="contains"
                   filterValue="#{designElementController.filterByComponent}"
                   rendered="#{designElementController.displayComponent}">
-            <p:autoComplete id="componentDropdown" 
-                            value="#{designElementObject.component}" 
-                            var="componentObject"
-                            converter="componentConverter" 
-                            completeMethod="#{designElementController.completeComponent}" 
-                            itemLabel="#{componentObject.name}"
-                            itemValue="#{componentObject}"
-                            valueChangeListener="#{designElementController.selectComponentValueChangeListener(valueChangeEvent)}"
-                            forceSelection="true"
-                            scrollHeight="200"
-                            dropdown="true" 
-                            styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
-            </p:autoComplete>
+            <ui:fragment rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}">
 
-            <p:commandButton id="designElementComponentSelectButton"
-                             oncomplete="PF('designElementComponentSelectDialogWidget').show()"
-                             immediate="true"
-                             alt="Select Component" 
-                             styleClass="actionButtonSmall"
-                             icon="ui-icon-search">
-                <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
-                <p:tooltip for="designElementComponentSelectButton" value="Search for component."/>
-            </p:commandButton>
+                <p:autoComplete id="componentDropdown" 
+                                value="#{designElementObject.component}" 
+                                var="componentObject"
+                                converter="componentConverter" 
+                                completeMethod="#{designElementController.completeComponent}" 
+                                itemLabel="#{componentObject.name}"
+                                itemValue="#{componentObject}"
+                                valueChangeListener="#{designElementController.selectComponentValueChangeListener(valueChangeEvent)}"
+                                forceSelection="true"
+                                scrollHeight="200"
+                                dropdown="true" 
+                                styleClass="autocomplete">
+                    <p:ajax event="valueChange" immediate="true" process="@this"/>
+                </p:autoComplete>
+
+                <p:commandButton id="designElementComponentSelectButton"
+                                 oncomplete="PF('designElementComponentSelectDialogWidget').show()"
+                                 immediate="true"
+                                 alt="Select Component" 
+                                 styleClass="actionButtonSmall"
+                                 icon="ui-icon-search">
+                    <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
+                    <p:tooltip for="designElementComponentSelectButton" value="Search for component."/>
+                </p:commandButton>
+            </ui:fragment>
         </p:column>
 
         <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
                   filterBy="#{designElementObject.childDesign.name}" filterMatchMode="contains"
                   filterValue="#{designElementController.filterByChildDesign}"
                   rendered="#{designElementController.displayChildDesign}">
-            <p:autoComplete id="childDesignDropdown" 
-                            value="#{designElementObject.childDesign}" 
-                            var="childDesignObject"
-                            converter="designConverter" 
-                            completeMethod="#{designElementController.completeChildDesign}" 
-                            itemLabel="#{childDesignObject.name}"
-                            itemValue="#{childDesignObject}"
-                            valueChangeListener="#{designElementController.selectChildDesignValueChangeListener(valueChangeEvent)}"
-                            forceSelection="true"
-                            scrollHeight="200"
-                            dropdown="true" 
-                            styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
-             </p:autoComplete>
+            <ui:fragment rendered="#{designElementController.getDisplayChildDesignSelection(designElementObject)}">
+                <p:autoComplete id="childDesignDropdown" 
+                                value="#{designElementObject.childDesign}" 
+                                var="childDesignObject"
+                                converter="designConverter" 
+                                completeMethod="#{designElementController.completeChildDesign}" 
+                                itemLabel="#{childDesignObject.name}"
+                                itemValue="#{childDesignObject}"
+                                valueChangeListener="#{designElementController.selectChildDesignValueChangeListener(valueChangeEvent)}"
+                                forceSelection="true"
+                                scrollHeight="200"
+                                dropdown="true" 
+                                styleClass="autocomplete">
+                    <p:ajax event="valueChange" immediate="true" process="@this"/>
+                </p:autoComplete>
 
-            <p:commandButton id="designElementChildDesignSelectButton"
-                             oncomplete="PF('designElementChildDesignSelectDialogWidget').show()"
-                             immediate="true"
-                             alt="Select Child Design" 
-                             styleClass="actionButtonSmall"
-                             icon="ui-icon-search">
-                <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
-                <p:tooltip for="designElementChildDesignSelectButton" value="Search for child design."/>
-            </p:commandButton>
+                <p:commandButton id="designElementChildDesignSelectButton"
+                                 oncomplete="PF('designElementChildDesignSelectDialogWidget').show()"
+                                 immediate="true"
+                                 alt="Select Child Design" 
+                                 styleClass="actionButtonSmall"
+                                 icon="ui-icon-search">
+                    <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
+                    <p:tooltip for="designElementChildDesignSelectButton" value="Search for child design."/>
+                </p:commandButton>
+            </ui:fragment>
         </p:column>
 
         <p:column sortBy="#{designElementObject.location.name}" headerText="Location"

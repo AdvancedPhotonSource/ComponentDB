@@ -1,12 +1,19 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.AssemblyComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Component;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.ComponentUtility;
+import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,202 +21,209 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import javax.faces.event.ValueChangeEvent;
+import org.apache.log4j.Logger;
+import org.primefaces.component.autocomplete.AutoComplete;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.event.SelectEvent;
 
 @Named("assemblyComponentController")
 @SessionScoped
-public class AssemblyComponentController implements Serializable
-{
+public class AssemblyComponentController extends CrudEntityController<AssemblyComponent, AssemblyComponentFacade> implements Serializable {
 
-    private AssemblyComponent current;
-    private DataModel items = null;
+    private static final String DisplayDescriptionSettingTypeKey = "AssemblyComponent.List.Display.Description";
+    private static final String DisplayFlatTableViewSettingTypeKey = "AssemblyComponent.List.Display.FlatTableView";
+    private static final String DisplayIdSettingTypeKey = "AssemblyComponent.List.Display.Id";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AssemblyComponent.List.Display.NumberOfItemsPerPage";
+    private static final String DisplaySortOrderSettingTypeKey = "AssemblyComponent.List.Display.SortOrder";
+
+    private static final String FilterByDescriptionSettingTypeKey = "AssemblyComponent.List.FilterBy.Description";
+    private static final String FilterByNameSettingTypeKey = "AssemblyComponent.List.FilterBy.Name";
+    private static final String FilterBySortOrderSettingTypeKey = "AssemblyComponent.List.FilterBy.SortOrder";
+
+    private static final Logger logger = Logger.getLogger(AssemblyComponentController.class.getName());
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.AssemblyComponentFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private AssemblyComponentFacade assemblyComponentFacade;
+
+    @EJB
+    private ComponentFacade componentFacade;
+
+    private Boolean displayFlatTableView = null;
+    private Boolean displaySortOrder = null;
+
+    private String filterBySortOrder = null;
+
+    private List<Component> selectComponentCandidateList = null;
+
+    private Component selectedAssembly = null;
 
     public AssemblyComponentController() {
     }
 
-    public AssemblyComponent getSelected() {
-        if (current == null) {
-            current = new AssemblyComponent();
-            selectedItemIndex = -1;
+    @Override
+    protected AssemblyComponentFacade getFacade() {
+        return assemblyComponentFacade;
+    }
+
+    @Override
+    protected AssemblyComponent createEntityInstance() {
+        AssemblyComponent assemblyComponent = new AssemblyComponent();
+
+        selectComponentCandidateList = null;
+        return assemblyComponent;
+    }
+
+    @Override
+    public void selectByRequestParams() {
+        if (idViewParam != null) {
+            AssemblyComponent assemblyComponent = findById(idViewParam);
+            setCurrent(assemblyComponent);
+            prepareEntityView(assemblyComponent);
+            idViewParam = null;
         }
-        return current;
     }
 
-    private AssemblyComponentFacade getFacade() {
-        return ejbFacade;
+    public AssemblyComponent findById(Integer id) {
+        return assemblyComponentFacade.findById(id);
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10)
-            {
+    @Override
+    public String getEntityTypeName() {
+        return "assemblyComponent";
+    }
 
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "assembly component";
+    }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getAssembly().getName();
         }
-        return pagination;
+        return "";
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
+    @Override
+    public List<AssemblyComponent> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public String prepareView() {
-        current = (AssemblyComponent) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
+    @Override
+    public void prepareEntityInsert(AssemblyComponent assemblyComponent) throws ObjectAlreadyExists {
     }
 
-    public String prepareCreate() {
-        current = new AssemblyComponent();
-        selectedItemIndex = -1;
-        return "Create";
+    @Override
+    public void prepareEntityUpdate(AssemblyComponent assemblyComponent) throws ObjectAlreadyExists {
     }
 
-    public String create() {
+    @Override
+    public void prepareEntityUpdateOnRemoval(AssemblyComponent assemblyComponent) {
+    }
+
+    public String prepareViewFromAssembly(AssemblyComponent assemblyComponent) {
+        logger.debug("Preparing assembly component view from assembly view page");
+        prepareView(assemblyComponent);
+        return "/views/assemblyComponent/view.xhtml?faces-redirect=true";
+    }
+
+    public String prepareViewToAssembly(AssemblyComponent assemblyComponent) {
+        return "/views/component/view.xhtml?faces-redirect=true?id=" + assemblyComponent.getAssembly().getId();
+    }
+
+    public String destroyAndReturnAssemblyView(AssemblyComponent assemblyComponent) {
+        Component assembly = assemblyComponent.getAssembly();
+        setCurrent(assemblyComponent);
         try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("AssemblyComponentCreated"));
-            return prepareCreate();
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
+            logger.debug("Destroying " + assemblyComponent.getComponent().getName());
+            getFacade().remove(assemblyComponent);
+            SessionUtility.addInfoMessage("Success", "Deleted assembly component id " + assemblyComponent.getId() + ".");
+            return "/views/component/view.xhtml?faces-redirect=true?id=" + assembly.getId();
+        } catch (Exception ex) {
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }
 
-    public String prepareEdit() {
-        current = (AssemblyComponent) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayFlatTableView = Boolean.parseBoolean(settingTypeMap.get(DisplayFlatTableViewSettingTypeKey).getDefaultValue());
+        displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
     }
 
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("AssemblyComponentUpdated"));
-            return "View";
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayFlatTableView = sessionUser.getUserSettingValueAsBoolean(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
+        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+
+        Map<String, String> filters = dataTable.getFilters();
+        filterBySortOrder = filters.get("sortOrder");
+    }
+
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
+        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
     }
 
-    public String destroy() {
-        current = (AssemblyComponent) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        }
-        else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("AssemblyComponentDeleted"));
-        }
-        catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public AssemblyComponent getAssemblyComponent(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterBySortOrder = null;
     }
 
     @FacesConverter(forClass = AssemblyComponent.class)
-    public static class AssemblyComponentControllerConverter implements Converter
-    {
+    public static class AssemblyComponentControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AssemblyComponentController controller = (AssemblyComponentController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "assemblyComponentController");
-            return controller.getAssemblyComponent(getKey(value));
+            try {
+                AssemblyComponentController controller = (AssemblyComponentController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "assemblyComponentController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to design element object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {
@@ -232,12 +246,112 @@ public class AssemblyComponentController implements Serializable
             if (object instanceof AssemblyComponent) {
                 AssemblyComponent o = (AssemblyComponent) object;
                 return getStringKey(o.getId());
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + AssemblyComponent.class.getName());
             }
         }
 
+    }
+
+    public Boolean getDisplayFlatTableView() {
+        return displayFlatTableView;
+    }
+
+    public void setDisplayFlatTableView(Boolean displayFlatTableView) {
+        this.displayFlatTableView = displayFlatTableView;
+    }
+
+    public Boolean getDisplaySortOrder() {
+        return displaySortOrder;
+    }
+
+    public void setDisplaySortOrder(Boolean displaySortOrder) {
+        this.displaySortOrder = displaySortOrder;
+    }
+
+    public String getFilterBySortOrder() {
+        return filterBySortOrder;
+    }
+
+    public void setFilterBySortOrder(String filterBySortOrder) {
+        this.filterBySortOrder = filterBySortOrder;
+    }
+
+    public Component getSelectedAssembly() {
+        return selectedAssembly;
+    }
+
+    public void setSelectedAssembly(Component selectedAssembly) {
+        this.selectedAssembly = selectedAssembly;
+    }
+
+    // This listener is accessed either after selection made in dialog,
+    // or from selection menu.    
+    public void selectComponentValueChangeListener(ValueChangeEvent valueChangeEvent) {
+        AssemblyComponent assemblyComponent = getCurrent();
+        if (assemblyComponent == null || valueChangeEvent == null) {
+            return;
+        }
+
+        Component existingComponent = assemblyComponent.getComponent();
+        Component newEventComponent = null;
+        Component oldEventComponent = null;
+
+        Object newValue = valueChangeEvent.getNewValue();
+        if (newValue != null) {
+            newEventComponent = (Component) newValue;
+        }
+        Object oldValue = valueChangeEvent.getOldValue();
+        if (oldValue != null) {
+            oldEventComponent = (Component) oldValue;
+        }
+
+        if (ObjectUtility.equals(existingComponent, oldEventComponent)) {
+            // change via menu
+            assemblyComponent.setComponent(newEventComponent);
+        } else {
+            // change via dialog
+            assemblyComponent.setComponent(oldEventComponent);
+        }
+    }
+
+    public void selectComponentListener(SelectEvent selectEvent) {
+        AssemblyComponent assemblyComponent = getCurrent();
+        if (assemblyComponent == null) {
+            return;
+        }
+        AutoComplete autoComplete = (AutoComplete) selectEvent.getSource();
+        Object itemValue = autoComplete.getItemValue();
+        if (itemValue != null) {
+            Component component = (Component) itemValue;
+            assemblyComponent.setComponent(component);
+        }
+    }
+
+    public void unselectComponentListener(SelectEvent selectEvent) {
+        AssemblyComponent assemblyComponent = getCurrent();
+        if (assemblyComponent == null) {
+            return;
+        }
+        assemblyComponent.setComponent(null);
+    }
+
+    public List<Component> getSelectComponentCandidateList() {
+        if (selectComponentCandidateList == null) {
+            selectComponentCandidateList = componentFacade.findAll();
+        }
+        return selectComponentCandidateList;
+    }
+
+    public List<Component> completeComponent(String query) {
+        return ComponentUtility.filterComponent(query, getSelectComponentCandidateList());
+    }
+
+    public void selectComponent(Component component) {
+        AssemblyComponent assemblyComponent = getCurrent();
+        if (assemblyComponent != null) {
+            assemblyComponent.setComponent(component);
+        }
     }
 
 }

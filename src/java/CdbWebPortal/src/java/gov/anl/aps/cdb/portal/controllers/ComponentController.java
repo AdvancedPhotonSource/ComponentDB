@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
@@ -20,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.AssemblyComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
@@ -89,7 +91,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @EJB
     private ComponentTypeFacade componentTypeFacade;
-    
+
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
 
@@ -158,7 +160,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
             entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
         }
         component.setEntityInfo(entityInfo);
-        
+
         selectComponentTypeCandidateList = null;
         return component;
     }
@@ -306,7 +308,20 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 componentInstance.resetAttributesToNullIfEmpty();
             }
         }
-        logger.debug("Updating component " + component.getName() 
+        
+        List<AssemblyComponent> assemblyComponentList = component.getAssemblyComponentList();
+        if (assemblyComponentList != null) {
+            for (AssemblyComponent assemblyComponent : assemblyComponentList) {
+                if (assemblyComponent.getComponent() == null) {
+                    throw new InvalidObjectState("Assembly component must be selected.");
+                }
+            }
+        }
+        
+        // Catch circular dependencies.
+        AssemblyComponentUtility.createAssemblyRoot(component);
+
+        logger.debug("Updating component " + component.getName()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
     }
 
@@ -315,7 +330,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         EntityInfo entityInfo = component.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
     }
-    
+
     @Override
     public String prepareEdit(Component component) {
         locationList = locationFacade.findAll();
@@ -470,6 +485,24 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public void saveLogList() {
         update();
+    }
+
+    public void prepareAddAssemblyComponent(Component component) {
+        List<AssemblyComponent> assemblyComponentList = component.getAssemblyComponentList();
+        AssemblyComponent assemblyComponent = new AssemblyComponent();
+        assemblyComponent.setAssembly(component);
+        assemblyComponentList.add(assemblyComponent);
+    }
+
+    public void saveAssemblyComponentList() {
+        update();
+    }
+
+    public void deleteAssemblyComponent(AssemblyComponent assemblyComponent) {
+        Component component = getCurrent();
+        List<AssemblyComponent> assemblyComponentList = component.getAssemblyComponentList();
+        assemblyComponentList.remove(assemblyComponent);
+        updateOnRemoval();
     }
 
     @Override
@@ -776,7 +809,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public List<ComponentType> completeComponentType(String query) {
         return ComponentTypeUtility.filterComponentType(query, getSelectComponentTypeCandidateList());
     }
-    
+
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.
     public void selectComponentTypeValueChangeListener(ValueChangeEvent valueChangeEvent) {

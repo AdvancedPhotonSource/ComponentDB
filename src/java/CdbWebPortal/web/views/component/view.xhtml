@@ -43,7 +43,7 @@
             </div>
 
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1,2">                
+                <p:accordionPanel multiple="true" activeIndex="0,1,2,3">                
                     <p:tab title="Properties">
                         <ui:include src="../componentProperty/list.xhtml"/>
                     </p:tab>
@@ -52,6 +52,10 @@
                         <ui:include src="../componentSource/list.xhtml"/>
                     </p:tab>
 
+                    <p:tab title="Assembly Components">
+                        <ui:include src="../assemblyComponent/list.xhtml"/>
+                    </p:tab>  
+                    
                     <p:tab title="Instances">
                         <ui:include src="../componentInstance/list.xhtml"/>
                     </p:tab>       

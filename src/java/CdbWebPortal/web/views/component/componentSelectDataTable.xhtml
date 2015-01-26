@@ -8,10 +8,10 @@
 
     <p:dataTable id="componentSelectDataTable" 
                  widgetVar="componentSelectDataTableWidget"
-                 var="componentObject" 
+                 var="selectComponentObject" 
                  value="#{componentController.selectDataModel}" 
                  filteredValue="#{componentController.filteredObjectList}"
-                 rowKey="#{componentObject.id}"
+                 rowKey="#{selectComponentObject.id}"
                  selection="#{componentController.selectedComponent}"
                  selectionMode="single"
                  paginator="true"
@@ -19,121 +19,121 @@
                  rows="20"
                  emptyMessage="No available component types found.">
 
-        <p:column sortBy="#{componentObject.id}" headerText="Id"
+        <p:column sortBy="#{selectComponentObject.id}" headerText="Id"
                   rendered="#{componentController.selectDisplayId}">
-            <h:outputText value="#{componentObject.id}"/>
+            <h:outputText value="#{selectComponentObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.name}" headerText="Name" 
-                  filterBy="#{componentObject.name}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.name}" headerText="Name" 
+                  filterBy="#{selectComponentObject.name}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByName}"
                   rendered="true">
-            <h:outputText value="#{componentObject.name}"/>
+            <h:outputText value="#{selectComponentObject.name}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.description}" headerText="Description" 
-                  filterBy="#{componentObject.description}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.description}" headerText="Description" 
+                  filterBy="#{selectComponentObject.description}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByDescription}"
                   rendered="#{componentController.selectDisplayDescription}">
-            <h:outputText value="#{componentObject.description}"/>
+            <h:outputText value="#{selectComponentObject.description}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.componentType}" headerText="Type" 
-                  filterBy="#{componentObject.componentType}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.componentType}" headerText="Type" 
+                  filterBy="#{selectComponentObject.componentType}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByType}"
                   rendered="#{componentController.selectDisplayType}">
-            <h:outputText value="#{componentObject.componentType}"/>
+            <h:outputText value="#{selectComponentObject.componentType}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.componentType.componentTypeCategory}" headerText="Category" 
-                  filterBy="#{componentObject.componentType.componentTypeCategory}" filterMatchMode="exact"
+        <p:column sortBy="#{selectComponentObject.componentType.componentTypeCategory}" headerText="Category" 
+                  filterBy="#{selectComponentObject.componentType.componentTypeCategory}" filterMatchMode="exact"
                   filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
                   filterValue="#{componentController.selectFilterByCategory}"
                   rendered="#{componentController.selectDisplayCategory}">
-            <h:outputText value="#{componentObject.componentType.componentTypeCategory.name}"/>
+            <h:outputText value="#{selectComponentObject.componentType.componentTypeCategory.name}"/>
         </p:column>
 
-        <ui:param name="propertyValue1" value="#{componentObject.getPropertyValue(propertyTypeId1)}"/>
-        <p:column sortBy="#{componentObject.propertyValue1}" headerText="Property: #{propertyTypeName1}" 
-                  filterBy="#{componentObject.propertyValue1}" filterMatchMode="contains"
+        <ui:param name="propertyValue1" value="#{selectComponentObject.getPropertyValue(propertyTypeId1)}"/>
+        <p:column sortBy="#{selectComponentObject.propertyValue1}" headerText="Property: #{propertyTypeName1}" 
+                  filterBy="#{selectComponentObject.propertyValue1}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByPropertyValue1}"
                   rendered="#{propertyTypeId1 != null}">
             <h:outputText value="#{propertyValue1}"/>
         </p:column>
 
-        <ui:param name="propertyValue2" value="#{componentObject.getPropertyValue(propertyTypeId2)}"/>
-        <p:column sortBy="#{componentObject.propertyValue2}" headerText="Property: #{propertyTypeName2}" 
-                  filterBy="#{componentObject.propertyValue2}" filterMatchMode="contains"
+        <ui:param name="propertyValue2" value="#{selectComponentObject.getPropertyValue(propertyTypeId2)}"/>
+        <p:column sortBy="#{selectComponentObject.propertyValue2}" headerText="Property: #{propertyTypeName2}" 
+                  filterBy="#{selectComponentObject.propertyValue2}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByPropertyValue2}"
                   rendered="#{propertyTypeId2 != null}">
             <h:outputText value="#{propertyValue2}"/>
         </p:column>
 
-        <ui:param name="propertyValue3" value="#{componentObject.getPropertyValue(propertyTypeId3)}"/>
-        <p:column sortBy="#{componentObject.propertyValue3}" headerText="Property: #{propertyTypeName3}" 
-                  filterBy="#{componentObject.propertyValue3}" filterMatchMode="contains"
+        <ui:param name="propertyValue3" value="#{selectComponentObject.getPropertyValue(propertyTypeId3)}"/>
+        <p:column sortBy="#{selectComponentObject.propertyValue3}" headerText="Property: #{propertyTypeName3}" 
+                  filterBy="#{selectComponentObject.propertyValue3}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByPropertyValue3}"
                   rendered="#{propertyTypeId3 != null}">
             <h:outputText value="#{propertyValue3}"/>
         </p:column>
 
-        <ui:param name="propertyValue4" value="#{componentObject.getPropertyValue(propertyTypeId4)}"/>
-        <p:column sortBy="#{componentObject.propertyValue4}" headerText="Property: #{propertyTypeName4}" 
-                  filterBy="#{componentObject.propertyValue4}" filterMatchMode="contains"
+        <ui:param name="propertyValue4" value="#{selectComponentObject.getPropertyValue(propertyTypeId4)}"/>
+        <p:column sortBy="#{selectComponentObject.propertyValue4}" headerText="Property: #{propertyTypeName4}" 
+                  filterBy="#{selectComponentObject.propertyValue4}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByPropertyValue4}"
                   rendered="#{propertyTypeId4 != null}">
             <h:outputText value="#{propertyValue4}"/>
         </p:column>
 
-        <ui:param name="propertyValue5" value="#{componentObject.getPropertyValue(propertyTypeId5)}"/>
-        <p:column sortBy="#{componentObject.propertyValue5}" headerText="Property: #{propertyTypeName5}" 
-                  filterBy="#{componentObject.propertyValue5}" filterMatchMode="contains"
+        <ui:param name="propertyValue5" value="#{selectComponentObject.getPropertyValue(propertyTypeId5)}"/>
+        <p:column sortBy="#{selectComponentObject.propertyValue5}" headerText="Property: #{propertyTypeName5}" 
+                  filterBy="#{selectComponentObject.propertyValue5}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByPropertyValue5}"
                   rendered="#{propertyTypeId5 != null}">
             <h:outputText value="#{propertyValue5}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.entityInfo.ownerUser.username}" headerText="Owner"
-                  filterBy="#{componentObject.entityInfo.ownerUser.username}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.entityInfo.ownerUser.username}" headerText="Owner"
+                  filterBy="#{selectComponentObject.entityInfo.ownerUser.username}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByOwnerUser}"
                   rendered="#{componentController.selectDisplayOwnerUser}">
-            <h:outputText value="#{componentObject.entityInfo.ownerUser.username}"/>
+            <h:outputText value="#{selectComponentObject.entityInfo.ownerUser.username}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.entityInfo.ownerUserGroup.name}" headerText="Group"
-                  filterBy="#{componentObject.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
+        <p:column sortBy="#{selectComponentObject.entityInfo.ownerUserGroup.name}" headerText="Group"
+                  filterBy="#{selectComponentObject.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
                   filterOptions="#{userGroupController.availableItemsForSelectOne}"
                   filterValue="#{componentController.selectFilterByOwnerGroup}"
                   rendered="#{componentController.selectDisplayOwnerGroup}">
-            <h:outputText value="#{componentObject.entityInfo.ownerUserGroup.name}"/>
+            <h:outputText value="#{selectComponentObject.entityInfo.ownerUserGroup.name}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.entityInfo.createdByUser.username}" headerText="Created By"
-                  filterBy="#{componentObject.entityInfo.createdByUser.username}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.entityInfo.createdByUser.username}" headerText="Created By"
+                  filterBy="#{selectComponentObject.entityInfo.createdByUser.username}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByCreatedByUser}"
                   rendered="#{componentController.selectDisplayCreatedByUser}">
-            <h:outputText value="#{componentObject.entityInfo.createdByUser.username}"/>
+            <h:outputText value="#{selectComponentObject.entityInfo.createdByUser.username}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.entityInfo.createdOnDateTime}" headerText="Created On"
-                  filterBy="#{componentObject.entityInfo.createdOnDateTime}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.entityInfo.createdOnDateTime}" headerText="Created On"
+                  filterBy="#{selectComponentObject.entityInfo.createdOnDateTime}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByCreatedOnDateTime}"
                   rendered="#{componentController.selectDisplayCreatedOnDateTime}">
-            <h:outputText value="#{componentObject.entityInfo.createdOnDateTime}"/>
+            <h:outputText value="#{selectComponentObject.entityInfo.createdOnDateTime}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
-                  filterBy="#{componentObject.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
+                  filterBy="#{selectComponentObject.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByLastModifiedByUser}"
                   rendered="#{componentController.selectDisplayLastModifiedByUser}">
-            <h:outputText value="#{componentObject.entityInfo.lastModifiedByUser.username}"/>
+            <h:outputText value="#{selectComponentObject.entityInfo.lastModifiedByUser.username}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
-                  filterBy="#{componentObject.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains"
+        <p:column sortBy="#{selectComponentObject.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
+                  filterBy="#{selectComponentObject.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByLastModifiedOnDateTime}"
                   rendered="#{componentController.selectDisplayLastModifiedOnDateTime}">
-            <h:outputText value="#{componentObject.entityInfo.lastModifiedOnDateTime}"/>
+            <h:outputText value="#{selectComponentObject.entityInfo.lastModifiedOnDateTime}"/>
         </p:column>
     </p:dataTable>
 

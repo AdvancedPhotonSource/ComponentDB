@@ -8,7 +8,6 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -77,14 +76,6 @@ public class DesignElement extends CdbEntity {
     @ManyToMany
     private List<PropertyValue> propertyValueList;
 
-    @JoinTable(name = "design_element_link", joinColumns = {
-        @JoinColumn(name = "child_design_element_id", referencedColumnName = "id")},
-            inverseJoinColumns = {
-                @JoinColumn(name = "parent_design_element_id", referencedColumnName = "id")})
-    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
-    private List<DesignElement> parentDesignElementList;
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "parentDesignElementList")
-    private List<DesignElement> childDesignElementList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
     private List<DesignElementConnection> designElementConnectionList;
@@ -105,6 +96,8 @@ public class DesignElement extends CdbEntity {
     @JoinColumn(name = "parent_design_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Design parentDesign;
+
+    private transient List<PropertyValue> imagePropertyList = null;
 
     public DesignElement() {
     }
@@ -196,6 +189,18 @@ public class DesignElement extends CdbEntity {
         this.designElementConnectionList1 = designElementConnectionList1;
     }
 
+    public List<PropertyValue> getImagePropertyList() {
+        return imagePropertyList;
+    }
+
+    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
+        this.imagePropertyList = imagePropertyList;
+    }
+
+    public void resetImagePropertyList() {
+        this.imagePropertyList = null;
+    }
+
     @Override
     public EntityInfo getEntityInfo() {
         return entityInfo;
@@ -237,55 +242,6 @@ public class DesignElement extends CdbEntity {
         this.parentDesign = parentDesign;
     }
 
-    public List<DesignElement> getParentDesignElementList() {
-        return parentDesignElementList;
-    }
-
-    public void setParentDesignElementList(List<DesignElement> parentDesignElementList) {
-        this.parentDesignElementList = parentDesignElementList;
-    }
-
-    public List<DesignElement> getChildDesignElementList() {
-        return childDesignElementList;
-    }
-
-    public void setChildDesignElementList(List<DesignElement> childDesignElementList) {
-        this.childDesignElementList = childDesignElementList;
-    }
-
-    public DesignElement getParentDesignElement() {
-        if (parentDesignElementList == null || parentDesignElementList.isEmpty()) {
-            return null;
-        }
-        return parentDesignElementList.get(0);
-    }
-
-    public void resetParentDesignElement() {
-        parentDesignElementList = null;
-    }
-
-    public void setParentDesignElement(DesignElement parentDesignElement) {
-        DesignElement oldParentDesignElement = getParentDesignElement();
-        if (oldParentDesignElement != null) {
-            if (oldParentDesignElement.equals(parentDesignElement)) {
-                return;
-            }
-            List<DesignElement> oldParentDesignElementChildList = oldParentDesignElement.getChildDesignElementList();
-            oldParentDesignElementChildList.remove(this);
-        }
-
-        parentDesignElementList = new ArrayList<>();
-        if (parentDesignElement != null) {
-            parentDesignElementList.add(parentDesignElement);
-            List<DesignElement> newParentDesignElementChildList = parentDesignElement.getChildDesignElementList();
-            if (newParentDesignElementChildList == null) {
-                newParentDesignElementChildList = new ArrayList<>();
-                parentDesignElement.setChildDesignElementList(newParentDesignElementChildList);
-            }
-            newParentDesignElementChildList.add(this);
-        }
-    }
-
     public String getContainedObjectName() {
         if (component != null) {
             return component.getName();
@@ -296,7 +252,7 @@ public class DesignElement extends CdbEntity {
         return null;
     }
 
-   public DesignElementType getContainedObjectType() {
+    public DesignElementType getContainedObjectType() {
         if (component != null) {
             return DesignElementType.COMPONENT;
         }
@@ -305,8 +261,8 @@ public class DesignElement extends CdbEntity {
         }
         return null;
     }
- 
-   public Integer getContainedObjectId() {
+
+    public Integer getContainedObjectId() {
         if (component != null) {
             return component.getId();
         }
@@ -315,7 +271,7 @@ public class DesignElement extends CdbEntity {
         }
         return null;
     }
-   
+
     @Override
     public int hashCode() {
         int hash = 0;

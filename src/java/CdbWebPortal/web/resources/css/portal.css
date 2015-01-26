@@ -1,9 +1,10 @@
-body {
+html, body {
     background-color: #f2f4f7;
     font-size: 12px;
     font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
     color: #000000;
     margin: 0px;
+    height: 100%;
 }
 
 a:link, a:visited {
@@ -45,14 +46,24 @@ a:link:hover, a:visited:hover  {
 }
 
 #middle {
+    //min-height: 500px;
 }
 
 #bottom {
     position: relative;
-    background-color: #6da5d8;
+    background-color: #f2f4f7;
     padding: 0px;
     margin: 0px 0px 0px 0px;
-    height: 100%
+    //height: 100%;
+}
+
+footer {
+    bottom: 10px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    text-align: center; 
+    color: #4e80b6;
 }
 
 .title {

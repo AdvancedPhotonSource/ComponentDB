@@ -30,6 +30,7 @@ public class SearchController implements Serializable {
 
     private static final String CaseInsensitiveSettingTypeKey = "Search.CaseInsensitive";  
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Search.Display.NumberOfItemsPerPage";
+    private static final String DisplayAssemblyComponentsSettingTypeKey = "Search.Display.AssemblyComponents";
     private static final String DisplayComponentsSettingTypeKey = "Search.Display.Components";
     private static final String DisplayComponentInstancesSettingTypeKey = "Search.Display.ComponentInstances";
     private static final String DisplayComponentTypesSettingTypeKey = "Search.Display.ComponentTypes";
@@ -53,6 +54,7 @@ public class SearchController implements Serializable {
 
     protected Integer displayNumberOfItemsPerPage = null;
 
+    protected Boolean displayAssemblyComponents = null;    
     protected Boolean displayComponents = null;
     protected Boolean displayComponentInstances = null;
     protected Boolean displayComponentTypes = null;
@@ -141,6 +143,7 @@ public class SearchController implements Serializable {
         
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         caseInsensitive = Boolean.parseBoolean(settingTypeMap.get(CaseInsensitiveSettingTypeKey).getDefaultValue());
+        displayAssemblyComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayAssemblyComponentsSettingTypeKey).getDefaultValue());
         displayComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentsSettingTypeKey).getDefaultValue());
         displayComponentInstances = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstancesSettingTypeKey).getDefaultValue());
         displayComponentTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypesSettingTypeKey).getDefaultValue());
@@ -163,6 +166,7 @@ public class SearchController implements Serializable {
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         caseInsensitive = sessionUser.getUserSettingValueAsBoolean(CaseInsensitiveSettingTypeKey, caseInsensitive);
+        displayAssemblyComponents = sessionUser.getUserSettingValueAsBoolean(DisplayAssemblyComponentsSettingTypeKey, displayAssemblyComponents);
         displayComponents = sessionUser.getUserSettingValueAsBoolean(DisplayComponentsSettingTypeKey, displayComponents);
         displayComponentInstances = sessionUser.getUserSettingValueAsBoolean(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
         displayComponentTypes = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
@@ -186,6 +190,7 @@ public class SearchController implements Serializable {
 
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         sessionUser.setUserSettingValue(CaseInsensitiveSettingTypeKey, caseInsensitive);
+        sessionUser.setUserSettingValue(DisplayAssemblyComponentsSettingTypeKey, displayAssemblyComponents);
         sessionUser.setUserSettingValue(DisplayComponentsSettingTypeKey, displayComponents);
         sessionUser.setUserSettingValue(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
         sessionUser.setUserSettingValue(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
@@ -238,6 +243,14 @@ public class SearchController implements Serializable {
 
     public void setDisplayNumberOfItemsPerPage(Integer displayNumberOfItemsPerPage) {
         this.displayNumberOfItemsPerPage = displayNumberOfItemsPerPage;
+    }
+
+    public Boolean getDisplayAssemblyComponents() {
+        return displayAssemblyComponents;
+    }
+
+    public void setDisplayAssemblyComponents(Boolean displayAssemblyComponents) {
+        this.displayAssemblyComponents = displayAssemblyComponents;
     }
 
     public Boolean getDisplayComponents() {

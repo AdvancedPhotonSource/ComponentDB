@@ -30,13 +30,13 @@
                 <div class="actionButton">
                     <p:commandButton id="designElementViewEditButton" action="#{designElementController.prepareEdit(designElementObject)}" 
                                      rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil">
-                        <p:tooltip for="designElementViewEditButton" value="Edit design instance."/>
+                        <p:tooltip for="designElementViewEditButton" value="Edit design element."/>
                     </p:commandButton>
                     <p:commandButton id="designElementViewDeleteButton" onclick="PF('designElementDestroyDialogWidget').show();" 
                                      rendered="#{(isEntityWriteable and loginController.isEntityWriteable(designObject.entityInfo))}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                        <p:tooltip for="designElementViewDeleteButton" value="Delete design instance."/>
+                        <p:tooltip for="designElementViewDeleteButton" value="Delete design element."/>
                     </p:commandButton>  
-                    <p:commandButton id="designElementViewDoneButton" action="#{designElementController.prepareViewToComponent(designElementObject)}" 
+                    <p:commandButton id="designElementViewDoneButton" action="#{designElementController.prepareViewToDesign(designElementObject)}" 
                                      value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w">
                         <p:tooltip for="designElementViewDoneButton" value="Return to previous page."/>
                     </p:commandButton>
@@ -48,6 +48,9 @@
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">  
+                    <p:tab title="Images">
+                        <ui:include src="../designElementProperty/image.xhtml"/>
+                    </p:tab> 
                     <p:tab title="Log Entries">
                         <ui:include src="../designElementLog/list.xhtml"/>
                     </p:tab>

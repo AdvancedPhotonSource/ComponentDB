@@ -49,8 +49,11 @@
         <h:outputText value="#{propertyValueObject.displayValue}"
                       rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>        
 
-        <h:outputText value="#{propertyValueObject.displayValue}"
-                      rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>         
+
+        <ui:fragment rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}">         
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{propertyValueObject.value}"/>
+        </ui:fragment>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
@@ -75,12 +78,18 @@
 
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic" 
               rendered="#{propertyValueController.displayIsDynamic}">
-        <h:outputText value="#{propertyValueObject.isDynamic}"/>
+        <div class="dataTableCheckbox">
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{propertyValueObject.isDynamic}"/>
+        </div>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User Writeable" 
               rendered="#{propertyValueController.displayIsUserWriteable}">
-        <h:outputText value="#{propertyValueObject.isUserWriteable}"/>
+        <div class="dataTableCheckbox">
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{propertyValueObject.isUserWriteable}"/>
+        </div>
     </p:column>
 
 </ui:composition>

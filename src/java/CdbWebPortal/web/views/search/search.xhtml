@@ -47,10 +47,14 @@
                             <h2>Search Results</h2>
                         </div>  
 
-                        <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4,5,6,7,8">
+                        <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4,5,6,7,8,9,10,11,12,13">
                             <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
                             <ui:param name="searchString" value="#{searchController.searchString}"/>
                             <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
+
+                            <p:tab title="Assembly Components" rendered="#{searchController.displayAssemblyComponents}">
+                                <ui:include src="../assemblyComponent/assemblyComponentSearchDataTable.xhtml"/>
+                            </p:tab> 
 
                             <p:tab title="Components" rendered="#{searchController.displayComponents}">
                                 <ui:include src="../component/componentSearchDataTable.xhtml"/>
@@ -75,7 +79,7 @@
                             <p:tab title="Design Elements" rendered="#{searchController.displayDesigns}">
                                 <ui:include src="../designElement/designElementSearchDataTable.xhtml"/>
                             </p:tab> 
-                            
+
                             <p:tab title="Locations" rendered="#{searchController.displayLocations}">
                                 <ui:include src="../location/locationSearchDataTable.xhtml"/>
                             </p:tab>   
@@ -95,14 +99,14 @@
                             <p:tab title="Sources" rendered="#{searchController.displaySources}">
                                 <ui:include src="../source/sourceSearchDataTable.xhtml"/>
                             </p:tab>                                
-                            <p:tab title="User Groups" rendered="#{searchController.displayUserGroups}">
-                                <ui:include src="../userGroup/userGroupSearchDataTable.xhtml"/>
-                            </p:tab>    
 
                             <p:tab title="Users" rendered="#{searchController.displayUsers}">
                                 <ui:include src="../userInfo/userInfoSearchDataTable.xhtml"/>
-                            </p:tab> 
+                            </p:tab>
 
+                            <p:tab title="User Groups" rendered="#{searchController.displayUserGroups}">
+                                <ui:include src="../userGroup/userGroupSearchDataTable.xhtml"/>
+                            </p:tab>    
 
                         </p:accordionPanel>
                     </ui:fragment>

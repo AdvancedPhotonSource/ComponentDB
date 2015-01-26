@@ -71,7 +71,8 @@ public class SessionUtility
         Map parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         return (String) parameterMap.get(parameterName);
     }
-
+    
+    
     /**
      * Set user.
      *

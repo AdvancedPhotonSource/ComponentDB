@@ -14,14 +14,35 @@
               styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
-               <p:selectBooleanCheckbox id="designElementComponentSelectDisplayCategory" value="#{componentController.selectDisplayCategory}"/>  
-                <h:outputLabel for="designElementComponentSelectDisplayCategory" value="Display Category" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="designElementSelectDisplayCategory" value="#{componentController.selectDisplayCategory}"/>  
+                <h:outputLabel for="designElementSelectDisplayCategory" value="Display Category" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="designElementComponentSelectDisplayDescription" value="#{componentController.selectDisplayDescription}"/>  
-                <h:outputLabel for="designElementComponentSelectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="designElementSelectDisplayCreatedByUser" value="#{componentController.selectDisplayCreatedByUser}"/>  
+                <h:outputLabel for="designElementSelectDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="designElementComponentSelectDisplayId" value="#{componentController.selectDisplayId}"/>  
-                <h:outputLabel for="designElementComponentSelectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="designElementSelectDisplayCreatedOnDateTime" value="#{componentController.selectDisplayCreatedOnDateTime}"/>  
+                <h:outputLabel for="designElementSelectDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayDescription" value="#{componentController.selectDisplayDescription}"/>  
+                <h:outputLabel for="designElementSelectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayId" value="#{componentController.selectDisplayId}"/>  
+                <h:outputLabel for="designElementSelectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayLastModifiedByUser" value="#{componentController.selectDisplayLastModifiedByUser}"/>  
+                <h:outputLabel for="designElementSelectDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayLastModifiedOnDateTime" value="#{componentController.selectDisplayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="designElementSelectDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayOwnerUser" value="#{componentController.selectDisplayOwnerUser}"/>  
+                <h:outputLabel for="designElementSelectDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayOwnerGroup" value="#{componentController.selectDisplayOwnerGroup}"/>  
+                <h:outputLabel for="designElementSelectDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designElementSelectDisplayType" value="#{componentController.selectDisplayType}"/>  
+                <h:outputLabel for="designElementSelectDisplayType" value="Display Type" styleClass="dialogDataLabel"/>
              </p:panelGrid>
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 

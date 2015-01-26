@@ -81,9 +81,10 @@ public class Component extends CdbEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentInstance> componentInstanceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
+    private List<AssemblyComponent> assemblyList;
+    @OrderBy("sortOrder ASC")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "assembly")
     private List<AssemblyComponent> assemblyComponentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "assembly")
-    private List<AssemblyComponent> assemblyComponentList1;
     @OneToMany(mappedBy = "component")
     private List<DesignElement> designElementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
@@ -204,21 +205,21 @@ public class Component extends CdbEntity {
     }
 
     @XmlTransient
+    public List<AssemblyComponent> getAssemblyList() {
+        return assemblyList;
+    }
+
+    public void setAssemblyList(List<AssemblyComponent> assemblyList) {
+        this.assemblyList = assemblyList;
+    }
+
+    @XmlTransient
     public List<AssemblyComponent> getAssemblyComponentList() {
         return assemblyComponentList;
     }
 
     public void setAssemblyComponentList(List<AssemblyComponent> assemblyComponentList) {
         this.assemblyComponentList = assemblyComponentList;
-    }
-
-    @XmlTransient
-    public List<AssemblyComponent> getAssemblyComponentList1() {
-        return assemblyComponentList1;
-    }
-
-    public void setAssemblyComponentList1(List<AssemblyComponent> assemblyComponentList1) {
-        this.assemblyComponentList1 = assemblyComponentList1;
     }
 
     @XmlTransient
@@ -360,8 +361,8 @@ public class Component extends CdbEntity {
         cloned.name = "Copy Of " + cloned.name;
         cloned.componentConnectorList = null;
         cloned.componentInstanceList = null;
+        cloned.assemblyList = null;
         cloned.assemblyComponentList = null;
-        cloned.assemblyComponentList1 = null;
         cloned.designElementList = null;
         cloned.componentResourceList = null;
         cloned.logList = null;

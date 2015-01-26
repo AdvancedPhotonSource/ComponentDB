@@ -25,7 +25,7 @@
                 <ui:include src="../common/commonEditActionButtons.xhtml"/>
 
                 <p/>
-                <p:accordionPanel multiple="true" activeIndex="0,1,2,3">
+                <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4">
                     <p:tab title="Log Entries">
                         <ui:include src="../componentLog/editList.xhtml"/>
                     </p:tab>
@@ -38,6 +38,10 @@
                         <ui:include src="../componentSource/editList.xhtml"/>
                     </p:tab> 
 
+                   <p:tab title="Assembly Components">
+                        <ui:include src="../assemblyComponent/editList.xhtml"/>
+                    </p:tab>  
+                    
                     <p:tab title="Instances">
                         <ui:include src="../componentInstance/editList.xhtml"/>
                     </p:tab>  

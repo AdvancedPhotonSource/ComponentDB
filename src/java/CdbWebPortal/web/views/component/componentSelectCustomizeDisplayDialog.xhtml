@@ -14,20 +14,37 @@
               styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
-               <p:selectBooleanCheckbox id="selectDisplayCategory" value="#{componentController.selectDisplayCategory}"/>  
-                <h:outputLabel for="selectDisplayCategory" value="Display Category" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="componentSelectDisplayCategory" value="#{componentController.selectDisplayCategory}"/>  
+                <h:outputLabel for="componentSelectDisplayCategory" value="Display Category" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{componentController.selectDisplayDescription}"/>  
-                <h:outputLabel for="selectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+                <p:selectBooleanCheckbox id="componentSelectDisplayCreatedByUser" value="#{componentController.selectDisplayCreatedByUser}"/>  
+                <h:outputLabel for="componentSelectDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="selectDisplayId" value="#{componentController.selectDisplayId}"/>  
-                <h:outputLabel for="selectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
-             
-                <ui:include src="../entityInfo/entityInfoSelectCustomizeDisplayObject.xhtml">
-                    <ui:param name="entityTypeName" value="component"/>
-                    <ui:param name="entityController" value="componentController"/>
-                </ui:include>
-           </p:panelGrid>
+                <p:selectBooleanCheckbox id="componentSelectDisplayCreatedOnDateTime" value="#{componentController.selectDisplayCreatedOnDateTime}"/>  
+                <h:outputLabel for="componentSelectDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayDescription" value="#{componentController.selectDisplayDescription}"/>  
+                <h:outputLabel for="componentSelectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayId" value="#{componentController.selectDisplayId}"/>  
+                <h:outputLabel for="componentSelectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayLastModifiedByUser" value="#{componentController.selectDisplayLastModifiedByUser}"/>  
+                <h:outputLabel for="componentSelectDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayLastModifiedOnDateTime" value="#{componentController.selectDisplayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="componentSelectDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayOwnerUser" value="#{componentController.selectDisplayOwnerUser}"/>  
+                <h:outputLabel for="componentSelectDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayOwnerGroup" value="#{componentController.selectDisplayOwnerGroup}"/>  
+                <h:outputLabel for=componentSelectDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentSelectDisplayType" value="#{componentController.selectDisplayType}"/>  
+                <h:outputLabel for="componentSelectDisplayType" value="Display Type" styleClass="dialogDataLabel"/>
+
+            </p:panelGrid>
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  update="componentSelectDataTable"

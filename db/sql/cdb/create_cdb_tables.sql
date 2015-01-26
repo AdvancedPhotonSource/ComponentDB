@@ -875,21 +875,6 @@ CREATE TABLE `design_element` (
 --
 
 --
--- Table `design_element_link`
---
-
-DROP TABLE IF EXISTS `design_element_link`;
-CREATE TABLE `design_element_link` (
-  `parent_design_element_id` int(11) unsigned NOT NULL,
-  `child_design_element_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`parent_design_element_id`, `child_design_element_id`),
-  KEY `design_element_link_k1` (`parent_design_element_id`),
-  CONSTRAINT `design_element_link_fk1` FOREIGN KEY (`parent_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_link_k2` (`child_design_element_id`),
-  CONSTRAINT `design_element_link_fk2` FOREIGN KEY (`child_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
 -- Table `design_element_property`
 --
 
