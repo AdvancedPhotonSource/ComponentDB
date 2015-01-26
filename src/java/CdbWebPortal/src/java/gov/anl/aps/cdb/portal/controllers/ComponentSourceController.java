@@ -223,9 +223,15 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ComponentSourceController controller = (ComponentSourceController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componentSourceController");
-            return controller.getEntity(getKey(value));
+            try {
+                ComponentSourceController controller = (ComponentSourceController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "componentSourceController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to component source object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {

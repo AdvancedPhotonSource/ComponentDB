@@ -153,9 +153,15 @@ public class ComponentTypeCategoryController extends CrudEntityController<Compon
             if (value == null || value.length() == 0) {
                 return null;
             }
+            try {
             ComponentTypeCategoryController controller = (ComponentTypeCategoryController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "componentTypeCategoryController");
             return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to component type category object.");
+                return null;
+            }
         }
 
         java.lang.Integer getKey(String value) {

@@ -96,7 +96,7 @@ public class UserInfo extends CdbEntity
     private List<EntityInfo> entityInfoList3;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private List<UserSetting> userSettingList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUserId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<Log> logList;

@@ -78,9 +78,9 @@ public class ComponentInstance extends CdbEntity {
     private List<PropertyValue> propertyValueList;
     @ManyToMany(mappedBy = "componentInstanceList")
     private List<DesignElement> designElementList;
-    @OneToMany(mappedBy = "locationId")
+    @OneToMany(mappedBy = "location")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstanceId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstance")
     private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList1;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)

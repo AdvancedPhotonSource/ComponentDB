@@ -6,7 +6,6 @@
 
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -37,9 +36,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentInstanceLocationHistory.findById", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findByLocationDetails", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findByEnteredOnDateTime", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.enteredOnDateTime = :enteredOnDateTime")})
-public class ComponentInstanceLocationHistory implements Serializable
+public class ComponentInstanceLocationHistory extends CdbEntity
 {
-    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -54,13 +52,13 @@ public class ComponentInstanceLocationHistory implements Serializable
     private Date enteredOnDateTime;
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserInfo enteredByUserId;
+    private UserInfo enteredByUser;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     @ManyToOne
-    private ComponentInstance locationId;
+    private ComponentInstance location;
     @JoinColumn(name = "component_instance_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private ComponentInstance componentInstanceId;
+    private ComponentInstance componentInstance;
 
     public ComponentInstanceLocationHistory() {
     }
@@ -74,6 +72,7 @@ public class ComponentInstanceLocationHistory implements Serializable
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -98,28 +97,28 @@ public class ComponentInstanceLocationHistory implements Serializable
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
-    public UserInfo getEnteredByUserId() {
-        return enteredByUserId;
+    public UserInfo getEnteredByUser() {
+        return enteredByUser;
     }
 
-    public void setEnteredByUserId(UserInfo enteredByUserId) {
-        this.enteredByUserId = enteredByUserId;
+    public void setEnteredByUser(UserInfo enteredByUser) {
+        this.enteredByUser = enteredByUser;
     }
 
-    public ComponentInstance getLocationId() {
-        return locationId;
+    public ComponentInstance getLocation() {
+        return location;
     }
 
-    public void setLocationId(ComponentInstance locationId) {
-        this.locationId = locationId;
+    public void setLocation(ComponentInstance location) {
+        this.location = location;
     }
 
-    public ComponentInstance getComponentInstanceId() {
-        return componentInstanceId;
+    public ComponentInstance getComponentInstance() {
+        return componentInstance;
     }
 
-    public void setComponentInstanceId(ComponentInstance componentInstanceId) {
-        this.componentInstanceId = componentInstanceId;
+    public void setComponentInstance(ComponentInstance componentInstance) {
+        this.componentInstance = componentInstance;
     }
 
     @Override
@@ -136,10 +135,7 @@ public class ComponentInstanceLocationHistory implements Serializable
             return false;
         }
         ComponentInstanceLocationHistory other = (ComponentInstanceLocationHistory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
