@@ -1,0 +1,4 @@
+./cdb_create_ca.sh 
+./cdb_create_user_cert.sh sinisa.veseli "Sinisa Veseli" sinisa.veseli@aps.anl.gov
+openssl x509 -text -noout -in ../etc/CA/certs/sinisa.veseli.crt 
+./cdb_create_server_cert.sh cdb "CDB Web Service" cdb@aps.anl.gov
