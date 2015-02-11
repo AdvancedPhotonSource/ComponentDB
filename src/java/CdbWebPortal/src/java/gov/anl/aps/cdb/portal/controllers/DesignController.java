@@ -1,8 +1,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
-import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignFacade;
@@ -140,7 +140,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
     }
 
     @Override
-    public void prepareEntityUpdate(Design design) throws CdbPortalException {
+    public void prepareEntityUpdate(Design design) throws CdbException {
         String designName = design.getName();
         if (designName == null || designName.isEmpty()) {
             throw new ObjectAlreadyExists("Design name cannot be empty.");

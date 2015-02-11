@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
+import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.utilities.AssemblyComponentUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -49,7 +49,7 @@ public class AssemblyComponentListTreeViewBean implements Serializable {
                         try {
                 // rootNode = createAssemblyRoot();
                 rootNode = AssemblyComponentUtility.createAssemblyRoot(assembly);
-            } catch (CdbPortalException ex) {
+            } catch (CdbException ex) {
                 logger.error(ex.getMessage());
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
             }
@@ -62,7 +62,7 @@ public class AssemblyComponentListTreeViewBean implements Serializable {
             try {
                 // rootNode = createAssemblyRoot();
                 rootNode = AssemblyComponentUtility.createAssemblyRoot(assembly);
-            } catch (CdbPortalException ex) {
+            } catch (CdbException ex) {
                 logger.error(ex.getMessage());
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
             }

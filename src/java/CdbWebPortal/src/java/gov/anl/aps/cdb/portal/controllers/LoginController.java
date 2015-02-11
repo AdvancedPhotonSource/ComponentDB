@@ -13,7 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
-import gov.anl.aps.cdb.portal.utilities.LdapUtility;
+import gov.anl.aps.cdb.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;

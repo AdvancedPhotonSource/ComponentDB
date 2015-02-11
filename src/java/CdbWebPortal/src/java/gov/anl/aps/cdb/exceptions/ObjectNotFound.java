@@ -4,24 +4,24 @@
  * and open the template in the editor.
  */
 
-package gov.anl.aps.cdb.portal.exceptions;
+package gov.anl.aps.cdb.exceptions;
 
 
-import gov.anl.aps.cdb.portal.constants.CdbStatus;
+import gov.anl.aps.cdb.constants.CdbStatus;
 
 /**
  * Object already exists exception class.
  */
-public class InvalidObjectState extends CdbPortalException 
+public class ObjectNotFound extends CdbException 
 {
 
     /**
      * Constructor.
      */
-    public InvalidObjectState() 
+    public ObjectNotFound() 
     {
         super();
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
+        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
@@ -29,10 +29,10 @@ public class InvalidObjectState extends CdbPortalException
      *
      * @param message Error message
      */
-    public InvalidObjectState(String message) 
+    public ObjectNotFound(String message) 
     {
         super(message);
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
+        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
@@ -40,10 +40,10 @@ public class InvalidObjectState extends CdbPortalException
      *
      * @param throwable Throwable object
      */
-    public InvalidObjectState(Throwable throwable) 
+    public ObjectNotFound(Throwable throwable) 
     {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
+        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
@@ -52,10 +52,10 @@ public class InvalidObjectState extends CdbPortalException
      * @param message Error message
      * @param throwable Throwable object
      */
-    public InvalidObjectState(String message, Throwable throwable) 
+    public ObjectNotFound(String message, Throwable throwable) 
     {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
+        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
 }

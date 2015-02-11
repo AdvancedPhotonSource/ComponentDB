@@ -1,6 +1,6 @@
-package gov.anl.aps.cdb.portal.utilities;
+package gov.anl.aps.cdb.utilities;
 
-import gov.anl.aps.cdb.portal.exceptions.ImageProcessingFailed;
+import gov.anl.aps.cdb.exceptions.ImageProcessingFailed;
 import java.awt.AlphaComposite;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;

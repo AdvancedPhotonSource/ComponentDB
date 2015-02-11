@@ -3,7 +3,7 @@ package gov.anl.aps.cdb.portal.model.jsf.handlers;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.utilities.HttpLinkUtility;
+import gov.anl.aps.cdb.utilities.HttpLinkUtility;
 
 /**
  *

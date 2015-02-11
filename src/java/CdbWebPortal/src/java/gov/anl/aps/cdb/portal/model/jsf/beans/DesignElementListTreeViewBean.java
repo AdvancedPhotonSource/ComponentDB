@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
+import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
@@ -54,7 +54,7 @@ public class DesignElementListTreeViewBean implements Serializable {
             try {
                 //rootNode = createDesignElementRoot();
                 rootNode = DesignElementUtility.createDesignElementRoot(design);
-            } catch (CdbPortalException ex) {
+            } catch (CdbException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
             }
@@ -68,7 +68,7 @@ public class DesignElementListTreeViewBean implements Serializable {
             try {
                 //rootNode = createDesignElementRoot();
                 rootNode = DesignElementUtility.createDesignElementRoot(parentDesign);
-            } catch (CdbPortalException ex) {
+            } catch (CdbException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
             }

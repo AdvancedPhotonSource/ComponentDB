@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gov.anl.aps.cdb.portal.utilities;
+package gov.anl.aps.cdb.utilities;
 
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import java.util.Hashtable;
 import javax.naming.Context;
 import javax.naming.NamingException;

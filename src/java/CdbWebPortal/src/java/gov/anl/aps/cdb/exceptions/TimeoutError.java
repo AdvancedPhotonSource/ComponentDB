@@ -4,24 +4,24 @@
  * and open the template in the editor.
  */
 
-package gov.anl.aps.cdb.portal.exceptions;
+package gov.anl.aps.cdb.exceptions;
 
 
-import gov.anl.aps.cdb.portal.constants.CdbStatus;
+import gov.anl.aps.cdb.constants.CdbStatus;
 
 /**
  * Object already exists exception class.
  */
-public class ObjectAlreadyExists extends CdbPortalException 
+public class TimeoutError extends CdbException 
 {
 
     /**
      * Constructor.
      */
-    public ObjectAlreadyExists() 
+    public TimeoutError() 
     {
         super();
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
+        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
     /**
@@ -29,10 +29,10 @@ public class ObjectAlreadyExists extends CdbPortalException
      *
      * @param message Error message
      */
-    public ObjectAlreadyExists(String message) 
+    public TimeoutError(String message) 
     {
         super(message);
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
+        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
     /**
@@ -40,10 +40,10 @@ public class ObjectAlreadyExists extends CdbPortalException
      *
      * @param throwable Throwable object
      */
-    public ObjectAlreadyExists(Throwable throwable) 
+    public TimeoutError(Throwable throwable) 
     {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
+        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
     /**
@@ -52,10 +52,10 @@ public class ObjectAlreadyExists extends CdbPortalException
      * @param message Error message
      * @param throwable Throwable object
      */
-    public ObjectAlreadyExists(String message, Throwable throwable) 
+    public TimeoutError(String message, Throwable throwable) 
     {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
+        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
 }

@@ -3,14 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueHistoryController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignElementController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/ComponentInstanceLocationHistory.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceLocationHistoryController.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/DesignElement.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Component.java</file>
-            <file>file:/home/sveseli/Work/CMS/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/PropertyValueHistory.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/utilities/HttpLinkUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/constants/CdbRole.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/utilities/UrlUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/EntityInfo.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/utilities/StringUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/api/CdbRestApi.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/constants/DesignElementType.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/utilities/LdapUtility.java</file>
         </group>
     </open-files>
 </project-private>

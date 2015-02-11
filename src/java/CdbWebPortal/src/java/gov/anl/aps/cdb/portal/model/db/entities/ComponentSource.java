@@ -5,8 +5,8 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.portal.utilities.HttpLinkUtility;
-import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.utilities.HttpLinkUtility;
+import gov.anl.aps.cdb.utilities.ObjectUtility;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;

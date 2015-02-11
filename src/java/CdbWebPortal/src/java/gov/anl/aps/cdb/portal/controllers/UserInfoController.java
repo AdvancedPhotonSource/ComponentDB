@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -149,7 +149,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     }
 
     @Override
-    public void prepareEntityUpdate(UserInfo userInfo) throws CdbPortalException {
+    public void prepareEntityUpdate(UserInfo userInfo) throws CdbException {
         UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
         if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");

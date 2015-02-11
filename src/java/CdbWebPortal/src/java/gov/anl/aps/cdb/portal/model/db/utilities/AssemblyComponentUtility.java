@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import java.util.ArrayList;
@@ -11,10 +11,10 @@ import org.primefaces.model.TreeNode;
 
 public class AssemblyComponentUtility {
 
-    public static TreeNode createAssemblyRoot(Component assembly) throws CdbPortalException {
+    public static TreeNode createAssemblyRoot(Component assembly) throws CdbException {
         TreeNode assemblyRoot = new DefaultTreeNode(new AssemblyComponent(), null);
         if (assembly == null) {
-            throw new CdbPortalException("Cannot create assembly tree view: assembly is not set.");
+            throw new CdbException("Cannot create assembly tree view: assembly is not set.");
         }
 
         // Use "tree branch" list to prevent circular trees

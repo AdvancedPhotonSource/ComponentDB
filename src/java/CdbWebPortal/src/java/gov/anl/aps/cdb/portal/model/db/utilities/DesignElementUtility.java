@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
@@ -12,10 +12,10 @@ import org.primefaces.model.TreeNode;
 
 public class DesignElementUtility {
 
-    public static TreeNode createDesignElementRoot(Design parentDesign) throws CdbPortalException {
+    public static TreeNode createDesignElementRoot(Design parentDesign) throws CdbException {
         TreeNode designElementRoot = new DefaultTreeNode(new DesignElement(), null);
         if (parentDesign == null) {
-            throw new CdbPortalException("Cannot create design element tree view: parent design is not set.");
+            throw new CdbException("Cannot create design element tree view: parent design is not set.");
         }
 
         // Use "tree branch" list to prevent circular trees

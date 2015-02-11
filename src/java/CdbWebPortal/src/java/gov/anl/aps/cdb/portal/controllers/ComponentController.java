@@ -1,8 +1,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
-import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeFacade;
@@ -26,7 +26,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
-import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -213,7 +213,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    public void prepareEntityInsert(Component component) throws CdbPortalException {
+    public void prepareEntityInsert(Component component) throws CdbException {
         Component existingComponent = componentFacade.findByName(component.getName());
         if (existingComponent != null) {
             throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
@@ -252,7 +252,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    public void prepareEntityUpdate(Component component) throws CdbPortalException {
+    public void prepareEntityUpdate(Component component) throws CdbException {
         Component existingComponent = componentFacade.findByName(component.getName());
         if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
             throw new ObjectAlreadyExists("Component " + component.getName() + " already exists with id " + existingComponent.getId() + ".");

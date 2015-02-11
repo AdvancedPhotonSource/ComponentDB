@@ -1,4 +1,4 @@
-package gov.anl.aps.cdb.portal.utilities;
+package gov.anl.aps.cdb.utilities;
 
 import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;

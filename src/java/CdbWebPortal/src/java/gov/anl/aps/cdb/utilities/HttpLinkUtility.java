@@ -1,16 +1,16 @@
-package gov.anl.aps.cdb.portal.utilities;
+package gov.anl.aps.cdb.utilities;
 
-import gov.anl.aps.cdb.portal.constants.CdbProperty;
+import gov.anl.aps.cdb.constants.CdbProperty;
+import gov.anl.aps.cdb.constants.CdbServiceProtocol;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 
-/**
- *
- * @author sveseli
- */
+
 public class HttpLinkUtility {
 
     public static final int HttpLinkDisplayLength = ConfigurationUtility.getPortalPropertyAsInteger(
             CdbProperty.HTTP_LINK_DISPLAY_LENGTH_PROPERTY_NAME);
 
+    
     public static String prepareHttpLinkDisplayValue(String url) {
         if (url == null || url.isEmpty()) {
             return null;
@@ -34,4 +34,5 @@ public class HttpLinkUtility {
         }
         return targetValue;
     }    
+    
 }

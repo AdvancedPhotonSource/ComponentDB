@@ -1,13 +1,13 @@
 
-package gov.anl.aps.cdb.portal.exceptions;
+package gov.anl.aps.cdb.exceptions;
 
-import gov.anl.aps.cdb.portal.constants.CdbStatus;
+import gov.anl.aps.cdb.constants.CdbStatus;
 
 
 /**
  * Generic CDB exception.
  */
-public class CdbPortalException extends Exception
+public class CdbException extends Exception
 {
 
     /**
@@ -44,7 +44,7 @@ public class CdbPortalException extends Exception
     /**
      * Constructor.
      */
-    public CdbPortalException() 
+    public CdbException() 
     {
         super();
     }
@@ -54,7 +54,7 @@ public class CdbPortalException extends Exception
      *
      * @param message Error message
      */
-    public CdbPortalException(String message) 
+    public CdbException(String message) 
     {
         super(message);
     }
@@ -65,7 +65,7 @@ public class CdbPortalException extends Exception
      * @param message Error message
      * @param errorCode Error code
      */
-    public CdbPortalException(String message, int errorCode) 
+    public CdbException(String message, int errorCode) 
     {
         super(message);
         this.errorCode = errorCode;
@@ -76,7 +76,7 @@ public class CdbPortalException extends Exception
      *
      * @param throwable Throwable object
      */
-    public CdbPortalException(Throwable throwable) 
+    public CdbException(Throwable throwable) 
     {
         super(throwable);
     }
@@ -87,7 +87,7 @@ public class CdbPortalException extends Exception
      * @param message Error message
      * @param throwable Throwable object
      */
-    public CdbPortalException(String message, Throwable throwable) 
+    public CdbException(String message, Throwable throwable) 
     {
         super(message, throwable);
     }

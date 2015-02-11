@@ -1,5 +1,6 @@
-package gov.anl.aps.cdb.portal.utilities;
+package gov.anl.aps.cdb.utilities;
 
+import gov.anl.aps.cdb.utilities.NoOpTrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;

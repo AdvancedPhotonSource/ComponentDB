@@ -4,24 +4,24 @@
  * and open the template in the editor.
  */
 
-package gov.anl.aps.cdb.portal.exceptions;
+package gov.anl.aps.cdb.exceptions;
 
 
-import gov.anl.aps.cdb.portal.constants.CdbStatus;
+import gov.anl.aps.cdb.constants.CdbStatus;
 
 /**
- * Image processing failed exception class.
+ * Object already exists exception class.
  */
-public class ImageProcessingFailed extends CdbPortalException 
+public class InvalidArgument extends CdbException 
 {
 
     /**
      * Constructor.
      */
-    public ImageProcessingFailed() 
+    public InvalidArgument() 
     {
         super();
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
+        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
     /**
@@ -29,10 +29,10 @@ public class ImageProcessingFailed extends CdbPortalException
      *
      * @param message Error message
      */
-    public ImageProcessingFailed(String message) 
+    public InvalidArgument(String message) 
     {
         super(message);
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
+        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
     /**
@@ -40,10 +40,10 @@ public class ImageProcessingFailed extends CdbPortalException
      *
      * @param throwable Throwable object
      */
-    public ImageProcessingFailed(Throwable throwable) 
+    public InvalidArgument(Throwable throwable) 
     {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
+        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
     /**
@@ -52,10 +52,10 @@ public class ImageProcessingFailed extends CdbPortalException
      * @param message Error message
      * @param throwable Throwable object
      */
-    public ImageProcessingFailed(String message, Throwable throwable) 
+    public InvalidArgument(String message, Throwable throwable) 
     {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
+        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
 }

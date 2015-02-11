@@ -1,6 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
+import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.beans.AbstractFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
@@ -11,7 +11,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
-import gov.anl.aps.cdb.portal.utilities.CollectionUtility;
+import gov.anl.aps.cdb.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
@@ -469,7 +469,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         return "create?faces-redirect=true";
     }
 
-    protected void prepareEntityInsert(EntityType entity) throws CdbPortalException {
+    protected void prepareEntityInsert(EntityType entity) throws CdbException {
     }
 
     public String create() {
@@ -481,7 +481,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             resetListDataModel();
             current = newEntity;
             return view();
-        } catch (CdbPortalException | RuntimeException ex) {
+        } catch (CdbException | RuntimeException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
@@ -498,7 +498,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         return "edit?faces-redirect=true";
     }
 
-    protected void prepareEntityUpdate(EntityType entity) throws CdbPortalException {
+    protected void prepareEntityUpdate(EntityType entity) throws CdbException {
     }
 
     public String update() {
@@ -511,13 +511,13 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             resetLogText();
             current = updatedEntity;
             return view();
-        } catch (CdbPortalException | RuntimeException ex) {
+        } catch (CdbException | RuntimeException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }
 
-    protected void prepareEntityUpdateOnRemoval(EntityType entity) throws CdbPortalException {
+    protected void prepareEntityUpdateOnRemoval(EntityType entity) throws CdbException {
     }
 
     public String updateOnRemoval() {
@@ -530,13 +530,13 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             resetLogText();
             current = updatedEntity;
             return view();
-        } catch (CdbPortalException | RuntimeException ex) {
+        } catch (CdbException | RuntimeException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }
     }
 
-    protected void prepareEntityDestroy(EntityType entity) throws CdbPortalException {
+    protected void prepareEntityDestroy(EntityType entity) throws CdbException {
     }
 
     public void destroy(EntityType entity) {
@@ -562,7 +562,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             resetListDataModel();
             clearListFilters();
             return prepareList();
-        } catch (CdbPortalException ex) {
+        } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
         }

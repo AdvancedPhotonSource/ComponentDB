@@ -1,4 +1,4 @@
-package gov.anl.aps.cdb.portal.utilities;
+package gov.anl.aps.cdb.utilities;
 
 
 public class ObjectUtility

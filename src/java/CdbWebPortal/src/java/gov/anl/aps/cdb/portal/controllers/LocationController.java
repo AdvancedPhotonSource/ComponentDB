@@ -1,14 +1,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
-import gov.anl.aps.cdb.portal.exceptions.CdbPortalException;
-import gov.anl.aps.cdb.portal.exceptions.InvalidObjectState;
-import gov.anl.aps.cdb.portal.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.ObjectUtility;
+import gov.anl.aps.cdb.utilities.ObjectUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -121,7 +121,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     }
 
     @Override
-    public void prepareEntityInsert(Location location) throws CdbPortalException {
+    public void prepareEntityInsert(Location location) throws CdbException {
         Location existingLocation = locationFacade.findByName(location.getName());
         if (existingLocation != null) {
             throw new ObjectAlreadyExists("Location " + location.getName() + " already exists.");
@@ -134,7 +134,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     }
 
     @Override
-    public void prepareEntityUpdate(Location location) throws CdbPortalException {
+    public void prepareEntityUpdate(Location location) throws CdbException {
         Location existingLocation = locationFacade.findByName(location.getName());
         if (existingLocation != null && !existingLocation.getId().equals(location.getId())) {
             throw new ObjectAlreadyExists("Location " + location.getName() + " already exists.");
@@ -147,7 +147,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     }
 
     @Override
-    public void prepareEntityDestroy(Location location) throws CdbPortalException {
+    public void prepareEntityDestroy(Location location) throws CdbException {
         Location parentLocation = location.getParentLocation();
         if (parentLocation != null) {
             List<Location> parentChildLocationList = parentLocation.getChildLocationList();
