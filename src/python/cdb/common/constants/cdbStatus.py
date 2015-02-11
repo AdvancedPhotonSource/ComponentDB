@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+
+#######################################################################
+
+CDB_OK = 0
+CDB_ERROR = 1
+CDB_CONFIGURATION_ERROR = 2
+CDB_AUTHORIZATION_ERROR = 3
+CDB_INTERNAL_ERROR = 4
+CDB_INVALID_ARGUMENT_ERROR = 5
+CDB_INVALID_REQUEST_ERROR = 6
+CDB_COMMAND_FAILED_ERROR = 7
+CDB_URL_ERROR = 8
+
+
