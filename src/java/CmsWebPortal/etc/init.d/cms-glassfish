@@ -1,0 +1,103 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          glassfish
+# Required-Start:    $remote_fs $network $syslog
+# Required-Stop:     $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Starts GlassFish
+# Description:       Starts GlassFish application server
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Set root to default if needed.
+MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
+if [ -z "${CMS_ROOT_DIR}" ]; then
+    CMS_ROOT_DIR=$MY_DIR/../..
+fi
+        
+# Source environment file.
+CMS_USER=`id -nu`
+CMS_HOST=`hostname -s`
+CMS_ENV_FILE=${CMS_ROOT_DIR}/setup.sh
+if [ ! -f ${CMS_ENV_FILE} ]; then
+    echo "Environment file ${CMS_ENV_FILE} does not exist." 
+    exit 2
+fi
+. ${CMS_ENV_FILE} > /dev/null
+
+export AS_JAVA=$CMS_SUPPORT/java/$CMS_HOST_ARCH
+GLASSFISH_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH
+DERBY_DIR=$CMS_SUPPORT/glassfish/$CMS_HOST_ARCH/javadb/bin
+
+CMS_DAEMON_NAME=glassfish
+CMS_DAEMON_CONTROL_CMD=$GLASSFISH_DIR/bin/asadmin
+CMS_DAEMON_START_ARGS="start-domain domain1"
+CMS_DAEMON_STOP_ARGS="stop-domain domain1"
+CMS_DAEMON_STATUS_CMDS="uptime list-domains list-applications list-jdbc-resources"
+
+start() {
+    echo -n $"Starting ${CMS_DAEMON_NAME}: "       
+    # Check if we're a privileged user
+    if [ `id -u` = 0 -a ${CMS_USER} != "root" ]; then
+        su -m -c "${CMS_DAEMON_CONTROL_CMD} ${CMS_DAEMON_START_ARGS}" ${CMS_USER}
+    else
+        ${CMS_DAEMON_CONTROL_CMD} ${CMS_DAEMON_START_ARGS}
+    fi
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && success $"${CMS_DAEMON_NAME} startup" || failure $"${CMS_DAEMON_NAME} startup"
+    echo
+}
+
+stop() {
+    echo -n $"Stopping ${CMS_DAEMON_NAME}: "       
+    # Check if we're a privileged user
+    if [ `id -u` = 0 -a ${CMS_USER} != "root" ]; then
+        su -m -c "${CMS_DAEMON_CONTROL_CMD} ${CMS_DAEMON_STOP_ARGS}" ${CMS_USER}
+    else
+        ${CMS_DAEMON_CONTROL_CMD} ${CMS_DAEMON_STOP_ARGS}
+    fi
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && success $"${CMS_DAEMON_NAME} shutdown" || failure $"${CMS_DAEMON_NAME} shutdown"
+    echo
+}
+
+status() {
+    # Check if we're a privileged user
+    if [ `id -u` = 0 -a ${CMS_USER} != "root" ]; then
+        for cmd in ${CMS_DAEMON_STATUS_CMDS}; do
+            su -m -c "${CMS_DAEMON_CONTROL_CMD} ${cmd}" ${CMS_USER}
+        done
+    else
+        for cmd in ${CMS_DAEMON_STATUS_CMDS}; do
+            ${CMS_DAEMON_CONTROL_CMD} ${cmd}
+        done
+    fi
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    restart)
+        stop
+        start
+    ;;
+    status)
+        status
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+    ;;
+esac
+
+

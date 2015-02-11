@@ -1,0 +1,262 @@
+#!/bin/sh
+#
+# cms-mysqld	This shell script takes care of starting and stopping
+#		the CMS MySQL (cms-mysqld).
+#
+# chkconfig: - 64 36
+# description:	CMS MySQL database server.
+# processname: mysqld
+### BEGIN INIT INFO
+# Provides: cms-mysqld
+# Required-Start: $local_fs $remote_fs $network $named $syslog $time
+# Required-Stop: $local_fs $remote_fs $network $named $syslog $time
+# Short-Description: start and stop CMS MySQL server
+# Description: CMS MySQL database server
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Source networking configuration.
+. /etc/sysconfig/network
+
+# Set root to default if needed.
+MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
+if [ -z "${CMS_ROOT_DIR}" ]; then
+    CMS_ROOT_DIR=$MY_DIR/../..
+fi
+
+# Source environment file.
+CMS_USER=`id -nu`
+CMS_HOST=`hostname -s`
+CMS_ENV_FILE=${CMS_ROOT_DIR}/setup.sh
+if [ ! -f ${CMS_ENV_FILE} ]; then
+    echo "Environment file ${CMS_ENV_FILE} does not exist." 
+    exit 2
+fi
+. ${CMS_ENV_FILE} > /dev/null 
+
+CMS_DAEMON=/usr/bin/mysqld_safe
+CMS_DAEMON_NAME=mysqld
+CMS_DAEMON_PORT=3306
+CMS_DAEMON_RUN_DIR=${CMS_VAR_DIR}/run/${CMS_DAEMON_NAME}
+CMS_DAEMON_DATA_DIR=${CMS_DATA_DIR}
+CMS_DAEMON_LOG_DIR=${CMS_VAR_DIR}/log
+CMS_DAEMON_PID_FILE=${CMS_DAEMON_RUN_DIR}/${CMS_DAEMON_NAME}.${CMS_HOST}.pid
+CMS_DAEMON_LOCK_FILE=${CMS_DAEMON_RUN_DIR}/${CMS_DAEMON_NAME}.${CMS_HOST}.lock
+CMS_DAEMON_SOCK_FILE=${CMS_DAEMON_RUN_DIR}/${CMS_DAEMON_NAME}.${CMS_HOST}.sock
+CMS_DAEMON_LOG_FILE=${CMS_DAEMON_LOG_DIR}/${CMS_DAEMON_NAME}.${CMS_HOST}.log
+CMS_DAEMON_CONFIG_FILE=${CMS_ROOT_DIR}/etc/my.cnf
+
+START_TIMEOUT=120
+STOP_TIMEOUT=60
+
+# extract value of a MySQL option from config files
+# Usage: get_mysql_option SECTION VARNAME DEFAULT
+# result is returned in $result
+# We use my_print_defaults which prints all options from multiple files,
+# with the more specific ones later; hence take the last match.
+get_mysql_option(){
+	result=`/usr/bin/my_print_defaults --defaults-file=$CMS_DAEMON_CONFIG_FILE "$1" | sed -n "s/^--$2=//p" | tail -n 1`
+	if [ -z "$result" ]; then
+	    # not found, use default
+	    result="$3"
+	fi
+}
+
+get_mysql_option mysqld datadir ${CMS_DATA_DIR}
+datadir="$result"
+get_mysql_option mysqld socket ${CMS_DAEMON_SOCK_FILE}
+socketfile="$result"
+get_mysql_option mysqld_safe log-error ${CMS_DAEMON_LOG_FILE}
+errlogfile="$result"
+get_mysql_option mysqld_safe pid-file ${CMS_DAEMON_PID_FILE}
+mypidfile="$result"
+
+
+start(){
+    [ -x $CMS_DAEMON ] || exit 5
+    # check to see if it's already running
+    CMS_DAEMON_RUNNING=0
+    if [ -f "$mypidfile" ]; then
+	    CMS_DAEMON_PID=`cat "$mypidfile" 2>/dev/null`
+	    if [ -n "$CMS_DAEMON_PID" ] && [ -d "/proc/$CMS_DAEMON_PID" ] ; then
+	        CMS_DAEMON_RUNNING=1
+	    fi
+    fi
+    RESPONSE=`/usr/bin/mysqladmin --socket="$socketfile" --user=UNKNOWN_MYSQL_USER ping 2>&1`
+    if [ $CMS_DAEMON_RUNNING = 1 ] && [ $? = 0 ]; then
+	    # already running, do nothing
+	    action $"Starting $CMS_DAEMON_NAME: " /bin/true
+	    ret=0
+    elif [ $CMS_DAEMON_RUNNING = 1 ] && echo "$RESPONSE" | grep -q "Access denied for user"; then
+	    # already running, do nothing
+	    action $"Starting $CMS_DAEMON_NAME: " /bin/true
+	    ret=0
+    else
+    	# prepare for start
+        mkdir -p `dirname $errlogfile`
+	    touch "$errlogfile" 2>/dev/null
+	    if [ $? -ne 0 ]; then
+	        # failed to touch log file, probably insufficient permissions
+	        action $"Starting $CMS_DAEMON_NAME: " /bin/false
+	        return 4
+	    fi
+	    chown $CMS_USER "$errlogfile" 
+	    chmod 0640 "$errlogfile"
+	    [ -x /sbin/restorecon ] && /sbin/restorecon "$errlogfile"
+	    if [ ! -d "$datadir/mysql" ] ; then
+	        # First, make sure $datadir is there with correct permissions
+	        if [ ! -e "$datadir" -a ! -h "$datadir" ]; then
+		        mkdir -p "$datadir" || exit 1
+	        fi
+	        chown $CMS_USER "$datadir"
+	        chmod 0755 "$datadir"
+	        [ -x /sbin/restorecon ] && /sbin/restorecon "$datadir"
+	        # Now create the database
+	        action $"Initializing CMS MySQL database: " /usr/bin/mysql_install_db --datadir="$datadir" --user=$CMS_USER
+	        ret=$?
+	        chown -R $CMS_USER "$datadir"
+	        if [ $ret -ne 0 ] ; then
+		        return $ret
+	        fi
+	    fi
+	    chown $CMS_USER "$datadir"
+	    chmod 0755 "$datadir"
+	    # Pass all the options determined above, to ensure consistent behavior.
+	    # In many cases mysqld_safe would arrive at the same conclusions anyway
+	    # but we need to be sure.  (An exception is that we don't force the
+	    # log-error setting, since this script doesn't really depend on that,
+	    # and some users might prefer to configure logging to syslog.)
+	    # Note: set --basedir to prevent probes that might trigger SELinux
+	    # alarms, per bug #547485
+	    if [ -S "$socketfile" ] ; then
+	        echo "Another CMS MySQL daemon already running with the same unix socket."
+	        action $"Starting $CMS_DAEMON_NAME: " /bin/false
+	        return 1
+	    fi
+	    $CMS_DAEMON --defaults-file=$CMS_DAEMON_CONFIG_FILE \
+            --datadir="$datadir" --socket="$socketfile" \
+		    --pid-file="$mypidfile" --basedir=/usr --user=$CMS_USER \
+		    > /dev/null 2>&1 &
+	    safe_pid=$!
+	    # Spin for a maximum of N seconds waiting for the server to come up;
+	    # exit the loop immediately if mysqld_safe process disappears.
+	    # Rather than assuming we know a valid username, accept an "access
+	    # denied" response as meaning the server is functioning.
+	    ret=0
+	    TIMEOUT="$START_TIMEOUT"
+	    while [ $TIMEOUT -gt 0 ]; do
+	        RESPONSE=`/usr/bin/mysqladmin --socket="$socketfile" --user=UNKNOWN_MYSQL_USER ping 2>&1`
+	        mret=$?
+	        if [ $mret -eq 0 ]; then
+		        break
+	        fi
+	        # exit codes 1, 11 (EXIT_CANNOT_CONNECT_TO_SERVICE) are expected,
+	        # anything else suggests a configuration error
+	        if [ $mret -ne 1 -a $mret -ne 11 ]; then
+		        echo "$RESPONSE"
+		        echo "Cannot check for MySQL Daemon startup because of mysqladmin failure."
+		        ret=1
+		        break
+	        fi
+	        echo "$RESPONSE" | grep -q "Access denied for user" && break
+	        if ! /bin/kill -0 $safe_pid 2>/dev/null; then
+		        echo "MySQL Daemon failed to start."
+		        ret=1
+		        break
+	        fi
+	        sleep 1
+	        let TIMEOUT=${TIMEOUT}-1
+	    done
+	    if [ $TIMEOUT -eq 0 ]; then
+	        echo "Timeout error occurred trying to start MySQL Daemon."
+	        ret=1
+	    fi
+	    if [ $ret -eq 0 ]; then
+	        action $"Starting $CMS_DAEMON_NAME: " /bin/true
+	        chmod o+r $mypidfile >/dev/null 2>&1
+	        touch $CMS_DAEMON_LOCK_FILE
+	    else
+	        action $"Starting $CMS_DAEMON_NAME: " /bin/false
+	    fi
+    fi
+    return $ret
+}
+
+stop() {
+	if [ ! -f "$mypidfile" ]; then
+	    # not running; per LSB standards this is "ok"
+	    action $"Stopping $CMS_DAEMON_NAME: " /bin/true
+	    return 0
+	fi
+	CMS_DAEMON_PID=`cat "$mypidfile" 2>/dev/null`
+	if [ -n "$CMS_DAEMON_PID" ]; then
+	    /bin/kill "$CMS_DAEMON_PID" >/dev/null 2>&1
+	    ret=$?
+	    if [ $ret -eq 0 ]; then
+		    TIMEOUT="$STOP_TIMEOUT"
+		    while [ $TIMEOUT -gt 0 ]; do
+		        /bin/kill -0 "$CMS_DAEMON_PID" >/dev/null 2>&1 || break
+		        sleep 1
+		        let TIMEOUT=${TIMEOUT}-1
+		    done
+		    if [ $TIMEOUT -eq 0 ]; then
+		        echo "Timeout error occurred trying to stop MySQL Daemon."
+		        ret=1
+		        action $"Stopping $CMS_DAEMON_NAME: " /bin/false
+		    else
+		        rm -f $CMS_DAEMON_LOCK_FILE
+		        rm -f "$socketfile"
+		        action $"Stopping $CMS_DAEMON_NAME: " /bin/true
+		    fi
+	    else
+		    action $"Stopping $CMS_DAEMON_NAME: " /bin/false
+	    fi
+	else
+	    # failed to read pidfile, probably insufficient permissions
+	    action $"Stopping $CMS_DAEMON_NAME: " /bin/false
+	    ret=4
+	fi
+	return $ret
+}
+ 
+restart() {
+    stop
+    start
+}
+
+condrestart() {
+    [ -e $CMS_DAEMON_LOCK_FILE ] && restart || :
+}
+
+
+# See how we were called.
+case "$1" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    status)
+        status -p "$mypidfile" $CMS_DAEMON_NAME
+    ;;
+    restart)
+        restart
+    ;;
+    condrestart|try-restart)
+        condrestart
+    ;;
+    reload)
+        exit 3
+    ;;
+    force-reload)
+        restart
+    ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+
+exit $?
