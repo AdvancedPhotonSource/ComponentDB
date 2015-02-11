@@ -10,8 +10,15 @@ if [ ! -z "$CDB_ROOT_DIR" -a "$CDB_ROOT_DIR" != `pwd` ]; then
 fi
 export CDB_ROOT_DIR=`pwd`
 
+if [ -z $CDB_RUN_DIR ]; then
+    export CDB_RUN_DIR=$CDB_ROOT_DIR/..
+    if [ -d $CDB_RUN_DIR ]; then
+        cd $CDB_RUN_DIR
+        export CDB_RUN_DIR=`pwd`
+    fi
+fi
 if [ -z $CDB_DATA_DIR ]; then
-    export CDB_DATA_DIR=$CDB_ROOT_DIR/../data
+    export CDB_DATA_DIR=$CDB_RUN_DIR/data
     if [ -d $CDB_DATA_DIR ]; then
         cd $CDB_DATA_DIR
         export CDB_DATA_DIR=`pwd`
@@ -23,7 +30,7 @@ if [ ! -d $CDB_DATA_DIR ]; then
 fi
 
 if [ -z $CDB_VAR_DIR ]; then
-    export CDB_VAR_DIR=$CDB_ROOT_DIR/../var
+    export CDB_VAR_DIR=$CDB_RUN_DIR/var
     if [ -d $CDB_VAR_DIR ]; then
         cd $CDB_VAR_DIR
         export CDB_VAR_DIR=`pwd`
@@ -37,7 +44,7 @@ CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 
 # Check support setup
 if [ -z $CDB_SUPPORT_DIR ]; then
-    export CDB_SUPPORT_DIR=$CDB_ROOT_DIR/../support 
+    export CDB_SUPPORT_DIR=$CDB_RUN_DIR/support 
     if [ -d $CDB_SUPPORT_DIR ]; then
         cd $CDB_SUPPORT_DIR
         export CDB_SUPPORT_DIR=`pwd`
@@ -61,6 +68,27 @@ prependPathIfDirExists() {
 prependPathIfDirExists $CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/ant/bin
 prependPathIfDirExists $CDB_ROOT_DIR/bin
+
+# Check if we have  local python
+if [ -z $CDB_PYTHON_DIR ]; then
+    pythonDir=$CDB_SUPPORT_DIR/python/$CDB_HOST_ARCH
+else
+    pythonDir=$CDB_PYTHON_DIR
+fi
+if [ -d $pythonDir ]; then
+    cd $pythonDir
+    pythonDir=`pwd`
+    export PATH=`pwd`/bin:$PATH
+    export LD_LIBRARY_PATH=`pwd`/lib:$LD_LIBRARY_PATH
+    export CDB_PYTHON_DIR=$pythonDir
+fi
+
+if [ -z $PYTHONPATH ]; then
+    PYTHONPATH=$CDB_ROOT_DIR/src/python
+else
+    PYTHONPATH=$CDB_ROOT_DIR/src/python:$PYTHONPATH
+fi
+export PYTHONPATH
 
 # Done
 cd $currentDir

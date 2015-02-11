@@ -1,6 +1,6 @@
 
 TOP = ..
-SUBDIRS = java
+SUBDIRS = java python
 
 include $(TOP)/tools/make/RULES_CDB
 
