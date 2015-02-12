@@ -45,13 +45,15 @@ mkdir -p ${CDB_RUN_DIR}/var/log
 
 CDB_DAEMON_NAME="CdbWebService"
 CDB_DAEMON_CMD=${CDB_ROOT_DIR}/sbin/cdbWebService.py
-CDB_PID_FILE=${CDB_RUN_DIR}/var/run/cdb-web-service.pid
-CDB_CONFIG_FILE=${CDB_RUN_DIR}/etc/cdb-web-service.conf
+CDB_PID_FILE=${CDB_RUN_DIR}/var/run/cdb-web-service
+CDB_CONFIG_FILE=${CDB_RUN_DIR}/etc/cdb-web-service
 if [ ! -z "${CDB_DB_NAME}" ]; then
     CDB_PID_FILE=${CDB_PID_FILE}.${CDB_DB_NAME}
     CDB_CONFIG_FILE=${CDB_CONFIG_FILE}.${CDB_DB_NAME}
     CDB_DAEMON_NAME=${CDB_DAEMON_NAME}.${CDB_DB_NAME}
 fi
+CDB_PID_FILE=${CDB_PID_FILE}.pid
+CDB_CONFIG_FILE=${CDB_CONFIG_FILE}.conf
 CDB_DAEMON_START_ARGS="-d -p $CDB_PID_FILE --config-file $CDB_CONFIG_FILE"
 
 # Determine su command
