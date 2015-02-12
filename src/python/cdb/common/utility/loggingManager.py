@@ -10,7 +10,6 @@ import re
 import sys
 import os.path
 import logging
-import ConfigParser
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.exceptions.configurationError import ConfigurationError
 
@@ -100,8 +99,12 @@ class LoggingManager:
     def configureHandlers(self):
         """ Configure log handlers from the config file. """
         cm = ConfigurationManager.getInstance()
+        # try log config first, then general config
         configFile = cm.getLogConfigFile()
-        configSections = self.__getConfigSections(configFile)
+        if not configFile or not os.path.exists(configFile):
+            configFile = cm.getConfigFile()
+        configParser = cm.getConfigParserFromConfigFile(configFile)
+        configSections = cm.getConfigSectionsFromConfigParser(configParser)
 
         # Console handler.
         defaults = { 
@@ -110,13 +113,13 @@ class LoggingManager:
             'dateformat' : cm.getLogDateFormat(),
             'handler' : 'ConsoleLoggingHandler(sys.stdout,)'
         }
-        consoleHandler = self.__configureHandler(configFile, 'ConsoleLogging', defaults)
+        consoleHandler = self.__configureHandler(configParser, 'ConsoleLogging', defaults)
 
         if consoleHandler != None:
             self.consoleHandler = consoleHandler
 
-        # File logging. # Do not configure if log directory does
-        # not exist.
+        # File logging. 
+        # Do not configure if log directory does not exist.
         defaults['handler'] = None
         defaults['level'] = cm.getFileLogLevel() 
         if not os.path.exists(configFile):
@@ -126,7 +129,7 @@ class LoggingManager:
             if os.path.exists(defaultLogDir):
                 handler = 'TimedRotatingFileLoggingHandler("%s")' % defaultLogFile 
                 defaults['handler'] = handler
-                fileHandler = self.__configureHandler(configFile, 'FileLogging', defaults)
+                fileHandler = self.__configureHandler(configParser, 'FileLogging', defaults)
                 if fileHandler != None:
                     self.fileHandlerList.append(fileHandler)
 
@@ -134,7 +137,7 @@ class LoggingManager:
             # Parse all file loggers present in the config file
             for configSection in configSections:
                 if configSection.startswith('FileLogging'):
-                     fileHandler = self.__configureHandler(configFile, configSection, defaults)
+                     fileHandler = self.__configureHandler(configParser, configSection, defaults)
                      if fileHandler != None:
                          self.fileHandlerList.append(fileHandler)
 
@@ -146,17 +149,14 @@ class LoggingManager:
             rootLogger.addHandler(handler)
 
         # Get a logger factory based on our current config 
-        self.configureLoggers(configFile, defaultLevel=cm.getFileLogLevel())
+        self.configureLoggers(configParser, defaultLevel=cm.getFileLogLevel())
 
-    def configureLoggers(self, configFile, defaultLevel='error'):
-        configParser = ConfigParser.ConfigParser()
-        configParser.read(configFile)
-
+    def configureLoggers(self, configParser, defaultLevel='error'):
         rootLogLevel = 'error'
         levelRegEx = '^.*$=%s' % (defaultLevel)
-        if configParser.has_section('LoggerLevels'):
-            rootLogLevel = configParser.get('LoggerLevels', 'root', rootLogLevel)
-            levelRegEx = configParser.get('LoggerLevels', 'levelregex', levelRegEx)
+        if configParser is not None and configParser.has_section('LoggerLevels'):
+            rootLogLevel = ConfigurationManager.getOptionFromConfigParser(configParser, 'LoggerLevels', 'root', rootLogLevel)
+            levelRegEx = ConfigurationManager.getOptionFromConfigParser(configParser, 'LoggerLevels', 'levelregex', levelRegEx)
 
         rootLevelInt = logging.getLevelName(rootLogLevel.upper())
         logging.getLogger('').root.setLevel(rootLevelInt)
@@ -179,28 +179,13 @@ class LoggingManager:
                 self.logger.error('Parser error in log configuration file: %s' % line)
                 self.logger.exception(ex)
 
-    def __getOptionFromConfigFile(self, configParser, configSection, key, defaultValue=None):
-        """ Get specified option from the configuration file. """
-        if configParser.has_section(configSection):
-            return configParser.get(configSection, key, True)
-        else:
-            return defaultValue
-
-    # Get the sections in the config file
-    def __getConfigSections(self, configFile):
-        """ Return a list of the sections in the given config file """
-        configParser = ConfigParser.RawConfigParser()
-        configParser.read(configFile)
-        return configParser.sections()
-
     # Configure particular handler with given defaults.
-    def __configureHandler(self, configFile, configSection, defaults):
+    def __configureHandler(self, configParser, configSection, defaults):
         """ Configure specified handler with a given defaults. """
-        configParser = ConfigParser.ConfigParser(defaults)
-        configParser.read(configFile)
         handlerOption = defaults['handler']
         try:
-            handlerOption = configParser.get(configSection, 'handler', True)
+            if configParser is not None:
+                handlerOption = configParser.get(configSection, 'handler')
         except Exception, ex:
             pass
 
@@ -214,33 +199,33 @@ class LoggingManager:
             moduleName = handlerName[0].lower() + handlerName[1:]
             try:
                 exec 'from cdb.common.utility import %s' % (moduleName)
-                exec '_handler = %s.%s' % (moduleName, handlerOption)
+                exec 'handler = %s.%s' % (moduleName, handlerOption)
             except IOError, ex:
-                _errno, _emsg = ex
+                errNo, errMsg = ex
                 import errno
 
                 # If the exception raised is an I/O permissions error, ignore
                 # it and disable this log handler.  This allows non-root users
                 # to use the (system-wide) default log configuration
-                if _errno != errno.EACCES:
+                if errNo != errno.EACCES:
                     raise
-                _handler = None 
+                handler = None 
             except Exception, ex:
                 raise ConfigurationError(exception=ex)
 
         # Only request setting from the config file if it was
         # not set via environment variable, or programmatically.
-        if _handler != None:
+        cm = ConfigurationManager.getInstance()
+        if handler != None:
             try:
-                _level = self.__getOptionFromConfigFile(configParser,
-                configSection, 'level', defaults['level'])
-                intLevel = self.getIntLogLevel(_level.upper())
-                _handler.setLevel(intLevel)
+                level = cm.getOptionFromConfigParser(configParser, configSection, 'level', defaults['level'])
+                intLevel = self.getIntLogLevel(level.upper())
+                handler.setLevel(intLevel)
 
-                _format = self.__getOptionFromConfigFile(configParser, configSection, 'format', defaults['format'])
-                _dateformat = self.__getOptionFromConfigFile(configParser, configSection, 'dateformat', defaults['dateformat'])
+                format = cm.getOptionFromConfigParser(configParser, configSection, 'format', defaults['format'])
+                dateformat = cm.getOptionFromConfigParser(configParser, configSection, 'dateformat', defaults['dateformat'])
 
-                _handler.setFormatter(logging.Formatter(_format, _dateformat))
+                handler.setFormatter(logging.Formatter(format, dateformat))
             except Exception, ex:
                 raise ConfigurationError(exception=ex)
 
@@ -252,8 +237,8 @@ class LoggingManager:
                 pass
 
             if filter:
-                _handler.addFilter(logging.Filter(filter))
-        return _handler
+                handler.addFilter(logging.Filter(filter))
+        return handler
 
     def getLogger(self, name='defaultLogger'):
         if not self.initFlag:

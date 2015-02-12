@@ -6,6 +6,7 @@
 
 ####################################################################
 import sys
+import os
 import cherrypy
 from cherrypy.process import plugins
 from cherrypy import server
@@ -14,6 +15,7 @@ from cdb.common.constants import cdbStatus
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.cdbModuleManager import CdbModuleManager
+from cdb.common.exceptions.configurationError import ConfigurationError
 
 ####################################################################
 
@@ -38,8 +40,7 @@ class CdbRestWebServiceBase:
         self.routeMapper = routeMapper
         self.options = None
         self.args = None
-        self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
-        self.logger.info('Initializing service')
+        self.logger = None
 
     def prepareOptions(self):
         from optparse import OptionParser
@@ -47,9 +48,12 @@ class CdbRestWebServiceBase:
         p.add_option('-d', '--daemon', action="store_true",
             dest='daemonFlag', default=False, 
             help="Run as a daemon.")
-        p.add_option('-p', '--pidfile',
-            dest='pidfile', default=None,
-            help="Store the process id in the given file.")
+        p.add_option('-p', '--pid-file',
+            dest='pidFile', default=None,
+            help="Store process id in the given file.")
+        p.add_option('', '--config-file',
+            dest='configFile', default=None,
+            help="Service configuration file.")
         p.add_option('-P', '--port',
             dest='serverPort', default=self.getDefaultServerPort(),
             help="Server port.")
@@ -117,10 +121,22 @@ class CdbRestWebServiceBase:
         cherrypy.config.update(configDict)
 
     def prepareServer(self):
-        self.logger.debug('Preparing service configuration')
         try:
             optionParser = self.prepareOptions()
             (self.options, self.args) = optionParser.parse_args()
+      
+            # Set config file.
+            configFile = self.options.configFile
+            if configFile:
+                if not os.path.exists(configFile):
+                    raise ConfigurationError('Configuration file %s does not exist.' % configFile)
+                self.configurationManager.setConfigFile(self.options.configFile)
+             
+            # Turn off console log for daemon mode.
+            self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
+            if self.options.daemonFlag:
+                LoggingManager.getInstance().setConsoleLogLevel('CRITICAL')
+
             dispatch = self.routeMapper.setupRoutes()
             self.logger.debug('Using route dispatch: %s' % dispatch)
 
@@ -139,7 +155,12 @@ class CdbRestWebServiceBase:
             self.logger.info('Using port %s' % self.options.serverPort)
             self.logger.debug('Using %s request handler threads' % self.options.nServerThreads)
         except Exception, ex:
-            self.logger.exception(ex)
+            if self.logger is not None:
+                self.logger.exception(ex)
+            else:
+                import traceback
+                print '\n%s' % sys.exc_info()[1]
+                traceback.print_exc(file=sys.stderr)
             sys.exit(cdbStatus.CDB_ERROR)
 
     # Run server.
@@ -152,9 +173,9 @@ class CdbRestWebServiceBase:
             plugins.Daemonizer(engine).subscribe()
         self.logger.debug('Daemon mode: %s' % self.options.daemonFlag)
 
-        if self.options.pidfile != None:
-            plugins.PIDFile(engine, self.options.pidfile).subscribe()
-        self.logger.debug('Using PID file: %s' % self.options.pidfile)
+        if self.options.pidFile != None:
+            plugins.PIDFile(engine, self.options.pidFile).subscribe()
+        self.logger.debug('Using PID file: %s' % self.options.pidFile)
 
         if self.options.sslCert != None and self.options.sslKey != None:
             server.ssl_ca_certificate = None

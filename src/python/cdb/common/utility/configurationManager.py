@@ -10,6 +10,7 @@ import os
 import socket
 import UserDict
 import pwd
+import ConfigParser
 
 from cdb.common.constants import cdbServiceConstants
 from cdb.common.exceptions.configurationError import ConfigurationError
@@ -170,6 +171,9 @@ class ConfigurationManager(UserDict.UserDict):
         # Settings that might come from file.
         self.__setFromVarFile('dbPassword', self.getDbPasswordFile())
 
+        # Variables we do not keep in a dictionary
+        self.configParser = None
+
     # This function will ignore errors if environment variable is not set.
     def __setFromEnvVar(self, key, envVar):
         """ 
@@ -205,6 +209,72 @@ class ConfigurationManager(UserDict.UserDict):
         if default != '__internal__':
             defaultValue = default
         return self.get(key, defaultValue)
+
+    def clearConfigParser(self):
+        self.configParser = None
+
+    def getConfigParser(self, defaults={}):
+        if self.configParser is None:
+            configFile = self.getConfigFile()
+            if os.path.exists(configFile):
+                self.configParser = ConfigParser.ConfigParser(defaults)
+                self.configParser.read(configFile)
+                self.configParser.defaults = defaults
+        return self.configParser
+
+    def setConfigDefaults(self, defaults={}):
+        configParser = self.getConfigParser()
+        if configParser is not None:
+            configParser.defaults = defaults
+
+    def getConfigOption(self, configSection, key, defaultValue=None):
+        configParser = self.getConfigParser()
+        if self.hasConfigSection(configSection):
+            try:
+                return configParser.get(configSection, key)
+            except ConfigParser.NoOptionError, ex:
+                # ok, return default value
+                pass
+        return defaultValue
+
+    def getConfigSections(self):
+        configParser = self.getConfigParser()
+        if configParser is not None:
+            return configParser.sections()
+        return []
+
+    def hasConfigSection(self, name):
+        configSections = self.getConfigSections()
+        if name in configSections:
+            return True
+        return False
+
+    def getConfigItems(self, configSection):
+        configParser = self.getConfigParser()
+        if configParser is not None and configParser.has_section(config_section):
+            return configParser.items(configSection)
+        return []
+
+    @classmethod
+    def getConfigParserFromConfigFile(cls, configFile):
+        if not os.path.exists(configFile):
+            return None
+        configParser = ConfigParser.RawConfigParser()
+        configParser.read(configFile)
+        return configParser
+
+    @classmethod
+    def getOptionFromConfigParser(cls, configParser, configSection, key, defaultValue=None):
+        if configParser is not None and configParser.has_section(configSection):
+            return configParser.get(configSection, key)
+        else:
+            return defaultValue
+
+    @classmethod
+    def getConfigSectionsFromConfigParser(cls, configParser):
+        if configParser is not None:
+            return configParser.sections()
+        return []
 
     def getHost(self):
         return self['host']
@@ -483,6 +553,8 @@ class ConfigurationManager(UserDict.UserDict):
 
     def setConfigFile(self, configFile):
         self['configFile'] = configFile
+        # Must reinitialize config parser at this point
+        self.configParser = None
 
     def getConfigFile(self, default='__internal__'):
         return self.__getKeyValue('configFile', default)
