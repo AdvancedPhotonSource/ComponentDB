@@ -1,0 +1,127 @@
+#!/bin/bash
+
+#
+# cdb-web-service
+#
+# Starts the CDB WebService daemon
+#
+# chkconfig: 345 98 98
+# description: controls CDB Web Service daemon
+
+### BEGIN INIT INFO
+# Provides: cdb-web-service
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs $network
+# Default-Start:  2 3 4 5
+# Default-Stop: 0 1 6
+# Description: Controls CDB Web Service daemon
+### END INIT INFO
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# Arguments
+ACTION=$1
+CDB_DB_NAME=$2
+
+# Set root to default if needed.
+MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
+if [ -z "${CDB_ROOT_DIR}" ]; then
+    CDB_ROOT_DIR=$MY_DIR/../..
+fi
+
+# Source environment file.
+CDB_USER=`id -nu`
+CDB_HOST=`hostname -s`
+CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
+if [ ! -f ${CDB_ENV_FILE} ]; then
+    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    exit 2
+fi
+. ${CDB_ENV_FILE} > /dev/null
+
+mkdir -p ${CDB_RUN_DIR}/var/run
+mkdir -p ${CDB_RUN_DIR}/var/log
+
+CDB_DAEMON_NAME="CdbWebService"
+CDB_DAEMON_CMD=${CDB_ROOT_DIR}/sbin/cdbWebService.py
+CDB_PID_FILE=${CDB_RUN_DIR}/var/run/cdb-web-service.pid
+CDB_CONFIG_FILE=${CDB_RUN_DIR}/etc/cdb-web-service.conf
+if [ ! -z "${CDB_DB_NAME}" ]; then
+    CDB_PID_FILE=${CDB_PID_FILE}.${CDB_DB_NAME}
+    CDB_CONFIG_FILE=${CDB_CONFIG_FILE}.${CDB_DB_NAME}
+    CDB_DAEMON_NAME=${CDB_DAEMON_NAME}.${CDB_DB_NAME}
+fi
+CDB_DAEMON_START_ARGS="-d -p $CDB_PID_FILE --config-file $CDB_CONFIG_FILE"
+
+# Determine su command
+SU=su
+if [ -x /sbin/runuser ]; then
+    SU=runuser
+fi
+
+RETVAL=0
+start() {
+    # Check if service is already running
+    status -p $CDB_PID_FILE > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        PID=`cat $CDB_PID_FILE`
+        echo $"$CDB_DAEMON_NAME daemon is already running (pid: $PID)."	
+        RETVAL=1
+        return $RETVAL
+    fi
+    echo -n $"Starting $CDB_DAEMON_NAME daemon: "	
+    # Check if we're a privileged user
+    if [ `id -u` = 0 -a ${CDB_USER} != "root" ]; then
+        $SU -m -c "${CDB_DAEMON_CMD} ${CDB_DAEMON_START_ARGS}" ${CDB_USER}
+    else
+        ${CDB_DAEMON_CMD} ${CDB_DAEMON_START_ARGS}
+    fi
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] &&  success $"$CDB_DAEMON_NAME startup" || failure $"$CDB_DAEMON_NAME startup"
+    echo
+    return $RETVAL
+}
+
+stop() {
+    # Check if service is already running
+    status -p $CDB_PID_FILE > /dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        echo $"$CDB_DAEMON_NAME daemon is not running."	
+        RETVAL=1
+        return $RETVAL
+    fi
+    echo -n $"Stopping $CDB_DAEMON_NAME daemon: "
+    PID=`cat $CDB_PID_FILE`
+    kill $PID
+	RETVAL=$?
+	[ $RETVAL -eq 0 ] && rm -f $CDB_PID_FILE && success $"$CDB_DAEMON_NAME shutdown" || failure $"$CDB_DAEMON_NAME shutdown"
+	echo
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$ACTION" in
+    start)
+        start
+    ;;
+    stop)
+        stop
+    ;;
+    restart)
+        restart
+    ;;
+    status)
+        status -p $CDB_PID_FILE "$CDB_DAEMON_NAME"
+        RETVAL=$?
+    ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        RETVAL=2
+esac
+
+exit $RETVAL

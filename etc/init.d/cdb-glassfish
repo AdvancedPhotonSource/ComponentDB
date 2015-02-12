@@ -5,8 +5,7 @@
 # Required-Stop:     $remote_fs $network $syslog
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Starts GlassFish
-# Description:       Starts GlassFish application server
+# Description:       Controls CDB GlassFish application server
 ### END INIT INFO
 
 # Source function library.
@@ -52,6 +51,7 @@ start() {
     RETVAL=$?
     [ $RETVAL -eq 0 ] && success $"${CDB_DAEMON_NAME} startup" || failure $"${CDB_DAEMON_NAME} startup"
     echo
+    return $RETVAL
 }
 
 stop() {
@@ -65,6 +65,7 @@ stop() {
     RETVAL=$?
     [ $RETVAL -eq 0 ] && success $"${CDB_DAEMON_NAME} shutdown" || failure $"${CDB_DAEMON_NAME} shutdown"
     echo
+    return $RETVAL
 }
 
 status() {
