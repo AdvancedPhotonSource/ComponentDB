@@ -23,6 +23,9 @@ class CdbRestWebServiceBase:
 
     DEFAULT_N_SERVER_REQUEST_THREADS = 10
     DEFAULT_SERVER_SOCKET_TIMEOUT = 30
+    CONFIG_SECTION_NAME = 'WebService'
+    CONFIG_OPTION_NAME_LIST = [ 'serviceHost', 'servicePort', 
+        'sslCertFile', 'sslKeyFile', 'sslCaCertFile' ]
 
     class SignalHandler:
         def __init__(self, signal, oldSignalHandler):
@@ -55,19 +58,19 @@ class CdbRestWebServiceBase:
             dest='configFile', default=None,
             help="Service configuration file.")
         p.add_option('-P', '--port',
-            dest='serverPort', default=self.getDefaultServerPort(),
-            help="Server port.")
+            dest='servicePort', default=None,
+            help="Service port.")
         p.add_option('-H', '--host',
-            dest='serverHost', default=self.getDefaultServerHost(),
-            help="Server host.")
+            dest='serviceHost', default=None,
+            help="Service host.")
         p.add_option('-C', '--ssl-ca-cert', 
-            dest='sslCaCert', default=None,
+            dest='sslCaCertFile', default=None,
             help='SSL CA certificate path (used for client SSL certificate verification). Requires --ssl-key and --ssl-cert.')
         p.add_option('-c', '--ssl-cert', 
-            dest='sslCert', default=None,
+            dest='sslCertFile', default=None,
             help='SSL certificate path. SSL operation requires both --ssl-key and --ssl-cert. Client SSL certificate verification also requires --ssl-ca-cert.')
         p.add_option('-k', '--ssl-key', 
-            dest='sslKey', default=None, 
+            dest='sslKeyFile', default=None, 
             help='SSL key path. SSL operation requires both --ssl-key and --ssl-cert. Client SSL certificate verification also requires --ssl-ca-cert.')
         p.add_option('', '--n-server-threads', 
         dest='nServerThreads', default=CdbRestWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS,
@@ -112,25 +115,55 @@ class CdbRestWebServiceBase:
         cherrypy.log.access_log.propagate = False
 
     def updateServerConfig(self):
+        serviceHost = self.configurationManager.getServiceHost()
+        servicePort = int(self.configurationManager.getServicePort())
+        nServerThreads = int(self.options.nServerThreads)
         configDict = {
-            'server.socket_host' : self.options.serverHost,
-            'server.socket_port' : int(self.options.serverPort),
-            'server.thread_pool' : int(self.options.nServerThreads),
+            'server.socket_host' : serviceHost,
+            'server.socket_port' : servicePort,
+            'server.thread_pool' : nServerThreads,
             'log.screen' : (self.options.daemonFlag != True),
         }
         cherrypy.config.update(configDict)
+
+    def readConfigFile(self, configFile):
+        configFile = self.options.configFile
+        if not configFile:
+            configFile = self.configurationManager.getConfigFile()
+        else:
+            self.configurationManager.setConfigFile(configFile)
+
+        if not os.path.exists(configFile):
+            raise ConfigurationError('Configuration file %s does not exist.' % configFile)
+        # Read file and set config options
+        self.configurationManager.setOptionsFromConfigFile(configFile, CdbRestWebServiceBase.CONFIG_SECTION_NAME, CdbRestWebServiceBase.CONFIG_OPTION_NAME_LIST)
+        print "PORT: ", self.configurationManager.getServicePort()
+
+    def readCommandLineOptions(self):
+        # This method should be called after reading config file
+        # in case some options are overridden
+        if self.options.sslCaCertFile != None:
+            self.configurationManager.setSslCaCertFile(self.options.sslCaCertFile)
+        if self.options.sslCertFile != None:
+            self.configurationManager.setSslCertFile(self.options.sslCertFile)
+
+        if self.options.sslKeyFile != None:
+            self.configurationManager.setSslKeyFile(self.options.sslKeyFile)
+
+        if self.options.serviceHost != None:
+            self.configurationManager.setServiceHost(self.options.serviceHost)
+
+        if self.options.servicePort != None:
+            self.configurationManager.setServicePort(self.options.servicePort)
 
     def prepareServer(self):
         try:
             optionParser = self.prepareOptions()
             (self.options, self.args) = optionParser.parse_args()
       
-            # Set config file.
-            configFile = self.options.configFile
-            if configFile:
-                if not os.path.exists(configFile):
-                    raise ConfigurationError('Configuration file %s does not exist.' % configFile)
-                self.configurationManager.setConfigFile(self.options.configFile)
+            # Read config file and override with command line options
+            self.readConfigFile(self.options.configFile)
+            self.readCommandLineOptions()
              
             # Turn off console log for daemon mode.
             self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
@@ -151,8 +184,8 @@ class CdbRestWebServiceBase:
             self.initServerLog()
             self.updateServerConfig()
 
-            self.logger.info('Using host %s' % self.options.serverHost)
-            self.logger.info('Using port %s' % self.options.serverPort)
+            self.logger.info('Using host %s' % self.configurationManager.getServiceHost())
+            self.logger.info('Using port %s' % self.configurationManager.getServicePort())
             self.logger.debug('Using %s request handler threads' % self.options.nServerThreads)
         except Exception, ex:
             if self.logger is not None:
@@ -177,19 +210,20 @@ class CdbRestWebServiceBase:
             plugins.PIDFile(engine, self.options.pidFile).subscribe()
         self.logger.debug('Using PID file: %s' % self.options.pidFile)
 
-        if self.options.sslCert != None and self.options.sslKey != None:
+        sslCertFile = self.configurationManager.getSslCertFile()
+        sslKeyFile = self.configurationManager.getSslKeyFile()
+        sslCaCertFile = self.configurationManager.getSslCaCertFile()
+        self.logger.info('Using SSL CA cert file: %s' % sslCaCertFile)
+        if sslCertFile != None and sslKeyFile != None:
             server.ssl_ca_certificate = None
-            if self.options.sslCaCert != None:
-                server.ssl_ca_certificate = self.options.sslCaCert
-                self.configurationManager.setSslCaCertFile(self.options.sslCaCert)
-                self.logger.info('Using SSL CA cert file: %s' % self.options.sslCaCert)
-                server.ssl_certificate = self.options.sslCert
-                self.configurationManager.setSslCertFile(self.options.sslCert)
-                self.logger.info('Using SSL cert file: %s' % self.options.sslCert)
+            if sslCaCertFile != None:
+                server.ssl_ca_certificate = self.options.sslCaCertFile
+                self.logger.info('Using SSL CA cert file: %s' % sslCaCertFile)
+            server.ssl_certificate = sslCertFile
+            self.logger.info('Using SSL cert file: %s' % sslCertFile)
 
-                server.ssl_private_key = self.options.sslKey
-                self.configurationManager.setSslKeyFile(self.options.sslKey)
-                self.logger.info('Using SSL key file: %s' % self.options.sslKey)
+            server.ssl_private_key = sslKeyFile
+            self.logger.info('Using SSL key file: %s' % sslKeyFile)
 
         server.ssl_module = 'builtin'
         #server.ssl_module = 'pyopenssl'
@@ -230,7 +264,6 @@ class CdbRestWebServiceBase:
 
     # Run server instance.
     def run(self):
-        self.prepareOptions()
         self.prepareServer()
         sys.exit(self.__runServer())
 

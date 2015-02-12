@@ -210,6 +210,16 @@ class ConfigurationManager(UserDict.UserDict):
             defaultValue = default
         return self.get(key, defaultValue)
 
+    def setOptionsFromConfigFile(self, configFile, configSection, keyList):
+        if configFile is not None and os.path.exists(configFile):
+            configParser = ConfigParser.RawConfigParser()
+            configParser.read(configFile)
+            if not configParser.has_section(configSection):
+                return
+            for key in keyList:
+                if configParser.has_option(configSection, key):
+                    self[key] = configParser.get(configSection, key)
+
     def clearConfigParser(self):
         self.configParser = None
 
