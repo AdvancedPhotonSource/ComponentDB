@@ -43,12 +43,12 @@ DEFAULT_CDB_SERVICE_USERNAME = ''
 DEFAULT_CDB_SERVICE_PASSWORD = ''
 
 DEFAULT_CDB_DB = 'mysql'
-DEFAULT_CDB_DB_HOST = 'localhost'
-DEFAULT_CDB_DB_PORT = 20232                # 20CDB
+DEFAULT_CDB_DB_HOST = '127.0.0.1'
+DEFAULT_CDB_DB_PORT = 3306
 DEFAULT_CDB_DB_PASSWORD = ''
-DEFAULT_CDB_DB_USER = ''
+DEFAULT_CDB_DB_USER = 'cdb'
 DEFAULT_CDB_DB_SCHEMA = 'cdb'
-DEFAULT_CDB_DB_PASSWORD_FILE = '%s/lib/mysql/etc/db.passwd' # requires root dir
+DEFAULT_CDB_DB_PASSWORD_FILE = '%s/etc/mysql/cdb.db.passwd' # requires run dir
 
 DEFAULT_CDB_CONTEXT_ROOT = '/cdb'
 
@@ -198,7 +198,7 @@ class ConfigurationManager(UserDict.UserDict):
         except Exception, ex:
             pass
 
-    def __getKeyValue(self, key, default='__internal__'):
+    def __getKeyValue(self, key, default='__cdb_default__'):
         """
         Get value for a given key.
         Keys will be of the form 'logFile', and the default keys have
@@ -206,7 +206,7 @@ class ConfigurationManager(UserDict.UserDict):
         """
         defaultKey = "default" + key[0].upper() + key[1:]
         defaultValue = self.get(defaultKey, None)
-        if default != '__internal__':
+        if default != '__cdb_default__':
             defaultValue = default
         return self.get(key, defaultValue)
 
@@ -298,7 +298,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setRootDir(self, rootDir):
         self['rootDir'] = rootDir
 
-    def getRootDir(self, default='__internal__'):
+    def getRootDir(self, default='__cdb_default__'):
         return self.__getKeyValue('rootDir', default)
 
     def getDefaultRunDir(self):
@@ -307,7 +307,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setRunDir(self, runDir):
         self['runDir'] = runDir
 
-    def getRunDir(self, default='__internal__'):
+    def getRunDir(self, default='__cdb_default__'):
         return self.__getKeyValue('runDir', default)
 
     def getDefaultLogFile(self):
@@ -316,7 +316,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setLogFile(self, logFile):
         self['logFile'] = logFile
 
-    def getLogFile(self, default='__internal__'):
+    def getLogFile(self, default='__cdb_default__'):
         return self.__getKeyValue('logFile', default)
 
     def hasLogFile(self):
@@ -328,7 +328,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setLogConfigFile(self, logConfigFile):
         self['logConfigFile'] = logConfigFile
 
-    def getLogConfigFile(self, default='__internal__'):
+    def getLogConfigFile(self, default='__cdb_default__'):
         return self.__getKeyValue('logConfigFile', default)
 
     def hasLogConfigFile(self):
@@ -340,7 +340,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setConsoleLogLevel(self, level):
         self['consoleLogLevel'] = level 
 
-    def getConsoleLogLevel(self, default='__internal__'):
+    def getConsoleLogLevel(self, default='__cdb_default__'):
         return self.__getKeyValue('consoleLogLevel', default)
 
     def hasConsoleLogLevel(self):
@@ -352,7 +352,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setFileLogLevel(self, level):
         self['fileLogLevel'] = level 
 
-    def getFileLogLevel(self, default='__internal__'):
+    def getFileLogLevel(self, default='__cdb_default__'):
         return self.__getKeyValue('fileLogLevel', default)
 
     def hasFileLogLevel(self):
@@ -364,7 +364,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setLogRecordFormat(self, format):
         self['logRecordFormat'] = format
 
-    def getLogRecordFormat(self, default='__internal__'):
+    def getLogRecordFormat(self, default='__cdb_default__'):
         return self.__getKeyValue('logRecordFormat', default)
 
     def hasLogRecordFormat(self):
@@ -376,7 +376,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setLogDateFormat(self, format):
         self['logDateFormat'] = format
 
-    def getLogDateFormat(self, default='__internal__'):
+    def getLogDateFormat(self, default='__cdb_default__'):
         return self.__getKeyValue('logDateFormat', default)
 
     def hasLogDateFormat(self):
@@ -388,7 +388,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setCherrypyLogLevel(self, level):
         self['cherrypyLogLevel'] = level 
 
-    def getCherrypyLogLevel(self, default='__internal__'):
+    def getCherrypyLogLevel(self, default='__cdb_default__'):
         return self.__getKeyValue('cherrypyLogLevel', default)
 
     def hasCherrypyLogLevel(self):
@@ -400,7 +400,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setCherrypyLogFile(self, cherrypyLogFile):
         self['cherrypyLogFile'] = cherrypyLogFile
 
-    def getCherrypyLogFile(self, default='__internal__'):
+    def getCherrypyLogFile(self, default='__cdb_default__'):
         return self.__getKeyValue('cherrypyLogFile', default)
 
     def hasCherrypyLogFile(self):
@@ -412,7 +412,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setCherrypyAccessFile(self, cherrypyAccessFile):
         self['cherrypyAccessFile'] = cherrypyAccessFile
 
-    def getCherrypyAccessFile(self, default='__internal__'):
+    def getCherrypyAccessFile(self, default='__cdb_default__'):
         return self.__getKeyValue('cherrypyAccessFile', default)
 
     def hasCherrypyAccessFile(self):
@@ -429,7 +429,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setServiceProtocol(self, serviceProtocol):
         self['serviceProtocol'] = serviceProtocol
 
-    def getServiceProtocol(self, default='__internal__'):
+    def getServiceProtocol(self, default='__cdb_default__'):
         return self.__getKeyValue('serviceProtocol', default)
 
     def hasServiceProtocol(self):
@@ -441,7 +441,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setServicePort(self, servicePort):
         self['servicePort'] = servicePort 
 
-    def getServicePort(self, default='__internal__'):
+    def getServicePort(self, default='__cdb_default__'):
         return int(self.__getKeyValue('servicePort', default))
 
     def hasServicePort(self):
@@ -453,7 +453,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setServiceHost(self, serviceHost):
         self['serviceHost'] = serviceHost
 
-    def getServiceHost(self, default='__internal__'):
+    def getServiceHost(self, default='__cdb_default__'):
         return self.__getKeyValue('serviceHost', default)
 
     def hasServiceHost(self):
@@ -465,7 +465,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setServiceUsername(self, serviceUsername):
         self['serviceUsername'] = serviceUsername 
 
-    def getServiceUsername(self, default='__internal__'):
+    def getServiceUsername(self, default='__cdb_default__'):
         return self.__getKeyValue('serviceUsername', default)
 
     def hasServiceUsername(self):
@@ -477,7 +477,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setServicePassword(self, servicePassword):
         self['servicePassword'] = servicePassword 
 
-    def getServicePassword(self, default='__internal__'):
+    def getServicePassword(self, default='__cdb_default__'):
         return self.__getKeyValue('servicePassword', default)
 
     def hasServicePassword(self):
@@ -489,7 +489,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setDb(self, db):
         self['db'] = db
 
-    def getDb(self, default='__internal__'):
+    def getDb(self, default='__cdb_default__'):
         return self.__getKeyValue('db', default) 
 
     def hasDb(self):
@@ -501,7 +501,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setDbHost(self, dbHost):
         self['dbHost'] = dbHost
 
-    def getDbHost(self, default='__internal__'):
+    def getDbHost(self, default='__cdb_default__'):
         return self.__getKeyValue('dbHost', default) 
 
     def hasDbHost(self):
@@ -513,7 +513,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setDbPort(self, dbPort):
         self['dbPort'] = dbPort
 
-    def getDbPort(self, default='__internal__'):
+    def getDbPort(self, default='__cdb_default__'):
         return self.__getKeyValue('dbPort', default) 
 
     def hasDbPort(self):
@@ -525,7 +525,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setDbPassword(self, dbPassword):
         self['dbPassword'] = dbPassword
 
-    def getDbPassword(self, default='__internal__'):
+    def getDbPassword(self, default='__cdb_default__'):
         return self.__getKeyValue('dbPassword', default) 
 
     def hasDbPassword(self):
@@ -534,7 +534,7 @@ class ConfigurationManager(UserDict.UserDict):
     def getDefaultDbPasswordFile(self):
         return self['defaultDbPasswordFile']
 
-    def getDbPasswordFile(self, default='__internal__'):
+    def getDbPasswordFile(self, default='__cdb_default__'):
         return self.__getKeyValue('dbPasswordFile', default) 
 
     def setDbPasswordFile(self, f):
@@ -546,17 +546,17 @@ class ConfigurationManager(UserDict.UserDict):
     def getDefaultDbUser(self):
         return self['defaultDbUser']
 
-    def getDbUser(self, default='__internal__'):
+    def getDbUser(self, default='__cdb_default__'):
         return self.__getKeyValue('dbUser', default) 
 
-    def setDbUser(self, u):
-        self['dbUser'] = u
+    def setDbUser(self, dbUser):
+        self['dbUser'] = dbUser
 
     def hasDbUser(self):
         return self.has_key('dbUser')
 
-    def getDbSchema(self):
-        return self['dbSchema']
+    def getDbSchema(self, default='__cdb_default__'):
+        return self.__getKeyValue('dbSchema', default)
 
     def getDefaultConfigFile(self):
         return self['defaultConfigFile']
@@ -566,7 +566,7 @@ class ConfigurationManager(UserDict.UserDict):
         # Must reinitialize config parser at this point
         self.configParser = None
 
-    def getConfigFile(self, default='__internal__'):
+    def getConfigFile(self, default='__cdb_default__'):
         return self.__getKeyValue('configFile', default)
 
     def hasConfigFile(self):
@@ -578,7 +578,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setContextRoot(self, contextRoot):
         self['contextRoot'] = contextRoot
 
-    def getContextRoot(self, default='__internal__'):
+    def getContextRoot(self, default='__cdb_default__'):
         return self.__getKeyValue('contextRoot', default)
 
     def hasContextRoot(self):
@@ -590,7 +590,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setSessionCacheFile(self, sessionCacheFile):
         self['sessionCacheFile'] = sessionCacheFile
 
-    def getSessionCacheFile(self, default='__internal__'):
+    def getSessionCacheFile(self, default='__cdb_default__'):
         return self.__getKeyValue('sessionCacheFile', default)
 
     def hasSessionCacheFile(self):
@@ -602,7 +602,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setRequireSessionCredentials(self, requireSessionCredentials):
         self['requireSessionCredentials'] = requireSessionCredentials
 
-    def getRequireSessionCredentials(self, default='__internal__'):
+    def getRequireSessionCredentials(self, default='__cdb_default__'):
         return self.__getKeyValue('requireSessionCredentials', default)
 
     def hasRequireSessionCredentials(self):
@@ -614,7 +614,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setSslCaCertFile(self, sslCaCertFile):
         self['sslCaCertFile'] = sslCaCertFile
 
-    def getSslCaCertFile(self, default='__internal__'):
+    def getSslCaCertFile(self, default='__cdb_default__'):
         return self.__getKeyValue('sslCaCertFile', default)
 
     def hasSslCaCertFile(self):
@@ -626,7 +626,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setSslCertFile(self, sslCertFile):
         self['sslCertFile'] = sslCertFile
 
-    def getSslCertFile(self, default='__internal__'):
+    def getSslCertFile(self, default='__cdb_default__'):
         return self.__getKeyValue('sslCertFile', default)
 
     def hasSslCertFile(self):
@@ -638,7 +638,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setSslKeyFile(self, sslKeyFile):
         self['sslKeyFile'] = sslKeyFile
 
-    def getSslKeyFile(self, default='__internal__'):
+    def getSslKeyFile(self, default='__cdb_default__'):
         return self.__getKeyValue('sslKeyFile', default)
 
     def hasSslKeyFile(self):
@@ -650,7 +650,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setUsername(self, username):
         self['username'] = username
 
-    def getUsername(self, default='__internal__'):
+    def getUsername(self, default='__cdb_default__'):
         return self.__getKeyValue('username', default)
 
     def hasUsername(self):
@@ -662,7 +662,7 @@ class ConfigurationManager(UserDict.UserDict):
     def setPassword(self, password):
         self['password'] = password
 
-    def getPassword(self, default='__internal__'):
+    def getPassword(self, default='__cdb_default__'):
         return self.__getKeyValue('password', default)
 
     def hasPassword(self):
