@@ -1,13 +1,18 @@
 #!/bin/bash
 
 sbindir=`dirname $0` 
-if [ -z $CDB_RUN_DIR ]; then
+# Set root/run directories
+if [ -z $CDB_ROOT_DIR ]; then
     cd $sbindir/..
+    export CDB_ROOT_DIR=`pwd`
+fi
+if [ -z $CDB_RUN_DIR ]; then
+    cd $CDB_ROOT_DIR/..
     export CDB_RUN_DIR=`pwd`
 fi
-
 CA_ROOT=$CDB_RUN_DIR/etc/CA
-CA_CONFIG=$CDB_RUN_DIR/etc/openssl.cnf
+CA_CONFIG=$CDB_ROOT_DIR/etc/cdb.openssl.cnf
+
 LOG_FILE=/tmp/cdb-server-cert.log.$$
 
 SERVER_NAME=$1
