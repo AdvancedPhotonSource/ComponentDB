@@ -3,8 +3,8 @@
 from cdb.common.exceptions.dbError import DbError
 from cdb.common.utility.loggingManager import LoggingManager
 
-class CdbDbTable(object):
-    """ Base Cdb DB table wrapper class. """
+class CdbDbEntity(object):
+    """ Base Cdb DB entity class. """
     columns = []
     mappedColumnDict = {}
 
