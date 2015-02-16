@@ -10,6 +10,7 @@ from cdb.common.exceptions.commandFailed import CommandFailed
 from cdb.common.exceptions.configurationError import ConfigurationError
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
+from cdb.common.db import cdbDbEntityMap
 
 
 class DbManager:
@@ -60,6 +61,10 @@ class DbManager:
                 echo=DbManager.DB_CONNECTION_LOGGING_FLAG, 
                 pool_timeout=DbManager.DB_CONNECTION_POOL_TIMEOUT)
             self.metadata = sqlalchemy.MetaData(engineUrl)
+
+            self.logger.debug('Mapping DB tables')
+            for (dbTableName, dbEntityClass) in cdbDbEntityMap.CDB_DB_ENTITY_MAP.items():
+                self.mapTable(dbEntityClass, dbTableName)
             self.logger.debug('Initialized SQLalchemy engines')
 
         finally:

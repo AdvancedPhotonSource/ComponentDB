@@ -8,7 +8,7 @@ from cdb.common.db.dbManager import DbManager
 class CdbDbApi:
     """ Base DB API class. """
     def __init__(self):
-        self.logger = logManager.getLogger(self.__class__.__name__)
+        self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
         self.dbManager = DbManager.getInstance()
 
     def getLogger(self):
