@@ -466,7 +466,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
 
     public String prepareClone(EntityType entity) {
         current = cloneEntityInstance(entity);
-        return "create?faces-redirect=true";
+        return "/views/" + getEntityTypeName() + "/create?faces-redirect=true";
     }
 
     protected void prepareEntityInsert(EntityType entity) throws CdbException {

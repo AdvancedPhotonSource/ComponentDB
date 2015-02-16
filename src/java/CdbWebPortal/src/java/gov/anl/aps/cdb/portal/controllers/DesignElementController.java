@@ -108,6 +108,8 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     private SelectOneMenu componentSelectOneMenu;
     private DataTable designElementPropertyValueListDataTable = null;
+    private DataTable componentPropertyValueListDataTable = null;
+    private DataTable childDesignPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
 
     public DesignElementController() {
@@ -794,4 +796,35 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         return designElementImageList;
     }
 
+    public Boolean getDisplayChildDesignProperties(DesignElement designElement) {
+        if (designElement == null) {
+            return false;
+        }
+        DesignElementType designElementType = designElement.getContainedObjectType();
+        return (designElementType != null && designElementType.equals(DesignElementType.DESIGN));
+    }
+
+    public Boolean getDisplayComponentProperties(DesignElement designElement) {
+        if (designElement == null) {
+            return false;
+        }
+        DesignElementType designElementType = designElement.getContainedObjectType();
+        return (designElementType != null && designElementType.equals(DesignElementType.COMPONENT));
+    }    
+
+    public DataTable getComponentPropertyValueListDataTable() {
+        return componentPropertyValueListDataTable;
+    }
+
+    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
+        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
+    }
+
+    public DataTable getChildDesignPropertyValueListDataTable() {
+        return childDesignPropertyValueListDataTable;
+    }
+
+    public void setChildDesignPropertyValueListDataTable(DataTable childDesignPropertyValueListDataTable) {
+        this.childDesignPropertyValueListDataTable = childDesignPropertyValueListDataTable;
+    }
 }

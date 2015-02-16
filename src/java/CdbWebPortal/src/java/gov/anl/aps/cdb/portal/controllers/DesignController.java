@@ -158,6 +158,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             design.getLogList().add(logEntry);
             resetLogText();
         }
+
         for (DesignElement designElement : design.getDesignElementList()) {
             String designElementName = designElement.getName();
             if (designElementName == null || designElementName.isEmpty()) {
@@ -171,8 +172,16 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
                 throw new ObjectAlreadyExists("Design element with name " + designElementName
                         + " already exists.");
             }
+
+            // If id is null, this is a new design element; check its properties
+            if (designElement.getId() == null) {
+                UserInfo createdByUser = designElement.getEntityInfo().getCreatedByUser();
+                Date createdOnDateTime = designElement.getEntityInfo().getCreatedOnDateTime();
+                designElement.updateDynamicProperties(createdByUser, createdOnDateTime);
+            }
+
         }
-        
+
         // Catch circular dependency issues.
         DesignElementUtility.createDesignElementRoot(design);
         prepareDesignImageList(design);

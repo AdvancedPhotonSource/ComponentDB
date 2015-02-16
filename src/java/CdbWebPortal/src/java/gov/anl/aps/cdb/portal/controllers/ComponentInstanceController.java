@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
@@ -143,6 +144,21 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
         return componentInstance;
     }
+    
+    @Override
+    public ComponentInstance cloneEntityInstance(ComponentInstance componentInstance) {
+        ComponentInstance clonedComponentInstance = super.cloneEntityInstance(componentInstance);
+        UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
+        EntityInfo entityInfo = new EntityInfo();
+        entityInfo.setOwnerUser(ownerUser);
+        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+        }
+        clonedComponentInstance.setEntityInfo(entityInfo);
+        super.setLogText("Cloned from component instance id " + componentInstance.getId());
+        return clonedComponentInstance;
+    }    
 
     @Override
     public String getEntityTypeName() {

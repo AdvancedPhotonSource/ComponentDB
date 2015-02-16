@@ -12,11 +12,13 @@
             <div class="pageTitle">
                 <h1>Add Component Instance</h1>
             </div>
-            
-            <div class="userNotification">
-                <h3>Component instance with QR Id #{componentInstanceController.selected.qrId} must be defined.</h3>
-            </div>
-            <p/>
+
+            <ui:fragment rendered="#{componentInstanceController.selected.qrId != null}">
+                <div class="userNotification">
+                    <h3>Component instance with QR Id #{componentInstanceController.selected.qrId} must be defined.</h3>
+                </div>
+                <p/>
+            </ui:fragment>
 
             <ui:include src="componentInstanceCreatePanelGrid.xhtml"/>
 

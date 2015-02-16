@@ -8,6 +8,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -76,7 +78,6 @@ public class DesignElement extends CdbEntity {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
     @ManyToMany
     private List<PropertyValue> propertyValueList;
-
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
     private List<DesignElementConnection> designElementConnectionList;
@@ -309,6 +310,32 @@ public class DesignElement extends CdbEntity {
     @Override
     public String toString() {
         return name;
+    }
+
+    public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
+        List<PropertyValue> inheritedPropertyList = null;
+        if (component != null) {
+            inheritedPropertyList = component.getPropertyValueList();
+        } else if (childDesign != null) {
+            inheritedPropertyList = childDesign.getPropertyValueList();
+        }
+
+        if (inheritedPropertyList != null) {
+            List<PropertyValue> designElementPropertyList = getPropertyValueList();
+            if (designElementPropertyList == null) {
+                designElementPropertyList = new ArrayList<>();
+            }
+            for (PropertyValue propertyValue : inheritedPropertyList) {
+                if (propertyValue.getIsDynamic()) {
+                    PropertyValue propertyValue2 = propertyValue.copy();
+                    propertyValue2.setId(null);
+                    propertyValue2.setEnteredByUser(enteredByUser);
+                    propertyValue2.setEnteredOnDateTime(enteredOnDateTime);
+                    designElementPropertyList.add(propertyValue2);
+                }
+            }
+            setPropertyValueList(designElementPropertyList);
+        }
     }
 
     @Override

@@ -421,6 +421,26 @@ public class ComponentInstance extends CdbEntity {
     }
 
     @Override
+    public ComponentInstance clone() throws CloneNotSupportedException {
+        ComponentInstance cloned = (ComponentInstance) super.clone();
+        cloned.id = null;
+        cloned.qrId = null;
+        cloned.serialNumber = null;
+        cloned.tag = null;
+        cloned.description = null;
+        cloned.designElementList = null;
+        cloned.logList = null;
+        cloned.componentInstanceLocationHistoryList = null;
+        cloned.componentInstanceLocationHistoryList1 = null;
+        cloned.imagePropertyList = null;
+        for (PropertyValue propertyValue : cloned.propertyValueList) {
+            propertyValue.setId(null);
+        }
+        cloned.entityInfo = null;
+        return cloned;
+    }
+
+    @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, id.toString());
         searchResult.doesValueContainPattern("tag", tag, searchPattern);

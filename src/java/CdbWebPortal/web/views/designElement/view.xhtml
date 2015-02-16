@@ -63,6 +63,13 @@
                         <ui:include src="../designElementProperty/list.xhtml"/>
                     </p:tab>
 
+                    <p:tab title="Component Properties" rendered="#{designElementController.getDisplayComponentProperties(designElementObject)}">
+                        <ui:include src="../designElementProperty/designElementComponentPropertyList.xhtml"/>
+                    </p:tab>    
+                    
+                    <p:tab title="Child Design Properties" rendered="#{designElementController.getDisplayChildDesignProperties(designElementObject)}">
+                        <ui:include src="../designElementProperty/designElementChildDesignPropertyList.xhtml"/>
+                    </p:tab>                       
                 </p:accordionPanel>
             </div>
 
