@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignElement.findAll", query = "SELECT d FROM DesignElement d"),
     @NamedQuery(name = "DesignElement.findById", query = "SELECT d FROM DesignElement d WHERE d.id = :id"),
     @NamedQuery(name = "DesignElement.findByName", query = "SELECT d FROM DesignElement d WHERE d.name = :name"),
+    @NamedQuery(name = "DesignElement.findByNameAndParentDesign", query = "SELECT d FROM DesignElement d WHERE d.name = :name and d.parentDesign = :parentDesign"),
     @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
     @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
 public class DesignElement extends CdbEntity {

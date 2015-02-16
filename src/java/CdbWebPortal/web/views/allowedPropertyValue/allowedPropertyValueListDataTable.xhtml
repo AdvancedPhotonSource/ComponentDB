@@ -24,29 +24,21 @@
             <h:outputText value="#{allowedPropertyValueObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value"
-                  filterBy="#{allowedPropertyValueObject.value}" filterMatchMode="contains"
-                  filterValue="#{allowedPropertyValueController.filterByValue}">
+        <p:column sortBy="#{allowedPropertyValueObject.value}" headerText="Value">
             <h:outputText value="#{allowedPropertyValueObject.value}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units"
-                  filterBy="#{allowedPropertyValueObject.units}" filterMatchMode="contains"
-                  filterValue="#{allowedPropertyValueController.filterByUnits}"
                   rendered="#{allowedPropertyValueController.displayUnits}">
             <h:outputText value="#{allowedPropertyValueObject.units}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order"
-                  filterBy="#{allowedPropertyValueObject.sortOrder}" filterMatchMode="contains"
-                  filterValue="#{allowedPropertyValueController.filterBySortOrder}"
                   rendered="#{allowedPropertyValueController.displaySortOrder}">
             <h:outputText value="#{allowedPropertyValueObject.sortOrder}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description"
-                  filterBy="#{allowedPropertyValueObject.description}" filterMatchMode="contains"
-                  filterValue="#{allowedPropertyValueController.filterByDescription}"
                   rendered="#{allowedPropertyValueController.displayDescription}">
             <h:outputText value="#{allowedPropertyValueObject.description}"/>
         </p:column>

@@ -11,34 +11,15 @@ public class CdbException extends Exception
 {
 
     /**
-     * Exception signature key.
+     * Exception keys.
      */
-    public static final String SignatureKey = "__cdb_portal_exception__";
+    public static final String SIGNATURE_KEY = "__cdb_portal_exception__";
+    public static final String TYPE_KEY = "type";
+    public static final String CODE_KEY = "code";
+    public static final String ARGS_KEY = "args";
 
-    /**
-     * Exception type key.
-     */
-    public static final String TypeKey = "type";
 
-    /**
-     * Exception code key.
-     */
-    public static final String CodeKey = "code";
-
-    /**
-     * Exception args key.
-     */
-    public static final String ArgsKey = "args";
-
-    /**
-     * Error code.
-     */
     private int errorCode = CdbStatus.CDB_ERROR;
-
-
-    /**
-     * Error message. 
-     */
     private String error = null;
 
     /**

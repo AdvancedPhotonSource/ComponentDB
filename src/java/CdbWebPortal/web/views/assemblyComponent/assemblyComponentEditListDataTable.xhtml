@@ -23,9 +23,7 @@
             <h:outputText value="#{assemblyComponentObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{assemblyComponentObject.component.name}" headerText="Component"
-                  filterBy="#{assemblyComponentObject.component.name}" filterMatchMode="contains"
-                  filterValue="#{assemblyComponentController.filterByName}">
+        <p:column sortBy="#{assemblyComponentObject.component.name}" headerText="Component">
 
             <p:autoComplete id="assemblyComponentDropdown" 
                             value="#{assemblyComponentObject.component}" 
@@ -55,9 +53,6 @@
 
 
         <p:column sortBy="#{assemblyComponentObject.sortOrder}" headerText="Sort Order"
-                  filterBy="#{assemblyComponentObject.sortOrder}" filterMatchMode="contains"
-                  filterValue="#{assemblyComponentController.filterBySortOrder}"
-                  filterStyle="width:60px"
                   rendered="#{assemblyComponentController.displaySortOrder}">
             <h:inputText id="sortOrder" value="#{assemblyComponentObject.sortOrder}" styleClass="shortCellInput"/>
             <p:tooltip for="sortOrder" value="Enter sort order."/>
@@ -65,8 +60,6 @@
 
 
         <p:column sortBy="#{assemblyComponentObject.description}" headerText="Description"
-                  filterBy="#{assemblyComponentObject.description}" filterMatchMode="contains"
-                  filterValue="#{assemblyComponentController.filterByDescription}"
                   rendered="#{assemblyComponentController.displayDescription}">
             <h:inputText id="description" value="#{assemblyComponentObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="description" value="Enter description."/>

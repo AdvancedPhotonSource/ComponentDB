@@ -13,25 +13,18 @@
         <p:tooltip for="logId" value="Log entry id cannot be modified."/>
     </p:column>
 
-    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Timestamp"
-              filterBy="#{logObject.enteredOnDateTime}" filterMatchMode="contains"
-              filterValue="#{logController.filterByEnteredOnDateTime}">
+    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Timestamp">
         <h:outputText id="timestamp" value="#{logObject.shortDisplayEnteredOnDateTime}"/>
         <p:tooltip for="timestamp" value="Original timestamp cannot be modified."/>
     </p:column>
 
 
-    <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User"
-              filterBy="#{logObject.enteredByUser}" filterMatchMode="contains"
-              filterValue="#{logController.filterByEnteredByUser}">
+    <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User">
         <h:outputText id="user" value="#{logObject.enteredByUser.username}"/>
         <p:tooltip for="user" value="Original user cannot be modified."/>
     </p:column>
 
     <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
-              filterBy="#{logObject.logTopic}" filterMatchMode="exact"
-              filterOptions="#{logTopicController.availableItemsForSelectOne}"
-              filterValue="#{logController.filterByTopic}"
               rendered="#{logController.displayTopic}">
         <p:selectOneMenu id="topic" value="#{logObject.logTopic}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
@@ -39,9 +32,7 @@
         </p:selectOneMenu>
     </p:column>
 
-    <p:column sortBy="#{logObject.text}" headerText="Log Entry"
-              filterBy="#{logObject.text}" filterMatchMode="contains"
-              filterValue="#{logController.filterByText}">
+    <p:column sortBy="#{logObject.text}" headerText="Log Entry">
         <h:inputTextarea id="logEntry" value="#{logObject.text}"/>
         <p:tooltip for="logEntry" value="Enter log entry text."/>
     </p:column>

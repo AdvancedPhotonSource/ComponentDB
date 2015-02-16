@@ -13,7 +13,7 @@
                  var="designElementObject"
                  emptyMessage="No design elements found.">
 
-        <p:column sortBy="#{designElementObject.name}" headerText="Name">
+        <p:column sortBy="#{designElementObject.name}" headerText="Element Name">
             <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Design Element: #{designElementObject.name}">
                 <h:outputText value="#{designElementObject.name}"/>
             </h:outputLink>

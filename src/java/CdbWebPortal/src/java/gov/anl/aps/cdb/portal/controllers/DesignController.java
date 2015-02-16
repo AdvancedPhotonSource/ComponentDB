@@ -166,7 +166,7 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             if (designElement.getComponent() != null && designElement.getChildDesign() != null) {
                 throw new InvalidObjectState("Design element cannot have both component and child design.");
             }
-            DesignElement existingDesignElement = designElementFacade.findByName(designElementName);
+            DesignElement existingDesignElement = designElementFacade.findByNameAndParentDesign(designElementName, design);
             if (existingDesignElement != null && !existingDesignElement.getId().equals(designElement.getId())) {
                 throw new ObjectAlreadyExists("Design element with name " + designElementName
                         + " already exists.");

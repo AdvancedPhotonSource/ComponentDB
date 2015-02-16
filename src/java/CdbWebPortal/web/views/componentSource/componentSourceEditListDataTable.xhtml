@@ -23,9 +23,7 @@
             <h:outputText value="#{componentSourceObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name"
-                  filterBy="#{componentSourceObject.source.name}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterBySourceName}">
+        <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name">
             <p:selectOneMenu id="source" value="#{componentSourceObject.source}" required="true" 
                              styleClass="cellSelect">
                 <f:selectItem itemLabel="Select" noSelectionOption="true"/>
@@ -35,40 +33,30 @@
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.partNumber}" headerText="Part Number"
-                  filterBy="#{componentSourceObject.partNumber}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByPartNumber}"
                   rendered="#{componentSourceController.displayPartNumber}">
             <h:inputText id="partNumber" value="#{componentSourceObject.partNumber}" styleClass="cellInput"/>
             <p:tooltip for="partNumber" value="Part number is optional."/>
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.cost}" headerText="Cost [$]"
-                  filterBy="#{componentSourceObject.cost}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByCost}" filterStyleClass="shortFilter"
                   rendered="#{componentSourceController.displayCost}">
             <h:inputText id="cost" value="#{componentSourceObject.cost}" styleClass="cellInput"/>
             <p:tooltip for="cost" value="Cost is optional."/>
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.description}" headerText="Description"
-                  filterBy="#{componentSourceObject.description}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByDescription}"
                   rendered="#{componentSourceController.displayDescription}">
             <h:inputText id="description" value="#{componentSourceObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="description" value="Description is optional."/>
         </p:column>
 
         <p:column sortBy="#{componentSourceObject.contactInfo}" headerText="Contact Info"
-                  filterBy="#{componentSourceObject.contactInfo}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByContactInfo}"
                   rendered="#{componentSourceController.displayContactInfo}">
             <h:inputText id="contactInfo" value="#{componentSourceObject.contactInfo}" styleClass="cellInput"/>
             <p:tooltip for="contactInfo" value="Enter contact info."/>
         </p:column>    
 
         <p:column sortBy="#{componentSourceObject.url}" headerText="URL"
-                  filterBy="#{componentSourceObject.url}" filterMatchMode="contains"
-                  filterValue="#{componentSourceController.filterByUrl}"
                   rendered="#{componentSourceController.displayUrl}">
             <h:inputText id="url" value="#{componentSourceObject.url}" styleClass="cellInput"/>
             <p:tooltip for="url" value="Enter component source URL."/>

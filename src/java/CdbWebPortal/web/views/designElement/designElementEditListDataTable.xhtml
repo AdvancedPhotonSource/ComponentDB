@@ -23,16 +23,12 @@
             <h:outputText value="#{designElementObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{designElementObject.name}" headerText="Name"
-                  filterBy="#{designElementObject.name}" filterMatchMode="contains"
-                  filterValue="#{designElementController.filterByName}">
+        <p:column sortBy="#{designElementObject.name}" headerText="Element Name">
             <h:inputText id="designElementObjectName" value="#{designElementObject.name}" styleClass="cellInput"/>
             <p:tooltip for="designElementObjectName" value="Enter name."/>
         </p:column>
 
         <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
-                  filterBy="#{designElementObject.component.name}" filterMatchMode="contains"
-                  filterValue="#{designElementController.filterByComponent}"
                   rendered="#{designElementController.displayComponent}">
             <ui:fragment rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}">
 
@@ -64,8 +60,6 @@
         </p:column>
 
         <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
-                  filterBy="#{designElementObject.childDesign.name}" filterMatchMode="contains"
-                  filterValue="#{designElementController.filterByChildDesign}"
                   rendered="#{designElementController.displayChildDesign}">
             <ui:fragment rendered="#{designElementController.getDisplayChildDesignSelection(designElementObject)}">
                 <p:autoComplete id="childDesignDropdown" 
@@ -96,8 +90,6 @@
         </p:column>
 
         <p:column sortBy="#{designElementObject.location.name}" headerText="Location"
-                  filterBy="#{designElementObject.location.name}" filterMatchMode="contains"
-                  filterValue="#{designElementController.filterByLocation}"
                   rendered="#{designElementController.displayLocation}">
             <p:autoComplete id="locationDropdown" 
                             value="#{designElementObject.location}" 
@@ -123,9 +115,6 @@
         </p:column>        
 
         <p:column sortBy="#{designElementObject.sortOrder}" headerText="Sort Order"
-                  filterBy="#{designElementObject.sortOrder}" filterMatchMode="contains"
-                  filterValue="#{designElementController.filterBySortOrder}"
-                  filterStyle="width:60px"
                   rendered="#{designElementController.displaySortOrder}">
             <h:inputText id="sortOrder" value="#{designElementObject.sortOrder}" styleClass="shortCellInput"/>
             <p:tooltip for="sortOrder" value="Enter sort order."/>
@@ -133,8 +122,6 @@
 
 
         <p:column sortBy="#{designElementObject.description}" headerText="Description"
-                  filterBy="#{designElementObject.description}" filterMatchMode="contains"
-                  filterValue="#{designElementController.filterByDescription}"
                   rendered="#{designElementController.displayDescription}">
             <h:inputText id="description" value="#{designElementObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="description" value="Enter description."/>
