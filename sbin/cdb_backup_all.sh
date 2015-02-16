@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Script used for backing up CDB database
+# Script used for backing up CDB database + web app
 # Deployment configuration can be set in etc/$CDB_CDB_DB_NAME.deploy.conf file
 #
 # Usage:
@@ -37,7 +37,7 @@ fi
 if [ ! -z "$1" ]; then
     CDB_DB_NAME=$1
 fi
-echo "Using DB name: $CDB_DB_NAME"
+echo "Backing up $CDB_DB_NAME"
 
 # Look for deployment file in etc directory, and use it to override
 # default entries
@@ -49,13 +49,19 @@ else
     echo "Deployment config file $deployConfigFile not found, using defaults"
 fi
 
+# Determine run directory
+if [ -z "${CDB_RUN_DIR}" ]; then
+    CDB_RUN_DIR=$CDB_ROOT_DIR/..
+fi
+
 # Second argument overrides directory with db population scripts
-timestamp=`date +%Y%m%d.%H%M%S`
+#timestamp=`date +%Y%m%d.%H%M%S`
+timestamp=`date +%Y%m%d`
 CDB_BACKUP_DIR=$2
 if [ -z $CDB_BACKUP_DIR ]; then
-    CDB_BACKUP_DIR=/tmp/$CDB_DB_NAME.backup.$timestamp
+    CDB_BACKUP_DIR=$CDB_RUN_DIR/backup/$CDB_DB_NAME/$timestamp
 fi
-backupFile=$CDB_DB_NAME.backup.$timestamp.sql
+backupFile=${CDB_DB_NAME}.backup.$timestamp.sql
 fullBackupFilePath=$CDB_BACKUP_DIR/$backupFile
 
 # Read password
@@ -84,14 +90,9 @@ mysqlCmd="$mysqlCmd $CDB_DB_NAME"
 
 echo
 echo
-echo "Using backup directory: $CDB_BACKUP_DIR"
+echo "Using DB backup directory: $CDB_BACKUP_DIR"
 
 mkdir -p $CDB_BACKUP_DIR
-
-# Backup web app
-rsync -arlvP $CDB_SUPPORT/glassfish/linux-x86_64/glassfish/domains/domain1/autodeploy/$CDB_DB_NAME.war $CDB_BACKUP_DIR
-
-# Backup DB
 $mysqlCmd > $fullBackupFilePath
 
 nTableLocks=`grep -n LOCK $fullBackupFilePath | grep WRITE | wc -l`
@@ -109,9 +110,18 @@ while [ $lockCnt -lt $nTableLocks ]; do
     firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
     lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`
     echo "Creating sql script for $dbTable"
-    cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $CDB_BACKUP_DIR/populate_$dbTable.sql
+    targetFile=$CDB_BACKUP_DIR/populate_$dbTable.sql
+    cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $targetFile
+    cat $targetFile | sed 's?VALUES ?VALUES\n?g' | sed 's?),(?),\n(?g' > $targetFile.2 && mv $targetFile.2 $targetFile
 done
 rm -f $processingFile
+
+# Backup web app
+echo "Backing up $CDB_DB_NAME web app"
+rsync -arlvP $CDB_SUPPORT_DIR/glassfish/linux-x86_64/glassfish/domains/domain1/autodeploy/$CDB_DB_NAME.war $CDB_BACKUP_DIR
+
+echo "Backup of $CDB_DB_NAME is done."
+
 
 
 

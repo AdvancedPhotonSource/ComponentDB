@@ -6,7 +6,7 @@
 #
 # Usage:
 #
-# $0 [CDB_DB_NAME [CDB_DB_BACKUP_DIR]]
+# $0 [CDB_DB_NAME [CDB_BACKUP_DIR]]
 #
 
 CDB_DB_NAME=cdb
@@ -37,7 +37,7 @@ fi
 if [ ! -z "$1" ]; then
     CDB_DB_NAME=$1
 fi
-echo "Using DB name: $CDB_DB_NAME"
+echo "Backing up $CDB_DB_NAME"
 
 # Look for deployment file in etc directory, and use it to override
 # default entries
@@ -49,14 +49,20 @@ else
     echo "Deployment config file $deployConfigFile not found, using defaults"
 fi
 
-# Second argument overrides directory with db population scripts
-timestamp=`date +%Y%m%d.%H%M%S`
-CDB_DB_BACKUP_DIR=$2
-if [ -z $CDB_DB_BACKUP_DIR ]; then
-    CDB_DB_BACKUP_DIR=/tmp/cdb_db_backup.$timestamp
+# Determine run directory
+if [ -z "${CDB_RUN_DIR}" ]; then
+    CDB_RUN_DIR=$CDB_ROOT_DIR/..
 fi
-backupFile=cdb_db_backup.$timestamp.sql
-fullBackupFilePath=$CDB_DB_BACKUP_DIR/$backupFile
+
+# Second argument overrides directory with db population scripts
+#timestamp=`date +%Y%m%d.%H%M%S`
+timestamp=`date +%Y%m%d`
+CDB_BACKUP_DIR=$2
+if [ -z $CDB_BACKUP_DIR ]; then
+    CDB_BACKUP_DIR=$CDB_RUN_DIR/backup/$CDB_DB_NAME/$timestamp
+fi
+backupFile=${CDB_DB_NAME}.backup.$timestamp.sql
+fullBackupFilePath=$CDB_BACKUP_DIR/$backupFile
 
 # Read password
 sttyOrig=`stty -g`
@@ -84,16 +90,16 @@ mysqlCmd="$mysqlCmd $CDB_DB_NAME"
 
 echo
 echo
-echo "Using DB backup directory: $CDB_DB_BACKUP_DIR"
+echo "Using DB backup directory: $CDB_BACKUP_DIR"
 
-mkdir -p $CDB_DB_BACKUP_DIR
+mkdir -p $CDB_BACKUP_DIR
 $mysqlCmd > $fullBackupFilePath
 
 nTableLocks=`grep -n LOCK $fullBackupFilePath | grep WRITE | wc -l`
 echo "Processing $nTableLocks table locks"
 
 lockCnt=0
-processingFile=$CDB_DB_BACKUP_DIR/process.txt
+processingFile=$CDB_BACKUP_DIR/process.txt
 while [ $lockCnt -lt $nTableLocks ]; do
     lockCnt=`expr $lockCnt + 1`
     headLine=`expr $lockCnt \* 2`
@@ -104,11 +110,11 @@ while [ $lockCnt -lt $nTableLocks ]; do
     firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
     lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`
     echo "Creating sql script for $dbTable"
-    targetFile=$CDB_DB_BACKUP_DIR/populate_$dbTable.sql
+    targetFile=$CDB_BACKUP_DIR/populate_$dbTable.sql
     cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $targetFile
     cat $targetFile | sed 's?VALUES ?VALUES\n?g' | sed 's?),(?),\n(?g' > $targetFile.2 && mv $targetFile.2 $targetFile
 done
 rm -f $processingFile
 
-
+echo "Backup of $CDB_DB_NAME is done."
 
