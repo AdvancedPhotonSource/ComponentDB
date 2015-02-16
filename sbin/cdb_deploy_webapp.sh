@@ -83,13 +83,11 @@ configFile=WEB-INF/classes/resources.properties
 cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
-configFile=resources/css/login.css
-cmd="cat $configFile | sed 's?color:.*CDB_CSS_PORTAL_TITLE_COLOR.*?color: ${CDB_CSS_PORTAL_TITLE_COLOR};?g' > $configFile.2 && mv $configFile.2 $configFile"
-eval $cmd
-
-configFile=resources/css/portal.css
-cmd="cat $configFile | sed 's?color:.*CDB_CSS_PORTAL_TITLE_COLOR.*?color: ${CDB_CSS_PORTAL_TITLE_COLOR};?g' > $configFile.2 && mv $configFile.2 $configFile"
-eval $cmd
+for cssFile in login portal components designs; do
+    configFile=resources/css/$cssFile.css
+    cmd="cat $configFile | sed 's?color:.*CDB_CSS_PORTAL_TITLE_COLOR.*?color: ${CDB_CSS_PORTAL_TITLE_COLOR};?g' > $configFile.2 && mv $configFile.2 $configFile"
+    eval $cmd
+done
 
 jar cf ../$CDB_WAR_FILE *
 
