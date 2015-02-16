@@ -10,15 +10,15 @@ if [ ! -z "$CDB_ROOT_DIR" -a "$CDB_ROOT_DIR" != `pwd` ]; then
 fi
 export CDB_ROOT_DIR=`pwd`
 
-if [ -z $CDB_RUN_DIR ]; then
-    export CDB_RUN_DIR=$CDB_ROOT_DIR/..
-    if [ -d $CDB_RUN_DIR ]; then
-        cd $CDB_RUN_DIR
-        export CDB_RUN_DIR=`pwd`
+if [ -z $CDB_INSTALL_DIR ]; then
+    export CDB_INSTALL_DIR=$CDB_ROOT_DIR/..
+    if [ -d $CDB_INSTALL_DIR ]; then
+        cd $CDB_INSTALL_DIR
+        export CDB_INSTALL_DIR=`pwd`
     fi
 fi
 if [ -z $CDB_DATA_DIR ]; then
-    export CDB_DATA_DIR=$CDB_RUN_DIR/data
+    export CDB_DATA_DIR=$CDB_INSTALL_DIR/data
     if [ -d $CDB_DATA_DIR ]; then
         cd $CDB_DATA_DIR
         export CDB_DATA_DIR=`pwd`
@@ -30,7 +30,7 @@ if [ ! -d $CDB_DATA_DIR ]; then
 fi
 
 if [ -z $CDB_VAR_DIR ]; then
-    export CDB_VAR_DIR=$CDB_RUN_DIR/var
+    export CDB_VAR_DIR=$CDB_INSTALL_DIR/var
     if [ -d $CDB_VAR_DIR ]; then
         cd $CDB_VAR_DIR
         export CDB_VAR_DIR=`pwd`
@@ -44,7 +44,7 @@ CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 
 # Check support setup
 if [ -z $CDB_SUPPORT_DIR ]; then
-    export CDB_SUPPORT_DIR=$CDB_RUN_DIR/support 
+    export CDB_SUPPORT_DIR=$CDB_INSTALL_DIR/support 
     if [ -d $CDB_SUPPORT_DIR ]; then
         cd $CDB_SUPPORT_DIR
         export CDB_SUPPORT_DIR=`pwd`

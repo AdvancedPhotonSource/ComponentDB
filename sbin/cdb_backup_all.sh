@@ -50,8 +50,8 @@ else
 fi
 
 # Determine run directory
-if [ -z "${CDB_RUN_DIR}" ]; then
-    CDB_RUN_DIR=$CDB_ROOT_DIR/..
+if [ -z "${CDB_INSTALL_DIR}" ]; then
+    CDB_INSTALL_DIR=$CDB_ROOT_DIR/..
 fi
 
 # Second argument overrides directory with db population scripts
@@ -59,7 +59,7 @@ fi
 timestamp=`date +%Y%m%d`
 CDB_BACKUP_DIR=$2
 if [ -z $CDB_BACKUP_DIR ]; then
-    CDB_BACKUP_DIR=$CDB_RUN_DIR/backup/$CDB_DB_NAME/$timestamp
+    CDB_BACKUP_DIR=$CDB_INSTALL_DIR/backup/$CDB_DB_NAME/$timestamp
 fi
 backupFile=${CDB_DB_NAME}.backup.$timestamp.sql
 fullBackupFilePath=$CDB_BACKUP_DIR/$backupFile

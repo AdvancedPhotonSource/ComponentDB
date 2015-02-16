@@ -40,13 +40,13 @@ if [ ! -f ${CDB_ENV_FILE} ]; then
 fi
 . ${CDB_ENV_FILE} > /dev/null
 
-mkdir -p ${CDB_RUN_DIR}/var/run
-mkdir -p ${CDB_RUN_DIR}/var/log
+mkdir -p ${CDB_INSTALL_DIR}/var/run
+mkdir -p ${CDB_INSTALL_DIR}/var/log
 
 CDB_DAEMON_NAME="CdbWebService"
 CDB_DAEMON_CMD=${CDB_ROOT_DIR}/sbin/cdbWebService.py
-CDB_PID_FILE=${CDB_RUN_DIR}/var/run/cdb-web-service
-CDB_CONFIG_FILE=${CDB_RUN_DIR}/etc/cdb-web-service
+CDB_PID_FILE=${CDB_INSTALL_DIR}/var/run/cdb-web-service
+CDB_CONFIG_FILE=${CDB_INSTALL_DIR}/etc/cdb-web-service
 if [ ! -z "${CDB_DB_NAME}" ]; then
     CDB_PID_FILE=${CDB_PID_FILE}.${CDB_DB_NAME}
     CDB_CONFIG_FILE=${CDB_CONFIG_FILE}.${CDB_DB_NAME}

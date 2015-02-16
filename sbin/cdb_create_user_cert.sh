@@ -5,11 +5,11 @@ if [ -z $CDB_ROOT_DIR ]; then
     cd $sbindir/..
     export CDB_ROOT_DIR=`pwd`
 fi
-if [ -z $CDB_RUN_DIR ]; then
+if [ -z $CDB_INSTALL_DIR ]; then
     cd $CDB_ROOT_DIR/..
-    export CDB_RUN_DIR=`pwd`
+    export CDB_INSTALL_DIR=`pwd`
 fi
-CA_ROOT=$CDB_RUN_DIR/etc/CA
+CA_ROOT=$CDB_INSTALL_DIR/etc/CA
 CA_CONFIG=$CDB_ROOT_DIR/etc/cdb.openssl.cnf
 LOG_FILE=/tmp/cdb-user-cert.log.$$
 
