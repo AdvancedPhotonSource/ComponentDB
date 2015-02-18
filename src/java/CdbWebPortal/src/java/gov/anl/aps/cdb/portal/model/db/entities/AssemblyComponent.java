@@ -3,12 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -40,8 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "AssemblyComponent.findById", query = "SELECT a FROM AssemblyComponent a WHERE a.id = :id"),
     @NamedQuery(name = "AssemblyComponent.findByDescription", query = "SELECT a FROM AssemblyComponent a WHERE a.description = :description"),
     @NamedQuery(name = "AssemblyComponent.findBySortOrder", query = "SELECT a FROM AssemblyComponent a WHERE a.sortOrder = :sortOrder")})
-public class AssemblyComponent extends CdbEntity
-{
+public class AssemblyComponent extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -168,14 +166,35 @@ public class AssemblyComponent extends CdbEntity
             return false;
         }
         return this.id.equals(other.id);
-    }    
+    }
 
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.entities.AssemblyComponent[ id=" + id + " ]";
     }
 
-    
+    @Override
+    public AssemblyComponent clone() throws CloneNotSupportedException {
+        AssemblyComponent cloned = (AssemblyComponent) super.clone();
+        cloned.id = null;
+        cloned.assemblyComponentConnectionList = null;
+        cloned.assemblyComponentConnectionList1 = null;
+        cloned.assemblyComponentConnectionList2 = null;
+        cloned.assembly = null;
+        return cloned;
+    }
+
+    public AssemblyComponent copyAndSetAssembly(Component assembly) {
+        AssemblyComponent copied = null;
+        try {
+            copied = clone();
+            copied.assembly = assembly;
+        } catch (CloneNotSupportedException ex) {
+            // will not happen
+        }
+        return copied;
+    }
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, component.getName());

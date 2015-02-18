@@ -3,31 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstanceProperty/list.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/create.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElementProperty/designElementChildDesignPropertyListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstanceProperty/componentInstanceComponentPropertyListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElementProperty/designElementComponentPropertyListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/list.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/ComponentInstance.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstanceProperty/componentInstanceComponentPropertyList.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Component.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/DesignElement.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/list.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonChildListActionButtons.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonListActionLinks.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/portal.css</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/view.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignElementController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElementProperty/designElementComponentPropertyList.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/componentInstances.css</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/components.css</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/designs.css</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/view.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElementProperty/designElementChildDesignPropertyList.xhtml</file>
         </group>
     </open-files>
 </project-private>

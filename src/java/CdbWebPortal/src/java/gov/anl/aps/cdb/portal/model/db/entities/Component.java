@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.utilities.CollectionUtility;
 import gov.anl.aps.cdb.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -92,8 +93,9 @@ public class Component extends CdbEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
     private List<ComponentResource> componentResourceList;
 
-    private transient List<PropertyValue> imagePropertyList = null;  
-    
+    private transient boolean isCloned = false;
+    private transient List<PropertyValue> imagePropertyList = null;
+
     private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
 
     // Used to map property type id to property value number
@@ -259,8 +261,8 @@ public class Component extends CdbEntity {
 
     public void resetImagePropertyList() {
         this.imagePropertyList = null;
-    }    
-    
+    }
+
     public String getPropertyValueByIndex(Integer index) {
         Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
         if (propertyTypeId != null) {
@@ -354,11 +356,31 @@ public class Component extends CdbEntity {
         return name;
     }
 
+    public void addComponentTypeProperties() {
+        if (isCloned) {
+            // this component has been cloned, do nothing
+            return;
+        }
+        propertyValueList = new ArrayList<>();
+        for (PropertyType propertyType : componentType.getPropertyTypeList()) {
+            PropertyValue propertyValue = new PropertyValue();
+            propertyValue.setPropertyType(propertyType);
+            propertyValue.setValue(propertyType.getDefaultValue());
+            propertyValue.setUnits(propertyType.getDefaultUnits());
+            propertyValue.setEnteredByUser(entityInfo.getCreatedByUser());
+            propertyValue.setEnteredOnDateTime(entityInfo.getCreatedOnDateTime());
+            propertyValueList.add(propertyValue);
+        }
+    }
+
     @Override
     public Component clone() throws CloneNotSupportedException {
         Component cloned = (Component) super.clone();
         cloned.id = null;
-        cloned.name = "Copy Of " + cloned.name;
+        cloned.name = "Cloned name: " + cloned.name;
+        if (description != null && !description.isEmpty()) {
+            cloned.description = "Cloned description: " + description;
+        }
         cloned.componentConnectorList = null;
         cloned.componentInstanceList = null;
         cloned.assemblyList = null;
@@ -366,30 +388,38 @@ public class Component extends CdbEntity {
         cloned.designElementList = null;
         cloned.componentResourceList = null;
         cloned.logList = null;
-        for (PropertyValue propertyValue : cloned.propertyValueList) {
-            propertyValue.setId(null);
-        }
-        for (ComponentSource componentSource : cloned.componentSourceList) {
-            componentSource.setId(null);
-            componentSource.setComponent(cloned);
-        }
+        cloned.propertyValueList = null;
+        cloned.componentSourceList = null;
         cloned.entityInfo = null;
+        cloned.isCloned = true;
         return cloned;
     }
-//
-//    public String getDisplayComponentTypeAndCategoryList() {
-//        if (componentTypeList == null || componentTypeList.isEmpty()) {
-//            return "";
-//        }
-//        
-//        String display = "";
-//        String delimiter = "";
-//        for (ComponentType componentType : componentTypeList) {
-//            display += delimiter + componentType.getNameWithCategory();
-//            delimiter = ", ";
-//        }
-//        return display;
-//    }
+
+    public Component copyAndSetEntityInfo(EntityInfo entityInfo) {
+        Component copied = null;
+        try {
+            copied = clone();
+            copied.entityInfo = entityInfo;
+            copied.propertyValueList = new ArrayList<>();
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyValue propertyValue2 = propertyValue.copyAndSetUserInfoAndDate(entityInfo.getLastModifiedByUser(), entityInfo.getLastModifiedOnDateTime());
+                copied.propertyValueList.add(propertyValue2);
+            }
+            copied.componentSourceList = new ArrayList<>();
+            for (ComponentSource componentSource : componentSourceList) {
+                ComponentSource componentSource2 = componentSource.copyAndSetComponent(copied);
+                copied.componentSourceList.add(componentSource2);
+            }
+            copied.assemblyComponentList = new ArrayList<>();
+            for (AssemblyComponent assemblyComponent : assemblyComponentList) {
+                AssemblyComponent assemblyComponent2 = assemblyComponent.copyAndSetAssembly(copied);
+                copied.assemblyComponentList.add(assemblyComponent2);
+            }
+        } catch (CloneNotSupportedException ex) {
+            // will not happen 
+        }
+        return copied;
+    }
 
     @Override
     public SearchResult search(Pattern searchPattern) {
@@ -439,7 +469,7 @@ public class Component extends CdbEntity {
         String result = name + " [" + componentType.getNameWithCategory() + "]";
         return result;
     }
-    
+
     public String getComponentSources() {
         if (componentSourceList == null) {
             return "";

@@ -28,7 +28,7 @@
             <h:inputText id="qrId" value="#{componentInstanceObject.qrId}" styleClass="cellInput"/>
             <p:tooltip for="qrId" value="Enter QR id."/>
         </p:column>
-        
+
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
             <h:inputText id="tag" value="#{componentInstanceObject.tag}" styleClass="cellInput"/>
             <p:tooltip for="tag" value="Enter tag."/>
@@ -39,8 +39,8 @@
             <h:inputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" styleClass="cellInput"/>
             <p:tooltip for="serialNumber" value="Enter serial number."/>
         </p:column>
-       
-               
+
+
         <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
             <p:autoComplete id="locationDropdown" 
                             value="#{componentInstanceObject.location}" 
@@ -79,10 +79,20 @@
 
         <p:column headerText="Actions">
             <div class="actionLink">
-                <p:commandLink action="#{componentInstanceController.destroy(componentInstanceObject)}"
+                <p:commandLink id="componentInstanceEditListCloneLink" 
+                               action="#{componentController.prepareAddClonedComponentInstance(componentObject, componentInstanceObject)}"
+                               styleClass="ui-icon ui-icon-copy" 
+                               update="componentInstanceEditListDataTable"
+                               title="Clone">
+                    <p:tooltip for="componentInstanceEditListCloneLink" value="Clone #{componentInstanceController.displayEntityTypeName}."/>
+                </p:commandLink>
+                <p:commandLink id="componentInstanceEditListDestroyLink" 
+                               action="#{componentInstanceController.destroy(componentInstanceObject)}"
                                actionListener="#{componentController.deleteComponentInstance(componentInstanceObject)}" 
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="componentInstanceEditListDataTable" 
+                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               update="componentInstanceEditListDataTable" 
                                rendered="#{loginController.isEntityWriteable(componentInstanceObject.entityInfo)}"/>
+                     <p:tooltip for="componentInstanceEditListDestroyLink" value="Destroy #{componentInstanceController.displayEntityTypeName}."/>
             </div>
         </p:column>
     </p:dataTable>

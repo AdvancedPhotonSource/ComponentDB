@@ -76,7 +76,7 @@ public class DesignElement extends CdbEntity {
     @JoinTable(name = "design_element_property", joinColumns = {
         @JoinColumn(name = "design_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<PropertyValue> propertyValueList;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondDesignElementId")
@@ -99,6 +99,7 @@ public class DesignElement extends CdbEntity {
     @ManyToOne(optional = false)
     private Design parentDesign;
 
+    private transient boolean isCloned = false;    
     private transient List<PropertyValue> imagePropertyList = null;
 
     public DesignElement() {
@@ -313,6 +314,11 @@ public class DesignElement extends CdbEntity {
     }
 
     public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
+        if (isCloned) {
+            // Only update properties for non-cloned elements
+            return;
+        }
+        
         List<PropertyValue> inheritedPropertyList = null;
         if (component != null) {
             inheritedPropertyList = component.getPropertyValueList();
@@ -327,10 +333,7 @@ public class DesignElement extends CdbEntity {
             }
             for (PropertyValue propertyValue : inheritedPropertyList) {
                 if (propertyValue.getIsDynamic()) {
-                    PropertyValue propertyValue2 = propertyValue.copy();
-                    propertyValue2.setId(null);
-                    propertyValue2.setEnteredByUser(enteredByUser);
-                    propertyValue2.setEnteredOnDateTime(enteredOnDateTime);
+                    PropertyValue propertyValue2 = propertyValue.copyAndSetUserInfoAndDate(enteredByUser, enteredOnDateTime);
                     designElementPropertyList.add(propertyValue2);
                 }
             }
@@ -338,6 +341,46 @@ public class DesignElement extends CdbEntity {
         }
     }
 
+   @Override
+    public DesignElement clone() throws CloneNotSupportedException {
+        DesignElement cloned = (DesignElement) super.clone();
+        cloned.id = null;
+        cloned.name = "Cloned name: " + name;
+
+        if (description != null && !description.isEmpty()) {
+            cloned.description = "Cloned description: " + description;
+        }
+
+        cloned.logList = null;
+        cloned.imagePropertyList = null;
+        cloned.propertyValueList = null;
+        cloned.componentInstanceList = null;
+        cloned.designElementConnectionList = null;
+        cloned.designElementConnectionList1 = null;
+        cloned.entityInfo = null;
+        cloned.isCloned = true;
+        return cloned;
+    }
+
+    public DesignElement copyAndSetParentDesign(Design parentDesign) {
+        DesignElement copied = null;
+        EntityInfo copiedEntityInfo = parentDesign.getEntityInfo();
+        try {
+            copied = clone();
+            copied.parentDesign = parentDesign;
+            copied.entityInfo = copiedEntityInfo;
+            copied.propertyValueList = new ArrayList<>();
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyValue propertyValue2 = propertyValue.copyAndSetUserInfoAndDate(copiedEntityInfo.getLastModifiedByUser(), copiedEntityInfo.getLastModifiedOnDateTime());
+                copied.propertyValueList.add(propertyValue2);
+            }
+        } catch (CloneNotSupportedException ex) {
+            // will not happen
+        }
+        return copied;
+    }
+
+    
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);

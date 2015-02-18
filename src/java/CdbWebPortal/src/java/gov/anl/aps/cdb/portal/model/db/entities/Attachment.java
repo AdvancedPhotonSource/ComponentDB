@@ -131,7 +131,7 @@ public class Attachment extends CdbEntity {
     
     public String getFilePath() {
         if (filePath == null) {
-            filePath = StorageUtility.getFileSystemLogAttachmentPathDirectory(name);
+            filePath = StorageUtility.getApplicationLogAttachmentPathDirectory(name);
         }
         return filePath;
     }

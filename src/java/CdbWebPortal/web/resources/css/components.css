@@ -1,5 +1,5 @@
 html, body {
-    background-color: #b2d4c2;
+    background-color: #ebf4fa;
     font-size: 12px;
     font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
     color: #000000;
@@ -51,7 +51,7 @@ a:link:hover, a:visited:hover  {
 
 #bottom {
     position: relative;
-    background-color: #b2d4c2;
+    background-color: #ebf4fa;
     padding: 0px;
     margin: 0px 0px 0px 0px;
     //height: 100%;
@@ -331,7 +331,7 @@ tr:hover .actionLink {
 }
 
 input, textarea {
-    background: #b2d4c2;
+    background: #ebf4fa;
     box-shadow: 0px 3px 5px #d5d5d5;
     width: 300px;
 }
@@ -402,7 +402,7 @@ h1 {
     font-weight: bold;
     margin: 20px;
     padding-bottom: 0px;
-    color: #b2d4c2;
+    color: #ebf4fa;
     vertical-align: middle;
 }
 
@@ -458,11 +458,11 @@ h2 {
 }
 
 .ui-accordion .ui-accordion-content {
-    background: #b2d4c2;    
+    background: #ebf4fa;    
 }
 
 .ui-panelgrid tr, .ui-panelgrid td {
-    background: #b2d4c2;
+    background: #ebf4fa;
     border: none;
     font-weight: bold;
 }

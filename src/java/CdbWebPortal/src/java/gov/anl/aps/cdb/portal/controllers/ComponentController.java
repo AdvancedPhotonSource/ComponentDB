@@ -167,16 +167,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     @Override
     public Component cloneEntityInstance(Component component) {
-        Component clonedComponent = super.cloneEntityInstance(component);
-        UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(ownerUser);
-        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-        }
-        clonedComponent.setEntityInfo(entityInfo);
-        super.setLogText("Cloned from " + component.getName());
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        Component clonedComponent = component.copyAndSetEntityInfo(entityInfo);
+        setLogText("Cloned from " + component.getName());
         return clonedComponent;
     }
 
@@ -223,13 +216,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
             throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
         }
 
-        EntityInfo entityInfo = component.getEntityInfo();
-        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
-        Date createdOnDateTime = new Date();
-        entityInfo.setCreatedOnDateTime(createdOnDateTime);
-        entityInfo.setCreatedByUser(createdByUser);
-        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
-        entityInfo.setLastModifiedByUser(createdByUser);
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        component.setEntityInfo(entityInfo);
         Log logEntry = prepareLogEntry();
         if (logEntry != null) {
             List<Log> logList = new ArrayList<>();
@@ -237,18 +225,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
             component.setLogList(logList);
         }
 
-        ArrayList<PropertyValue> propertyValueList = new ArrayList<>();
-        for (PropertyType propertyType : componentType.getPropertyTypeList()) {
-            PropertyValue propertyValue = new PropertyValue();
-            propertyValue.setPropertyType(propertyType);
-            propertyValue.setValue(propertyType.getDefaultValue());
-            propertyValue.setUnits(propertyType.getDefaultUnits());
-            propertyValue.setEnteredByUser(createdByUser);
-            propertyValue.setEnteredOnDateTime(createdOnDateTime);
-            propertyValueList.add(propertyValue);
-        }
-        component.setPropertyValueList(propertyValueList);
-        logger.debug("Inserting new component " + component.getName() + " (user: " + createdByUser.getUsername() + ")");
+        component.addComponentTypeProperties();
+        logger.debug("Inserting new component " + component.getName() + " (user: " 
+                + entityInfo.getCreatedByUser().getUsername() + ")");
     }
 
     @Override
@@ -392,23 +371,19 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void prepareAddComponentInstance(Component component) {
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
         ComponentInstance componentInstance = new ComponentInstance();
-        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
-        Date createdOnDateTime = new Date();
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(createdByUser);
-        entityInfo.setCreatedOnDateTime(createdOnDateTime);
-        entityInfo.setCreatedByUser(createdByUser);
-        entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
-        entityInfo.setLastModifiedByUser(createdByUser);
-        List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-        }
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         componentInstance.setEntityInfo(entityInfo);
         componentInstance.setComponent(component);
         componentInstanceList.add(componentInstance);
     }
-
+    
+    public void prepareAddClonedComponentInstance(Component component, ComponentInstance componentInstance) {
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        ComponentInstance clonedComponentInstance = componentInstance.copyAndSetEntityInfo(entityInfo);
+        componentInstanceList.add(clonedComponentInstance);      
+    }
+        
     public void saveComponentInstanceList() {
         Component component = getCurrent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();

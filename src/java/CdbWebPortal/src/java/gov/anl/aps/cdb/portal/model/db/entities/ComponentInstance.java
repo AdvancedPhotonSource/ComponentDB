@@ -100,6 +100,7 @@ public class ComponentInstance extends CdbEntity {
     private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
 
     private transient String qrIdDisplay;
+    private transient boolean isCloned = false;
 
     public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
         if (propertyTypeId != null) {
@@ -387,6 +388,10 @@ public class ComponentInstance extends CdbEntity {
     }
 
     public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
+        if (isCloned) {
+            // Only update properties for non-cloned instances
+            return;
+        }
         List<PropertyValue> componentInstancePropertyList = getPropertyValueList();
         if (componentInstancePropertyList == null) {
             componentInstancePropertyList = new ArrayList<>();
@@ -394,10 +399,7 @@ public class ComponentInstance extends CdbEntity {
         List<PropertyValue> componentPropertyList = component.getPropertyValueList();
         for (PropertyValue propertyValue : componentPropertyList) {
             if (propertyValue.getIsDynamic()) {
-                PropertyValue propertyValue2 = propertyValue.copy();
-                propertyValue2.setId(null);
-                propertyValue2.setEnteredByUser(enteredByUser);
-                propertyValue2.setEnteredOnDateTime(enteredOnDateTime);
+                PropertyValue propertyValue2 = propertyValue.copyAndSetUserInfoAndDate(enteredByUser, enteredOnDateTime);
                 componentInstancePropertyList.add(propertyValue2);
             }
         }
@@ -426,18 +428,39 @@ public class ComponentInstance extends CdbEntity {
         cloned.id = null;
         cloned.qrId = null;
         cloned.serialNumber = null;
-        cloned.tag = null;
-        cloned.description = null;
+        if (tag != null && !tag.isEmpty()) {
+            cloned.tag = "Cloned tag: " + tag;
+        }
+
+        if (description != null && !description.isEmpty()) {
+            cloned.description = "Cloned description: " + description;
+        }
+
         cloned.designElementList = null;
         cloned.logList = null;
         cloned.componentInstanceLocationHistoryList = null;
         cloned.componentInstanceLocationHistoryList1 = null;
         cloned.imagePropertyList = null;
-        for (PropertyValue propertyValue : cloned.propertyValueList) {
-            propertyValue.setId(null);
-        }
+        cloned.propertyValueList = null;
         cloned.entityInfo = null;
+        cloned.isCloned = true;
         return cloned;
+    }
+
+    public ComponentInstance copyAndSetEntityInfo(EntityInfo entityInfo) {
+        ComponentInstance copied = null;
+        try {
+            copied = clone();
+            copied.entityInfo = entityInfo;
+            copied.propertyValueList = new ArrayList<>();
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyValue propertyValue2 = propertyValue.copyAndSetUserInfoAndDate(entityInfo.getLastModifiedByUser(), entityInfo.getLastModifiedOnDateTime());
+                copied.propertyValueList.add(propertyValue2);
+            }
+        } catch (CloneNotSupportedException ex) {
+            // will not happen
+        }
+        return copied;
     }
 
     @Override

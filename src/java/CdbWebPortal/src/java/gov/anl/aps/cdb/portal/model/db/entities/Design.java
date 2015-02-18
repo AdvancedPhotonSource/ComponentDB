@@ -58,7 +58,7 @@ public class Design extends CdbEntity {
     @JoinTable(name = "design_property", joinColumns = {
         @JoinColumn(name = "design_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<PropertyValue> propertyValueList;
     @JoinTable(name = "design_log", joinColumns = {
         @JoinColumn(name = "design_id", referencedColumnName = "id")}, inverseJoinColumns = {
@@ -73,6 +73,7 @@ public class Design extends CdbEntity {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
 
+    private transient boolean isCloned = false;    
     private transient List<PropertyValue> imagePropertyList = null;
 
     public Design() {
@@ -212,6 +213,43 @@ public class Design extends CdbEntity {
         this.imagePropertyList = null;
     }
 
+        @Override
+    public Design clone() throws CloneNotSupportedException {
+        Design cloned = (Design) super.clone();
+        cloned.id = null;
+        cloned.name = "Cloned name: " + cloned.name;
+        if (description != null && !description.isEmpty()) {
+            cloned.description = "Cloned description: " + description;
+        }
+        cloned.designElementList = null;
+        cloned.logList = null;
+        cloned.propertyValueList = null;
+        cloned.entityInfo = null;
+        cloned.isCloned = true;
+        return cloned;
+    }
+
+    public Design copyAndSetEntityInfo(EntityInfo entityInfo) {
+        Design copied = null;
+        try {
+            copied = clone();
+            copied.entityInfo = entityInfo;
+            copied.propertyValueList = new ArrayList<>();
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyValue propertyValue2 = propertyValue.copyAndSetUserInfoAndDate(entityInfo.getLastModifiedByUser(), entityInfo.getLastModifiedOnDateTime());
+                copied.propertyValueList.add(propertyValue2);
+            }
+            copied.designElementList = new ArrayList<>();
+            for (DesignElement designElement : designElementList) {
+                DesignElement designElement2 = designElement.copyAndSetParentDesign(copied);
+                copied.designElementList.add(designElement2);
+            }           
+        } catch (CloneNotSupportedException ex) {
+            // will not happen 
+        }
+        return copied;
+    }
+    
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);

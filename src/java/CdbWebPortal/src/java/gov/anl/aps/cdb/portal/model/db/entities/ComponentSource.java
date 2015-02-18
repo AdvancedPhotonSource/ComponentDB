@@ -211,4 +211,24 @@ public class ComponentSource extends CdbEntity {
         return source.getName();
     }
 
+    @Override
+    public ComponentSource clone() throws CloneNotSupportedException {
+        ComponentSource cloned = (ComponentSource) super.clone();
+        cloned.id = null;
+        cloned.component = null;
+        return cloned;
+    }
+    
+    public ComponentSource copyAndSetComponent(Component component) {
+        ComponentSource copied = null;
+        try {
+            copied = clone();
+            copied.component = component;
+        }
+        catch (CloneNotSupportedException ex) {
+            // will not happen
+        }
+        return copied;
+    }
+
 }

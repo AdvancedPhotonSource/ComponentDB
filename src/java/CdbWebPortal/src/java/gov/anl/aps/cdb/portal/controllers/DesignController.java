@@ -90,15 +90,9 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
 
     @Override
     public Design cloneEntityInstance(Design design) {
-        Design clonedDesign = super.cloneEntityInstance(design);
-        UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(ownerUser);
-        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-        }
-        clonedDesign.setEntityInfo(entityInfo);
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        Design clonedDesign = design.copyAndSetEntityInfo(entityInfo);
+        setLogText("Cloned from " + design.getName());
         return clonedDesign;
     }
 

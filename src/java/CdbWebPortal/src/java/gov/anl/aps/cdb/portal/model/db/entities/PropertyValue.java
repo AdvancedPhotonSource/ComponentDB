@@ -101,7 +101,7 @@ public class PropertyValue extends CdbEntity {
 
     private transient Boolean booleanValue;
     private transient Date dateValue;
-    
+
     public PropertyValue() {
     }
 
@@ -295,7 +295,6 @@ public class PropertyValue extends CdbEntity {
         }
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -355,15 +354,36 @@ public class PropertyValue extends CdbEntity {
         }
     }
 
-    public PropertyValue copy() {
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.propertyType = propertyType;
-        propertyValue.tag = tag;
-        propertyValue.value = value;
-        propertyValue.description = description;
-        propertyValue.units = units;
-        propertyValue.isDynamic = isDynamic;
-        propertyValue.isUserWriteable = isUserWriteable;
-        return propertyValue;
+    @Override
+    public PropertyValue clone() throws CloneNotSupportedException {
+        PropertyValue cloned = (PropertyValue) super.clone();
+        cloned.id = null;
+        cloned.enteredByUser = null;
+        cloned.enteredOnDateTime = null;
+        cloned.designList = null;
+        cloned.componentInstanceList = null;
+        cloned.componentConnectorList = null;
+        cloned.componentList = null;
+        cloned.designElementList = null;
+        cloned.propertyValueHistoryList = null;
+        if (cloned.tag != null && !cloned.tag.isEmpty()) {
+            cloned.tag = "Cloned tag: " + tag;
+        }
+        if (cloned.description != null && !cloned.description.isEmpty()) {
+            cloned.description = "Cloned description: " + description;
+        }
+        return cloned;
+    }
+
+    public PropertyValue copyAndSetUserInfoAndDate(UserInfo enteredByUser, Date enteredOnDateTime) {
+        PropertyValue copied = null;
+        try {
+            copied = clone();
+            copied.enteredByUser = enteredByUser;
+            copied.enteredOnDateTime = enteredOnDateTime;
+        } catch (CloneNotSupportedException ex) {
+            // will not happen 
+        }
+        return copied;
     }
 }

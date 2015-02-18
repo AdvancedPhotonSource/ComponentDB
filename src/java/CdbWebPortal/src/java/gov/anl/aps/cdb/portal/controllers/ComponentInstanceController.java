@@ -148,13 +148,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     @Override
     public ComponentInstance cloneEntityInstance(ComponentInstance componentInstance) {
         ComponentInstance clonedComponentInstance = super.cloneEntityInstance(componentInstance);
-        UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(ownerUser);
-        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-        }
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         clonedComponentInstance.setEntityInfo(entityInfo);
         super.setLogText("Cloned from component instance id " + componentInstance.getId());
         return clonedComponentInstance;
