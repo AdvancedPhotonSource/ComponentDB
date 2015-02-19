@@ -19,17 +19,20 @@ if [ ! -f ${CDB_ENV_FILE} ]; then
 fi
 . ${CDB_ENV_FILE} > /dev/null
 
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
-CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
-CDB_DATA_DIR=${CDB_DATA_DIR:=$CDB_INSTALL_DIR/data}
 
-echo "Creating data directories"
-mkdir -p "$CDB_DATA_DIR/log"
-mkdir -p "$CDB_DATA_DIR/propertyValue"
+echo "Preparing netbeans configuration"
 
 echo "Modifying glassfish-web config file"
-configFile=$CDB_ROOT_DIR/src/java/CdbWebPortal/web/WEB-INF/glassfish-web.xml
+portalSrcDir=$CDB_ROOT_DIR/src/java/CdbWebPortal
+configFile=$portalSrcDir/web/WEB-INF/glassfish-web.xml
 cmd="cat $configFile.template | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g' > $configFile"
 eval $cmd
 
-echo "Done preparing portal configuration"
+# configure glassfish db access
+passwordFile=$CDB_ROOT_DIR/etc/cdb.db.passwd
+CDB_DB_PASSWORD=`cat $passwordFile`
+configFile=$portalSrcDir/setup/glassfish-resources.xml
+cmd="cat $configFile.template | sed 's?CBD_DB_PASSWORD?$CDB_DB_PASSWORD?g' > $configFile"
+eval $cmd
+
+echo "Done preparing netbeans configuration"

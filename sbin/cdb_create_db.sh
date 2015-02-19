@@ -120,11 +120,6 @@ passwordFile=$CDB_ETC_DIR/$CDB_DB_NAME.db.passwd
 echo $CDB_DB_PASSWORD > $passwordFile
 chmod 600 $passwordFile
 
-# configure glassfish db access
-configFile=$CDB_ROOT_DIR/src/java/CdbWebPortal/setup/glassfish-resources.xml
-cmd="cat $configFile.template | sed 's?CBD_DB_PASSWORD?$CDB_DB_PASSWORD?g' > $configFile"
-eval $cmd
-
 # populate db
 cd $CURRENT_DIR && cd $CDB_DB_SCRIPTS_DIR
 CDB_DB_TABLES="\

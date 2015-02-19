@@ -1,27 +1,34 @@
 #!/bin/sh
 
-CMS_SVN_URL=https://svn.aps.anl.gov/cms
+CDB_SVN_URL=https://svn.aps.anl.gov/cms
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
-if [ -z "${CMS_ROOT_DIR}" ]; then
-    CMS_ROOT_DIR=$MY_DIR/..
+if [ -z "${CDB_ROOT_DIR}" ]; then
+    CDB_ROOT_DIR=$MY_DIR/..
 fi
-CMS_SUPPORT=$CMS_ROOT_DIR/../support
+CDB_SUPPORT_DIR=$CDB_ROOT_DIR/../support
+CDB_DATA_DIR=$CDB_ROOT_DIR/../data
 
 execute() {
     echo "Executing: $@"
     eval "$@"
 }
 
-if [ ! -d $CMS_SUPPORT ]; then
-    echo "Creating new CMS support directory $CMS_SUPPORT."
-    cd `dirname $CMS_SUPPORT`
-    execute svn co $CMS_SVN_URL/support support
+if [ ! -d $CDB_SUPPORT_DIR ]; then
+    echo "Creating new CDB support directory $CDB_SUPPORT_DIR."
+    cd `dirname $CDB_SUPPORT_DIR`
+    execute svn co $CDB_SVN_URL/support support
 fi
-cd $CMS_SUPPORT
+cd $CDB_SUPPORT_DIR
 execute svn update
-execute $CMS_SUPPORT/bin/clean_all.sh
-execute $CMS_SUPPORT/bin/install_all.sh
+execute $CDB_SUPPORT/bin/clean_all.sh
+execute $CDB_SUPPORT/bin/install_all.sh
+
+if [ ! -d $CDB_DATA_DIR ]; then
+    echo "Creating data directories"
+    mkdir -p "$CDB_DATA_DIR/log"
+    mkdir -p "$CDB_DATA_DIR/propertyValue"
+fi
 
 
 
