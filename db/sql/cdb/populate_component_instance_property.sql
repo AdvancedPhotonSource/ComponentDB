@@ -3,6 +3,8 @@ LOCK TABLES `component_instance_property` WRITE;
 INSERT INTO `component_instance_property` VALUES
 (5,78),
 (5,95),
+(6,153),
+(6,166),
 (22,126),
 (23,130),
 (24,129),

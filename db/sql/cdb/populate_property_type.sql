@@ -8,7 +8,7 @@ INSERT INTO `property_type` VALUES
 (5,'Electrical Equipment Status','NRTL Approved or APS Inspection Required or Not Required',2,NULL,NULL,NULL),
 (6,'Electrical Inspection #','Inspection # from DEEI (use desc of Status?)',2,NULL,NULL,NULL),
 (7,'Documentation URI','',4,3,NULL,NULL),
-(8,'Form Factor','',3,NULL,NULL,NULL),
+(8,'Form Factor','',3,NULL,'',''),
 (9,'Slot Length','',3,NULL,NULL,NULL),
 (10,'Required Water Flow',NULL,3,NULL,NULL,NULL),
 (11,'WBS','',1,NULL,NULL,NULL),
@@ -35,6 +35,8 @@ INSERT INTO `property_type` VALUES
 (32,'Alignment Record','',5,5,NULL,NULL),
 (33,'Design Status','',6,NULL,NULL,NULL),
 (34,'Component Instance Status','',6,NULL,NULL,NULL),
-(35,'Length','',3,NULL,NULL,NULL);
+(35,'Length','',3,NULL,NULL,NULL),
+(36,'Current','Could be max current or operating current',NULL,NULL,'','Amps'),
+(37,'Weight','',3,NULL,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

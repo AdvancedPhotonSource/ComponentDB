@@ -20,6 +20,8 @@ INSERT INTO `design` VALUES
 (23,'Straight multiplet (downstream)','',198),
 (24,'Curved FODO','',199),
 (25,'L-Bend','',200),
-(28,'Lattice','',207);
+(28,'Lattice','',207),
+(29,'Girder 1','',428),
+(31,'RTFB R&D Teststand','',447);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

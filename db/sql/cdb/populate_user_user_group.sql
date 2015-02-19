@@ -13,6 +13,7 @@ INSERT INTO `user_user_group` VALUES
 (6,3),
 (7,6),
 (7,12),
+(8,1),
 (8,9),
 (9,9),
 (10,9),

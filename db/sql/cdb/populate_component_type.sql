@@ -118,6 +118,7 @@ INSERT INTO `component_type` VALUES
 (120,'Support',NULL,5),
 (121,'Computer - Laptop/Tablet','',3),
 (122,'High Voltage Pulser','',7),
-(123,'High Voltage Attenuator','',7);
+(123,'High Voltage Attenuator','',7),
+(124,'Flash Disk','',3);
 /*!40000 ALTER TABLE `component_type` ENABLE KEYS */;
 UNLOCK TABLES;

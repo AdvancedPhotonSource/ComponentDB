@@ -161,7 +161,7 @@ INSERT INTO `component` VALUES
 (163,'Generic: Sextupole Bottom Half','',84,181),
 (164,'Generic: Plinth','',119,182),
 (165,'Generic: Plate','',118,183),
-(166,'Q6','Quadrupole 6 Design',83,185),
+(166,'Q6','Quadrupole 6 Assembly',83,185),
 (167,'S1','Sextupole 1 Design',84,186),
 (168,'DMM Base Plate','',118,187),
 (169,'Quadrupole 0.569m','',83,188),
@@ -181,6 +181,13 @@ INSERT INTO `component` VALUES
 (183,'FID HV Pulser for MBA Injection','Model #FPG 20-01MC2N6',122,392),
 (184,'DSO-S204A Oscilloscope','Infiniium S Series 2 GHz 4 channel\r\n',44,393),
 (185,'ATF HV Attenuator','Model # 20-025N\r\n',123,394),
-(186,'FID High Voltage Coax Cable','Describe length in Instance Property ',34,395);
+(186,'FID High Voltage Coax Cable','Describe length in Instance Property ',34,395),
+(187,'DMM Plinth','',119,427),
+(191,'Schroff MicroTCA Chassis','Model 11850-026',7,440),
+(192,'MIcroTCA.4 Power Supply','AC-DC 1000W power supply (double height, double width) for an  MTCA.4 chassis. 12Vdc and 3.3Vdc output, low noise/low ripple. ',49,441),
+(193,'MicroTCA Carrier Hub (MCH) ','',10,442),
+(194,'AM31x MicroTCA CPU','AMC Single-Width mid-height front panel 2nd Gen Intel Core CPU  w/2 core 2.2GHz Corei7 2655LE with 4GB DRAM dual x4 PCI  Express Fat Pipes. Extended Options Region I/O = GPIO, 2xUSB,  1xRS232 and 2xSATA. Without Display Port connector. ',42,443),
+(195,'8 Gigabyte Flash Disk Module for AM31x','',124,445),
+(196,'AMC-V7-2C6678','FPGA/DSP MicroTCA Board',43,446);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;
