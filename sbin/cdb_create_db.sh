@@ -27,6 +27,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
     CDB_ROOT_DIR=$MY_DIR/..
 fi
 CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/cdb
+CDB_ETC_DIR=$CDB_ROOT_DIR/etc
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
     echo "Environment file ${CDB_ENV_FILE} does not exist." 
@@ -66,8 +67,20 @@ echo "Using DB scripts directory: $CDB_DB_SCRIPTS_DIR"
 if [ -z "$CDB_DB_ADMIN_PASSWORD" ]; then
     sttyOrig=`stty -g`
     stty -echo
-    read -p "Enter MySQL root password: " CDB_DB_ADMIN_PASSWORD
+    read -p "Enter DB root password: " CDB_DB_ADMIN_PASSWORD
     stty $sttyOrig
+    echo
+fi
+
+
+# Read user db password if needed 
+CDB_DB_PASSWORD=$CDB_DB_USER_PASSWORD
+if [ -z "$CDB_DB_USER_PASSWORD" ]; then
+    sttyOrig=`stty -g`
+    stty -echo
+    read -p "Enter DB password for the $CDB_DB_USER user: " CDB_DB_PASSWORD
+    stty $sttyOrig
+    echo
 fi
 
 mysqlCmd="mysql --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
@@ -101,6 +114,16 @@ execute "$mysqlCmd < $sqlFile"
 # create db tables
 mysqlCmd="$mysqlCmd -D $CDB_DB_NAME <"
 execute $mysqlCmd create_cdb_tables.sql
+
+# create db password file
+passwordFile=$CDB_ETC_DIR/$CDB_DB_NAME.db.passwd
+echo $CDB_DB_PASSWORD > $passwordFile
+chmod 600 $passwordFile
+
+# configure glassfish db access
+configFile=$CDB_ROOT_DIR/src/java/CdbWebPortal/setup/glassfish-resources.xml
+cmd="cat $configFile.template | sed 's?CBD_DB_PASSWORD?$CDB_DB_PASSWORD?g' > $configFile"
+eval $cmd
 
 # populate db
 cd $CURRENT_DIR && cd $CDB_DB_SCRIPTS_DIR

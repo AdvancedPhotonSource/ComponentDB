@@ -32,4 +32,4 @@ configFile=$CDB_ROOT_DIR/src/java/CdbWebPortal/web/WEB-INF/glassfish-web.xml
 cmd="cat $configFile.template | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g' > $configFile"
 eval $cmd
 
-
+echo "Done preparing portal configuration"
