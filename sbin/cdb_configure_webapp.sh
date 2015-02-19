@@ -52,6 +52,12 @@ CDB_DB_POOL=mysql_${CDB_DB_NAME}_DbPool
 CDB_DATA_SOURCE=${CDB_DB_NAME}_DataSource
 CDB_DOMAIN=domain1
 
+# Check password from file
+passwordFile=$CDB_ROOT_DIR/etc/$CDB_DB_NAME.db.passwd
+if [ -f $passwordFile ]; then
+    CDB_DB_PASSWORD=`cat $passwordFile`
+fi
+
 # copy mysql driver
 echo "Copying mysql driver"
 rsync -ar $CDB_ROOT_DIR/src/java/CdbWebPortal/lib/mysql-connector-java-5.1.23-bin.jar $GLASSFISH_DIR/glassfish/domains/${CDB_DOMAIN}/lib/ext
