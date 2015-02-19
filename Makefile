@@ -19,5 +19,5 @@ support:
 db:
 	$(TOP)/sbin/cdb_create_db.sh
 
-include $(TOP)/tools/make/RULES_CMS
+include $(TOP)/tools/make/RULES_CDB
 
