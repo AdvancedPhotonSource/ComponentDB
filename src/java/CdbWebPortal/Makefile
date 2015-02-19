@@ -3,6 +3,7 @@ ANT=cdb-ant
 ANT_ARGS=-Dlibs.CopyLibs.classpath=lib/org-netbeans-modules-java-j2seproject-copylibstask.jar 
 BUILD_PROPERTIES_FILE=nbproject/private/private.properties
 GENERIC_BUILD_PROPERTIES_FILE=$(BUILD_PROPERTIES_FILE).generic.build
+GLASSFISH_WEB_XML_FILE=web/WEB-INF/glassfish-web.xml
 
 all install: dist
 
@@ -17,6 +18,7 @@ ant-clean:
 dist: 
 	mv $(BUILD_PROPERTIES_FILE) $(BUILD_PROPERTIES_FILE).orig
 	cmd="cat $(GENERIC_BUILD_PROPERTIES_FILE) | sed 's?CDB_GLASSFISH_DIR?$${CDB_GLASSFISH_DIR}?g' > $(BUILD_PROPERTIES_FILE)" && eval $$cmd
+	cmd="cat $(GLASSFISH_WEB_XML_FILE).template | sed 's?CDB_DATA_DIR?/cdb?g' > $(GLASSFISH_WEB_XML_FILE)" && eval $$cmd
 	$(ANT) $(ANT_ARGS) dist 
 	mv $(BUILD_PROPERTIES_FILE).orig $(BUILD_PROPERTIES_FILE)
 
