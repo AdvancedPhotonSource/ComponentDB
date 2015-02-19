@@ -18,6 +18,7 @@ support:
 
 db:
 	$(TOP)/sbin/cdb_create_db.sh
+
 db-dev:
 	$(TOP)/sbin/cdb_create_db.sh cdb_dev
 
