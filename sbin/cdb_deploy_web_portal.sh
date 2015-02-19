@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Script used for deploying CDB webapp
+# Script used for deploying CDB web portal
 # Deployment configuration can be set in etc/$CDB_DB_NAME.deploy.conf file
 #
 # Usage:
