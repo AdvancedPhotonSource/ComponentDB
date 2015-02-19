@@ -22,11 +22,17 @@ db:
 deploy-web-portal: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh
 
+undeploy-web-portal: 
+	$(TOP)/sbin/cdb_undeploy_web_portal.sh
+
 db-dev:
 	$(TOP)/sbin/cdb_create_db.sh cdb_dev
 
 deploy-web-portal-dev: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh cdb_dev
+
+undeploy-web-portal-dev: 
+	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_dev
 
 
 include $(TOP)/tools/make/RULES_CDB
