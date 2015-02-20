@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.AssemblyComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.ComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
@@ -46,6 +47,7 @@ import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
+import org.primefaces.model.TreeNode;
 
 @Named("componentController")
 @SessionScoped
@@ -178,6 +180,12 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return "component";
     }
 
+
+    @Override
+    public String getEntityTypeTypeName() {
+        return "componentType";
+    }
+    
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -1035,4 +1043,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
     }
+    
+        
+     public TreeNode createAssemblyRoot(Component assembly) throws CdbException {
+         return ComponentUtility.createAssemblyRoot(assembly);    
+     }
 }

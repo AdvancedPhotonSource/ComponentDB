@@ -97,6 +97,11 @@ footer {
     background: #6da5d8;
 }
 
+.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
+    background-color: #d5ebf5;
+    color: #4e80b6;  
+}
+
 .menuContent {
     position: relative;
     vertical-align: central;

@@ -7,6 +7,7 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
     <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
+        <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
 
     <div class="actionButton">
@@ -32,6 +33,10 @@
             <p:tooltip for="#{entityTypeName}ResetFiltersButton" value="Reset list filters."/>
         </p:commandButton>
 
+        <p:button id="#{entityTypeName}ViewTypesButton" href="../#{entityTypeTypeName}/list.xhtml" rendered="#{entityController.entityHasTypes()}" alt="View Types" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ViewTypesButton" value="View types."/>
+        </p:button>
+        
         <p:button id="#{entityTypeName}ViewCategoriesButton" href="../#{entityTypeCategoryName}/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ViewCategoriesButton" value="View categories."/>
         </p:button>

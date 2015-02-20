@@ -83,12 +83,17 @@ public class LocationController extends CrudEntityController<Location, LocationF
         Location location = new Location();
         return location;
     }
-
+    
     @Override
     public String getEntityTypeName() {
         return "location";
     }
 
+    @Override
+    public String getEntityTypeTypeName() {
+        return "locationType";
+    }
+    
     @Override
     public String getDisplayEntityTypeName() {
         return "location";

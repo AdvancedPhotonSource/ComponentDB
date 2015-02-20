@@ -133,6 +133,9 @@ public class Design extends CdbEntity {
 
     @XmlTransient
     public List<DesignElement> getDesignElementList() {
+        if (designElementList == null) {
+            designElementList = new ArrayList<>();
+        }
         return designElementList;
     }
 

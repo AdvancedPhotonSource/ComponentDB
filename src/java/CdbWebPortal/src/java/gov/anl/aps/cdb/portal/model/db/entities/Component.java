@@ -476,4 +476,8 @@ public class Component extends CdbEntity {
         }
         return CollectionUtility.displayItemListWithoutOutsideDelimiters(componentSourceList, ";");
     }
+    
+    public Boolean getIsAssembly() {
+        return (assemblyComponentList != null && !assemblyComponentList.isEmpty());
+    }
 }

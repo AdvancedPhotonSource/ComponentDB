@@ -158,6 +158,10 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         return null;
     }
 
+    public String getEntityTypeTypeName() {
+        return null;
+    }
+    
     public String getDisplayEntityTypeName() {
         return getEntityTypeName();
     }
@@ -778,6 +782,10 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         return getEntityTypeCategoryName() != null;
     }
 
+    public boolean entityHasTypes() {
+        return getEntityTypeTypeName() != null;
+    }
+    
     public boolean entityHasGroups() {
         return getEntityTypeGroupName() != null;
     }
