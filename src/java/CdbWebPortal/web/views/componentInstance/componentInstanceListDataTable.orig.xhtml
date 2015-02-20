@@ -9,7 +9,7 @@
     <p:dataTable id="componentInstanceListDataTable" 
                  widgetVar="componentInstanceListDataTableWidget"
                  var="componentInstanceObject" 
-                 value="#{componentInstanceController.listDataModel}" 
+                 value="#{componentObject.componentInstanceList}" 
                  filteredValue="#{componentInstanceController.filteredObjectList}"
                  binding="#{componentInstanceController.listDataTable}"
                  rows="#{componentInstanceController.displayNumberOfItemsPerPage}"
@@ -23,41 +23,29 @@
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
-                  filterBy="#{componentInstanceObject.qrId}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByQrId}"
                   rendered="#{componentInstanceController.displayQrId}">
             <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}"/>
         </p:column>
 
-        <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag"
-                  filterBy="#{componentInstanceObject.tag}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByTag}">
+        <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
             <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.serialNumber}" headerText="Serial Number"
-                  filterBy="#{componentInstanceObject.serialNumber}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterBySerialNumber}"                  
                   rendered="#{componentInstanceController.displaySerialNumber}">
             <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}"/>
         </p:column>
 
-        <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location"
-                  filterBy="#{componentInstanceObject.location.name}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByLocation}">
+        <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location">
             <h:outputText value="#{componentInstanceObject.location.name}"/>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
-                  filterBy="#{componentInstanceObject.locationDetails}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByLocationDetails}"
                   rendered="#{componentInstanceController.displayLocationDetails}">
             <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}"/>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.description}" headerText="Description"
-                  filterBy="#{componentInstanceObject.description}" filterMatchMode="contains"
-                  filterValue="#{componentInstanceController.filterByDescription}"
                   rendered="#{componentInstanceController.displayDescription}">
             <h:outputText id="description" value="#{componentInstanceObject.description}"/>
         </p:column>

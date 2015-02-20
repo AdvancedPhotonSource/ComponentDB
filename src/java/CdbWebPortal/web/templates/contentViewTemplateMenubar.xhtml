@@ -10,6 +10,9 @@
         <p:menuitem value="Components" 
                     styleClass="#{fn:startsWith(view.viewId, '/views/component/') ? 'activeMenuItem' : ''}"
                     action="#{componentController.prepareListFromViewPath('/views/component')}"/>
+        <p:menuitem value="Component Instances" 
+                    styleClass="#{fn:startsWith(view.viewId, '/views/componentInstance/') ? 'activeMenuItem' : ''}"
+                    action="#{componentController.prepareListFromViewPath('/views/componentInstance')}"/>
         <p:menuitem value="Designs" 
                     styleClass="#{fn:startsWith(view.viewId, '/views/design/') ? 'activeMenuItem' : ''}"
                     action="#{designController.prepareListFromViewPath('/views/design')}"/>       

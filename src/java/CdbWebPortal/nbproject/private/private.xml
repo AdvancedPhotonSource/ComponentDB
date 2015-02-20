@@ -3,23 +3,34 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Design.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/list.orig.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceListCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentType/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/editList.orig.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonChildEditListActionButtons.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceEditList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceEditListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/portal.css</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/components.css</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/list.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/beans/ComponentListTreeViewBean.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonListActionButtons.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentTypeCategory/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceEditListCustomizeDisplayDialog.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/designElementEditListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/editList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/userGroup/list.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/editList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/locationType/list.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentListTreeTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/componentInstances.css</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/designs.css</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LocationController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonChildEditListActionButtons.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/contentViewTemplateMenubar.xhtml</file>
         </group>
     </open-files>

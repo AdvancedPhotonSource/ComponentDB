@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <p:dialog id="componentComponentInstanceListCustomizeDisplayDialog" 
+              widgetVar="componentComponentInstanceListCustomizeDisplayDialogWidget" 
+              header="Customize Display" 
+              styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{componentInstanceController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="componentInstanceDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{componentInstanceController.displayCreatedByUser}"/>  
+                <h:outputLabel for="componentInstanceDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedOnDateTime" value="#{componentInstanceController.displayCreatedOnDateTime}"/>  
+                <h:outputLabel for="componentInstanceDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{componentInstanceController.displayDescription}"/>  
+                <h:outputLabel for="componentInstanceDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayId" value="#{componentInstanceController.displayId}"/>  
+                <h:outputLabel for="componentInstanceDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+ 
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedByUser" value="#{componentInstanceController.displayLastModifiedByUser}"/>  
+                <h:outputLabel for="componentInstanceDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedOnDateTime" value="#{componentInstanceController.displayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="componentInstanceDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+ 
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{componentInstanceController.displayLocationDetails}"/>  
+                <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
+           
+                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerUser" value="#{componentInstanceController.displayOwnerUser}"/>  
+                <h:outputLabel for="componentInstanceDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerGroup" value="#{componentInstanceController.displayOwnerGroup}"/>  
+                <h:outputLabel for="componentInstanceDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>                
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{componentInstanceController.displayQrId}"/>  
+                <h:outputLabel for="componentInstanceDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{componentInstanceController.displaySerialNumber}"/>  
+                <h:outputLabel for="componentInstanceDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
+                
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{componentInstanceController.customizeListDisplay()}"
+                                 update="@form"
+                                 oncomplete="componentComponentInstanceListCustomizeDisplayDialogWidget.hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userInfoController.saveSettingListForSessionUser()}"
+                                 actionListener="#{componentInstanceController.saveListSettingsForSessionUserActionListener}"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>
