@@ -37,10 +37,6 @@
                     <p:growl id="messages" showDetail="true" autoUpdate="true"/>
 
                     <p:panelGrid columns="2">
-                        <h:outputText value="Software Version" styleClass="sectionText"/>
-                        <h:outputLink value="https://confluence.aps.anl.gov/display/APSUCMS/Milestones" target="#{resources.CdbSoftwareVersion}">
-                            <h:outputText id="softwareVersion" value="#{resources.CdbSoftwareVersion}" styleClass="sectionText"/>
-                        </h:outputLink>
 
                         <p:outputLabel for="numberOfUsers" value="Registered Users" styleClass="sectionText"/>
                         <h:outputText id="numberOfUsers" value="#{userInfoController.availableItems.size()}" styleClass="sectionText"/>
@@ -54,6 +50,10 @@
                         <p:outputLabel for="numberOfDesigns" value="Designs" styleClass="sectionText"/>
                         <h:outputText id="numberOfDesigns" value="#{designController.availableItems.size()}" styleClass="sectionText"/>
 
+                        <h:outputText value="Software Version" styleClass="sectionText"/>
+                        <h:outputLink value="https://confluence.aps.anl.gov/display/APSUCMS/Milestones" target="#{resources.CdbSoftwareVersion}">
+                            <h:outputText id="softwareVersion" value="#{resources.CdbSoftwareVersion}" styleClass="sectionText"/>
+                        </h:outputLink>                        
                     </p:panelGrid>
                 </h:form>
             </div>
