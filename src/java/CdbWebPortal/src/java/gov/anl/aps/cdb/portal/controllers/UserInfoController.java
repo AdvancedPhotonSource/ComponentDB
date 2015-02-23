@@ -7,6 +7,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.utilities.CryptUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -146,6 +147,11 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
         }
         logger.debug("Inserting new user " + userInfo.getUsername());
+        if (passwordEntry != null && !passwordEntry.isEmpty()) {
+            String cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(passwordEntry);
+            userInfo.setPassword(cryptedPassword);
+            logger.debug("New user crypted password: " + cryptedPassword);
+        }
     }
 
     @Override
@@ -154,16 +160,18 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
         if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
         }
-        
+
         logger.debug("Updating user " + userInfo.getUsername());
         List<UserSetting> userSettingList = userInfo.getUserSettingList();
         for (UserSetting userSetting : userSettingList) {
             if (userSetting.getValue() == null) {
                 userSetting.setValue(userSetting.getSettingType().getDefaultValue());
             }
-            if (passwordEntry != null && !passwordEntry.isEmpty()) {
-                userInfo.setPassword(passwordEntry);
-            }
+        }
+        if (passwordEntry != null && !passwordEntry.isEmpty()) {
+            String cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(passwordEntry);
+            userInfo.setPassword(cryptedPassword);
+            logger.debug("Updated crypted password: " + cryptedPassword);
         }
     }
 

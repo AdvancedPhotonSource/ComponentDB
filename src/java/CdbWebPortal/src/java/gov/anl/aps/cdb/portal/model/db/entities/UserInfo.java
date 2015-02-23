@@ -76,7 +76,7 @@ public class UserInfo extends CdbEntity
     // @Pattern(regexp="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", message="Invalid email")//if the field contains email address consider using this annotation to enforce field validation
     @Size(max = 64)
     private String email;
-    @Size(max = 64)
+    @Size(max = 256)
     private String password;
     @Size(max = 256)
     private String description;

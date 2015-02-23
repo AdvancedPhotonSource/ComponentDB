@@ -42,6 +42,12 @@
             <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}"/>
         </p:column>
 
+        <p:column sortBy="#{componentInstanceObject.component.name}" headerText="Component"
+                  filterBy="#{componentInstanceObject.component.name}" filterMatchMode="contains"
+                  filterValue="#{componentInstanceController.filterByComponent}">
+            <h:outputText value="#{componentInstanceObject.component.name}"/>
+        </p:column>
+        
         <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location"
                   filterBy="#{componentInstanceObject.location.name}" filterMatchMode="contains"
                   filterValue="#{componentInstanceController.filterByLocation}">

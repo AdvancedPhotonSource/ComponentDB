@@ -10,7 +10,7 @@ CREATE TABLE `user_info` (
   `last_name` varchar(16) NOT NULL,
   `middle_name` varchar(16) DEFAULT NULL,
   `email` varchar(64) DEFAULT NULL,
-  `password` varchar(64) DEFAULT NULL,
+  `password` varchar(256) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_u1` (`username`),
@@ -850,6 +850,7 @@ CREATE TABLE `design_element` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `parent_design_id` int(11) unsigned NOT NULL,
+  `parent_design_element_id` int(11) unsigned DEFAULT NULL,
   `child_design_id` int(11) unsigned DEFAULT NULL,
   `component_id` int(11) unsigned DEFAULT NULL,
   `location_id` int(11) unsigned DEFAULT NULL,
@@ -860,14 +861,16 @@ CREATE TABLE `design_element` (
   UNIQUE KEY `design_element_u1` (`name`, `parent_design_id`),
   KEY `design_element_k1` (`parent_design_id`),
   CONSTRAINT `design_element_fk1` FOREIGN KEY (`parent_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_k2` (`child_design_id`),
-  CONSTRAINT `design_element_fk2` FOREIGN KEY (`child_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k3` (`component_id`),
-  CONSTRAINT `design_element_fk3` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k4` (`location_id`),
-  CONSTRAINT `design_element_fk4` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k5` (`entity_info_id`),
-  CONSTRAINT `design_element_fk5` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+  KEY `design_element_k2` (`parent_design_element_id`),
+  CONSTRAINT `design_element_fk2` FOREIGN KEY (`parent_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE,
+  KEY `design_element_k3` (`child_design_id`),
+  CONSTRAINT `design_element_fk3` FOREIGN KEY (`child_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE,
+  KEY `design_element_k4` (`component_id`),
+  CONSTRAINT `design_element_fk4` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
+  KEY `design_element_k5` (`location_id`),
+  CONSTRAINT `design_element_fk5` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
+  KEY `design_element_k6` (`entity_info_id`),
+  CONSTRAINT `design_element_fk6` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

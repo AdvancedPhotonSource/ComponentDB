@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.utilities.CryptUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,7 +168,7 @@ public class LoginController implements Serializable
         boolean isAdminUser = isAdmin(username);
         logger.debug("User " + username + " is admin: " + isAdminUser);
         boolean validCredentials = false;
-        if (user.getPassword() != null && user.getPassword().equals(password)) {
+        if (user.getPassword() != null && CryptUtility.verifyPasswordWithPbkdf2(password, user.getPassword())) {
             logger.debug("User " + username + " is authorized by CMS");
             validCredentials = true;
         }
