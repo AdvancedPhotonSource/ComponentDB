@@ -10,8 +10,8 @@ default:
 
 prepare-dev-env: support db netbeans-config
 
-netbeans-config:
-	$(TOP)/sbin/cdb_prepare_netbeans_config.sh
+dev-config:
+	$(TOP)/sbin/cdb_prepare_dev_config.sh
 
 support:
 	$(TOP)/sbin/cdb_install_support.sh
@@ -22,8 +22,14 @@ db:
 deploy-web-portal: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh
 
+deploy-web-service: 
+	$(TOP)/sbin/cdb_deploy_web_service.sh
+
 undeploy-web-portal: 
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh
+
+undeploy-web-service: 
+	$(TOP)/sbin/cdb_undeploy_web_service.sh
 
 db-dev:
 	$(TOP)/sbin/cdb_create_db.sh cdb_dev
@@ -31,9 +37,14 @@ db-dev:
 deploy-web-portal-dev: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh cdb_dev
 
+deploy-web-service-dev: 
+	$(TOP)/sbin/cdb_deploy_web_service.sh cdb_dev
+
 undeploy-web-portal-dev: 
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_dev
 
+undeploy-web-service-dev: 
+	$(TOP)/sbin/cdb_undeploy_web_service.sh cdb_dev
 
 include $(TOP)/tools/make/RULES_CDB
 

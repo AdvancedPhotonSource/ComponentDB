@@ -23,6 +23,7 @@
 # Arguments
 ACTION=$1
 CDB_DB_NAME=$2
+CDB_DB_NAME=${CDB_DB_NAME:=cdb}
 
 # Set root to default if needed.
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`

@@ -1,9 +1,12 @@
 [WebService]
 serviceHost=0.0.0.0
 servicePort=10232
-sslCertFile=/home/sveseli/Work/CDB/etc/ssl/cdb-web-service.crt
-sslKeyFile=/home/sveseli/Work/CDB/etc/ssl/cdb-web-service.key
-sslCaCertFile=/home/sveseli/Work/CDB/etc/ssl/cacert.pem
+sslCertFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.crt
+sslKeyFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.key
+sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
+
+[DbManager]
+dbPasswordFile=CDB_INSTALL_DIR/etc/cdb.db.passwd
 
 # Available logger levels: debug, info, warn, error, critical
 [ConsoleLogging]
@@ -13,7 +16,7 @@ format=%(asctime)s,%(msecs)003d %(levelname)s %(filename)s:%(lineno)d %(process)
 dateformat=%Y/%m/%d %H:%M:%S
 
 [FileLogging]
-handler=TimedRotatingFileLoggingHandler('/home/sveseli/Work/CDB/var/log/cdb-web-service.log')
+handler=TimedRotatingFileLoggingHandler('CDB_INSTALL_DIR/var/log/cdb-web-service.log')
 level=debug
 format=%(asctime)s,%(msecs)003d %(levelname)s %(filename)s:%(lineno)d %(process)d:  %(message)s
 dateformat=%Y/%m/%d %H:%M:%S

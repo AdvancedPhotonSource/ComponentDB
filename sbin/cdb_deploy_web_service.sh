@@ -51,6 +51,7 @@ CDB_WEB_SERVICE_KEY_FILE=${CDB_SSL_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.key
 CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.conf
 CDB_WEB_SERVICE_LOG_FILE=${CDB_INSTALL_DIR}/var/log/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.log
 CDB_WEB_SERVICE_INIT_CMD=${CDB_ROOT_DIR}/etc/init.d/$CDB_WEB_SERVICE_DAEMON
+CDB_DB_PASSWORD_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.db.passwd 
 
 echo "CDB install directory: $CDB_INSTALL_DIR"
 
@@ -80,7 +81,7 @@ fi
 echo "Checking service configuration file"
 if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
     echo "Generating service config file"
-    cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf \
+    cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
         | sed 's?servicePort=.*?servicePort=$CDB_WEB_SERVICE_PORT?g' \
         | sed 's?sslCaCertFile=.*?sslCaCertFile=$CDB_CA_CERT_FILE?g' \
         | sed 's?sslCertFile=.*?sslCertFile=$CDB_WEB_SERVICE_CERT_FILE?g' \
@@ -91,8 +92,9 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
 else
     echo "Service config file exists"
 fi
+rsync -ar $CDB_ROOT_DIR/etc/$CDB_DB_NAME.db.passwd $CDB_ETC_DIR || exit 1
 
-#echo "Starting web service for $CDB_DB_NAME"
+echo "Starting web service for $CDB_DB_NAME"
 $CDB_WEB_SERVICE_INIT_CMD start $CDB_DB_NAME
 
 echo "Done deploying web service for $CDB_DB_NAME"

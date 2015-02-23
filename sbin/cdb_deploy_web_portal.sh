@@ -46,6 +46,7 @@ CDB_DIST_DIR=$CDB_ROOT_DIR/src/java/CdbWebPortal/dist
 CDB_BUILD_WAR_FILE=CdbWebPortal.war
 CDB_WAR_FILE=$CDB_CONTEXT_ROOT.war
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
+CDB_DATE=`date +%Y.%m.%d`
 
 if [ ! -f $CDB_DIST_DIR/$CDB_BUILD_WAR_FILE ]; then
     echo "$CDB_BUILD_WAR_FILE not found in $CDB_DIST_DIR."
@@ -81,6 +82,8 @@ eval $cmd
 
 configFile=WEB-INF/classes/resources.properties
 cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+cmd="cat $configFile | sed 's?CdbSoftwareVersion=.*?CdbSoftwareVersion=${CDB_SOFTWARE_VERSION}?g' | sed 's?CDB_DATE?$CDB_DATE?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
 for cssFile in login portal components designs; do
