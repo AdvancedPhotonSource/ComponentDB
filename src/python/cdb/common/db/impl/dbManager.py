@@ -10,7 +10,7 @@ from cdb.common.exceptions.commandFailed import CommandFailed
 from cdb.common.exceptions.configurationError import ConfigurationError
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
-from cdb.common.db import cdbDbEntityMap
+from cdb.common.db.entities import cdbDbEntityMap
 
 
 class DbManager:
@@ -22,13 +22,16 @@ class DbManager:
     DB_CONNECTION_POOL_TIMEOUT = 60
     DB_CONNECTION_LOGGING_FLAG = False
 
+    CONFIG_SECTION_NAME = 'DbManager'
+    CONFIG_OPTION_NAME_LIST = [ 'dbPasswordFile' ]
+
     # Singleton.
     __lock = threading.RLock()
     __instance = None
 
     @classmethod
     def getInstance(cls):
-        from cdb.common.db.dbManager import DbManager
+        from cdb.common.db.impl.dbManager import DbManager
         try:
             mgr = DbManager()
         except DbManager, ex:
@@ -43,13 +46,17 @@ class DbManager:
             DbManager.__instance = self
             self.lock = threading.RLock()
             self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
-            dbUser = ConfigurationManager.getInstance().getDbUser()
-            dbSchema = ConfigurationManager.getInstance().getDbSchema()
-            dbPasswordFile = ConfigurationManager.getInstance().getDbPasswordFile()
+            cm = ConfigurationManager.getInstance()
+            cm.setOptionsFromConfigFile(DbManager.CONFIG_SECTION_NAME, DbManager.CONFIG_OPTION_NAME_LIST)
+
+            dbUser = cm.getDbUser()
+            dbSchema = cm.getDbSchema()
+            dbPasswordFile = cm.getDbPasswordFile()
+            self.logger.debug('Using DB password file: %s' % dbPasswordFile)
             dbPassword = open(dbPasswordFile, 'r').readline().strip()
-            dbPort = ConfigurationManager.getInstance().getDbPort()
-            dbHost = ConfigurationManager.getInstance().getDbHost()
-            db = ConfigurationManager.getInstance().getDb()
+            dbPort = cm.getDbPort()
+            dbHost = cm.getDbHost()
+            db = cm.getDb()
             self.logger.debug('DB schema: %s' % dbSchema)
             self.logger.debug('DB password file: %s' % dbPasswordFile)
             engineUrl = '%s://%s:%s@%s:%s/%s' % (db, dbUser, dbPassword, dbHost, dbPort, dbSchema)
@@ -63,8 +70,8 @@ class DbManager:
             self.metadata = sqlalchemy.MetaData(engineUrl)
 
             self.logger.debug('Mapping DB tables')
-            for (dbTableName, dbEntityClass) in cdbDbEntityMap.CDB_DB_ENTITY_MAP.items():
-                self.mapTable(dbEntityClass, dbTableName)
+            for (dbTableName, (dbEntityClass, dbRelationDict)) in cdbDbEntityMap.CDB_DB_ENTITY_MAP.items():
+                self.mapTable(dbEntityClass, dbTableName, dbRelationDict)
             self.logger.debug('Initialized SQLalchemy engines')
 
         finally:

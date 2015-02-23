@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import copy
+import types
 from cdb.common.exceptions.dbError import DbError
 from cdb.common.utility.loggingManager import LoggingManager
 
@@ -7,6 +9,8 @@ class CdbDbEntity(object):
     """ Base Cdb DB entity class. """
     columns = []
     mappedColumnDict = {}
+    removeKeyList = [ '_sa_instance_state' ]
+    cdbObjectClass = None
 
     def __init__(self, **kwargs):
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
@@ -26,7 +30,32 @@ class CdbDbEntity(object):
     def mapColumns(self):
         for (dbName, objectName) in self.mappedColumnDict.items():
             self.mapColumn(dbName, objectName)
-     
+    
+    def toCdbObject(self):
+        scrubbedDict = copy.deepcopy(self.__dict__)
+        for (dbName, objectName) in self.mappedColumnDict.items():
+            if scrubbedDict.has_key(dbName):
+                scrubbedDict[objectName] = scrubbedDict.get(dbName)
+                del scrubbedDict[dbName]
+        for key in self.removeKeyList:
+            if scrubbedDict.has_key(key):
+                del scrubbedDict[key]
+        for (key,value) in scrubbedDict.items():
+            if isinstance(value, CdbDbEntity):
+                scrubbedDict[key] = value.toCdbObject()
+            elif type(value) == types.ListType:
+                scrubbedList = []
+                for item in value:
+                    if isinstance(item, CdbDbEntity):
+                        scrubbedList.append(item.toCdbObject())
+                    else:
+                        scrubbedList.append(item)
+                scrubbedDict[key] = scrubbedList
+        if self.cdbObjectClass is not None:
+            return self.cdbObjectClass(scrubbedDict)
+        else:
+            return scrubbedDict
+         
     def __repr__(self):
         s = '%s(' % self.__class__.__name__
         addComma = False
@@ -47,9 +76,6 @@ class CdbDbEntity(object):
         pass
 
     def getCdbObject(self):
-        """ 
-        Convert the raw database object (self, a dict) into a 
-        CDB db object.
-        """
-        return None
+        """ Convert the raw database object into a CDB object. """
+        return self.toCdbObject()
 

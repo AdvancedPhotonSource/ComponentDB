@@ -22,7 +22,7 @@ class CdbObject(UserDict.UserDict):
         elif isinstance(dict, UserDict.UserDict):
             UserDict.UserDict.__init__(self, dict.data)
         else:
-            raise InvalidArgument('CdbObject must be initialized using dictionary.')
+            raise InvalidArgument('CdbObject instance must be initialized using dictionary.')
         self.jsonPreprocessKeyList = []
         self.logger = None
 

@@ -3,7 +3,7 @@
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.internalError import InternalError
 from cdb.common.utility.loggingManager import LoggingManager
-from cdb.common.db.dbManager import DbManager
+from cdb.common.db.impl.dbManager import DbManager
 
 class CdbDbApi:
     """ Base DB API class. """

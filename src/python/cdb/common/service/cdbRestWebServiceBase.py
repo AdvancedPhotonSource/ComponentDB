@@ -136,7 +136,7 @@ class CdbRestWebServiceBase:
         if not os.path.exists(configFile):
             raise ConfigurationError('Configuration file %s does not exist.' % configFile)
         # Read file and set config options
-        self.configurationManager.setOptionsFromConfigFile(configFile, CdbRestWebServiceBase.CONFIG_SECTION_NAME, CdbRestWebServiceBase.CONFIG_OPTION_NAME_LIST)
+        self.configurationManager.setOptionsFromConfigFile(CdbRestWebServiceBase.CONFIG_SECTION_NAME, CdbRestWebServiceBase.CONFIG_OPTION_NAME_LIST, configFile)
 
     def readCommandLineOptions(self):
         # This method should be called after reading config file

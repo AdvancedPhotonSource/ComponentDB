@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from cdb.common.exceptions.cdbException import CdbException
-from cdb.common.db.cdbDbApi import CdbDbApi
-from cdb.common.db.userInfoHandler import UserInfoHandler
+from cdb.common.db.api.cdbDbApi import CdbDbApi
+from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 
 class UserInfoDbApi(CdbDbApi):
 
@@ -15,8 +15,7 @@ class UserInfoDbApi(CdbDbApi):
             session = self.dbManager.openSession()
             try:
                 dbUserInfo = self.userInfoHandler.getUserInfo(session, username)
-                #return dbUserInfo.getCdbObject()
-                return dbUserInfo
+                return dbUserInfo.getCdbObject()
             except CdbException, ex:
                 raise
             except Exception, ex:
@@ -29,5 +28,5 @@ class UserInfoDbApi(CdbDbApi):
 # Testing.
 if __name__ == '__main__':
     api = UserInfoDbApi()
-    print api.getUserInfo('sveseli')
-         
+    dbUserInfo = api.getUserInfo('sveseli')
+    print dbUserInfo

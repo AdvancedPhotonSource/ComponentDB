@@ -99,10 +99,7 @@ class LoggingManager:
     def configureHandlers(self):
         """ Configure log handlers from the config file. """
         cm = ConfigurationManager.getInstance()
-        # try log config first, then general config
-        configFile = cm.getLogConfigFile()
-        if not configFile or not os.path.exists(configFile):
-            configFile = cm.getConfigFile()
+        configFile = cm.getConfigFile()
         configParser = cm.getConfigParserFromConfigFile(configFile)
         configSections = cm.getConfigSectionsFromConfigParser(configParser)
 

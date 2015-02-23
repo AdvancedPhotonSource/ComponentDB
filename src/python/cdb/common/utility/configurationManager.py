@@ -8,8 +8,8 @@
 
 import os
 import socket
-import UserDict
 import pwd
+import UserDict
 import ConfigParser
 
 from cdb.common.constants import cdbServiceConstants
@@ -20,11 +20,10 @@ from cdb.common.exceptions.configurationError import ConfigurationError
 # Defaults.
 
 DEFAULT_CDB_ROOT_DIR = '/opt/cdb'
-DEFAULT_CDB_RUN_DIR = '%s'                      # requires run dir
-DEFAULT_CDB_CONFIG_FILE = '%s/etc/cdb.conf'     # requires run dir
+DEFAULT_CDB_INSTALL_DIR = '%s'                      # requires install dir
+DEFAULT_CDB_CONFIG_FILE = '%s/etc/cdb.conf'         # requires install dir
 
-DEFAULT_CDB_LOG_FILE = '%s/var/log/cdb.log'    # requires run dir
-DEFAULT_CDB_LOG_CONFIG_FILE = '%s/etc/cdb.log.conf'     # requires run dir
+DEFAULT_CDB_LOG_FILE = '%s/var/log/cdb.log'         # requires install dir
 DEFAULT_CDB_CONSOLE_LOG_LEVEL = 'critical'
 DEFAULT_CDB_FILE_LOG_LEVEL = 'info'
 #DEFAULT_CDB_LOG_RECORD_FORMAT = '%(asctime)s,%(msecs)03d [%(levelname)s] %(module)s:%(lineno)d %(user)s@%(host)s %(name)s (%(process)d): %(message)s'
@@ -33,8 +32,8 @@ DEFAULT_CDB_LOG_RECORD_FORMAT = '%(asctime)s,%(msecs)03d %(levelname)s %(process
 DEFAULT_CDB_LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 DEFAULT_CDB_CHERRYPY_LOG_LEVEL = 'ERROR'
-DEFAULT_CDB_CHERRYPY_LOG_FILE = '%s/var/log/cherrypy.error'     # requires run dir
-DEFAULT_CDB_CHERRYPY_ACCESS_FILE = '%s/var/log/cherrypy.access' # requires run dir
+DEFAULT_CDB_CHERRYPY_LOG_FILE = '%s/var/log/cherrypy.error'     # requires install dir
+DEFAULT_CDB_CHERRYPY_ACCESS_FILE = '%s/var/log/cherrypy.access' # requires install dir
 
 DEFAULT_CDB_SERVICE_PORT = 10232           # 10CDB
 DEFAULT_CDB_SERVICE_HOST = '0.0.0.0'
@@ -48,7 +47,7 @@ DEFAULT_CDB_DB_PORT = 3306
 DEFAULT_CDB_DB_PASSWORD = ''
 DEFAULT_CDB_DB_USER = 'cdb'
 DEFAULT_CDB_DB_SCHEMA = 'cdb'
-DEFAULT_CDB_DB_PASSWORD_FILE = '%s/etc/mysql/cdb.db.passwd' # requires run dir
+DEFAULT_CDB_DB_PASSWORD_FILE = '%s/etc/cdb.db.passwd' # requires install dir
 
 DEFAULT_CDB_CONTEXT_ROOT = '/cdb'
 
@@ -102,12 +101,11 @@ class ConfigurationManager(UserDict.UserDict):
 
         self['defaultRootDir'] = DEFAULT_CDB_ROOT_DIR
         self.__setFromEnvVar('rootDir', 'CDB_ROOT_DIR')
-        self['defaultRunDir'] = DEFAULT_CDB_RUN_DIR % self.getRootDir()
-        self.__setFromEnvVar('runDir', 'CDB_RUN_DIR')
+        self['defaultInstallDir'] = DEFAULT_CDB_INSTALL_DIR % self.getRootDir()
+        self.__setFromEnvVar('installDir', 'CDB_INSTALL_DIR')
 
-        self['defaultConfigFile'] = DEFAULT_CDB_CONFIG_FILE % self.getRunDir()
-        self['defaultLogFile'] = DEFAULT_CDB_LOG_FILE % self.getRunDir()
-        self['defaultLogConfigFile'] = DEFAULT_CDB_LOG_CONFIG_FILE % self.getRunDir()
+        self['defaultConfigFile'] = DEFAULT_CDB_CONFIG_FILE % self.getInstallDir()
+        self['defaultLogFile'] = DEFAULT_CDB_LOG_FILE % self.getInstallDir()
 
         self['defaultConsoleLogLevel'] = DEFAULT_CDB_CONSOLE_LOG_LEVEL
         self['defaultFileLogLevel'] = DEFAULT_CDB_FILE_LOG_LEVEL
@@ -115,8 +113,8 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultLogDateFormat'] = DEFAULT_CDB_LOG_DATE_FORMAT
 
         self['defaultCherrypyLogLevel'] = DEFAULT_CDB_CHERRYPY_LOG_LEVEL
-        self['defaultCherrypyLogFile'] = DEFAULT_CDB_CHERRYPY_LOG_FILE % self.getRunDir()
-        self['defaultCherrypyAccessFile'] = DEFAULT_CDB_CHERRYPY_ACCESS_FILE % self.getRunDir()
+        self['defaultCherrypyLogFile'] = DEFAULT_CDB_CHERRYPY_LOG_FILE % self.getInstallDir()
+        self['defaultCherrypyAccessFile'] = DEFAULT_CDB_CHERRYPY_ACCESS_FILE % self.getInstallDir()
 
         self['defaultServicePort'] = DEFAULT_CDB_SERVICE_PORT
         self['defaultServiceHost'] = DEFAULT_CDB_SERVICE_HOST
@@ -127,7 +125,7 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultDbHost'] = DEFAULT_CDB_DB_HOST
         self['defaultDbPort'] = DEFAULT_CDB_DB_PORT
         self['defaultDbPassword'] = DEFAULT_CDB_DB_PASSWORD
-        self['defaultDbPasswordFile'] = DEFAULT_CDB_DB_PASSWORD_FILE % self.getRunDir()
+        self['defaultDbPasswordFile'] = DEFAULT_CDB_DB_PASSWORD_FILE % self.getInstallDir()
         self['defaultDbUser'] = DEFAULT_CDB_DB_USER
         self['defaultDbSchema'] = DEFAULT_CDB_DB_SCHEMA
 
@@ -141,7 +139,6 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultSslKeyFile'] = DEFAULT_CDB_SSL_KEY_FILE
                                                                                         # Settings that might come from environment variables.
         self.__setFromEnvVar('logFile', 'CDB_LOG_FILE')
-        self.__setFromEnvVar('logConfigFile', 'CDB_LOG_CONFIG_FILE')
         self.__setFromEnvVar('consoleLogLevel', 'CDB_CONSOLE_LOG_LEVEL')
         self.__setFromEnvVar('fileLogLevel', 'CDB_FILE_LOG_LEVEL')
         self.__setFromEnvVar('logRecordFormat', 'CDB_LOG_RECORD_FORMAT')
@@ -210,10 +207,14 @@ class ConfigurationManager(UserDict.UserDict):
             defaultValue = default
         return self.get(key, defaultValue)
 
-    def setOptionsFromConfigFile(self, configFile, configSection, keyList):
-        if configFile is not None and os.path.exists(configFile):
+    def setOptionsFromConfigFile(self, configSection, keyList, configFile=None):
+        _configFile = configFile
+        if _configFile is None:
+           _configFile = self.getConfigFile()
+            
+        if _configFile is not None and os.path.exists(_configFile):
             configParser = ConfigParser.RawConfigParser()
-            configParser.read(configFile)
+            configParser.read(_configFile)
             if not configParser.has_section(configSection):
                 return
             for key in keyList:
@@ -301,14 +302,14 @@ class ConfigurationManager(UserDict.UserDict):
     def getRootDir(self, default='__cdb_default__'):
         return self.__getKeyValue('rootDir', default)
 
-    def getDefaultRunDir(self):
-        return self['defaultRunDir']
+    def getDefaultInstallDir(self):
+        return self['defaultInstallDir']
 
-    def setRunDir(self, runDir):
-        self['runDir'] = runDir
+    def setInstallDir(self, installDir):
+        self['installDir'] = installDir
 
-    def getRunDir(self, default='__cdb_default__'):
-        return self.__getKeyValue('runDir', default)
+    def getInstallDir(self, default='__cdb_default__'):
+        return self.__getKeyValue('installDir', default)
 
     def getDefaultLogFile(self):
         return self['defaultLogFile']
@@ -321,18 +322,6 @@ class ConfigurationManager(UserDict.UserDict):
 
     def hasLogFile(self):
         return self.has_key('logFile')
-
-    def getDefaultLogConfigFile(self):
-        return self['defaultLogConfigFile']
-
-    def setLogConfigFile(self, logConfigFile):
-        self['logConfigFile'] = logConfigFile
-
-    def getLogConfigFile(self, default='__cdb_default__'):
-        return self.__getKeyValue('logConfigFile', default)
-
-    def hasLogConfigFile(self):
-        return self.has_key('logConfigFile')
 
     def getDefaultConsoleLogLevel(self):
         return self['defaultConsoleLogLevel']
