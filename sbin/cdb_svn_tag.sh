@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SVN_ROOT=https://svn.aps.anl.gov/cms
+SVN_ROOT=https://svn.aps.anl.gov/cdb
 version=$1
 if [ -z $version ]; then
     echo "Usage: $0 <version>"

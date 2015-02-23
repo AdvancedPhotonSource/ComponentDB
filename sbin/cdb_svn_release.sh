@@ -1,6 +1,6 @@
 #!/bin/sh
 
-SVN_ROOT=https://svn.aps.anl.gov/cms
+SVN_ROOT=https://svn.aps.anl.gov/cdb
 release=$1
 tag=$2
 if [ -z $release ]; then
