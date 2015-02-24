@@ -86,7 +86,7 @@ eval $cmd
 cmd="cat $configFile | sed 's?CdbSoftwareVersion=.*?CdbSoftwareVersion=${CDB_SOFTWARE_VERSION}?g' | sed 's?CDB_DATE?$CDB_DATE?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
-for cssFile in login portal components designs; do
+for cssFile in login portal components componentInstances designs; do
     configFile=resources/css/$cssFile.css
     cmd="cat $configFile | sed 's?color:.*CDB_CSS_PORTAL_TITLE_COLOR.*?color: ${CDB_CSS_PORTAL_TITLE_COLOR};?g' > $configFile.2 && mv $configFile.2 $configFile"
     eval $cmd
