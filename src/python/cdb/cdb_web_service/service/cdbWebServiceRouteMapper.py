@@ -15,6 +15,7 @@ from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.service.loginController import LoginController
 from fileSystemController import FileSystemController
 from fileSystemSessionController import FileSystemSessionController
+from userInfoController import UserInfoController
 
 #######################################################################
 
@@ -30,6 +31,7 @@ class CdbWebServiceRouteMapper:
         # Static instances shared between different routes
         fileSystemController = FileSystemController()
         fileSystemSessionController = FileSystemSessionController()
+        userInfoController = UserInfoController()
         loginController = LoginController()
 
         # Define routes.
@@ -45,23 +47,50 @@ class CdbWebServiceRouteMapper:
                 'method'        : ['GET', 'PUT', 'POST', 'DELETE']
             },
 
-            # Get directory listing
+            # Get user info list
             {
-                'name' : 'getDirectoryList',
-                'path' : '%s/directories/:(directoryName)' % contextRoot,
-                'controller' : fileSystemController,
-                'action' : 'getDirectoryList', 
-                'method' : ['GET', 'PUT', 'POST']
+                'name' : 'getUserInfoList',
+                'path' : '%s/users' % contextRoot,
+                'controller' : userInfoController,
+                'action' : 'getUserInfoList', 
+                'method' : ['GET']
             },
 
-            # Write file: requires login
+            # Get user by id
             {
-                'name' : 'writeFile',
-                'path' : '%s/files/:(fileName)' % contextRoot,
-                'controller' : fileSystemSessionController,
-                'action' : 'writeFile', 
-                'method' : ['POST']
+                'name' : 'getUserInfoById',
+                'path' : '%s/users/:(id)' % contextRoot,
+                'controller' : userInfoController,
+                'action' : 'getUserInfoById', 
+                'method' : ['GET']
             },
+
+            # Get user by username
+            {
+                'name' : 'getUserInfoByUsername',
+                'path' : '%s/usersByUsername/:(username)' % contextRoot,
+                'controller' : userInfoController,
+                'action' : 'getUserInfoByUsername', 
+                'method' : ['GET']
+            },
+
+            # Get directory listing (example method)
+            #{
+            #    'name' : 'getDirectoryList',
+            #    'path' : '%s/directories/:(directoryName)' % contextRoot,
+            #    'controller' : fileSystemController,
+            #    'action' : 'getDirectoryList', 
+            #    'method' : ['GET', 'PUT', 'POST']
+            #},
+
+            # Write file: requires login (example method)
+            #{
+            #    'name' : 'writeFile',
+            #    'path' : '%s/files/:(fileName)' % contextRoot,
+            #    'controller' : fileSystemSessionController,
+            #    'action' : 'writeFile', 
+            #    'method' : ['POST']
+            #},
         ]
        
         # Add routes to dispatcher. 

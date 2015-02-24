@@ -16,6 +16,8 @@ from cdb.common.utility import loggingManager
 
 class CdbObject(UserDict.UserDict):
     """ Base cdb object class. """
+    displayKeyList = [ 'id', 'name' ]
+
     def __init__(self, dict={}):
         if isinstance(dict, types.DictType): 
             UserDict.UserDict.__init__(self, dict)
@@ -41,12 +43,20 @@ class CdbObject(UserDict.UserDict):
     def getDictRep(self):
         # Dict representation is dict
         dictRep = {}
-        for (key,obj) in self.data.items():
-            if isinstance(obj, CdbObject):
-                dictRep[key] = obj.getDictRep()
+        for (key,value) in self.data.items():
+            if isinstance(value, CdbObject):
+                dictRep[key] = value.getDictRep()
+            elif type(value) == types.ListType:
+                itemList = []
+                for item in value:
+                    if isinstance(item, CdbObject):
+                        itemList.append(item.getDictRep())
+                    else:
+                        itemList.append(item)
+                dictRep[key] = itemList
             else:
-                if obj is not None:
-                    dictRep[key] = obj
+                if value is not None:
+                    dictRep[key] = value
         return dictRep
 
     def getDictJsonPreprocessedRep(self):
@@ -66,6 +76,28 @@ class CdbObject(UserDict.UserDict):
     def fromJsonString(cls, jsonString):
         return cls.getFromDict(json.loads(jsonString))
 
+    def display(self, keyList=[]):
+        displayKeyList = keyList
+        if not keyList:
+            displayKeyList = self.displayKeyList
+        display = ''
+        for key in displayKeyList:
+            if self.has_key(key):
+                value = self.get(key)
+                if isinstance(value, CdbObject):
+                    display = display + '%s={ %s} ' % (key, value.display())
+                elif isinstance(value, types.ListType):
+                    display = display + '%s=[ ' % key
+                    for item in value:
+                        if isinstance(item, CdbObject):
+                            display = display + '{ %s}, ' % (item)
+                        else:
+                            display = display + ' %s, ' % (item)
+                    display = display + '] '
+                else:
+                    display = display + '%s=%s ' % (key, value)
+        return display
+
 #######################################################################
 # Testing.
 
@@ -81,5 +113,6 @@ if __name__ == '__main__':
     x2 = CdbObject.fromJsonString(j)
     print 'CDB Object 2: ', x2
     print 'Type of CDB object 2: ', type(x2)
+    print x2.display()
 
 

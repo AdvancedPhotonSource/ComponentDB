@@ -146,7 +146,7 @@ class LoggingManager:
             rootLogger.addHandler(handler)
 
         # Get a logger factory based on our current config 
-        self.configureLoggers(configParser, defaultLevel=cm.getFileLogLevel())
+        self.configureLoggers(configParser, defaultLevel='debug')
 
     def configureLoggers(self, configParser, defaultLevel='error'):
         rootLogLevel = 'error'
@@ -226,15 +226,14 @@ class LoggingManager:
             except Exception, ex:
                 raise ConfigurationError(exception=ex)
 
-            # Look to see if there is a filter to apply to the handler
+            # Apply filters to handler
             filter = None
             try:
                 filter = configParser.get(configSection, 'filter')
+                if filter:
+                    handler.addFilter(logging.Filter(filter))
             except Exception, ex:
                 pass
-
-            if filter:
-                handler.addFilter(logging.Filter(filter))
         return handler
 
     def getLogger(self, name='defaultLogger'):
@@ -290,9 +289,12 @@ class LoggingManager:
 if __name__ == '__main__':
     lm = LoggingManager.getInstance()
     logger = lm.getLogger('Main')
+    logger.error('Error In Main')
+    logger.debug('Debug In Main')
+    logger.warn('Warn In Main')
     logger.info('Info In Main')
     logger = lm.getLogger('Main')
-    logger.info('Info In Main 2')
+    logger.info('Info In Main')
     logger = lm.getLogger('')
     logger.info('Info using root logger')
     logger = lm.getLogger('Main.2')

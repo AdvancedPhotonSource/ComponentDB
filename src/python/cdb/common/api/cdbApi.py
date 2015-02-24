@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 from cdb.common.utility.loggingManager import LoggingManager
 
 class CdbApi(object):
@@ -9,3 +10,12 @@ class CdbApi(object):
 
     def getLogger(self):
         return self.logger
+
+    @classmethod
+    def toCdbObjectList(cls, dictList, cdbObjectClass):
+        cdbObjectList = []
+        for dict in dictList:
+            cdbObjectList.append(cdbObjectClass(dict))
+        return cdbObjectList 
+      
+        

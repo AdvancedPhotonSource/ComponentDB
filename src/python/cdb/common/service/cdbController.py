@@ -8,6 +8,8 @@
 
 import cherrypy
 import httplib
+import json
+
 from sys import exc_info
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.constants import cdbStatus
@@ -63,7 +65,15 @@ class CdbController(object):
             status = cdbStatus.CDB_ERROR
         cls.addCdbResponseHeaders(status, msg, exClass)
 
-    def formatJsonResponse(self, response):
+    @classmethod
+    def formatJsonResponse(cls, response):
         cherrypy.response.headers['Content-Type'] = 'application/json'
         return '%s' % (response)
+
+    @classmethod
+    def toJson(cls, cdbObjectList):
+        jsonList = []
+        for cdbObject in cdbObjectList:
+            jsonList.append(cdbObject.getDictRep())
+        return json.dumps(jsonList)
 

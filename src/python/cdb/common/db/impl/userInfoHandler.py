@@ -15,12 +15,30 @@ class UserInfoHandler(CdbDbEntityHandler):
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
 
-    def getUserInfo(self, session, username):
+    def getUserInfoList(self, session):
+        self.logger.debug('Retrieving user info list')
+        dbUserInfoList = session.query(UserInfo).all()
+        for dbUserInfo in dbUserInfoList:
+            dbUserGroupNameList = session.query(UserGroup.name).join(UserUserGroup).filter(and_(UserUserGroup.user_id==dbUserInfo.id, UserUserGroup.user_group_id==UserGroup.id)).all()
+            dbUserInfo.userGroupNameList = map(lambda x: x[0], dbUserGroupNameList)
+        return dbUserInfoList
+
+    def getUserInfoById(self, session, id):
+        try:
+            self.logger.debug('Retrieving user info for id %s' % id)
+            dbUserInfo = session.query(UserInfo).filter(UserInfo.id==id).one()
+            dbUserGroupNameList = session.query(UserGroup.name).join(UserUserGroup).filter(and_(UserUserGroup.user_id==dbUserInfo.id, UserUserGroup.user_group_id==UserGroup.id)).all()
+            dbUserInfo.userGroupNameList = map(lambda x: x[0], dbUserGroupNameList)
+            return dbUserInfo
+        except NoResultFound, ex:
+            raise ObjectNotFound('User id %s does not exist.' % (id))
+
+    def getUserInfoByUsername(self, session, username):
         try:
             self.logger.debug('Retrieving user info for %s' % username)
             dbUserInfo = session.query(UserInfo).filter(UserInfo.username==username).one()
-            dbUserGroupList = session.query(UserGroup).join(UserUserGroup).filter(and_(UserUserGroup.user_id==dbUserInfo.id, UserUserGroup.user_group_id==UserGroup.id)).all()
-            dbUserInfo.userGroupList = dbUserGroupList
+            dbUserGroupNameList = session.query(UserGroup.name).join(UserUserGroup).filter(and_(UserUserGroup.user_id==dbUserInfo.id, UserUserGroup.user_group_id==UserGroup.id)).all()
+            dbUserInfo.userGroupNameList = map(lambda x: x[0], dbUserGroupNameList)
             return dbUserInfo
         except NoResultFound, ex:
             raise ObjectNotFound('Username %s does not exist.' % (username))

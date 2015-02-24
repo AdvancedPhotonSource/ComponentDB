@@ -49,6 +49,13 @@ class CdbDbApi:
             except InternalError, ex:
                 self.logger.error(ex)
 
+    def toCdbObjectList(self, dbEntityList):
+        cdbObjectList = []
+        for dbEntity in dbEntityList:
+            cdbObjectList.append(dbEntity.getCdbObject())
+        return cdbObjectList
+
+#######################################################################
 # Testing.
 if __name__ == '__main__':
     api = CdbDbApi()

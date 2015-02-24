@@ -39,6 +39,7 @@ class CdbCli(object):
         self.addOptionToGroup(commonGroup, '-?', '',       action='help', help='Show this help message and exit.')
         self.addOptionToGroup(commonGroup, '-v', '--version', action='store_true', dest='version', default=False, help='Print version and exit.')
         self.addOptionToGroup(commonGroup, '-d', '--debug', dest='consoleLogLevel', help='Set debug level (valid values: critical, error, warning, info, debug).')
+        self.addOptionToGroup(commonGroup, '', '--dict', action='store_true', dest='dict', default=False, help='Print output objects in dictionary format.') 
 
         # These will be set via env variables
         #self.addOptionToGroup(commonGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s).' % self.getDefaultServiceHost())
@@ -111,10 +112,14 @@ class CdbCli(object):
             print '%s version: %s' % (os.path.basename(sys.argv[0]), ConfigurationManager.getInstance().getCdbRelease())
             sys.exit(0)
 
-        # Logging level.
+        # Logging level. First try from command line, then from env variable.
         consoleLogLevel = optDict.get('consoleLogLevel', None)
         if consoleLogLevel:
             LoggingManager.getInstance().setConsoleLogLevel(consoleLogLevel)
+        else:
+            consoleLogLevel = ConfigurationManager.getInstance().getConsoleLogLevelFromEnvVar()
+            if consoleLogLevel:
+                LoggingManager.getInstance().setConsoleLogLevel(consoleLogLevel)
 
         # Service host, port, etc.
         #configManager = ConfigurationManager.getInstance()
@@ -230,6 +235,16 @@ class CdbCli(object):
         if id == None:
             raise InvalidRequest('Missing id.')
         return id
+
+    def displayCdbObject(self, cdbObject):
+        optDict = self._options.__dict__
+        if isinstance(cdbObject, CdbObject):
+            if optDict.get('dict'):
+                 return '%s' % cdbObject
+            else:
+                 return cdbObject.display()
+        else:
+            return '%s' % cdbObject
 
 #######################################################################
 # Testing

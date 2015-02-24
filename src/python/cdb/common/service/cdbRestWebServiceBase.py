@@ -212,7 +212,6 @@ class CdbRestWebServiceBase:
         sslCertFile = self.configurationManager.getSslCertFile()
         sslKeyFile = self.configurationManager.getSslKeyFile()
         sslCaCertFile = self.configurationManager.getSslCaCertFile()
-        self.logger.info('Using SSL CA cert file: %s' % sslCaCertFile)
         if sslCertFile != None and sslKeyFile != None:
             server.ssl_ca_certificate = None
             if sslCaCertFile != None:

@@ -24,8 +24,8 @@ DEFAULT_CDB_INSTALL_DIR = '%s'                      # requires install dir
 DEFAULT_CDB_CONFIG_FILE = '%s/etc/cdb.conf'         # requires install dir
 
 DEFAULT_CDB_LOG_FILE = '%s/var/log/cdb.log'         # requires install dir
-DEFAULT_CDB_CONSOLE_LOG_LEVEL = 'critical'
-DEFAULT_CDB_FILE_LOG_LEVEL = 'info'
+DEFAULT_CDB_CONSOLE_LOG_LEVEL = 'CRITICAL'
+DEFAULT_CDB_FILE_LOG_LEVEL = 'INFO'
 #DEFAULT_CDB_LOG_RECORD_FORMAT = '%(asctime)s,%(msecs)03d [%(levelname)s] %(module)s:%(lineno)d %(user)s@%(host)s %(name)s (%(process)d): %(message)s'
 #DEFAULT_CDB_LOG_RECORD_FORMAT = '%(asctime)s,%(msecs)03d %(levelname)s %(module)s:%(lineno)d %(process)d:  %(message)s'
 DEFAULT_CDB_LOG_RECORD_FORMAT = '%(asctime)s,%(msecs)03d %(levelname)s %(process)d:  %(message)s'
@@ -331,6 +331,9 @@ class ConfigurationManager(UserDict.UserDict):
 
     def getConsoleLogLevel(self, default='__cdb_default__'):
         return self.__getKeyValue('consoleLogLevel', default)
+
+    def getConsoleLogLevelFromEnvVar(self):
+        return os.environ.get('CDB_CONSOLE_LOG_LEVEL')
 
     def hasConsoleLogLevel(self):
         return self.has_key('consoleLogLevel')
