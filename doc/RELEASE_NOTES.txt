@@ -1,5 +1,38 @@
-Release 201401031 (10/31/2014)
-=============================
+Release 1.2 (Tag 20150228) (02/28/2015)
+=======================================
+
+- Redesigned portal home page	 	 
+- Redesigned color coding scheme for main collections	 	 
+- Enhanced design views	 	 
+- Added cloning of properties for designs	 	 
+- Added component instance list view and menu tab
+
+Release 1.1 (Tag 20150131) (01/31/2015)
+=======================================
+
+- Developed initial support for designs	 	 
+- Developed support for assemblies (complex components)	 	 
+- Added property type handlers (Date, Boolean)
+
+Tag 20141231 (12/31/2014)
+-------------------------
+
+- Developed support for locations	 	 
+- Developed support for component instances	 	 
+- Added property type handlers (Document, AMOS Link, EDP Link, Currency)
+
+Tag 20141130 (11/30/2014)
+-------------------------
+
+- Enhanced support for components and component types	 	 
+- Developed support for property value history	 	 
+- Developed support for allowed property type values	 	 
+- Designed property type handler framework	 	 
+- Added implementation of several property type handlers (ICMS Link, PARIS Link,
+Image)
+
+Tag 20141031 (10/31/2014)
+-------------------------
 
 - Moved development from CMS to CDB
 - New component db schema to reflect latest set of user requirements
@@ -7,16 +40,17 @@ Release 201401031 (10/31/2014)
   support for components
 - More consistent UI look and feel based on common elements
 
-Release 20140731 (07/31/2014)
-=============================
+Release 1.0 (Tag 20140731) (07/31/2014)
+=======================================
 
+- Completed initial support for collections
 - Resolved issue with regular users being able to add property and 
   component types
 - Added implementation for list view customization for component and property
   types/categories
 - Enhanced system backup scripts
 
-Release 20140531 (05/31/2014)
+Release 0.2 (Tag 20140531) (05/31/2014)
 =============================
 
 - Enhanced deployment scripts to allow multiple databases/applications
@@ -26,8 +60,8 @@ Release 20140531 (05/31/2014)
   for all main tables
 - Introduced component type selection mechanism
 
-Release 20140430 (04/30/2014)
-=============================
+Tag 20140430 (04/30/2014)
+-------------------------
 
 - Added framework for managing user settings
 - Added filter management for collections, components, users/groups
@@ -40,8 +74,8 @@ Release 20140430 (04/30/2014)
     - Added priority columns for design/collection/assembly components
     - Introduced collection links instead of parent collections
 
-Release 20140331 (03/31/2014)
-=============================
+Release 0.1 (Tag 20140331) (03/31/2014)
+=======================================
 
 - Completed initial DB design and schema creation scripts
 - Developed glassfish deployment/configuration scripts (SSL enabled)
