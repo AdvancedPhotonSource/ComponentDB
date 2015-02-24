@@ -667,6 +667,11 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         this.selectedObject = selectedObject;
     }
 
+    public void resetListDataModelAndSetCurrent(EntityType currentEntity) {
+        resetListDataModel();
+        current = currentEntity;
+    }
+    
     public void resetListDataModel() {
         listDataModel = null;
         listDataTable = null;

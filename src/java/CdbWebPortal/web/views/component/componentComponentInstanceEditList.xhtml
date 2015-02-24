@@ -12,7 +12,7 @@
         <ui:param name="addActionController" value="#{componentController}"/>
         <ui:param name="addAction" value="prepareAddComponentInstance"/>
         <ui:param name="addActionParameter" value="#{componentController.current}"/>
-        <ui:param name="addActionOnComplete" value=""/>
+        <ui:param name="addActionOnComplete" value="#{componentInstanceController.resetListDataModel()}"/>
         <ui:param name="saveAction" value="saveComponentInstanceList"/>
         <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
     </ui:include>    

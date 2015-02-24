@@ -24,7 +24,8 @@
 
             <p/>
             <div class="actionButton">
-                <p:commandButton id="componentInstanceCreateSaveButton" 
+                <p:commandButton id="componentInstanceCreateSaveButton"
+                                 actionListener="#{componentInstanceController.resetListDataModelAndSetCurrent(componentInstanceController.current)}"
                                  action="#{componentController.addComponentInstance(componentInstanceController.current)}" 
                                  value="Save" alt="Save" icon="ui-icon-check" update="@form">
                     <p:tooltip for="componentInstanceCreateSaveButton" value="Save new component instance."/>

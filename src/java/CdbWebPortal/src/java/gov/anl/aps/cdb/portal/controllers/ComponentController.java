@@ -432,9 +432,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     public void deleteComponentInstance(ComponentInstance componentInstance) {
-        Component component = getCurrent();
+        Component component = componentInstance.getComponent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
         componentInstanceList.remove(componentInstance);
+        setCurrent(component);
         updateOnRemoval();
     }
 
