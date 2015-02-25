@@ -112,14 +112,12 @@
         </p:column>
 
         <p:column headerText="Actions">
-            <div class="actionLink">
-                <p:commandLink id="componentInstanceListViewLink" 
-                               action="#{componentInstanceController.prepareViewFromComponent(componentInstanceObject)}" 
-                               styleClass="ui-icon ui-icon-info" 
-                               title="View">
-                    <p:tooltip for="componentInstanceListViewLink" value="View #{componentInstanceController.displayEntityTypeName} details."/>
-                </p:commandLink>
-            </div>
+            <ui:include src="../common/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{componentInstanceController}"/>
+                <ui:param name="entityObject" value="#{componentInstanceObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentInstanceObject.entityInfo)}"/>
+                <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
+            </ui:include>
         </p:column>
 
 

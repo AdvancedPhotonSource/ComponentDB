@@ -4,6 +4,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
+    <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
     <p:confirmDialog id="componentInstanceDestroyDialog" 
                      widgetVar="componentInstanceDestroyDialogWidget"
                      message="Delete component instance id #{componentInstanceObject.id} (QR id: #{componentInstanceObject.qrIdDisplay})?"

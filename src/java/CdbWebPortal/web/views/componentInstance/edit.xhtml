@@ -8,7 +8,7 @@
                 template="../../templates/componentInstancesViewTemplate.xhtml">
 
     <ui:define name="middleCenter">
-        <h:form id="editComponentForm" 
+        <h:form id="editComponentInstanceForm" 
                 enctype="multipart/form-data"
                 rendered="#{(loginController.loggedIn and 
                             loginController.isEntityWriteable(componentInstanceController.selected.entityInfo))}">
@@ -22,22 +22,10 @@
                 <ui:include src="componentInstanceEditPanelGrid.xhtml"/>
 
                 <p/>
+                <p/>
                 <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
-                <ui:param name="entityController" value="#{componentInstanceController}"/>
-                <div class="actionButton">
-                    <p:commandButton id="componentInstanceEditViewButton" action="#{componentInstanceController.view()}" 
-                                     value="View" alt="View" icon="ui-icon-info" update="@form">
-                        <p:tooltip for="componentInstanceEditViewButton" value="View component instance."/>
-                    </p:commandButton>
-                    <p:commandButton id="componentInstanceEditSaveButton" action="#{componentInstanceController.update()}" 
-                                     value="Save" alt="Save" icon="ui-icon-check" update="@form">
-                        <p:tooltip for="componentInstanceEditSaveButton" value="Save component instance."/>
-                    </p:commandButton>
-                    <p:commandButton id="componentInstanceEditDoneButton" action="#{componentInstanceController.prepareViewToComponent(componentInstanceObject)}" immediate="true" 
-                                     value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w">
-                        <p:tooltip for="componentInstanceEditDoneButton" value="Return to component details page."/>                    
-                    </p:commandButton>
-                </div>
+                <ui:param name="entityController" value="#{componentInstanceController}"/>                
+                <ui:include src="../common/commonEditActionButtons.xhtml"/>
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">

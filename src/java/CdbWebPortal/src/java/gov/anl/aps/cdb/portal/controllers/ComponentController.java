@@ -385,9 +385,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
         componentInstanceList.add(componentInstance);
     }
     
-    public void prepareAddClonedComponentInstance(Component component, ComponentInstance componentInstance) {
+    public void prepareAddClonedComponentInstance(ComponentInstance componentInstance) {
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
+        List<ComponentInstance> componentInstanceList = componentInstance.getComponent().getComponentInstanceList();
         ComponentInstance clonedComponentInstance = componentInstance.copyAndSetEntityInfo(entityInfo);
         componentInstanceList.add(clonedComponentInstance);      
     }

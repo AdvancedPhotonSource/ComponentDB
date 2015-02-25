@@ -23,25 +23,11 @@
 
                 <p/>
                 <ui:param name="componentObject" value="#{componentController.selected}"/>
-                <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
+                <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>                
                 <ui:param name="entityController" value="#{componentInstanceController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentInstanceObject.entityInfo)}"/>
-                <div class="actionButton">
-                    <p:commandButton id="componentInstanceViewEditButton" action="#{componentInstanceController.prepareEdit(componentInstanceObject)}" 
-                                     rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil">
-                        <p:tooltip for="componentInstanceViewEditButton" value="Edit component instance."/>
-                    </p:commandButton>
-                    <p:commandButton id="componentInstanceViewDeleteButton" onclick="PF('componentInstanceDestroyDialogWidget').show();" 
-                                     rendered="#{(isEntityWriteable and loginController.isEntityWriteable(componentObject.entityInfo))}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                        <p:tooltip for="componentInstanceViewDeleteButton" value="Delete component instance."/>
-                    </p:commandButton>  
-                    <p:commandButton id="componentInstanceViewDoneButton" action="#{componentInstanceController.prepareViewToComponent(componentInstanceObject)}" 
-                                     value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w">
-                        <p:tooltip for="componentInstanceViewDoneButton" value="Return to previous page."/>
-                    </p:commandButton>
-                    <p:commandButton id="componentInstanceViewNoOp" style="visibility:hidden" value="NoOp"/>
-                    <p:defaultCommand target="componentInstanceViewNoOp"/>
-                </div>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
+                <ui:include src="../common/commonViewActionButtons.xhtml"/>
                 <ui:include src="componentInstanceDestroyDialog.xhtml"/>
 
 
