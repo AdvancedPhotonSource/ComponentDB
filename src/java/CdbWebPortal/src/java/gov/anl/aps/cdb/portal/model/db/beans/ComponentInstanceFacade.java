@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -17,8 +17,8 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance>
-{
+public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -30,7 +30,7 @@ public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance>
     public ComponentInstanceFacade() {
         super(ComponentInstance.class);
     }
- 
+
     public ComponentInstance findById(Integer id) {
         try {
             return (ComponentInstance) em.createNamedQuery("ComponentInstance.findById")
@@ -39,8 +39,8 @@ public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance>
         } catch (NoResultException ex) {
         }
         return null;
-    }    
-    
+    }
+
     public ComponentInstance findByQrId(Integer qrId) {
         try {
             return (ComponentInstance) em.createNamedQuery("ComponentInstance.findByQrId")
@@ -49,5 +49,15 @@ public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance>
         } catch (NoResultException ex) {
         }
         return null;
-    }      
+    }
+
+    public void checkUniqueness(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+        if (componentInstance.getQrId() != null) {
+            // Check QR Id
+            ComponentInstance existingComponentInstance = findByQrId(componentInstance.getQrId());
+            if (existingComponentInstance != null && !existingComponentInstance.getId().equals(componentInstance.getId())) {
+                throw new ObjectAlreadyExists("Component instance with QR ID " + componentInstance.getQrId() + " already exists.");
+            }
+        }
+    }
 }

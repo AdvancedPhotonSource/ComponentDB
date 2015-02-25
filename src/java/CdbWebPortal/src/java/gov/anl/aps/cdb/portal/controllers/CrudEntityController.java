@@ -161,7 +161,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     public String getEntityTypeTypeName() {
         return null;
     }
-    
+
     public String getDisplayEntityTypeName() {
         return getEntityTypeName();
     }
@@ -483,6 +483,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             getFacade().create(current);
             SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
+            resetSelectDataModel();
             current = newEntity;
             return view();
         } catch (CdbException | RuntimeException ex) {
@@ -512,6 +513,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             EntityType updatedEntity = getFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
+            resetSelectDataModel();
             resetLogText();
             current = updatedEntity;
             return view();
@@ -531,6 +533,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             EntityType updatedEntity = getFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
+            resetSelectDataModel();
             resetLogText();
             current = updatedEntity;
             return view();
@@ -564,6 +567,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             getFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
+            resetSelectDataModel();
             clearListFilters();
             return prepareList();
         } catch (CdbException ex) {
@@ -671,7 +675,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         resetListDataModel();
         current = currentEntity;
     }
-    
+
     public void resetListDataModel() {
         listDataModel = null;
         listDataTable = null;
@@ -790,7 +794,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     public boolean entityHasTypes() {
         return getEntityTypeTypeName() != null;
     }
-    
+
     public boolean entityHasGroups() {
         return getEntityTypeGroupName() != null;
     }

@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
@@ -59,7 +58,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private static final String DisplayQrIdSettingTypeKey = "ComponentInstance.List.Display.QrId";
     private static final String DisplaySerialNumberSettingTypeKey = "ComponentInstance.List.Display.SerialNumber";
 
-    private static final String FilterByComponentSettingTypeKey = "ComponentInstance.List.FilterBy.Component";    
+    private static final String FilterByComponentSettingTypeKey = "ComponentInstance.List.FilterBy.Component";
     private static final String FilterByCreatedByUserSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedOnDateTime";
     private static final String FilterByDescriptionSettingTypeKey = "ComponentInstance.List.FilterBy.Description";
@@ -93,7 +92,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private Boolean displayQrId = null;
     private Boolean displaySerialNumber = null;
 
-    private String filterByComponent = null;    
+    private String filterByComponent = null;
     private String filterByLocation = null;
     private String filterByLocationDetails = null;
     private String filterByQrId = null;
@@ -146,16 +145,16 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
         return componentInstance;
     }
-    
+
     @Override
     public ComponentInstance cloneEntityInstance(ComponentInstance componentInstance) {
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         List<ComponentInstance> componentInstanceList = componentInstance.getComponent().getComponentInstanceList();
         ComponentInstance clonedComponentInstance = componentInstance.copyAndSetEntityInfo(entityInfo);
-        componentInstanceList.add(clonedComponentInstance);      
+        componentInstanceList.add(clonedComponentInstance);
         super.setLogText("Cloned from component instance id " + componentInstance.getId());
         return clonedComponentInstance;
-    }    
+    }
 
     @Override
     public String getEntityTypeName() {
@@ -238,6 +237,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     @Override
     public void prepareEntityInsert(ComponentInstance componentInstance) throws ObjectAlreadyExists {
         componentInstance.resetAttributesToNullIfEmpty();
+        componentInstanceFacade.checkUniqueness(componentInstance);
     }
 
     @Override
@@ -249,6 +249,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     @Override
     public void prepareEntityUpdate(ComponentInstance componentInstance) throws ObjectAlreadyExists {
+        componentInstance.resetAttributesToNullIfEmpty();
+        componentInstanceFacade.checkUniqueness(componentInstance);
         EntityInfo entityInfo = componentInstance.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
 
@@ -282,7 +284,6 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
                 newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
             }
         }
-        componentInstance.resetAttributesToNullIfEmpty();
         componentInstance.clearPropertyValueCache();
         prepareComponentInstanceImageList(componentInstance);
         logger.debug("Updating component instance id " + componentInstance.getId()
@@ -425,7 +426,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
 
-        filterByComponent = settingTypeMap.get(FilterByComponentSettingTypeKey).getDefaultValue();        
+        filterByComponent = settingTypeMap.get(FilterByComponentSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
 
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
@@ -475,7 +476,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         displayPropertyTypeId4 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         displayPropertyTypeId5 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
 
-        filterByComponent = sessionUser.getUserSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);        
+        filterByComponent = sessionUser.getUserSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
 
         filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
@@ -548,7 +549,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
 
-        sessionUser.setUserSettingValue(FilterByComponentSettingTypeKey, filterByComponent);        
+        sessionUser.setUserSettingValue(FilterByComponentSettingTypeKey, filterByComponent);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
         sessionUser.setUserSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
@@ -715,7 +716,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     public void setFilterByComponent(String filterByComponent) {
         this.filterByComponent = filterByComponent;
     }
-    
+
     public String getFilterByLocation() {
         return filterByLocation;
     }

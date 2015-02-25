@@ -5,6 +5,7 @@ import gov.anl.aps.cdb.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -95,6 +96,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private ComponentTypeFacade componentTypeFacade;
 
     @EJB
+    private ComponentInstanceFacade componentInstanceFacade;
+
+    @EJB
     private PropertyTypeFacade propertyTypeFacade;
 
     @EJB
@@ -180,12 +184,11 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return "component";
     }
 
-
     @Override
     public String getEntityTypeTypeName() {
         return "componentType";
     }
-    
+
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -234,7 +237,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
         }
 
         component.addComponentTypeProperties();
-        logger.debug("Inserting new component " + component.getName() + " (user: " 
+        logger.debug("Inserting new component " + component.getName() + " (user: "
                 + entityInfo.getCreatedByUser().getUsername() + ")");
     }
 
@@ -293,9 +296,10 @@ public class ComponentController extends CrudEntityController<Component, Compone
         if (componentInstanceList != null) {
             for (ComponentInstance componentInstance : componentInstanceList) {
                 componentInstance.resetAttributesToNullIfEmpty();
+                componentInstanceFacade.checkUniqueness(componentInstance);
             }
         }
-        
+
         List<AssemblyComponent> assemblyComponentList = component.getAssemblyComponentList();
         if (assemblyComponentList != null) {
             for (AssemblyComponent assemblyComponent : assemblyComponentList) {
@@ -304,7 +308,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
                 }
             }
         }
-        
+
         // Catch circular dependencies.
         AssemblyComponentUtility.createAssemblyRoot(component);
 
@@ -384,14 +388,14 @@ public class ComponentController extends CrudEntityController<Component, Compone
         componentInstance.setComponent(component);
         componentInstanceList.add(componentInstance);
     }
-    
+
     public void prepareAddClonedComponentInstance(ComponentInstance componentInstance) {
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         List<ComponentInstance> componentInstanceList = componentInstance.getComponent().getComponentInstanceList();
         ComponentInstance clonedComponentInstance = componentInstance.copyAndSetEntityInfo(entityInfo);
-        componentInstanceList.add(clonedComponentInstance);      
+        componentInstanceList.add(clonedComponentInstance);
     }
-        
+
     public void saveComponentInstanceList() {
         Component component = getCurrent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
@@ -1044,9 +1048,8 @@ public class ComponentController extends CrudEntityController<Component, Compone
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
     }
-    
-        
-     public TreeNode createAssemblyRoot(Component assembly) throws CdbException {
-         return ComponentUtility.createAssemblyRoot(assembly);    
-     }
+
+    public TreeNode createAssemblyRoot(Component assembly) throws CdbException {
+        return ComponentUtility.createAssemblyRoot(assembly);
+    }
 }
