@@ -82,7 +82,7 @@ if [ -z "$CDB_DB_USER_PASSWORD" ]; then
     stty $sttyOrig
     echo
 fi
-if [ -z "$CDB_USER_PASSWORD" ]; then
+if [ -z "$CDB_DB_PASSWORD" ]; then
     echo "$CDB_DB_USER user password cannot be empty."
     exit 1
 fi
