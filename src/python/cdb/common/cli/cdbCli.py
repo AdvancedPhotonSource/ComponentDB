@@ -6,6 +6,7 @@ import os.path
 import stat
 from optparse import OptionGroup
 
+import cdb
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.utility.osUtility import OsUtility
@@ -38,8 +39,9 @@ class CdbCli(object):
         self.addOptionToGroup(commonGroup, '-h', '--help', action='help', help='Show this help message and exit.')
         self.addOptionToGroup(commonGroup, '-?', '',       action='help', help='Show this help message and exit.')
         self.addOptionToGroup(commonGroup, '-v', '--version', action='store_true', dest='version', default=False, help='Print version and exit.')
-        self.addOptionToGroup(commonGroup, '-d', '--debug', dest='consoleLogLevel', help='Set debug level (valid values: critical, error, warning, info, debug).')
-        self.addOptionToGroup(commonGroup, '', '--dict', action='store_true', dest='dict', default=False, help='Print output objects in dictionary format.') 
+        self.addOptionToGroup(commonGroup, '-d', '--debug', dest='consoleLogLevel', help='Set debug level (valid values: CRITICAL, ERROR, WARNING, INFO, DEBUG).')
+        self.addOptionToGroup(commonGroup, '', '--display-format', dest='displayFormat', default=CdbObject.TEXT_DISPLAY_FORMAT, help='Display format for output objects. Possible options are: %s, %s, and %s (default: %s).' % (CdbObject.TEXT_DISPLAY_FORMAT, CdbObject.DICT_DISPLAY_FORMAT, CdbObject.JSON_DISPLAY_FORMAT, CdbObject.TEXT_DISPLAY_FORMAT)) 
+        self.addOptionToGroup(commonGroup, '', '--display-keys', dest='displayKeys', default=CdbObject.DISPLAY_DEFAULT_KEYS, help='List of output object keys to display. Possible options are: %s, %s, and string containing comma-separated keys (default: %s, represents class default keys).' % (CdbObject.DISPLAY_DEFAULT_KEYS, CdbObject.DISPLAY_ALL_KEYS, CdbObject.DISPLAY_DEFAULT_KEYS)) 
 
         # These will be set via env variables
         #self.addOptionToGroup(commonGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s).' % self.getDefaultServiceHost())
@@ -65,6 +67,12 @@ class CdbCli(object):
 
     def getPassword(self):
         return None
+
+    def getDisplayFormat(self):
+        return self.options.displayFormat
+
+    def getDisplayKeys(self):
+        return self.options.displayKeys
 
     def getLogger(self):
         return self.logger
@@ -109,7 +117,7 @@ class CdbCli(object):
 
         optDict = self.options.__dict__
         if optDict.get('version'):
-            print '%s version: %s' % (os.path.basename(sys.argv[0]), ConfigurationManager.getInstance().getCdbRelease())
+            print 'CDB Software Version: %s' % (cdb.__version__)
             sys.exit(0)
 
         # Logging level. First try from command line, then from env variable.

@@ -104,7 +104,6 @@ class CdbRestApi(CdbApi):
         # setHost()
         sm.setHost(self.__getWebServiceUrl(url))
         (response, responseData) = self.getSessionManager().sendRequest(url, method, contentType, data)
-        print "RESPONSE: ", responseData
         return json.loads(responseData)
 
 #######################################################################

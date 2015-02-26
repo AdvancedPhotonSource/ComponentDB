@@ -16,7 +16,14 @@ from cdb.common.utility import loggingManager
 
 class CdbObject(UserDict.UserDict):
     """ Base cdb object class. """
-    displayKeyList = [ 'id', 'name' ]
+    DISPLAY_ALL_KEYS = '__all__'
+    DISPLAY_DEFAULT_KEYS = '__default__'
+
+    DICT_DISPLAY_FORMAT = 'dict'
+    TEXT_DISPLAY_FORMAT = 'text'
+    JSON_DISPLAY_FORMAT = 'json'
+
+    DEFAULT_DISPLAY_KEY_LIST = [ 'id', 'name' ]
 
     def __init__(self, dict={}):
         if isinstance(dict, types.DictType): 
@@ -25,7 +32,6 @@ class CdbObject(UserDict.UserDict):
             UserDict.UserDict.__init__(self, dict.data)
         else:
             raise InvalidArgument('CdbObject instance must be initialized using dictionary.')
-        self.jsonPreprocessKeyList = []
         self.logger = None
 
     def getLogger(self):
@@ -40,10 +46,30 @@ class CdbObject(UserDict.UserDict):
             inst[key] = dict[key]
         return inst
 
-    def getDictRep(self):
+    def getRepKeyList(self, keyList):
+        if keyList is None:
+            return self.DEFAULT_DISPLAY_KEY_LIST
+        elif type(keyList) == types.ListType:
+            return keyList
+        elif type(keyList) == types.StringType:
+            if keyList == CdbObject.DISPLAY_ALL_KEYS:
+                return self.data.keys()
+            elif keyList == CdbObject.DISPLAY_DEFAULT_KEYS:
+                return self.DEFAULT_DISPLAY_KEY_LIST
+            else:
+                # Assume keys are separated by comma
+                return keyList.split(',')
+        else: 
+            # Unknown key list parameter.
+            raise InvalidArgument('Key list parameter must be one of: None, string "%s", string "%s", string containing comma-separated keys, or list of strings.' (CdbObject.DISPLAY_ALL_KEYS, CdbObject.DISPLAY_DEFAULT_KEYS))
+            
+
+    def getDictRep(self, keyList=[]):
         # Dict representation is dict
         dictRep = {}
-        for (key,value) in self.data.items():
+        displayKeyList = self.getRepKeyList(keyList)
+        for key in displayKeyList:
+            value = self.get(key)
             if isinstance(value, CdbObject):
                 dictRep[key] = value.getDictRep()
             elif type(value) == types.ListType:
@@ -59,44 +85,44 @@ class CdbObject(UserDict.UserDict):
                     dictRep[key] = value
         return dictRep
 
-    def getDictJsonPreprocessedRep(self):
-        dictRep = self.getDictRep()
-        # Convert designated keys into string values.
-        for key in self.jsonPreprocessKeyList:
-            value = dictRep.get(key)
-            if value is not None:
-                dictRep[key] = '%s' % value
-        return dictRep
+    def getTextRep(self, keyList=[]):
+        display = ''
+        displayKeyList = self.getRepKeyList(keyList)
+        for key in displayKeyList:
+            value = self.get(key)
+            value = self.get(key)
+            if isinstance(value, CdbObject):
+                display = display + '%s={ %s} ' % (key, value.display())
+            elif isinstance(value, types.ListType):
+                display = display + '%s=[ ' % key
+                for item in value:
+                    if isinstance(item, CdbObject):
+                        display = display + '{ %s}, ' % (item)
+                    else:
+                        display = display + ' %s, ' % (item)
+                display = display + '] '
+            else:
+                if value is not None:
+                    display = display + '%s=%s ' % (key, value)
+        return display
 
-    def getJsonRep(self):
-        dictRep = self.getDictJsonPreprocessedRep()
+    def getJsonRep(self, keyList=[]):
+        dictRep = self.getDictRep(keyList)
         return json.dumps(dictRep)
 
     @classmethod 
     def fromJsonString(cls, jsonString):
         return cls.getFromDict(json.loads(jsonString))
 
-    def display(self, keyList=[]):
-        displayKeyList = keyList
-        if not keyList:
-            displayKeyList = self.displayKeyList
-        display = ''
-        for key in displayKeyList:
-            if self.has_key(key):
-                value = self.get(key)
-                if isinstance(value, CdbObject):
-                    display = display + '%s={ %s} ' % (key, value.display())
-                elif isinstance(value, types.ListType):
-                    display = display + '%s=[ ' % key
-                    for item in value:
-                        if isinstance(item, CdbObject):
-                            display = display + '{ %s}, ' % (item)
-                        else:
-                            display = display + ' %s, ' % (item)
-                    display = display + '] '
-                else:
-                    display = display + '%s=%s ' % (key, value)
-        return display
+    def getDisplayString(self, displayKeyList=[], displayFormat=TEXT_DISPLAY_FORMAT):
+        if displayFormat == CdbObject.DICT_DISPLAY_FORMAT:
+            return self.getDictRep(displayKeyList)
+        elif displayFormat == CdbObject.TEXT_DISPLAY_FORMAT:
+            return self.getTextRep(displayKeyList)
+        elif displayFormat == CdbObject.JSON_DISPLAY_FORMAT:
+            return self.getJsonRep(displayKeyList)
+        raise InvalidArgument('Unrecognized display displayFormat: %s.' (displayFormat))
+
 
 #######################################################################
 # Testing.
@@ -113,6 +139,6 @@ if __name__ == '__main__':
     x2 = CdbObject.fromJsonString(j)
     print 'CDB Object 2: ', x2
     print 'Type of CDB object 2: ', type(x2)
-    print x2.display()
+    print x2.getDisplayString(displayKeyList='__all__')
 
 
