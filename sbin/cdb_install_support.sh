@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CDB_SVN_URL=https://svn.aps.anl.gov/cms
+CDB_SVN_URL=https://svn.aps.anl.gov/cdb
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 if [ -z "${CDB_ROOT_DIR}" ]; then
@@ -21,8 +21,8 @@ if [ ! -d $CDB_SUPPORT_DIR ]; then
 fi
 cd $CDB_SUPPORT_DIR
 execute svn update
-execute $CDB_SUPPORT/bin/clean_all.sh
-execute $CDB_SUPPORT/bin/install_all.sh
+execute $CDB_SUPPORT_DIR/bin/clean_all.sh
+execute $CDB_SUPPORT_DIR/bin/install_all.sh
 
 if [ ! -d $CDB_DATA_DIR ]; then
     echo "Creating data directories"
