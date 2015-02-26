@@ -20,12 +20,14 @@ fi
 . ${CDB_ENV_FILE} > /dev/null
 CDB_INSTALL_DIR=${CDB_INSTALL_DIR:=$CDB_ROOT_DIR/..}
 CDB_ETC_DIR=${CDB_INSTALL_DIR}/etc
+CDB_LOG_DIR=${CDB_INSTALL_DIR}/var/log
 CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/cdb.conf
-CDB_WEB_SERVICE_LOG_FILE=${CDB_INSTALL_DIR}/var/log/cdb.log
+CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/cdb.log
 CDB_DB_PASSWORD_FILE=$CDB_ROOT_DIR/etc/cdb.db.passwd
 
 echo "Preparing development configuration"
 mkdir -p $CDB_ETC_DIR
+mkdir -p $CDB_LOG_DIR
 
 echo "Modifying glassfish-web config file"
 portalSrcDir=$CDB_ROOT_DIR/src/java/CdbWebPortal
