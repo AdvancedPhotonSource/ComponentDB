@@ -82,6 +82,10 @@ if [ -z "$CDB_DB_USER_PASSWORD" ]; then
     stty $sttyOrig
     echo
 fi
+if [ -z "$CDB_USER_PASSWORD" ]; then
+    echo "$CDB_DB_USER user password cannot be empty."
+    exit 1
+fi
 
 mysqlCmd="mysql --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
 if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
