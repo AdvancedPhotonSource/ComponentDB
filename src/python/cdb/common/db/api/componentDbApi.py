@@ -31,6 +31,14 @@ if __name__ == '__main__':
     api = ComponentDbApi()
     componentTypeList = api.getComponentTypeList()
     for componentType in componentTypeList:
+        print
+        print "********************"
+        print componentType
+        print "TEXT"
+        print componentType.getTextRep()
+        print "DICT"
+        print componentType.getDictRep()
+        print "JSON"
         print componentType.getJsonRep()
 
 
