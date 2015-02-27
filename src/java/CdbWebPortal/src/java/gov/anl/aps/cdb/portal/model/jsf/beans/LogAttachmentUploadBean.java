@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template uploadedFile, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Attachment;

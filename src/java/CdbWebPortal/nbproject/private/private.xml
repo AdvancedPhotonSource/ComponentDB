@@ -4,29 +4,37 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/ComponentInstanceUtility.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentDestroyDialog.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonViewActionButtons.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceDestroyDialog.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/create.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonListActionLinks.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonViewActionButtons.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Log.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonEditActionButtons.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/view.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/list.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceListDataTable.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentEditPanelGrid.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/SessionUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/setup/glassfish-resources.xml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceEditPanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/create.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/edit.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/view.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/beans/ComponentInstanceFacade.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/view.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/list.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/beans/ComponentInstanceFacade.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/StorageUtility.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceEditList.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentComponentInstanceEditListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/log/logListObject.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/beans/LogAttachmentUploadBean.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/WEB-INF/glassfish-web.xml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceDestroyDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/componentDestroyDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonListActionLinks.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Attachment.java</file>
         </group>
     </open-files>
 </project-private>
