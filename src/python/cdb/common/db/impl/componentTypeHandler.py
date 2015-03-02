@@ -16,6 +16,5 @@ class ComponentTypeHandler(CdbDbEntityHandler):
     def getComponentTypeList(self, session):
         self.logger.debug('Retrieving component type list')
         dbComponentTypeList = session.query(ComponentType).all()
-        print dbComponentTypeList
         return dbComponentTypeList
 

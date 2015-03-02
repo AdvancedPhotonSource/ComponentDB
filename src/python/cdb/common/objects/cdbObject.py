@@ -50,7 +50,10 @@ class CdbObject(UserDict.UserDict):
         if keyList is None:
             return self.DEFAULT_DISPLAY_KEY_LIST
         elif type(keyList) == types.ListType:
-            return keyList
+            if not len(keyList):
+                return self.DEFAULT_DISPLAY_KEY_LIST
+            else:
+                return keyList
         elif type(keyList) == types.StringType:
             if keyList == CdbObject.DISPLAY_ALL_KEYS:
                 return self.data.keys()
@@ -64,7 +67,7 @@ class CdbObject(UserDict.UserDict):
             raise InvalidArgument('Key list parameter must be one of: None, string "%s", string "%s", string containing comma-separated keys, or list of strings.' (CdbObject.DISPLAY_ALL_KEYS, CdbObject.DISPLAY_DEFAULT_KEYS))
             
 
-    def getDictRep(self, keyList=[]):
+    def getDictRep(self, keyList=None):
         # Dict representation is dict
         dictRep = {}
         displayKeyList = self.getRepKeyList(keyList)
@@ -85,14 +88,13 @@ class CdbObject(UserDict.UserDict):
                     dictRep[key] = value
         return dictRep
 
-    def getTextRep(self, keyList=[]):
+    def getTextRep(self, keyList=None):
         display = ''
         displayKeyList = self.getRepKeyList(keyList)
         for key in displayKeyList:
             value = self.get(key)
-            value = self.get(key)
             if isinstance(value, CdbObject):
-                display = display + '%s={ %s} ' % (key, value.display())
+                display = display + '%s={ %s} ' % (key, value.getTextRep())
             elif isinstance(value, types.ListType):
                 display = display + '%s=[ ' % key
                 for item in value:
@@ -106,7 +108,7 @@ class CdbObject(UserDict.UserDict):
                     display = display + '%s=%s ' % (key, value)
         return display
 
-    def getJsonRep(self, keyList=[]):
+    def getJsonRep(self, keyList=None):
         dictRep = self.getDictRep(keyList)
         return json.dumps(dictRep)
 

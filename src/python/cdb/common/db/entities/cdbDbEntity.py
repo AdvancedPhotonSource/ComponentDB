@@ -51,6 +51,7 @@ class CdbDbEntity(object):
                     else:
                         scrubbedList.append(item)
                 scrubbedDict[key] = scrubbedList
+
         if self.cdbObjectClass is not None:
             return self.cdbObjectClass(scrubbedDict)
         else:
