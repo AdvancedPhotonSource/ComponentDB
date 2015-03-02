@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -59,5 +60,10 @@ public class ComponentInstanceFacade extends AbstractFacade<ComponentInstance> {
                 throw new ObjectAlreadyExists("Component instance with QR ID " + componentInstance.getQrId() + " already exists.");
             }
         }
+    }
+
+    public List<ComponentInstance> findAllOrderByQrId() {
+        return (List<ComponentInstance>) em.createNamedQuery("ComponentInstance.findAllOrderByQrId")
+                .getResultList();
     }
 }

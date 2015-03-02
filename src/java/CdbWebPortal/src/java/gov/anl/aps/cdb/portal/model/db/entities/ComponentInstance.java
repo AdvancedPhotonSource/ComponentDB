@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "ComponentInstance.findAll", query = "SELECT c FROM ComponentInstance c"),
+    @NamedQuery(name = "ComponentInstance.findAllOrderByQrId", query = "SELECT c FROM ComponentInstance c ORDER BY c.qrId"),
     @NamedQuery(name = "ComponentInstance.findById", query = "SELECT c FROM ComponentInstance c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentInstance.findBySerialNumber", query = "SELECT c FROM ComponentInstance c WHERE c.serialNumber = :serialNumber"),
     @NamedQuery(name = "ComponentInstance.findByQrId", query = "SELECT c FROM ComponentInstance c WHERE c.qrId = :qrId"),

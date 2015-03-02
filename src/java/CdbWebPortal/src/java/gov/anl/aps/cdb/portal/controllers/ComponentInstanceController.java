@@ -32,6 +32,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
@@ -182,6 +184,12 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         return componentInstanceFacade.findByQrId(qrId);
     }
 
+    @Override
+    public DataModel createListDataModel() {
+        listDataModel = new ListDataModel(getFacade().findAllOrderByQrId());
+        return listDataModel;
+    }
+    
     @Override
     public void selectByRequestParams() {
         if (idViewParam != null) {

@@ -41,26 +41,26 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     @EJB
     private LogTopicFacade logTopicFacade;
 
-    private EntityType current = null;
+    protected EntityType current = null;
 
-    private DataModel listDataModel = null;
-    private DataTable listDataTable = null;
-    private boolean listDataModelReset = true;
-    private List<EntityType> filteredObjectList = null;
+    protected DataModel listDataModel = null;
+    protected DataTable listDataTable = null;
+    protected boolean listDataModelReset = true;
+    protected List<EntityType> filteredObjectList = null;
 
-    private Date settingsTimestamp = null;
-    private List<SettingType> settingTypeList;
-    private Map<String, SettingType> settingTypeMap;
-    private boolean settingsInitializedFromDefaults = false;
+    protected Date settingsTimestamp = null;
+    protected List<SettingType> settingTypeList;
+    protected Map<String, SettingType> settingTypeMap;
+    protected boolean settingsInitializedFromDefaults = false;
 
-    private DataModel selectDataModel = null;
-    private DataTable selectDataTable = null;
-    private boolean selectDataModelReset = false;
-    private EntityType selectedObject = null;
-    private List<EntityType> selectedObjectList = null;
+    protected DataModel selectDataModel = null;
+    protected DataTable selectDataTable = null;
+    protected boolean selectDataModelReset = false;
+    protected EntityType selectedObject = null;
+    protected List<EntityType> selectedObjectList = null;
 
-    private String logText = null;
-    private Integer logTopicId = null;
+    protected String logText = null;
+    protected Integer logTopicId = null;
 
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayId = null;

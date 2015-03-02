@@ -2,6 +2,7 @@ package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
@@ -48,9 +49,26 @@ public class DesignElementUtility {
                 }
                 populateDesignNode(childDesignElementNode, childDesign, designTreeBranch);
             }
+            if (component != null) {
+                populateAssemblyNode(childDesignElementNode, component);
+            }
         }
         designTreeBranch.remove(design);
     }
 
+    private static void populateAssemblyNode(TreeNode designElementNode, Component assembly) throws InvalidObjectState {
+        List<AssemblyComponent> assemblyComponentList = assembly.getAssemblyComponentList();
+        if (assemblyComponentList == null) {
+            return;
+        }
+        for (AssemblyComponent assemblyComponent : assemblyComponentList) {
+            Component component = assemblyComponent.getComponent();
+            // Create fake design element for tree view display purpose
+            DesignElement designElement = new DesignElement();
+            designElement.setComponent(component);
+            TreeNode childDesignElementNode = new DefaultTreeNode(designElement, designElementNode);
+            populateAssemblyNode(childDesignElementNode, component);
+        }
+    }
     
 }
