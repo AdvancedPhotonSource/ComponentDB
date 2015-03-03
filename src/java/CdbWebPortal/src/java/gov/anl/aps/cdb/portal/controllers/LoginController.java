@@ -34,6 +34,8 @@ import org.apache.log4j.Logger;
 public class LoginController implements Serializable
 {
 
+    private static final int MILISECONDS_IN_SECOND = 1000;
+    
     @EJB
     private UserInfoFacade userFacade;
     @EJB
@@ -44,6 +46,7 @@ public class LoginController implements Serializable
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
     private UserInfo user = null;
+    private Integer sessionTimeoutInMiliseconds = null;
 
     private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
@@ -315,4 +318,19 @@ public class LoginController implements Serializable
         return "/views/home?faces-redirect=true";
     }
 
+    public void sessionIdleListener() {
+        logout();
+        SessionUtility.addWarningMessage("Warning", "Session Expired");
+        SessionUtility.navigateTo("/views/home?faces-redirect=true");
+    }    
+    
+    public int getSessionTimeoutInMiliseconds() {
+        if (sessionTimeoutInMiliseconds == null) {
+            int timeoutInSeconds = SessionUtility.getSessionTimeoutInSeconds();
+            logger.debug("Session timeout in seconds: " + timeoutInSeconds);
+            // reduce configured value slightly to avoid premature session expiration issues
+            sessionTimeoutInMiliseconds = (timeoutInSeconds-1)*MILISECONDS_IN_SECOND;  
+        }
+        return sessionTimeoutInMiliseconds;
+    }
 }

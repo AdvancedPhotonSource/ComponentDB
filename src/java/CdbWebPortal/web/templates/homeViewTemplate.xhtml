@@ -84,6 +84,9 @@
                 <ui:insert name="bottom">
                     <h:form prependId="false">
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+                        <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}">
+                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" /> 
+                        </p:idleMonitor>
                     </h:form>
                     <footer>
                         <h:outputText value="Copyright &#169; 2014-2015 UChicago Argonne, LLC"/>   

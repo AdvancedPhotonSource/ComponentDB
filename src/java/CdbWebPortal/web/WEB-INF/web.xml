@@ -26,4 +26,9 @@
         <param-name>org.omnifaces.FACES_VIEWS_SCAN_PATHS</param-name>
         <param-value>/*.xhtml</param-value>
     </context-param>
+    
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/index.xhtml</location>
+    </error-page>
 </web-app>

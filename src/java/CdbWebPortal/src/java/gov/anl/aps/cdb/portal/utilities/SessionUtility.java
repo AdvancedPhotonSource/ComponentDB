@@ -5,6 +5,7 @@ import java.util.Stack;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpSession;
 
 /**
  * Session utility class.
@@ -142,5 +143,10 @@ public class SessionUtility
     public static String getContextRoot() {
         String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
         return contextPath;
+    }
+    
+    public static int getSessionTimeoutInSeconds() {
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+        return session.getMaxInactiveInterval();
     }
 }
