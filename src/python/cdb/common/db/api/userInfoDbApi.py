@@ -3,12 +3,28 @@
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.userInfoHandler import UserInfoHandler
+from cdb.common.db.impl.userGroupHandler import UserGroupHandler
 
 class UserInfoDbApi(CdbDbApi):
 
     def __init__(self):
         CdbDbApi.__init__(self)
         self.userInfoHandler = UserInfoHandler()
+        self.userGroupHandler = UserGroupHandler()
+
+    def getUserGroupList(self):
+        try:
+            session = self.dbManager.openSession()
+            try:
+                dbUserGroupList = self.userGroupHandler.getUserGroupList(session)
+                return self.toCdbObjectList(dbUserGroupList)
+            except CdbException, ex:
+                raise
+            except Exception, ex:
+                self.logger.exception('%s' % ex)
+                raise
+        finally:
+            self.dbManager.closeSession(session)
 
     def getUserInfoList(self):
         try:
@@ -62,4 +78,10 @@ if __name__ == '__main__':
     for userInfo in userInfoList:
         print userInfo.getJsonRep()
 
+    print 
+    print 'User Groups'
+    print '***********'
+    userGroupList = api.getUserGroupList()
+    for userGroup in userGroupList:
+        print userGroup.getDictRep()
 

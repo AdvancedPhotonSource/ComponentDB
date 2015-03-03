@@ -19,6 +19,7 @@ from componentTypeCategoryController import ComponentTypeCategoryController
 from componentTypeController import ComponentTypeController
 from componentController import ComponentController
 from userInfoController import UserInfoController
+from userGroupController import UserGroupController
 
 #######################################################################
 
@@ -35,6 +36,7 @@ class CdbWebServiceRouteMapper:
         #fileSystemController = FileSystemController()
         #fileSystemSessionController = FileSystemSessionController()
         userInfoController = UserInfoController()
+        userGroupController = UserGroupController()
         componentTypeCategoryController = ComponentTypeCategoryController()
         componentTypeController = ComponentTypeController()
         componentController = ComponentController()
@@ -51,6 +53,15 @@ class CdbWebServiceRouteMapper:
                 'controller'    : loginController,
                 'action'        : 'login',
                 'method'        : ['GET', 'PUT', 'POST', 'DELETE']
+            },
+
+            # Get user group list
+            {
+                'name' : 'getUserGroupList',
+                'path' : '%s/userGroups' % contextRoot,
+                'controller' : userGroupController,
+                'action' : 'getUserGroupList', 
+                'method' : ['GET']
             },
 
             # Get user info list

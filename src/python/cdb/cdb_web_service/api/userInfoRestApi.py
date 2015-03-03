@@ -8,11 +8,23 @@ from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.userInfo import UserInfo
+from cdb.common.objects.userGroup import UserGroup
 
 class UserInfoRestApi(CdbRestApi):
     
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
+
+    def getUserGroupList(self):
+        try:
+            url = '%s/userGroups' % (self.getContextRoot())
+            responseData = self.sendRequest(url=url, method='GET')
+            return self.toCdbObjectList(responseData, UserGroup)
+        except CdbException, ex:
+            raise
+        except Exception, ex:
+            self.getLogger().exception('%s' % ex)
+            raise CdbException(exception=ex)
 
     def getUserInfoList(self):
         try:
@@ -56,13 +68,9 @@ class UserInfoRestApi(CdbRestApi):
 
 if __name__ == '__main__':
     api = UserInfoRestApi('sveseli', 'sveseli', 'zagreb.svdev.net', 10232, 'http')
-    userInfoList = api.getUserInfoList()
-    for userInfo in userInfoList:
-        print userInfo.display()
-    print
-    print api.getUserInfoById(4).display()
-    print
-    print api.getUserInfoByUsername('sveseli').display()
+    userGroupList = api.getUserGroupList()
+    for userGroup in userGroupList:
+        print userGroup.getDisplayString()
 
 
 
