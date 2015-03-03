@@ -6,8 +6,6 @@
 
 #######################################################################
 
-import threading
-
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
 from cdb.common.db.api.userInfoDbApi import UserInfoDbApi

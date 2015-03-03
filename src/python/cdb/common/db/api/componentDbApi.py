@@ -2,6 +2,7 @@
 
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.db.api.cdbDbApi import CdbDbApi
+from cdb.common.db.impl.componentHandler import ComponentHandler
 from cdb.common.db.impl.componentTypeHandler import ComponentTypeHandler
 from cdb.common.db.impl.componentTypeCategoryHandler import ComponentTypeCategoryHandler
 
@@ -11,6 +12,7 @@ class ComponentDbApi(CdbDbApi):
         CdbDbApi.__init__(self)
         self.componentTypeCategoryHandler = ComponentTypeCategoryHandler()
         self.componentTypeHandler = ComponentTypeHandler()
+        self.componentHandler = ComponentHandler()
 
     def getComponentTypeCategoryList(self):
         try:
@@ -40,6 +42,20 @@ class ComponentDbApi(CdbDbApi):
         finally:
             self.dbManager.closeSession(session)
 
+    def getComponentList(self):
+        try:
+            session = self.dbManager.openSession()
+            try:
+                dbComponentList = self.componentHandler.getComponentList(session)
+                return self.toCdbObjectList(dbComponentList)
+            except CdbException, ex:
+                raise
+            except Exception, ex:
+                self.logger.exception('%s' % ex)
+                raise
+        finally:
+            self.dbManager.closeSession(session)
+
 
 #######################################################################
 # Testing.
@@ -51,14 +67,18 @@ if __name__ == '__main__':
 
     componentTypeList = api.getComponentTypeList()
     for componentType in componentTypeList:
+        print componentType
+
+    componentList = api.getComponentList()
+    for component in componentList:
         print
         print "********************"
-        print componentType
+        print component
         print "TEXT"
-        print componentType.getTextRep()
+        print component.getTextRep()
         print "DICT"
-        print componentType.getDictRep()
+        print component.getDictRep()
         print "JSON"
-        print componentType.getJsonRep()
+        print component.getJsonRep()
 
 

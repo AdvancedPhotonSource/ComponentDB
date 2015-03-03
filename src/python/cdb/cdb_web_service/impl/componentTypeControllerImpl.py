@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Implementation for component controller.
+# Implementation for component type controller.
 #
 
 #######################################################################
@@ -12,13 +12,13 @@ from cdb.common.db.api.componentDbApi import ComponentDbApi
 
 #######################################################################
 
-class ComponentControllerImpl(CdbObjectManager):
-    """ Component controller implementation class. """
+class ComponentTypeControllerImpl(CdbObjectManager):
+    """ Component type controller implementation class. """
 
     def __init__(self):
         CdbObjectManager.__init__(self)
         self.componentDbApi = ComponentDbApi()
 
-    def getComponentList(self):
-        return self.componentDbApi.getComponentList()
+    def getComponentTypeList(self):
+        return self.componentDbApi.getComponentTypeList()
 

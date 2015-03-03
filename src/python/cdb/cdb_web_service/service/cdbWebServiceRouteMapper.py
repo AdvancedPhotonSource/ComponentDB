@@ -13,8 +13,11 @@ import cherrypy
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.service.loginController import LoginController
-from fileSystemController import FileSystemController
-from fileSystemSessionController import FileSystemSessionController
+#from fileSystemController import FileSystemController
+#from fileSystemSessionController import FileSystemSessionController
+from componentTypeCategoryController import ComponentTypeCategoryController
+from componentTypeController import ComponentTypeController
+from componentController import ComponentController
 from userInfoController import UserInfoController
 
 #######################################################################
@@ -29,9 +32,12 @@ class CdbWebServiceRouteMapper:
         logger.debug('Using context root: %s' % contextRoot)
 
         # Static instances shared between different routes
-        fileSystemController = FileSystemController()
-        fileSystemSessionController = FileSystemSessionController()
+        #fileSystemController = FileSystemController()
+        #fileSystemSessionController = FileSystemSessionController()
         userInfoController = UserInfoController()
+        componentTypeCategoryController = ComponentTypeCategoryController()
+        componentTypeController = ComponentTypeController()
+        componentController = ComponentController()
         loginController = LoginController()
 
         # Define routes.
@@ -71,6 +77,33 @@ class CdbWebServiceRouteMapper:
                 'path' : '%s/usersByUsername/:(username)' % contextRoot,
                 'controller' : userInfoController,
                 'action' : 'getUserInfoByUsername', 
+                'method' : ['GET']
+            },
+
+            # Get component type category list
+            {
+                'name' : 'getComponentTypeCategoryList',
+                'path' : '%s/componentTypeCategories' % contextRoot,
+                'controller' : componentTypeCategoryController,
+                'action' : 'getComponentTypeCategoryList', 
+                'method' : ['GET']
+            },
+
+            # Get component type list
+            {
+                'name' : 'getComponentTypeList',
+                'path' : '%s/componentTypes' % contextRoot,
+                'controller' : componentTypeController,
+                'action' : 'getComponentTypeList', 
+                'method' : ['GET']
+            },
+
+            # Get component list
+            {
+                'name' : 'getComponentList',
+                'path' : '%s/components' % contextRoot,
+                'controller' : componentController,
+                'action' : 'getComponentList', 
                 'method' : ['GET']
             },
 

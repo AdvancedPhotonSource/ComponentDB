@@ -14,7 +14,7 @@ class ComponentTypeCategoryHandler(CdbDbEntityHandler):
         CdbDbEntityHandler.__init__(self)
 
     def getComponentTypeCategoryList(self, session):
-        self.logger.debug('Retrieving component category list')
+        self.logger.debug('Retrieving component type category list')
         dbComponentTypeCategoryList = session.query(ComponentTypeCategory).all()
         return dbComponentTypeCategoryList
 

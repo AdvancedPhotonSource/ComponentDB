@@ -3,6 +3,7 @@
 from sqlalchemy.orm import relation
 from cdb.common.db.entities.componentTypeCategory import ComponentTypeCategory
 from cdb.common.db.entities.componentType import ComponentType
+from cdb.common.db.entities.component import Component
 from cdb.common.db.entities.userGroup import UserGroup
 from cdb.common.db.entities.userInfo import UserInfo
 from cdb.common.db.entities.userUserGroup import UserUserGroup
@@ -12,6 +13,9 @@ CDB_DB_ENTITY_MAP = {
     'component_type_category' : (ComponentTypeCategory, {}),
     'component_type' : (ComponentType, {
         'componentTypeCategory' : relation(ComponentTypeCategory, lazy=False), 
+        }),
+    'component' : (Component, {
+        'componentType' : relation(ComponentType, lazy=False), 
         }),
     'user_info' : (UserInfo, {}), 
     'user_group' : (UserGroup, {}),

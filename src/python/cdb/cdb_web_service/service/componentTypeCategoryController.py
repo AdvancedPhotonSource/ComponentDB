@@ -10,20 +10,20 @@ from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.internalError import InternalError
 
-from cdb.cdb_web_service.impl.componentControllerImpl import ComponentControllerImpl
+from cdb.cdb_web_service.impl.componentTypeCategoryControllerImpl import ComponentTypeCategoryControllerImpl
 
 #######################################################################
 
-class ComponentController(CdbController):
+class ComponentTypeCategoryController(CdbController):
 
     def __init__(self):
         CdbController.__init__(self)
-        self.componentControllerImpl = ComponentControllerImpl()
+        self.componentTypeCategoryControllerImpl = ComponentTypeCategoryControllerImpl()
 
     @cherrypy.expose
-    def getComponentList(self, **kwargs):
+    def getComponentTypeCategoryList(self, **kwargs):
         try:
-           response = '%s' % self.toJson(self.componentControllerImpl.getComponentList())
+           response = '%s' % self.toJson(self.componentTypeCategoryControllerImpl.getComponentTypeCategoryList())
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
