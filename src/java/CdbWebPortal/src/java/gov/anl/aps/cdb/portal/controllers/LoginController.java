@@ -31,11 +31,10 @@ import org.apache.log4j.Logger;
  */
 @Named("loginController")
 @SessionScoped
-public class LoginController implements Serializable
-{
+public class LoginController implements Serializable {
 
     private static final int MILISECONDS_IN_SECOND = 1000;
-    
+
     @EJB
     private UserInfoFacade userFacade;
     @EJB
@@ -174,12 +173,10 @@ public class LoginController implements Serializable
         if (user.getPassword() != null && CryptUtility.verifyPasswordWithPbkdf2(password, user.getPassword())) {
             logger.debug("User " + username + " is authorized by CMS");
             validCredentials = true;
-        }
-        else if (LdapUtility.validateCredentials(username, password)) {
+        } else if (LdapUtility.validateCredentials(username, password)) {
             logger.debug("User " + username + " is authorized by LDAP");
             validCredentials = true;
-        }
-        else {
+        } else {
             logger.debug("User " + username + " is not authorized");
         }
 
@@ -192,15 +189,13 @@ public class LoginController implements Serializable
                 loggedInAsAdmin = true;
                 SessionUtility.addInfoMessage("Successful Login", "Administrator " + username + " is logged in.");
 
-            }
-            else {
+            } else {
                 loggedInAsUser = true;
                 SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
             }
 
             return getLandingPage();
-        }
-        else {
+        } else {
             SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");
             return (username = password = null);
         }
@@ -242,8 +237,7 @@ public class LoginController implements Serializable
     public String displayUsername() {
         if (isLoggedIn()) {
             return username;
-        }
-        else {
+        } else {
             return "Not Logged In";
         }
     }
@@ -251,8 +245,7 @@ public class LoginController implements Serializable
     public String displayRole() {
         if (isLoggedInAsAdmin()) {
             return "Administrator";
-        }
-        else {
+        } else {
             return "User";
         }
     }
@@ -319,17 +312,24 @@ public class LoginController implements Serializable
     }
 
     public void sessionIdleListener() {
+        logger.debug("Handling session timeout for user: " + user.getUsername());
+        String msg = "Session expired ";
+        if (user != null) {
+            msg += "for user " + user.getUsername() + ".";
+        } else {
+            msg += "for anonymouse user.";
+        }
         logout();
-        SessionUtility.addWarningMessage("Warning", "Session Expired");
+        SessionUtility.addWarningMessage("Warning", msg);
         SessionUtility.navigateTo("/views/home?faces-redirect=true");
-    }    
-    
+    }
+
     public int getSessionTimeoutInMiliseconds() {
         if (sessionTimeoutInMiliseconds == null) {
             int timeoutInSeconds = SessionUtility.getSessionTimeoutInSeconds();
             logger.debug("Session timeout in seconds: " + timeoutInSeconds);
             // reduce configured value slightly to avoid premature session expiration issues
-            sessionTimeoutInMiliseconds = (timeoutInSeconds-1)*MILISECONDS_IN_SECOND;  
+            sessionTimeoutInMiliseconds = (timeoutInSeconds - 1) * MILISECONDS_IN_SECOND;
         }
         return sessionTimeoutInMiliseconds;
     }
