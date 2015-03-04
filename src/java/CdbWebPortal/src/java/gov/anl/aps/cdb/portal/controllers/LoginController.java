@@ -320,8 +320,8 @@ public class LoginController implements Serializable {
         } else {
             msg += "for anonymous user";
         }
-        logout();
         SessionUtility.addWarningMessage("Warning", msg);
+        logout();
         SessionUtility.navigateTo("/views/home?faces-redirect=true");
     }
 
