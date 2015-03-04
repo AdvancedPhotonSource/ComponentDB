@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 public class LoginController implements Serializable {
 
     private static final int MILISECONDS_IN_SECOND = 1000;
+    private static final int SESSION_TIMEOUT_DECREASE_IN_SECONDS = 10;
 
     @EJB
     private UserInfoFacade userFacade;
@@ -171,7 +172,7 @@ public class LoginController implements Serializable {
         logger.debug("User " + username + " is admin: " + isAdminUser);
         boolean validCredentials = false;
         if (user.getPassword() != null && CryptUtility.verifyPasswordWithPbkdf2(password, user.getPassword())) {
-            logger.debug("User " + username + " is authorized by CMS");
+            logger.debug("User " + username + " is authorized by CDB");
             validCredentials = true;
         } else if (LdapUtility.validateCredentials(username, password)) {
             logger.debug("User " + username + " is authorized by LDAP");
@@ -296,6 +297,12 @@ public class LoginController implements Serializable {
         return isLoggedInAsAdmin() || this.user.getId() == user.getId();
     }
 
+    private void resetLoginInfo() {
+        loggedInAsAdmin = false;
+        loggedInAsUser = false;
+        user = null;        
+    }
+    
     /**
      * Logout action.
      *
@@ -306,14 +313,11 @@ public class LoginController implements Serializable {
         SessionUtility.clearSession();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.invalidateSession();
-        loggedInAsAdmin = false;
-        loggedInAsUser = false;
-        user = null;
+        resetLoginInfo();
         return "/views/home?faces-redirect=true";
     }
 
     public void sessionIdleListener() {
-        logger.debug("Handling session timeout for user: " + user);
         String msg = "Session expired ";
         if (user != null) {
             msg += "for user " + user;
@@ -321,7 +325,10 @@ public class LoginController implements Serializable {
             msg += "for anonymous user";
         }
         SessionUtility.addWarningMessage("Warning", msg);
-        logout();
+        logger.debug(msg);
+        if (isLoggedIn()) {
+            resetLoginInfo();
+        }
         SessionUtility.navigateTo("/views/home?faces-redirect=true");
     }
 
@@ -330,7 +337,7 @@ public class LoginController implements Serializable {
             int timeoutInSeconds = SessionUtility.getSessionTimeoutInSeconds();
             logger.debug("Session timeout in seconds: " + timeoutInSeconds);
             // reduce configured value slightly to avoid premature session expiration issues
-            sessionTimeoutInMiliseconds = (timeoutInSeconds - 1) * MILISECONDS_IN_SECOND;
+            sessionTimeoutInMiliseconds = (timeoutInSeconds - SESSION_TIMEOUT_DECREASE_IN_SECONDS) * MILISECONDS_IN_SECOND;
         }
         // logger.debug("Idle timeout in miliseconds: " + sessionTimeoutInMiliseconds);
         return sessionTimeoutInMiliseconds;

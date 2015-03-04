@@ -85,9 +85,11 @@
                     <h:form prependId="false">
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
-                                       onidle="window.location.replace('../home.xhtml');">
-                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" /> 
+                                       onidle="handleSessionTimeout();">
+                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
+                                    immediate="true" async="true"/> 
                         </p:idleMonitor>
+                        <h:outputScript library="javascript" name="sessionTimeout.js"/>
                     </h:form>
                 </ui:insert>
             </div>

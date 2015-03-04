@@ -54,7 +54,7 @@
                     <div id="menuCenter" class="menuCenterContent">
                         <ui:insert name="menuCenter">
                             <h:form prependId="false">
-                                <ui:include src="contentViewTemplateMenubar.xhtml"/>
+                                <ui:include src="homeViewTemplateMenubar.xhtml"/>
                             </h:form>
                         </ui:insert>
                     </div>
@@ -85,10 +85,12 @@
                     <h:form prependId="false">
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
-                                       onidle="window.location.replace('../home.xhtml');"
+                                       onidle="handleSessionTimeout();"
                                        rendered="#{loginController.loggedIn}">
-                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}"/> 
+                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
+                                    immediate="true" async="true"/> 
                         </p:idleMonitor>
+                        <h:outputScript library="javascript" name="sessionTimeout.js"/>
                     </h:form>
                     <footer>
                         <h:outputText value="Copyright &#169; 2014-2015 UChicago Argonne, LLC"/>   
