@@ -84,7 +84,8 @@
                 <ui:insert name="bottom">
                     <h:form prependId="false">
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
-                        <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}">
+                        <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
+                                       onidle="window.location.replace('../home.xhtml');">
                             <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" /> 
                         </p:idleMonitor>
                     </h:form>
