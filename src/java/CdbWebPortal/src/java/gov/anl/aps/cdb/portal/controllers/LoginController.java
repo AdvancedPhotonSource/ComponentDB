@@ -302,6 +302,7 @@ public class LoginController implements Serializable {
      * @return url to logout page
      */
     public String logout() {
+        logger.debug("Logging out user: " + user);
         SessionUtility.clearSession();
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.invalidateSession();
@@ -312,12 +313,12 @@ public class LoginController implements Serializable {
     }
 
     public void sessionIdleListener() {
-        logger.debug("Handling session timeout for user: " + user.getUsername());
+        logger.debug("Handling session timeout for user: " + user);
         String msg = "Session expired ";
         if (user != null) {
-            msg += "for user " + user.getUsername() + ".";
+            msg += "for user " + user;
         } else {
-            msg += "for anonymouse user.";
+            msg += "for anonymous user";
         }
         logout();
         SessionUtility.addWarningMessage("Warning", msg);
@@ -331,6 +332,7 @@ public class LoginController implements Serializable {
             // reduce configured value slightly to avoid premature session expiration issues
             sessionTimeoutInMiliseconds = (timeoutInSeconds - 1) * MILISECONDS_IN_SECOND;
         }
+        // logger.debug("Idle timeout in miliseconds: " + sessionTimeoutInMiliseconds);
         return sessionTimeoutInMiliseconds;
     }
 }

@@ -461,11 +461,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
         List<Log> componentLogList = component.getLogList();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
-            Date settingsTimestamp = getSettingsTimestamp();
             if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 updateSettingsFromSessionUser(sessionUser);
                 settingsTimestamp = new Date();
-                setSettingsTimestamp(settingsTimestamp);
             }
         }
         return componentLogList;

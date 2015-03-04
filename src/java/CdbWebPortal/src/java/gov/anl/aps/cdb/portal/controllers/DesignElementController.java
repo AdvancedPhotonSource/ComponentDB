@@ -209,11 +209,9 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         List<Log> designElementLogList = designElement.getLogList();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
-            Date settingsTimestamp = getSettingsTimestamp();
             if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 updateSettingsFromSessionUser(sessionUser);
                 settingsTimestamp = new Date();
-                setSettingsTimestamp(settingsTimestamp);
             }
         }
         return designElementLogList;

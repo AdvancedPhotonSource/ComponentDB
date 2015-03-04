@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.DesignElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
@@ -121,7 +120,6 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
             throw new ObjectAlreadyExists("Design " + design.getName() + " already exists.");
         }
         EntityInfo entityInfo = design.getEntityInfo();
-        String logText = getLogText();
         if (logText != null && !logText.isEmpty()) {
             Log logEntry = LogUtility.createLogEntry(logText);
             List<Log> logList = new ArrayList<>();
@@ -146,7 +144,6 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
 
         EntityInfo entityInfo = design.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
-        String logText = getLogText();
         if (logText != null && !logText.isEmpty()) {
             Log logEntry = LogUtility.createLogEntry(logText);
             design.getLogList().add(logEntry);
@@ -285,11 +282,9 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         List<Log> designLogList = design.getLogList();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
-            Date settingsTimestamp = getSettingsTimestamp();
             if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 updateSettingsFromSessionUser(sessionUser);
                 settingsTimestamp = new Date();
-                setSettingsTimestamp(settingsTimestamp);
             }
         }
         return designLogList;

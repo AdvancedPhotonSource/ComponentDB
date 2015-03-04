@@ -292,14 +292,14 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     }
 
     public String resetList() {
-        logger.debug("Resetting list");
+        logger.debug("Resetting list data model for " + getDisplayEntityTypeName());
         clearListFilters();
         resetListDataModel();
         return prepareList();
     }
 
     public String prepareList() {
-        logger.debug("Preparing list");
+        logger.debug("Preparing list data model for " + getDisplayEntityTypeName());
         current = null;
         if (listDataTable != null) {
             updateListSettingsFromListDataTable(listDataTable);
@@ -312,14 +312,14 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     }
 
     public String resetListForView() {
-        logger.debug("Resetting list for view");
+        logger.debug("Resetting list for " + getDisplayEntityTypeName() + " view ");
         clearListFilters();
         resetListDataModel();
         return view();
     }
 
     public String resetListForEdit() {
-        logger.debug("Resetting list for edit");
+        logger.debug("Resetting list for " + getDisplayEntityTypeName() + " edit");
         clearListFilters();
         resetListDataModel();
         return edit();
@@ -358,7 +358,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             resetListDataModel();
         }
         if (listDataTable == null) {
-            logger.debug("Recreating data table");
+            logger.debug("Recreating list data table for " + getDisplayEntityTypeName());
             listDataTable = new DataTable();
         }
         return listDataTable;

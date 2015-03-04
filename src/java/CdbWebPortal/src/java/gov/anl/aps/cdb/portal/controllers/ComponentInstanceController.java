@@ -329,11 +329,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         List<Log> componentInstanceLogList = componentInstance.getLogList();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
-            Date settingsTimestamp = getSettingsTimestamp();
             if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
                 updateSettingsFromSessionUser(sessionUser);
                 settingsTimestamp = new Date();
-                setSettingsTimestamp(settingsTimestamp);
             }
         }
         return componentInstanceLogList;
@@ -601,6 +599,11 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         super.clearSelectFilters();
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+    
     @FacesConverter(forClass = ComponentInstance.class)
     public static class ComponentInstanceControllerConverter implements Converter {
 
