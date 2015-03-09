@@ -19,6 +19,6 @@ class ComponentControllerImpl(CdbObjectManager):
         CdbObjectManager.__init__(self)
         self.componentDbApi = ComponentDbApi()
 
-    def getComponentList(self):
-        return self.componentDbApi.getComponentList()
+    def getComponents(self):
+        return self.componentDbApi.getComponents()
 

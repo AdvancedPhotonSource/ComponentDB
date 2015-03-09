@@ -57,64 +57,64 @@ class CdbWebServiceRouteMapper:
 
             # Get user group list
             {
-                'name' : 'getUserGroupList',
+                'name' : 'getUserGroups',
                 'path' : '%s/userGroups' % contextRoot,
                 'controller' : userGroupController,
-                'action' : 'getUserGroupList', 
+                'action' : 'getUserGroups', 
                 'method' : ['GET']
             },
 
             # Get user info list
             {
-                'name' : 'getUserInfoList',
+                'name' : 'getUsers',
                 'path' : '%s/users' % contextRoot,
                 'controller' : userInfoController,
-                'action' : 'getUserInfoList', 
+                'action' : 'getUsers', 
                 'method' : ['GET']
             },
 
             # Get user by id
             {
-                'name' : 'getUserInfoById',
+                'name' : 'getUserById',
                 'path' : '%s/users/:(id)' % contextRoot,
                 'controller' : userInfoController,
-                'action' : 'getUserInfoById', 
+                'action' : 'getUserById', 
                 'method' : ['GET']
             },
 
             # Get user by username
             {
-                'name' : 'getUserInfoByUsername',
+                'name' : 'getUserByUsername',
                 'path' : '%s/usersByUsername/:(username)' % contextRoot,
                 'controller' : userInfoController,
-                'action' : 'getUserInfoByUsername', 
+                'action' : 'getUserByUsername', 
                 'method' : ['GET']
             },
 
             # Get component type category list
             {
-                'name' : 'getComponentTypeCategoryList',
+                'name' : 'getComponentTypeCategories',
                 'path' : '%s/componentTypeCategories' % contextRoot,
                 'controller' : componentTypeCategoryController,
-                'action' : 'getComponentTypeCategoryList', 
+                'action' : 'getComponentTypeCategories', 
                 'method' : ['GET']
             },
 
             # Get component type list
             {
-                'name' : 'getComponentTypeList',
+                'name' : 'getComponentTypes',
                 'path' : '%s/componentTypes' % contextRoot,
                 'controller' : componentTypeController,
-                'action' : 'getComponentTypeList', 
+                'action' : 'getComponentTypes', 
                 'method' : ['GET']
             },
 
             # Get component list
             {
-                'name' : 'getComponentList',
+                'name' : 'getComponents',
                 'path' : '%s/components' % contextRoot,
                 'controller' : componentController,
-                'action' : 'getComponentList', 
+                'action' : 'getComponents', 
                 'method' : ['GET']
             },
 

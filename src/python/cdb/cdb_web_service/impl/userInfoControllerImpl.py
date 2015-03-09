@@ -8,7 +8,7 @@
 
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
-from cdb.common.db.api.userInfoDbApi import UserInfoDbApi
+from cdb.common.db.api.userDbApi import UserDbApi
 
 #######################################################################
 
@@ -17,14 +17,14 @@ class UserInfoControllerImpl(CdbObjectManager):
 
     def __init__(self):
         CdbObjectManager.__init__(self)
-        self.userInfoDbApi = UserInfoDbApi()
+        self.userDbApi = UserDbApi()
 
-    def getUserInfoList(self):
-        return self.userInfoDbApi.getUserInfoList()
+    def getUserInfos(self):
+        return self.userDbApi.getUsers()
 
-    def getUserInfoById(self, id):
-        return self.userInfoDbApi.getUserInfoById(id)
+    def getUserById(self, id):
+        return self.userDbApi.getUserById(id)
 
-    def getUserInfoByUsername(self, username):
-        return self.userInfoDbApi.getUserInfoByUsername(username)
+    def getUserByUsername(self, username):
+        return self.userDbApi.getUserByUsername(username)
 

@@ -14,12 +14,12 @@ class ComponentDbApi(CdbDbApi):
         self.componentTypeHandler = ComponentTypeHandler()
         self.componentHandler = ComponentHandler()
 
-    def getComponentTypeCategoryList(self):
+    def getComponentTypeCategories(self):
         try:
             session = self.dbManager.openSession()
             try:
-                dbComponentTypeCategoryList = self.componentTypeCategoryHandler.getComponentTypeCategoryList(session)
-                return self.toCdbObjectList(dbComponentTypeCategoryList)
+                dbComponentTypeCategories = self.componentTypeCategoryHandler.getComponentTypeCategories(session)
+                return self.toCdbObjectList(dbComponentTypeCategories)
             except CdbException, ex:
                 raise
             except Exception, ex:
@@ -28,12 +28,12 @@ class ComponentDbApi(CdbDbApi):
         finally:
             self.dbManager.closeSession(session)
 
-    def getComponentTypeList(self):
+    def getComponentTypes(self):
         try:
             session = self.dbManager.openSession()
             try:
-                dbComponentTypeList = self.componentTypeHandler.getComponentTypeList(session)
-                return self.toCdbObjectList(dbComponentTypeList)
+                dbComponentTypes = self.componentTypeHandler.getComponentTypes(session)
+                return self.toCdbObjectList(dbComponentTypes)
             except CdbException, ex:
                 raise
             except Exception, ex:
@@ -42,12 +42,12 @@ class ComponentDbApi(CdbDbApi):
         finally:
             self.dbManager.closeSession(session)
 
-    def getComponentList(self):
+    def getComponents(self):
         try:
             session = self.dbManager.openSession()
             try:
-                dbComponentList = self.componentHandler.getComponentList(session)
-                return self.toCdbObjectList(dbComponentList)
+                dbComponents = self.componentHandler.getComponents(session)
+                return self.toCdbObjectList(dbComponents)
             except CdbException, ex:
                 raise
             except Exception, ex:
@@ -56,21 +56,55 @@ class ComponentDbApi(CdbDbApi):
         finally:
             self.dbManager.closeSession(session)
 
+    def getComponentById(self, id):
+        try:
+            session = self.dbManager.openSession()
+            try:
+                dbComponent = self.componentHandler.getComponentById(session, id)
+                print "DB_COMPONENT", dbComponent.__dict__
+                return dbComponent.getCdbObject()
+            except CdbException, ex:
+                raise
+            except Exception, ex:
+                self.logger.exception('%s' % ex)
+                raise
+        finally:
+            self.dbManager.closeSession(session)
+
+
+    def addComponent(self, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
+        try:
+             session = self.dbManager.openSession()
+             try:
+                 dbComponent = self.componentHandler.addComponent(session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
+                 session.commit()
+                 print "DB_COMPONENT", dbComponent.__dict__
+                 component = dbComponent.getCdbObject()
+                 return component
+             except CdbException, ex:
+                 session.rollback()
+                 raise
+             except Exception, ex:
+                 session.rollback()
+                 self.logger.exception('%s' % ex)
+                 raise
+        finally:
+            self.dbManager.closeSession(session)
 
 #######################################################################
 # Testing.
 if __name__ == '__main__':
     api = ComponentDbApi()
-    componentTypeCategoryList = api.getComponentTypeCategoryList()
-    for componentTypeCategory in componentTypeCategoryList:
+    componentTypeCategories = api.getComponentTypeCategories()
+    for componentTypeCategory in componentTypeCategories:
         print componentTypeCategory
 
-    componentTypeList = api.getComponentTypeList()
-    for componentType in componentTypeList:
+    componentTypes = api.getComponentTypes()
+    for componentType in componentTypes:
         print componentType
 
-    componentList = api.getComponentList()
-    for component in componentList:
+    components = api.getComponents()
+    for component in components:
         print
         print "********************"
         print component
@@ -81,4 +115,12 @@ if __name__ == '__main__':
         print "JSON"
         print component.getJsonRep()
 
+    print 'Getting component'
+    component = api.getComponentById(10)
+    print component.getDictRep()
 
+    print 'Adding component'
+    component = api.addComponent(name='bcd1', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
+    print "Added Component"
+    print component.__dict__
+    print component.getDictRep('__all__')

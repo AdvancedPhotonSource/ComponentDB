@@ -10,12 +10,12 @@ from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.userInfo import UserInfo
 from cdb.common.objects.userGroup import UserGroup
 
-class UserInfoRestApi(CdbRestApi):
+class UserRestApi(CdbRestApi):
     
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
-    def getUserGroupList(self):
+    def getUserGroups(self):
         try:
             url = '%s/userGroups' % (self.getContextRoot())
             responseData = self.sendRequest(url=url, method='GET')
@@ -26,7 +26,7 @@ class UserInfoRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
-    def getUserInfoList(self):
+    def getUsers(self):
         try:
             url = '%s/users' % (self.getContextRoot())
             responseData = self.sendRequest(url=url, method='GET')
@@ -37,7 +37,7 @@ class UserInfoRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
-    def getUserInfoById(self, id):
+    def getUserById(self, id):
         try:
             if id is None:
                 raise InvalidRequest('User id must be provided.')
@@ -50,7 +50,7 @@ class UserInfoRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
-    def getUserInfoByUsername(self, username):
+    def getUserByUsername(self, username):
         try:
             if username is None:
                 raise InvalidRequest('Username must be provided.')
@@ -67,9 +67,9 @@ class UserInfoRestApi(CdbRestApi):
 # Testing.
 
 if __name__ == '__main__':
-    api = UserInfoRestApi('sveseli', 'sveseli', 'zagreb.svdev.net', 10232, 'http')
-    userGroupList = api.getUserGroupList()
-    for userGroup in userGroupList:
+    api = UserRestApi('sveseli', 'sveseli', 'zagreb.svdev.net', 10232, 'http')
+    userGroups = api.getUserGroups()
+    for userGroup in userGroups:
         print userGroup.getDisplayString()
 
 

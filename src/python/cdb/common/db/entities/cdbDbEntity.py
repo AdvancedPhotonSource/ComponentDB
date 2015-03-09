@@ -9,7 +9,7 @@ class CdbDbEntity(object):
     """ Base Cdb DB entity class. """
     columns = []
     mappedColumnDict = {}
-    removeKeyList = [ '_sa_instance_state' ]
+    removeKeyList = [ '_sa_instance_state', 'logger' ]
     cdbObjectClass = None
 
     def __init__(self, **kwargs):
@@ -32,7 +32,7 @@ class CdbDbEntity(object):
             self.mapColumn(dbName, objectName)
     
     def toCdbObject(self):
-        scrubbedDict = copy.deepcopy(self.__dict__)
+        scrubbedDict = copy.copy(self.__dict__)
         for (dbName, objectName) in self.mappedColumnDict.items():
             if scrubbedDict.has_key(dbName):
                 scrubbedDict[objectName] = scrubbedDict.get(dbName)
@@ -72,7 +72,7 @@ class CdbDbEntity(object):
             s += ')'
         return s
 
-    def loadRelations(self):
+    def loadRelationships(self):
         """ Load all relations object knows about. """
         pass
 

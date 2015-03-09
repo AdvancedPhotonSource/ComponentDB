@@ -8,7 +8,7 @@
 
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
-from cdb.common.db.api.userInfoDbApi import UserInfoDbApi
+from cdb.common.db.api.userDbApi import UserDbApi
 
 #######################################################################
 
@@ -17,9 +17,9 @@ class UserGroupControllerImpl(CdbObjectManager):
 
     def __init__(self):
         CdbObjectManager.__init__(self)
-        self.userInfoDbApi = UserInfoDbApi()
+        self.userDbApi = UserDbApi()
 
-    def getUserGroupList(self):
-        return self.userInfoDbApi.getUserGroupList()
+    def getUserGroups(self):
+        return self.userDbApi.getUserGroups()
 
 

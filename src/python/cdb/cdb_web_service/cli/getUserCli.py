@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from cdbWebServiceCli import CdbWebServiceCli
-from cdb.cdb_web_service.api.userInfoRestApi import UserInfoRestApi
+from cdb.cdb_web_service.api.userRestApi import UserRestApi
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
 class GetUserCli(CdbWebServiceCli):
@@ -28,11 +28,11 @@ Description:
     Retrieves user information.
         """)
         self.checkArgs()
-        api = UserInfoRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
+        api = UserRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
         if self.getId() is not None:
-            userInfo = api.getUserInfoById(self.getId())
+            userInfo = api.getUserById(self.getId())
         else:
-            userInfo = api.getUserInfoByUsername(self.getUsername())
+            userInfo = api.getUserByUsername(self.getUsername())
         print userInfo.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 
 #######################################################################

@@ -23,10 +23,10 @@ class CdbWebService(CdbRestWebServiceBase):
         self.logger.debug('Initializing cdb modules')
 
         # For testing purposes only, use NoOp authorization principal retriever
-        self.logger.debug('Using NoOp Authorization Principal Retriever')
-        from cdb.common.impl.noOpAuthorizationPrincipalRetriever import NoOpAuthorizationPrincipalRetriever
-        principalRetriever = NoOpAuthorizationPrincipalRetriever()
-        AuthorizationManager.getInstance().addAuthorizationPrincipalRetriever(principalRetriever)
+        #self.logger.debug('Using NoOp Authorization Principal Retriever')
+        #from cdb.common.impl.noOpAuthorizationPrincipalRetriever import NoOpAuthorizationPrincipalRetriever
+        #principalRetriever = NoOpAuthorizationPrincipalRetriever()
+        #AuthorizationManager.getInstance().addAuthorizationPrincipalRetriever(principalRetriever)
 
         # Add modules that will be started.
         moduleManager = CdbModuleManager.getInstance()

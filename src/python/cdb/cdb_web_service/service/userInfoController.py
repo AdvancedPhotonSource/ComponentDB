@@ -21,9 +21,9 @@ class UserInfoController(CdbController):
         self.userInfoControllerImpl = UserInfoControllerImpl()
 
     @cherrypy.expose
-    def getUserInfoList(self, **kwargs):
+    def getUsers(self, **kwargs):
         try:
-           response = '%s' % self.toJson(self.userInfoControllerImpl.getUserInfoList())
+           response = '%s' % self.toJson(self.userInfoControllerImpl.getUserInfos())
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
@@ -35,11 +35,11 @@ class UserInfoController(CdbController):
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
-    def getUserInfoById(self, id, **kwargs):
+    def getUserById(self, id, **kwargs):
         try:
             if not id:
                 raise InvalidRequest('Invalid id.')
-            response = '%s' % self.userInfoControllerImpl.getUserInfoById(id).getJsonRep()
+            response = '%s' % self.userInfoControllerImpl.getUserById(id).getJsonRep()
             self.logger.debug('Returning user info for %s: %s' % (id,response))
         except CdbException, ex:
             self.logger.error('%s' % ex)
@@ -52,11 +52,11 @@ class UserInfoController(CdbController):
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
-    def getUserInfoByUsername(self, username, **kwargs):
+    def getUserByUsername(self, username, **kwargs):
         try:
             if not len(username):
                 raise InvalidRequest('Invalid username.')
-            response = '%s' % self.userInfoControllerImpl.getUserInfoByUsername(username).getJsonRep()
+            response = '%s' % self.userInfoControllerImpl.getUserByUsername(username).getJsonRep()
             self.logger.debug('Returning user info for %s: %s' % (username,response))
         except CdbException, ex:
             self.logger.error('%s' % ex)

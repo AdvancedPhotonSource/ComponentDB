@@ -143,7 +143,7 @@ class LoginController(CdbController):
                 if not condition():
                     logger.debug('Authorization check %s failed for username %s' % (condition.func_name, username))
                     errorMsg = 'Authorization check %s failed for user %s.' % (condition.func_name, username)
-                    raise CdbHttpError(cdbHttpStatus.CDBI_HTTP_UNAUTHORIZED, 'User Not Authorized', AuthorizationError(errorMsg))
+                    raise CdbHttpError(cdbHttpStatus.CDB_HTTP_UNAUTHORIZED, 'User Not Authorized', AuthorizationError(errorMsg))
         else:
             logger.debug('Username is not supplied')
             raise CdbHttpError(cdbHttpStatus.CDB_HTTP_UNAUTHORIZED, 'User Not Authorized', ex)

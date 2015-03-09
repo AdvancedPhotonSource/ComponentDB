@@ -29,7 +29,7 @@ class LoggingManager:
         handler     # Indicates which handler class to use 
         level       # Indicates logging level
         format      # Indicates format for log messages
-        dateformat  # Indicates date format used for log messages
+        dateFormat  # Indicates date format used for log messages
 
     Given below is an example of a valid configuration file:
 
@@ -37,12 +37,12 @@ class LoggingManager:
         handler=ConsoleLoggingHandler(sys.stdout,)
         level=info
         format=[%(levelname)s] %(message)s 
-        dateformat=%m/%d/%y %H:%M:%S
+        dateFormat=%m/%d/%y %H:%M:%S
     [FileLogging]
         handler=TimedRotatingFileLoggingHandler('/tmp/cdb.log')
         level=debug
         format=%(asctime)s,%(msecs)d [%(levelname)s] %(module)s:%(lineno)d %(user)s@%(host)s %(name)s (%(process)d): %(message)s
-        dateformat=%m/%d/%y %H:%M:%S
+        dateFormat=%m/%d/%y %H:%M:%S
     """
 
     # Get singleton instance.
@@ -107,7 +107,7 @@ class LoggingManager:
         defaults = { 
             'level' : cm.getConsoleLogLevel(),
             'format' : cm.getLogRecordFormat(),
-            'dateformat' : cm.getLogDateFormat(),
+            'dateFormat' : cm.getLogDateFormat(),
             'handler' : 'ConsoleLoggingHandler(sys.stdout,)'
         }
         consoleHandler = self.__configureHandler(configParser, 'ConsoleLogging', defaults)
@@ -220,9 +220,9 @@ class LoggingManager:
                 handler.setLevel(intLevel)
 
                 format = cm.getOptionFromConfigParser(configParser, configSection, 'format', defaults['format'])
-                dateformat = cm.getOptionFromConfigParser(configParser, configSection, 'dateformat', defaults['dateformat'])
+                dateFormat = cm.getOptionFromConfigParser(configParser, configSection, 'dateFormat', defaults['dateFormat'])
 
-                handler.setFormatter(logging.Formatter(format, dateformat))
+                handler.setFormatter(logging.Formatter(format, dateFormat))
             except Exception, ex:
                 raise ConfigurationError(exception=ex)
 

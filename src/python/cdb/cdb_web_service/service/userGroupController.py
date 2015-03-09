@@ -21,9 +21,9 @@ class UserGroupController(CdbController):
         self.userGroupControllerImpl = UserGroupControllerImpl()
 
     @cherrypy.expose
-    def getUserGroupList(self, **kwargs):
+    def getUserGroups(self, **kwargs):
         try:
-           response = '%s' % self.toJson(self.userGroupControllerImpl.getUserGroupList())
+           response = '%s' % self.toJson(self.userGroupControllerImpl.getUserGroups())
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)

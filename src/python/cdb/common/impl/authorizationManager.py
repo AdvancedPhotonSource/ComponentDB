@@ -13,6 +13,11 @@ class AuthorizationManager(CdbObjectManager):
     DEFAULT_CACHE_SIZE = 10000 # number of items
     DEFAULT_CACHE_OBJECT_LIFETIME = 3600 # seconds
 
+    CONFIG_SECTION_NAME = 'AuthorizationManager'
+    ADMIN_GROUP_NAME_KEY = 'admingroupname'
+    PRINCIPAL_RETRIEVER_KEY = 'principalretriever'
+    PRINCIPAL_AUTHENTICATOR_KEY = 'principalauthenticator'
+
     # Get singleton instance.
     @classmethod
     def getInstance(cls):
@@ -32,27 +37,51 @@ class AuthorizationManager(CdbObjectManager):
         AuthorizationManager.__instance = self
         CdbObjectManager.__init__(self)
         self.configurationManager = ConfigurationManager.getInstance()
-        self.authorizationPrincipalRetrieverList = []
+        self.principalRetriever = None
+        self.principalAuthenticatorList = []
         self.objectCache = ObjectCache(AuthorizationManager.DEFAULT_CACHE_SIZE, AuthorizationManager.DEFAULT_CACHE_OBJECT_LIFETIME)
+        self.configure()
+
+    def createObjectInstance(self, moduleName, className, constructor):
+        self.logger.debug('Creating object: %s, %s, %s' % (moduleName, className, constructor))
+        cmd = 'from %s import %s' % (moduleName, className)
+        exec cmd
+        cmd = 'objectInstance = %s' % (constructor)
+        exec cmd
+        return objectInstance
 
     @classmethod
     def cryptPassword(cls, cleartext):
-        """ Return crypted password.... """
         return CryptUtility.cryptPassword(cleartext)
 
-    def addAuthorizationPrincipalRetriever(self, authorizationPrincipalRetriever):
-        self.authorizationPrincipalRetrieverList.append(authorizationPrincipalRetriever)
+    @classmethod
+    def cryptPasswordWithPbkdf2(cls, cleartext):
+        return CryptUtility.cryptPasswordWithPbkdf2(cleartext)
 
-    def addAuthorizationPrincipalRetrieverList(self, authorizationPrincipalRetrieverList):
-        self.authorizationPrincipalRetrieverList = self.authorizationPrincipalRetrieverList + authorizationPrincipalRetrieverList
+    def configure(self):
+        configItems = self.configurationManager.getConfigItems(AuthorizationManager.CONFIG_SECTION_NAME)
+        self.logger.debug('Got config items: %s' % configItems)
+        adminGroupName = self.configurationManager.getConfigOption(AuthorizationManager.CONFIG_SECTION_NAME, AuthorizationManager.ADMIN_GROUP_NAME_KEY)
 
-    def authenticatePrincipal(self, principal, password):
-        self.logger.debug('Check principal: %s' % principal)
-        if principal is not None:
-            principalToken = principal.getToken()
-            if CryptUtility.verifyPassword(password, principalToken):
-                return principal
-        return None
+        # Create principal retriever
+        principalRetriever = self.configurationManager.getConfigOption(AuthorizationManager.CONFIG_SECTION_NAME, AuthorizationManager.PRINCIPAL_RETRIEVER_KEY)
+        (moduleName,className,constructor) = self.configurationManager.getModuleClassConstructorTuple(principalRetriever)    
+        self.logger.debug('Creating principal retriever class: %s' % className)
+        self.principalRetriever = self.createObjectInstance(moduleName, className, constructor)
+        self.principalRetriever.setAdminGroupName(adminGroupName)
+        self.logger.debug('Authorization principal retriever: %s' % (self.principalRetriever))
+
+        # Create principal authenticators
+        for (key,value) in configItems:
+            if key.startswith(AuthorizationManager.PRINCIPAL_AUTHENTICATOR_KEY):
+                (moduleName,className,constructor) = self.configurationManager.getModuleClassConstructorTuple(value)    
+                self.logger.debug('Creating principal authenticator class: %s' % className)
+                principalAuthenticator = self.createObjectInstance(moduleName, className, constructor)
+                self.addAuthorizationPrincipalAuthenticator(principalAuthenticator)
+                self.logger.debug('Authorization principal authenticator: %s' % (principalAuthenticator))
+
+    def addAuthorizationPrincipalAuthenticator(self, principalAuthenticator):
+        self.principalAuthenticatorList.append(principalAuthenticator)
 
     def getAuthorizationPrincipal(self, username, password):
         """ Get principal based on a username and password """
@@ -62,21 +91,22 @@ class AuthorizationManager(CdbObjectManager):
         principalTuple = self.objectCache.get(username)
         if principalTuple is not None:
             (id, principal, updateTime, expirationTime) = principalTuple
-            #self.logger.debug('Got username %s from the cache' % username)
-        principal = self.authenticatePrincipal(principal, password)
-        if principal is not None:
-            self.logger.debug('Got principal %s from the cache' % principal.getName())
-            return principal
+        if principal is None:
+            # Try principal retriever
+            principal = self.principalRetriever.getAuthorizationPrincipal(username)
 
-        # Try all role auth principal retrievers.
-        for authorizationPrincipalRetriever in self.authorizationPrincipalRetrieverList:
-            principal = authorizationPrincipalRetriever.getAuthorizationPrincipal(username)
-            #self.logger.debug('Got principal %s from retriever' % principal)
-            principal = self.authenticatePrincipal(principal, password)
-            if principal is not None:
-                self.logger.debug('Adding authorization principal %s to the cache' % principal.getName())
-                self.objectCache.put(username, principal)
-                return principal
+        if principal is None:
+            self.logger.debug('No principal for username: %s' % username)
+            return 
+        
+        # Try all authorization principal authenticators.
+        for principalAuthenticator in self.principalAuthenticatorList:
+            self.logger.debug('Attempting to authenticate %s by %s' % (username, principalAuthenticator.getName()))
+            authenticatedPrincipal = principalAuthenticator.authenticatePrincipal(principal, password)
+            if authenticatedPrincipal is not None:
+                self.logger.debug('Adding authorization principal %s to the cache, authenticated by %s' % (principal.getName(),principalAuthenticator.getName()))
+                self.objectCache.put(username, authenticatedPrincipal)
+                return authenticatedPrincipal
         return None
 
     def removeAuthorizationPrincipal(self, username):
@@ -87,11 +117,7 @@ class AuthorizationManager(CdbObjectManager):
 # Testing.
 if __name__ == '__main__':
     am = AuthorizationManager.getInstance()
-    pw = AuthorizationManager.cryptPassword('password')
-    print 'Password: ', pw
-    from cdb.common.objects.authorizationPrincipal import AuthorizationPrincipal
-    principal = AuthorizationPrincipal('sv', pw)
-    print 'Principal: ', principal
-    authPrincipal = am.authenticatePrincipal(principal, 'password')
-    print 'Auth Principal: ', authPrincipal
+    authPrincipal = am.getAuthorizationPrincipal('sveseli', 'sv')
+    print 'Auth principal: ', authPrincipal
+
 

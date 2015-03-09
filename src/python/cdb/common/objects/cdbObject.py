@@ -10,6 +10,7 @@ import UserDict
 import UserList
 import types
 import json
+import datetime
 
 from cdb.common.exceptions.invalidArgument import InvalidArgument
 from cdb.common.utility import loggingManager
@@ -85,7 +86,10 @@ class CdbObject(UserDict.UserDict):
                 dictRep[key] = itemList
             else:
                 if value is not None:
-                    dictRep[key] = value
+                    if isinstance(value, datetime.datetime):
+                        dictRep[key] = str(value)
+                    else:
+                        dictRep[key] = value
         return dictRep
 
     def getTextRep(self, keyList=None):

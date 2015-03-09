@@ -262,7 +262,7 @@ class ConfigurationManager(UserDict.UserDict):
 
     def getConfigItems(self, configSection):
         configParser = self.getConfigParser()
-        if configParser is not None and configParser.has_section(config_section):
+        if configParser is not None and configParser.has_section(configSection):
             return configParser.items(configSection)
         return []
 
@@ -286,6 +286,21 @@ class ConfigurationManager(UserDict.UserDict):
         if configParser is not None:
             return configParser.sections()
         return []
+
+    @classmethod
+    def getModuleClassConstructorTuple(cls, value):
+        """ Extract (module,class,constructor) tuple from the given value. """
+        itemList = value.split('(')
+        if not itemList:
+            return ()
+        itemList2 = itemList[0].split('.')
+        moduleNameList = itemList2[0:-1]
+        className = itemList2[-1]
+        moduleName = className[0].lower() + className[1:]
+        if len(moduleNameList): 
+            moduleName = '.'.join(moduleNameList)
+        constructor = '%s(%s' % (className, ''.join(itemList[1:]))
+        return (moduleName,className,constructor)
 
     def getHost(self):
         return self['host']

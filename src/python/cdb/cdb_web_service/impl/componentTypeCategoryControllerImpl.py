@@ -19,5 +19,5 @@ class ComponentTypeCategoryControllerImpl(CdbObjectManager):
         CdbObjectManager.__init__(self)
         self.componentDbApi = ComponentDbApi()
 
-    def getComponentTypeCategoryList(self):
-        return self.componentDbApi.getComponentTypeCategoryList()
+    def getComponentTypeCategories(self):
+        return self.componentDbApi.getComponentTypeCategories()

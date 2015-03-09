@@ -5,6 +5,7 @@ import os.path
 import sqlalchemy 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import mapper
+from sqlalchemy.orm import relationship
 
 from cdb.common.exceptions.commandFailed import CommandFailed
 from cdb.common.exceptions.configurationError import ConfigurationError
@@ -90,13 +91,28 @@ class DbManager:
         finally:
             self.lock.release()
 
-    def mapTable(self, tableClass, tableName, *args, **kwargs):
+    def mapTable(self, tableClass, tableName, relationDict):
         """ Map DB table to a given class. """
         self.lock.acquire()
         try:
             table = sqlalchemy.Table(tableName, self.metadata, autoload=True)
             tableClass.columns = table.columns
-            mapper(tableClass, table, *args, **kwargs)
+
+            # Build relations from specified foreign key columns and other properties.
+            tableRelations = {}
+            for (name, propertyDict) in relationDict.items():
+                lazy = propertyDict.get('lazy')
+                parentEntity = propertyDict.get('parentEntity')
+                foreignKeyColumns = propertyDict.get('foreignKeyColumns', [])
+                if len(foreignKeyColumns):
+                    fkList = []
+                    for fk in foreignKeyColumns:
+                        fkList.append(table.columns.get(fk))
+                    tableRelations[name] = relationship(parentEntity, foreign_keys=fkList, lazy=lazy)
+                else:
+                    tableRelations[name] = relationship(parentEntity, lazy=lazy)
+
+            mapper(tableClass, table, tableRelations)
             return table
         finally:
             self.lock.release()

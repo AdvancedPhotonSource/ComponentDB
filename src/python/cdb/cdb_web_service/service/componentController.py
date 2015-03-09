@@ -21,9 +21,9 @@ class ComponentController(CdbController):
         self.componentControllerImpl = ComponentControllerImpl()
 
     @cherrypy.expose
-    def getComponentList(self, **kwargs):
+    def getComponents(self, **kwargs):
         try:
-           response = '%s' % self.toJson(self.componentControllerImpl.getComponentList())
+           response = '%s' % self.toJson(self.componentControllerImpl.getComponents())
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)

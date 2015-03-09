@@ -12,6 +12,6 @@ if [ -z $CDB_ROOT_DIR ]; then
     source $setupFile > /dev/null
 fi
 
-$CDB_ROOT_DIR/src/python/cdb/cdb_web_service/cli/getUserListCli.py $@
+$CDB_ROOT_DIR/src/python/cdb/cdb_web_service/cli/getComponentsCli.py $@
 
 

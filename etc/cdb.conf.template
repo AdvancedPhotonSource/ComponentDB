@@ -5,6 +5,12 @@ sslCertFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.crt
 sslKeyFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.key
 sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
 
+[AuthorizationManager]
+principalRetriever=DbPrincipalRetriever()
+#principalRetriever=NoOpPrincipalRetriever()
+principalAuthenticator1=CryptedPasswordPrincipalAuthenticator()
+principalAuthenticator2=LdapPasswordPrincipalAuthenticator(serverUrl='ldaps://ldap.anl.gov:636', dnFormat='uid=%s,dc=anl,dc=gov')
+
 [DbManager]
 dbPasswordFile=CDB_INSTALL_DIR/etc/cdb.db.passwd
 
@@ -13,11 +19,11 @@ dbPasswordFile=CDB_INSTALL_DIR/etc/cdb.db.passwd
 handler=ConsoleLoggingHandler(sys.stdout,)
 level=debug
 format=%(asctime)s,%(msecs)003d %(levelname)s %(filename)s:%(lineno)d %(process)d:  %(message)s
-dateformat=%Y/%m/%d %H:%M:%S
+dateFormat=%Y/%m/%d %H:%M:%S
 
 [FileLogging]
 handler=TimedRotatingFileLoggingHandler('CDB_INSTALL_DIR/var/log/cdb-web-service.log')
 level=debug
 format=%(asctime)s,%(msecs)003d %(levelname)s %(filename)s:%(lineno)d %(process)d:  %(message)s
-dateformat=%Y/%m/%d %H:%M:%S
+dateFormat=%Y/%m/%d %H:%M:%S
 

@@ -74,6 +74,6 @@ class CdbController(object):
     def toJson(cls, cdbObjectList):
         jsonList = []
         for cdbObject in cdbObjectList:
-            jsonList.append(cdbObject.getDictRep())
+            jsonList.append(cdbObject.getDictRep(keyList='__all__'))
         return json.dumps(jsonList)
 

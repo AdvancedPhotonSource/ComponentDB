@@ -16,7 +16,7 @@ class ComponentRestApi(CdbRestApi):
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
-    def getComponentTypeCategoryList(self):
+    def getComponentTypeCategories(self):
         try:
             url = '%s/componentTypeCategories' % (self.getContextRoot())
             responseData = self.sendRequest(url=url, method='GET')
@@ -27,7 +27,7 @@ class ComponentRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
-    def getComponentTypeList(self):
+    def getComponentTypes(self):
         try:
             url = '%s/componentTypes' % (self.getContextRoot())
             responseData = self.sendRequest(url=url, method='GET')
@@ -38,7 +38,7 @@ class ComponentRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
-    def getComponentList(self):
+    def getComponents(self):
         try:
             url = '%s/components' % (self.getContextRoot())
             responseData = self.sendRequest(url=url, method='GET')
@@ -54,24 +54,24 @@ class ComponentRestApi(CdbRestApi):
 
 if __name__ == '__main__':
     api = ComponentRestApi('sveseli', 'sveseli', 'zagreb.svdev.net', 10232, 'http')
-    componentTypeList = api.getComponentTypeList()
+    componentTypes = api.getComponentTypes()
     print 'Component Types'
     print '***************'
-    for componentType in componentTypeList:
+    for componentType in componentTypes:
         print componentType.getDisplayString()
 
     print
     print 'Component Type Categories'
     print '*************************'
-    componentTypeCategoryList = api.getComponentTypeCategoryList()
-    for componentTypeCategory in componentTypeCategoryList:
+    componentTypeCategories = api.getComponentTypeCategories()
+    for componentTypeCategory in componentTypeCategories:
         print componentTypeCategory.getDisplayString()
 
     print
     print 'Components'
     print '**********'
-    componentList = api.getComponentList()
-    for component in componentList:
+    components = api.getComponents()
+    for component in components:
         print component.getDisplayString()
 
 

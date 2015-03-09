@@ -3,25 +3,25 @@
 from cdbWebServiceCli import CdbWebServiceCli
 from cdb.cdb_web_service.api.componentRestApi import ComponentRestApi
 
-class GetComponentListCli(CdbWebServiceCli):
+class GetComponentTypesCli(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-get-component-list 
+    cdb-get-component-types 
 
 Description:
-    Retrieves list of components.
+    Retrieves list of component types.
         """)
         api = ComponentRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
-        componentList = api.getComponentList()
-        for component in componentList:
-            print component.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
+        componentTypes = api.getComponentTypes()
+        for componentType in componentTypes:
+            print componentType.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 
 
 #######################################################################
 # Run command.
 if __name__ == '__main__':
-    cli = GetComponentListCli()
+    cli = GetComponentTypesCli()
     cli.run()

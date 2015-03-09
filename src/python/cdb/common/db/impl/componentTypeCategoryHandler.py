@@ -13,8 +13,8 @@ class ComponentTypeCategoryHandler(CdbDbEntityHandler):
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
 
-    def getComponentTypeCategoryList(self, session):
+    def getComponentTypeCategories(self, session):
         self.logger.debug('Retrieving component type category list')
-        dbComponentTypeCategoryList = session.query(ComponentTypeCategory).all()
-        return dbComponentTypeCategoryList
+        dbComponentTypeCategories = session.query(ComponentTypeCategory).all()
+        return dbComponentTypeCategories
 
