@@ -38,7 +38,9 @@ a:link:hover, a:visited:hover  {
     background-image: -webkit-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
     /* Proposed W3C Markup */
     background-image: linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
-    
+    /* IE6-9 */
+    filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#4e80b6', endColorstr='#6da5d8');
+
     padding: 15px;
     margin: 0px 0px 0px 0px;
     height: 75px;
@@ -515,13 +517,13 @@ h2 {
 }
 
 .ui-icon-excel {
-    background-image: url(../../resources/images/excel2.ico) !important;
+    background-image: url(../../resources/images/excel.ico) !important;
     background-repeat: no-repeat;
     background-position: left
 }
 
 .ui-icon-pdf {
-    background-image: url(../../resources/images/pdf2.ico) !important;
+    background-image: url(../../resources/images/pdf.ico) !important;
     background-repeat: no-repeat;
     background-position: left
 }
@@ -543,20 +545,4 @@ h2 {
 
 .dataTableCheckbox {
     text-align: center;
-}
-
-.assemblyTreeTable .ui-treetable thead th,  .ui-treetable thead th  {
-    display: none;
-}
-
-.assemblyTreeTable .ui-treetable tbody td,  .ui-treetable tbody td  {
-    border: 0px;
-}
-
-.assemblyTreeTable .ui-widget-content {
-    border: 0px;
-}
-
-.assemblyTreeTable .ui-treetable-toggler {
-    margin-left: -15px;
 }
