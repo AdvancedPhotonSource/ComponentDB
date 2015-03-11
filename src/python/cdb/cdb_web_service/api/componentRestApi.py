@@ -49,6 +49,58 @@ class ComponentRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
+    def getComponentById(self, id):
+        try:
+            url = '%s/components/%s' % (self.getContextRoot(), id)
+            if id is None:
+                raise InvalidRequest('Component id must be provided.')
+            responseData = self.sendRequest(url=url, method='GET')
+            return Component(responseData)
+        except CdbException, ex:
+            raise
+        except Exception, ex:
+            self.getLogger().exception('%s' % ex)
+            raise CdbException(exception=ex)
+
+    def getComponentByName(self, name):
+        try:
+            url = '%s/componentsByName/%s' % (self.getContextRoot(), name)
+            if name is None or not len(name):
+                raise InvalidRequest('Component name must be provided.')
+            responseData = self.sendRequest(url=url, method='GET')
+            return Component(responseData)
+        except CdbException, ex:
+            raise
+        except Exception, ex:
+            self.getLogger().exception('%s' % ex)
+            raise CdbException(exception=ex)
+
+    def addComponent(self, name, componentTypeId, ownerUserId, ownerGroupId, isGroupWriteable, description):
+        try:
+            url = '%s/components/new' % (self.getContextRoot())
+            if name is None or not len(name):
+                raise InvalidRequest('Component name must be provided.')
+            url += '?name=%s' % Encoder.encode(name)
+            if componentTypeId is None:
+                raise InvalidRequest('Component type id must be provided.')
+            url += '&componentTypeId=%s' % componentTypeId
+            if ownerUserId is not None:
+                url += '&ownerUserId=%s' % ownerUserId
+            if ownerGroupId is not None:
+                url += '&ownerGroupId=%s' % ownerGroupId
+            if description is not None and len(name):
+                url += '&description=%s' % Encoder.encode(description)
+            if isGroupWriteable is not None:
+                url += '&isGroupWriteable=%s' % isGroupWriteable
+
+            responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+            return Component(responseData)
+        except CdbException, ex:
+            raise
+        except Exception, ex:
+            self.getLogger().exception('%s' % ex)
+            raise CdbException(exception=ex)
+
 #######################################################################
 # Testing.
 

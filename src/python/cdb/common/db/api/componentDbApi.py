@@ -61,7 +61,6 @@ class ComponentDbApi(CdbDbApi):
             session = self.dbManager.openSession()
             try:
                 dbComponent = self.componentHandler.getComponentById(session, id)
-                print "DB_COMPONENT", dbComponent.__dict__
                 return dbComponent.getCdbObject()
             except CdbException, ex:
                 raise
@@ -71,15 +70,27 @@ class ComponentDbApi(CdbDbApi):
         finally:
             self.dbManager.closeSession(session)
 
+    def getComponentByName(self, name):
+        try:
+            session = self.dbManager.openSession()
+            try:
+                dbComponent = self.componentHandler.getComponentByName(session, name)
+                return dbComponent.getCdbObject()
+            except CdbException, ex:
+                raise
+            except Exception, ex:
+                self.logger.exception('%s' % ex)
+                raise
+        finally:
+            self.dbManager.closeSession(session)
 
     def addComponent(self, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
         try:
              session = self.dbManager.openSession()
              try:
                  dbComponent = self.componentHandler.addComponent(session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
-                 session.commit()
-                 print "DB_COMPONENT", dbComponent.__dict__
                  component = dbComponent.getCdbObject()
+                 session.commit()
                  return component
              except CdbException, ex:
                  session.rollback()
@@ -120,7 +131,6 @@ if __name__ == '__main__':
     print component.getDictRep()
 
     print 'Adding component'
-    component = api.addComponent(name='bcd1', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
+    component = api.addComponent(name='bcd8', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
     print "Added Component"
-    print component.__dict__
-    print component.getDictRep('__all__')
+    print component

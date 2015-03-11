@@ -13,14 +13,14 @@ from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from componentTypeHandler import ComponentTypeHandler
 from userInfoHandler import UserInfoHandler
 from userGroupHandler import UserGroupHandler
+from entityInfoHandler import EntityInfoHandler
 
 class ComponentHandler(CdbDbEntityHandler):
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
         self.componentTypeHandler = ComponentTypeHandler()
-        self.userInfoHandler = UserInfoHandler()
-        self.userGroupHandler = UserGroupHandler()
+        self.entityInfoHandler = EntityInfoHandler()
 
     def getComponents(self, session):
         self.logger.debug('Retrieving component list')
@@ -35,6 +35,14 @@ class ComponentHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('Component id %s does not exist.' % (id))
 
+    def getComponentByName(self, session, name):
+        try:
+            self.logger.debug('Retrieving component name %s' % name)
+            dbComponent = session.query(Component).filter(Component.name==name).one()
+            return dbComponent
+        except NoResultFound, ex:
+            raise ObjectNotFound('Component with name %s does not exist.' % (name))
+
     def addComponent(self, session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description=None):
         try:
             dbComponent = session.query(Component).filter(Component.name==name).one()
@@ -42,33 +50,16 @@ class ComponentHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             # OK.
             pass
-
         dbComponentType = self.componentTypeHandler.getComponentTypeById(session, componentTypeId)
-        createdByDbUserInfo = self.userInfoHandler.getUserInfoById(session, createdByUserId)
-        ownerDbUserInfo = self.userInfoHandler.getUserInfoById(session, ownerUserId)
-        ownerDbUserGroup = self.userGroupHandler.getUserGroupById(session, ownerGroupId)
-        createdOnDateTime = datetime.datetime.now()
-        lastModifiedOnDateTime = createdOnDateTime 
-        lastModifiedByUserId = createdByUserId
-        lastModifiedByDbUserInfo = createdByDbUserInfo 
-        
         # Create entity info
-        #dbEntityInfo = EntityInfo(owner_user_id=ownerUserId, owner_user_group_id=ownerGroupId, created_by_user_id=createdByUserId, created_on_date_time=createdOnDateTime, last_modified_by_user_id=lastModifiedByUserId, last_modified_on_date_time=lastModifiedOnDateTime, is_group_writeable=isGroupWriteable)
-        dbEntityInfo = EntityInfo(created_on_date_time=createdOnDateTime, last_modified_on_date_time=lastModifiedOnDateTime, is_group_writeable=isGroupWriteable)
-        dbEntityInfo.ownerUserInfo = ownerDbUserInfo 
-        dbEntityInfo.ownerUserGroup = ownerDbUserGroup
-        dbEntityInfo.createdByUserInfo = createdByDbUserInfo 
-        dbEntityInfo.lastModifiedByUserInfo = lastModifiedByDbUserInfo 
-        #session.add(dbEntityInfo)
-        #session.flush()
+        dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable)
 
-        #dbComponent = Component(name=name, component_type_id=dbComponentType.id, entity_info_id=dbEntityInfo.id, description=description)
-        dbComponent = Component(name=name, component_type_id=dbComponentType.id, description=description)
+        # Create component
+        dbComponent = Component(name=name, description=description)
+        dbComponent.componentType = dbComponentType
         dbComponent.entityInfo = dbEntityInfo
         session.add(dbComponent)
         session.flush()
         self.logger.debug('Inserted component id %s' % dbComponent.id)
-        print "DB COMPONENT IN HANDLER", dbComponent
-        print "DB COMPONENT DICT IN HANDLER", dbComponent.__dict__
         return dbComponent
 
