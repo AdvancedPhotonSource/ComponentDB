@@ -18,6 +18,7 @@ class LoginController(CdbController):
     """ Controller to provide login and logout actions. """
 
     SESSION_USERNAME_KEY = '_cp_username'
+    SESSION_USER_KEY = 'user'
     SESSION_ROLE_KEY = 'role'
     INVALID_SESSION_KEY = 'invalidSession'
 
@@ -101,6 +102,7 @@ class LoginController(CdbController):
                 cherrypy.request.login = None
                 cherrypy.session[LoginController.INVALID_CDB_SESSION_KEY] = True
             raise AuthorizationError('Incorrect username or password.')
+        cherrypy.session[LoginController.SESSION_USER_KEY] = principal.getUserInfo()
         return principal
 
     @classmethod

@@ -77,3 +77,11 @@ class CdbController(object):
             jsonList.append(cdbObject.getDictRep(keyList='__all__'))
         return json.dumps(jsonList)
 
+    @classmethod
+    def getSessionUser(cls):
+        return cherrypy.serving.session.get('user')
+
+    @classmethod
+    def getSessionUsername(cls):
+        return cherrypy.serving.session.get('_cp_username')
+

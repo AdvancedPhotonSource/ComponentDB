@@ -4,8 +4,8 @@ from cdbObject import CdbObject
 
 class AuthorizationPrincipal(CdbObject):
 
-    def __init__(self, name, token=None):
-        CdbObject.__init__(self,{'name' : name, 'token' : token})
+    def __init__(self, name, token=None, userInfo={}):
+        CdbObject.__init__(self,{'name' : name, 'token' : token, 'userInfo' : userInfo})
 
     def getName(self):
         return self.get('name')
@@ -21,3 +21,9 @@ class AuthorizationPrincipal(CdbObject):
 
     def getRole(self):
         return self.get('role')
+
+    def setUserInfo(self, userInfo):
+        self['userInfo'] = userInfo
+
+    def getUserInfo(self):
+        return self.get('userInfo')
