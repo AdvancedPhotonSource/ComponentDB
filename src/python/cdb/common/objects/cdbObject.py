@@ -121,6 +121,7 @@ class CdbObject(UserDict.UserDict):
         return cls.getFromDict(json.loads(jsonString))
 
     def getDisplayString(self, displayKeyList=[], displayFormat=TEXT_DISPLAY_FORMAT):
+        """ Get display string. """
         if displayFormat == CdbObject.DICT_DISPLAY_FORMAT:
             return self.getDictRep(displayKeyList)
         elif displayFormat == CdbObject.TEXT_DISPLAY_FORMAT:

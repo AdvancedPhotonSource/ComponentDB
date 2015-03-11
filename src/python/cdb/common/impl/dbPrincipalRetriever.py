@@ -17,6 +17,7 @@ class DbPrincipalRetriever(AuthorizationPrincipalRetriever):
             user = self.dbApi.getUserWithPasswordByUsername(username)
             principal = AuthorizationPrincipal(username, user.get('password'))
             principal.setRole(cdbRole.CDB_USER_ROLE)
+            principal.setUserInfo(user)
             if self.adminGroupName is not None:
                 for userGroup in user.get('userGroupList', []):
                     if userGroup.get('name') == self.adminGroupName:

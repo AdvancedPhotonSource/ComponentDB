@@ -19,7 +19,7 @@ class UserInfoControllerImpl(CdbObjectManager):
         CdbObjectManager.__init__(self)
         self.userDbApi = UserDbApi()
 
-    def getUserInfos(self):
+    def getUsers(self):
         return self.userDbApi.getUsers()
 
     def getUserById(self, id):

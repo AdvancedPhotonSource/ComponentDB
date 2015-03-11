@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-from sqlalchemy import Integer
-from sqlalchemy import String
-from sqlalchemy import Column
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship
 from cdb.common.db.entities.componentTypeCategory import ComponentTypeCategory
 from cdb.common.db.entities.componentType import ComponentType
 from cdb.common.db.entities.component import Component
+from cdb.common.db.entities.design import Design
 from cdb.common.db.entities.entityInfo import EntityInfo
 from cdb.common.db.entities.userGroup import UserGroup
 from cdb.common.db.entities.userInfo import UserInfo
@@ -21,6 +17,9 @@ CDB_DB_ENTITY_MAP = {
         }),
     'component' : (Component, {
         'componentType' : { 'parentEntity' : ComponentType, 'lazy' : False }, 
+        'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False }, 
+        }),
+    'design' : (Design, {
         'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False }, 
         }),
     'entity_info' : (EntityInfo, {
