@@ -549,7 +549,7 @@ h2 {
     display: none;
 }
 
-.assemblyTreeTable .ui-treetable tbody td,  .ui-treetable tbody td  {
+.assemblyTreeTable tbody td  {
     border: 0px;
 }
 
