@@ -545,7 +545,7 @@ h2 {
     text-align: center;
 }
 
-.assemblyTreeTable .ui-treetable thead th,  .ui-treetable thead th  {
+.assemblyTreeTable thead th  {
     display: none;
 }
 
