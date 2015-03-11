@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-#######################################################################
-
 import cherrypy
 import json
 
@@ -10,20 +8,18 @@ from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.internalError import InternalError
 
-from cdb.cdb_web_service.impl.userInfoControllerImpl import UserInfoControllerImpl
+from cdb.cdb_web_service.impl.designControllerImpl import DesignControllerImpl
 
-#######################################################################
-
-class UserInfoController(CdbController):
+class DesignController(CdbController):
 
     def __init__(self):
         CdbController.__init__(self)
-        self.userInfoControllerImpl = UserInfoControllerImpl()
+        self.designControllerImpl = DesignControllerImpl()
 
     @cherrypy.expose
-    def getUsers(self, **kwargs):
+    def getDesigns(self, **kwargs):
         try:
-           response = '%s' % self.toJson(self.userInfoControllerImpl.getUsers())
+           response = '%s' % self.toJson(self.designControllerImpl.getDesigns())
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
@@ -35,12 +31,11 @@ class UserInfoController(CdbController):
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
-    def getUserById(self, id, **kwargs):
+    def getDesignById(self, id, **kwargs):
         try:
             if not id:
                 raise InvalidRequest('Invalid id provided.')
-            response = '%s' % self.userInfoControllerImpl.getUserById(id).getJsonRep()
-            self.logger.debug('Returning user info for %s: %s' % (id,response))
+            response = '%s' % self.designControllerImpl.getDesignById(id).getJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
@@ -52,12 +47,11 @@ class UserInfoController(CdbController):
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
-    def getUserByUsername(self, username, **kwargs):
+    def getDesignByName(self, name, **kwargs):
         try:
-            if not len(username):
-                raise InvalidRequest('Invalid username provided.')
-            response = '%s' % self.userInfoControllerImpl.getUserByUsername(username).getJsonRep()
-            self.logger.debug('Returning user info for %s: %s' % (username,response))
+            if not name:
+                raise InvalidRequest('Invalid name provided.')
+            response = '%s' % self.designControllerImpl.getDesignByName(name).getJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
