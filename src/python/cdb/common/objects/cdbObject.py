@@ -75,12 +75,12 @@ class CdbObject(UserDict.UserDict):
         for key in displayKeyList:
             value = self.get(key)
             if isinstance(value, CdbObject):
-                dictRep[key] = value.getDictRep()
+                dictRep[key] = value.getDictRep('__all__')
             elif type(value) == types.ListType:
                 itemList = []
                 for item in value:
                     if isinstance(item, CdbObject):
-                        itemList.append(item.getDictRep())
+                        itemList.append(item.getDictRep('__all__'))
                     else:
                         itemList.append(item)
                 dictRep[key] = itemList
