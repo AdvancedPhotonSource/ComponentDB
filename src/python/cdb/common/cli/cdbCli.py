@@ -41,7 +41,7 @@ class CdbCli(object):
         self.addOptionToGroup(commonGroup, '-v', '--version', action='store_true', dest='version', default=False, help='Print version and exit.')
         self.addOptionToGroup(commonGroup, '-d', '--debug', dest='consoleLogLevel', help='Set debug level (valid values: CRITICAL, ERROR, WARNING, INFO, DEBUG).')
         self.addOptionToGroup(commonGroup, '', '--display-format', dest='displayFormat', default=CdbObject.TEXT_DISPLAY_FORMAT, help='Display format for output objects. Possible options are: %s, %s, and %s (default: %s).' % (CdbObject.TEXT_DISPLAY_FORMAT, CdbObject.DICT_DISPLAY_FORMAT, CdbObject.JSON_DISPLAY_FORMAT, CdbObject.TEXT_DISPLAY_FORMAT)) 
-        self.addOptionToGroup(commonGroup, '', '--display-keys', dest='displayKeys', default=CdbObject.DISPLAY_DEFAULT_KEYS, help='List of output object keys to display. Possible options are: %s, %s, and string containing comma-separated keys (default: %s, represents class default keys).' % (CdbObject.DISPLAY_DEFAULT_KEYS, CdbObject.DISPLAY_ALL_KEYS, CdbObject.DISPLAY_DEFAULT_KEYS)) 
+        self.addOptionToGroup(commonGroup, '', '--display-keys', dest='displayKeys', default=CdbObject.DEFAULT_KEYS, help='List of output object keys to display. Possible options are: %s, %s, and string containing comma-separated keys (default: %s, represents class default keys).' % (CdbObject.DEFAULT_KEYS, CdbObject.ALL_KEYS, CdbObject.DEFAULT_KEYS)) 
 
         # These will be set via env variables
         #self.addOptionToGroup(commonGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s).' % self.getDefaultServiceHost())
