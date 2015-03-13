@@ -27,11 +27,11 @@ class UserInfoController(CdbController):
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
@@ -39,16 +39,16 @@ class UserInfoController(CdbController):
         try:
             if not id:
                 raise InvalidRequest('Invalid id provided.')
-            response = '%s' % self.userInfoControllerImpl.getUserById(id).getJsonRep()
+            response = '%s' % self.userInfoControllerImpl.getUserById(id).getFullJsonRep()
             self.logger.debug('Returning user info for %s: %s' % (id,response))
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
@@ -56,15 +56,15 @@ class UserInfoController(CdbController):
         try:
             if not len(username):
                 raise InvalidRequest('Invalid username provided.')
-            response = '%s' % self.userInfoControllerImpl.getUserByUsername(username).getJsonRep()
+            response = '%s' % self.userInfoControllerImpl.getUserByUsername(username).getFullJsonRep()
             self.logger.debug('Returning user info for %s: %s' % (username,response))
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 

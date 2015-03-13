@@ -40,14 +40,14 @@ class DesignSessionController(CdbSessionController):
             if description is not None:
                 description = Encoder.decode(description)
 
-            response = '%s' % self.designControllerImpl.addDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description).getJsonRep()
+            response = '%s' % self.designControllerImpl.addDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description).getFullJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 

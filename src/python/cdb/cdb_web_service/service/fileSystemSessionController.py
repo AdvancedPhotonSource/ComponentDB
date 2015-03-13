@@ -33,15 +33,15 @@ class FileSystemSessionController(CdbSessionController):
             encodedFileContent = kwargs.get('encodedFileContent', '')
             fileContent = Encoder.decode(encodedFileContent) 
             filePath = '%s/%s' % (parentDirectory, fileName)
-            response = '%s' % self.fileSystemControllerImpl.writeFile(filePath, fileContent).getJsonRep()
+            response = '%s' % self.fileSystemControllerImpl.writeFile(filePath, fileContent).getFullJsonRep()
             self.logger.debug('Returning: %s' % response)
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 

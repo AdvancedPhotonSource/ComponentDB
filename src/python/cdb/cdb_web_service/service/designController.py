@@ -23,11 +23,11 @@ class DesignController(CdbController):
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
@@ -35,15 +35,15 @@ class DesignController(CdbController):
         try:
             if not id:
                 raise InvalidRequest('Invalid id provided.')
-            response = '%s' % self.designControllerImpl.getDesignById(id).getJsonRep()
+            response = '%s' % self.designControllerImpl.getDesignById(id).getFullJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
@@ -51,14 +51,14 @@ class DesignController(CdbController):
         try:
             if not name:
                 raise InvalidRequest('Invalid name provided.')
-            response = '%s' % self.designControllerImpl.getDesignByName(name).getJsonRep()
+            response = '%s' % self.designControllerImpl.getDesignByName(name).getFullJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 

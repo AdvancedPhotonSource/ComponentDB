@@ -27,11 +27,11 @@ class UserGroupController(CdbController):
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 
 

@@ -30,15 +30,15 @@ class FileSystemController(CdbController):
                 raise InvalidRequest('Missing parent directory.')
             parentDirectory = kwargs.get('parentDirectory')
             path = '%s/%s' % (parentDirectory, directoryName)
-            response = '%s' % self.fileSystemControllerImpl.getDirectoryList(path).getJsonRep()
+            response = '%s' % self.fileSystemControllerImpl.getDirectoryList(path).getFullJsonRep()
             self.logger.debug('Returning path for %s: %s' % (path,response))
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = ex.getJsonRep()
+            response = ex.getFullJsonRep()
         except Exception, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
-            response = InternalError(ex).getJsonRep()
+            response = InternalError(ex).getFullJsonRep()
         return self.formatJsonResponse(response)
 
