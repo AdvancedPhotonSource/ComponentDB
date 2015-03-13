@@ -23,7 +23,7 @@
         <p:column headerText="Actions">
             <div class="actionLink">
                 <p:commandLink id="componentLogUploadAttachmentButton" 
-                               oncomplete="logAttachmentUploadDialogWidget.show()" 
+                               oncomplete="PF('logAttachmentUploadDialogWidget').show()" 
                                styleClass="ui-icon ui-icon-circle-arrow-n"
                                update="@form">
                     <f:setPropertyActionListener value="#{logObject}" target="#{logController.current}"/>

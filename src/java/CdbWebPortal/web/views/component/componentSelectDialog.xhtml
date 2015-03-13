@@ -4,7 +4,6 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
@@ -15,8 +14,8 @@
         <div class="dialog">
             <div class="actionButton">
                 <p:commandButton id="componentSelectCustomizeDisplay" 
-                                 onclick="componentInstanceComponentSelectDialogWidget.hide();
-                                         componentInstanceComponentSelectCustomizeDisplayDialogWidget.show()"
+                                 onclick="PF('componentInstanceComponentSelectDialogWidget').hide();
+                                         PF('componentInstanceComponentSelectCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  immediate="true"                                 
                                  icon="ui-icon-wrench" 
@@ -28,8 +27,8 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentInstanceController.selectComponent(componentController.selectedComponent)}"
-                                 onclick="componentInstanceComponentSelectDataTableWidget.filter()" 
-                                 oncomplete="componentInstanceComponentSelectDialogWidget.hide()" 
+                                 onclick="PF('componentInstanceComponentSelectDataTableWidget').filter()" 
+                                 oncomplete="PF('componentInstanceComponentSelectDialogWidget').hide()" 
                                  update="@form"
                                  immediate="true"
                                  icon="ui-icon-arrowreturnthick-1-w">

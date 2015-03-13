@@ -30,10 +30,10 @@
 
             <p:commandButton id="assemblyComponentSelectButton"
                              action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
-                             oncomplete="assemblyComponentSelectDialogWidget.show()"
+                             oncomplete="PF('assemblyComponentSelectDialogWidget').show()"
                              update="@form"
                              alt="Select Component" 
-                             styleClass="actionButtonSmall"
+                             styleClass="selectButtonForAutocomplete"
                              icon="ui-icon-search">
                 <f:setPropertyActionListener target="#{assemblyComponentController.current}" value="#{assemblyComponentObject}" />
                 <f:setPropertyActionListener target="#{componentController.selectedComponent}" value="#{assemblyComponentObject.component}"/>

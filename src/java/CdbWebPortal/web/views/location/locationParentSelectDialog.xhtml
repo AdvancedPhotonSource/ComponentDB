@@ -15,8 +15,8 @@
 
             <div class="actionButton">
                 <p:commandButton id="locationParentSelectCustomizeDisplay" 
-                                 onclick="locationParentSelectDialogWidget.hide();
-                                         locationParentSelectCustomizeDisplayDialogWidget.show()"
+                                 onclick="PF('locationParentSelectDialogWidget').hide();
+                                         PF('locationParentSelectCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
@@ -36,13 +36,13 @@
                                  action="#{locationController.selectParentLocation(locationController.selectedParentLocation)}"
                                  update="@form"
                                  onclick="locationParentSelectDataTableWidget.filter()" 
-                                 oncomplete="locationParentSelectDialogWidget.hide()" 
+                                 oncomplete="PF('locationParentSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{locationController.selectDisplayFlatTableView}"/>
                 <p:commandButton value="Done" alt="Done"
                                  action="#{locationController.selectParentLocation(locationSelectTreeViewBean.selectedLocation)}"
                                  update="@form"
-                                 oncomplete="locationParentSelectDialogWidget.hide()" 
+                                 oncomplete="PF('locationParentSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{!locationController.selectDisplayFlatTableView}"/>
             </f:facet>

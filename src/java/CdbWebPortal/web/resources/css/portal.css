@@ -192,6 +192,16 @@ footer {
     border: 0px;
 }
 
+.selectButtonForAutocomplete {
+    height: 25px;
+    width: 25px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 30px;
+    border: 0px;
+}
+
 .actionButton {
     margin-top: 5px;
     margin-bottom: 5px;

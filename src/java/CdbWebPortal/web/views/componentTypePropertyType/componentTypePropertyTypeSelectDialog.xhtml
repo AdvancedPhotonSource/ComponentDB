@@ -15,7 +15,7 @@
 
             <div class="actionButton">
                 <p:commandButton id="componentTypePropertyTypeSelectCustomizeDisplay" 
-                                 onclick="componentTypePropertyTypeSelectWidget.hide(); componentTypePropertyTypeSelectCustomizeDisplayDialogWidget.show()"
+                                 onclick="PF('componentTypePropertyTypeSelectWidget').hide(); PF('componentTypePropertyTypeSelectCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
@@ -27,7 +27,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentTypeController.selectPropertyTypes(propertyTypeController.getSelectedObjectListAndResetSelectDataModel())}"
                                  update="@form"
-                                 oncomplete="componentTypePropertyTypeSelectWidget.hide()" 
+                                 oncomplete="PF('componentTypePropertyTypeSelectWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

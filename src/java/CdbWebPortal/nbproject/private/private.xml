@@ -3,26 +3,32 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/ComponentInstanceUtility.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/homeViewTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/componentInstanceCreatePanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/create.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/index.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/homeViewTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/loginViewTemplate.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/LocationUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/componentInstancesViewTemplate.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/DesignElementUtility.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/contentViewTemplate.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/error.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/ComponentTypeUtility.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/home.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/SessionUtility.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/SearchController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/ComponentUtility.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueHistoryController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LoginController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ErrorController.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/AssemblyComponentUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/error/pageNotFound.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonChildListActionButtons.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/errorViewTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CrudEntityController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/index.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/WEB-INF/web.xml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/view.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/componentsViewTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/contentViewTemplate.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/common/commonListActionButtons.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/home.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/ComponentUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/templates/contentViewTemplateMenubar.xhtml</file>
         </group>
     </open-files>
 </project-private>

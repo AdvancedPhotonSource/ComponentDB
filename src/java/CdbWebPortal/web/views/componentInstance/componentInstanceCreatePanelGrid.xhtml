@@ -31,7 +31,7 @@
 
             <p:commandButton id="selectComponentButton"
                              action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
-                             oncomplete="componentInstanceComponentSelectDialogWidget.show()"
+                             oncomplete="PF('componentInstanceComponentSelectDialogWidget').show();"
                              update="@form"
                              immediate="true"
                              alt="Select Component" 

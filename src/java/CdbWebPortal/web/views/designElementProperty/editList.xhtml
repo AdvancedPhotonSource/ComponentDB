@@ -12,7 +12,7 @@
         <ui:param name="addActionController" value="#{propertyTypeController}"/>
         <ui:param name="addAction" value="prepareSelectPropertyTypesForComponentInstance"/>
         <ui:param name="addActionParameter" value="#{designElementController.current}"/>
-        <ui:param name="addActionOnComplete" value="designElementPropertySelectDialogWidget.show()"/>
+        <ui:param name="addActionOnComplete" value="PF('designElementPropertySelectDialogWidget').show()"/>
         <ui:param name="saveAction" value="savePropertyList"/>
         <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
     </ui:include>    

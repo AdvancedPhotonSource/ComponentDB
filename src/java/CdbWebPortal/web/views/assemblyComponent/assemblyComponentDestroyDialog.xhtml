@@ -10,11 +10,11 @@
                      header="Delete Assembly Component" 
                      severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="assemblyComponentDestroyDialogWidget.hide()" 
+        <p:commandButton value="Yes" oncomplete="PF('assemblyComponentDestroyDialogWidget').hide()" 
                          actionListener="#{componentController.deleteAssemblyComponent(assemblyComponentObject)}"
                          action="#{assemblyComponentController.destroyAndReturnAssemblyView(assemblyComponentObject)}"
                          update="@form"/>
-        <p:commandButton value="No" onclick="assemblyComponentDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="No" onclick="PF('assemblyComponentDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>
 
 </ui:composition>

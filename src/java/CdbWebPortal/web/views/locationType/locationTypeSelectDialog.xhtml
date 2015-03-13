@@ -15,7 +15,7 @@
 
             <div class="actionButton">
                 <p:commandButton id="locationTypeSelectCustomizeDisplay" 
-                                 onclick="locationTypeSelectDialogWidget.hide(); locationTypeSelectCustomizeDisplayDialogWidget.show()"
+                                 onclick="PF('locationTypeSelectDialogWidget').hide(); PF('locationTypeSelectCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
@@ -27,7 +27,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{locationController.selectLocationType(locationTypeController.selectedObject)}"
                                  update="@form"
-                                 oncomplete="locationTypeSelectDialogWidget.hide()" 
+                                 oncomplete="PF('locationTypeSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

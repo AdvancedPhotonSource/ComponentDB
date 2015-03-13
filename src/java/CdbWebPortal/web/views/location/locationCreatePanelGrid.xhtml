@@ -40,7 +40,7 @@
 
             <p:commandButton id="selectParentButton"
                              action="#{locationController.clearSelectFiltersAndResetSelectDataModel()}" 
-                             oncomplete="locationParentSelectDialogWidget.show()"
+                             oncomplete="PF('locationParentSelectDialogWidget').show()"
                              update="@form"
                              immediate="true"
                              alt="Select Parent Location" 

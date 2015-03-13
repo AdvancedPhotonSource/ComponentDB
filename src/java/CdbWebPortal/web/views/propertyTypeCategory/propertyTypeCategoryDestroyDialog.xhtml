@@ -10,8 +10,8 @@
                      header="Delete Property Type Category" 
                      severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="propertyTypeCategoryDestroyDialogWidget.hide()" action="#{propertyTypeCategoryController.destroy()}" update="@form"/>
-        <p:commandButton value="No" onclick="propertyTypeCategoryDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="Yes" oncomplete="PF('propertyTypeCategoryDestroyDialogWidget').hide()" action="#{propertyTypeCategoryController.destroy()}" update="@form"/>
+        <p:commandButton value="No" onclick="PF('propertyTypeCategoryDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>  
 
 </ui:composition>

@@ -44,7 +44,7 @@
             <div class="actionLink">
                 <p:commandLink action="#{componentTypeCategoryController.prepareView(componentTypeCategoryObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
                 <p:commandLink action="#{componentTypeCategoryController.prepareEdit(componentTypeCategoryObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
-                <p:commandLink oncomplete="componentTypeCategoryDestroyDialogWidget.show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                <p:commandLink oncomplete="PF('componentTypeCategoryDestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
                     <f:setPropertyActionListener value="#{componentTypeCategoryObject}" target="#{componentTypeCategoryController.current}"/>
                 </p:commandLink>
             </div>

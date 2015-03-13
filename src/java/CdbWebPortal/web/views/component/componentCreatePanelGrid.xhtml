@@ -39,11 +39,11 @@
 
             <p:commandButton id="componentTypeSelectButton"
                              action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
-                             oncomplete="componentTypeSelectDialogWidget.show()"
+                             oncomplete="PF('componentTypeSelectDialogWidget').show()"
                              update="@form"
                              immediate="true"
                              alt="Select Component" 
-                             styleClass="actionButtonSmall"
+                             styleClass="selectButtonForAutocomplete"
                              icon="ui-icon-search">
                 <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{designElementObject.component}"/>
                 <p:tooltip for="componentTypeSelectButton" value="Search for component type."/>

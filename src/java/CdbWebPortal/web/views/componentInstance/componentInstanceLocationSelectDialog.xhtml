@@ -13,8 +13,8 @@
               styleClass="locationSelectDialog">
         <div class="locationSelectDialog">
             <p:commandButton id="componentInstanceLocationSelectCustomizeDisplay" 
-                             onclick="componentInstanceLocationSelectDialogWidget.hide();
-                                     componentInstanceLocationSelectCustomizeDisplayDialogWidget.show()"
+                             onclick="PF('componentInstanceLocationSelectDialogWidget').hide();
+                                     PF('componentInstanceLocationSelectCustomizeDisplayDialogWidget').show()"
                              alt="Customize selection view." 
                              icon="ui-icon-wrench" 
                              styleClass="actionButtonRight">
@@ -32,13 +32,13 @@
                 <p:commandButton value="Done" alt="Done"
                                  action="#{componentInstanceController.selectLocation(locationController.selectedObject)}"
                                  update="@form"
-                                 oncomplete="componentInstanceLocationSelectDialogWidget.hide()" 
+                                 oncomplete="PF('componentInstanceLocationSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{locationController.selectDisplayFlatTableView}"/>
                 <p:commandButton value="Done" alt="Done"
                                  action="#{componentInstanceController.selectLocation(locationSelectTreeViewBean.selectedLocation)}"
                                  update="@form"
-                                 oncomplete="componentInstanceLocationSelectDialogWidget.hide()" 
+                                 oncomplete="PF('componentInstanceLocationSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{!locationController.selectDisplayFlatTableView}"/>
             </f:facet>            

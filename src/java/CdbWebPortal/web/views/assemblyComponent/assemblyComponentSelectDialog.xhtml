@@ -15,8 +15,8 @@
         <div class="dialog">
             <div class="actionButton">
                 <p:commandButton id="componentSelectCustomizeDisplay" 
-                                 onclick="assemblyComponentSelectDialogWidget.hide();
-                                         assemblyComponentSelectCustomizeDisplayDialogWidget.show()"
+                                 onclick="PF('assemblyComponentSelectDialogWidget').hide();
+                                         PF('assemblyComponentSelectCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  immediate="true"                                 
                                  icon="ui-icon-wrench" 
@@ -28,8 +28,8 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{assemblyComponentController.selectComponent(componentController.selectedComponent)}"
-                                 onclick="componentSelectDataTableWidget.filter()" 
-                                 oncomplete="assemblyComponentSelectDialogWidget.hide()" 
+                                 onclick="PF('componentSelectDataTableWidget').filter()" 
+                                 oncomplete="PF('assemblyComponentSelectDialogWidget').hide()" 
                                  update="#{updateTarget}"
                                  icon="ui-icon-arrowreturnthick-1-w">
                 </p:commandButton>

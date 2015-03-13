@@ -13,8 +13,8 @@
               styleClass="locationSelectDialog">
         <div class="locationSelectDialog">
             <p:commandButton id="designElementLocationSelectCustomizeDisplay" 
-                             onclick="designElementLocationSelectDialogWidget.hide();
-                                     designElementLocationSelectCustomizeDisplayDialogWidget.show()"
+                             onclick="PF('designElementLocationSelectDialogWidget').hide();
+                                     PF('designElementLocationSelectCustomizeDisplayDialogWidget').show()"
                              alt="Customize selection view." 
                              icon="ui-icon-wrench" 
                              styleClass="actionButtonRight">
@@ -32,13 +32,13 @@
                 <p:commandButton value="Done" alt="Done"
                                  action="#{designElementController.selectLocation(locationController.selectedObject)}"
                                  update="#{updateTarget}"
-                                 oncomplete="designElementLocationSelectDialogWidget.hide()" 
+                                 oncomplete="PF('designElementLocationSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{locationController.selectDisplayFlatTableView}"/>
                 <p:commandButton value="Done" alt="Done"
                                  action="#{designElementController.selectLocation(locationSelectTreeViewBean.selectedLocation)}"
                                  update="#{updateTarget}"
-                                 oncomplete="designElementLocationSelectDialogWidget.hide()" 
+                                 oncomplete="PF('designElementLocationSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{!locationController.selectDisplayFlatTableView}"/>
             </f:facet>            

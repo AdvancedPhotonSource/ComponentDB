@@ -5,8 +5,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dialog id="designElementLocationSelectCustomizeDisplayDialog" 
               widgetVar="designElementLocationSelectCustomizeDisplayDialogWidget" 
@@ -18,8 +17,8 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  update="designElementLocationSelectDialog"
-                                 onclick="designElementLocationSelectCustomizeDisplayDialogWidget.hide()"
-                                 oncomplete="designElementLocationSelectDialogWidget.show()" 
+                                 onclick="PF('designElementLocationSelectCustomizeDisplayDialogWidget').hide()"
+                                 oncomplete="PF('designElementLocationSelectDialogWidget').show()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

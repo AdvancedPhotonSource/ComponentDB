@@ -51,7 +51,7 @@
                                  oncomplete="PF('designElementComponentSelectDialogWidget').show()"
                                  immediate="true"
                                  alt="Select Component" 
-                                 styleClass="actionButtonSmall"
+                                 styleClass="selectButtonForAutocomplete"
                                  icon="ui-icon-search">
                     <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
                     <p:tooltip for="designElementComponentSelectButton" value="Search for component."/>
@@ -81,7 +81,7 @@
                                  oncomplete="PF('designElementChildDesignSelectDialogWidget').show()"
                                  immediate="true"
                                  alt="Select Child Design" 
-                                 styleClass="actionButtonSmall"
+                                 styleClass="selectButtonForAutocomplete"
                                  icon="ui-icon-search">
                     <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
                     <p:tooltip for="designElementChildDesignSelectButton" value="Search for child design."/>
@@ -107,7 +107,7 @@
             </p:autoComplete>
             <p:commandButton id="location" onclick="PF('designElementLocationSelectDialogWidget').show();" 
                              alt="Select" icon="ui-icon-search"
-                             styleClass="actionButtonSmall"
+                             styleClass="selectButtonForAutocomplete"
                              immediate="true">
                 <f:setPropertyActionListener value="#{designElementObject}" target="#{designElementController.current}"/>
             </p:commandButton>

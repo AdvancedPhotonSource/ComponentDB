@@ -11,7 +11,7 @@
         <ui:param name="addActionController" value="#{propertyTypeController}"/>
         <ui:param name="addAction" value="prepareSelectPropertyTypesForComponentType"/>
         <ui:param name="addActionParameter" value="#{componentTypeController.current}"/>
-        <ui:param name="addActionOnComplete" value="componentTypePropertyTypeSelectWidget.show()"/>
+        <ui:param name="addActionOnComplete" value="PF('componentTypePropertyTypeSelectWidget').show()"/>
         <ui:param name="saveAction" value="savePropertyTypeList"/>
         <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin}"/>
     </ui:include>    
