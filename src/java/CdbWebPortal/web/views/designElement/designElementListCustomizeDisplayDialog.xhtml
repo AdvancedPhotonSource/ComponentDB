@@ -61,7 +61,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{designElementController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="designElementListCustomizeDisplayDialogWidget.hide()" 
+                                 oncomplete="PF('designElementListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

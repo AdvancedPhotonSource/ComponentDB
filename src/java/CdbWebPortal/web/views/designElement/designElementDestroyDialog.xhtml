@@ -10,11 +10,11 @@
                      header="Delete Design Element" 
                      severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="designElementDestroyDialogWidget.hide()" 
+        <p:commandButton value="Yes" oncomplete="PF('designElementDestroyDialogWidget').hide()" 
                          actionListener="#{designController.deleteDesignElement(designElementObject)}"
                          action="#{designElementController.destroyAndReturnDesignView(designElementObject)}"
                          update="@form"/>
-        <p:commandButton value="No" onclick="designElementDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="No" onclick="PF('designElementDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>
 
 </ui:composition>

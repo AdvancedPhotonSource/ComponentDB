@@ -8,10 +8,10 @@
                      header="Delete Component Type" severity="alert" widgetVar="componentTypeDestroyDialogWidget"
                      styleClass="dialog">
         <p:commandButton value="Yes" 
-                         oncomplete="componentTypeDestroyDialogWidget.hide()" 
+                         oncomplete="PF('componentTypeDestroyDialogWidget').hide()" 
                          action="#{componentTypeController.destroy()}" 
                          update="@form"/>
-        <p:commandButton value="No" onclick="componentTypeDestroyDialogWidget.hide()" type="button"/>
+        <p:commandButton value="No" onclick="PF('componentTypeDestroyDialogWidget').hide()" type="button"/>
     </p:confirmDialog>  
     
 </ui:composition>

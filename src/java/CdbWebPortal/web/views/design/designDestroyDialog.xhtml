@@ -11,9 +11,9 @@
                      severity="alert" 
                      styleClass="dialog">
         <p:commandButton value="Yes" 
-                         oncomplete="designDestroyDialogWidget.hide()" 
+                         oncomplete="PF('designDestroyDialogWidget').hide()" 
                          action="#{designController.destroy()}" update="@form"/>
-        <p:commandButton value="No" onclick="designDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="No" onclick="PF('designDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>
 
 </ui:composition>

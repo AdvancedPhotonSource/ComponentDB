@@ -15,7 +15,7 @@
                          actionListener="#{componentController.deleteComponentInstance(componentInstanceObject)}"
                          action="#{componentInstanceController.destroy()}"
                          update="@form"/>
-        <p:commandButton value="No" onclick="componentInstanceDestroyDialogWidget.hide()" type="button" />
+        <p:commandButton value="No" onclick="PF('componentInstanceDestroyDialogWidget').hide()" type="button" />
     </p:confirmDialog>
 
 </ui:composition>

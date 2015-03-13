@@ -10,8 +10,8 @@
                      header="Delete Location Type" 
                      severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="locationTypeDestroyDialogWidget.hide()" action="#{locationTypeController.destroy()}" update="@form"/>
-        <p:commandButton value="No" onclick="locationTypeDestroyDialogWidget.hide()" type="button"/>
+        <p:commandButton value="Yes" oncomplete="PF('locationTypeDestroyDialogWidget').hide()" action="#{locationTypeController.destroy()}" update="@form"/>
+        <p:commandButton value="No" onclick="PF('locationTypeDestroyDialogWidget').hide()" type="button"/>
     </p:confirmDialog>  
 
 </ui:composition>

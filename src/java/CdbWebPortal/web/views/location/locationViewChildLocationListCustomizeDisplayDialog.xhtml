@@ -19,7 +19,7 @@
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{locationController.customizeListDisplay()}"
                                  update="@form"
-                                 oncomplete="locationViewChildLocationListCustomizeDisplayDialogWidget.hide()" 
+                                 oncomplete="PF('locationViewChildLocationListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"

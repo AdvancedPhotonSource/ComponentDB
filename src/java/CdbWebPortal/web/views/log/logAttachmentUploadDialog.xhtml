@@ -19,7 +19,7 @@
                                  action="#{logAttachmentUploadBean.upload}"
                                  ajax="false"
                                  update="@form"
-                                 oncomplete="logAttachmentUploadDialogWidget.hide()" 
+                                 oncomplete="PF('logAttachmentUploadDialogWidget').hide()" 
                                  icon="ui-icon-check">
                     <f:setPropertyActionListener value="#{logController.current}" target="#{logAttachmentUploadBean.logEntry}"/>
                     <p:tooltip for="logAttachmentUploadSubmitButton" value="Submit log attachment for upload."/>
