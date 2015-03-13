@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Component route descriptor.
+# PdmLink route descriptor.
 #
 
 from cdb.common.utility.configurationManager import ConfigurationManager
@@ -21,12 +21,20 @@ class PDMLinkRouteDescriptor:
         # Make sure to have leading '/' for consistency.
         routes = [
 
-            # Get component type category list
+            # Get pdm link drawing revision information
             {
                 'name': 'getDrawingRevisions',
                 'path': '%s/pdmLink/drawingRevisionsInfo/:(drawingNumber)' % contextRoot,
                 'controller': pdmLinkController,
                 'action': 'getDrawingRevisionsInfo',
+                'method': ['GET']
+            },
+            # Get thumbnail of a revision of a PdmLink drawing
+            {
+                'name': 'getDrawingThumbnail',
+                'path': '%s/pdmLink/drawingRevisionThumbnail/:(drawingRevUfid)' % contextRoot,
+                'controller': pdmLinkController,
+                'action': 'getDrawingThumbnail',
                 'method': ['GET']
             }
 

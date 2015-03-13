@@ -31,6 +31,7 @@ from suds.xsd.doctor import Import, ImportDoctor
 
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.utility.errorChecker import ErrorChecker
+from cdb.common.exceptions.objectNotFound import ObjectNotFound
 
 import ssl
 
@@ -127,9 +128,9 @@ class PDMLink:
         if (len(listContentResults) > 2):
             for attrib in listContentResults[2]['properties']:
                 if attrib.name == 'urlLocation':
-                    return str(attrib.value)
+                    return CdbObject({'thumbnailUrl': attrib.value})
         else:
-            return str(False)
+            raise ObjectNotFound('A thumbnail for the requested ufid was not found. Some drawings/revisions do not have thumbnails that could be retreived.')
 
     #returns a small image of the revision given the ufid of drawing number
     def getSmallThumbnail(self, ufid):

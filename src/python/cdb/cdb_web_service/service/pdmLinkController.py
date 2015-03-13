@@ -24,7 +24,21 @@ class PDMLinkController(CdbController):
     @cherrypy.expose
     def getDrawingRevisionsInfo(self, drawingNumber, **kwargs):
         try:
-            response = '%s' % self.pdmLinkConnectionImpl.getDrawingRevisionsInfo(drawingNumber).getJsonRep('__all__')
+            response = '%s' % self.pdmLinkConnectionImpl.getDrawingRevisionsInfo(drawingNumber).getFullJsonRep()
+        except CdbException, ex:
+            self.logger.error('%s' % ex)
+            self.handleException(ex)
+            response = ex.getJsonRep()
+        except Exception, ex:
+            self.logger.error('%s' % ex)
+            self.handleException(ex)
+            response = InternalError(ex).getJsonRep()
+        return self.formatJsonResponse(response)
+
+    @cherrypy.expose
+    def getDrawingThumbnail(self, drawingRevUfid, **kwargs):
+        try:
+            response = '%s' % self.pdmLinkConnectionImpl.getDrawingThumbnail(drawingRevUfid).getFullJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)

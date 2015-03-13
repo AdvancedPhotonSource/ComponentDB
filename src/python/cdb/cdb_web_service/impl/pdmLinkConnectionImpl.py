@@ -20,3 +20,6 @@ class PDMLinkConnectionImpl(CdbObjectManager):
 
     def getDrawingRevisionsInfo(self, drawingNumber):
         return self.pdmLinkConnection.getLinksRevs(drawingNumber)
+
+    def getDrawingThumbnail(self, drawingRevUfid):
+        return self.pdmLinkConnection.getThumbnail(drawingRevUfid)
