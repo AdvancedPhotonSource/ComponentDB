@@ -7,7 +7,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <h:form id="loginForm">
-        <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialog">
+        <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialogWidget">
             <h:panelGrid styleClass="loginInput">
                 <div class="dialog">
                     <div>
@@ -18,7 +18,7 @@
                     </div>
 
                     <f:facet name="footer">
-                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="loginDialog.hide()"/>
+                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
                     </f:facet>
                 </div>
             </h:panelGrid>
