@@ -49,6 +49,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     private static final String DisplayChildDesignSettingTypeKey = "DesignElement.List.Display.ChildDesign";
     private static final String DisplayComponentSettingTypeKey = "DesignElement.List.Display.Component";
+    private static final String DisplayComponentTypeSettingTypeKey = "DesignElement.List.Display.ComponentType";
     private static final String DisplayCreatedByUserSettingTypeKey = "DesignElement.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "DesignElement.List.Display.CreatedOnDateTime";
     private static final String DisplayDescriptionSettingTypeKey = "DesignElement.List.Display.Description";
@@ -64,6 +65,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     private static final String FilterByChildDesignSettingTypeKey = "DesignElement.List.FilterBy.ChildDesign";
     private static final String FilterByComponentSettingTypeKey = "DesignElement.List.FilterBy.Component";
+    private static final String FilterByComponentTypeSettingTypeKey = "DesignElement.List.FilterBy.ComponentType";
     private static final String FilterByCreatedByUserSettingTypeKey = "DesignElement.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "DesignElement.List.FilterBy.CreatedOnDateTime";
     private static final String FilterByDescriptionSettingTypeKey = "DesignElement.List.FilterBy.Description";
@@ -91,12 +93,14 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     private Boolean displayChildDesign = null;
     private Boolean displayComponent = null;
+    private Boolean displayComponentType = null;
     private Boolean displayFlatTableView = null;
     private Boolean displayLocation = null;
     private Boolean displaySortOrder = null;
 
     private String filterByChildDesign = null;
     private String filterByComponent = null;
+    private String filterByComponentType = null;
     private String filterByLocation = null;
     private String filterBySortOrder = null;
 
@@ -291,6 +295,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         displayChildDesign = Boolean.parseBoolean(settingTypeMap.get(DisplayChildDesignSettingTypeKey).getDefaultValue());
         displayComponent = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentSettingTypeKey).getDefaultValue());
+        displayComponentType = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
         displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
 
@@ -305,6 +310,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         filterByChildDesign = settingTypeMap.get(FilterByChildDesignSettingTypeKey).getDefaultValue();
         filterByComponent = settingTypeMap.get(FilterByComponentSettingTypeKey).getDefaultValue();
+        filterByComponentType = settingTypeMap.get(FilterByComponentTypeSettingTypeKey).getDefaultValue();
         filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
         filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
 
@@ -325,6 +331,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         displayChildDesign = sessionUser.getUserSettingValueAsBoolean(DisplayChildDesignSettingTypeKey, displayChildDesign);
         displayComponent = sessionUser.getUserSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
+        displayComponentType = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypeSettingTypeKey, displayComponentType);
         displayLocation = sessionUser.getUserSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
 
@@ -339,6 +346,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         filterByChildDesign = sessionUser.getUserSettingValueAsString(FilterByChildDesignSettingTypeKey, filterByChildDesign);
         filterByComponent = sessionUser.getUserSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);
+        filterByComponentType = sessionUser.getUserSettingValueAsString(FilterByComponentTypeSettingTypeKey, filterByComponentType);
         filterByLocation = sessionUser.getUserSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
         filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
 
@@ -354,6 +362,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         Map<String, String> filters = dataTable.getFilters();
         filterByChildDesign = filters.get("childDesign");
         filterByComponent = filters.get("component");
+        filterByComponentType = filters.get("componentType");
         filterByLocation = filters.get("location");
         filterBySortOrder = filters.get("sortOrder");
     }
@@ -377,6 +386,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         sessionUser.setUserSettingValue(DisplayChildDesignSettingTypeKey, displayChildDesign);
         sessionUser.setUserSettingValue(DisplayComponentSettingTypeKey, displayComponent);
+        sessionUser.setUserSettingValue(DisplayComponentTypeSettingTypeKey, displayComponentType);
         sessionUser.setUserSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
 
@@ -391,6 +401,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
         sessionUser.setUserSettingValue(FilterByChildDesignSettingTypeKey, filterByChildDesign);
         sessionUser.setUserSettingValue(FilterByComponentSettingTypeKey, filterByComponent);
+        sessionUser.setUserSettingValue(FilterByComponentTypeSettingTypeKey, filterByComponentType);
         sessionUser.setUserSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
         sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
     }
@@ -400,6 +411,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         super.clearListFilters();
         filterByChildDesign = null;
         filterByComponent = null;
+        filterByComponentType = null;
         filterByLocation = null;
         filterBySortOrder = null;
     }
@@ -467,6 +479,14 @@ public class DesignElementController extends CrudEntityController<DesignElement,
         this.displayComponent = displayComponent;
     }
 
+    public Boolean getDisplayComponentType() {
+        return displayComponentType;
+    }
+
+    public void setDisplayComponentType(Boolean displayComponentType) {
+        this.displayComponentType = displayComponentType;
+    }
+
     public Boolean getDisplayFlatTableView() {
         return displayFlatTableView;
     }
@@ -505,6 +525,14 @@ public class DesignElementController extends CrudEntityController<DesignElement,
 
     public void setFilterByComponent(String filterByComponent) {
         this.filterByComponent = filterByComponent;
+    }
+
+    public String getFilterByComponentType() {
+        return filterByComponentType;
+    }
+
+    public void setFilterByComponentType(String filterByComponentType) {
+        this.filterByComponentType = filterByComponentType;
     }
 
     public String getFilterByLocation() {

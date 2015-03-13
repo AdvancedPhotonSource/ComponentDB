@@ -197,11 +197,12 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
             setCurrent(componentInstance);
             idViewParam = null;
         } else {
+            String paramValue = null;
             try {
                 // Due to bug in primefaces, we cannot have more than one
                 // f:viewParam on the web page, so process qrId here
                 qrIdViewParam = null;
-                String paramValue = SessionUtility.getRequestParameterValue("qrId");
+                paramValue = SessionUtility.getRequestParameterValue("qrId");
                 if (paramValue != null) {
                     qrIdViewParam = Integer.parseInt(paramValue);
                     if (qrIdViewParam != null) {
@@ -219,8 +220,13 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
                     }
                 }
             } catch (NumberFormatException ex) {
+                SessionUtility.addErrorMessage("Error", "Invalid value supplied for QR id: " + paramValue);
                 logger.warn("Invalid value supplied for QR id: " + ex);
+                current = null;
             }
+        }
+        if (current == null) {
+            handleInvalidSessionRequest();
         }
     }
 

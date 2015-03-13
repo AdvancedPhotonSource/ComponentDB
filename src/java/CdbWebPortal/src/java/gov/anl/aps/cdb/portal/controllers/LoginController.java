@@ -257,6 +257,10 @@ public class LoginController implements Serializable {
             return false;
         }
 
+        if (entityInfo == null) {
+            return false;
+        }
+
         // Admins can write any object.
         if (isLoggedInAsAdmin()) {
             return true;
@@ -265,26 +269,24 @@ public class LoginController implements Serializable {
         // Users can write object if entityInfo != null and:
         // current user is owner, or the object is writeable by owner group
         // and current user is memebr of that group
-        if (entityInfo != null) {
-            UserInfo ownerUser = entityInfo.getOwnerUser();
-            if (ownerUser != null && ownerUser.getId().equals(user.getId())) {
+        UserInfo ownerUser = entityInfo.getOwnerUser();
+        if (ownerUser != null && ownerUser.getId().equals(user.getId())) {
+            return true;
+        }
+
+        Boolean isGroupWriteable = entityInfo.getIsGroupWriteable();
+        if (isGroupWriteable == null || !isGroupWriteable.booleanValue()) {
+            return false;
+        }
+
+        UserGroup ownerUserGroup = entityInfo.getOwnerUserGroup();
+        if (ownerUserGroup == null) {
+            return false;
+        }
+
+        for (UserGroup userGroup : user.getUserGroupList()) {
+            if (ownerUserGroup.getId().equals(userGroup.getId())) {
                 return true;
-            }
-
-            Boolean isGroupWriteable = entityInfo.getIsGroupWriteable();
-            if (isGroupWriteable == null || !isGroupWriteable.booleanValue()) {
-                return false;
-            }
-
-            UserGroup ownerUserGroup = entityInfo.getOwnerUserGroup();
-            if (ownerUserGroup == null) {
-                return false;
-            }
-
-            for (UserGroup userGroup : user.getUserGroupList()) {
-                if (ownerUserGroup.getId().equals(userGroup.getId())) {
-                    return true;
-                }
             }
         }
         return false;
@@ -300,9 +302,17 @@ public class LoginController implements Serializable {
     private void resetLoginInfo() {
         loggedInAsAdmin = false;
         loggedInAsUser = false;
-        user = null;        
+        user = null;
     }
-    
+
+    /**
+     * Navigate to home page
+     */
+    public void handleInvalidSessionRequest() {
+        SessionUtility.addWarningMessage("Warning", "Invalid session request");
+        SessionUtility.navigateTo("/views/home?faces-redirect=true");
+    }
+
     /**
      * Logout action.
      *

@@ -114,6 +114,14 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         updateSettings();
     }
 
+    /**
+     * Navigate to home page in case of invalid request
+     */
+    public void handleInvalidSessionRequest() {
+        SessionUtility.addErrorMessage("Error", "Invalid session request");
+        SessionUtility.navigateTo("/views/error?faces-redirect=true");
+    }
+
     public void resetLogText() {
         logText = "";
         logTopicId = null;
@@ -431,6 +439,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
     }
+
 
     public boolean isViewValid() {
         selectByRequestParams();
