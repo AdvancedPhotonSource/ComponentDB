@@ -59,3 +59,6 @@ class CdbException(exceptions.Exception):
             'exceptionType' : self.getExceptionType(),
         })
 
+    def getFullJsonRep(self):
+        return self.getJsonRep();
+
