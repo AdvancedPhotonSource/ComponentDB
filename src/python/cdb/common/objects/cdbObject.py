@@ -17,14 +17,14 @@ from cdb.common.utility import loggingManager
 
 class CdbObject(UserDict.UserDict):
     """ Base cdb object class. """
-    DISPLAY_ALL_KEYS = '__all__'
-    DISPLAY_DEFAULT_KEYS = '__default__'
+    ALL_KEYS = '__all__'
+    DEFAULT_KEYS = '__default__'
 
     DICT_DISPLAY_FORMAT = 'dict'
     TEXT_DISPLAY_FORMAT = 'text'
     JSON_DISPLAY_FORMAT = 'json'
 
-    DEFAULT_DISPLAY_KEY_LIST = [ 'id', 'name' ]
+    DEFAULT_KEY_LIST = [ 'id', 'name' ]
 
     def __init__(self, dict={}):
         if isinstance(dict, types.DictType): 
@@ -49,23 +49,23 @@ class CdbObject(UserDict.UserDict):
 
     def getRepKeyList(self, keyList):
         if keyList is None:
-            return self.DEFAULT_DISPLAY_KEY_LIST
+            return self.DEFAULT_KEY_LIST
         elif type(keyList) == types.ListType:
             if not len(keyList):
-                return self.DEFAULT_DISPLAY_KEY_LIST
+                return self.DEFAULT_KEY_LIST
             else:
                 return keyList
         elif type(keyList) == types.StringType:
-            if keyList == CdbObject.DISPLAY_ALL_KEYS:
+            if keyList == CdbObject.ALL_KEYS:
                 return self.data.keys()
-            elif keyList == CdbObject.DISPLAY_DEFAULT_KEYS:
-                return self.DEFAULT_DISPLAY_KEY_LIST
+            elif keyList == CdbObject.DEFAULT_KEYS:
+                return self.DEFAULT_KEY_LIST
             else:
                 # Assume keys are separated by comma
                 return keyList.split(',')
         else: 
             # Unknown key list parameter.
-            raise InvalidArgument('Key list parameter must be one of: None, string "%s", string "%s", string containing comma-separated keys, or list of strings.' (CdbObject.DISPLAY_ALL_KEYS, CdbObject.DISPLAY_DEFAULT_KEYS))
+            raise InvalidArgument('Key list parameter must be one of: None, string "%s", string "%s", string containing comma-separated keys, or list of strings.' (CdbObject.ALL_KEYS, CdbObject.DEFAULT_KEYS))
             
 
     def getDictRep(self, keyList=None):
@@ -114,6 +114,10 @@ class CdbObject(UserDict.UserDict):
 
     def getJsonRep(self, keyList=None):
         dictRep = self.getDictRep(keyList)
+        return json.dumps(dictRep)
+
+    def getFullJsonRep(self):
+        dictRep = self.getDictRep(CdbObject.ALL_KEYS)
         return json.dumps(dictRep)
 
     @classmethod 
