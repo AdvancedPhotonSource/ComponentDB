@@ -6,20 +6,14 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
-import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 import gov.anl.aps.cdb.portal.model.db.utilities.DesignElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 @Named("designElementListTreeViewBean")

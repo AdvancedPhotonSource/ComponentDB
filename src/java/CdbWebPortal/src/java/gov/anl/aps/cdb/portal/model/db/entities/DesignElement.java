@@ -275,6 +275,13 @@ public class DesignElement extends CdbEntity {
         return null;
     }
 
+    public ComponentType getContainedObjectComponentType() {
+        if (component != null) {
+            return component.getComponentType();
+        }
+        return null;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

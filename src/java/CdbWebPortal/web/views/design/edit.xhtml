@@ -7,9 +7,10 @@
                 template="../../templates/designsViewTemplate.xhtml">
 
     <ui:define name="middleCenter">
+        <ui:param name="isRequestValid" value="#{(loginController.loggedIn and loginController.isEntityWriteable(designController.selected.entityInfo))}"/>
         <h:form id="editDesignForm" 
                 enctype="multipart/form-data"
-                rendered="#{(loginController.loggedIn and loginController.isEntityWriteable(designController.selected.entityInfo))}">
+                rendered="#{isRequestValid}">
 
             <div class="middleCenterLeftContent">
 

@@ -31,4 +31,9 @@
         <exception-type>javax.faces.application.ViewExpiredException</exception-type>
         <location>/index.xhtml</location>
     </error-page>
+    
+    <error-page>
+        <error-code>404</error-code>
+        <location>/views/error/pageNotFound.xhtml</location>
+    </error-page>
 </web-app>

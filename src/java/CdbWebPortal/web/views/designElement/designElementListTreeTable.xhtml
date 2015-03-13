@@ -24,10 +24,17 @@
             <h:outputText value="#{designElementObject.id}"/>
         </p:column>
 
-        <p:column sortBy="#{designElementObject.containedObjectType}" headerText="Type">
+        <p:column sortBy="#{designElementObject.containedObjectType}" headerText="Element Type">
             <h:outputText value="#{designElementObject.containedObjectType}"/>
         </p:column>
 
+        <p:column sortBy="#{designElementObject.containedObjectComponentType}" headerText="Component Type"
+                  rendered="#{designElementController.displayComponentType}">
+            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.containedObjectComponentType.id}&amp;breadcrumb=#{breadcrumb}" title="Component Type: #{designElementObject.component.componentType.name}">
+                <h:outputText value="#{designElementObject.containedObjectComponentType}"/>
+            </h:outputLink>
+        </p:column>
+        
         <p:column sortBy="#{designElementObject.containedObjectName}" headerText="Component | Design">
             <h:outputLink value="../#{designElementObject.containedObjectType}/view.xhtml?id=#{designElementObject.containedObjectId}&amp;breadcrumb=#{breadcrumb}" title="View #{designElementObject.containedObjectType} details">
                 <h:outputText value="#{designElementObject.containedObjectName}"/>

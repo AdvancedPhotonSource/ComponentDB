@@ -30,13 +30,20 @@
             </h:outputLink>
         </p:column>
 
+        <p:column sortBy="#{designElementObject.component.componentType.name}" headerText="Component Type"
+                  rendered="#{designElementController.displayComponentType}">
+            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.component.componentType.id}&amp;breadcrumb=#{breadcrumb}" title="Component Type: #{designElementObject.component.componentType.name}">
+                <h:outputText value="#{designElementObject.component.componentType.name}"/>
+            </h:outputLink>
+        </p:column>
+        
         <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
                   rendered="#{designElementController.displayComponent}">
             <h:outputLink value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}" title="Component: #{designElementObject.component.name}">
                 <h:outputText value="#{designElementObject.component.name}"/>
             </h:outputLink>
         </p:column>
-
+        
         <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
                   rendered="#{designElementController.displayChildDesign}">
             <h:outputLink value="../design/view.xhtml?id=#{designElementObject.childDesign.id}&amp;breadcrumb=#{breadcrumb}" title="Child Design: #{designElementObject.childDesign.name}">

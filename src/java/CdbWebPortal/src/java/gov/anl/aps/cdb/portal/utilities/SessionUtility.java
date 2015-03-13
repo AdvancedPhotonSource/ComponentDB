@@ -16,9 +16,10 @@ public class SessionUtility
     /**
      * Keys.
      */
-    public static final String MessagesKey = "messages";
-    public static final String UserKey = "user";
-    public static final String ViewStackKey = "viewStack";
+    public static final String MESSAGES_KEY = "messages";
+    public static final String USER_KEY = "user";
+    public static final String VIEW_STACK_KEY = "viewStack";
+    public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
 
     /**
      * Constructor.
@@ -35,7 +36,8 @@ public class SessionUtility
     public static void addErrorMessage(String summary, String detail) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
-        context.addMessage(MessagesKey, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+        context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+        setLastSessionError(detail);
     }
 
     /**
@@ -47,7 +49,7 @@ public class SessionUtility
     public static void addWarningMessage(String summary, String detail) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
-        context.addMessage(MessagesKey, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail));
+        context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail));
     }
 
     /**
@@ -59,7 +61,7 @@ public class SessionUtility
     public static void addInfoMessage(String summary, String detail) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
-        context.addMessage(MessagesKey, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
+        context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
     }
 
     /**
@@ -81,7 +83,7 @@ public class SessionUtility
      */
     public static void setUser(Object user) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        sessionMap.put(UserKey, user);
+        sessionMap.put(USER_KEY, user);
     }
 
     /**
@@ -91,22 +93,22 @@ public class SessionUtility
      */
     public static Object getUser() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        return sessionMap.get(UserKey);
+        return sessionMap.get(USER_KEY);
     }
 
     public static void pushViewOnStack(String viewId) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        Stack<String> viewStack = (Stack) sessionMap.get(ViewStackKey);
+        Stack<String> viewStack = (Stack) sessionMap.get(VIEW_STACK_KEY);
         if (viewStack == null) {
             viewStack = new Stack<>();
-            sessionMap.put(ViewStackKey, viewStack);
+            sessionMap.put(VIEW_STACK_KEY, viewStack);
         }
         viewStack.push(viewId);
     }
 
     public static String popViewFromStack() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        Stack<String> viewStack = (Stack) sessionMap.get(ViewStackKey);
+        Stack<String> viewStack = (Stack) sessionMap.get(VIEW_STACK_KEY);
         if (viewStack != null && !viewStack.empty()) {
             return viewStack.pop();
         }
@@ -149,4 +151,14 @@ public class SessionUtility
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         return session.getMaxInactiveInterval();
     }
+    
+    public static void setLastSessionError(String error) {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        sessionMap.put(LAST_SESSION_ERROR_KEY, error);
+    }
+
+    public static String getLastSessionError() {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        return (String) sessionMap.get(LAST_SESSION_ERROR_KEY);
+    }    
 }

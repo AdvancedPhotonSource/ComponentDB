@@ -8,9 +8,9 @@
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link href="../../resources/css/designs.css" rel="stylesheet" type="text/css" />
+        <link href="../../resources/css/content.css" rel="stylesheet" type="text/css" />
         <link rel="icon" type="image/png" href="../../resources/images/anl.ico" />
-        <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>
+        <title>#{resources.CdbPortalTitle}</title>
     </h:head>
 
     <h:body>
@@ -75,6 +75,10 @@
                         <div id="middleCenter" class="middleCenterContent">
                             <ui:insert name="middleCenter">
                             </ui:insert>
+                            <div class="actionButton">
+                                <p:button id="okButton" href="../home.xhtml" alt="OK" value="OK"/>
+                                <p:tooltip for="okButton" value="Return to home page"/>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -99,22 +103,18 @@
                 </ui:insert>
             </div>
         </ui:fragment>
-        
+
         <h:form id="loginForm">
             <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialog">
                 <h:panelGrid styleClass="loginInput">
-                    <div class="dialog">
-                        <div>
-                            <p:inputText id="username" value="#{loginController.username}" title="Username"/>
-                            <p:watermark for="username" value="Username"/>
-                            <p:password id="password" value="#{loginController.password}" title="Password"/>
-                            <p:watermark for="password" value="Password"/>
-                        </div>
+                    <p:inputText id="username" value="#{loginController.username}" title="Username"/>
+                    <p:watermark for="username" value="Username"/>
+                    <p:password id="password" value="#{loginController.password}" title="Password"/>
+                    <p:watermark for="password" value="Password"/>
 
-                        <f:facet name="footer">
-                            <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="loginDialog.hide()"/>
-                        </f:facet>
-                    </div>
+                    <f:facet name="footer">
+                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="loginDialog.hide()"/>
+                    </f:facet>
                 </h:panelGrid>
             </p:dialog>
         </h:form>
