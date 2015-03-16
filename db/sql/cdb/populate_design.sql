@@ -22,6 +22,8 @@ INSERT INTO `design` VALUES
 (25,'L-Bend','',200),
 (28,'Lattice','',207),
 (29,'Girder 1','',428),
-(31,'RTFB R&D Teststand','',447);
+(31,'S27 RTFB Teststand (4x4)','',447),
+(32,'Double Sector Controller - uTCA Version','uTCA crate and modules for double sector controller prototype',448),
+(33,'S27 Integrated orbit feedback prototype','',459);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

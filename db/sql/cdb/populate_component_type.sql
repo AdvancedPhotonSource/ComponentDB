@@ -112,13 +112,16 @@ INSERT INTO `component_type` VALUES
 (114,'MONI',NULL,12),
 (115,'CSBEND',NULL,12),
 (116,'VERTEX-POINT',NULL,12),
-(117,'KSECT',NULL,12),
+(117,'KSEXT','',12),
 (118,'Plate',NULL,5),
 (119,'Plinth',NULL,5),
 (120,'Support',NULL,5),
 (121,'Computer - Laptop/Tablet','',3),
 (122,'High Voltage Pulser','',7),
 (123,'High Voltage Attenuator','',7),
-(124,'Flash Disk','',3);
+(124,'Flash Disk','',3),
+(125,'BPM Processor','Takes BPM signals, converts to X/Y/Sum',8),
+(126,'MARK','',12),
+(127,'Fan','',1);
 /*!40000 ALTER TABLE `component_type` ENABLE KEYS */;
 UNLOCK TABLES;

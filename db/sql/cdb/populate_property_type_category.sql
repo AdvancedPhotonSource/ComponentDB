@@ -6,6 +6,8 @@ INSERT INTO `property_type_category` VALUES
 (3,'Physical',''),
 (4,'Documentation',NULL),
 (5,'Maintenance',NULL),
-(6,'Status',NULL);
+(6,'Status',NULL),
+(7,'Lattice','Properties associate with lattice elements'),
+(8,'Design','Properties associated with Designs');
 /*!40000 ALTER TABLE `property_type_category` ENABLE KEYS */;
 UNLOCK TABLES;

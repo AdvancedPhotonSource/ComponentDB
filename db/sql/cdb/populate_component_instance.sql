@@ -3,12 +3,9 @@ LOCK TABLES `component_instance` WRITE;
 INSERT INTO `component_instance` VALUES
 (1,180,396,'Glenn\'s Windows Laptop',NULL,42,'Mobile','',383),
 (2,6,397,'3-D Printed Example',NULL,11,'','',384),
-(5,1,232,'First Unit','330 223 093',NULL,'','',387),
 (6,181,NULL,'First Unit',NULL,12,'','',389),
-(7,182,NULL,'First Unit',NULL,13,'','',391),
 (8,183,214,'First Unit','FPG2014000416',1,'','',396),
 (9,184,NULL,NULL,NULL,2,'','',397),
-(22,181,NULL,'Second Unit',NULL,14,'','',410),
 (23,186,NULL,NULL,NULL,8,'','',413),
 (24,186,NULL,NULL,NULL,5,'','',414),
 (25,186,NULL,NULL,NULL,6,'','',411),
@@ -16,6 +13,16 @@ INSERT INTO `component_instance` VALUES
 (27,186,NULL,NULL,NULL,10,'','',416),
 (28,186,NULL,NULL,NULL,9,'','',415),
 (29,185,NULL,NULL,'ATF20140004553',3,'','',418),
-(30,185,NULL,NULL,'ATF20140004552',4,'','',417);
+(30,185,NULL,NULL,'ATF20140004552',4,'','',417),
+(31,196,NULL,'first unit',NULL,NULL,NULL,'',460),
+(32,36,398,NULL,'302224203',23,'','',466),
+(33,194,245,'First Unit from 2013','M18578/020',40,'','',479),
+(34,204,NULL,'First Unit Recvd',NULL,NULL,NULL,'',481),
+(35,205,NULL,'First Unit',NULL,NULL,NULL,'',483),
+(36,191,245,NULL,NULL,43,NULL,'',487),
+(37,207,245,NULL,NULL,45,NULL,'',488),
+(38,207,245,NULL,NULL,44,NULL,'',489),
+(39,192,245,NULL,NULL,46,NULL,'',490),
+(40,193,245,NULL,NULL,41,'','',491);
 /*!40000 ALTER TABLE `component_instance` ENABLE KEYS */;
 UNLOCK TABLES;

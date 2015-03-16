@@ -361,6 +361,11 @@ INSERT INTO `allowed_property_value` VALUES
 (358,34,'Under Maintenance','','',9.00),
 (359,34,'On-site Operational Spare','','',7.00),
 (360,34,'Under Installation','','',6.00),
-(361,8,'MicroTCA','','',12.50);
+(361,8,'MicroTCA','','',12.50),
+(362,38,'Bare wire','','',0.00),
+(363,38,'SMA plug','','',3.00),
+(364,38,'SFP 2-way socket','','',2.00),
+(365,38,'SMA socket','','',4.00),
+(366,38,'SFP 2-way plug','','',1.00);
 /*!40000 ALTER TABLE `allowed_property_value` ENABLE KEYS */;
 UNLOCK TABLES;
