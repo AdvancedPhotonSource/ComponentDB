@@ -2,24 +2,24 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="entityTypeNames" value="#{entityTypeName}s"/>
     <ui:param name="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
     <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
     <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
-
+    
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
             <p:tooltip for="#{entityTypeName}AddButton" value="Add new #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
-        <p:commandButton id="#{entityTypeName}ExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
-            <p:dataExporter type="xls" target="#{entityTypeName}ListDataTable" fileName="#{entityTypeName}s"/>
+        <p:commandButton id="#{entityTypeName}ExportXlsButton" action="#{entityController.exportListDataTableAsXls(entityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:tooltip for="#{entityTypeName}ExportXlsButton" value="Export list to excel file."/>
         </p:commandButton>  
-        <p:commandButton id="#{entityTypeName}ExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
-            <p:dataExporter type="pdf" target="#{entityTypeName}ListDataTable" fileName="#{entityTypeName}s"/>
+        <p:commandButton id="#{entityTypeName}ExportPdfButton" action="#{entityController.exportListDataTableAsPdf(entityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
             <p:tooltip for="#{entityTypeName}ExportPdfButton" value="Export list to pdf file."/>
         </p:commandButton>  
         <p:commandButton id="#{entityTypeName}PrintButton" styleClass="actionButtonRight" icon="ui-icon-print">

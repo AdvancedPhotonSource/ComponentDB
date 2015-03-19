@@ -19,6 +19,10 @@ import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.jsf.components.CdbCsvExporter;
+import gov.anl.aps.cdb.portal.view.jsf.components.CdbExcelExporter;
+import gov.anl.aps.cdb.portal.view.jsf.components.CdbPdfExporter;
+import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
 import gov.anl.aps.cdb.utilities.StringUtility;
 import java.io.IOException;
 
@@ -32,12 +36,15 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.export.Exporter;
 
 public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeType extends AbstractFacade<EntityType>> implements Serializable {
 
@@ -1266,4 +1273,48 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         this.settingsTimestamp = settingsTimestamp;
     }
 
+    public void exportListDataTableAsPdf(String filename) throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Exporter exporter = new CdbPdfExporter();
+        exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
+        context.responseComplete();
+    }
+
+    public static void exportDataTableAsPdf(String dataTableId, String filename) throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
+        Exporter exporter = new CdbPdfExporter();
+        exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
+        context.responseComplete();
+    }
+    
+    public void exportListDataTableAsXls(String filename) throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Exporter exporter = new CdbExcelExporter();
+        exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
+        context.responseComplete();
+    }
+
+    public static void exportDataTableAsXls(String dataTableId, String filename) throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
+        Exporter exporter = new CdbExcelExporter();
+        exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
+        context.responseComplete();
+    }
+
+    public void exportListDataTableAsCsv(String filename) throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        Exporter exporter = new CdbCsvExporter();
+        exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
+        context.responseComplete();
+    }
+    
+    public static void exportDataTableAsCsv(String dataTableId, String filename) throws IOException {
+        FacesContext context = FacesContext.getCurrentInstance();
+        DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
+        Exporter exporter = new CdbCsvExporter();
+        exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
+        context.responseComplete();
+    }    
 }
