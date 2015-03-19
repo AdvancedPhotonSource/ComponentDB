@@ -13,4 +13,4 @@ from cdb.common.exceptions.cdbException import CdbException
 
 class InvalidRequest(CdbException):
     def __init__ (self, error='', **kwargs):
-        CdbException.__init__(self, error, cdbStatus.CDB_INVALID_REQUEST_ERROR, **kwargs)
+        CdbException.__init__(self, error, cdbStatus.CDB_INVALID_REQUEST, **kwargs)
