@@ -2,10 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/contentViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{locationTypeController.processCreateRequestParams}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">: Create Location Type</ui:define>       
     <ui:define name="middleCenter">
 
         <h:form id="addLocationTypeForm" rendered="#{loginController.loggedInAsAdmin}">
@@ -13,11 +19,11 @@
                 <h1>Add Location Type</h1>
             </div>
 
-            <ui:include src="locationTypeCreatePanelGrid.xhtml"/>
+            <ui:include src="private/locationTypeCreatePanelGrid.xhtml"/>
 
             <p/>
             <ui:param name="entityController" value="#{locationTypeController}"/>
-            <ui:include src="../common/commonCreateActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonCreateActionButtons.xhtml"/>
         </h:form>
 
     </ui:define>

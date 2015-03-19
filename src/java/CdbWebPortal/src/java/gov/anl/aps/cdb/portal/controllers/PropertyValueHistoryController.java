@@ -147,12 +147,12 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByEnteredByUser = filters.get("enteredByUser");
-        filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
-        filterByTag = filters.get("tag");
-        filterByUnits = filters.get("units");
-        filterByValue = filters.get("value");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByEnteredByUser = (String) filters.get("enteredByUser");
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
+        filterByTag = (String) filters.get("tag");
+        filterByUnits = (String) filters.get("units");
+        filterByValue = (String) filters.get("value");
     }
 
     @Override

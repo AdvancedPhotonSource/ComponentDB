@@ -2,16 +2,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/componentInstancesViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{componentInstanceController.processEditRequestParams}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">: Edit Component Instance #{componentInstanceController.current.qrId}</ui:define>            
     <ui:define name="middleCenter">
         <h:form id="editComponentInstanceForm" 
                 enctype="multipart/form-data"
-                rendered="#{(loginController.loggedIn and 
-                            loginController.isEntityWriteable(componentInstanceController.selected.entityInfo))}">
+                rendered="#{loginController.isEntityWriteable(componentInstanceController.current.entityInfo)}">
 
             <div class="middleCenterLeftContent">
 
@@ -19,22 +23,22 @@
                     <h1>Edit Component Instance</h1>
                 </div>
 
-                <ui:include src="componentInstanceEditPanelGrid.xhtml"/>
+                <ui:include src="private/componentInstanceEditPanelGrid.xhtml"/>
 
                 <p/>
                 <p/>
                 <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
                 <ui:param name="entityController" value="#{componentInstanceController}"/>                
-                <ui:include src="../common/commonEditActionButtons.xhtml"/>
+                <ui:include src="../common/private/commonEditActionButtons.xhtml"/>
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Log Entries">
-                        <ui:include src="../componentInstanceLog/editList.xhtml"/>
+                        <ui:include src="../componentInstanceLog/private/componentInstanceLogEditList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Properties">
-                        <ui:include src="../componentInstanceProperty/editList.xhtml"/>
+                        <ui:include src="../componentInstanceProperty/private/componentInstancePropertyEditList.xhtml"/>
                     </p:tab>
 
                 </p:accordionPanel>  

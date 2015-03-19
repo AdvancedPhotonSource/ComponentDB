@@ -2,9 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 template="../../templates/componentsViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{componentController.processCreateRequestParams}"/>
+    </f:metadata>
+    
+    <ui:define name="pageTitle">: Create Component</ui:define>        
     <ui:define name="middleCenter">
 
         <h:form id="addComponentForm" rendered="#{loginController.loggedIn}">
@@ -12,11 +18,11 @@
                 <h1>Add Component</h1>
             </div>
 
-            <ui:include src="componentCreatePanelGrid.xhtml"/>
+            <ui:include src="private/componentCreatePanelGrid.xhtml"/>
 
             <p/>
             <ui:param name="entityController" value="#{componentController}"/>
-            <ui:include src="../common/commonCreateActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonCreateActionButtons.xhtml"/>
 
         </h:form>
 

@@ -167,14 +167,14 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByCost = filters.get("cost");
-        filterByContactInfo = filters.get("contactInfo");
-        filterByIsManufacturer = filters.get("isManufacturer");
-        filterByIsVendor = filters.get("isVendor");
-        filterByPartNumber = filters.get("partNumber");
-        filterBySourceName = filters.get("source.name");
-        filterByUrl = filters.get("url");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByCost = (String) filters.get("cost");
+        filterByContactInfo = (String) filters.get("contactInfo");
+        filterByIsManufacturer = (String) filters.get("isManufacturer");
+        filterByIsVendor = (String) filters.get("isVendor");
+        filterByPartNumber = (String) filters.get("partNumber");
+        filterBySourceName = (String) filters.get("source.name");
+        filterByUrl = (String) filters.get("url");
     }
 
     @Override

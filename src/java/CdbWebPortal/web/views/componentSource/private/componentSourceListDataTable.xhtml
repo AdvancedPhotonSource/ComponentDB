@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="breadcrumb" value="#{componentSourceController.currentViewId}"/>
+    <p:dataTable id="componentSourceListDataTable" 
+                 widgetVar="componentSourceListWidget"
+                 var="componentSourceObject" 
+                 value="#{componentObject.componentSourceList}" 
+                 filteredValue="#{componentSourceController.filteredObjectList}"
+                 binding="#{componentSourceController.listDataTable}"
+                 rows="#{componentSourceController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No component sources found.">
+
+        <p:column sortBy="#{componentSourceObject.id}" headerText="Id"
+                  rendered="#{componentSourceController.displayId}">
+            <h:outputText value="#{componentSourceObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.source.name}" headerText="Name">
+            <h:outputLink value="../source/view.xhtml?id=#{componentSourceObject.source.id}&amp;breadcrumb=#{breadcrumb}" title="View design details">
+                <h:outputText value="#{componentSourceObject.source.name}"/>
+            </h:outputLink>  
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.partNumber}" headerText="Part Number"
+                  rendered="#{componentSourceController.displayPartNumber}">
+            <h:outputText value="#{componentSourceObject.partNumber}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.cost}" headerText="Cost [$]"
+                  rendered="#{componentSourceController.displayCost}">
+            <h:outputText value="#{componentSourceObject.cost}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentSourceObject.description}" headerText="Description"
+                  rendered="#{componentSourceController.displayDescription}">
+            <h:outputText value="#{componentSourceObject.description}"/>
+        </p:column>    
+
+        <p:column sortBy="#{componentSourceObject.contactInfo}" headerText="Contact Info"
+                  rendered="#{componentSourceController.displayContactInfo}">
+            <h:outputText value="#{componentSourceObject.contactInfo}"/>
+        </p:column>    
+
+        <p:column sortBy="#{componentSourceObject.url}" headerText="URL"
+                  rendered="#{componentSourceController.displayUrl}">
+            <h:outputLink value="#{componentSourceObject.targetUrl}" target="_page_#{componentSourceObject.url}">
+                <h:outputText value="#{componentSourceObject.displayUrl}"/>
+            </h:outputLink>
+        </p:column>         
+
+        <p:column sortBy="#{componentSourceObject.isManufacturer}" headerText="Manufacturer"
+                  rendered="#{componentSourceController.displayIsManufacturer}">
+            <div class="dataTableCheckbox">
+                <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                              rendered="#{componentSourceObject.isManufacturer}"/>
+            </div>
+        </p:column>   
+
+        <p:column sortBy="#{componentSourceObject.isVendor}" headerText="Vendor"
+                  rendered="#{componentSourceController.displayIsVendor}">
+            <div class="dataTableCheckbox">
+                <h:outputText value="" styleClass="ui-icon ui-icon-check"
+                              rendered="#{componentSourceObject.isVendor}"/>
+            </div>
+        </p:column> 
+
+    </p:dataTable>
+
+</ui:composition>
+
+

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="propertyTypeCategoryListDataTable"
+                 widgetVar="propertyTypeCategoryListWidget" 
+                 var="propertyTypeCategoryObject" 
+                 value="#{propertyTypeCategoryController.listDataModel}" 
+                 filteredValue="#{propertyTypeCategoryController.filteredObjectList}"
+                 binding="#{propertyTypeCategoryController.listDataTable}"
+                 rows="#{propertyTypeCategoryController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No property type categories found."> 
+
+        <p:column sortBy="#{propertyTypeCategoryObject.id}" headerText="Id"
+                  rendered="#{propertyTypeCategoryController.displayId}">
+            <h:outputText value="#{propertyTypeCategoryObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeCategoryObject.name}" headerText="Name" 
+                  filterBy="#{propertyTypeCategoryObject.name}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeCategoryController.filterByName}"
+                  rendered="true">
+            <h:outputLink value="view.xhtml?id=#{propertyTypeCategoryObject.id}" title="View property type category details">
+                <h:outputText value="#{propertyTypeCategoryObject.name}"/>
+            </h:outputLink> 
+        </p:column>
+
+        <p:column sortBy="#{propertyTypeCategoryObject.description}" headerText="Description" 
+                  filterBy="#{propertyTypeCategoryObject.description}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeCategoryController.filterByDescription}"
+                  rendered="#{propertyTypeCategoryController.displayDescription}">
+            <h:outputText value="#{propertyTypeCategoryObject.description}"/>
+        </p:column>
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{propertyTypeCategoryController}"/>
+                <ui:param name="entityObject" value="#{propertyTypeCategoryObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+
+</ui:composition>

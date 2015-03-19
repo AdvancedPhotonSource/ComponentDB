@@ -138,19 +138,18 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     }
 
     @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            DesignElement designElement = findById(idViewParam);
-            setCurrent(designElement);
-            prepareEntityView(designElement);
-            idViewParam = null;
-        }
-    }
-
     public DesignElement findById(Integer id) {
         return designElementFacade.findById(id);
     }
 
+    @Override
+    public EntityInfo getEntityInfo(DesignElement entity) {
+        if (entity != null) {
+            return entity.getEntityInfo();
+        }
+        return null;
+    } 
+    
     @Override
     public String getEntityTypeName() {
         return "designElement";
@@ -359,12 +358,12 @@ public class DesignElementController extends CrudEntityController<DesignElement,
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByChildDesign = filters.get("childDesign");
-        filterByComponent = filters.get("component");
-        filterByComponentType = filters.get("componentType");
-        filterByLocation = filters.get("location");
-        filterBySortOrder = filters.get("sortOrder");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByChildDesign = (String) filters.get("childDesign");
+        filterByComponent = (String) filters.get("component");
+        filterByComponentType = (String) filters.get("componentType");
+        filterByLocation = (String) filters.get("location");
+        filterBySortOrder = (String) filters.get("sortOrder");
     }
 
     @Override

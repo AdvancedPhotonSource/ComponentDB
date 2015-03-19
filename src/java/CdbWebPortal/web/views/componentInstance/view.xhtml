@@ -2,16 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/componentInstancesViewTemplate.xhtml">
 
     <f:metadata>
-        <f:viewParam id="id" name="id" value="#{componentInstanceController.idViewParam}"/>
-        <f:event type="preRenderComponent" listener="#{componentInstanceController.processViewRequestParams()}"/>
+        <f:event type="preRenderComponent" listener="#{componentInstanceController.processViewRequestParams}"/>
     </f:metadata>
 
+    <ui:define name="pageTitle">: View Component Instance #{componentInstanceController.current.qrId}</ui:define>        
     <ui:define name="middleCenter">
         <h:form id="viewComponentInstanceForm">
 
@@ -19,7 +19,7 @@
                 <div class="pageTitle">
                     <h1>Component Instance Details</h1>
                 </div>
-                <ui:include src="componentInstanceViewPanelGrid.xhtml"/>
+                <ui:include src="private/componentInstanceViewPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="componentObject" value="#{componentController.selected}"/>
@@ -27,17 +27,17 @@
                 <ui:param name="entityController" value="#{componentInstanceController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentInstanceObject.entityInfo)}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
-                <ui:include src="../common/commonViewActionButtons.xhtml"/>
-                <ui:include src="componentInstanceDestroyDialog.xhtml"/>
+                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                <ui:include src="private/componentInstanceDestroyDialog.xhtml"/>
 
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Images">
-                        <ui:include src="../componentInstanceProperty/image.xhtml"/>
+                        <ui:include src="../componentInstanceProperty/private/componentInstancePropertyImageGalleria.xhtml"/>
                     </p:tab>   
                     <p:tab title="Log Entries">
-                        <ui:include src="../componentInstanceLog/list.xhtml"/>
+                        <ui:include src="../componentInstanceLog/private/componentInstanceLogList.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>   
 
@@ -46,19 +46,19 @@
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true" activeIndex="0,1">                
                     <p:tab title="Component Instance Properties">
-                        <ui:include src="../componentInstanceProperty/list.xhtml"/>
+                        <ui:include src="../componentInstanceProperty/private/componentInstancePropertyList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Component Properties">
-                        <ui:include src="../componentInstanceProperty/componentInstanceComponentPropertyList.xhtml"/>
+                        <ui:include src="../componentInstanceProperty/private/componentInstanceComponentPropertyList.xhtml"/>
                     </p:tab>
 
                 </p:accordionPanel>
             </div>
 
-            <ui:include src="../propertyValueHistory/propertyValueHistoryListDialog.xhtml"/>
+            <ui:include src="../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
 
-            <ui:include src="../propertyValueHistory/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
+            <ui:include src="../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 
         </h:form>
 

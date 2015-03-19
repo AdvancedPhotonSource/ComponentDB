@@ -2,23 +2,27 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/componentsViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{componentTypeController.processCreateRequestParams}"/>
+    </f:metadata>
+    
+    <ui:define name="pageTitle">: Create Component Type</ui:define>     
     <ui:define name="middleCenter">
         <h:form id="addComponentTypeForm" rendered="#{loginController.loggedInAsAdmin}">
             <div class="pageTitle">
                 <h1>Add Component Type</h1>
             </div>
 
-            <ui:include src="componentTypeCreatePanelGrid.xhtml"/>
+            <ui:include src="private/componentTypeCreatePanelGrid.xhtml"/>
 
             <p/>
             <ui:param name="entityController" value="#{componentTypeController}"/>
-            <ui:include src="../common/commonCreateActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonCreateActionButtons.xhtml"/>
         </h:form>
 
     </ui:define>

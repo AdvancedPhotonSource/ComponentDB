@@ -1,5 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
@@ -133,8 +135,11 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     @Override
     protected ComponentInstance createEntityInstance() {
-        ComponentInstance componentInstance = new ComponentInstance();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        if (entityInfo == null) {
+            return null;
+        }
+        ComponentInstance componentInstance = new ComponentInstance();
         componentInstance.setEntityInfo(entityInfo);
 
         if (qrIdViewParam != null) {
@@ -176,6 +181,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         return "";
     }
 
+    @Override
     public ComponentInstance findById(Integer id) {
         return componentInstanceFacade.findById(id);
     }
@@ -185,48 +191,64 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     @Override
+    public EntityInfo getEntityInfo(ComponentInstance entity) {
+        if (entity != null) {
+            return entity.getEntityInfo();
+        }
+        return null;
+    }
+
+    @Override
     public DataModel createListDataModel() {
         listDataModel = new ListDataModel(getFacade().findAllOrderByQrId());
         return listDataModel;
     }
-    
+
     @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            ComponentInstance componentInstance = findById(idViewParam);
-            setCurrent(componentInstance);
-            idViewParam = null;
-        } else {
-            String paramValue = null;
-            try {
-                // Due to bug in primefaces, we cannot have more than one
-                // f:viewParam on the web page, so process qrId here
-                qrIdViewParam = null;
-                paramValue = SessionUtility.getRequestParameterValue("qrId");
-                if (paramValue != null) {
-                    qrIdViewParam = Integer.parseInt(paramValue);
-                    if (qrIdViewParam != null) {
-                        ComponentInstance componentInstance = findByQrId(qrIdViewParam);
-                        setCurrent(componentInstance);
-                        if (componentInstance == null) {
-                            UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-                            if (sessionUser != null) {
-                                SessionUtility.navigateTo("/views/componentInstance/create.xhtml?faces-redirect=true");
-                            } else {
-                                SessionUtility.pushViewOnStack("/views/componentInstance/create.xhtml");
-                                SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
-                            }
-                        }
-                    }
-                }
-            } catch (NumberFormatException ex) {
-                SessionUtility.addErrorMessage("Error", "Invalid value supplied for QR id: " + paramValue);
-                logger.warn("Invalid value supplied for QR id: " + ex);
-                current = null;
+    public ComponentInstance selectByViewRequestParams() throws CdbException {
+        setBreadcrumbRequestParams();
+        Integer idParam = null;
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        try {
+            if (paramValue != null) {
+                idParam = Integer.parseInt(paramValue);
             }
+        } catch (NumberFormatException ex) {
+            throw new InvalidRequest("Invalid value supplied for " + getDisplayEntityTypeName() + " id: " + paramValue);
         }
-        if (current == null) {
-            handleInvalidSessionRequest();
+        if (idParam != null) {
+            ComponentInstance componentInstance = findById(idParam);
+            if (componentInstance == null) {
+                throw new InvalidRequest("Component instance id " + idParam + " does not exist.");
+            }
+            setCurrent(componentInstance);
+            return componentInstance;
+        } else {
+            // Due to bug in primefaces, we cannot have more than one
+            // f:viewParam on the web page, so process qrId here
+            paramValue = SessionUtility.getRequestParameterValue("qrId");
+            if (paramValue != null) {
+                try {
+                    qrIdViewParam = Integer.parseInt(paramValue);
+                    ComponentInstance componentInstance = findByQrId(qrIdViewParam);
+                    setCurrent(componentInstance);
+                    if (componentInstance == null) {
+                        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+                        if (sessionUser != null) {
+                            SessionUtility.navigateTo("/views/componentInstance/create.xhtml?faces-redirect=true");
+                        } else {
+                            SessionUtility.pushViewOnStack("/views/componentInstance/create.xhtml");
+                            SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
+                        }
+                        return null;
+                    }
+                } catch (NumberFormatException ex) {
+                    throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
+                }
+            } else if (current == null) {
+                throw new InvalidRequest("Component instance has not been selected.");
+            }
+            return current;
         }
     }
 
@@ -243,6 +265,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     @Override
     public void prepareEntityView(ComponentInstance componentInstance) {
+        if (componentInstance == null) {
+            return;
+        }
         componentInstance.clearPropertyValueCache();
         prepareComponentInstanceImageList(componentInstance);
         prepareComponentInstancePropertyValueDisplay(componentInstance);
@@ -305,7 +330,8 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     @Override
-    public void prepareEntityUpdateOnRemoval(ComponentInstance componentInstance) {
+    public void prepareEntityUpdateOnRemoval(ComponentInstance componentInstance
+    ) {
         EntityInfo entityInfo = componentInstance.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
     }
@@ -317,7 +343,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     public String prepareViewToComponent(ComponentInstance componentInstance) {
-        return "/views/component/view.xhtml?faces-redirect=true?id=" + componentInstance.getComponent().getId();
+        return "/views/component/view.xhtml?id=" + componentInstance.getComponent().getId() + "&faces-redirect=true";
     }
 
     public void prepareAddLog(ComponentInstance componentInstance) {
@@ -520,19 +546,19 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByComponent = filters.get("component.name");
-        filterByLocation = filters.get("location.name");
-        filterByLocationDetails = filters.get("locationDetails");
-        filterByQrId = filters.get("qrId");
-        filterBySerialNumber = filters.get("serialNumber");
-        filterByTag = filters.get("tag");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByComponent = (String) filters.get("component.name");
+        filterByLocation = (String) filters.get("location.name");
+        filterByLocationDetails = (String) filters.get("locationDetails");
+        filterByQrId = (String) filters.get("qrId");
+        filterBySerialNumber = (String) filters.get("serialNumber");
+        filterByTag = (String) filters.get("tag");
 
-        filterByPropertyValue1 = filters.get("propertyValue1");
-        filterByPropertyValue2 = filters.get("propertyValue2");
-        filterByPropertyValue3 = filters.get("propertyValue3");
-        filterByPropertyValue4 = filters.get("propertyValue4");
-        filterByPropertyValue5 = filters.get("propertyValue5");
+        filterByPropertyValue1 = (String) filters.get("propertyValue1");
+        filterByPropertyValue2 = (String) filters.get("propertyValue2");
+        filterByPropertyValue3 = (String) filters.get("propertyValue3");
+        filterByPropertyValue4 = (String) filters.get("propertyValue4");
+        filterByPropertyValue5 = (String) filters.get("propertyValue5");
     }
 
     @Override
@@ -609,7 +635,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     public boolean entityCanBeCreatedByUsers() {
         return true;
     }
-    
+
     @FacesConverter(forClass = ComponentInstance.class)
     public static class ComponentInstanceControllerConverter implements Converter {
 
@@ -881,6 +907,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     public List<PropertyValue> prepareComponentInstanceImageList(ComponentInstance componentInstance) {
+        if (componentInstance == null) {
+            return null;
+        }
         List<PropertyValue> componentInstanceImageList = PropertyValueUtility.prepareImagePropertyValueList(componentInstance.getPropertyValueList());
         Component component = componentInstance.getComponent();
         if (component != null) {
@@ -892,6 +921,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     public void prepareComponentInstancePropertyValueDisplay(ComponentInstance componentInstance) {
+        if (componentInstance == null) {
+            return;
+        }        
         List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyValueUtility.configurePropertyValueDisplay(propertyValue);
@@ -900,6 +932,9 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
 
     public List<PropertyValue> getComponentInstanceImageList() {
         ComponentInstance componentInstance = getCurrent();
+        if (componentInstance == null) {
+            return null;
+        }
         List<PropertyValue> componentInstanceImageList = componentInstance.getImagePropertyList();
         if (componentInstanceImageList == null) {
             componentInstanceImageList = prepareComponentInstanceImageList(componentInstance);

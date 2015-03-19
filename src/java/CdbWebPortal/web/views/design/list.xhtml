@@ -2,9 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../templates/designsViewTemplate.xhtml">
 
+    <ui:define name="pageTitle">: Design Catalog</ui:define>    
     <ui:define name="middleCenter">
 
         <div class="pageTitle">
@@ -14,17 +15,17 @@
         <h:form id="viewDesignListForm">    
 
             <ui:param name="entityController" value="#{designController}"/>
-            <ui:include src="../common/commonListActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
                         
             <h:panelGroup>  
 
-                <ui:include src="designListDataTable.xhtml"/>
+                <ui:include src="private/designListDataTable.xhtml"/>
 
             </h:panelGroup>
 
-            <ui:include src="designDestroyDialog.xhtml"/>
+            <ui:include src="private/designDestroyDialog.xhtml"/>
 
-            <ui:include src="designListCustomizeDisplayDialog.xhtml"/>
+            <ui:include src="private/designListCustomizeDisplayDialog.xhtml"/>
 
         </h:form>
 

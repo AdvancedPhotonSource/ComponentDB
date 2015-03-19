@@ -2,10 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/componentsViewTemplate.xhtml">
 
+    <ui:define name="pageTitle">: Component Type Categories</ui:define>        
     <ui:define name="middleCenter">
         <div class="pageTitle">
             <h1>Component Type Categories</h1>
@@ -13,11 +14,11 @@
 
         <h:form id="viewComponentTypeCategoryListForm">            
             <ui:param name="entityController" value="#{componentTypeCategoryController}"/>
-            <ui:include src="../common/commonListActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>  
 
-                <ui:include src="componentTypeCategoryListDataTable.xhtml"/>
+                <ui:include src="private/componentTypeCategoryListDataTable.xhtml"/>
 
             </h:panelGroup>
 
@@ -27,9 +28,9 @@
                           value="Return" alt="Return to component type list." icon="ui-icon-arrowreturnthick-1-w"/>
             </div>
 
-            <ui:include src="componentTypeCategoryDestroyDialog.xhtml"/>
+            <ui:include src="private/componentTypeCategoryDestroyDialog.xhtml"/>
 
-            <ui:include src="componentTypeCategoryListCustomizeDisplayDialog.xhtml"/>
+            <ui:include src="private/componentTypeCategoryListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
     </ui:define>

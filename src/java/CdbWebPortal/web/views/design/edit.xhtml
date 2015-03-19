@@ -2,15 +2,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/designsViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{designController.processEditRequestParams}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">: Edit Design #{designController.selected.name}</ui:define>     
     <ui:define name="middleCenter">
-        <ui:param name="isRequestValid" value="#{(loginController.loggedIn and loginController.isEntityWriteable(designController.selected.entityInfo))}"/>
         <h:form id="editDesignForm" 
                 enctype="multipart/form-data"
-                rendered="#{isRequestValid}">
+                rendered="#{loginController.isEntityWriteable(designController.selected.entityInfo)}">
 
             <div class="middleCenterLeftContent">
 
@@ -18,32 +23,30 @@
                     <h1>Edit Design</h1>
                 </div>
 
-                <ui:include src="designEditPanelGrid.xhtml"/>
+                <ui:include src="private/designEditPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="designObject" value="#{designController.selected}"/>
                 <ui:param name="entityController" value="#{designController}"/>
-                <ui:include src="../common/commonEditActionButtons.xhtml"/>
+                <ui:include src="../common/private/commonEditActionButtons.xhtml"/>
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1,2,3">
                     <p:tab title="Log Entries">
-                        <ui:include src="../designLog/editList.xhtml"/>
+                        <ui:include src="../designLog/private/designLogEditList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Properties">
-                        <ui:include src="../designProperty/editList.xhtml"/>
+                        <ui:include src="../designProperty/private/designPropertyEditList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Elements">
-                        <ui:include src="../designElement/editList.xhtml"/>
+                        <ui:include src="../designElement/private/designElementEditList.xhtml"/>
                     </p:tab>  
 
                 </p:accordionPanel>  
             </div>
 
-            <div class="middleCenterRightContent">
-            </div>
         </h:form>
 
     </ui:define>

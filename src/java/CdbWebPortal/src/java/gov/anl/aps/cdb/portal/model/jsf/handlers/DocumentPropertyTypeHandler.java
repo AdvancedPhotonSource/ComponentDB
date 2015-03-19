@@ -19,7 +19,7 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler
    
     @Override
     public String getEditActionOncomplete() {
-        return "propertyValueDocumentUploadDialogWidget.show()";
+        return "PF('propertyValueDocumentUploadDialogWidget').show()";
     }
     
     @Override

@@ -2,14 +2,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/componentsViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{componentController.processEditRequestParams}"/>
+    </f:metadata>
+    
+    <ui:define name="pageTitle">: Edit Component #{componentController.selected.name}</ui:define>        
     <ui:define name="middleCenter">
         <h:form id="editComponentForm" 
                 enctype="multipart/form-data"
-                rendered="#{(loginController.loggedIn and loginController.isEntityWriteable(componentController.selected.entityInfo))}">
+                rendered="#{loginController.isEntityWriteable(componentController.current.entityInfo)}">
 
             <div class="middleCenterLeftContent">
 
@@ -17,33 +23,33 @@
                     <h1>Edit Component</h1>
                 </div>
 
-                <ui:include src="componentEditPanelGrid.xhtml"/>
+                <ui:include src="private/componentEditPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="componentObject" value="#{componentController.selected}"/>
                 <ui:param name="entityController" value="#{componentController}"/>
-                <ui:include src="../common/commonEditActionButtons.xhtml"/>
+                <ui:include src="../common/private/commonEditActionButtons.xhtml"/>
 
                 <p/>
-                <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4">
+                <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4" rendered="#{componentObject != null}">
                     <p:tab title="Log Entries">
-                        <ui:include src="../componentLog/editList.xhtml"/>
+                        <ui:include src="../componentLog/private/componentLogEditList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Properties">
-                        <ui:include src="../componentProperty/editList.xhtml"/>
+                        <ui:include src="../componentProperty/private/componentPropertyEditList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Sources">
-                        <ui:include src="../componentSource/editList.xhtml"/>
+                        <ui:include src="../componentSource/private/componentSourceEditList.xhtml"/>
                     </p:tab> 
 
                     <p:tab title="Assembly Components">
-                        <ui:include src="../assemblyComponent/editList.xhtml"/>
+                        <ui:include src="private/componentAssemblyComponentEditList.xhtml"/>
                     </p:tab>  
 
                     <p:tab title="Instances">
-                        <ui:include src="componentComponentInstanceEditList.xhtml"/>
+                        <ui:include src="private/componentComponentInstanceEditList.xhtml"/>
                     </p:tab>  
 
                 </p:accordionPanel>  

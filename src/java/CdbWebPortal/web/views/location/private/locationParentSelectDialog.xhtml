@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="locationParentSelectDialog" 
+              widgetVar="locationParentSelectDialogWidget" 
+              header="Select Parent Location" 
+              styleClass="locationSelectDialog">
+        <div class="locationSelectDialog">
+
+            <div class="actionButton">
+                <p:commandButton id="locationParentSelectCustomizeDisplay" 
+                                 onclick="PF('locationParentSelectDialogWidget').hide();
+                                         PF('locationParentSelectCustomizeDisplayDialogWidget').show()"
+                                 alt="Customize selection view." 
+                                 icon="ui-icon-wrench" 
+                                 styleClass="actionButtonRight">
+                    <p:tooltip for="locationParentSelectCustomizeDisplay" value="Customize selection view."/>
+                </p:commandButton>
+            </div>
+
+            <ui:fragment rendered="#{locationController.selectDisplayFlatTableView}">
+                <ui:include src="locationParentSelectDataTable.xhtml" />
+            </ui:fragment>
+            <ui:fragment rendered="#{!locationController.selectDisplayFlatTableView}">
+                <ui:include src="locationParentSelectTreeTable.xhtml"/>   
+            </ui:fragment>
+
+            <f:facet name="footer" class="locationSelectDialog">
+                <p:commandButton value="Done" alt="Done"
+                                 action="#{locationController.selectParentLocation(locationController.selectedParentLocation)}"
+                                 update="@form"
+                                 onclick="locationParentSelectDataTableWidget.filter()" 
+                                 oncomplete="PF('locationParentSelectDialogWidget').hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 rendered="#{locationController.selectDisplayFlatTableView}"/>
+                <p:commandButton value="Done" alt="Done"
+                                 action="#{locationController.selectParentLocation(locationSelectTreeViewBean.selectedLocation)}"
+                                 update="@form"
+                                 oncomplete="PF('locationParentSelectDialogWidget').hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 rendered="#{!locationController.selectDisplayFlatTableView}"/>
+            </f:facet>
+
+        </div>
+    </p:dialog>
+
+</ui:composition>
+

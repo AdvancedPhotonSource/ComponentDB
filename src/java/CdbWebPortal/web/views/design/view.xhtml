@@ -2,18 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/designsViewTemplate.xhtml">
 
     <f:metadata>
-        <f:viewParam id="id" name="id" value="#{designController.idViewParam}"/>
-        <f:event type="preRenderComponent" listener="#{designController.processViewRequestParams()}"/>
+        <f:event type="preRenderComponent" listener="#{designController.processViewRequestParams}"/>
     </f:metadata>
 
-    <ui:define name="pageTitle">: Design Details</ui:define>
-    
+    <ui:define name="pageTitle">: View Design #{designController.selected.name}</ui:define> 
     <ui:define name="middleCenter">
         <h:form id="viewDesignForm">
 
@@ -23,23 +21,23 @@
                 </div>
 
 
-                <ui:include src="designViewPanelGrid.xhtml"/>
+                <ui:include src="private/designViewPanelGrid.xhtml"/>
 
                 <p/>
                 <p/>
                 <ui:param name="designObject" value="#{designController.selected}"/>
                 <ui:param name="entityController" value="#{designController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
-                <ui:include src="../common/commonViewActionButtons.xhtml"/>
-                <ui:include src="designDestroyDialog.xhtml"/>
+                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                <ui:include src="private/designDestroyDialog.xhtml"/>
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Images">
-                        <ui:include src="../designProperty/image.xhtml"/>
+                        <ui:include src="../designProperty/private/designPropertyImageGalleria.xhtml"/>
                     </p:tab>   
                     <p:tab title="Log Entries">
-                        <ui:include src="../designLog/list.xhtml"/>
+                        <ui:include src="../designLog/private/designLogList.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>     
 
@@ -47,11 +45,11 @@
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Properties">
-                        <ui:include src="../designProperty/list.xhtml"/>
+                        <ui:include src="../designProperty/private/designPropertyList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Elements">
-                        <ui:include src="../designElement/list.xhtml"/>
+                        <ui:include src="../designElement/private/designElementList.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>
 

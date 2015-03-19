@@ -69,21 +69,11 @@ public class AssemblyComponentController extends CrudEntityController<AssemblyCo
     @Override
     protected AssemblyComponent createEntityInstance() {
         AssemblyComponent assemblyComponent = new AssemblyComponent();
-
         selectComponentCandidateList = null;
         return assemblyComponent;
     }
 
     @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            AssemblyComponent assemblyComponent = findById(idViewParam);
-            setCurrent(assemblyComponent);
-            prepareEntityView(assemblyComponent);
-            idViewParam = null;
-        }
-    }
-
     public AssemblyComponent findById(Integer id) {
         return assemblyComponentFacade.findById(id);
     }
@@ -130,7 +120,7 @@ public class AssemblyComponentController extends CrudEntityController<AssemblyCo
     }
 
     public String prepareViewToAssembly(AssemblyComponent assemblyComponent) {
-        return "/views/component/view.xhtml?faces-redirect=true?id=" + assemblyComponent.getAssembly().getId();
+        return "/views/component/view.xhtml?id=" + assemblyComponent.getAssembly().getId() + "&faces-redirect=true";
     }
 
     public String destroyAndReturnAssemblyView(AssemblyComponent assemblyComponent) {
@@ -180,8 +170,8 @@ public class AssemblyComponentController extends CrudEntityController<AssemblyCo
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterBySortOrder = filters.get("sortOrder");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterBySortOrder = (String) filters.get("sortOrder");
     }
 
     @Override

@@ -16,7 +16,7 @@ public class ImagePropertyTypeHandler extends AbstractPropertyTypeHandler
    
     @Override
     public String getEditActionOncomplete() {
-        return "propertyValueImageUploadDialogWidget.show()";
+        return "PF('propertyValueImageUploadDialogWidget').show()";
     }
     
     @Override

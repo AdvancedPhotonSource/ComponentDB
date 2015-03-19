@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="componentTypeObject" value="#{componentTypeController.selected}"/>
+
+    <p:panelGrid columns="4" style="editEntityDetails">
+
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="name" value="#{componentTypeObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:message for="name"/>
+        <p:tooltip for="name" value="Component type name is required."/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:inputText id="description" value="#{componentTypeObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:message for="description"/> 
+        <p:tooltip for="description" value="Description is optional."/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{componentTypeObject.id}" title="Id" styleClass="entityDataText"/>
+        <p:message for="id"/> 
+        <p:tooltip for="id" value="Component type id cannot be modified."/>
+
+        <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
+        <p:selectOneMenu id="category" value="#{componentTypeObject.componentTypeCategory}" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="category" value="#{componentTypeCategoryController.availableItems}" itemLabel="#{category.name}" itemValue="#{category}"/>
+        </p:selectOneMenu>
+        <p:message for="category"/> 
+        <p:tooltip for="category" value="Category specification is optional."/>
+
+    </p:panelGrid>
+
+</ui:composition>
+
+

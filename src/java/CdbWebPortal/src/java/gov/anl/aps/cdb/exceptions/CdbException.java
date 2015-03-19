@@ -110,7 +110,10 @@ public class CdbException extends Exception
      */
     public String getErrorMessage() 
     {
-        return error;
+        if (error != null) {
+            return error;
+        }
+        return super.getMessage();
     }
 
     /**

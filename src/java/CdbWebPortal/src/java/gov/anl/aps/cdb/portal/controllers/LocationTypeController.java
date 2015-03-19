@@ -66,17 +66,9 @@ public class LocationTypeController extends CrudEntityController<LocationType, L
         return "";
     }
 
+    @Override
     public LocationType findById(Integer id) {
         return locationTypeFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            LocationType locationType = findById(idViewParam);
-            setCurrent(locationType);
-            idViewParam = null;
-        }
     }
 
     @Override

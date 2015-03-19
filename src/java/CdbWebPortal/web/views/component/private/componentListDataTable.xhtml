@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="propertyTypeId1" value="#{componentController.displayPropertyTypeId1}"/>
+    <ui:param name="propertyTypeName1" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId1)}"/>
+    <ui:param name="propertyTypeId2" value="#{componentController.displayPropertyTypeId2}"/>
+    <ui:param name="propertyTypeName2" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId2)}"/>
+    <ui:param name="propertyTypeId3" value="#{componentController.displayPropertyTypeId3}"/>
+    <ui:param name="propertyTypeName3" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId3)}"/>
+    <ui:param name="propertyTypeId4" value="#{componentController.displayPropertyTypeId4}"/>
+    <ui:param name="propertyTypeName4" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId4)}"/>
+    <ui:param name="propertyTypeId5" value="#{componentController.displayPropertyTypeId5}"/>
+    <ui:param name="propertyTypeName5" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId5)}"/>
+    <p:dataTable id="componentListDataTable" 
+                 widgetVar="componentListDataTableWidget"
+                 var="componentObject" 
+                 value="#{componentController.listDataModel}" 
+                 filteredValue="#{componentController.filteredObjectList}"
+                 rows="#{componentController.displayNumberOfItemsPerPage}" 
+                 binding="#{componentController.listDataTable}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No components found.">
+
+        <p:column sortBy="#{componentObject.id}" headerText="Id"
+                  rendered="#{componentController.displayId}">
+            <h:outputText value="#{componentObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.name}" headerText="Name" 
+                  filterBy="#{componentObject.name}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByName}"
+                  rendered="true">
+            <ui:param name="isAssembly" value="#{componentObject.isAssembly}"/>
+            <ui:fragment rendered="#{!isAssembly}">
+                <h:outputLink value="view.xhtml?id=#{componentObject.id}" title="View component details">
+                    <h:outputText value="#{componentObject.name}"/>
+                </h:outputLink>  
+            </ui:fragment>
+            <ui:fragment rendered="#{isAssembly}">
+                <p:treeTable id="assemblyComponentListTreeTable"
+                             widgetVar="assemblyComponentListTreeTableWidget" 
+                             value="#{componentController.createAssemblyRoot(componentObject)}"
+                             var="assemblyComponentObject"
+                             styleClass="assemblyTreeTable"
+                             emptyMessage="No assembly components found.">
+                    <p:column>
+                        <h:outputLink value="view.xhtml?id=#{assemblyComponentObject.id}" title="View component details">
+                            <h:outputText value="#{assemblyComponentObject.name}"/>
+                        </h:outputLink>             
+                    </p:column>
+                </p:treeTable>
+            </ui:fragment>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.description}" headerText="Description" 
+                  filterBy="#{componentObject.description}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByDescription}"
+                  rendered="#{componentController.displayDescription}">
+            <h:outputText value="#{componentObject.description}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.componentType}" headerText="Type" 
+                  filterBy="#{componentObject.componentType}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByType}"
+                  rendered="#{componentController.displayType}">
+            <h:outputText value="#{componentObject.componentType}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.componentType.componentTypeCategory}" headerText="Category" 
+                  filterBy="#{componentObject.componentType.componentTypeCategory}" filterMatchMode="exact"
+                  filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
+                  filterValue="#{componentController.filterByCategory}"
+                  rendered="#{componentController.displayCategory}">
+            <h:outputText value="#{componentObject.componentType.componentTypeCategory.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.componentSources}" headerText="Sources" 
+                  filterBy="#{componentObject.componentSources}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterBySources}"
+                  rendered="#{componentController.displaySources}">
+            <h:outputText value="#{componentObject.componentSources}"/>
+        </p:column>
+
+        <ui:param name="propertyValue1" value="#{componentObject.getPropertyValue(propertyTypeId1)}"/>
+        <p:column headerText="Property: #{propertyTypeName1}" 
+                  filterBy="#{componentObject.propertyValue1}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByPropertyValue1}"
+                  rendered="#{propertyTypeId1 != null}">
+            <h:outputText value="#{propertyValue1}"/>
+        </p:column>
+
+        <ui:param name="propertyValue2" value="#{componentObject.getPropertyValue(propertyTypeId2)}"/>
+        <p:column headerText="Property: #{propertyTypeName2}" 
+                  filterBy="#{componentObject.propertyValue2}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByPropertyValue2}"
+                  rendered="#{propertyTypeId2 != null}">
+            <h:outputText value="#{propertyValue2}"/>
+        </p:column>
+
+        <ui:param name="propertyValue3" value="#{componentObject.getPropertyValue(propertyTypeId3)}"/>
+        <p:column headerText="Property: #{propertyTypeName3}" 
+                  filterBy="#{componentObject.propertyValue3}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByPropertyValue3}"
+                  rendered="#{propertyTypeId3 != null}">
+            <h:outputText value="#{propertyValue3}"/>
+        </p:column>
+
+        <ui:param name="propertyValue4" value="#{componentObject.getPropertyValue(propertyTypeId4)}"/>
+        <p:column headerText="Property: #{propertyTypeName4}" 
+                  filterBy="#{componentObject.propertyValue4}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByPropertyValue4}"
+                  rendered="#{propertyTypeId4 != null}">
+            <h:outputText value="#{propertyValue4}"/>
+        </p:column>
+
+        <ui:param name="propertyValue5" value="#{componentObject.getPropertyValue(propertyTypeId5)}"/>
+        <p:column headerText="Property: #{propertyTypeName5}" 
+                  filterBy="#{componentObject.propertyValue5}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByPropertyValue5}"
+                  rendered="#{propertyTypeId5 != null}">
+            <h:outputText value="#{propertyValue5}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.entityInfo.ownerUser.username}" headerText="Owner"
+                  filterBy="#{componentObject.entityInfo.ownerUser.username}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByOwnerUser}"
+                  rendered="#{componentController.displayOwnerUser}">
+            <h:outputText value="#{componentObject.entityInfo.ownerUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.entityInfo.ownerUserGroup.name}" headerText="Group"
+                  filterBy="#{componentObject.entityInfo.ownerUserGroup.name}" filterMatchMode="exact"
+                  filterOptions="#{userGroupController.availableItemsForSelectOne}"
+                  filterValue="#{componentController.filterByOwnerGroup}"
+                  rendered="#{componentController.displayOwnerGroup}">
+            <h:outputText value="#{componentObject.entityInfo.ownerUserGroup.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.entityInfo.createdByUser.username}" headerText="Created By"
+                  filterBy="#{componentObject.entityInfo.createdByUser.username}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByCreatedByUser}"
+                  rendered="#{componentController.displayCreatedByUser}">
+            <h:outputText value="#{componentObject.entityInfo.createdByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.entityInfo.createdOnDateTime}" headerText="Created On"
+                  filterBy="#{componentObject.entityInfo.createdOnDateTime}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByCreatedOnDateTime}"
+                  rendered="#{componentController.displayCreatedOnDateTime}">
+            <h:outputText value="#{componentObject.entityInfo.createdOnDateTime}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.entityInfo.lastModifiedByUser.username}" headerText="Modified By"
+                  filterBy="#{componentObject.entityInfo.lastModifiedByUser.username}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByLastModifiedByUser}"
+                  rendered="#{componentController.displayLastModifiedByUser}">
+            <h:outputText value="#{componentObject.entityInfo.lastModifiedByUser.username}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentObject.entityInfo.lastModifiedOnDateTime}" headerText="Modified On"
+                  filterBy="#{componentObject.entityInfo.lastModifiedOnDateTime}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByLastModifiedOnDateTime}"
+                  rendered="#{componentController.displayLastModifiedOnDateTime}">
+            <h:outputText value="#{componentObject.entityInfo.lastModifiedOnDateTime}"/>
+        </p:column>
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{componentController}"/>
+                <ui:param name="entityObject" value="#{componentObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
+                <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>
+
+

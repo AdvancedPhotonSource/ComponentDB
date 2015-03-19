@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="componentTypeListDataTable"
+                 widgetVar="componentTypeListWidget" 
+                 var="componentTypeObject" 
+                 value="#{componentTypeController.listDataModel}" 
+                 filteredValue="#{componentTypeController.filteredObjectList}"
+                 binding="#{componentTypeController.listDataTable}"
+                 rows="#{componentTypeController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No component types found.">
+
+        <p:column sortBy="#{componentTypeObject.id}" headerText="Id"
+                  rendered="#{componentTypeController.displayId}">
+            <h:outputText value="#{componentTypeObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.name}" headerText="Name" 
+                  filterBy="#{componentTypeObject.name}" filterMatchMode="contains"
+                  filterValue="#{componentTypeController.filterByName}"
+                  rendered="true">
+            <h:outputLink value="view.xhtml?id=#{componentTypeObject.id}" title="View component type details">
+                <h:outputText value="#{componentTypeObject.name}"/>
+            </h:outputLink>      
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.componentTypeCategory.name}" headerText="Category" 
+                  filterBy="#{componentTypeObject.componentTypeCategory.name}" filterMatchMode="exact"
+                  filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
+                  filterValue="#{componentTypeController.filterByCategory}"
+                  rendered="true">
+            <h:outputText value="#{componentTypeObject.componentTypeCategory.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.description}" headerText="Description" 
+                  filterBy="#{componentTypeObject.description}" filterMatchMode="contains"
+                  filterValue="#{componentTypeController.filterByDescription}"
+                  rendered="#{componentTypeController.displayDescription}">
+            <h:outputText value="#{componentTypeObject.description}"/>
+        </p:column>
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{componentTypeController}"/>
+                <ui:param name="entityObject" value="#{componentTypeObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

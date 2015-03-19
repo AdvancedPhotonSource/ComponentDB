@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{locationSelectTreeViewBean.addToSkipLocationList(locationController.current)}"/>
+    </f:metadata>
+
+    <p:treeTable value="#{locationSelectTreeViewBean.rootNode}" 
+                 var="locationParentObject"
+                 selection="#{locationSelectTreeViewBean.selectedNode}"
+                 selectionMode="single" 
+                 emptyMessage="No available locations found.">
+
+        <p:column sortBy="#{locationParentObject.name}" headerText="Name" 
+                  rendered="true">
+            <h:outputText value="#{locationParentObject.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationParentObject.id}" headerText="Id" 
+                  rendered="#{locationController.selectDisplayId}">
+            <h:outputText value="#{locationParentObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationParentObject.locationType.name}" headerText="Type" 
+                  rendered="#{locationController.selectDisplayType}">
+            <h:outputText value="#{locationParentObject.locationType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationParentObject.parentLocation.name}" headerText="Parent" 
+                  rendered="#{locationController.selectDisplayParent}">
+            <h:outputText value="#{locationParentObject.parentLocation.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationParentObject.description}" headerText="Description" 
+                  rendered="#{locationController.selectDisplayDescription}">
+            <h:outputText value="#{locationParentObject.description}"/>
+        </p:column>
+
+    </p:treeTable>
+    
+</ui:composition>
+
+

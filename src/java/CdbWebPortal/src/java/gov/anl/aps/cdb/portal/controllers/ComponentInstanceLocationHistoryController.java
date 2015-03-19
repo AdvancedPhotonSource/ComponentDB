@@ -128,11 +128,11 @@ public class ComponentInstanceLocationHistoryController extends CrudEntityContro
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByEnteredByUser = filters.get("enteredByUser");
-        filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
-        filterByLocation = filters.get("location");
-        filterByLocationDetails = filters.get("locationDetails");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByEnteredByUser = (String) filters.get("enteredByUser");
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
+        filterByLocation = (String) filters.get("location");
+        filterByLocationDetails = (String) filters.get("locationDetails");
     }
 
     @Override

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="locationObject" value="#{locationController.current}"/>
+    <p:dataTable id="locationViewChildLocationListDataTable"
+                 widgetVar="locationViewChildLocationListDataTableWidget" 
+                 var="childLocationObject"
+                 value="#{locationObject.childLocationList}" 
+                 rows="#{locationController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No child locations found.">
+
+        <p:column sortBy="#{childLocationObject.id}" headerText="Id"
+                  rendered="#{locationController.displayId}">
+            <h:outputText value="#{childLocationObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{childLocationObject.name}" headerText="Name">
+            <h:outputLink value="view.xhtml?id=#{childLocationObject.id}" title="View location details">
+                <h:outputText value="#{childLocationObject.name}"/>
+            </h:outputLink>             
+        </p:column>
+
+        <p:column sortBy="#{childLocationObject.locationType.name}" headerText="Type" 
+                  rendered="#{locationController.displayType}">
+            <h:outputText value="#{childLocationObject.locationType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{childLocationObject.description}" headerText="Description" 
+                  rendered="#{locationController.displayDescription}">
+            <h:outputText value="#{childLocationObject.description}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>

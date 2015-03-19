@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="userGroupListDataTable" 
+                 widgetVar="userGroupListDataTableWidget" 
+                 var="userGroupObject" 
+                 value="#{userGroupController.listDataModel}"
+                 filteredValue="#{userGroupController.filteredObjectList}"
+                 binding="#{userGroupController.listDataTable}"
+                 rows="#{userGroupController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No user groups found.">
+
+        <p:column sortBy="#{userGroupObject.id}" headerText="Id"
+                  rendered="#{userGroupController.displayId}">
+            <h:outputText value="#{userGroupObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{userGroupObject.name}" headerText="Name" 
+                  filterBy="#{userGroupObject.name}" filterMatchMode="contains"
+                  filterValue="#{userGroupController.filterByName}">
+            <h:outputLink value="view.xhtml?id=#{userGroupObject.id}" title="View user group details">
+                <h:outputText value="#{userGroupObject.name}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{userGroupObject.description}" headerText="Description" 
+                  filterBy="#{userGroupObject.description}" filterMatchMode="contains"
+                  filterValue="#{userGroupController.filterByDescription}"
+                  rendered="#{userGroupController.displayDescription}">
+            <h:outputText value="#{userGroupObject.description}"/>
+        </p:column>
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{userGroupController}"/>
+                <ui:param name="entityObject" value="#{userGroupObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

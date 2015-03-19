@@ -3,8 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:composition template="../../templates/contentViewTemplate.xhtml">
         <ui:define name="middleCenter">
@@ -47,71 +47,71 @@
                             <h2>Search Results</h2>
                         </div>  
 
-                        <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4,5,6,7,8,9,10,11,12,13">
+                        <p:accordionPanel multiple="true" activeIndex="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15">
                             <ui:param name="breadcrumb" value="#{searchController.currentViewId}"/>
                             <ui:param name="searchString" value="#{searchController.searchString}"/>
                             <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
 
                             <p:tab title="Assembly Components" rendered="#{searchController.displayAssemblyComponents}">
-                                <ui:include src="../assemblyComponent/assemblyComponentSearchDataTable.xhtml"/>
+                                <ui:include src="../assemblyComponent/private/assemblyComponentSearchDataTable.xhtml"/>
                             </p:tab> 
 
                             <p:tab title="Components" rendered="#{searchController.displayComponents}">
-                                <ui:include src="../component/componentSearchDataTable.xhtml"/>
+                                <ui:include src="../component/private/componentSearchDataTable.xhtml"/>
                             </p:tab>   
 
                             <p:tab title="Component Instances" rendered="#{searchController.displayComponentInstances}">
-                                <ui:include src="../componentInstance/componentInstanceSearchDataTable.xhtml"/>
+                                <ui:include src="../componentInstance/private/componentInstanceSearchDataTable.xhtml"/>
                             </p:tab>
 
                             <p:tab title="Component Types" rendered="#{searchController.displayComponentTypes}">
-                                <ui:include src="../componentType/componentTypeSearchDataTable.xhtml"/>
+                                <ui:include src="../componentType/private/componentTypeSearchDataTable.xhtml"/>
                             </p:tab>  
 
                             <p:tab title="Component Type Categories" rendered="#{searchController.displayComponentTypeCategories}">
-                                <ui:include src="../componentTypeCategory/componentTypeCategorySearchDataTable.xhtml"/>
+                                <ui:include src="../componentTypeCategory/private/componentTypeCategorySearchDataTable.xhtml"/>
                             </p:tab>    
 
                             <p:tab title="Designs" rendered="#{searchController.displayDesigns}">
-                                <ui:include src="../design/designSearchDataTable.xhtml"/>
+                                <ui:include src="../design/private/designSearchDataTable.xhtml"/>
                             </p:tab> 
 
                             <p:tab title="Design Elements" rendered="#{searchController.displayDesigns}">
-                                <ui:include src="../designElement/designElementSearchDataTable.xhtml"/>
+                                <ui:include src="../designElement/private/designElementSearchDataTable.xhtml"/>
                             </p:tab> 
 
                             <p:tab title="Locations" rendered="#{searchController.displayLocations}">
-                                <ui:include src="../location/locationSearchDataTable.xhtml"/>
+                                <ui:include src="../location/private/locationSearchDataTable.xhtml"/>
                             </p:tab>   
 
                             <p:tab title="Location Types" rendered="#{searchController.displayLocationTypes}">
-                                <ui:include src="../locationType/locationTypeSearchDataTable.xhtml"/>
+                                <ui:include src="../locationType/private/locationTypeSearchDataTable.xhtml"/>
                             </p:tab>   
 
                             <p:tab title="Property Types" rendered="#{searchController.displayPropertyTypes}">
-                                <ui:include src="../propertyType/propertyTypeSearchDataTable.xhtml"/>
+                                <ui:include src="../propertyType/private/propertyTypeSearchDataTable.xhtml"/>
                             </p:tab>    
 
                             <p:tab title="Property Type Categories" rendered="#{searchController.displayPropertyTypeCategories}">
-                                <ui:include src="../propertyTypeCategory/propertyTypeCategorySearchDataTable.xhtml"/>
+                                <ui:include src="../propertyTypeCategory/private/propertyTypeCategorySearchDataTable.xhtml"/>
                             </p:tab>    
 
                             <p:tab title="Sources" rendered="#{searchController.displaySources}">
-                                <ui:include src="../source/sourceSearchDataTable.xhtml"/>
+                                <ui:include src="../source/private/sourceSearchDataTable.xhtml"/>
                             </p:tab>                                
 
                             <p:tab title="Users" rendered="#{searchController.displayUsers}">
-                                <ui:include src="../userInfo/userInfoSearchDataTable.xhtml"/>
+                                <ui:include src="../userInfo/private/userInfoSearchDataTable.xhtml"/>
                             </p:tab>
 
                             <p:tab title="User Groups" rendered="#{searchController.displayUserGroups}">
-                                <ui:include src="../userGroup/userGroupSearchDataTable.xhtml"/>
+                                <ui:include src="../userGroup/private/userGroupSearchDataTable.xhtml"/>
                             </p:tab>    
 
                         </p:accordionPanel>
                     </ui:fragment>
 
-                    <ui:include src="searchCustomizeDialog.xhtml"/>
+                    <ui:include src="private/searchCustomizeDialog.xhtml"/>
 
                 </h:form>
             </div>

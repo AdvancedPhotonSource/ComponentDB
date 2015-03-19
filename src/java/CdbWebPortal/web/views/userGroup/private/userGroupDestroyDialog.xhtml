@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:confirmDialog id="userGroupDestroyDialog" 
+                     widgetVar="userGroupDestroyDialogWidget"
+                     message="Delete user group #{userGroupController.getCurrentEntityInstanceName()}?"
+                     header="Delete User Group" 
+                     severity="alert" 
+                     styleClass="dialog">
+        <p:commandButton value="Yes" oncomplete="PF('userGroupDestroyDialogWidget').hide()" action="#{userGroupController.destroy()}"/>
+        <p:commandButton value="No" onclick="PF('userGroupDestroyDialogWidget').hide()" type="button" />
+    </p:confirmDialog>  
+
+</ui:composition>
+
+

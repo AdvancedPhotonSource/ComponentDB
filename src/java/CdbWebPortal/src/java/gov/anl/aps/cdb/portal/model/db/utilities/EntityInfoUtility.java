@@ -11,6 +11,10 @@ public class EntityInfoUtility {
 
     public static EntityInfo createEntityInfo() {
         UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+        if (createdByUser == null) {
+            // Created by user cannot be empty.
+            return null;
+        }
         Date createdOnDateTime = new Date();
         EntityInfo entityInfo = new EntityInfo();
         entityInfo.setOwnerUser(createdByUser);
@@ -18,11 +22,9 @@ public class EntityInfoUtility {
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
-        if (createdByUser != null) {
-            List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
-            if (!ownerUserGroupList.isEmpty()) {
-                entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-            }
+        List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
+        if (!ownerUserGroupList.isEmpty()) {
+            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
         }
         return entityInfo;
     }

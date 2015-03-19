@@ -66,17 +66,9 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
         return "";
     }
 
+    @Override
     public PropertyTypeCategory findById(Integer id) {
         return propertyTypeCategoryFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            PropertyTypeCategory propertyTypeCategory = findById(idViewParam);
-            setCurrent(propertyTypeCategory);
-            idViewParam = null;
-        }
     }
 
     @Override

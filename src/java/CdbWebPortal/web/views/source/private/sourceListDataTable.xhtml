@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="sourceListDataTable" 
+                 widgetVar="sourceListDataTableWidget" 
+                 var="sourceObject" 
+                 value="#{sourceController.listDataModel}" 
+                 filteredValue="#{sourceController.filteredObjectList}"
+                 binding="#{sourceController.listDataTable}"
+                 rows="#{sourceController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No sources found.">
+
+        <p:column sortBy="#{sourceObject.id}" headerText="Id"
+                  rendered="#{sourceController.displayId}">
+            <h:outputText value="#{sourceObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{sourceObject.name}" headerText="Name" 
+                  filterBy="#{sourceObject.name}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByName}">
+            <h:outputLink value="view.xhtml?id=#{sourceObject.id}" title="View source details">
+                <h:outputText value="#{sourceObject.name}"/>
+            </h:outputLink>        
+        </p:column>
+
+        <p:column sortBy="#{sourceObject.description}" headerText="Description" 
+                  filterBy="#{sourceObject.description}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByDescription}"
+                  rendered="#{sourceController.displayDescription}">
+            <h:outputText value="#{sourceObject.description}"/>
+        </p:column>
+
+        <p:column sortBy="#{sourceObject.contactInfo}" headerText="Contact Info" 
+                  filterBy="#{sourceObject.contactInfo}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByContactInfo}"
+                  rendered="#{sourceController.displayContactInfo}">
+            <h:outputText value="#{sourceObject.contactInfo}"/>
+        </p:column>
+
+        <p:column sortBy="#{sourceObject.url}" headerText="URL" 
+                  filterBy="#{sourceObject.url}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterByUrl}"
+                  rendered="#{sourceController.displayUrl}">
+            <h:outputLink value="#{sourceObject.targetUrl}" target="_page_#{sourceObject.url}">
+                <h:outputText value="#{sourceObject.displayUrl}"/>
+            </h:outputLink>
+        </p:column>        
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{sourceController}"/>
+                <ui:param name="entityObject" value="#{sourceObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

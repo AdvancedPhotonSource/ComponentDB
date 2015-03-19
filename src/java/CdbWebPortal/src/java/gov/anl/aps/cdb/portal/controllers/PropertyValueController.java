@@ -172,16 +172,16 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByEnteredByUser = filters.get("enteredByUser");
-        filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
-        filterByIsDynamic = filters.get("isDynamic");
-        filterByIsUserWriteable = filters.get("isUserWriteable");
-        filterByTag = filters.get("tag");
-        filterByType = filters.get("type");
-        filterByTypeCategory = filters.get("typeCategory");
-        filterByUnits = filters.get("units");
-        filterByValue = filters.get("value");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByEnteredByUser = (String) filters.get("enteredByUser");
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
+        filterByIsDynamic = (String) filters.get("isDynamic");
+        filterByIsUserWriteable = (String) filters.get("isUserWriteable");
+        filterByTag = (String) filters.get("tag");
+        filterByType = (String) filters.get("type");
+        filterByTypeCategory = (String) filters.get("typeCategory");
+        filterByUnits = (String) filters.get("units");
+        filterByValue = (String) filters.get("value");
     }
 
     @Override

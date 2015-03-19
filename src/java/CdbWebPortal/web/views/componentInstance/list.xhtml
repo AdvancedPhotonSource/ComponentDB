@@ -2,10 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../templates/componentInstancesViewTemplate.xhtml">
 
-
+    <ui:define name="pageTitle">: Component Instance Inventory</ui:define>
     <ui:define name="middleCenter">
 
         <h:form id="viewComponentInstanceListForm">  
@@ -13,17 +13,17 @@
                 <h1>Component Instance Inventory</h1>
             </div>
             <ui:param name="entityController" value="#{componentInstanceController}"/>
-            <ui:include src="../common/commonListActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>
 
-                <ui:include src="componentInstanceListDataTable.xhtml"/>
+                <ui:include src="private/componentInstanceListDataTable.xhtml"/>
 
             </h:panelGroup>
 
-            <ui:include src="componentInstanceDestroyDialog.xhtml"/>
+            <ui:include src="private/componentInstanceDestroyDialog.xhtml"/>
 
-            <ui:include src="componentInstanceListCustomizeDisplayDialog.xhtml"/>
+            <ui:include src="private/componentInstanceListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
     </ui:define>

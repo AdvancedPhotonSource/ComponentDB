@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="componentTypeSelectDataTable" 
+                 widgetVar="componentTypeSelectDataTableWidget"
+                 var="componentTypeObject" 
+                 value="#{componentTypeController.selectDataModel}" 
+                 filteredValue="#{componentTypeController.filteredObjectList}"
+                 rowKey="#{componentTypeObject.id}"
+                 selection="#{componentTypeController.selectedComponentType}"
+                 selectionMode="single"
+                 paginator="true"
+                 paginatorAlwaysVisible="true"
+                 rows="#{resources.SelectDataTableNumberOfRows}"
+                 emptyMessage="No available component types found.">
+
+        <p:column sortBy="#{componentTypeObject.id}" headerText="Id"
+                  rendered="#{componentTypeController.selectDisplayId}">
+            <h:outputText value="#{componentTypeObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.name}" headerText="Name" 
+                  filterBy="name" filterMatchMode="contains"
+                  filterValue="#{componentTypeController.selectFilterByName}"
+                  rendered="true">
+            <h:outputText value="#{componentTypeObject.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.componentTypeCategory.name}" headerText="Category" 
+                  filterBy="#{componentTypeObject.componentTypeCategory.name}" filterMatchMode="exact"
+                  filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
+                  filterValue="#{componentTypeController.selectFilterByCategory}"
+                  rendered="#{componentTypeController.selectDisplayCategory}">
+            <h:outputText value="#{componentTypeObject.componentTypeCategory.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.description}" headerText="Description" 
+                  filterBy="description" filterMatchMode="contains"
+                  filterValue="#{componentTypeController.selectFilterByDescription}"
+                  rendered="#{componentTypeController.selectDisplayDescription}">
+            <h:outputText value="#{componentTypeObject.description}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

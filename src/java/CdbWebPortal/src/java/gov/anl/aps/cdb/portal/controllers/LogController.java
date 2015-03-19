@@ -130,11 +130,11 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByEnteredByUser = filters.get("enteredByUser");
-        filterByEnteredOnDateTime = filters.get("enteredOnDateTime");
-        filterByText = filters.get("text");
-        filterByTopic = filters.get("topic");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByEnteredByUser = (String) filters.get("enteredByUser");
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
+        filterByText = (String) filters.get("text");
+        filterByTopic = (String) filters.get("topic");
     }
 
     @Override

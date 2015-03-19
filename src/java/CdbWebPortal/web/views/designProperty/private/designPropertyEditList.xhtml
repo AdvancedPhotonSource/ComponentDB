@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designController.selected.entityInfo)}"/>
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
+        <ui:param name="parentEntityController" value="#{designController}"/>
+        <ui:param name="childEntityController" value="#{propertyValueController}"/>
+        <ui:param name="childEntityTypeName" value="designProperty"/>
+        <ui:param name="addActionController" value="#{propertyTypeController}"/>
+        <ui:param name="addAction" value="prepareSelectPropertyTypesForDesign"/>
+        <ui:param name="addActionParameter" value="#{designController.current}"/>
+        <ui:param name="addActionOnComplete" value="PF('designPropertySelectDialogWidget').show()"/>
+        <ui:param name="saveAction" value="savePropertyList"/>
+        <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
+    </ui:include>    
+
+    <ui:include src="designPropertyEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+
+    <ui:include src="designPropertyEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+    <ui:include src="designPropertySelectDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+    <ui:include src="designPropertySelectCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+</ui:composition>
+
+

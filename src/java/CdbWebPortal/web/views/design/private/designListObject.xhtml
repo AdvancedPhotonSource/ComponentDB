@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column sortBy="#{designObject.id}" headerText="Id"
+              rendered="#{designController.displayId}">
+        <h:outputText value="#{designObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{designObject.name}" headerText="Name" 
+              filterBy="#{designObject.name}" filterMatchMode="contains"
+              filterValue="#{designController.filterByName}">
+        <h:outputLink value="view.xhtml?id=#{designObject.id}" title="View design details">
+            <h:outputText value="#{designObject.name}"/>
+        </h:outputLink>         
+    </p:column>
+
+    <p:column sortBy="#{designObject.description}" headerText="Description" 
+              filterBy="#{designObject.description}" filterMatchMode="contains"
+              filterValue="#{designController.filterByDescription}"
+              rendered="#{designController.displayDescription}">
+        <h:outputText value="#{designObject.description}"/>
+    </p:column>
+
+    <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
+        <ui:param name="entityInfoObject" value="#{designObject.entityInfo}"/>
+    </ui:include>
+
+
+</ui:composition>

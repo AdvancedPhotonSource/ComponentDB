@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="componentPropertyListDataTable" 
+                 widgetVar="componentPropertyListDataTableWidget"
+                 var="propertyValueObject" 
+                 value="#{componentObject.propertyValueList}" 
+                 filteredValue="#{componentController.filteredPropertyValueList}"
+                 binding="#{componentController.componentPropertyValueListDataTable}"
+                 rows="#{propertyValueController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No component properties found.">
+
+        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml"/>
+
+        <p:column headerText="Actions" exportable="false">
+            <div class="actionLink">
+                <p:commandLink id="componentPropertyValueHistoryListViewButton" 
+                               oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
+                               styleClass="ui-icon ui-icon-info" 
+                               title="View history."
+                               update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
+                                                 value="#{propertyValueObject}"/>
+                    <p:tooltip for="componentPropertyValueHistoryListViewButton" value="View property value history."/>
+                </p:commandLink>
+            </div>
+        </p:column>       
+
+    </p:dataTable>
+
+    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
+
+    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
+
+</ui:composition>
+

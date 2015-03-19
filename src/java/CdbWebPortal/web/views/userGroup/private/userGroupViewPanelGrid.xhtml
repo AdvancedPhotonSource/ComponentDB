@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="userGroupObject" value="#{userGroupController.selected}"/>
+    <p:panelGrid columns="2">
+
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="name" value="#{userGroupObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:outputText id="description" value="#{userGroupObject.description}" title="Description" styleClass="entityDataText"/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{userGroupObject.id}" title="Id" styleClass="entityDataText"/>
+
+    </p:panelGrid>
+
+</ui:composition>
+
+

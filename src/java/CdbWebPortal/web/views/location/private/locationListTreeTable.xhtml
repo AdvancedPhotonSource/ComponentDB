@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:treeTable id="locationListTreeTable"
+                 widgetVar="locationListTreeTableWidget" 
+                 value="#{locationListTreeViewBean.rootNode}"
+                 var="locationObject"
+                 emptyMessage="No locations found.">
+
+        <p:column sortBy="#{locationObject.name}" headerText="Name" 
+                  rendered="true">
+            <h:outputLink value="view.xhtml?id=#{locationObject.id}" title="View location details">
+                <h:outputText value="#{locationObject.name}"/>
+            </h:outputLink>             
+        </p:column>
+
+        <p:column sortBy="#{locationObject.id}" headerText="Id"
+                  rendered="#{locationController.displayId}">
+            <h:outputText value="#{locationObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationObject.locationType.name}" headerText="Type" 
+                  rendered="#{locationController.displayType}">
+            <h:outputText value="#{locationObject.locationType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationObject.parentLocation.name}" headerText="Parent" 
+                  rendered="#{locationController.displayParent}">
+            <h:outputText value="#{locationObject.parentLocation.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{locationObject.description}" headerText="Description" 
+                  rendered="#{locationController.displayDescription}">
+            <h:outputText value="#{locationObject.description}"/>
+        </p:column>
+
+    </p:treeTable>
+
+</ui:composition>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(designElementController.selected.entityInfo)}">
+        <ui:param name="parentEntityController" value="#{designElementController}"/>
+        <ui:param name="childEntityController" value="#{logController}"/>
+        <ui:param name="childEntityTypeName" value="designElementLog"/>
+        <ui:param name="addActionController" value="#{designElementController}"/>
+        <ui:param name="addAction" value="prepareAddLog"/>
+        <ui:param name="addActionParameter" value="#{designElementController.current}"/>
+        <ui:param name="addActionOnComplete" value=""/>
+        <ui:param name="saveAction" value="saveLogList"/>
+        <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(designElementController.selected.entityInfo)}"/>
+    </ui:include>    
+
+    <ui:include src="designElementLogEditListDataTable.xhtml"/>
+    
+    <ui:include src="designElementLogEditListCustomizeDisplayDialog.xhtml"/>
+    
+</ui:composition>
+
+

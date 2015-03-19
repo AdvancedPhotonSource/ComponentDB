@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="userInfoListDataTable"                              
+                 widgetVar="userInfoListDataTableWidget" 
+                 var="userInfoObject" 
+                 value="#{userInfoController.listDataModel}" 
+                 filteredValue="#{userInfoController.filteredObjectList}"
+                 binding="#{userInfoController.listDataTable}"
+                 rows="#{userInfoController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No users found.">
+
+        <p:column sortBy="#{userInfoObject.id}" headerText="Id"
+                  rendered="#{userInfoController.displayId}">
+            <h:outputText value="#{userInfoObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{userInfoObject.username}" headerText="Username" 
+                  filterBy="#{userInfoObject.username}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByUsername}">
+            <h:outputLink value="view.xhtml?id=#{userInfoObject.id}" title="View user details">
+                <h:outputText value="#{userInfoObject.username}"/>
+            </h:outputLink>        
+        </p:column>
+
+        <p:column sortBy="#{userInfoObject.userGroupList.toString()}" headerText="Groups" 
+                  filterBy="#{userInfoObject.userGroupList}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByGroups}"
+                  rendered="#{userInfoController.displayGroups}">
+            <h:outputText value="#{userInfoController.displayEntityList(userInfoObject.userGroupList)}"/>
+        </p:column>
+
+        <p:column sortBy="#{userInfoObject.lastName}" headerText="Last Name" 
+                  filterBy="#{userInfoObject.lastName}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByLastName}"
+                  rendered="#{userInfoController.displayLastName}">
+            <h:outputText value="#{userInfoObject.lastName}"/>
+        </p:column>                  
+
+        <p:column sortBy="#{userInfoObject.firstName}" headerText="First Name" 
+                  filterBy="#{userInfoObject.firstName}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByFirstName}"
+                  rendered="#{userInfoController.displayFirstName}">
+            <h:outputText value="#{userInfoObject.firstName}"/>
+        </p:column> 
+
+        <p:column sortBy="#{userInfoObject.middleName}" headerText="Middle Name" 
+                  filterBy="#{userInfoObject.middleName}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByMiddleName}"
+                  rendered="#{userInfoController.displayMiddleName}">
+            <h:outputText value="#{userInfoObject.middleName}"/>
+        </p:column> 
+
+        <p:column sortBy="#{userInfoObject.email}" headerText="Email" 
+                  filterBy="#{userInfoObject.email}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByEmail}"
+                  rendered="#{userInfoController.displayEmail}">
+            <h:outputText value="#{userInfoObject.email}"/>
+        </p:column>
+
+        <p:column sortBy="#{userInfoObject.description}" headerText="Description" 
+                  filterBy="#{userInfoObject.description}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterByDescription}"
+                  rendered="#{userInfoController.displayDescription}">
+            <h:outputText value="#{userInfoObject.description}"/>
+        </p:column>
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{userInfoController}"/>
+                <ui:param name="entityObject" value="#{userInfoObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userInfoObject)}"/>
+            </ui:include>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

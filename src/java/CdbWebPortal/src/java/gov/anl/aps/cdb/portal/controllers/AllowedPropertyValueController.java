@@ -139,10 +139,10 @@ public class AllowedPropertyValueController extends CrudEntityController<Allowed
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterBySortOrder = filters.get("sortOrder");
-        filterByUnits = filters.get("units");
-        filterByValue = filters.get("value");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterBySortOrder = (String) filters.get("sortOrder");
+        filterByUnits = (String) filters.get("units");
+        filterByValue = (String) filters.get("value");
     }    
     
     @Override

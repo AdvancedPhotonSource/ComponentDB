@@ -2,17 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/contentViewTemplate.xhtml">
     <f:metadata>
-        <ui:include src="../common/commonViewMetadata.xhtml">
-            <ui:param name="entityController" value="#{userInfoController}"/>
-        </ui:include>
+        <f:event type="preRenderComponent" listener="#{userInfoController.processViewRequestParams}"/>
     </f:metadata>
 
+    <ui:define name="pageTitle">: View User #{userInfoController.selected.username}</ui:define>
     <ui:define name="middleCenter">
         <h:form id="viewUserInfoForm">
 
@@ -21,19 +19,19 @@
                     <h1>User Details</h1>
                 </div>
 
-                <ui:include src="userInfoViewPanelGrid.xhtml"/>
+                <ui:include src="private/userInfoViewPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="entityController" value="#{userInfoController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userInfoController.selected)}"/>
-                <ui:include src="../common/commonViewActionButtons.xhtml"/>
-                <ui:include src="userInfoDestroyDialog.xhtml"/>
+                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                <ui:include src="private/userInfoDestroyDialog.xhtml"/>
 
             </div>
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true" rendered="#{loginController.loggedIn}">
                     <p:tab title="Settings">
-                        <ui:include src="../userSetting/view.xhtml"/>
+                        <ui:include src="../userSetting/private/userSettingView.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>
             </div>

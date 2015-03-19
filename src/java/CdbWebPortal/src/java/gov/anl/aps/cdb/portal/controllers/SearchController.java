@@ -44,7 +44,7 @@ public class SearchController implements Serializable {
     @EJB
     private SettingTypeFacade settingTypeFacade;
 
-    private static final Logger logger = Logger.getLogger(LoginController.class.getName());
+    private static final Logger logger = Logger.getLogger(SearchController.class.getName());
     private String searchString = null;
     private Boolean caseInsensitive = true;
 

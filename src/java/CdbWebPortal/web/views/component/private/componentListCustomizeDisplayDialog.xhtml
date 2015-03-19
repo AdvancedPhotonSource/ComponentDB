@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="componentListCustomizeDisplayDialog"
+              widgetVar="componentListCustomizeDisplayDialogWidget" 
+              header="Customize List Display" 
+              styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="displayNumberOfItemsPerPage" value="#{componentController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{componentController.displayCreatedByUser}"/>  
+                <h:outputLabel for="displayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{componentController.displayCreatedOnDateTime}"/>  
+                <h:outputLabel for="displayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayDescription" value="#{componentController.displayDescription}"/>  
+                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayId" value="#{componentController.displayId}"/>  
+                <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{componentController.displayLastModifiedByUser}"/>  
+                <h:outputLabel for="displayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{componentController.displayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="displayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayOwnerUser" value="#{componentController.displayOwnerUser}"/>  
+                <h:outputLabel for="displayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{componentController.displayOwnerGroup}"/>  
+                <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayType" value="#{componentController.displayType}"/>  
+                <h:outputLabel for="displayType" value="Display Type" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="displayCategory" value="#{componentController.displayCategory}"/>  
+                <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
+
+                <p:selectOneMenu id="displayPropertyType1" value="#{componentController.displayPropertyTypeId1}" 
+                                 styleClass="entityDataSelectOne">
+                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
+                    <f:selectItems var="propertyType1" value="#{propertyTypeController.availableItems}" 
+                                   itemLabel="#{propertyType1.name}" itemValue="#{propertyType1.id}"/>
+                </p:selectOneMenu>
+                <h:outputLabel for="displayPropertyType1" value="Display Property Type #1" styleClass="entityDataLabel"/>
+
+                <p:selectOneMenu id="displayPropertyType2" value="#{componentController.displayPropertyTypeId2}" 
+                                 styleClass="entityDataSelectOne">
+                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
+                    <f:selectItems var="propertyType2" value="#{propertyTypeController.availableItems}" 
+                                   itemLabel="#{propertyType2.name}" itemValue="#{propertyType2.id}"/>
+                </p:selectOneMenu>
+                <h:outputLabel for="displayPropertyType2" value="Display Property Type #2" styleClass="entityDataLabel"/>                
+
+                <p:selectOneMenu id="displayPropertyType3" value="#{componentController.displayPropertyTypeId3}" 
+                                 styleClass="entityDataSelectOne">
+                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
+                    <f:selectItems var="propertyType3" value="#{propertyTypeController.availableItems}" 
+                                   itemLabel="#{propertyType3.name}" itemValue="#{propertyType3.id}"/>
+                </p:selectOneMenu>
+                <h:outputLabel for="displayPropertyType3" value="Display Property Type #3" styleClass="entityDataLabel"/>   
+
+                <p:selectOneMenu id="displayPropertyType4" value="#{componentController.displayPropertyTypeId4}" 
+                                 styleClass="entityDataSelectOne">
+                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
+                    <f:selectItems var="propertyType4" value="#{propertyTypeController.availableItems}" 
+                                   itemLabel="#{propertyType4.name}" itemValue="#{propertyType4.id}"/>
+                </p:selectOneMenu>
+                <p:outputLabel for="displayPropertyType4" value="Display Property Type #4" styleClass="entityDataLabel"/>   
+
+                <p:selectOneMenu id="displayPropertyType5" value="#{componentController.displayPropertyTypeId5}" 
+                                 styleClass="entityDataSelectOne">
+                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
+                    <f:selectItems var="propertyType5" value="#{propertyTypeController.availableItems}" 
+                                   itemLabel="#{propertyType5.name}" itemValue="#{propertyType5.id}"/>
+                </p:selectOneMenu>
+                <h:outputLabel for="displayPropertyType5" value="Display Property Type #5" styleClass="entityDataLabel"/>   
+
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{componentController.customizeListDisplay()}"
+                                 update="@form"
+                                 oncomplete="PF('componentListCustomizeDisplayDialogWidget').hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userController.saveSettingListForSessionUser()}"
+                                 actionListener="#{componentController.saveListSettingsForSessionUserActionListener}"
+                                 oncomplete="PF('componentListCustomizeDisplayDialogWidget').hide()" 
+                                 update="@form"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+
+</ui:composition>

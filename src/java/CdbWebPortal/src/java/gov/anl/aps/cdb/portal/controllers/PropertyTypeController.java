@@ -110,17 +110,9 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         return "";
     }
 
+    @Override
     public PropertyType findById(Integer id) {
         return propertyTypeFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            PropertyType propertyType = findById(idViewParam);
-            setCurrent(propertyType);
-            idViewParam = null;
-        }
     }
 
     @Override
@@ -200,11 +192,11 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByCategory = filters.get("propertyTypeCategory.name");
-        filterByDefaultUnits = filters.get("defaultUnits");
-        filterByDefaultValue = filters.get("defaultValue");
-        filterByHandler = filters.get("handlerName");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByCategory = (String) filters.get("propertyTypeCategory.name");
+        filterByDefaultUnits = (String) filters.get("defaultUnits");
+        filterByDefaultValue = (String) filters.get("defaultValue");
+        filterByHandler = (String) filters.get("handlerName");
     }
 
     @Override

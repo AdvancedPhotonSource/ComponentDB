@@ -5,13 +5,14 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.constants.CdbRole;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
+import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -188,10 +189,12 @@ public class LoginController implements Serializable {
             SessionUtility.setUser(user);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
+                SessionUtility.setRole(CdbRole.ADMIN);
                 SessionUtility.addInfoMessage("Successful Login", "Administrator " + username + " is logged in.");
 
             } else {
                 loggedInAsUser = true;
+                SessionUtility.setRole(CdbRole.USER);
                 SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
             }
 
@@ -232,6 +235,7 @@ public class LoginController implements Serializable {
     public String dropAdminRole() {
         loggedInAsAdmin = false;
         loggedInAsUser = true;
+        SessionUtility.setRole(CdbRole.USER);
         return getLandingPage();
     }
 
@@ -266,30 +270,8 @@ public class LoginController implements Serializable {
             return true;
         }
 
-        // Users can write object if entityInfo != null and:
-        // current user is owner, or the object is writeable by owner group
-        // and current user is memebr of that group
-        UserInfo ownerUser = entityInfo.getOwnerUser();
-        if (ownerUser != null && ownerUser.getId().equals(user.getId())) {
-            return true;
-        }
+        return AuthorizationUtility.isEntityWriteableByUser(entityInfo, user);
 
-        Boolean isGroupWriteable = entityInfo.getIsGroupWriteable();
-        if (isGroupWriteable == null || !isGroupWriteable.booleanValue()) {
-            return false;
-        }
-
-        UserGroup ownerUserGroup = entityInfo.getOwnerUserGroup();
-        if (ownerUserGroup == null) {
-            return false;
-        }
-
-        for (UserGroup userGroup : user.getUserGroupList()) {
-            if (ownerUserGroup.getId().equals(userGroup.getId())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public boolean isUserWriteable(UserInfo user) {

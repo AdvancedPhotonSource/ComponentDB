@@ -2,10 +2,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../templates/componentsViewTemplate.xhtml">
 
-
+    <ui:define name="pageTitle">: Component Catalog</ui:define>
     <ui:define name="middleCenter">
 
         <h:form id="viewComponentListForm">  
@@ -13,17 +13,17 @@
                 <h1>Component Catalog</h1>
             </div>
             <ui:param name="entityController" value="#{componentController}"/>
-            <ui:include src="../common/commonListActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>
 
-                <ui:include src="componentListDataTable.xhtml"/>
+                <ui:include src="private/componentListDataTable.xhtml"/>
 
             </h:panelGroup>
 
-            <ui:include src="componentDestroyDialog.xhtml"/>
+            <ui:include src="private/componentDestroyDialog.xhtml"/>
 
-            <ui:include src="componentListCustomizeDisplayDialog.xhtml"/>
+            <ui:include src="private/componentListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
     </ui:define>

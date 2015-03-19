@@ -187,19 +187,19 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
         prepareDesignImageList(design);
     }
 
+    @Override
     public Design findById(Integer id) {
         return designFacade.findById(id);
     }
 
     @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            Design design = findById(idViewParam);
-            setCurrent(design);
-            idViewParam = null;
+    public EntityInfo getEntityInfo(Design entity) {
+        if (entity != null) {
+            return entity.getEntityInfo();
         }
-    }
-
+        return null;
+    } 
+    
     public void prepareAddProperty() {
         Design design = getCurrent();
         List<PropertyValue> propertyList = design.getPropertyValueList();

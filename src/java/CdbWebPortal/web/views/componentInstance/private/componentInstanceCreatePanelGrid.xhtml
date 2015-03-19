@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
+    <p:panelGrid columns="4" styleClass="createEntityDetails">
+
+        <h:outputLabel for="qrId" value="QR Id" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="qrId" value="#{componentInstanceObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+        <p:message for="qrId"/> 
+        <p:tooltip for="qrId" value="Enter component instance QR id."/>
+
+        <h:outputLabel for="componentInstanceComponentSelectOneMenu" value="Component" styleClass="entityDataEmphasizedLabel"/>
+        <p:column>
+            <p:selectOneMenu id="componentInstanceComponentSelectOneMenu" 
+                             widgetVar="componentInstanceComponentSelectOneMenuWidget"
+                             value="#{componentInstanceObject.component}" 
+                             styleClass="entityDataText"
+                             converter="componentConverter"
+                             binding="#{componentInstanceController.componentSelectOneMenu}">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="componentObject" value="#{componentController.availableItems}" itemLabel="#{componentObject.name}" 
+                               itemValue="#{componentObject}"/>
+                <p:ajax update="componentType"/>    
+                <p:ajax update="componentTypeCategory"/>       
+            </p:selectOneMenu>
+
+            <p:commandButton id="selectComponentButton"
+                             action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
+                             oncomplete="PF('componentInstanceComponentSelectDialogWidget').show();"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Component" 
+                             styleClass="actionButtonSmall"
+                             icon="ui-icon-search">
+                <f:setPropertyActionListener target="#{componentController.selectedComponent}" value="#{componentInstanceObject.component}"/>
+                <p:tooltip for="selectComponentButton" value="Search for component."/>
+            </p:commandButton>
+        </p:column>
+        <p:message for="componentInstanceComponentSelectOneMenu"/>
+        <p:tooltip for="componentInstanceComponentSelectOneMenu" value="Select component."/> 
+
+        <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
+        <h:outputText id="componentType" value="#{componentInstanceObject.component.componentType.name}" title="Type" styleClass="entityDataText"/>
+        <p:message for="componentType"/>
+        <p:tooltip for="componentType" value="Selected component type."/>
+
+        <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
+        <h:outputText id="componentTypeCategory" value="#{componentInstanceObject.component.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
+        <p:message for="componentTypeCategory"/>
+        <p:tooltip for="componentTypeCategory" value="Selected component type category."/>
+
+        <h:outputLabel for="tag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="tag" value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>
+        <p:message for="tag"/> 
+        <p:tooltip for="tag" value="Enter component instance tag."/>
+
+        <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
+        <p:message for="serialNumber"/> 
+        <p:tooltip for="serialNumber" value="Enter component instance serial number."/>
+
+        <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>        
+        <p:column>
+            <p:autoComplete id="locationDropdown" 
+                            value="#{componentInstanceObject.location}" 
+                            var="location"
+                            converter="locationConverter" 
+                            completeMethod="#{componentInstanceController.completeLocation}" 
+                            itemLabel="#{location.name}"
+                            itemValue="#{location}"
+                            valueChangeListener="#{componentInstanceController.selectLocationValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true"
+                            size="100"
+                            styleClass="autocomplete">
+                <p:ajax event="valueChange" immediate="true" process="@this"/>
+            </p:autoComplete>
+            <p:commandButton id="location" onclick="PF('componentInstanceLocationSelectDialogWidget').show();" 
+                             alt="Select" icon="ui-icon-search"
+                             styleClass="selectButtonForAutocomplete"
+                             immediate="true">
+                <f:setPropertyActionListener value="#{componentInstanceObject}" target="#{componentInstanceController.current}"/>
+            </p:commandButton>
+        </p:column>      
+        <p:message for="location"/>
+        <p:tooltip for="location" value="Select location."/>
+
+        <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
+        <h:inputText id="locationDetails" value="#{componentInstanceObject.locationDetails}" title="Location Details" styleClass="entityDataText"/>
+        <p:message for="locationDetails"/> 
+        <p:tooltip for="locationDetails" value="Enter location details."/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:inputText id="description" value="#{componentInstanceObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:message for="description"/> 
+        <p:tooltip for="description" value="Enter description."/>
+
+        <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{componentInstanceObject.entityInfo}"/>
+        </ui:include>
+
+    </p:panelGrid>
+
+
+    <ui:include src="componentInstanceComponentSelectDialog.xhtml"/>
+
+    <ui:include src="componentInstanceComponentSelectCustomizeDisplayDialog.xhtml"/>
+
+    <ui:include src="componentInstanceLocationSelectDialog.xhtml"/>
+
+</ui:composition>
+
+

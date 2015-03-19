@@ -12,4 +12,8 @@ public class StringUtility
         }
         return cs1.equals(cs2);
     }
+    
+    public static String capitalize(String input) {
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    }
 }

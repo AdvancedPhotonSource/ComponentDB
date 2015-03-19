@@ -2,17 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/componentsViewTemplate.xhtml">
 
     <f:metadata>
-        <f:viewParam id="id" name="id" value="#{componentController.idViewParam}"/>
-        <f:event type="preRenderComponent" listener="#{componentController.processViewRequestParams()}"/>
+        <f:event type="preRenderComponent" listener="#{componentController.processViewRequestParams}"/>
     </f:metadata>
 
+    <ui:define name="pageTitle">: View Component #{componentController.selected.name}</ui:define>    
     <ui:define name="middleCenter">
         <h:form id="viewComponentForm">
 
@@ -20,44 +19,44 @@
                 <div class="pageTitle">
                     <h1>Component Details</h1>
                 </div>
-                <ui:include src="componentViewPanelGrid.xhtml"/>
+                <ui:include src="private/componentViewPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="componentObject" value="#{componentController.selected}"/>
                 <ui:param name="entityController" value="#{componentController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
-                <ui:include src="../common/commonViewActionButtons.xhtml"/>
-                <ui:include src="componentDestroyDialog.xhtml"/>
+                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                <ui:include src="private/componentDestroyDialog.xhtml"/>
 
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Images">
-                        <ui:include src="../componentProperty/image.xhtml"/>
+                        <ui:include src="../componentProperty/private/componentPropertyImageGalleria.xhtml"/>
                     </p:tab>   
                     <p:tab title="Log Entries">
-                        <ui:include src="../componentLog/list.xhtml"/>
+                        <ui:include src="../componentLog/private/componentLogList.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>   
 
             </div>
 
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1,2,3">                
+                <p:accordionPanel multiple="true" activeIndex="0,1,2,3" rendered="#{componentObject != null}">                
                     <p:tab title="Properties">
-                        <ui:include src="../componentProperty/list.xhtml"/>
+                        <ui:include src="../componentProperty/private/componentPropertyList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Sources">
-                        <ui:include src="../componentSource/list.xhtml"/>
+                        <ui:include src="../componentSource/private/componentSourceList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Assembly Components">
-                        <ui:include src="../assemblyComponent/list.xhtml"/>
+                        <ui:include src="private/componentAssemblyComponentList.xhtml"/>
                     </p:tab>  
-                    
+
                     <p:tab title="Instances">
-                        <ui:include src="componentComponentInstanceList.xhtml"/>
+                        <ui:include src="private/componentComponentInstanceList.xhtml"/>
                     </p:tab>       
 
                 </p:accordionPanel>

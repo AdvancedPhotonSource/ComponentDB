@@ -100,19 +100,12 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
         return "";
     }
 
+    @Override
     public UserInfo findById(Integer id) {
         return userInfoFacade.findById(id);
     }
 
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            UserInfo userInfo = findById(idViewParam);
-            setCurrent(userInfo);
-            idViewParam = null;
-        }
-    }
-
+    
     @Override
     public List<UserInfo> getAvailableItems() {
         return super.getAvailableItems();
@@ -264,13 +257,13 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByEmail = filters.get("email");
-        filterByFirstName = filters.get("firstName");
-        filterByGroups = filters.get("groups");
-        filterByLastName = filters.get("lastName");
-        filterByMiddleName = filters.get("middleName");
-        filterByUsername = filters.get("username");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByEmail = (String) filters.get("email");
+        filterByFirstName = (String) filters.get("firstName");
+        filterByGroups = (String) filters.get("groups");
+        filterByLastName = (String) filters.get("lastName");
+        filterByMiddleName = (String) filters.get("middleName");
+        filterByUsername = (String) filters.get("username");
     }
 
     @Override

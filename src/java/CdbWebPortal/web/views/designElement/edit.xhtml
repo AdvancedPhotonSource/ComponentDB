@@ -2,16 +2,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/designsViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{designElementController.processEditRequestParams}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">: Edit Design Element #{designElementController.selected.name}</ui:define>     
     <ui:define name="middleCenter">
         <h:form id="editComponentForm" 
                 enctype="multipart/form-data"
-                rendered="#{(loginController.loggedIn and 
-                            loginController.isEntityWriteable(designElementController.selected.entityInfo))}">
+                rendered="#{loginController.isEntityWriteable(designElementController.selected.entityInfo)}">
 
             <div class="middleCenterLeftContent">
 
@@ -19,7 +23,7 @@
                     <h1>Edit Design Element</h1>
                 </div>
 
-                <ui:include src="designElementEditPanelGrid.xhtml"/>
+                <ui:include src="private/designElementEditPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="designElementObject" value="#{designElementController.selected}"/>
@@ -27,33 +31,31 @@
                 <div class="actionButton">
                     <p:commandButton id="designElementEditViewButton" action="#{designElementController.view()}" 
                                      value="View" alt="View" icon="ui-icon-info" update="@form">
-                        <p:tooltip for="designElementEditViewButton" value="View component instance."/>
+                        <p:tooltip for="designElementEditViewButton" value="View design element."/>
                     </p:commandButton>
                     <p:commandButton id="designElementEditSaveButton" action="#{designElementController.update()}" 
                                      value="Save" alt="Save" icon="ui-icon-check" update="@form">
-                        <p:tooltip for="designElementEditSaveButton" value="Save component instance."/>
+                        <p:tooltip for="designElementEditSaveButton" value="Save design element."/>
                     </p:commandButton>
-                    <p:commandButton id="designElementEditDoneButton" action="#{designElementController.prepareViewToComponent(designElementObject)}" immediate="true" 
-                                     value="Done" alt="Done" icon="ui-icon-arrowreturnthick-1-w">
-                        <p:tooltip for="designElementEditDoneButton" value="Return to component details page."/>                    
+                    <p:commandButton id="designElementEditDoneButton" action="#{designElementController.prepareViewToDesign(designElementObject)}" immediate="true" 
+                                     value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
+                        <p:tooltip for="designElementEditDoneButton" value="Return to design details page."/>                    
                     </p:commandButton>
                 </div>
 
                 <p/>
                 <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Log Entries">
-                        <ui:include src="../designElementLog/editList.xhtml"/>
+                        <ui:include src="../designElementLog/private/designElementLogEditList.xhtml"/>
                     </p:tab>
 
                     <p:tab title="Properties">
-                        <ui:include src="../designElementProperty/editList.xhtml"/>
+                        <ui:include src="../designElementProperty/private/designElementPropertyEditList.xhtml"/>
                     </p:tab>
 
                 </p:accordionPanel>  
             </div>
 
-            <div class="middleCenterRightContent">
-            </div>
         </h:form>
 
     </ui:define>

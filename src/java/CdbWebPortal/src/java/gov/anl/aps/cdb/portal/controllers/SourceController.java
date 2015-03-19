@@ -72,17 +72,9 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         return "";
     }
 
+    @Override
     public Source findById(Integer id) {
         return sourceFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            Source userGroup = findById(idViewParam);
-            setCurrent(userGroup);
-            idViewParam = null;
-        }
     }
 
     @Override
@@ -154,9 +146,9 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByContactInfo = filters.get("contactInfo");
-        filterByUrl = filters.get("url");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByContactInfo = (String) filters.get("contactInfo");
+        filterByUrl = (String) filters.get("url");
     }
 
     @Override
@@ -228,11 +220,6 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
             }
         }
 
-    }
-
-    @Override
-    public boolean entityCanBeCreatedByUsers() {
-        return true;
     }
 
     public Boolean getDisplayContactInfo() {

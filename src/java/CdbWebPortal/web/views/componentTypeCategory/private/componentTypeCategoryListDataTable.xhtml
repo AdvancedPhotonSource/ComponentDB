@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="componentTypeCategoryListDataTable"
+                 widgetVar="componentTypeCategoryListDataTableWidget" 
+                 var="componentTypeCategoryObject" 
+                 value="#{componentTypeCategoryController.listDataModel}" 
+                 filteredValue="#{componentTypeCategoryController.filteredObjectList}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 rows="#{componentTypeCategoryController.displayNumberOfItemsPerPage}"
+                 binding="#{componentTypeCategoryController.listDataTable}"
+                 emptyMessage="No component type categories found." > 
+
+        <p:column sortBy="#{componentTypeCategoryObject.id}" headerText="Id"
+                  rendered="#{componentTypeCategoryController.displayId}">
+            <h:outputText value="#{componentTypeCategoryObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeCategoryObject.name}" headerText="Name" 
+                  filterBy="#{componentTypeCategoryObject.name}" filterMatchMode="contains"
+                  filterValue="#{componentTypeCategoryController.filterByName}"
+                  rendered="true">
+            <h:outputLink value="view.xhtml?id=#{componentTypeCategoryObject.id}" title="View component type category details">
+                <h:outputText value="#{componentTypeCategoryObject.name}"/>
+            </h:outputLink>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeCategoryObject.description}" headerText="Description" 
+                  filterBy="#{componentTypeCategoryObject.description}" filterMatchMode="contains"
+                  filterValue="#{componentTypeCategoryController.filterByDescription}"
+                  rendered="#{componentTypeCategoryController.displayDescription}">
+            <h:outputText value="#{componentTypeCategoryObject.description}"/>
+        </p:column>
+
+        <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+        <p:column headerText="Actions" exportable="false">
+            <div class="actionLink">
+                <p:commandLink action="#{componentTypeCategoryController.prepareView(componentTypeCategoryObject)}" styleClass="ui-icon ui-icon-info" title="View"/>
+                <p:commandLink action="#{componentTypeCategoryController.prepareEdit(componentTypeCategoryObject)}" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-pencil" title="Edit"/>
+                <p:commandLink oncomplete="PF('componentTypeCategoryDestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                    <f:setPropertyActionListener value="#{componentTypeCategoryObject}" target="#{componentTypeCategoryController.current}"/>
+                </p:commandLink>
+            </div>
+        </p:column>
+    </p:dataTable>
+
+
+</ui:composition>

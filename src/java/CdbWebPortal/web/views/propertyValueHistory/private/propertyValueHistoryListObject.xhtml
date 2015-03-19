@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column sortBy="#{propertyValueHistoryObject.id}" headerText="Id"
+              rendered="#{propertyValueHistoryController.displayId}">
+        <h:outputText value="#{propertyValueHistoryObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.tag}" headerText="Tag"
+              filterBy="#{propertyValueHistoryObject.tag}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByTag}"
+              rendered="#{propertyValueHistoryController.displayTag}">
+        <h:outputText value="#{propertyValueHistoryObject.tag}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.value}" headerText="Value"
+              filterBy="#{propertyValueHistoryObject.value}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByValue}">
+
+        <h:outputText value="#{propertyValueHistoryObject.value}"
+                      rendered="#{propertyValueHistoryController.displayTextValue()}"/>
+
+        <p:graphicImage value="/propertyValue/images/#{propertyValueHistoryObject.value}.thumbnail" 
+                        alt="#{propertyValueHistoryObject.value}" title="#{propertyValueHistoryObject.value}"
+                        rendered="#{propertyValueHistoryController.displayImageValue()}"/>
+
+        <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
+                      title="#{propertyValueHistoryObject.targetValue}"
+                      rendered="#{propertyValueHistoryController.displayHttpLinkValue()}">
+            <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
+        </h:outputLink>
+
+        <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
+                      title="#{propertyValueHistoryObject.targetValue}"
+                      rendered="#{propertyValueHistoryController.displayDocumentValue()}">
+            <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
+        </h:outputLink>        
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"
+              filterBy="#{propertyValueHistoryObject.units}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByUnits}"
+              rendered="#{propertyValueHistoryController.displayUnits}">
+        <h:outputText value="#{propertyValueHistoryObject.units}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.description}" headerText="Description"
+              filterBy="#{propertyValueHistoryObject.description}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByDescription}"
+              rendered="#{propertyValueHistoryController.displayDescription}">
+        <h:outputText value="#{propertyValueHistoryObject.description}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.enteredByUser.username}" headerText="Entered By"
+              filterBy="#{propertyValueHistoryObject.enteredByUser.username}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByEnteredByUser}"
+              rendered="#{propertyValueHistoryController.displayEnteredByUser}">
+        <h:outputText value="#{propertyValueHistoryObject.enteredByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueHistoryObject.enteredOnDateTime}" headerText="Entered On"
+              filterBy="#{propertyValueHistoryObject.enteredOnDateTime}" filterMatchMode="contains"
+              filterValue="#{propertyValueHistoryController.filterByEnteredOnDateTime}"
+              rendered="#{propertyValueHistoryController.displayEnteredOnDateTime}">
+        <h:outputText value="#{propertyValueHistoryObject.enteredOnDateTime}"/>
+    </p:column>
+
+</ui:composition>
+
+

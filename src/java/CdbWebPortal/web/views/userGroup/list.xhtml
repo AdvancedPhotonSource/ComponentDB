@@ -2,10 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
                 template="../../templates/contentViewTemplate.xhtml">
 
+    <ui:define name="pageTitle">: User Groups</ui:define>            
     <ui:define name="middleCenter">
 
         <h:form id="viewUserGroupListForm">    
@@ -14,9 +15,9 @@
             </div>
 
             <ui:param name="entityController" value="#{userGroupController}"/>
-            <ui:include src="../common/commonListActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
             <h:panelGroup>  
-                <ui:include src="userGroupListDataTable.xhtml"/>
+                <ui:include src="private/userGroupListDataTable.xhtml"/>
             </h:panelGroup>
 
             <p/>
@@ -26,9 +27,9 @@
                     <p:tooltip for="userGroupDoneButton" value="Return to user list."/>
                 </p:button>
             </div>
-            <ui:include src="userGroupDestroyDialog.xhtml"/>
+            <ui:include src="private/userGroupDestroyDialog.xhtml"/>
 
-            <ui:include src="userGroupListCustomizeDisplayDialog.xhtml"/>
+            <ui:include src="private/userGroupListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
     </ui:define>

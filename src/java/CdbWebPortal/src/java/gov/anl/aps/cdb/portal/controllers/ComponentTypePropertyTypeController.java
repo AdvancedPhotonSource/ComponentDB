@@ -91,8 +91,8 @@ public class ComponentTypePropertyTypeController extends CrudEntityController<Pr
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByPropertyTypeName = filters.get("propertyType.name");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByPropertyTypeName = (String) filters.get("propertyType.name");
     }
     
     @Override

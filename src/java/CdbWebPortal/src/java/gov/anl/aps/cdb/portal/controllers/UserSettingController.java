@@ -93,9 +93,9 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterBySettingType = filters.get("settingType");
-        filterByValue = filters.get("value");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterBySettingType = (String) filters.get("settingType");
+        filterByValue = (String) filters.get("value");
     }
 
     @Override

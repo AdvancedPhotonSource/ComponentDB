@@ -107,17 +107,9 @@ public class LocationController extends CrudEntityController<Location, LocationF
         return "";
     }
 
+    @Override
     public Location findById(Integer id) {
         return locationFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            Location location = findById(idViewParam);
-            setCurrent(location);
-            idViewParam = null;
-        }
     }
 
     @Override
@@ -209,9 +201,9 @@ public class LocationController extends CrudEntityController<Location, LocationF
         if (dataTable == null) {
             return;
         }
-        Map<String, String> filters = dataTable.getFilters();
-        filterByParent = filters.get("locationParent.name");
-        filterByType = filters.get("type");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByParent = (String) filters.get("locationParent.name");
+        filterByType = (String) filters.get("type");
 
     }
 
@@ -297,10 +289,6 @@ public class LocationController extends CrudEntityController<Location, LocationF
 
     }
 
-    @Override
-    public boolean entityCanBeCreatedByUsers() {
-        return true;
-    }
 
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.

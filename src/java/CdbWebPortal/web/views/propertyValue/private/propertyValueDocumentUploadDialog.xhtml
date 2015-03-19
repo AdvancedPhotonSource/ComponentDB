@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="propertyValueDocumentUploadDialog" 
+              widgetVar="propertyValueDocumentUploadDialogWidget" 
+              header="Document Upload" 
+              styleClass="dialog">
+        <div class="dialog">
+
+            <p:fileUpload value="#{propertyValueDocumentUploadBean.uploadedFile}" mode="simple"/>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton id="propertyValueDocumentUploadSubmitButton" value="Submit" alt="Submit" 
+                                 actionListener="#{propertyValueDocumentUploadBean.upload(propertyValueController.current)}"
+                                 action="#{parentEntityController[saveAction]}"
+                                 ajax="false"
+                                 update="@form"
+                                 oncomplete="PF('propertyValueDocumentUploadDialogWidget').hide()" 
+                                 icon="ui-icon-check">
+                    <p:tooltip for="propertyValueDocumentUploadSubmitButton" value="Submit document for upload."/>
+                </p:commandButton>
+            </f:facet>
+        </div>
+
+    </p:dialog>
+
+</ui:composition>

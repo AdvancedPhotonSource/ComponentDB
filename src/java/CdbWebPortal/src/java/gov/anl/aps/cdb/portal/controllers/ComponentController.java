@@ -197,19 +197,18 @@ public class ComponentController extends CrudEntityController<Component, Compone
         return "";
     }
 
+    @Override
     public Component findById(Integer id) {
         return componentFacade.findById(id);
     }
 
     @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            Component component = findById(idViewParam);
-            setCurrent(component);
-            prepareEntityView(component);
-            idViewParam = null;
+    public EntityInfo getEntityInfo(Component entity) {
+        if (entity != null) {
+            return entity.getEntityInfo();
         }
-    }
+        return null;
+    }    
 
     @Override
     public void prepareEntityView(Component component) {
@@ -317,13 +316,15 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    public void prepareEntityUpdateOnRemoval(Component component) {
+    public void prepareEntityUpdateOnRemoval(Component component
+    ) {
         EntityInfo entityInfo = component.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
     }
 
     @Override
-    public String prepareEdit(Component component) {
+    public String prepareEdit(Component component
+    ) {
         locationList = locationFacade.findAll();
         return super.prepareEdit(component);
     }
@@ -604,15 +605,15 @@ public class ComponentController extends CrudEntityController<Component, Compone
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByType = filters.get("componentType");
-        filterByCategory = filters.get("componentTypeCategory");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByType = (String) filters.get("componentType");
+        filterByCategory = (String) filters.get("componentTypeCategory");
 
-        filterByPropertyValue1 = filters.get("propertyValue1");
-        filterByPropertyValue2 = filters.get("propertyValue2");
-        filterByPropertyValue3 = filters.get("propertyValue3");
-        filterByPropertyValue4 = filters.get("propertyValue4");
-        filterByPropertyValue5 = filters.get("propertyValue5");
+        filterByPropertyValue1 = (String) filters.get("propertyValue1");
+        filterByPropertyValue2 = (String) filters.get("propertyValue2");
+        filterByPropertyValue3 = (String) filters.get("propertyValue3");
+        filterByPropertyValue4 = (String) filters.get("propertyValue4");
+        filterByPropertyValue5 = (String) filters.get("propertyValue5");
     }
 
     @Override
@@ -1006,6 +1007,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     public List<PropertyValue> prepareComponentImageList(Component component) {
+        if (component == null) {
+            return null;
+        } 
         List<PropertyValue> componentImageList = PropertyValueUtility.prepareImagePropertyValueList(component.getPropertyValueList());
         component.setImagePropertyList(componentImageList);
         return componentImageList;
@@ -1013,6 +1017,9 @@ public class ComponentController extends CrudEntityController<Component, Compone
 
     public List<PropertyValue> getComponentImageList() {
         Component component = getCurrent();
+        if (component == null) {
+            return null;
+        }
         List<PropertyValue> componentImageList = component.getImagePropertyList();
         if (componentImageList == null) {
             componentImageList = prepareComponentImageList(component);

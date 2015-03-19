@@ -19,7 +19,6 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 @Named("componentTypeController")
 @SessionScoped
@@ -66,17 +65,9 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
         return componentTypeFacade;
     }
 
+    @Override
     public ComponentType findById(Integer id) {
         return componentTypeFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            ComponentType componentType = findById(idViewParam);
-            setCurrent(componentType);
-            idViewParam = null;
-        }
     }
 
     @Override
@@ -173,8 +164,8 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByCategory = filters.get("componentTypeCategory.name");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByCategory = (String) filters.get("componentTypeCategory.name");
     }
 
     @Override

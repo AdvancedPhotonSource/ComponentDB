@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <div class="actionButton">
+        <p:commandButton id="#{childEntityTypeName}EditListAddButton" action="#{addActionController[addAction](addActionParameter)}" 
+                         oncomplete="#{addActionOnComplete}" value="Add" rendered="#{displayAddButton}" alt="Add" icon="ui-icon-plus" update="@form">
+            <p:tooltip for="#{childEntityTypeName}EditListAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
+        </p:commandButton>
+        <p:commandButton id="#{childEntityTypeName}EditListSaveButton" action="#{parentEntityController[saveAction]}" 
+                         ajax="false" value="Save" alt="Save List" icon="ui-icon-check">
+            <p:tooltip for="#{childEntityTypeName}EditListSaveButton" value="Save list."/>
+        </p:commandButton>
+
+        <p:commandButton id="#{childEntityTypeName}EditListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+            <p:dataExporter type="xls" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
+            <p:tooltip for="#{childEntityTypeName}EditListExportXlsButton" value="Export list to excel file."/>
+        </p:commandButton>  
+        <p:commandButton id="#{childEntityTypeName}EditListExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+            <p:dataExporter type="pdf" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
+            <p:tooltip for="#{childEntityTypeName}EditListExportPdfButton" value="Export list to pdf file."/>
+        </p:commandButton>  
+        <p:commandButton id="#{childEntityTypeName}EditListPrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+            <p:printer target="#{childEntityTypeName}EditListDataTable"/>
+            <p:tooltip for="#{childEntityTypeName}EditListPrintButton" value="Print list."/>
+        </p:commandButton> 
+        <p:commandButton id="#{childEntityTypeName}EditListCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').show()" alt="Customize Edit List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:tooltip for="#{childEntityTypeName}EditListCustomizeDisplayButton" value="Customize view."/>
+        </p:commandButton>
+        <p:commandButton id="#{childEntityTypeName}EditListResetFiltersButton" action="#{childEntityController.resetListForEdit}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+            <p:tooltip for="#{childEntityTypeName}EditListResetFiltersButton" value="Reset filters."/>
+        </p:commandButton>
+
+        <p:commandButton id="#{childEntityTypeName}EditListNoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{childEntityTypeName}EditListNoOp"/>
+    </div>
+
+</ui:composition>

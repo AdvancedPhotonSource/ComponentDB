@@ -2,12 +2,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../templates/componentsViewTemplate.xhtml">
 
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{componentTypeController.processEditRequestParams}"/>
+    </f:metadata>
+    
+    <ui:define name="pageTitle">: Edit Component Type #{componentTypeController.selected.name}</ui:define>      
     <ui:define name="middleCenter">
 
         <h:form id="editComponentTypeForm" rendered="#{loginController.loggedInAsAdmin}">
@@ -17,17 +21,17 @@
                 <div class="pageTitle">
                     <h1>Edit Component Type</h1>
                 </div>
-                <ui:include src="componentTypeEditPanelGrid.xhtml"/>
+                <ui:include src="private/componentTypeEditPanelGrid.xhtml"/>
 
                 <p/>
                 <ui:param name="entityController" value="#{componentTypeController}"/>
-                <ui:include src="../common/commonEditActionButtons.xhtml"/>
+                <ui:include src="../common/private/commonEditActionButtons.xhtml"/>
             </div>
 
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="false">
                     <p:tab title="Property Types">
-                        <ui:include src="../componentTypePropertyType/editList.xhtml"/>
+                        <ui:include src="../componentTypePropertyType/private/componentTypePropertyTypeEditList.xhtml"/>
                     </p:tab>
                 </p:accordionPanel>
             </div>

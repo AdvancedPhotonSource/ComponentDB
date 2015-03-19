@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="designElementLogEditListDataTable" 
+                 widgetVar="designElementLogEditListDataTableWidget"
+                 var="logObject" 
+                 value="#{designElementObject.logList}"
+                 filteredValue="#{logController.filteredObjectList}"
+                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 editable="true"
+                 emptyMessage="No design element log entries found.">
+
+        <ui:include src="../../log/private/logEditObject.xhtml"/>
+
+        <p:column headerText="Actions" exportable="false">
+            <div class="actionLink">
+                <p:commandLink id="designElementLogUploadAttachmentButton" 
+                               oncomplete="PF('logAttachmentUploadDialogWidget').show()" 
+                               styleClass="ui-icon ui-icon-circle-arrow-n"
+                               update="@form">
+                    <f:setPropertyActionListener value="#{logObject}" target="#{logController.current}"/>
+                    <p:tooltip for="designElementLogUploadAttachmentButton" value="Upload design element log attachment."/>
+                </p:commandLink>
+                <p:commandLink id="designElementLogDestroyButton" 
+                               action="#{designElementController.deleteLog(logObject)}" 
+                               actionListener="#{logController.destroy(logObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               update="designElementLogEditListDataTable">
+                    <p:tooltip for="designElementLogDestroyButton" value="Delete design element log entry."/>
+                </p:commandLink>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+    <ui:include src="../../log/private/logAttachmentUploadDialog.xhtml"/>
+
+</ui:composition>
+
+

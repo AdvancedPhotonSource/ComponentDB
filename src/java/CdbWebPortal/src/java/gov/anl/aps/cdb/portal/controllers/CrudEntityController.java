@@ -1,19 +1,26 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.constants.CdbRole;
+import gov.anl.aps.cdb.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.portal.model.db.beans.AbstractFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
+import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.utilities.StringUtility;
+import java.io.IOException;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -100,7 +107,6 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
     protected String selectFilterByLastModifiedByUser = null;
     protected String selectFilterByLastModifiedOnDateTime = null;
 
-    protected Integer idViewParam = null;
     protected String breadcrumbViewParam = null;
     protected String breadcrumbObjectIdViewParam = null;
 
@@ -114,12 +120,9 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         updateSettings();
     }
 
-    /**
-     * Navigate to home page in case of invalid request
-     */
-    public void handleInvalidSessionRequest() {
-        SessionUtility.addErrorMessage("Error", "Invalid session request");
-        SessionUtility.navigateTo("/views/error?faces-redirect=true");
+    public void handleInvalidSessionRequest(String error) {
+        SessionUtility.setLastSessionError(error);
+        SessionUtility.navigateTo("/views/error/invalidRequest?faces-redirect=true");
     }
 
     public void resetLogText() {
@@ -180,17 +183,145 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         return current;
     }
 
+    public EntityType findById(Integer id) {
+        return null;
+    }
+
     public void setCurrent(EntityType current) {
         this.current = current;
     }
 
-    public void processViewRequestParams() {
-        breadcrumbViewParam = SessionUtility.getRequestParameterValue("breadcrumb");
-        breadcrumbObjectIdViewParam = SessionUtility.getRequestParameterValue("breadcrumbObjectId");
-        selectByRequestParams();
+    public EntityInfo getEntityInfo(EntityType entity) {
+        return null;
     }
 
-    public void selectByRequestParams() {
+    public void processViewRequestParams() {
+        try {
+            EntityType entity = selectByViewRequestParams();
+            if (entity != null) {
+                prepareEntityView(entity);
+            }
+        } catch (CdbException ex) {
+            handleInvalidSessionRequest(ex.getErrorMessage());
+        }
+    }
+
+    protected void setBreadcrumbRequestParams() {
+        if (breadcrumbViewParam == null) {
+            breadcrumbViewParam = SessionUtility.getRequestParameterValue("breadcrumb");
+        }
+        if (breadcrumbObjectIdViewParam == null) {
+            breadcrumbObjectIdViewParam = SessionUtility.getRequestParameterValue("breadcrumbObjectId");
+        }
+    }
+
+    public EntityType selectByViewRequestParams() throws CdbException {
+        setBreadcrumbRequestParams();
+        Integer idParam = null;
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        try {
+            if (paramValue != null) {
+                idParam = Integer.parseInt(paramValue);
+            }
+        } catch (NumberFormatException ex) {
+            throw new InvalidRequest("Invalid value supplied for " + getDisplayEntityTypeName() + " id: " + paramValue);
+        }
+        if (idParam != null) {
+            EntityType entity = findById(idParam);
+            if (entity == null) {
+                throw new InvalidRequest(StringUtility.capitalize(getDisplayEntityTypeName()) + " id " + idParam + " does not exist.");
+            }
+            setCurrent(entity);
+            return entity;
+        } else if (current == null || current.getId() == null) {
+            throw new InvalidRequest(StringUtility.capitalize(getDisplayEntityTypeName()) + " has not been selected.");
+        }
+        return current;
+    }
+
+    public void processEditRequestParams() {
+        try {
+            selectByEditRequestParams();
+        } catch (CdbException ex) {
+            handleInvalidSessionRequest(ex.getErrorMessage());
+        }
+    }
+
+    public EntityType selectByEditRequestParams() throws CdbException {
+        setBreadcrumbRequestParams();
+        Integer idParam = null;
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        try {
+            if (paramValue != null) {
+                idParam = Integer.parseInt(paramValue);
+            }
+        } catch (NumberFormatException ex) {
+            throw new InvalidRequest("Invalid value supplied for " + getDisplayEntityTypeName() + " id: " + paramValue);
+        }
+        if (idParam != null) {
+            EntityType entity = findById(idParam);
+            if (entity == null) {
+                throw new InvalidRequest(StringUtility.capitalize(getDisplayEntityTypeName()) + " id " + idParam + " does not exist.");
+            }
+            setCurrent(entity);
+        }
+
+        if (current == null || current.getId() == null) {
+            throw new InvalidRequest(StringUtility.capitalize(getDisplayEntityTypeName()) + " has not been selected.");
+        }
+
+        // Make sure user is logged in
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser == null) {
+            SessionUtility.pushViewOnStack("/views/" + getEntityTypeName() + "/edit.xhtml?id=" + idParam + "&faces-redirect=true");
+            SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
+            return null;
+        } else {
+            CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+            if (sessionRole != CdbRole.ADMIN) {
+                // Make sure user is authorized to edit entity
+                // Try entity info first, then entity itself second
+                boolean userAuthorized = AuthorizationUtility.isEntityWriteableByUser(getEntityInfo(current), sessionUser);
+                if (!userAuthorized) {
+                    userAuthorized = AuthorizationUtility.isEntityWriteableByUser(current, sessionUser);
+                    if (!userAuthorized) {
+                        throw new AuthorizationError("User " + sessionUser.getUsername() + " is not authorized to edit "
+                                + getDisplayEntityTypeName() + " object with id " + current.getId() + ".");
+                    }
+                }
+            }
+        }
+        return current;
+    }
+
+    public void processCreateRequestParams() {
+        try {
+            selectByCreateRequestParams();
+        } catch (CdbException ex) {
+            handleInvalidSessionRequest(ex.getErrorMessage());
+        }
+    }
+
+    public EntityType selectByCreateRequestParams() throws CdbException {
+        setBreadcrumbRequestParams();
+
+        // Make sure user is logged in
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser == null) {
+            SessionUtility.pushViewOnStack("/views/" + getEntityTypeName() + "/create.xhtml?faces-redirect=true");
+            SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
+        } else {
+            CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+            if (sessionRole != CdbRole.ADMIN) {
+                // Make sure user is authorized to create entity
+                boolean userAuthorized = entityCanBeCreatedByUsers();
+                if (!userAuthorized) {
+                    throw new AuthorizationError("User " + sessionUser.getUsername() + " is not authorized to create "
+                            + getDisplayEntityTypeName() + " objects.");
+                }
+            }
+        }
+        return null;
     }
 
     public EntityType getSelected() {
@@ -263,15 +394,15 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
             return;
         }
 
-        Map<String, String> filters = dataTable.getFilters();
-        filterByName = filters.get("name");
-        filterByDescription = filters.get("decription");
-        filterByOwnerUser = filters.get("entityInfo.ownerUser.username");
-        filterByOwnerGroup = filters.get("entityInfo.ownerUserGroup.name");
-        filterByCreatedByUser = filters.get("entityInfo.createdByUser.username");
-        filterByCreatedOnDateTime = filters.get("entityInfo.createdOnDateTime");
-        filterByLastModifiedByUser = filters.get("entityInfo.lastModifiedByUser.username");
-        filterByLastModifiedOnDateTime = filters.get("entityInfo.lastModifiedOnDateTime");
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByName = (String) filters.get("name");
+        filterByDescription = (String) filters.get("decription");
+        filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username");
+        filterByOwnerGroup = (String) filters.get("entityInfo.ownerUserGroup.name");
+        filterByCreatedByUser = (String) filters.get("entityInfo.createdByUser.username");
+        filterByCreatedOnDateTime = (String) filters.get("entityInfo.createdOnDateTime");
+        filterByLastModifiedByUser = (String) filters.get("entityInfo.lastModifiedByUser.username");
+        filterByLastModifiedOnDateTime = (String) filters.get("entityInfo.lastModifiedOnDateTime");
     }
 
     public void clearListFilters() {
@@ -343,6 +474,8 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
                 loadView = prepareView(getFacade().find(entityId));
             }
         }
+        breadcrumbViewParam = null;
+        breadcrumbObjectIdViewParam = null;
         return loadView;
     }
 
@@ -389,7 +522,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         if (listDataTable == null) {
             return;
         }
-        Map<String, String> filterMap = listDataTable.getFilters();
+        Map<String, Object> filterMap = listDataTable.getFilters();
         for (String filterName : filterMap.keySet()) {
             filterMap.put(filterName, "");
         }
@@ -399,8 +532,9 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         if (listDataTable == null) {
             return false;
         }
-        Map<String, String> filterMap = listDataTable.getFilters();
-        for (String filter : filterMap.values()) {
+        Map<String, Object> filterMap = listDataTable.getFilters();
+        for (Object filterValue : filterMap.values()) {
+            String filter = (String) filterValue;
             if (filter != null && !filter.isEmpty()) {
                 return true;
             }
@@ -440,10 +574,10 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         return returnPage;
     }
 
-
-    public boolean isViewValid() {
-        selectByRequestParams();
-        return current != null;
+    public void verifyView() throws IOException {
+        if (current != null) {
+            SessionUtility.redirectTo("/views/error/invalidRequest.xhtml");
+        }
     }
 
     protected void prepareEntityView(EntityType entity) {
@@ -1114,14 +1248,6 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
 
     public void setSelectFilterByLastModifiedOnDateTime(String selectFilterByLastModifiedOnDateTime) {
         this.selectFilterByLastModifiedOnDateTime = selectFilterByLastModifiedOnDateTime;
-    }
-
-    public Integer getIdViewParam() {
-        return idViewParam;
-    }
-
-    public void setIdViewParam(Integer idViewParam) {
-        this.idViewParam = idViewParam;
     }
 
     public String getBreadcrumbViewParam() {

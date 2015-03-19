@@ -6,9 +6,7 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
-import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import java.io.Serializable;
 import java.util.List;

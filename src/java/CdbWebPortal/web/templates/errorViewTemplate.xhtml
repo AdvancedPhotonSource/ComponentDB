@@ -2,15 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link href="../../resources/css/content.css" rel="stylesheet" type="text/css" />
+        <h:outputStylesheet name="portal.css" library="css" />
         <link rel="icon" type="image/png" href="../../resources/images/anl.ico" />
-        <title>#{resources.CdbPortalTitle}</title>
+        <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>
     </h:head>
 
     <h:body>
@@ -19,7 +19,7 @@
             <div id="top" class="topContent">
                 <div id="topLeft" class="topLeftContent">
                     <ui:insert name="topLeft">
-                        <h:graphicImage alt="ANL Logo" url="../../resources/images/AnlLogo167x75.png"/>
+                        <h:graphicImage alt="ANL Logo" url="/resources/images/AnlLogo167x75.png"/>
                     </ui:insert>
                 </div>
                 <div>
@@ -55,7 +55,7 @@
                         <div id="menuCenter" class="menuCenterContent">
                             <ui:insert name="menuCenter">
                                 <h:form prependId="false">
-                                    <ui:include src="contentViewTemplateMenubar.xhtml"/>
+                                    <ui:include src="/templates/homeViewMenubarTemplate.xhtml"/>
                                 </h:form>
                             </ui:insert>
                         </div>
@@ -76,7 +76,7 @@
                             <ui:insert name="middleCenter">
                             </ui:insert>
                             <div class="actionButton">
-                                <p:button id="okButton" href="../home.xhtml" alt="OK" value="OK"/>
+                                <p:button id="okButton" href="/views/home.xhtml" alt="OK" value="OK"/>
                                 <p:tooltip for="okButton" value="Return to home page"/>
                             </div>
                         </div>
@@ -105,7 +105,7 @@
         </ui:fragment>
 
         <h:form id="loginForm">
-            <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialog">
+            <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialogWidget">
                 <h:panelGrid styleClass="loginInput">
                     <p:inputText id="username" value="#{loginController.username}" title="Username"/>
                     <p:watermark for="username" value="Username"/>
@@ -113,7 +113,7 @@
                     <p:watermark for="password" value="Password"/>
 
                     <f:facet name="footer">
-                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="loginDialog.hide()"/>
+                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
                     </f:facet>
                 </h:panelGrid>
             </p:dialog>

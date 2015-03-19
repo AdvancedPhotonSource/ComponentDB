@@ -65,17 +65,9 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
         return "";
     }
 
+    @Override
     public UserGroup findById(Integer id) {
         return userGroupFacade.findById(id);
-    }
-
-    @Override
-    public void selectByRequestParams() {
-        if (idViewParam != null) {
-            UserGroup userGroup = findById(idViewParam);
-            setCurrent(userGroup);
-            idViewParam = null;
-        }
     }
 
     @Override
