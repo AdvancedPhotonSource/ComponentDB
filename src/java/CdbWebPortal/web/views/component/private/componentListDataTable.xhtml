@@ -64,14 +64,14 @@
             <h:outputText value="#{componentObject.description}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.componentType}" headerText="Type" 
+        <p:column sortBy="#{componentObject.componentType.name}" headerText="Type" 
                   filterBy="#{componentObject.componentType}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByType}"
                   rendered="#{componentController.displayType}">
             <h:outputText value="#{componentObject.componentType}"/>
         </p:column>
 
-        <p:column sortBy="#{componentObject.componentType.componentTypeCategory}" headerText="Category" 
+        <p:column sortBy="#{componentObject.componentType.componentTypeCategory.name}" headerText="Category" 
                   filterBy="#{componentObject.componentType.componentTypeCategory}" filterMatchMode="exact"
                   filterOptions="#{componentTypeCategoryController.availableItemsForSelectOne}"
                   filterValue="#{componentController.filterByCategory}"

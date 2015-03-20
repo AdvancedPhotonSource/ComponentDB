@@ -30,13 +30,13 @@
             <f:facet name="footer" class="locationSelectDialog">
                 <p:commandButton value="Done" alt="Done"
                                  action="#{componentInstanceController.selectLocation(locationController.selectedObject)}"
-                                 update="locationDropdown"
+                                 update="@form"
                                  oncomplete="PF('componentInstanceLocationSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{locationController.selectDisplayFlatTableView}"/>
                 <p:commandButton value="Done" alt="Done"
                                  action="#{componentInstanceController.selectLocation(locationSelectTreeViewBean.selectedLocation)}"
-                                 update="locationDropdown"
+                                 update="@form"
                                  oncomplete="PF('componentInstanceLocationSelectDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"
                                  rendered="#{!locationController.selectDisplayFlatTableView}"/>

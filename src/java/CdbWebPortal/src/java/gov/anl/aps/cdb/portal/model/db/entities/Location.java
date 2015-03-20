@@ -39,13 +39,13 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "location")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
+    @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l ORDER BY l.name"),
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name"),
     @NamedQuery(name = "Location.findByDescription", query = "SELECT l FROM Location l WHERE l.description = :description"),
     @NamedQuery(name = "Location.findByIsUserWriteable", query = "SELECT l FROM Location l WHERE l.isUserWriteable = :isUserWriteable"),
     @NamedQuery(name = "Location.findBySortOrder", query = "SELECT l FROM Location l WHERE l.sortOrder = :sortOrder"),
-    @NamedQuery(name = "Location.findLocationsWithoutParents", query = "SELECT l FROM Location l WHERE l.id NOT IN (SELECT l2.id FROM Location l2 JOIN l2.parentLocationList cll2)")})
+    @NamedQuery(name = "Location.findLocationsWithoutParents", query = "SELECT l FROM Location l WHERE l.id NOT IN (SELECT l2.id FROM Location l2 JOIN l2.parentLocationList cll2) ORDER BY l.name")})
 public class Location extends CdbEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

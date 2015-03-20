@@ -31,6 +31,12 @@ public class LocationFacade extends AbstractFacade<Location> {
         super(Location.class);
     }
 
+    @Override
+    public List<Location> findAll() {
+        return (List<Location>) em.createNamedQuery("Location.findAll")
+                .getResultList();
+    }
+
     public Location findByName(String name) {
         try {
             return (Location) em.createNamedQuery("Location.findByName")
@@ -52,7 +58,7 @@ public class LocationFacade extends AbstractFacade<Location> {
     }
 
     public List<Location> findLocationsWithoutParents() {
-        return (List<Location>)em.createNamedQuery("Location.findLocationsWithoutParents")
+        return (List<Location>) em.createNamedQuery("Location.findLocationsWithoutParents")
                 .getResultList();
     }
 }
