@@ -26,20 +26,21 @@ pdmConn.getLinks('U221020202-104210.DRW')
 *********************************
 '''
 
+import ssl
 from suds.client import Client
-from suds.xsd.doctor import Import, ImportDoctor
+from suds.xsd.doctor import Import
+from suds.xsd.doctor import ImportDoctor
 
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.utility.errorChecker import ErrorChecker
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 
-import ssl
 
 # decorator used to disable ssl for functions requestion info from Windchill
 # decorator to decorate functions that have input of (self, drawingNumber, [etc]) due to error checking
-def tempDiableSSLcheckingDrawingErrorCheck(func):
+def useUnverifiedSslContext(func):
     # store the default ssl context
-    defaultsslcontext = ssl._create_default_https_context
+    defaultSslContextontext = ssl._create_default_https_context
 
     def newFunc(*args, **kwargs):
         # throws an exception upon invalid extension
@@ -49,31 +50,30 @@ def tempDiableSSLcheckingDrawingErrorCheck(func):
         # perform call to windchill
         val = func(*args, **kwargs)
         # revert back to original SSL settings
-        ssl._create_default_https_context = defaultsslcontext
+        ssl._create_default_https_context = defaultSslContextontext
         return val
 
     return newFunc
 
 
 class PDMLink:
-    def __init__(self, pdmUserName, pdmPass, windchillLink, ICMSLink, ICMSRev):
-        #Location of windchill classes on Windchill. 
-        #Usage windchillLink + ClassLink | https://windchill-vm.aps.anl.gov/Windchill + clasLink
+    def __init__(self, pdmUserName, pdmPass, windchillLink, icmsLink, icmsRev):
+        # Location of windchill classes on Windchill. 
+        # Usage windchillLink + ClassLink | https://windchill-vm.aps.anl.gov/Windchill + clasLink
         windchillWebpartsClassLink = '/servlet/SimpleTaskDispatcher?CLASS=com.ptc.windchill.webparts'
         windchillWsClassLink = '/servlet/SimpleTaskDispatcher?CLASS=com.ptc.windchill.ws'
-        #required for Suds, Soap client for python.
+        # required for Suds, Soap client for python.
         soapEncodingXML = 'http://schemas.xmlsoap.org/soap/encoding/'
 
-        #WSDL URLS
+        # WSDL URLS
         fullWebpartsClassLink = windchillLink + windchillWebpartsClassLink
         fullWsClassLink = windchillLink + windchillWsClassLink
-
 
         #       ***Innitialize variables used across class***
 
         #Static ISMS links
-        self.ICMSLink = ICMSLink
-        self.ICMSRev = ICMSRev
+        self.icmsLink = icmsLink
+        self.icmsRev = icmsRev
 
         #Create Client objects 
         imp = Import(soapEncodingXML)  #Required for suds to corretly use wsdls
@@ -122,7 +122,7 @@ class PDMLink:
         return str(self.getRevisions(drawingNum))
 
     #returns a one time use authenticated link to an image of a drawing numbers ufid if one exists
-    @tempDiableSSLcheckingDrawingErrorCheck
+    @useUnverifiedSslContext
     def getThumbnail(self, ufid):
         listContentResults = self.windchillWsClass.service.ListContent(ufid)
         if (len(listContentResults) > 2):
@@ -150,7 +150,7 @@ class PDMLink:
                 return property.value
 
     #returns everything getRevisions as well as the links to pdmlink and ICMS
-    @tempDiableSSLcheckingDrawingErrorCheck
+    @useUnverifiedSslContext
     def getLinksRevs(self, drawingNum):
         # function below getRevisions - uptates the self.currObj no need to call findDrawing
         revs = self.getRevisions(drawingNum)
@@ -166,12 +166,12 @@ class PDMLink:
         links = [];
         for index in range(len(revs)):
             if (revs[index]['state'] == 'RELEASED'):
-                links.append(CdbObject({"UFID": str(revs[index]['ufid']), "State": revs[index]['state'], "icmsUrl": str(
-                    self.ICMSLink + name + self.ICMSRev + revs[index]['version'] + str(revs[index]['iteration']).rjust(
+                links.append(CdbObject({"UFID": str(revs[index]['ufid']), "state": revs[index]['state'], "icmsUrl": str(
+                    self.icmsLink + name + self.icmsRev + revs[index]['version'] + str(revs[index]['iteration']).rjust(
                         3, '0')),
                                         "version": revs[index]['version'], "iteration": revs[index]['iteration']}))
             else:
-                links.append(CdbObject({"UFID": str(revs[index]['ufid']), "State": revs[index]['state'],
+                links.append(CdbObject({"UFID": str(revs[index]['ufid']), "state": revs[index]['state'],
                                         "version": revs[index]['version'], "iteration": revs[index]['iteration']}))
 
         return CdbObject({"name": self.getName(drawingNum), "windchillUrl": str(actionUrl), "revisions": links})
