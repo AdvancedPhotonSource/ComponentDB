@@ -402,7 +402,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
 
         Map<String, Object> filters = dataTable.getFilters();
         filterByName = (String) filters.get("name");
-        filterByDescription = (String) filters.get("decription");
+        filterByDescription = (String) filters.get("description");
         filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username");
         filterByOwnerGroup = (String) filters.get("entityInfo.ownerUserGroup.name");
         filterByCreatedByUser = (String) filters.get("entityInfo.createdByUser.username");
@@ -1286,7 +1286,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
         context.responseComplete();
     }
-    
+
     public void exportListDataTableAsXls(String filename) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         Exporter exporter = new CdbExcelExporter();
@@ -1308,12 +1308,12 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
         exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
         context.responseComplete();
     }
-    
+
     public static void exportDataTableAsCsv(String dataTableId, String filename) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
         Exporter exporter = new CdbCsvExporter();
         exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
         context.responseComplete();
-    }    
+    }
 }
