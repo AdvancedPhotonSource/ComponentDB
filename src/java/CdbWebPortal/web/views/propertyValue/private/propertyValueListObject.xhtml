@@ -3,6 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
     <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
@@ -78,6 +79,7 @@
 
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic" 
               rendered="#{propertyValueController.displayIsDynamic}">
+        <f:attribute name="exportValue" value="#{propertyValueObject.isDynamic}"/>
         <div class="dataTableCheckbox">
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueObject.isDynamic}"/>
@@ -86,6 +88,7 @@
 
     <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User Writeable" 
               rendered="#{propertyValueController.displayIsUserWriteable}">
+        <f:attribute name="exportValue" value="#{propertyValueObject.isUserWriteable}"/>
         <div class="dataTableCheckbox">
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueObject.isUserWriteable}"/>

@@ -1,10 +1,13 @@
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
 import java.util.Iterator;
+import java.util.Map;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 public class UiComponentUtility {
+
+    static public final String EXPORT_VALUE_ATTR_KEY = "exportValue";
 
     public static UIComponent findComponent(String id) {
         UIComponent component = null;
@@ -35,5 +38,22 @@ public class UiComponentUtility {
             }
         }
         return null;
+    }
+
+    static public String getParentComponentExportValue(UIComponent component) {
+        if (component == null) {
+            return null;
+        }
+        UIComponent parent = component.getParent();
+        if (parent == null) {
+            return null;
+        }
+        Map<String, Object> attrs = parent.getAttributes();
+        Object exportObject = attrs.get(EXPORT_VALUE_ATTR_KEY);
+        if (exportObject == null) {
+            return null;
+        }
+        String exportValue = exportObject.toString();
+        return exportValue;
     }
 }
