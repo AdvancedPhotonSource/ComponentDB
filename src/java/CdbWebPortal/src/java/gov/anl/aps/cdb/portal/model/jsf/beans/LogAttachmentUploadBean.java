@@ -46,7 +46,8 @@ public class LogAttachmentUploadBean {
         this.logEntry = logEntry;
     }
 
-    public void upload() {
+    public void upload(Log logEntry) {
+        this.logEntry = logEntry;
         Path uploadDirPath;
         try {
             if (uploadedFile != null && !uploadedFile.getFileName().isEmpty()) {

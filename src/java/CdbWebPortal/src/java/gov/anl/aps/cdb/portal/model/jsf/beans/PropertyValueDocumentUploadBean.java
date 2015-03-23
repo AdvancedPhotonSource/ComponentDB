@@ -19,7 +19,6 @@ import java.nio.file.StandardCopyOption;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
 
