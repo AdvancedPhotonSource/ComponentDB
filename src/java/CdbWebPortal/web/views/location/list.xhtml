@@ -37,6 +37,10 @@
             <ui:include src="private/locationListCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
+        <ui:fragment rendered="#{locationController.displayFlatTableView}">
+            <h:outputScript library="javascript" name="locationListFilter.js"/>
+        </ui:fragment>
+        
     </ui:define>
 
 </ui:composition>

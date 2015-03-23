@@ -15,7 +15,10 @@
         <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(designElementController.selected.entityInfo)}"/>
     </ui:include>    
 
-    <ui:include src="designElementLogEditListDataTable.xhtml"/>
+    <ui:include src="designElementLogEditListDataTable.xhtml">
+        <ui:param name="parentEntityController" value="#{designElementController}"/>
+        <ui:param name="saveAction" value="saveLogList"/>
+    </ui:include>
     
     <ui:include src="designElementLogEditListCustomizeDisplayDialog.xhtml"/>
     

@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="propertyTypeListDataTable"
-                 widgetVar="propertyTypeListWidget" 
+                 widgetVar="propertyTypeListDataTableWidget" 
                  var="propertyTypeObject"
                  value="#{propertyTypeController.listDataModel}" 
                  filteredValue="#{propertyTypeController.filteredObjectList}"
@@ -22,7 +22,7 @@
         </p:column>
 
         <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
-                  filterBy="name" filterMatchMode="contains"
+                  filterBy="#{propertyTypeObject.name}" filterMatchMode="contains"
                   filterValue="#{propertyTypeController.filterByName}"
                   rendered="true">
             <h:outputLink value="view.xhtml?id=#{propertyTypeObject.id}" title="View property type details">

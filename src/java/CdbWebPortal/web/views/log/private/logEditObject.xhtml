@@ -39,7 +39,7 @@
     <p:column headerText="Attachments">
         <ui:repeat var="attachment" value="#{logObject.attachmentList}">
             <h:outputLink value="#{attachment.filePath}" target="_page_#{attachment.name}" title="#{attachment.name}" styleClass="entityDataIcon">
-                 <h:graphicImage alt="Attachment" url="../../../resources/images/attachment.ico"/>
+                 <h:graphicImage alt="Attachment" library="images" name="attachment.ico"/>
             </h:outputLink> 
         </ui:repeat>
     </p:column>

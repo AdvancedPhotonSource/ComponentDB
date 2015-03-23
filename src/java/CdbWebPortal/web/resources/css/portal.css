@@ -525,13 +525,19 @@ h2 {
 }
 
 .ui-icon-excel {
-    background-image: url(../../resources/images/excel2.ico) !important;
+    background-image: url(../../resources/images/excel.ico) !important;
     background-repeat: no-repeat;
     background-position: left
 }
 
 .ui-icon-pdf {
-    background-image: url(../../resources/images/pdf2.ico) !important;
+    background-image: url(../../resources/images/pdf.ico) !important;
+    background-repeat: no-repeat;
+    background-position: left
+}
+
+.ui-icon-attachment {
+    background-image: url(../../resources/images/attachment.ico) !important;
     background-repeat: no-repeat;
     background-position: left
 }

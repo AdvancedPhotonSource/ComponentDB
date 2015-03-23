@@ -50,11 +50,11 @@
     <p:column style="width:35px"
               rendered="#{logController.displayAttachments}">
         <f:facet name="header">
-           <h:graphicImage alt="Attachment" url="../../../resources/images/attachment.ico"/>
+           <h:graphicImage alt="Attachments" library="images" name="attachment.ico"/>
         </f:facet>
         <ui:repeat var="attachment" value="#{logObject.attachmentList}">
             <h:outputLink value="#{attachment.filePath}" target="_page_#{attachment.name}" title="#{attachment.name}" styleClass="entityDataIcon">
-                 <h:graphicImage alt="Attachment" url="../../../resources/images/attachment.ico"/>
+                <h:graphicImage alt="Attachment" library="images" name="attachment.ico"/>
             </h:outputLink>   
         </ui:repeat>
     </p:column>

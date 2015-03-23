@@ -11,8 +11,7 @@
                  var="locationObject"
                  emptyMessage="No locations found.">
 
-        <p:column sortBy="#{locationObject.name}" headerText="Name" 
-                  rendered="true">
+        <p:column sortBy="#{locationObject.name}" headerText="Name">
             <h:outputLink value="view.xhtml?id=#{locationObject.id}" title="View location details">
                 <h:outputText value="#{locationObject.name}"/>
             </h:outputLink>             

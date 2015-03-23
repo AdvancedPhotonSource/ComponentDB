@@ -16,7 +16,8 @@
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton id="logAttachmentUploadSubmitButton" value="Submit" alt="Submit" 
-                                 action="#{logAttachmentUploadBean.upload}"
+                                 actionListener="#{logAttachmentUploadBean.upload(logController.current)}"
+                                 action="#{parentEntityController[saveAction]}"
                                  ajax="false"
                                  update="@form"
                                  oncomplete="PF('logAttachmentUploadDialogWidget').hide()" 

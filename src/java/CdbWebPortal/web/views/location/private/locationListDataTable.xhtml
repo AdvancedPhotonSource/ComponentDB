@@ -23,8 +23,7 @@
 
         <p:column sortBy="#{locationObject.name}" headerText="Name" 
                   filterBy="#{locationObject.name}" filterMatchMode="contains"
-                  filterValue="#{locationController.filterByName}"
-                  rendered="true">
+                  filterValue="#{locationController.filterByName}">
             <h:outputLink value="view.xhtml?id=#{locationObject.id}" title="View location details">
                 <h:outputText value="#{locationObject.name}"/>
             </h:outputLink>             
