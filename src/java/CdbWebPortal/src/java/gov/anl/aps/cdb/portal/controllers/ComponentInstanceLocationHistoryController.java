@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceLocationHistoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceLocationHistoryDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -21,7 +21,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentInstanceLocationHistoryController")
 @SessionScoped
-public class ComponentInstanceLocationHistoryController extends CrudEntityController<ComponentInstanceLocationHistory, ComponentInstanceLocationHistoryFacade> implements Serializable {
+public class ComponentInstanceLocationHistoryController extends CrudEntityController<ComponentInstanceLocationHistory, ComponentInstanceLocationHistoryDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.Id";
@@ -51,14 +51,14 @@ public class ComponentInstanceLocationHistoryController extends CrudEntityContro
     private static final Logger logger = Logger.getLogger(ComponentInstanceLocationHistoryController.class.getName());
 
     @EJB
-    private ComponentInstanceLocationHistoryFacade componentInstanceLocationHistoryFacade;
+    private ComponentInstanceLocationHistoryDbFacade componentInstanceLocationHistoryFacade;
 
     public ComponentInstanceLocationHistoryController() {
         super();
     }
 
     @Override
-    protected ComponentInstanceLocationHistoryFacade getFacade() {
+    protected ComponentInstanceLocationHistoryDbFacade getFacade() {
         return componentInstanceLocationHistoryFacade;
     }
 

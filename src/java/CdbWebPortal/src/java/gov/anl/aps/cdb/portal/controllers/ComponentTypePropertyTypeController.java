@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -15,7 +15,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypePropertyTypeController")
 @SessionScoped
-public class ComponentTypePropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeFacade> implements Serializable
+public class ComponentTypePropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable
 {
 
     private static final String DisplayIdSettingTypeKey = "ComponentTypePropertyType.List.Display.Id";    
@@ -27,7 +27,7 @@ public class ComponentTypePropertyTypeController extends CrudEntityController<Pr
     private static final Logger logger = Logger.getLogger(ComponentTypePropertyTypeController.class.getName());
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
+    private PropertyTypeDbFacade propertyTypeFacade;
     
     private String filterByPropertyTypeName = null;
 
@@ -35,7 +35,7 @@ public class ComponentTypePropertyTypeController extends CrudEntityController<Pr
     }
 
     @Override
-    protected PropertyTypeFacade getFacade() {
+    protected PropertyTypeDbFacade getFacade() {
         return propertyTypeFacade;
     }
 

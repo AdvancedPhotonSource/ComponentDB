@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentSourceFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentSourceDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -22,7 +22,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentSourceController")
 @SessionScoped
-public class ComponentSourceController extends CrudEntityController<ComponentSource, ComponentSourceFacade> implements Serializable {
+public class ComponentSourceController extends CrudEntityController<ComponentSource, ComponentSourceDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentSource.List.Display.NumberOfItemsPerPage";
     private static final String DisplayContactInfoSettingTypeKey = "ComponentSource.List.Display.ContactInfo";
@@ -44,7 +44,7 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
     private static final String FilterByUrlSettingTypeKey = "ComponentSource.List.FilterBy.Url";
 
     @EJB
-    private ComponentSourceFacade componentSourceFacade;
+    private ComponentSourceDbFacade componentSourceFacade;
     private static final Logger logger = Logger.getLogger(ComponentSourceController.class.getName());
 
     private Boolean displayContactInfo = null;
@@ -66,7 +66,7 @@ public class ComponentSourceController extends CrudEntityController<ComponentSou
     }
 
     @Override
-    protected ComponentSourceFacade getFacade() {
+    protected ComponentSourceDbFacade getFacade() {
         return componentSourceFacade;
     }
 

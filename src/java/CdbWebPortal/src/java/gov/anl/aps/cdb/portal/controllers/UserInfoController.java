@@ -3,7 +3,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserInfoDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -25,7 +25,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("userInfoController")
 @SessionScoped
-public class UserInfoController extends CrudEntityController<UserInfo, UserInfoFacade> implements Serializable {
+public class UserInfoController extends CrudEntityController<UserInfo, UserInfoDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserInfo.List.Display.Id";
@@ -47,7 +47,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     private static final Logger logger = Logger.getLogger(UserInfoController.class.getName());
 
     @EJB
-    private UserInfoFacade userInfoFacade;
+    private UserInfoDbFacade userInfoFacade;
 
     private String passwordEntry = null;
 
@@ -68,7 +68,7 @@ public class UserInfoController extends CrudEntityController<UserInfo, UserInfoF
     }
 
     @Override
-    protected UserInfoFacade getFacade() {
+    protected UserInfoDbFacade getFacade() {
         return userInfoFacade;
     }
 

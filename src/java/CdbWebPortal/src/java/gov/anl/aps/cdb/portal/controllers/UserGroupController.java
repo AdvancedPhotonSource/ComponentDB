@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
-import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserGroupDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("userGroupController")
 @SessionScoped
-public class UserGroupController extends CrudEntityController<UserGroup, UserGroupFacade> implements Serializable {
+public class UserGroupController extends CrudEntityController<UserGroup, UserGroupDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserGroup.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserGroup.List.Display.Id";
@@ -32,13 +32,13 @@ public class UserGroupController extends CrudEntityController<UserGroup, UserGro
     private static final Logger logger = Logger.getLogger(UserGroupController.class.getName());
 
     @EJB
-    private UserGroupFacade userGroupFacade;
+    private UserGroupDbFacade userGroupFacade;
 
     public UserGroupController() {
     }
 
     @Override
-    protected UserGroupFacade getFacade() {
+    protected UserGroupDbFacade getFacade() {
         return userGroupFacade;
     }
 

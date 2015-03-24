@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
@@ -25,7 +25,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyTypeController")
 @SessionScoped
-public class PropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeFacade> implements Serializable {
+public class PropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyType.List.Display.Id";
@@ -47,7 +47,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
+    private PropertyTypeDbFacade propertyTypeFacade;
 
     private Boolean displayCategory = null;
     private Boolean displayDefaultUnits = null;
@@ -77,7 +77,7 @@ public class PropertyTypeController extends CrudEntityController<PropertyType, P
     }
 
     @Override
-    protected PropertyTypeFacade getFacade() {
+    protected PropertyTypeDbFacade getFacade() {
         return propertyTypeFacade;
     }
 

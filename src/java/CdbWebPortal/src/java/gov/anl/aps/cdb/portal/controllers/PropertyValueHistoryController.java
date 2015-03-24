@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -26,7 +26,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueHistoryController")
 @SessionScoped
-public class PropertyValueHistoryController extends CrudEntityController<PropertyValueHistory, PropertyValueHistoryFacade> implements Serializable {
+public class PropertyValueHistoryController extends CrudEntityController<PropertyValueHistory, PropertyValueHistoryDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValueHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValueHistory.List.Display.Id";
@@ -62,14 +62,14 @@ public class PropertyValueHistoryController extends CrudEntityController<Propert
     private static final Logger logger = Logger.getLogger(PropertyValueHistoryController.class.getName());
 
     @EJB
-    private PropertyValueHistoryFacade propertyValueHistoryFacade;
+    private PropertyValueHistoryDbFacade propertyValueHistoryFacade;
 
     public PropertyValueHistoryController() {
         super();
     }
 
     @Override
-    protected PropertyValueHistoryFacade getFacade() {
+    protected PropertyValueHistoryDbFacade getFacade() {
         return propertyValueHistoryFacade;
     }
 

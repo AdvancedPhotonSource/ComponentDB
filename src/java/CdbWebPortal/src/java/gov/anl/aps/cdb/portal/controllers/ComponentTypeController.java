@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -22,7 +22,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypeController")
 @SessionScoped
-public class ComponentTypeController extends CrudEntityController<ComponentType, ComponentTypeFacade> implements Serializable {
+public class ComponentTypeController extends CrudEntityController<ComponentType, ComponentTypeDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentType.List.Display.Id";
@@ -36,7 +36,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     private static final Logger logger = Logger.getLogger(ComponentTypeController.class.getName());
 
     @EJB
-    private ComponentTypeFacade componentTypeFacade;
+    private ComponentTypeDbFacade componentTypeFacade;
 
     private Boolean displayCategory = null;
     
@@ -48,11 +48,11 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
 
     private ComponentType selectedComponentType = null;
 
-    public ComponentTypeFacade getComponentTypeFacade() {
+    public ComponentTypeDbFacade getComponentTypeFacade() {
         return componentTypeFacade;
     }
 
-    public void setComponentTypeFacade(ComponentTypeFacade componentTypeFacade) {
+    public void setComponentTypeFacade(ComponentTypeDbFacade componentTypeFacade) {
         this.componentTypeFacade = componentTypeFacade;
     }
 
@@ -61,7 +61,7 @@ public class ComponentTypeController extends CrudEntityController<ComponentType,
     }
 
     @Override
-    protected ComponentTypeFacade getFacade() {
+    protected ComponentTypeDbFacade getFacade() {
         return componentTypeFacade;
     }
 

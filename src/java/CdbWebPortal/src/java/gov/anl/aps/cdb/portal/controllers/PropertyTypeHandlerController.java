@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
-public class PropertyTypeHandlerController extends CrudEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade> implements Serializable {
+public class PropertyTypeHandlerController extends CrudEntityController<PropertyTypeHandler, PropertyTypeHandlerDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeHandler.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeHandler.List.Display.Id";
@@ -32,13 +32,13 @@ public class PropertyTypeHandlerController extends CrudEntityController<Property
     private static final Logger logger = Logger.getLogger(PropertyTypeHandlerController.class.getName());
 
     @EJB
-    private PropertyTypeHandlerFacade propertyTypeHandlerFacade;
+    private PropertyTypeHandlerDbFacade propertyTypeHandlerFacade;
 
     public PropertyTypeHandlerController() {
     }
 
     @Override
-    protected PropertyTypeHandlerFacade getFacade() {
+    protected PropertyTypeHandlerDbFacade getFacade() {
         return propertyTypeHandlerFacade;
     }
 

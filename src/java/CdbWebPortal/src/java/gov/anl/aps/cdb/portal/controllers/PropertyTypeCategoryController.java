@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeCategoryController")
 @SessionScoped
-public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade> implements Serializable {
+public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeCategory.List.Display.Id";
@@ -32,13 +32,13 @@ public class PropertyTypeCategoryController extends CrudEntityController<Propert
     private static final Logger logger = Logger.getLogger(PropertyTypeCategoryController.class.getName());
 
     @EJB
-    private PropertyTypeCategoryFacade propertyTypeCategoryFacade;
+    private PropertyTypeCategoryDbFacade propertyTypeCategoryFacade;
 
     public PropertyTypeCategoryController() {
     }
 
     @Override
-    protected PropertyTypeCategoryFacade getFacade() {
+    protected PropertyTypeCategoryDbFacade getFacade() {
         return propertyTypeCategoryFacade;
     }
 

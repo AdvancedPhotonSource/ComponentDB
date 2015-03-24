@@ -2,8 +2,8 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
-import gov.anl.aps.cdb.portal.model.db.beans.AssemblyComponentFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.AssemblyComponentDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -29,7 +29,7 @@ import org.primefaces.event.SelectEvent;
 
 @Named("assemblyComponentController")
 @SessionScoped
-public class AssemblyComponentController extends CrudEntityController<AssemblyComponent, AssemblyComponentFacade> implements Serializable {
+public class AssemblyComponentController extends CrudEntityController<AssemblyComponent, AssemblyComponentDbFacade> implements Serializable {
 
     private static final String DisplayDescriptionSettingTypeKey = "AssemblyComponent.List.Display.Description";
     private static final String DisplayFlatTableViewSettingTypeKey = "AssemblyComponent.List.Display.FlatTableView";
@@ -44,10 +44,10 @@ public class AssemblyComponentController extends CrudEntityController<AssemblyCo
     private static final Logger logger = Logger.getLogger(AssemblyComponentController.class.getName());
 
     @EJB
-    private AssemblyComponentFacade assemblyComponentFacade;
+    private AssemblyComponentDbFacade assemblyComponentFacade;
 
     @EJB
-    private ComponentFacade componentFacade;
+    private ComponentDbFacade componentFacade;
 
     private Boolean displayFlatTableView = null;
     private Boolean displaySortOrder = null;
@@ -62,7 +62,7 @@ public class AssemblyComponentController extends CrudEntityController<AssemblyCo
     }
 
     @Override
-    protected AssemblyComponentFacade getFacade() {
+    protected AssemblyComponentDbFacade getFacade() {
         return assemblyComponentFacade;
     }
 

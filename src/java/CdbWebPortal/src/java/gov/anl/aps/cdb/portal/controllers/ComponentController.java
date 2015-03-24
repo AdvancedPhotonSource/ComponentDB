@@ -4,11 +4,11 @@ import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentTypeDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
@@ -52,7 +52,7 @@ import org.primefaces.model.TreeNode;
 
 @Named("componentController")
 @SessionScoped
-public class ComponentController extends CrudEntityController<Component, ComponentFacade> implements Serializable {
+public class ComponentController extends CrudEntityController<Component, ComponentDbFacade> implements Serializable {
 
     private static final String DisplayCategorySettingTypeKey = "Component.List.Display.Category";
     private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
@@ -90,19 +90,19 @@ public class ComponentController extends CrudEntityController<Component, Compone
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
-    private ComponentFacade componentFacade;
+    private ComponentDbFacade componentFacade;
 
     @EJB
-    private ComponentTypeFacade componentTypeFacade;
+    private ComponentTypeDbFacade componentTypeFacade;
 
     @EJB
-    private ComponentInstanceFacade componentInstanceFacade;
+    private ComponentInstanceDbFacade componentInstanceFacade;
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
+    private PropertyTypeDbFacade propertyTypeFacade;
 
     @EJB
-    private LocationFacade locationFacade;
+    private LocationDbFacade locationFacade;
 
     private Boolean displayType = null;
     private Boolean displayCategory = null;
@@ -148,7 +148,7 @@ public class ComponentController extends CrudEntityController<Component, Compone
     }
 
     @Override
-    protected ComponentFacade getFacade() {
+    protected ComponentDbFacade getFacade() {
         return componentFacade;
     }
 

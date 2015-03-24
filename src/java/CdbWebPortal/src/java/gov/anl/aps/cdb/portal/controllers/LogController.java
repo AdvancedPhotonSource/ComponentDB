@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -20,7 +20,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("logController")
 @SessionScoped
-public class LogController extends CrudEntityController<Log, LogFacade> implements Serializable {
+public class LogController extends CrudEntityController<Log, LogDbFacade> implements Serializable {
 
     private static final String DisplayAttachmentsSettingTypeKey = "Log.List.Display.Attachments";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";
@@ -47,7 +47,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
     private static final Logger logger = Logger.getLogger(LogController.class.getName());
 
     @EJB
-    private LogFacade logFacade;
+    private LogDbFacade logFacade;
 
     private DataTable designLogListDataTable = null;
     private DataTable componentLogListDataTable = null;
@@ -59,7 +59,7 @@ public class LogController extends CrudEntityController<Log, LogFacade> implemen
     }
 
     @Override
-    protected LogFacade getFacade() {
+    protected LogDbFacade getFacade() {
         return logFacade;
     }
 

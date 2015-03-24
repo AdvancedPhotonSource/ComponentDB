@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.LocationTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("locationTypeController")
 @SessionScoped
-public class LocationTypeController extends CrudEntityController<LocationType, LocationTypeFacade> implements Serializable {
+public class LocationTypeController extends CrudEntityController<LocationType, LocationTypeDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "LocationType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "LocationType.List.Display.Id";
@@ -32,13 +32,13 @@ public class LocationTypeController extends CrudEntityController<LocationType, L
     private static final Logger logger = Logger.getLogger(LocationTypeController.class.getName());
 
     @EJB
-    private LocationTypeFacade locationTypeFacade;
+    private LocationTypeDbFacade locationTypeFacade;
 
     public LocationTypeController() {
     }
 
     @Override
-    protected LocationTypeFacade getFacade() {
+    protected LocationTypeDbFacade getFacade() {
         return locationTypeFacade;
     }
 

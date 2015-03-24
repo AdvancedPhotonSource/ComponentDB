@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
-import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.SourceDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -21,7 +21,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("sourceController")
 @SessionScoped
-public class SourceController extends CrudEntityController<Source, SourceFacade> implements Serializable {
+public class SourceController extends CrudEntityController<Source, SourceDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
     private static final String DisplayContactInfoSettingTypeKey = "Source.List.Display.ContactInfo";
@@ -43,13 +43,13 @@ public class SourceController extends CrudEntityController<Source, SourceFacade>
     private String filterByUrl = null;
 
     @EJB
-    private SourceFacade sourceFacade;
+    private SourceDbFacade sourceFacade;
 
     public SourceController() {
     }
 
     @Override
-    protected SourceFacade getFacade() {
+    protected SourceDbFacade getFacade() {
         return sourceFacade;
     }
 

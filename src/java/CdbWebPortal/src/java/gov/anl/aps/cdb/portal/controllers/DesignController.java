@@ -3,9 +3,9 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignElementDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
-import gov.anl.aps.cdb.portal.model.db.beans.DesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -37,7 +37,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("designController")
 @SessionScoped
-public class DesignController extends CrudEntityController<Design, DesignFacade> implements Serializable {
+public class DesignController extends CrudEntityController<Design, DesignDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Design.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Design.List.Display.Id";
@@ -65,17 +65,17 @@ public class DesignController extends CrudEntityController<Design, DesignFacade>
     private List<PropertyValue> filteredPropertyValueList;
 
     @EJB
-    private DesignFacade designFacade;
+    private DesignDbFacade designFacade;
 
     @EJB
-    private DesignElementFacade designElementFacade;
+    private DesignElementDbFacade designElementFacade;
 
     public DesignController() {
         super();
     }
 
     @Override
-    protected DesignFacade getFacade() {
+    protected DesignDbFacade getFacade() {
         return designFacade;
     }
 

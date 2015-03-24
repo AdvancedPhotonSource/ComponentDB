@@ -2,7 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -24,7 +24,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController extends CrudEntityController<PropertyValue, PropertyValueFacade> implements Serializable {
+public class PropertyValueController extends CrudEntityController<PropertyValue, PropertyValueDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValue.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValue.List.Display.Id";
@@ -69,7 +69,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
 
     @EJB
-    private PropertyValueFacade propertyValueFacade;
+    private PropertyValueDbFacade propertyValueFacade;
 
     private DataTable designPropertyValueListDataTable = null;
     private DataTable componentPropertyValueListDataTable = null;
@@ -80,7 +80,7 @@ public class PropertyValueController extends CrudEntityController<PropertyValue,
     }
 
     @Override
-    protected PropertyValueFacade getFacade() {
+    protected PropertyValueDbFacade getFacade() {
         return propertyValueFacade;
     }
 

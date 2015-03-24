@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
-import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import java.io.Serializable;
 import java.util.List;
@@ -21,7 +21,7 @@ import org.primefaces.model.TreeNode;
 public class LocationListTreeViewBean implements Serializable {
 
     @EJB
-    LocationFacade locationFacade;
+    LocationDbFacade locationFacade;
 
     private TreeNode rootNode;
 

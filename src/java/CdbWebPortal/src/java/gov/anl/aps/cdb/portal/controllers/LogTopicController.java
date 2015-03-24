@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogTopicDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 
 import java.io.Serializable;
@@ -17,19 +17,19 @@ import org.apache.log4j.Logger;
 
 @Named("logTopicController")
 @SessionScoped
-public class LogTopicController extends CrudEntityController<LogTopic, LogTopicFacade> implements Serializable {
+public class LogTopicController extends CrudEntityController<LogTopic, LogTopicDbFacade> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(LogTopicController.class.getName());
 
     @EJB
-    private LogTopicFacade logTopicFacade;
+    private LogTopicDbFacade logTopicFacade;
 
     public LogTopicController() {
         super();
     }
 
     @Override
-    protected LogTopicFacade getFacade() {
+    protected LogTopicDbFacade getFacade() {
         return logTopicFacade;
     }
 

@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import java.io.Serializable;
@@ -22,7 +22,7 @@ import org.primefaces.model.TreeNode;
 public class ComponentListTreeViewBean implements Serializable {
 
     @EJB
-    ComponentFacade componentFacade;
+    ComponentDbFacade componentFacade;
 
     private TreeNode rootNode;
 

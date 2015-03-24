@@ -6,8 +6,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.constants.CdbRole;
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserInfoDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -38,9 +38,9 @@ public class LoginController implements Serializable {
     private static final int SESSION_TIMEOUT_DECREASE_IN_SECONDS = 10;
 
     @EJB
-    private UserInfoFacade userFacade;
+    private UserInfoDbFacade userFacade;
     @EJB
-    private SettingTypeFacade settingTypeFacade;
+    private SettingTypeDbFacade settingTypeFacade;
 
     private String username = null;
     private String password = null;

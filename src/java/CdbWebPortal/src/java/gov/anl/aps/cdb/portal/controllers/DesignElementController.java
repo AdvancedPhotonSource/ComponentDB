@@ -2,11 +2,11 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
-import gov.anl.aps.cdb.portal.model.db.beans.DesignElementFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.DesignFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignElementDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DesignDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -45,7 +45,7 @@ import org.primefaces.event.SelectEvent;
 
 @Named("designElementController")
 @SessionScoped
-public class DesignElementController extends CrudEntityController<DesignElement, DesignElementFacade> implements Serializable {
+public class DesignElementController extends CrudEntityController<DesignElement, DesignElementDbFacade> implements Serializable {
 
     private static final String DisplayChildDesignSettingTypeKey = "DesignElement.List.Display.ChildDesign";
     private static final String DisplayComponentSettingTypeKey = "DesignElement.List.Display.Component";
@@ -80,16 +80,16 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     private static final Logger logger = Logger.getLogger(DesignElementController.class.getName());
 
     @EJB
-    private DesignElementFacade designElementFacade;
+    private DesignElementDbFacade designElementFacade;
 
     @EJB
-    private LocationFacade locationFacade;
+    private LocationDbFacade locationFacade;
 
     @EJB
-    private ComponentFacade componentFacade;
+    private ComponentDbFacade componentFacade;
 
     @EJB
-    private DesignFacade designFacade;
+    private DesignDbFacade designFacade;
 
     private Boolean displayChildDesign = null;
     private Boolean displayComponent = null;
@@ -120,7 +120,7 @@ public class DesignElementController extends CrudEntityController<DesignElement,
     }
 
     @Override
-    protected DesignElementFacade getFacade() {
+    protected DesignElementDbFacade getFacade() {
         return designElementFacade;
     }
 

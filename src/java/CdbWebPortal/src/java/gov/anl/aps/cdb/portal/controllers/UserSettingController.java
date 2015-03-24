@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
-import gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserSettingDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -20,12 +20,12 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("userSettingController")
 @SessionScoped
-public class UserSettingController extends CrudEntityController<UserSetting, UserSettingFacade> implements Serializable {
+public class UserSettingController extends CrudEntityController<UserSetting, UserSettingDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserSetting.List.Display.NumberOfItemsPerPage";
 
     @EJB
-    private UserSettingFacade userSettingFacade;
+    private UserSettingDbFacade userSettingFacade;
     private static final Logger logger = Logger.getLogger(UserSettingController.class.getName());
 
     // These do not correspond to setting types.
@@ -36,7 +36,7 @@ public class UserSettingController extends CrudEntityController<UserSetting, Use
     }
 
     @Override
-    protected UserSettingFacade getFacade() {
+    protected UserSettingDbFacade getFacade() {
         return userSettingFacade;
     }
 

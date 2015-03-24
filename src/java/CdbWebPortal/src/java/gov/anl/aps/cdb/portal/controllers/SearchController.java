@@ -1,7 +1,7 @@
 
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
@@ -42,7 +42,7 @@ public class SearchController implements Serializable {
     private static final String DisplayUserGroupsSettingTypeKey = "Search.Display.UserGroups";
 
     @EJB
-    private SettingTypeFacade settingTypeFacade;
+    private SettingTypeDbFacade settingTypeFacade;
 
     private static final Logger logger = Logger.getLogger(SearchController.class.getName());
     private String searchString = null;

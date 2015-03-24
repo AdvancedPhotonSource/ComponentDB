@@ -4,7 +4,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -31,7 +31,7 @@ import org.primefaces.model.menu.MenuModel;
 
 @Named("locationController")
 @SessionScoped
-public class LocationController extends CrudEntityController<Location, LocationFacade> implements Serializable {
+public class LocationController extends CrudEntityController<Location, LocationDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Location.List.Display.NumberOfItemsPerPage";
     private static final String DisplayDescriptionSettingTypeKey = "Location.List.Display.Description";
@@ -48,7 +48,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     private static final Logger logger = Logger.getLogger(LocationController.class.getName());
 
     @EJB
-    private LocationFacade locationFacade;
+    private LocationDbFacade locationFacade;
 
     private Boolean displayFlatTableView = null;
     private Boolean displayParent = null;
@@ -74,7 +74,7 @@ public class LocationController extends CrudEntityController<Location, LocationF
     }
 
     @Override
-    protected LocationFacade getFacade() {
+    protected LocationDbFacade getFacade() {
         return locationFacade;
     }
 

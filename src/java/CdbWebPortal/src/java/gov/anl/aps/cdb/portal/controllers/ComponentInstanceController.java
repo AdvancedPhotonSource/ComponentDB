@@ -4,9 +4,9 @@ import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LocationFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LocationDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
@@ -42,7 +42,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 @Named("componentInstanceController")
 @SessionScoped
-public class ComponentInstanceController extends CrudEntityController<ComponentInstance, ComponentInstanceFacade> implements Serializable {
+public class ComponentInstanceController extends CrudEntityController<ComponentInstance, ComponentInstanceDbFacade> implements Serializable {
 
     private static final String DisplayCreatedByUserSettingTypeKey = "ComponentInstance.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.Display.CreatedOnDateTime";
@@ -84,13 +84,13 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     private static final Logger logger = Logger.getLogger(ComponentInstanceController.class.getName());
 
     @EJB
-    private ComponentInstanceFacade componentInstanceFacade;
+    private ComponentInstanceDbFacade componentInstanceFacade;
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
+    private PropertyTypeDbFacade propertyTypeFacade;
 
     @EJB
-    private LocationFacade locationFacade;
+    private LocationDbFacade locationFacade;
 
     private Boolean displayLocationDetails = null;
     private Boolean displayQrId = null;
@@ -129,7 +129,7 @@ public class ComponentInstanceController extends CrudEntityController<ComponentI
     }
 
     @Override
-    protected ComponentInstanceFacade getFacade() {
+    protected ComponentInstanceDbFacade getFacade() {
         return componentInstanceFacade;
     }
 

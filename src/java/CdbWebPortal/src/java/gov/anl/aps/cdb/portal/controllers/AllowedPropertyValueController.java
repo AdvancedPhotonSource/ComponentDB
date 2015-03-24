@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
-import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -22,7 +22,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("allowedPropertyValueController")
 @SessionScoped
-public class AllowedPropertyValueController extends CrudEntityController<AllowedPropertyValue, AllowedPropertyValueFacade> implements Serializable
+public class AllowedPropertyValueController extends CrudEntityController<AllowedPropertyValue, AllowedPropertyValueDbFacade> implements Serializable
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AllowedPropertyValue.List.Display.NumberOfItemsPerPage";
@@ -39,7 +39,7 @@ public class AllowedPropertyValueController extends CrudEntityController<Allowed
 
     
     @EJB
-    private AllowedPropertyValueFacade allowedPropertyValueFacade;
+    private AllowedPropertyValueDbFacade allowedPropertyValueFacade;
     private static final Logger logger = Logger.getLogger(AllowedPropertyValueController.class.getName());
 
     private Boolean displayUnits = null;
@@ -54,7 +54,7 @@ public class AllowedPropertyValueController extends CrudEntityController<Allowed
     }
 
     @Override
-    protected AllowedPropertyValueFacade getFacade() {
+    protected AllowedPropertyValueDbFacade getFacade() {
         return allowedPropertyValueFacade;
     }
 
