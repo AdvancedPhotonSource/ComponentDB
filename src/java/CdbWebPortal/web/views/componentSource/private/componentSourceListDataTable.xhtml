@@ -3,6 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="breadcrumb" value="#{componentSourceController.currentViewId}"/>
@@ -57,6 +58,7 @@
 
         <p:column sortBy="#{componentSourceObject.isManufacturer}" headerText="Manufacturer"
                   rendered="#{componentSourceController.displayIsManufacturer}">
+            <f:attribute name="exportValue" value="#{componentSourceObject.isManufacturer}"/>
             <div class="dataTableCheckbox">
                 <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                               rendered="#{componentSourceObject.isManufacturer}"/>
@@ -65,6 +67,7 @@
 
         <p:column sortBy="#{componentSourceObject.isVendor}" headerText="Vendor"
                   rendered="#{componentSourceController.displayIsVendor}">
+            <f:attribute name="exportValue" value="#{componentSourceObject.isVendor}"/>
             <div class="dataTableCheckbox">
                 <h:outputText value="" styleClass="ui-icon ui-icon-check"
                               rendered="#{componentSourceObject.isVendor}"/>

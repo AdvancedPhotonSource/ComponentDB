@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -17,8 +17,8 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class PropertyTypeFacade extends AbstractFacade<PropertyType>
-{
+public class PropertyTypeFacade extends AbstractDbFacade<PropertyType> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -30,14 +30,19 @@ public class PropertyTypeFacade extends AbstractFacade<PropertyType>
     public PropertyTypeFacade() {
         super(PropertyType.class);
     }
-    
+
+    @Override
+    public List<PropertyType> findAll() {
+        return (List<PropertyType>) em.createNamedQuery("PropertyType.findAll")
+                .getResultList();
+    }
+
     public PropertyType findByName(String name) {
         try {
-            return (PropertyType)em.createNamedQuery("PropertyType.findByName")
-                .setParameter("name", name)
-                .getSingleResult();
-        }
-        catch (NoResultException ex) {
+            return (PropertyType) em.createNamedQuery("PropertyType.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
         }
         return null;
     }
@@ -47,9 +52,8 @@ public class PropertyTypeFacade extends AbstractFacade<PropertyType>
             return (PropertyType) em.createNamedQuery("PropertyType.findById")
                     .setParameter("id", id)
                     .getSingleResult();
-        } 
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
         }
         return null;
-    }        
+    }
 }

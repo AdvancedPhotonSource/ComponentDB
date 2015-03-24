@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class DesignLinkFacade extends AbstractFacade<DesignLink>
+public class DesignLinkFacade extends AbstractDbFacade<DesignLink>
 {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -17,7 +18,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class UserInfoFacade extends AbstractFacade<UserInfo> {
+public class UserInfoFacade extends AbstractDbFacade<UserInfo> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -27,6 +28,12 @@ public class UserInfoFacade extends AbstractFacade<UserInfo> {
         return em;
     }
 
+    @Override
+    public List<UserInfo> findAll() {
+        return (List<UserInfo>) em.createNamedQuery("UserInfo.findAll")
+                .getResultList();
+    } 
+    
     public UserInfoFacade() {
         super(UserInfo.class);
     }

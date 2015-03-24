@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class ComponentSourceFacade extends AbstractFacade<ComponentSource> {
+public class ComponentSourceFacade extends AbstractDbFacade<ComponentSource> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;

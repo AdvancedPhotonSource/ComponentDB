@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "component_type_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ComponentTypeCategory.findAll", query = "SELECT c FROM ComponentTypeCategory c"),
+    @NamedQuery(name = "ComponentTypeCategory.findAll", query = "SELECT c FROM ComponentTypeCategory c ORDER BY c.name"),
     @NamedQuery(name = "ComponentTypeCategory.findById", query = "SELECT c FROM ComponentTypeCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentTypeCategory.findByName", query = "SELECT c FROM ComponentTypeCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentTypeCategory.findByDescription", query = "SELECT c FROM ComponentTypeCategory c WHERE c.description = :description")})

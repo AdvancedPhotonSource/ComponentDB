@@ -90,14 +90,14 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentController.customizeListDisplay()}"
-                                 update="@form"
+                                 update="componentListDataTable"
                                  oncomplete="PF('componentListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
-                                 action="#{userController.saveSettingListForSessionUser()}"
+                                 action="#{userInfoController.saveSettingListForSessionUser()}"
                                  actionListener="#{componentController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('componentListCustomizeDisplayDialogWidget').hide()" 
-                                 update="@form"
+                                 update="componentListDataTable"
                                  rendered="#{loginController.loggedIn}"
                                  icon="ui-icon-check"/>
             </f:facet>

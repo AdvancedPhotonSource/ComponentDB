@@ -9,7 +9,7 @@
     <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
     <p:selectOneMenu id="ownerUser" value="#{entityInfoObject.ownerUser}" styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-        <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.username}" itemValue="#{ownerUser}"/>
+        <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
     </p:selectOneMenu>
     <p:message for="ownerUser"/> 
     <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>

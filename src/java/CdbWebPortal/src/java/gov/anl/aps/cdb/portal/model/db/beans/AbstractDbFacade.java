@@ -13,11 +13,11 @@ import javax.persistence.EntityManager;
  *
  * @author sveseli
  */
-public abstract class AbstractFacade<T>
+public abstract class AbstractDbFacade<T>
 {
     private Class<T> entityClass;
 
-    public AbstractFacade(Class<T> entityClass) {
+    public AbstractDbFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 

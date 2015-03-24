@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class SettingTypeFacade extends AbstractFacade<SettingType>
+public class SettingTypeFacade extends AbstractDbFacade<SettingType>
 {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;

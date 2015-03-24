@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class AllowedPropertyValueFacade extends AbstractFacade<AllowedPropertyValue>
+public class AllowedPropertyValueFacade extends AbstractDbFacade<AllowedPropertyValue>
 {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;

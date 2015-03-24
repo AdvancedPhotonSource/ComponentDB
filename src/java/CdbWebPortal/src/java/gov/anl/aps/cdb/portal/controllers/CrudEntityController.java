@@ -4,7 +4,7 @@ import gov.anl.aps.cdb.constants.CdbRole;
 import gov.anl.aps.cdb.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.exceptions.CdbException;
 import gov.anl.aps.cdb.exceptions.InvalidRequest;
-import gov.anl.aps.cdb.portal.model.db.beans.AbstractFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.AbstractDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.export.Exporter;
 
-public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeType extends AbstractFacade<EntityType>> implements Serializable {
+public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeType extends AbstractDbFacade<EntityType>> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(CrudEntityController.class.getName());
 

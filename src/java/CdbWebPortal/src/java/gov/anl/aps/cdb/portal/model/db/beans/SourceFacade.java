@@ -18,7 +18,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class SourceFacade extends AbstractFacade<Source>
+public class SourceFacade extends AbstractDbFacade<Source>
 {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -32,6 +32,12 @@ public class SourceFacade extends AbstractFacade<Source>
         super(Source.class);
     }
 
+    @Override
+    public List<Source> findAll() {
+        return (List<Source>) em.createNamedQuery("Source.findAll")
+                .getResultList();
+    }
+    
     public Source findById(Integer id) {
         try {
             return (Source) em.createNamedQuery("Source.findById")

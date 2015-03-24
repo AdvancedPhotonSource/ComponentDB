@@ -2,6 +2,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentTypeCategory;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -12,7 +13,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class ComponentTypeCategoryFacade extends AbstractFacade<ComponentTypeCategory> {
+public class ComponentTypeCategoryFacade extends AbstractDbFacade<ComponentTypeCategory> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -26,6 +27,12 @@ public class ComponentTypeCategoryFacade extends AbstractFacade<ComponentTypeCat
         super(ComponentTypeCategory.class);
     }
 
+    @Override
+    public List<ComponentTypeCategory> findAll() {
+        return (List<ComponentTypeCategory>) em.createNamedQuery("ComponentTypeCategory.findAll")
+                .getResultList();
+    }
+    
     public ComponentTypeCategory findByName(String name) {
         try {
             return (ComponentTypeCategory) em.createNamedQuery("ComponentTypeCategory.findByName")

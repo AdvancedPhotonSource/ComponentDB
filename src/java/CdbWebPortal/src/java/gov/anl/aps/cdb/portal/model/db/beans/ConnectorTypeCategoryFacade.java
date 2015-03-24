@@ -16,7 +16,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class ConnectorTypeCategoryFacade extends AbstractFacade<ConnectorTypeCategory>
+public class ConnectorTypeCategoryFacade extends AbstractDbFacade<ConnectorTypeCategory>
 {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;

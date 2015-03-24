@@ -8,7 +8,6 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "user_info")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "UserInfo.findAll", query = "SELECT u FROM UserInfo u"),
+    @NamedQuery(name = "UserInfo.findAll", query = "SELECT u FROM UserInfo u ORDER BY u.lastName"),
     @NamedQuery(name = "UserInfo.findById", query = "SELECT u FROM UserInfo u WHERE u.id = :id"),
     @NamedQuery(name = "UserInfo.findByUsername", query = "SELECT u FROM UserInfo u WHERE u.username = :username"),
     @NamedQuery(name = "UserInfo.findByFirstName", query = "SELECT u FROM UserInfo u WHERE u.firstName = :firstName"),
@@ -107,6 +106,7 @@ public class UserInfo extends CdbEntity
 
     private transient HashMap<String, UserSetting> userSettingMap = null;
     private transient Date userSettingsModificationDate = null;
+    private transient String fullNameForSelection = null;
     
     public UserInfo() {
     }
@@ -423,4 +423,24 @@ public class UserInfo extends CdbEntity
         searchResult.doesValueContainPattern("description", description, searchPattern);
         return searchResult;
     }        
+    
+    public String getFullNameForSelection() {
+        if (fullNameForSelection != null) {
+            return fullNameForSelection;
+        } 
+        
+        if (lastName == null || lastName.isEmpty()) {
+            return username;
+        }
+        
+        fullNameForSelection = lastName;
+        if (firstName != null && !firstName.isEmpty()) {
+            fullNameForSelection += ", " + firstName;
+        }
+        if (middleName != null && !middleName.isEmpty()) {
+            fullNameForSelection += " " + middleName;
+        }
+        return fullNameForSelection;
+    }
+    
 }

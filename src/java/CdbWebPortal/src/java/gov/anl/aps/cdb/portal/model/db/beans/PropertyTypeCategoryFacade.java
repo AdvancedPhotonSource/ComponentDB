@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -16,7 +17,7 @@ import javax.persistence.PersistenceContext;
  * @author sveseli
  */
 @Stateless
-public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCategory> {
+public class PropertyTypeCategoryFacade extends AbstractDbFacade<PropertyTypeCategory> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -30,6 +31,12 @@ public class PropertyTypeCategoryFacade extends AbstractFacade<PropertyTypeCateg
         super(PropertyTypeCategory.class);
     }
 
+    @Override
+    public List<PropertyTypeCategory> findAll() {
+        return (List<PropertyTypeCategory>) em.createNamedQuery("PropertyTypeCategory.findAll")
+                .getResultList();
+    }    
+    
     public PropertyTypeCategory findByName(String name) {
         try {
             return (PropertyTypeCategory) em.createNamedQuery("PropertyTypeCategory.findByName")
