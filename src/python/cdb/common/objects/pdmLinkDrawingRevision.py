@@ -3,9 +3,9 @@
 from cdbObject import CdbObject
 
 
-class PDMLinkRevisionThumbnail(CdbObject):
+class PdmLinkDrawingRevision(CdbObject):
 
-    DEFAULT_KEY_LIST = ['thumbnailUrl']
+    DEFAULT_KEY_LIST = ['state', 'ufid', 'iteration', 'version', 'icmsUrl']
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)

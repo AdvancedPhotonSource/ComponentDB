@@ -10,21 +10,21 @@ from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.internalError import InternalError
 
-from cdb.cdb_web_service.impl.pdmLinkConnectionImpl import PDMLinkConnectionImpl
+from cdb.cdb_web_service.impl.pdmLinkControllerImpl import PdmLinkControllerImpl
 
 #######################################################################
 
 
-class PDMLinkController(CdbController):
+class PdmLinkController(CdbController):
 
     def __init__(self):
         CdbController.__init__(self)
-        self.pdmLinkConnectionImpl = PDMLinkConnectionImpl()
+        self.pdmLinkControllerImpl = PdmLinkControllerImpl()
 
     @cherrypy.expose
-    def getDrawingRevisionsInfo(self, drawingNumber, **kwargs):
+    def getDrawing(self, name, **kwargs):
         try:
-            response = '%s' % self.pdmLinkConnectionImpl.getDrawingRevisionsInfo(drawingNumber).getFullJsonRep()
+            response = '%s' % self.pdmLinkControllerImpl.getDrawing(name).getFullJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)
@@ -36,9 +36,9 @@ class PDMLinkController(CdbController):
         return self.formatJsonResponse(response)
 
     @cherrypy.expose
-    def getDrawingThumbnail(self, drawingRevUfid, **kwargs):
+    def getDrawingThumbnail(self, ufid, **kwargs):
         try:
-            response = '%s' % self.pdmLinkConnectionImpl.getDrawingThumbnail(drawingRevUfid).getFullJsonRep()
+            response = '%s' % self.pdmLinkControllerImpl.getDrawingThumbnail(ufid).getFullJsonRep()
         except CdbException, ex:
             self.logger.error('%s' % ex)
             self.handleException(ex)

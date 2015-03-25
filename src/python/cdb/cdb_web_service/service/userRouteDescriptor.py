@@ -19,7 +19,6 @@ class UserRouteDescriptor:
         userGroupController = UserGroupController()
 
         # Define routes.
-        # Make sure to have leading '/' for consistency.
         routes = [
 
             # Get user group list

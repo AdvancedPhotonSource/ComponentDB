@@ -5,7 +5,7 @@
 #
 
 from cdb.common.utility.configurationManager import ConfigurationManager
-from pdmLinkController import PDMLinkController
+from pdmLinkController import PdmLinkController
 
 
 class PDMLinkRouteDescriptor:
@@ -15,24 +15,24 @@ class PDMLinkRouteDescriptor:
         contextRoot = ConfigurationManager.getInstance().getContextRoot()
 
         # Static instances shared between different routes
-        pdmLinkController = PDMLinkController()
+        pdmLinkController = PdmLinkController()
 
         # Define routes.
-        # Make sure to have leading '/' for consistency.
         routes = [
 
-            # Get pdm link drawing revision information
+            # Get drawing 
             {
-                'name': 'getDrawingRevisions',
-                'path': '%s/pdmLink/drawingRevisionsInfo/:(drawingNumber)' % contextRoot,
+                'name': 'getDrawing',
+                'path': '%s/pdmLink/drawings/:(name)' % contextRoot,
                 'controller': pdmLinkController,
-                'action': 'getDrawingRevisionsInfo',
+                'action': 'getDrawing',
                 'method': ['GET']
             },
-            # Get thumbnail of a revision of a PdmLink drawing
+
+            # Get PdmLink drawing thumbnail 
             {
                 'name': 'getDrawingThumbnail',
-                'path': '%s/pdmLink/drawingRevisionThumbnail/:(drawingRevUfid)' % contextRoot,
+                'path': '%s/pdmLink/drawingThumbnails/:(ufid)' % contextRoot,
                 'controller': pdmLinkController,
                 'action': 'getDrawingThumbnail',
                 'method': ['GET']
