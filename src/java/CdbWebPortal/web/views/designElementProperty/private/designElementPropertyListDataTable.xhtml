@@ -23,8 +23,8 @@
             <div class="actionLink">
                 <p:commandLink id="propertyValueHistoryListViewButton" 
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
-                               styleClass="ui-icon ui-icon-info" 
-                               title="View history."
+                               styleClass="ui-icon ui-icon-history" 
+                               title="View property value history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>

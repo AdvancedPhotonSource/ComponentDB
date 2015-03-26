@@ -38,7 +38,7 @@ a:link:hover, a:visited:hover  {
     background-image: -webkit-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
     /* Proposed W3C Markup */
     background-image: linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
-    
+
     padding: 15px;
     margin: 0px 0px 0px 0px;
     height: 75px;
@@ -527,19 +527,32 @@ h2 {
 .ui-icon-excel {
     background-image: url(../../resources/images/excel.ico) !important;
     background-repeat: no-repeat;
-    background-position: left
+    background-position: center;
 }
 
 .ui-icon-pdf {
     background-image: url(../../resources/images/pdf.ico) !important;
     background-repeat: no-repeat;
-    background-position: left
+    background-position: center;
 }
 
 .ui-icon-attachment {
     background-image: url(../../resources/images/attachment.ico) !important;
     background-repeat: no-repeat;
     background-position: left
+}
+
+.ui-icon-info2 {
+    background-image: url(../../resources/images/info.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-history {
+    background-image: url(../../resources/images/history.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-top: 1px;
 }
 
 .ui-galleria-panel element.style {
@@ -578,7 +591,7 @@ h2 {
 }
 
 .ui-datatable table {
-   table-layout: auto !important;
+    table-layout: auto !important;
 }
 
 .ui-panelgrid .ui-panelgrid-cell {
