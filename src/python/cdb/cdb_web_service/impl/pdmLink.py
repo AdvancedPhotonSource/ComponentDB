@@ -87,6 +87,7 @@ class PdmLink:
         drawingList = self.findPdmLinkDrawings(drawingName)
         if not drawingList:
             raise ObjectNotFound('PDMLink drawing %s could not be found.' % drawingName)
+        print drawingList[0]
         return drawingList[0]
 
     # Get property map for a given pdm object
