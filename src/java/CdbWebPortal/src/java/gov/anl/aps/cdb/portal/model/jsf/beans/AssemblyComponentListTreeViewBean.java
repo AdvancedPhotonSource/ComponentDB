@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
-import gov.anl.aps.cdb.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.utilities.AssemblyComponentUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;

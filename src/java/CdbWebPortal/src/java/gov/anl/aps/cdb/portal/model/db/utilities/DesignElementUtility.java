@@ -1,7 +1,7 @@
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
-import gov.anl.aps.cdb.exceptions.CdbException;
-import gov.anl.aps.cdb.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;

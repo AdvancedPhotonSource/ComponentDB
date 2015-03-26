@@ -1,6 +1,6 @@
 package gov.anl.aps.cdb.portal.utilities;
 
-import gov.anl.aps.cdb.constants.CdbProperty;
+import gov.anl.aps.cdb.common.constants.CdbProperty;
 
 public class StorageUtility {
 

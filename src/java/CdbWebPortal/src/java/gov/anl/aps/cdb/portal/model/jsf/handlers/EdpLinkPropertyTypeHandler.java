@@ -1,6 +1,6 @@
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
-import gov.anl.aps.cdb.constants.CdbProperty;
+import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;

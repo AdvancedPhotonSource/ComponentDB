@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
-import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import java.util.List;
 import javax.ejb.Stateless;

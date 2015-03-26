@@ -1,8 +1,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.exceptions.CdbException;
-import gov.anl.aps.cdb.exceptions.InvalidObjectState;
-import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceDbFacade;
@@ -28,7 +28,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
-import gov.anl.aps.cdb.utilities.ObjectUtility;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;

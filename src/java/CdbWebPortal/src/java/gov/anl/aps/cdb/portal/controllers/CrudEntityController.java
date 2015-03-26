@@ -1,9 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.constants.CdbRole;
-import gov.anl.aps.cdb.exceptions.AuthorizationError;
-import gov.anl.aps.cdb.exceptions.CdbException;
-import gov.anl.aps.cdb.exceptions.InvalidRequest;
+import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
@@ -16,14 +16,14 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
-import gov.anl.aps.cdb.utilities.CollectionUtility;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.jsf.components.CdbCsvExporter;
 import gov.anl.aps.cdb.portal.view.jsf.components.CdbExcelExporter;
 import gov.anl.aps.cdb.portal.view.jsf.components.CdbPdfExporter;
 import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
-import gov.anl.aps.cdb.utilities.StringUtility;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import java.io.IOException;
 
 import java.io.Serializable;

@@ -1,6 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;

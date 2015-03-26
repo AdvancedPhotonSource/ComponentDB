@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.utilities.ObjectUtility;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;

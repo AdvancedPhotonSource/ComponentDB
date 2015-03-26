@@ -5,8 +5,8 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.utilities.CollectionUtility;
-import gov.anl.aps.cdb.utilities.ObjectUtility;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.HashMap;

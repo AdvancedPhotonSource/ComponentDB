@@ -1,8 +1,8 @@
 package gov.anl.aps.cdb.api;
 
 
-import gov.anl.aps.cdb.constants.CdbRole;
-import gov.anl.aps.cdb.exceptions.InvalidSession;
+import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.common.exceptions.InvalidSession;
 import java.io.Serializable;
 import java.net.HttpCookie;
 

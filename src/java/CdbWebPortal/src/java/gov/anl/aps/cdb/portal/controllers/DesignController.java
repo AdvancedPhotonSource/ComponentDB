@@ -1,8 +1,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.exceptions.CdbException;
-import gov.anl.aps.cdb.exceptions.InvalidObjectState;
-import gov.anl.aps.cdb.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignElementDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignDbFacade;

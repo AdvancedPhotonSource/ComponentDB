@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.constants.CdbRole;
+import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -14,9 +14,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
-import gov.anl.aps.cdb.utilities.LdapUtility;
+import gov.anl.aps.cdb.common.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.utilities.CryptUtility;
+import gov.anl.aps.cdb.common.utilities.CryptUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;

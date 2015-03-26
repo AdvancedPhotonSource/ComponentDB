@@ -5,18 +5,18 @@
  */
 package gov.anl.aps.cdb.api;
 
-import gov.anl.aps.cdb.constants.CdbHttpHeader;
-import gov.anl.aps.cdb.constants.CdbProperty;
-import gov.anl.aps.cdb.constants.CdbRole;
-import gov.anl.aps.cdb.constants.CdbServiceProtocol;
-import gov.anl.aps.cdb.exceptions.AuthorizationError;
-import gov.anl.aps.cdb.exceptions.CommunicationError;
-import gov.anl.aps.cdb.exceptions.ConfigurationError;
-import gov.anl.aps.cdb.exceptions.InvalidArgument;
-import gov.anl.aps.cdb.exceptions.InvalidSession;
-import gov.anl.aps.cdb.exceptions.CdbException;
-import gov.anl.aps.cdb.exceptions.CdbExceptionFactory;
-import gov.anl.aps.cdb.utilities.NoServerVerificationSSLSocketFactory;
+import gov.anl.aps.cdb.common.constants.CdbHttpHeader;
+import gov.anl.aps.cdb.common.constants.CdbProperty;
+import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.common.constants.CdbServiceProtocol;
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
+import gov.anl.aps.cdb.common.exceptions.CommunicationError;
+import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidSession;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.CdbExceptionFactory;
+import gov.anl.aps.cdb.common.utilities.NoServerVerificationSSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -37,8 +37,8 @@ import org.apache.log4j.Logger;
 public class CdbRestApi {
 
 
-    public static final String DefaultSessionId = "defaultSession";
-    public static final String LoginRequestUrl = "/login";
+    public static final String DEFAULT_SESSION_ID = "defaultSession";
+    public static final String LOGIN_REQUEST_URL = "/login";
 
 
     /*
@@ -429,7 +429,7 @@ public class CdbRestApi {
     public void login(String username, String password, String sessionId) throws CdbException {
         HttpURLConnection connection = null;
         try {
-            String urlString = getFullRequestUrl(LoginRequestUrl);
+            String urlString = getFullRequestUrl(LOGIN_REQUEST_URL);
             URL url = new URL(urlString);
             connection = (HttpURLConnection) url.openConnection();
             setPostRequestHeaders(connection);
@@ -472,7 +472,7 @@ public class CdbRestApi {
      * @throws CdbException in case of any other errors
      */
     public void login(String username, String password) throws CdbException {
-        login(username, password, DefaultSessionId);
+        login(username, password, DEFAULT_SESSION_ID);
     }
 
     /**
@@ -513,6 +513,41 @@ public class CdbRestApi {
         }
     }
 
+    /**
+     * Invoke GET request.
+     *
+     * @param requestUrl relative request URL, e.g. /object
+     * @return response service response
+     * @throws CdbException in case of any errors
+     */
+    public String invokeGetRequest(String requestUrl) throws CdbException {
+        String urlString = getFullRequestUrl(requestUrl);
+        HttpURLConnection connection = null;
+        try {
+            logger.debug("Invoking get request for URL: " + requestUrl);
+            URL url = new URL(urlString);
+            connection = (HttpURLConnection) url.openConnection();
+            updateSessionCookie(connection);
+            checkHttpResponseForCdbException(connection);
+            logger.debug("Response message:\n" + connection.getResponseMessage());
+            return readHttpResponse(connection);
+        } catch (CdbException ex) {
+            throw ex;
+        } catch (ConnectException ex) {
+            String errorMsg = "Cannot connect to " + getServiceUrl();
+            logger.error(errorMsg);
+            throw new CommunicationError(errorMsg, ex);
+        } catch (IOException ex) {
+            CdbException cdbException = convertHttpErrorToCdbException(ex, connection);
+            logger.error(ex.getMessage());
+            throw cdbException;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+    
     /**
      * Invoke POST request.
      *
@@ -639,12 +674,12 @@ public class CdbRestApi {
      */
     public static void main(String[] args) {
         try {
-            CdbRestApi client = new CdbRestApi("https://zagreb.svdev.net:10232/cdb");
-            client.login("sveseli", "sveseli");
+            CdbRestApi client = new CdbRestApi("http://zagreb.svdev.net:10232/cdb");
+            //client.login("sveseli", "sveseli");
             HashMap<String, String> data = new HashMap<>();
-            data.put("parentDirectory", "/");
-            String dirList = client.invokeSessionPostRequest("/directories/tmp", data);
-            System.out.println("Directory list: \n" + dirList);
+            //data.put("parentDirectory", "/");
+            String drawing = client.invokeGetRequest("/pdmLink/drawings/D14100201-113160.asm");
+            System.out.println("Drawing: \n" + drawing);
         } catch (CdbException ex) {
             System.out.println("Sorry: " + ex);
         }

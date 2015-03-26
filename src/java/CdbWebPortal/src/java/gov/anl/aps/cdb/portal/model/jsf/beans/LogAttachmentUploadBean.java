@@ -3,7 +3,7 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.utilities.FileUtility;
+import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
