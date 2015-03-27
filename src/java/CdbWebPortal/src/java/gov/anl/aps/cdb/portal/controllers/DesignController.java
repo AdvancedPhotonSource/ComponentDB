@@ -37,7 +37,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("designController")
 @SessionScoped
-public class DesignController extends CrudEntityController<Design, DesignDbFacade> implements Serializable {
+public class DesignController extends CdbEntityController<Design, DesignDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Design.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Design.List.Display.Id";

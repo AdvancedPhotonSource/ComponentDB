@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("userGroupController")
 @SessionScoped
-public class UserGroupController extends CrudEntityController<UserGroup, UserGroupDbFacade> implements Serializable {
+public class UserGroupController extends CdbEntityController<UserGroup, UserGroupDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserGroup.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserGroup.List.Display.Id";

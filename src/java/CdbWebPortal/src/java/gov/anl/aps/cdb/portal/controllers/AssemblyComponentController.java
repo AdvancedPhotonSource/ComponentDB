@@ -29,7 +29,7 @@ import org.primefaces.event.SelectEvent;
 
 @Named("assemblyComponentController")
 @SessionScoped
-public class AssemblyComponentController extends CrudEntityController<AssemblyComponent, AssemblyComponentDbFacade> implements Serializable {
+public class AssemblyComponentController extends CdbEntityController<AssemblyComponent, AssemblyComponentDbFacade> implements Serializable {
 
     private static final String DisplayDescriptionSettingTypeKey = "AssemblyComponent.List.Display.Description";
     private static final String DisplayFlatTableViewSettingTypeKey = "AssemblyComponent.List.Display.FlatTableView";

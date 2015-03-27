@@ -20,7 +20,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("logController")
 @SessionScoped
-public class LogController extends CrudEntityController<Log, LogDbFacade> implements Serializable {
+public class LogController extends CdbEntityController<Log, LogDbFacade> implements Serializable {
 
     private static final String DisplayAttachmentsSettingTypeKey = "Log.List.Display.Attachments";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";

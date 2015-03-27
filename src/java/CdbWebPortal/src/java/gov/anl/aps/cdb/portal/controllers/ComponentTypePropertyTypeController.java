@@ -15,7 +15,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentTypePropertyTypeController")
 @SessionScoped
-public class ComponentTypePropertyTypeController extends CrudEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable
+public class ComponentTypePropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable
 {
 
     private static final String DisplayIdSettingTypeKey = "ComponentTypePropertyType.List.Display.Id";    

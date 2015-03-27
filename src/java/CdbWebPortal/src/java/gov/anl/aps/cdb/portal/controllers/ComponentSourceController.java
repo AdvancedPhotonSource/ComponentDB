@@ -22,7 +22,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentSourceController")
 @SessionScoped
-public class ComponentSourceController extends CrudEntityController<ComponentSource, ComponentSourceDbFacade> implements Serializable {
+public class ComponentSourceController extends CdbEntityController<ComponentSource, ComponentSourceDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentSource.List.Display.NumberOfItemsPerPage";
     private static final String DisplayContactInfoSettingTypeKey = "ComponentSource.List.Display.ContactInfo";

@@ -26,7 +26,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueHistoryController")
 @SessionScoped
-public class PropertyValueHistoryController extends CrudEntityController<PropertyValueHistory, PropertyValueHistoryDbFacade> implements Serializable {
+public class PropertyValueHistoryController extends CdbEntityController<PropertyValueHistory, PropertyValueHistoryDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValueHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValueHistory.List.Display.Id";

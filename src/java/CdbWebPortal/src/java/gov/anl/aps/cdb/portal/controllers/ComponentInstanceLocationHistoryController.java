@@ -21,7 +21,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("componentInstanceLocationHistoryController")
 @SessionScoped
-public class ComponentInstanceLocationHistoryController extends CrudEntityController<ComponentInstanceLocationHistory, ComponentInstanceLocationHistoryDbFacade> implements Serializable {
+public class ComponentInstanceLocationHistoryController extends CdbEntityController<ComponentInstanceLocationHistory, ComponentInstanceLocationHistoryDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.Id";

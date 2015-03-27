@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("locationTypeController")
 @SessionScoped
-public class LocationTypeController extends CrudEntityController<LocationType, LocationTypeDbFacade> implements Serializable {
+public class LocationTypeController extends CdbEntityController<LocationType, LocationTypeDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "LocationType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "LocationType.List.Display.Id";

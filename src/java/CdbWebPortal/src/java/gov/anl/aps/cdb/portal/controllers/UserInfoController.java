@@ -25,7 +25,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("userInfoController")
 @SessionScoped
-public class UserInfoController extends CrudEntityController<UserInfo, UserInfoDbFacade> implements Serializable {
+public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserInfo.List.Display.Id";

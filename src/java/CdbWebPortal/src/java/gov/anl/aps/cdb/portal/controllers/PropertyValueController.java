@@ -24,7 +24,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController extends CrudEntityController<PropertyValue, PropertyValueDbFacade> implements Serializable {
+public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValue.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValue.List.Display.Id";

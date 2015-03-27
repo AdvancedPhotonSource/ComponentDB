@@ -31,7 +31,7 @@ import org.primefaces.model.menu.MenuModel;
 
 @Named("locationController")
 @SessionScoped
-public class LocationController extends CrudEntityController<Location, LocationDbFacade> implements Serializable {
+public class LocationController extends CdbEntityController<Location, LocationDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Location.List.Display.NumberOfItemsPerPage";
     private static final String DisplayDescriptionSettingTypeKey = "Location.List.Display.Description";

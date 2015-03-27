@@ -52,7 +52,7 @@ import org.primefaces.model.TreeNode;
 
 @Named("componentController")
 @SessionScoped
-public class ComponentController extends CrudEntityController<Component, ComponentDbFacade> implements Serializable {
+public class ComponentController extends CdbEntityController<Component, ComponentDbFacade> implements Serializable {
 
     private static final String DisplayCategorySettingTypeKey = "Component.List.Display.Category";
     private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";

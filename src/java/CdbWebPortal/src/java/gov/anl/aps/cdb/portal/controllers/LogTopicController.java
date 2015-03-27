@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 
 @Named("logTopicController")
 @SessionScoped
-public class LogTopicController extends CrudEntityController<LogTopic, LogTopicDbFacade> implements Serializable {
+public class LogTopicController extends CdbEntityController<LogTopic, LogTopicDbFacade> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(LogTopicController.class.getName());
 

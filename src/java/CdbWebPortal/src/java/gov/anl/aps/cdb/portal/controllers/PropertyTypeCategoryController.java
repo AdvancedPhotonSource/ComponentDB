@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeCategoryController")
 @SessionScoped
-public class PropertyTypeCategoryController extends CrudEntityController<PropertyTypeCategory, PropertyTypeCategoryDbFacade> implements Serializable {
+public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategory, PropertyTypeCategoryDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeCategory.List.Display.Id";

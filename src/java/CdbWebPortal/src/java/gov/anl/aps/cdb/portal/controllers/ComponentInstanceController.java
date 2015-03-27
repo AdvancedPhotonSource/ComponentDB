@@ -42,7 +42,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 @Named("componentInstanceController")
 @SessionScoped
-public class ComponentInstanceController extends CrudEntityController<ComponentInstance, ComponentInstanceDbFacade> implements Serializable {
+public class ComponentInstanceController extends CdbEntityController<ComponentInstance, ComponentInstanceDbFacade> implements Serializable {
 
     private static final String DisplayCreatedByUserSettingTypeKey = "ComponentInstance.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.Display.CreatedOnDateTime";

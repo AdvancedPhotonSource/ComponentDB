@@ -45,7 +45,7 @@ import org.primefaces.event.SelectEvent;
 
 @Named("designElementController")
 @SessionScoped
-public class DesignElementController extends CrudEntityController<DesignElement, DesignElementDbFacade> implements Serializable {
+public class DesignElementController extends CdbEntityController<DesignElement, DesignElementDbFacade> implements Serializable {
 
     private static final String DisplayChildDesignSettingTypeKey = "DesignElement.List.Display.ChildDesign";
     private static final String DisplayComponentSettingTypeKey = "DesignElement.List.Display.Component";

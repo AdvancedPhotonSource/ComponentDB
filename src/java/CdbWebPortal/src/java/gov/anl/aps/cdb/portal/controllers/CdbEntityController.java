@@ -45,9 +45,9 @@ import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.export.Exporter;
 
-public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityDbFacade<EntityType>> implements Serializable {
+public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityDbFacade<EntityType>> implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(CrudEntityController.class.getName());
+    private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
 
     @EJB
     private SettingTypeDbFacade settingTypeFacade;
@@ -118,7 +118,7 @@ public abstract class CrudEntityController<EntityType extends CdbEntity, FacadeT
 
     private boolean searchHasResults = false;
 
-    public CrudEntityController() {
+    public CdbEntityController() {
     }
 
     @PostConstruct

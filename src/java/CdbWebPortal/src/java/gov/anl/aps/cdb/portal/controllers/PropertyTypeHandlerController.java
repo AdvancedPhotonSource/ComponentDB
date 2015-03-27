@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
-public class PropertyTypeHandlerController extends CrudEntityController<PropertyTypeHandler, PropertyTypeHandlerDbFacade> implements Serializable {
+public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerDbFacade> implements Serializable {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeHandler.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeHandler.List.Display.Id";

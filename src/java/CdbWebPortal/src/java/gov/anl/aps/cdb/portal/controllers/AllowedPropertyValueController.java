@@ -22,7 +22,7 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("allowedPropertyValueController")
 @SessionScoped
-public class AllowedPropertyValueController extends CrudEntityController<AllowedPropertyValue, AllowedPropertyValueDbFacade> implements Serializable
+public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueDbFacade> implements Serializable
 {
 
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AllowedPropertyValue.List.Display.NumberOfItemsPerPage";
