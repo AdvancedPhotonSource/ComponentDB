@@ -78,6 +78,17 @@ class PdmLink:
         self.logger.debug('Looking for name pattern: %s ' % drawingNamePattern)
         self.__createWindchillClients()
         self.searchArgs['keyword'] = drawingNamePattern
+        # This call actually returns list of objects, and the last one will
+        # be of the form
+        # (com.ptc.windchill.ws.GenericBusinessObject){
+        #   ufid = None
+        #   typeIdentifier = "com.ptc.object"
+        #   properties[] = 
+        #     (com.ptc.windchill.ws.Property){
+        #       name = "hasMore"
+        #       value = "true"
+        #     },
+        # }
         drawingList = self.windchillWebparts.service.WindchillSearch(**self.searchArgs)
         return drawingList 
 
@@ -87,7 +98,13 @@ class PdmLink:
         drawingList = self.findPdmLinkDrawings(drawingName)
         if not drawingList:
             raise ObjectNotFound('PDMLink drawing %s could not be found.' % drawingName)
-        return drawingList[0]
+        drawing = drawingList[0]
+        firstProperty = drawing.properties[0]
+        # Object is not found if the first property of the first object
+        # in the list satisfies condition below
+        if firstProperty.name == "hasMore" and firstProperty.value == "false":
+            raise ObjectNotFound('PDMLink drawing %s could not be found.' % drawingName)
+        return drawing
 
     # Get property map for a given pdm object
     @classmethod

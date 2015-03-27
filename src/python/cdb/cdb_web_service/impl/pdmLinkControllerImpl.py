@@ -20,3 +20,6 @@ class PdmLinkControllerImpl(CdbObjectManager):
 
     def getDrawingThumbnail(self, ufid):
         return self.pdmLink.getDrawingThumbnail(ufid)
+
+    def getDrawingImage(self, ufid):
+        return self.pdmLink.getDrawingImage(ufid)
