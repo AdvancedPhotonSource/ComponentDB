@@ -49,4 +49,19 @@ class PdmLinkController(CdbController):
             response = InternalError(ex).getJsonRep()
         return self.formatJsonResponse(response)
 
+    @cherrypy.expose
+    def getDrawingImage(self, ufid, **kwargs):
+        try:
+            response = '%s' % self.pdmLinkControllerImpl.getDrawingImage(ufid).getFullJsonRep()
+        except CdbException, ex:
+            self.logger.error('%s' % ex)
+            self.handleException(ex)
+            response = ex.getJsonRep()
+        except Exception, ex:
+            self.logger.error('%s' % ex)
+            self.handleException(ex)
+            response = InternalError(ex).getJsonRep()
+        return self.formatJsonResponse(response)
+
+
 

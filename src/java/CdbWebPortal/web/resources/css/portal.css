@@ -417,6 +417,10 @@ select {
     width: 50px;
 }
 
+.leftElementPosition {
+    text-align: left;
+}
+
 h1 {
     font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
     font-size:  24px;
@@ -476,6 +480,10 @@ h2 {
 .imagePanel {
     max-height: 200px;
     max-width: 200px;
+}
+
+.ui-accordion .ui-accordion-header {
+    text-align: left;
 }
 
 .ui-accordion .ui-accordion-content {
@@ -551,8 +559,7 @@ h2 {
 .ui-icon-history {
     background-image: url(../../resources/images/history.ico) !important;
     background-repeat: no-repeat;
-    background-position: center;
-    margin-top: 1px;
+    background-position: bottom;
 }
 
 .ui-galleria-panel element.style {
@@ -596,4 +603,8 @@ h2 {
 
 .ui-panelgrid .ui-panelgrid-cell {
     border-style: none;
+}
+
+.ui-datatable .ui-sortable-column {
+    box-shadow: none;
 }

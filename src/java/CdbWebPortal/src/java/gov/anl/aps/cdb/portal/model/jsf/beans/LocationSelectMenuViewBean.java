@@ -18,7 +18,6 @@ import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
-import org.primefaces.model.menu.MenuItem;
 import org.primefaces.model.menu.MenuModel;
 
 @Named("locationSelectMenuViewBean")

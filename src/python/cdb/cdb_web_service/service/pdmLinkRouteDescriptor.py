@@ -36,6 +36,15 @@ class PDMLinkRouteDescriptor:
                 'controller': pdmLinkController,
                 'action': 'getDrawingThumbnail',
                 'method': ['GET']
+            },
+
+            # Get PdmLink drawing image 
+            {
+                'name': 'getDrawingImage',
+                'path': '%s/pdmLink/drawingImages/:(ufid)' % contextRoot,
+                'controller': pdmLinkController,
+                'action': 'getDrawingImage',
+                'method': ['GET']
             }
 
         ]

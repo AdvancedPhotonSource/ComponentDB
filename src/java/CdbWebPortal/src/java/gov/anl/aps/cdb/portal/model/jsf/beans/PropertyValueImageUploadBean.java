@@ -75,11 +75,11 @@ public class PropertyValueImageUploadBean {
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
                 byte[] originalData = Files.readAllBytes(originalFile.toPath());
-                byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.ThumbnailImageSize, imageFormat);
+                byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
                 String thumbFileName = originalFile.getAbsolutePath().replace("original", "thumbnail");
                 Path thumbPath = Paths.get(thumbFileName);
                 Files.write(thumbPath, thumbData); 
-                byte[] scaledData = ImageUtility.resizeImage(originalData, StorageUtility.ScaledImageSize, imageFormat);
+                byte[] scaledData = ImageUtility.resizeImage(originalData, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
                 String scaledFileName = originalFile.getAbsolutePath().replace("original", "scaled");
                 Path scaledPath = Paths.get(scaledFileName);
                 Files.write(scaledPath, scaledData);                 

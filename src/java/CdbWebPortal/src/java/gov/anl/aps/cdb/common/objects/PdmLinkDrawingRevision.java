@@ -1,13 +1,16 @@
 package gov.anl.aps.cdb.common.objects;
 
+import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 
-public class PdmLinkDrawingRevision {
- 
+public class PdmLinkDrawingRevision extends CdbObject {
+
     private String state;
     private String ufid;
-    private String iteration;
+    private Integer iteration;
     private String version;
     private String icmsUrl;
+
+    private transient String displayIcmsUrl;
 
     public PdmLinkDrawingRevision() {
     }
@@ -28,11 +31,11 @@ public class PdmLinkDrawingRevision {
         this.ufid = ufid;
     }
 
-    public String getIteration() {
+    public Integer getIteration() {
         return iteration;
     }
 
-    public void setIteration(String iteration) {
+    public void setIteration(Integer iteration) {
         this.iteration = iteration;
     }
 
@@ -51,6 +54,12 @@ public class PdmLinkDrawingRevision {
     public void setIcmsUrl(String icmsUrl) {
         this.icmsUrl = icmsUrl;
     }
-    
-    
+
+    public String getDisplayIcmsUrl() {
+        if (displayIcmsUrl == null && icmsUrl != null) {
+            displayIcmsUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(icmsUrl);
+        }
+        return displayIcmsUrl;
+    }
+
 }

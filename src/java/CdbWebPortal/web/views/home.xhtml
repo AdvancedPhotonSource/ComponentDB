@@ -51,7 +51,7 @@
                         <h:outputText id="numberOfDesigns" value="#{designController.availableItems.size()}" styleClass="sectionText"/>
 
                         <h:outputText value="Software Version" styleClass="sectionText"/>
-                        <h:outputLink value="https://confluence.aps.anl.gov/display/APSUCMS/Milestones" target="#{resources.CdbSoftwareVersion}">
+                        <h:outputLink value="#{resources.CdbSoftwareVersionUrl}" target="#{resources.CdbSoftwareVersion}">
                             <h:outputText id="softwareVersion" value="#{resources.CdbSoftwareVersion}" styleClass="sectionText"/>
                         </h:outputLink>                        
                     </p:panelGrid>
@@ -64,15 +64,19 @@
                     <h2>Quick Links</h2>
                     <h:form id="quickLinksForm">
                         <p:panelGrid columns="1">
-                            <h:outputLink value="https://edp.aps.anl.gov" target="EDP">
+                            <h:outputLink value="#{resources.EdpUrl}" target="EDP">
                                 <h:outputText value="EDP"/>
                             </h:outputLink>
-                            <h:outputLink value="https://ctlappsdev:8181/cdb_dev" target="CDB Development">
+                            <p:commandLink onclick="PF('pdmLinkDrawingSearchDialogWidget').show()">
+                                <h:outputText value="PDMLink Drawing Search Tool"/>
+                            </p:commandLink>
+                            <h:outputLink value="#{resources.CdbDevelopmentUrl}" target="CDB Development">
                                 <h:outputText value="CDB Development"/>
                             </h:outputLink>
-                        </p:panelGrid>s
+                        </p:panelGrid>
                     </h:form>
                 </div>
+                <ui:include src="pdmLink/private/pdmLinkDrawingSearchDialog.xhtml"/>
             </ui:fragment>
 
             <ui:fragment rendered="#{loginController.loggedInAsAdmin}">
@@ -90,6 +94,7 @@
             </ui:fragment>
 
         </ui:define>
+
     </ui:composition>
 </ui:composition>
 

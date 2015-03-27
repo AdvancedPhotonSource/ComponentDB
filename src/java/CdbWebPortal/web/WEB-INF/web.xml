@@ -83,6 +83,7 @@
             <url-pattern>/views/location/private/*</url-pattern>
             <url-pattern>/views/locationType/private/*</url-pattern>
             <url-pattern>/views/log/private/*</url-pattern>
+            <url-pattern>/views/pdmLinkDrawing/private/*</url-pattern>
             <url-pattern>/views/propertyType/private/*</url-pattern>
             <url-pattern>/views/propertyTypeCategory/private/*</url-pattern>
             <url-pattern>/views/propertyValue/private/*</url-pattern>

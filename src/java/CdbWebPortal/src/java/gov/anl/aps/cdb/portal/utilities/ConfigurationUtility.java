@@ -9,11 +9,11 @@ import org.apache.log4j.Logger;
 
 public class ConfigurationUtility {
 
-    public static final String PropertiesPath = "cdb.portal.properties";
-    public static final String PropertiesDelimiter = ",";
+    public static final String PROPERTIES_PATH = "cdb.portal.properties";
+    public static final String PROPERTIES_DELIMITER = ",";
    
     private static final Logger logger = Logger.getLogger(ConfigurationUtility.class.getName());
-    private static final Properties portalProperties = loadProperties(PropertiesPath);
+    private static final Properties portalProperties = loadProperties(PROPERTIES_PATH);
 
     public Properties getPortalProperties() {
         return portalProperties;
@@ -42,7 +42,7 @@ public class ConfigurationUtility {
     }
     
     public static List<String> getPortalPropertyList(String propertyName, String defaultValue) {
-        String[] propertyArray = portalProperties.getProperty(propertyName, defaultValue).split(PropertiesDelimiter);
+        String[] propertyArray = portalProperties.getProperty(propertyName, defaultValue).split(PROPERTIES_DELIMITER);
         logger.debug("Looking for property " + propertyName);
         ArrayList propertyList = new ArrayList();
         for (String property : propertyArray) {

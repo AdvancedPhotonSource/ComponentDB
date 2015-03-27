@@ -39,6 +39,19 @@ class PdmLinkRestApi(CdbRestApi):
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
 
+    def getDrawingImage(self, ufid):
+        try:
+            if ufid is None:
+                raise InvalidRequest('Drawing revision ufid must be provided.')
+            url = '%s/pdmLink/drawingImages/%s' % (self.getContextRoot(), ufid)
+            responseData = self.sendRequest(url=url, method='GET')
+            return Image(responseData)
+        except CdbException, ex:
+            raise
+        except Exception, ex:
+            self.getLogger().exception('%s' % ex)
+            raise CdbException(exception=ex)
+
 
 #######################################################################
 # Testing.

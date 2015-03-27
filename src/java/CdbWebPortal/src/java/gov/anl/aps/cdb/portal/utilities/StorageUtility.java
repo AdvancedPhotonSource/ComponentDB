@@ -4,16 +4,16 @@ import gov.anl.aps.cdb.common.constants.CdbProperty;
 
 public class StorageUtility {
 
-    public static final String StorageDirectory = ConfigurationUtility.getPortalProperty(CdbProperty.STORAGE_DIRECTORY_PROPERTY_NAME);
-    public static final Integer ScaledImageSize = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.SCALED_IMAGE_SIZE_PROPERTY_NAME);
-    public static final Integer ThumbnailImageSize = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.THUMBNAIL_IMAGE_PROPERTY_NAME);
+    public static final String STORAGE_DIRECTORY = ConfigurationUtility.getPortalProperty(CdbProperty.STORAGE_DIRECTORY_PROPERTY_NAME);
+    public static final Integer SCALED_IMAGE_SIZE = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.SCALED_IMAGE_SIZE_PROPERTY_NAME);
+    public static final Integer THUMBNAIL_IMAGE_SIZE = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.THUMBNAIL_IMAGE_PROPERTY_NAME);
 
     public static String getApplicationPropertyValueImagesDirectory() {
         return "/propertyValue/images";
     }
 
     public static String getFileSystemPropertyValueImagesDirectory() {
-        return StorageDirectory + getApplicationPropertyValueImagesDirectory();
+        return STORAGE_DIRECTORY + getApplicationPropertyValueImagesDirectory();
     }
 
     public static String getApplicationLogAttachmentsDirectory() {
@@ -28,7 +28,7 @@ public class StorageUtility {
     } 
     
     public static String getFileSystemLogAttachmentsDirectory() {
-        return StorageDirectory + getApplicationLogAttachmentsDirectory();
+        return STORAGE_DIRECTORY + getApplicationLogAttachmentsDirectory();
     }    
     
     public static String getFileSystemLogAttachmentPathDirectory(String attachmentName) {
@@ -50,7 +50,7 @@ public class StorageUtility {
     }   
     
     public static String getFileSystemPropertyValueDocumentsDirectory() {
-        return StorageDirectory + getApplicationPropertyValueDocumentsDirectory();
+        return STORAGE_DIRECTORY + getApplicationPropertyValueDocumentsDirectory();
     }    
     
     public static String getFileSystemPropertyValueDocumentPathDirectory(String documentName) {
