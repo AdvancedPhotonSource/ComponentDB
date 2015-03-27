@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="pdmLinkDrawingSearchDialog" 
+              widgetVar="pdmLinkDrawingSearchDialogWidget" 
+              header="Search for PDMLink Drawing" 
+              styleClass="dialog">
+        <h:form id="drawingSearchForm">
+            <div class="dialog">
+                <p:panelGrid columns="3" styleClass="viewEntityDetails">
+                    <h:outputLabel for="drawingName" value="Search Name" styleClass="entityDataLabel"/>
+                    <h:inputText id="drawingName" value="#{pdmLinkDrawingBean.drawingName}" title="Search Name" styleClass="entityDataText"/>
+                    <p:message for="drawingName"/> 
+
+                    <p:commandButton action="#{pdmLinkDrawingBean.findDrawing()}" 
+                                     value="Search" alt="Search" 
+                                     icon="ui-icon-search" 
+                                     oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition()"
+                                     update="@form"/>
+                    <h:outputText/>
+                    <h:outputText/>
+                </p:panelGrid>
+
+
+                <p/>
+                <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
+                    <p:accordionPanel multiple="true" activeIndex="0,1">
+                        <p:tab title="Drawing Details">
+                            <ui:include src="pdmLinkDrawingViewPanelGrid.xhtml"/>
+                        </p:tab>
+                        <p:tab title="Drawing Revisions">
+                            <ui:include src="pdmLinkDrawingRevisionListDataTable.xhtml"/>                       
+                        </p:tab>  
+                    </p:accordionPanel>
+                </ui:fragment>
+            </div>
+
+        </h:form>
+    </p:dialog>
+
+</ui:composition>
+
+
