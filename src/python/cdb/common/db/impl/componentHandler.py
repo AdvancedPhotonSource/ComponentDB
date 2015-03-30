@@ -11,8 +11,6 @@ from cdb.common.db.entities.component import Component
 from cdb.common.db.entities.entityInfo import EntityInfo
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from componentTypeHandler import ComponentTypeHandler
-from userInfoHandler import UserInfoHandler
-from userGroupHandler import UserGroupHandler
 from entityInfoHandler import EntityInfoHandler
 
 class ComponentHandler(CdbDbEntityHandler):

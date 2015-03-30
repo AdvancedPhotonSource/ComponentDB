@@ -5,11 +5,7 @@
 import cherrypy
 
 from cdb.common.service.cdbSessionController import CdbSessionController
-from cdb.common.objects.cdbObject import CdbObject
-from cdb.common.exceptions.cdbException import CdbException
-from cdb.common.exceptions.internalError import InternalError
 from cdb.common.exceptions.invalidRequest import InvalidRequest
-from cdb.common.service.loginController import LoginController
 from cdb.common.utility.encoder import Encoder
 
 from cdb.cdb_web_service.impl.fileSystemControllerImpl import FileSystemControllerImpl
@@ -25,23 +21,15 @@ class FileSystemSessionController(CdbSessionController):
 
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
     def writeFile(self, fileName, **kwargs):
-        try:
-            if not kwargs.has_key('parentDirectory'):
-                raise InvalidRequest('Missing parent directory.')
-            parentDirectory = kwargs.get('parentDirectory')
-            encodedFileContent = kwargs.get('encodedFileContent', '')
-            fileContent = Encoder.decode(encodedFileContent) 
-            filePath = '%s/%s' % (parentDirectory, fileName)
-            response = '%s' % self.fileSystemControllerImpl.writeFile(filePath, fileContent).getFullJsonRep()
-            self.logger.debug('Returning: %s' % response)
-        except CdbException, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = ex.getFullJsonRep()
-        except Exception, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = InternalError(ex).getFullJsonRep()
-        return self.formatJsonResponse(response)
+        if not kwargs.has_key('parentDirectory'):
+            raise InvalidRequest('Missing parent directory.')
+        parentDirectory = kwargs.get('parentDirectory')
+        encodedFileContent = kwargs.get('encodedFileContent', '')
+        fileContent = Encoder.decode(encodedFileContent) 
+        filePath = '%s/%s' % (parentDirectory, fileName)
+        response = '%s' % self.fileSystemControllerImpl.writeFile(filePath, fileContent).getFullJsonRep()
+        self.logger.debug('Returning: %s' % response)
+        return response
 

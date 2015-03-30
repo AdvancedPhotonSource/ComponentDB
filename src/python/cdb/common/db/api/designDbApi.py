@@ -3,72 +3,50 @@
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.designHandler import DesignHandler
+from cdb.common.db.impl.designElementHandler import DesignElementHandler
 
 class DesignDbApi(CdbDbApi):
 
     def __init__(self):
         CdbDbApi.__init__(self)
         self.designHandler = DesignHandler()
+        self.designElementHandler = DesignElementHandler()
 
-    def getDesigns(self):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbDesigns = self.designHandler.getDesigns(session)
-                return self.toCdbObjectList(dbDesigns)
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getDesigns(self, **kwargs):
+        session = kwargs['session']
+        dbDesigns = self.designHandler.getDesigns(session)
+        return self.toCdbObjectList(dbDesigns)
 
-    def getDesignById(self, id):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbDesign = self.designHandler.getDesignById(session, id)
-                return dbDesign.getCdbObject()
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getDesignById(self, id, **kwargs):
+        session = kwargs['session']
+        dbDesign = self.designHandler.getDesignById(session, id)
+        return dbDesign.getCdbObject()
 
-    def getDesignByName(self, name):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbDesign = self.designHandler.getDesignByName(session, name)
-                return dbDesign.getCdbObject()
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getDesignByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbDesign = self.designHandler.getDesignByName(session, name)
+        return dbDesign.getCdbObject()
 
-    def addDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
-        try:
-             session = self.dbManager.openSession()
-             try:
-                 dbDesign = self.designHandler.addDesign(session, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
-                 design = dbDesign.getCdbObject()
-                 session.commit()
-                 return design
-             except CdbException, ex:
-                 session.rollback()
-                 raise
-             except Exception, ex:
-                 session.rollback()
-                 self.logger.exception('%s' % ex)
-                 raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeTransaction
+    def addDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, **kwargs):
+        session = kwargs['session']
+        dbDesign = self.designHandler.addDesign(session, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
+        return dbDesign.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getDesignElements(self, designId, **kwargs):
+        session = kwargs['session']
+        dbDesignElements = self.designElementHandler.getDesignElements(session, designId)
+        return self.toCdbObjectList(dbDesignElements)
+
+    @CdbDbApi.executeTransaction
+    def addDesignElement(self, name, parentDesignId, childDesignId, componentId, locationId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, sortOrder, description, **kwargs):
+        session = kwargs['session']
+        dbDesignElement = self.designElementHandler.addDesignElement(session, name, parentDesignId, childDesignId, componentId, locationId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, sortOrder, description)
+        return dbDesignElement.getCdbObject()
 
 #######################################################################
 # Testing.
@@ -91,6 +69,20 @@ if __name__ == '__main__':
     print design.getDictRep()
 
     print 'Adding design'
-    design = api.addDesign(name='bcd8', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Design')
+    design = api.addDesign(name='de6', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Design')
     print "Added Design"
     print design
+
+    print 'Getting design elements'
+    parentDesignId = 1
+    designElements = api.getDesignElements(parentDesignId)
+    for designElement in designElements:
+        print
+        print "********************"
+        print designElement
+
+    print 'Adding design element'
+    designElement = api.addDesignElement(name='elm2', parentDesignId=1, childDesignId=2, componentId=None, locationId=None, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, sortOrder=111.123, description='Test Design Element')
+    print "Added Design Element"
+    print designElement
+

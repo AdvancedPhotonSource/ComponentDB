@@ -14,93 +14,41 @@ class ComponentDbApi(CdbDbApi):
         self.componentTypeHandler = ComponentTypeHandler()
         self.componentHandler = ComponentHandler()
 
-    def getComponentTypeCategories(self):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbComponentTypeCategories = self.componentTypeCategoryHandler.getComponentTypeCategories(session)
-                return self.toCdbObjectList(dbComponentTypeCategories)
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getComponentTypeCategories(self, **kwargs):
+        session = kwargs['session']
+        dbComponentTypeCategories = self.componentTypeCategoryHandler.getComponentTypeCategories(session)
+        return self.toCdbObjectList(dbComponentTypeCategories)
 
-    def getComponentTypes(self):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbComponentTypes = self.componentTypeHandler.getComponentTypes(session)
-                return self.toCdbObjectList(dbComponentTypes)
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getComponentTypes(self, **kwargs):
+        session = kwargs['session']
+        dbComponentTypes = self.componentTypeHandler.getComponentTypes(session)
+        return self.toCdbObjectList(dbComponentTypes)
 
-    def getComponents(self):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbComponents = self.componentHandler.getComponents(session)
-                return self.toCdbObjectList(dbComponents)
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getComponents(self, **kwargs):
+        session = kwargs['session']
+        dbComponents = self.componentHandler.getComponents(session)
+        return self.toCdbObjectList(dbComponents)
 
-    def getComponentById(self, id):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbComponent = self.componentHandler.getComponentById(session, id)
-                return dbComponent.getCdbObject()
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getComponentById(self, id, **kwargs):
+        session = kwargs['session']
+        dbComponent = self.componentHandler.getComponentById(session, id)
+        return dbComponent.getCdbObject()
 
-    def getComponentByName(self, name):
-        try:
-            session = self.dbManager.openSession()
-            try:
-                dbComponent = self.componentHandler.getComponentByName(session, name)
-                return dbComponent.getCdbObject()
-            except CdbException, ex:
-                raise
-            except Exception, ex:
-                self.logger.exception('%s' % ex)
-                raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeQuery
+    def getComponentByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbComponent = self.componentHandler.getComponentByName(session, name)
+        return dbComponent.getCdbObject()
 
-    def addComponent(self, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
-        try:
-             session = self.dbManager.openSession()
-             try:
-                 dbComponent = self.componentHandler.addComponent(session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
-                 component = dbComponent.getCdbObject()
-                 session.commit()
-                 return component
-             except CdbException, ex:
-                 session.rollback()
-                 raise
-             except Exception, ex:
-                 session.rollback()
-                 self.logger.exception('%s' % ex)
-                 raise
-        finally:
-            self.dbManager.closeSession(session)
+    @CdbDbApi.executeTransaction
+    def addComponent(self, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, **kwargs):
+        session = kwargs['session']
+        dbComponent = self.componentHandler.addComponent(session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
+        return dbComponent.getCdbObject()
 
 #######################################################################
 # Testing.
@@ -131,6 +79,6 @@ if __name__ == '__main__':
     print component.getDictRep()
 
     print 'Adding component'
-    component = api.addComponent(name='bcd8', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
+    component = api.addComponent(name='wwz6', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
     print "Added Component"
     print component

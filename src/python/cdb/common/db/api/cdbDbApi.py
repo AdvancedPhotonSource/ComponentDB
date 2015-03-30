@@ -11,22 +11,67 @@ class CdbDbApi:
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
         self.dbManager = DbManager.getInstance()
 
-    def getLogger(self):
-        return self.logger
+    # Decorator for all DB queries
+    @classmethod
+    def executeQuery(cls, func):
+        def query(*args, **kwargs):
+            try:
+                dbManager = DbManager.getInstance()
+                session = dbManager.openSession()
+                kwargs['session'] = session
+                try:
+                    return func(*args, **kwargs)
+                except CdbException, ex:
+                    raise
+                except Exception, ex:
+                    cls.getLogger().exception('%s' % ex)
+                    raise CdbException(exception=ex)
+            finally:
+                dbManager.closeSession(session)
+        return query
 
-    def executeQuery(self, query):
+    # Decorator for all DB transactions
+    @classmethod
+    def executeTransaction(cls, func):
+        def transaction(*args, **kwargs):
+            try:
+                dbManager = DbManager.getInstance()
+                session = dbManager.openSession()
+                kwargs['session'] = session
+                try:
+                    result = func(*args, **kwargs)
+                    session.commit()
+                    return result
+                except CdbException, ex:
+                    session.rollback()
+                    raise
+                except Exception, ex:
+                    session.rollback()
+                    cls.getLogger().exception('%s' % ex)
+                    raise CdbException(exception=ex)
+            finally:
+                dbManager.closeSession(session)
+        return transaction
+
+    @classmethod
+    def getLogger(cls):
+        logger = LoggingManager.getInstance().getLogger(cls.__name__)
+        return logger
+
+    @classmethod
+    def executeConnectionQuery(cls, query):
         connection = None
         try:
-            connection = self.dbManager.acquireConnection()
+            connection = DbManager.getInstance().acquireConnection()
             try:
                 return connection.execute(query)
             except CdbException, ex:
                 raise
             except Exception, ex:
-                self.logger.exception('%s' % ex)
+                cls.getLogger().exception('%s' % ex)
                 raise
         finally:
-            self.dbManager.releaseConnection(connection)
+            DbManager.getInstance().releaseConnection(connection)
 
 
     def loadRelation(self, dbObject, relationName):

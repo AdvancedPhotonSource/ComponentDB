@@ -25,8 +25,10 @@ class CdbController(object):
     def __init__(self):
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
-    def getLogger(self):
-        return self.logger
+    @classmethod
+    def getLogger(cls):
+        logger = LoggingManager.getInstance().getLogger(cls.__name__)
+        return logger
 
     @classmethod
     def addCdbResponseHeaders(cls, status=cdbStatus.CDB_OK, msg='Success', exceptionType=None):
@@ -84,4 +86,21 @@ class CdbController(object):
     @classmethod
     def getSessionUsername(cls):
         return cherrypy.serving.session.get('_cp_username')
+
+    # Exception decorator for all exposed method calls
+    @classmethod
+    def execute(cls, func):
+        def decorate(*args, **kwargs):
+            try:
+                response = func(*args, **kwargs)
+            except CdbException, ex:
+                cls.getLogger().error('%s' % ex)
+                cls.handleException(ex)
+                response = ex.getFullJsonRep()
+            except Exception, ex:
+                cls.getLogger().error('%s' % ex)
+                cls.handleException(ex)
+                response = InternalError(ex).getFullJsonRep()
+            return cls.formatJsonResponse(response)
+        return decorate
 

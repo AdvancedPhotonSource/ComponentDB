@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 
 import cherrypy
-import json
-
 from cdb.common.service.cdbController import CdbController
-from cdb.common.objects.cdbObject import CdbObject
-from cdb.common.exceptions.cdbException import CdbException
-from cdb.common.exceptions.internalError import InternalError
-
 from cdb.cdb_web_service.impl.designControllerImpl import DesignControllerImpl
 
 class DesignController(CdbController):
@@ -17,48 +11,21 @@ class DesignController(CdbController):
         self.designControllerImpl = DesignControllerImpl()
 
     @cherrypy.expose
+    @CdbController.execute
     def getDesigns(self, **kwargs):
-        try:
-           response = '%s' % self.toJson(self.designControllerImpl.getDesigns())
-        except CdbException, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = ex.getFullJsonRep()
-        except Exception, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = InternalError(ex).getFullJsonRep()
-        return self.formatJsonResponse(response)
+        return self.toJson(self.designControllerImpl.getDesigns())
 
     @cherrypy.expose
+    @CdbController.execute
     def getDesignById(self, id, **kwargs):
-        try:
-            if not id:
-                raise InvalidRequest('Invalid id provided.')
-            response = '%s' % self.designControllerImpl.getDesignById(id).getFullJsonRep()
-        except CdbException, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = ex.getFullJsonRep()
-        except Exception, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = InternalError(ex).getFullJsonRep()
-        return self.formatJsonResponse(response)
+        if not id:
+            raise InvalidRequest('Invalid id provided.')
+        return self.designControllerImpl.getDesignById(id).getFullJsonRep()
 
     @cherrypy.expose
+    @CdbController.execute
     def getDesignByName(self, name, **kwargs):
-        try:
-            if not name:
-                raise InvalidRequest('Invalid name provided.')
-            response = '%s' % self.designControllerImpl.getDesignByName(name).getFullJsonRep()
-        except CdbException, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = ex.getFullJsonRep()
-        except Exception, ex:
-            self.logger.error('%s' % ex)
-            self.handleException(ex)
-            response = InternalError(ex).getFullJsonRep()
-        return self.formatJsonResponse(response)
+        if not name:
+            raise InvalidRequest('Invalid name provided.')
+        return self.designControllerImpl.getDesignByName(name).getFullJsonRep()
 
