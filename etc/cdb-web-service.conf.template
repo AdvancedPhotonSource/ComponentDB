@@ -12,7 +12,9 @@ principalAuthenticator1=CryptedPasswordPrincipalAuthenticator()
 principalAuthenticator2=LdapPasswordPrincipalAuthenticator(serverUrl='ldaps://ldap.anl.gov:636', dnFormat='uid=%s,dc=anl,dc=gov')
 
 [DbManager]
-dbPasswordFile=CDB_INSTALL_DIR/etc/cdb.db.passwd
+dbSchema=CDB_DB_NAME
+dbUser=CDB_DB_NAME
+dbPasswordFile=CDB_INSTALL_DIR/etc/CDB_DB_NAME.db.passwd
 
 # Available logger levels: debug, info, warn, error, critical
 [ConsoleLogging]

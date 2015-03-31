@@ -24,7 +24,7 @@ class DbManager:
     DB_CONNECTION_LOGGING_FLAG = False
 
     CONFIG_SECTION_NAME = 'DbManager'
-    CONFIG_OPTION_NAME_LIST = [ 'dbPasswordFile' ]
+    CONFIG_OPTION_NAME_LIST = [ 'dbSchema', 'dbUser', 'dbPasswordFile' ]
 
     # Singleton.
     __lock = threading.RLock()
@@ -51,6 +51,7 @@ class DbManager:
             cm.setOptionsFromConfigFile(DbManager.CONFIG_SECTION_NAME, DbManager.CONFIG_OPTION_NAME_LIST)
 
             dbUser = cm.getDbUser()
+            self.logger.debug('Using DB user: %s' % dbUser)
             dbSchema = cm.getDbSchema()
             dbPasswordFile = cm.getDbPasswordFile()
             self.logger.debug('Using DB password file: %s' % dbPasswordFile)

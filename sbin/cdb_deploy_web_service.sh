@@ -53,6 +53,7 @@ CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.
 CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.log
 CDB_WEB_SERVICE_INIT_CMD=${CDB_ROOT_DIR}/etc/init.d/$CDB_WEB_SERVICE_DAEMON
 CDB_DB_PASSWORD_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.db.passwd 
+CDB_DATE=`date +%Y.%m.%d`
 
 echo "CDB install directory: $CDB_INSTALL_DIR"
 
@@ -89,12 +90,22 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
         | sed 's?sslCertFile=.*?sslCertFile=$CDB_WEB_SERVICE_CERT_FILE?g' \
         | sed 's?sslKeyFile=.*?sslKeyFile=$CDB_WEB_SERVICE_KEY_FILE?g' \
         | sed 's?handler=TimedRotatingFileLoggingHandler.*?handler=TimedRotatingFileLoggingHandler(\"$CDB_WEB_SERVICE_LOG_FILE\")?g' \
+        | sed 's?CDB_INSTALL_DIR?$CDB_INSTALL_DIR?g' \
+        | sed 's?CDB_DB_NAME?$CDB_DB_NAME?g' \
         > $CDB_WEB_SERVICE_CONFIG_FILE"
     eval $cmd || exit 1
 else
     echo "Service config file exists"
 fi
 rsync -ar $CDB_ROOT_DIR/etc/$CDB_DB_NAME.db.passwd $CDB_ETC_DIR || exit 1
+
+# Modify version
+echo "Modifying python module version"
+versionFile=$CDB_ROOT_DIR/src/python/cdb/__init__.py
+cmd="cat $versionFile | sed 's?__version__ =.*?__version__ = \"${CDB_SOFTWARE_VERSION}\"?g' | sed 's?CDB_DATE?$CDB_DATE?g' > $versionFile.2
+&& mv $versionFile.2 $versionFile"
+
+eval $cmd
 
 echo "Starting web service for $CDB_DB_NAME"
 $CDB_WEB_SERVICE_INIT_CMD start $CDB_DB_NAME
