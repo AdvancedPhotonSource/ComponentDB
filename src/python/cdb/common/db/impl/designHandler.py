@@ -7,6 +7,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.db.entities.design import Design
+from cdb.common.db.entities.designElement import DesignElement
+from cdb.common.db.entities.designProperty import DesignProperty
+from cdb.common.db.entities.propertyValue import PropertyValue
 from cdb.common.db.entities.entityInfo import EntityInfo
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from entityInfoHandler import EntityInfoHandler
@@ -22,21 +25,52 @@ class DesignHandler(CdbDbEntityHandler):
         dbDesigns = session.query(Design).all()
         return dbDesigns
 
-    def getDesignById(self, session, id):
+    def findDesignById(self, session, id):
         try:
-            self.logger.debug('Retrieving design id %s' % id)
             dbDesign = session.query(Design).filter(Design.id==id).one()
             return dbDesign
         except NoResultFound, ex:
             raise ObjectNotFound('Design id %s does not exist.' % (id))
 
-    def getDesignByName(self, session, name):
+    def findDesignByName(self, session, name):
         try:
-            self.logger.debug('Retrieving design name %s' % name)
             dbDesign = session.query(Design).filter(Design.name==name).one()
             return dbDesign
         except NoResultFound, ex:
-            raise ObjectNotFound('Design with name %s does not exist.' % (name))
+            raise ObjectNotFound('Design %s does not exist.' % (name))
+
+    # This method will not throw exception if both id and name are none
+    def findDesignByIdOrName(self, session, id, name):
+        if id is None and name is None:
+            return None
+        if id is not None:
+            return self.findDesignById(session, id)
+        return self.findDesignByName(session, name)
+
+    # This method will not throw exception if both id and name are none
+    def findDesignIdByIdOrName(self, session, id, name):
+        dbDesign = self.findDesignByIdOrName(session, id, name)
+        if dbDesign is None:
+            return None
+        return dbDesign.id
+
+    def getDesignById(self, session, id):
+        self.logger.debug('Retrieving design id %s' % id)
+        dbDesign = self.findDesignById(session, id)
+        dbDesignProperties = session.query(PropertyValue).join(DesignProperty).filter(and_(DesignProperty.design_id==dbDesign.id, DesignProperty.property_value_id==PropertyValue.id)).all()
+        dbDesign.propertyValueList = dbDesignProperties
+        dbDesignElements = session.query(DesignElement).filter(DesignElement.parent_design_id==dbDesign.id).all()
+        dbDesign.designElementList = dbDesignElements
+        return dbDesign
+
+    def getDesignByName(self, session, name):
+        self.logger.debug('Retrieving design name %s' % name)
+        dbDesign = self.findDesignByName(session, name)
+        dbDesignProperties = session.query(PropertyValue).join(DesignProperty).filter(and_(DesignProperty.design_id==dbDesign.id, DesignProperty.property_value_id==PropertyValue.id)).all()
+        dbDesign.propertyValueList = dbDesignProperties
+        dbDesignElements = session.query(DesignElement).filter(DesignElement.parent_design_id==dbDesign.id).all()
+        dbDesign.designElementList = dbDesignElements
+        return dbDesign
 
     def addDesign(self, session, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description=None):
         try:

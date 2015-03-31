@@ -20,26 +20,49 @@ class ComponentHandler(CdbDbEntityHandler):
         self.componentTypeHandler = ComponentTypeHandler()
         self.entityInfoHandler = EntityInfoHandler()
 
+    def findComponentById(self, session, id):
+        try:
+            dbComponent = session.query(Component).filter(Component.id==id).one()
+            return dbComponent
+        except NoResultFound, ex:
+            raise ObjectNotFound('Component id %s does not exist.' % (id))
+
+    def findComponentByName(self, session, name):
+        try:
+            dbComponent = session.query(Component).filter(Component.name==name).one()
+            return dbComponent
+        except NoResultFound, ex:
+            raise ObjectNotFound('Component with name %s does not exist.' % (name))
+
+    # This method will not throw exception if both id and name are none
+    def findComponentByIdOrName(self, session, id, name):
+        if id is None and name is None:
+            return None
+        if id is not None:
+            return self.findComponentById(session, id)
+        return self.findComponentByName(session, name)
+
+    # This method will not throw exception if both id and name are none
+    def findComponentIdByIdOrName(self, session, id, name):
+        dbComponent = self.findComponentByIdOrName(session, id, name)
+        if dbComponent is None:
+            return None
+        return dbComponent.id
+
     def getComponents(self, session):
         self.logger.debug('Retrieving component list')
         dbComponents = session.query(Component).all()
         return dbComponents
 
     def getComponentById(self, session, id):
-        try:
-            self.logger.debug('Retrieving component id %s' % id)
-            dbComponent = session.query(Component).filter(Component.id==id).one()
-            return dbComponent
-        except NoResultFound, ex:
-            raise ObjectNotFound('Component id %s does not exist.' % (id))
+        self.logger.debug('Retrieving component id %s' % id)
+        dbComponent = self.findComponentById(session, id)
+        return dbComponent
 
     def getComponentByName(self, session, name):
-        try:
-            self.logger.debug('Retrieving component name %s' % name)
-            dbComponent = session.query(Component).filter(Component.name==name).one()
-            return dbComponent
-        except NoResultFound, ex:
-            raise ObjectNotFound('Component with name %s does not exist.' % (name))
+        self.logger.debug('Retrieving component name %s' % name)
+        dbComponent = self.findComponentByName(session, name)
+        return dbComponent
 
     def addComponent(self, session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description=None):
         try:

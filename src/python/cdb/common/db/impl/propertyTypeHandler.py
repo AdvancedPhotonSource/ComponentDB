@@ -14,16 +14,21 @@ class PropertyTypeHandler(CdbDbEntityHandler):
         CdbDbEntityHandler.__init__(self)
 
     def getPropertyTypes(self, session):
-        self.logger.debug('Retrieving property type list')
         dbPropertyTypes = session.query(PropertyType).all()
         return dbPropertyTypes
 
     def getPropertyTypeById(self, session, id):
         try:
-            self.logger.debug('Retrieving property type id %s' % id)
             dbPropertyType = session.query(PropertyType).filter(PropertyType.id==id).one()
             return dbPropertyType
         except NoResultFound, ex:
             raise ObjectNotFound('Property type id %s does not exist.' % (id))
+
+    def getPropertyTypeByName(self, session, name):
+        try:
+            dbPropertyType = session.query(PropertyType).filter(PropertyType.name==name).one()
+            return dbPropertyType
+        except NoResultFound, ex:
+            raise ObjectNotFound('Property type name %s does not exist.' % (name))
 
 
