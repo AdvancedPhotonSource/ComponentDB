@@ -47,6 +47,8 @@ public class PropertyValueUtility {
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
                     newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
                     newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
+                    newPropertyValue.setDisplayValue(null);
+                    newPropertyValue.setTargetValue(null);
 
                     // Save history
                     List<PropertyValueHistory> propertyValueHistoryList = newPropertyValue.getPropertyValueHistoryList();
