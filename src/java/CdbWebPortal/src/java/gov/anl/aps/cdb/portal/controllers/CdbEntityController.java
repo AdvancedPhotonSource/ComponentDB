@@ -41,6 +41,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.export.Exporter;
@@ -117,6 +118,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected String breadcrumbObjectIdViewParam = null;
 
     private boolean searchHasResults = false;
+    private String searchString = null;
+    private boolean caseInsensitive = true;
+    private LinkedList<SearchResult> searchResultList;
 
     public CdbEntityController() {
     }
@@ -635,8 +639,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetSelectDataModel();
             current = newEntity;
             return view();
-        } catch (CdbException | RuntimeException ex) {
+        } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            return null;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            logger.error("Could not create " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
@@ -666,8 +675,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetLogText();
             current = updatedEntity;
             return view();
-        } catch (CdbException | RuntimeException ex) {
+        } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            return null;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            logger.error("Could not update " + getDisplayEntityTypeName() + " " 
+                    + getCurrentEntityInstanceName() + ": " + t.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
@@ -686,8 +701,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetLogText();
             current = updatedEntity;
             return view();
-        } catch (CdbException | RuntimeException ex) {
+        } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            return null;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            logger.error("Could not update " + getDisplayEntityTypeName() + " " 
+                    + getCurrentEntityInstanceName() + ": " + t.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
@@ -711,7 +732,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
         try {
-            logger.debug("Destroying " + getCurrentEntityInstanceName());
+            logger.debug("Destroying " +  getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityDestroy(current);
             getFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
@@ -721,6 +742,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return prepareList();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            return null;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            logger.error("Could not delete " + getDisplayEntityTypeName() + " " 
+                    + getCurrentEntityInstanceName() + ": " + t.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
@@ -906,10 +933,19 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public List<SearchResult> getSearchResultList(String searchString, boolean caseInsensitive) {
         searchHasResults = false;
-        LinkedList<SearchResult> searchResultList = new LinkedList<>();
         if (searchString == null || searchString.isEmpty()) {
+            searchResultList = new LinkedList<>();
             return searchResultList;
         }
+        if (searchString.equals(this.searchString) && caseInsensitive == this.caseInsensitive) {
+            // Return old results
+            return searchResultList;            
+        }
+        
+        // Start new search
+        this.searchString = searchString;
+        this.caseInsensitive = caseInsensitive;
+        searchResultList = new LinkedList<>();
 
         Pattern searchPattern;
         if (caseInsensitive) {

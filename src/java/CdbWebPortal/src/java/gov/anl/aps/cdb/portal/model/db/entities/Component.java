@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -426,16 +428,8 @@ public class Component extends CdbEntity {
         SearchResult searchResult = new SearchResult(id, name);
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
-        for (Log logEntry : logList) {
-            String logEntryKey = "log/text/id:" + logEntry.getId();
-            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
-        }
-        for (PropertyValue propertyValue : propertyValueList) {
-            String propertyValueKey = "propertyValue/value/id:" + propertyValue.getId();
-            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
-            propertyValueKey = "propertyValue/description/id:" + propertyValue.getId();
-            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
-        }
+        LogUtility.searchLogList(logList, searchPattern, searchResult);
+        PropertyValueUtility.searchPropertyValueList(propertyValueList, searchPattern, searchResult);
         return searchResult;
     }
 
@@ -476,7 +470,7 @@ public class Component extends CdbEntity {
         }
         return CollectionUtility.displayItemListWithoutOutsideDelimiters(componentSourceList, ";");
     }
-    
+
     public Boolean getIsAssembly() {
         return (assemblyComponentList != null && !assemblyComponentList.isEmpty());
     }

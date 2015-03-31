@@ -1,12 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.Date;
@@ -99,7 +96,7 @@ public class DesignElement extends CdbEntity {
     @ManyToOne(optional = false)
     private Design parentDesign;
 
-    private transient boolean isCloned = false;    
+    private transient boolean isCloned = false;
     private transient List<PropertyValue> imagePropertyList = null;
 
     public DesignElement() {
@@ -281,7 +278,7 @@ public class DesignElement extends CdbEntity {
         }
         return null;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -325,7 +322,7 @@ public class DesignElement extends CdbEntity {
             // Only update properties for non-cloned elements
             return;
         }
-        
+
         List<PropertyValue> inheritedPropertyList = null;
         if (component != null) {
             inheritedPropertyList = component.getPropertyValueList();
@@ -348,7 +345,7 @@ public class DesignElement extends CdbEntity {
         }
     }
 
-   @Override
+    @Override
     public DesignElement clone() throws CloneNotSupportedException {
         DesignElement cloned = (DesignElement) super.clone();
         cloned.id = null;
@@ -387,21 +384,21 @@ public class DesignElement extends CdbEntity {
         return copied;
     }
 
-    
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
-        for (Log logEntry : logList) {
-            String logEntryKey = "log/text/id:" + logEntry.getId();
-            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
+        LogUtility.searchLogList(logList, searchPattern, searchResult);
+        PropertyValueUtility.searchPropertyValueList(propertyValueList, searchPattern, searchResult);
+        if (component != null) {
+            String componentKey = "component/name";
+            searchResult.doesValueContainPattern(componentKey, component.getName(), searchPattern);
         }
-        for (PropertyValue propertyValue : propertyValueList) {
-            String propertyValueKey = "propertyValue/value/id:" + propertyValue.getId();
-            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
-            propertyValueKey = "propertyValue/description/id:" + propertyValue.getId();
-            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
+        if (childDesign != null) {
+            String childDesignKey = "childDesign/name";
+            searchResult.doesValueContainPattern(childDesignKey, childDesign.getName(), searchPattern);
+
         }
         return searchResult;
     }

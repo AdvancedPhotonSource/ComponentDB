@@ -38,7 +38,8 @@
 
                     <p/>
                     <div class="actionButton">
-                        <p:commandButton action="#{searchController.search()}" value="Search" alt="Search" icon="ui-icon-search" update="@form"/>
+                        <p:commandButton id="searchButton" action="#{searchController.search()}" value="Search" alt="Search" icon="ui-icon-search" update="@form"/>
+                        <p:defaultCommand target="searchButton"/>
                     </div>
 
                     <p/>

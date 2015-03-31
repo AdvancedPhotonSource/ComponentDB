@@ -6,6 +6,8 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,7 @@ public class Design extends CdbEntity {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
 
-    private transient boolean isCloned = false;    
+    private transient boolean isCloned = false;
     private transient List<PropertyValue> imagePropertyList = null;
 
     public Design() {
@@ -216,7 +218,7 @@ public class Design extends CdbEntity {
         this.imagePropertyList = null;
     }
 
-        @Override
+    @Override
     public Design clone() throws CloneNotSupportedException {
         Design cloned = (Design) super.clone();
         cloned.id = null;
@@ -246,27 +248,39 @@ public class Design extends CdbEntity {
             for (DesignElement designElement : designElementList) {
                 DesignElement designElement2 = designElement.copyAndSetParentDesign(copied);
                 copied.designElementList.add(designElement2);
-            }           
+            }
         } catch (CloneNotSupportedException ex) {
             // will not happen 
         }
         return copied;
     }
-    
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
-        for (Log logEntry : logList) {
-            String logEntryKey = "log/text/id:" + logEntry.getId();
-            searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
-        }
-        for (PropertyValue propertyValue : propertyValueList) {
-            String propertyValueKey = "propertyValue/value/id:" + propertyValue.getId();
-            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
-            propertyValueKey = "propertyValue/description/id:" + propertyValue.getId();
-            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
+
+        LogUtility.searchLogList(logList, searchPattern, searchResult);
+        PropertyValueUtility.searchPropertyValueList(propertyValueList, searchPattern, searchResult);
+        
+        String baseKey;
+        for (DesignElement designElement : designElementList) {
+            baseKey = "designElement/id:" + designElement.getId();
+            String designElementKey = baseKey + "/name";
+            searchResult.doesValueContainPattern(designElementKey, designElement.getName(), searchPattern);
+            designElementKey = baseKey + "/description";
+            searchResult.doesValueContainPattern(designElementKey, designElement.getDescription(), searchPattern);
+            Component component = designElement.getComponent();
+            if (component != null) {
+                designElementKey = baseKey + "/component/name";
+                searchResult.doesValueContainPattern(designElementKey, component.getName(), searchPattern);
+            }
+            Design childDesign = designElement.getChildDesign();
+            if (childDesign != null) {
+                designElementKey = baseKey + "/childDesign/name";
+                searchResult.doesValueContainPattern(designElementKey, childDesign.getName(), searchPattern);
+            }
         }
         return searchResult;
     }

@@ -7,8 +7,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
 public class PropertyValueUtility {
@@ -113,4 +115,14 @@ public class PropertyValueUtility {
     public static boolean displayDocumentValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DOCUMENT);
     }
+    
+    public static void searchPropertyValueList(List<PropertyValue> propertyValueList, Pattern searchPattern, SearchResult searchResult) {
+        for (PropertyValue propertyValue : propertyValueList) {
+            String baseKey = "propertyValue/id:" + propertyValue.getId();
+            String propertyValueKey = baseKey + "/value";
+            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
+            propertyValueKey = baseKey + "/description";
+            searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
+        }
+    }    
 }
