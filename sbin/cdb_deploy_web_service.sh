@@ -47,12 +47,14 @@ CDB_LOG_DIR=${CDB_INSTALL_DIR}/var/log
 CDB_CA_DIR=${CDB_ETC_DIR}/CA
 CDB_CA_CERT_FILE=${CDB_SSL_DIR}/cdb-ca-cert.pem
 CDB_WEB_SERVICE_DAEMON=cdb-web-service
-CDB_WEB_SERVICE_CERT_FILE=${CDB_SSL_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.crt
-CDB_WEB_SERVICE_KEY_FILE=${CDB_SSL_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.key
-CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.conf
-CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/$CDB_WEB_SERVICE_DAEMON.$CDB_DB_NAME.log
+CDB_WEB_SERVICE_CERT_FILE=${CDB_SSL_DIR}/$CDB_DB_NAME.$CDB_WEB_SERVICE_DAEMON.crt
+CDB_WEB_SERVICE_KEY_FILE=${CDB_SSL_DIR}/$CDB_DB_NAME.$CDB_WEB_SERVICE_DAEMON.key
+CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/$CDB_DB_NAME.$CDB_WEB_SERVICE_DAEMON.conf
+CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/$CDB_DB_NAME.$CDB_WEB_SERVICE_DAEMON.log
 CDB_WEB_SERVICE_INIT_CMD=${CDB_ROOT_DIR}/etc/init.d/$CDB_WEB_SERVICE_DAEMON
 CDB_DB_PASSWORD_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.db.passwd 
+CDB_USER_SETUP_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.setup.sh
+CDB_SERVICE_HOST=`hostname -f`
 CDB_DATE=`date +%Y.%m.%d`
 
 echo "CDB install directory: $CDB_INSTALL_DIR"
@@ -61,6 +63,9 @@ mkdir -p $CDB_ETC_DIR
 mkdir -p $CDB_SSL_DIR
 mkdir -p $CDB_LOG_DIR
 chmod 700 $CDB_SSL_DIR
+
+echo "Stopping web service for $CDB_DB_NAME"
+$CDB_WEB_SERVICE_INIT_CMD stop $CDB_DB_NAME
 
 echo "Checking CA certificate"
 if [ ! -f $CDB_CA_CERT_FILE ]; then
@@ -104,8 +109,17 @@ echo "Modifying python module version"
 versionFile=$CDB_ROOT_DIR/src/python/cdb/__init__.py
 cmd="cat $versionFile | sed 's?__version__ =.*?__version__ = \"${CDB_SOFTWARE_VERSION}\"?g' | sed 's?CDB_DATE?$CDB_DATE?g' > $versionFile.2
 && mv $versionFile.2 $versionFile"
-
 eval $cmd
+
+# Prepare setup file
+echo "Preparing setup file"
+cmd="cat $CDB_ROOT_DIR/etc/setup.sh.template \
+        | sed 's?CDB_ROOT_DIR=.*?CDB_ROOT_DIR=$CDB_ROOT_DIR?g' \
+        | sed 's?CDB_SERVICE_PROTOCOL=.*?CDB_SERVICE_PROTOCOL=https?g' \
+        | sed 's?CDB_SERVICE_HOST=.*?CDB_SERVICE_HOST=$CDB_SERVICE_HOST?g' \
+        | sed 's?CDB_SERVICE_PORT=.*?CDB_SERVICE_PORT=$CDB_SERVICE_PORT?g' \
+        > $CDB_USER_SETUP_FILE"
+    eval $cmd || exit 1
 
 echo "Starting web service for $CDB_DB_NAME"
 $CDB_WEB_SERVICE_INIT_CMD start $CDB_DB_NAME
