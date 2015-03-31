@@ -207,6 +207,16 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         return "/views/design/view.xhtml?faces-redirect=true?id=" + designElement.getParentDesign().getId();
     }
 
+    public String followBreadcrumbOrPrepareViewToDesign(DesignElement designElement) {
+        String loadView = breadcrumbViewParam;
+        if (loadView == null) {
+            loadView = prepareViewToDesign(designElement) ;
+        } 
+        breadcrumbViewParam = null;
+        breadcrumbObjectIdViewParam = null;
+        return loadView;
+    }
+    
     public void prepareAddLog(DesignElement designElement) {
         Log logEntry = LogUtility.createLogEntry();
         List<Log> designElementLogList = designElement.getLogList();

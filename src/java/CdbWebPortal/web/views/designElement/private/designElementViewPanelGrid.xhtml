@@ -11,6 +11,9 @@
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="name" value="#{designElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
 
+        <h:outputLabel for="parentDesign" value="Parent Design" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="parentDesign" value="#{designElementObject.parentDesign.name}" title="Parent Design" styleClass="entityDataEmphasizedText"/>
+        
         <h:outputLabel for="component" value="Component" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="component" value="#{designElementObject.component.displayNameWithTypeAndCategory}" title="Component" styleClass="entityDataEmphasizedText"/>
 

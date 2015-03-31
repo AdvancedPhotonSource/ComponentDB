@@ -10,7 +10,7 @@
     </p:column>
 
     <p:column sortBy="#{searchResultObject.objectName}" headerText="Name">
-        <h:outputLink value="../../#{entityName}/view.xhtml?id=#{searchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="#{entityTitle}: #{searchResultObject.objectName}">
+        <h:outputLink value="../#{entityName}/view.xhtml?id=#{searchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="#{entityTitle}: #{searchResultObject.objectName}">
             <h:outputText value="#{searchResultObject.objectName}"/>
         </h:outputLink>
     </p:column>

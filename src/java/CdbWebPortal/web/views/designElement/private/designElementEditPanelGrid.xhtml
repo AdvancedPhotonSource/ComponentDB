@@ -14,6 +14,11 @@
         <p:message for="name"/> 
         <p:tooltip for="name" value="Enter design element name."/>
 
+        <h:outputLabel for="parentDesign" value="Parent Design" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="parentDesign" value="#{designElementObject.parentDesign.name}" title="Parent Design" styleClass="entityDataEmphasizedText"/>
+        <p:message for="parentDesign"/> 
+        <p:tooltip for="parentDesign" value="Parent design cannot be modified."/>
+        
         <h:outputLabel for="designElementComponent" value="Component" 
                        styleClass="entityDataEmphasizedLabel"
                        rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}"/>

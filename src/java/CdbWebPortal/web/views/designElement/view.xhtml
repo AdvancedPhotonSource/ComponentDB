@@ -35,7 +35,7 @@
                                      rendered="#{(isEntityWriteable and loginController.isEntityWriteable(designObject.entityInfo))}" value="Delete" alt="Delete" icon="ui-icon-trash">
                         <p:tooltip for="designElementViewDeleteButton" value="Delete design element."/>
                     </p:commandButton>  
-                    <p:commandButton id="designElementViewDoneButton" action="#{designElementController.prepareViewToDesign(designElementObject)}" 
+                    <p:commandButton id="designElementViewDoneButton" action="#{designElementController.followBreadcrumbOrPrepareViewToDesign(designElementObject)}" 
                                      value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
                         <p:tooltip for="designElementViewDoneButton" value="Return to previous page."/>
                     </p:commandButton>
