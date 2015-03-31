@@ -148,8 +148,8 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
             return entity.getEntityInfo();
         }
         return null;
-    } 
-    
+    }
+
     @Override
     public String getEntityTypeName() {
         return "designElement";
@@ -181,6 +181,12 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     public void prepareEntityUpdate(DesignElement designElement) throws ObjectAlreadyExists {
         EntityInfo entityInfo = designElement.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
+
+        // Compare properties with what is in the db
+        List<PropertyValue> originalPropertyValueList = designElementFacade.findById(designElement.getId()).getPropertyValueList();
+        List<PropertyValue> newPropertyValueList = designElement.getPropertyValueList();
+        logger.debug("Verifying properties for design element " + designElement);
+        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
         prepareDesignElementImageList(designElement);
     }
 
@@ -835,7 +841,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         }
         DesignElementType designElementType = designElement.getContainedObjectType();
         return (designElementType != null && designElementType.equals(DesignElementType.COMPONENT));
-    }    
+    }
 
     public DataTable getComponentPropertyValueListDataTable() {
         return componentPropertyValueListDataTable;

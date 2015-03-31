@@ -175,6 +175,12 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
         // Catch circular dependency issues.
         DesignElementUtility.createDesignElementRoot(design);
+        
+        // Compare properties with what is in the db
+        List<PropertyValue> originalPropertyValueList = designFacade.findById(design.getId()).getPropertyValueList();
+        List<PropertyValue> newPropertyValueList = design.getPropertyValueList();
+        logger.debug("Verifying properties for design " + design);
+        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);        
         prepareDesignImageList(design);
         logger.debug("Updating design " + design.getName()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");

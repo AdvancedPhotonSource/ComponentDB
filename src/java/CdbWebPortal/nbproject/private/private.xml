@@ -3,13 +3,29 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/common/objects/PdmLinkDrawing.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/beans/PdmLinkDrawingBean.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/pdmLink/private/pdmLinkDrawingRevisionListDataTable.xhtml</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/resources/css/portal.css</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/PdmLinkPropertyTypeHandler.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/AbstractPropertyTypeHandler.java</file>
-            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/common/objects/PdmLinkDrawingRevision.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstanceProperty/private/componentInstancePropertyEditListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/PropertyValueHistory.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElementProperty/private/designElementPropertyEditList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designProperty/private/designPropertyEditListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CdbEntityController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/ComponentInstanceController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignElementController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentProperty/private/componentPropertyEditListCustomizeDisplayDialog.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/PropertyValue.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/Component.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentProperty/private/componentPropertyEditListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/private/designElementEditListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstance/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentInstanceProperty/private/componentInstancePropertyEditList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyTypeController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/component/edit.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/componentProperty/private/componentPropertyEditList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/private/designElementEditList.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/utilities/PropertyValueUtility.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElementProperty/private/designElementPropertyEditListDataTable.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designProperty/private/designPropertyEditList.xhtml</file>
         </group>
     </open-files>
 </project-private>

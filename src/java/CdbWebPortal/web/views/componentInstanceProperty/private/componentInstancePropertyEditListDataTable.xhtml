@@ -28,7 +28,7 @@
                 <ui:param name="editActionBean" value="#{propertyTypeHandler.editActionBean}"/>
 
                 <p:commandLink id="propertyValueHistoryListViewButton" 
-                               oncomplete="PF('propertyValueHistoryListWidget').show()" 
+                               oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
                                styleClass="ui-icon ui-icon-history" title="View property value history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 

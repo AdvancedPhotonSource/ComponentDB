@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
@@ -297,32 +296,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         List<PropertyValue> originalPropertyValueList = componentInstanceFacade.findById(componentInstance.getId()).getPropertyValueList();
         List<PropertyValue> newPropertyValueList = componentInstance.getPropertyValueList();
         logger.debug("Verifying properties for component instance id " + componentInstance.getId());
-        for (PropertyValue newPropertyValue : newPropertyValueList) {
-            int index = originalPropertyValueList.indexOf(newPropertyValue);
-            if (index >= 0) {
-                // Original property was there.
-                PropertyValue originalPropertyValue = originalPropertyValueList.get(index);
-                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescription(originalPropertyValue)) {
-                    // Property value was modified.
-                    logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
-                            + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
-                    newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
-                    newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
-
-                    // Save history
-                    List<PropertyValueHistory> propertyValueHistoryList = newPropertyValue.getPropertyValueHistoryList();
-                    PropertyValueHistory propertyValueHistory = new PropertyValueHistory();
-                    propertyValueHistory.updateFromPropertyValue(originalPropertyValue);
-                    propertyValueHistoryList.add(propertyValueHistory);
-                }
-            } else {
-                // New property value.
-                logger.debug("Adding new property value for type " + newPropertyValue.getPropertyType()
-                        + ": " + newPropertyValue);
-                newPropertyValue.setEnteredByUser(entityInfo.getLastModifiedByUser());
-                newPropertyValue.setEnteredOnDateTime(entityInfo.getLastModifiedOnDateTime());
-            }
-        }
+        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
         componentInstance.clearPropertyValueCache();
         prepareComponentInstanceImageList(componentInstance);
         logger.debug("Updating component instance id " + componentInstance.getId()

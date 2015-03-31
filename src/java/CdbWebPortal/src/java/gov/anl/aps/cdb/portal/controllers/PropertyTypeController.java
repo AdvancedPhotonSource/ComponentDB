@@ -9,6 +9,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
+import gov.anl.aps.cdb.portal.model.db.entities.Design;
+import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 
 import java.io.Serializable;
 import java.util.List;
@@ -71,6 +73,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     private DataTable componentSelectDataTable = null;
     private DataTable componentInstanceSelectDataTable = null;
+    private DataTable designSelectDataTable = null;
     private DataTable designElementSelectDataTable = null;
 
     public PropertyTypeController() {
@@ -287,6 +290,20 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         List<PropertyType> selectPropertyTypeList = getFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
+
+    public void prepareSelectPropertyTypesForDesign(Design design) {
+        clearSelectFilters();
+        resetSelectDataModel();
+        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        createSelectDataModel(selectPropertyTypeList);
+    }
+    
+    public void prepareSelectPropertyTypesForDesignElement(DesignElement designElement) {
+        clearSelectFilters();
+        resetSelectDataModel();
+        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        createSelectDataModel(selectPropertyTypeList);
+    }
     
     @FacesConverter(forClass = PropertyType.class)
     public static class PropertyTypeControllerConverter implements Converter {
@@ -348,6 +365,14 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     public void setComponentInstanceSelectDataTable(DataTable componentInstanceSelectDataTable) {
         this.componentInstanceSelectDataTable = componentInstanceSelectDataTable;
+    }
+
+    public DataTable getDesignSelectDataTable() {
+        return designSelectDataTable;
+    }
+
+    public void setDesignSelectDataTable(DataTable designSelectDataTable) {
+        this.designSelectDataTable = designSelectDataTable;
     }
 
     public DataTable getDesignElementSelectDataTable() {
