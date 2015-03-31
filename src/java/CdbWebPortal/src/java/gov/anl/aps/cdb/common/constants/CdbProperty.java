@@ -17,5 +17,4 @@ public class CdbProperty {
     public static final String EDP_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.edp.urlString";
     public static final String ICMS_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.icms.urlString";
     public static final String PARIS_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.paris.urlString";
-    public static final String PDMLINK_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.pdmlink.urlString";
 }

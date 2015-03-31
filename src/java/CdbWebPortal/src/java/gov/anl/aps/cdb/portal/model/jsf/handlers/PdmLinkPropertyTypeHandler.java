@@ -21,8 +21,6 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private static final Logger logger = Logger.getLogger(PdmLinkPropertyTypeHandler.class.getName());
 
     public static final String HANDLER_NAME = "PDMLink";
-    public static final String PdmLinkUrl = ConfigurationUtility.getPortalProperty(
-            CdbProperty.PDMLINK_URL_STRING_PROPERTY_NAME);
 
     private PdmLinkApi pdmLinkApi;
 
@@ -41,16 +39,6 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public DisplayType getValueDisplayType() {
         return DisplayType.HTTP_LINK;
-    }
-
-    public static String formatPdmLink(String pdmLinkId) {
-        if (pdmLinkId == null) {
-            return null;
-        }
-
-        String idValue = pdmLinkId.trim();
-        String url = PdmLinkUrl.replace("PDMLINK_ID", idValue);
-        return url;
     }
 
     @Override
