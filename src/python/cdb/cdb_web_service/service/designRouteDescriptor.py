@@ -54,9 +54,18 @@ class DesignRouteDescriptor:
             # design names can contain slashes
             {
                 'name' : 'addDesign',
-                'path' : '%s/designs/new' % contextRoot,
+                'path' : '%s/designs/add' % contextRoot,
                 'controller' : designSessionController,
                 'action' : 'addDesign', 
+                'method' : ['POST']
+            },
+
+            # Load design 
+            {
+                'name' : 'loadDesign',
+                'path' : '%s/designs/load' % contextRoot,
+                'controller' : designSessionController,
+                'action' : 'loadDesign', 
                 'method' : ['POST']
             },
 

@@ -13,6 +13,6 @@ class UserGroupController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getUserGroups(self, **kwargs):
-        return self.toJson(self.userGroupControllerImpl.getUserGroups())
+        return self.listToJson(self.userGroupControllerImpl.getUserGroups())
 
 

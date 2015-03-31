@@ -42,12 +42,12 @@ class DesignDbApi(CdbDbApi):
 
     # This method is meant for adding designs via spreadsheets
     @CdbDbApi.executeTransaction
-    def loadDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementDictList, **kwargs):
+    def loadDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList, **kwargs):
         session = kwargs['session']
         dbDesign = self.designHandler.addDesign(session, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
 
         # Go over all design elements
-        for designElementDict in designElementDictList: 
+        for designElementDict in designElementList: 
             designElementName = designElementDict.get('name')
             description = designElementDict.get('description')
             sortOrder = designElementDict.get('sortOrder')
@@ -74,10 +74,10 @@ class DesignDbApi(CdbDbApi):
             dbDesignElement = self.designElementHandler.addDesignElement(session, designElementName, parentDesignId, childDesignId, componentId, locationId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, sortOrder, description)
 
             # Go over design element properties 
-            designElementPropertyDictList = designElementDict.get('propertyList', [])
+            designElementPropertyList = designElementDict.get('propertyList', [])
             designElementId = dbDesignElement.id
-            for designElementPropertyDict in designElementPropertyDictList: 
-                propertyTypeName = designElementPropertyDict.get('propertyTypeName') 
+            for designElementPropertyDict in designElementPropertyList: 
+                propertyTypeName = designElementPropertyDict.get('name') 
                 tag = designElementPropertyDict.get('tag')
                 value = designElementPropertyDict.get('value')
                 units = designElementPropertyDict.get('units')
@@ -150,7 +150,7 @@ if __name__ == '__main__':
     #print designElementProperty
 
     print 'Loading design'
-    designElementDictList = [
+    designElementList = [
         { 'name' : 'e1',
           'componentId' : 3,
           'locationId' : 3,
@@ -184,7 +184,7 @@ if __name__ == '__main__':
           ]
         },
     ]
-    design = api.loadDesign(name='sv2', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Loaded Design', designElementDictList=designElementDictList)
+    design = api.loadDesign(name='sv2', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Loaded Design', designElementList=designElementList)
     print "Added Design"
     print design
 

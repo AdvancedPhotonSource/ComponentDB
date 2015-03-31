@@ -13,6 +13,6 @@ class ComponentTypeCategoryController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getComponentTypeCategories(self, **kwargs):
-        return self.toJson(self.componentTypeCategoryControllerImpl.getComponentTypeCategories())
+        return self.listToJson(self.componentTypeCategoryControllerImpl.getComponentTypeCategories())
 
 

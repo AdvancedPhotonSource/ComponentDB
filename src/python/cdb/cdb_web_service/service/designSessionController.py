@@ -36,3 +36,30 @@ class DesignSessionController(CdbSessionController):
 
         return self.designControllerImpl.addDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description).getFullJsonRep()
 
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def loadDesign(self, **kwargs):
+        if not kwargs.has_key('name'):
+            raise InvalidRequest('Missing design name.')
+        name = Encoder.decode(kwargs.get('name'))
+
+        sessionUser = self.getSessionUser()
+        createdByUserId = sessionUser.get('id')
+        ownerUserId = kwargs.get('ownerUserId', createdByUserId)
+        ownerGroupId = kwargs.get('ownerGroupId')
+        if ownerGroupId is None:
+            ownerGroup = sessionUser.getDefaultUserGroup()
+            if ownerGroup is not None:
+                ownerGroupId = ownerGroup.get('id')
+        isGroupWriteable = kwargs.get('isGroupWriteable', False)
+        description = kwargs.get('description')
+        if description is not None:
+            description = Encoder.decode(description)
+
+        designElementList = kwargs.get('designElementList')
+        if designElementList is not None:
+            designElementList = self.fromJson(Encoder.decode(designElementList))
+
+        return self.designControllerImpl.loadDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList).getFullJsonRep()
+

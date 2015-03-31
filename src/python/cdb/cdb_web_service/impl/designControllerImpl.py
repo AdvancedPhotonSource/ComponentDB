@@ -26,3 +26,6 @@ class DesignControllerImpl(CdbObjectManager):
 
     def addDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
         return self.designDbApi.addDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
+
+    def loadDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList):
+        return self.designDbApi.loadDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList)

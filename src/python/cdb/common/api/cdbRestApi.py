@@ -31,6 +31,14 @@ class CdbRestApi(CdbApi):
         self.protocol = protocol
         self.sessionManager = None
 
+    @classmethod
+    def toJson(cls, o):
+        return json.dumps(o)
+
+    @classmethod
+    def fromJson(cls, s):
+        return json.loads(s)
+
     def __getWebServiceUrl(self, url):
         if url.find('://') < 0:
             return '%s://%s:%s' % (self.protocol, socket.gethostbyname(self.host), self.port)

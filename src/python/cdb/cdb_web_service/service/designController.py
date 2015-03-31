@@ -13,7 +13,7 @@ class DesignController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getDesigns(self, **kwargs):
-        return self.toJson(self.designControllerImpl.getDesigns())
+        return self.listToJson(self.designControllerImpl.getDesigns())
 
     @cherrypy.expose
     @CdbController.execute

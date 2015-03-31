@@ -13,7 +13,7 @@ class UserInfoController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getUsers(self, **kwargs):
-        return self.toJson(self.userInfoControllerImpl.getUsers())
+        return self.listToJson(self.userInfoControllerImpl.getUsers())
 
     @cherrypy.expose
     @CdbController.execute

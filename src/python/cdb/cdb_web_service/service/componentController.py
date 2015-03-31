@@ -13,7 +13,7 @@ class ComponentController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getComponents(self, **kwargs):
-        return self.toJson(self.componentControllerImpl.getComponents())
+        return self.listToJson(self.componentControllerImpl.getComponents())
 
     @cherrypy.expose
     @CdbController.execute

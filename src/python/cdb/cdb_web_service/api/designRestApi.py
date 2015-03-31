@@ -53,7 +53,7 @@ class DesignRestApi(CdbRestApi):
 
     def addDesign(self, name, ownerUserId, ownerGroupId, isGroupWriteable, description):
         try:
-            url = '%s/designs/new' % (self.getContextRoot())
+            url = '%s/designs/add' % (self.getContextRoot())
             if name is None or not len(name):
                 raise InvalidRequest('Design name must be provided.')
             url += '?name=%s' % Encoder.encode(name)
@@ -73,6 +73,26 @@ class DesignRestApi(CdbRestApi):
         except Exception, ex:
             self.getLogger().exception('%s' % ex)
             raise CdbException(exception=ex)
+
+    @CdbRestApi.execute
+    def loadDesign(self, name, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList):
+        url = '%s/designs/load' % (self.getContextRoot())
+        if name is None or not len(name):
+            raise InvalidRequest('Design name must be provided.')
+        url += '?name=%s' % Encoder.encode(name)
+        if ownerUserId is not None:
+            url += '&ownerUserId=%s' % ownerUserId
+        if ownerGroupId is not None:
+            url += '&ownerGroupId=%s' % ownerGroupId
+        if description is not None and len(name):
+            url += '&description=%s' % Encoder.encode(description)
+        if isGroupWriteable is not None:
+            url += '&isGroupWriteable=%s' % isGroupWriteable
+        if designElementList is not None and len(designElementList):
+            url += '&designElementList=%s' % Encoder.encode(self.toJson(designElementList))
+
+        responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+        return Design(responseData)
 
 #######################################################################
 # Testing.

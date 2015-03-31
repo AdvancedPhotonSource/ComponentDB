@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import json
+from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.utility.loggingManager import LoggingManager
 
 class CdbApi(object):
@@ -8,8 +9,10 @@ class CdbApi(object):
     def __init__(self, username = None, password = None):
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
-    def getLogger(self):
-        return self.logger
+    @classmethod
+    def getLogger(cls):
+        logger = LoggingManager.getInstance().getLogger(cls.__name__)
+        return logger
 
     @classmethod
     def toCdbObjectList(cls, dictList, cdbObjectClass):
@@ -17,5 +20,17 @@ class CdbApi(object):
         for dict in dictList:
             cdbObjectList.append(cdbObjectClass(dict))
         return cdbObjectList 
-      
-        
+
+    # Exception decorator for all api calls
+    @classmethod
+    def execute(cls, func):
+        def decorate(*args, **kwargs):
+            try:
+                response = func(*args, **kwargs)
+                return response
+            except CdbException, ex:
+                raise
+            except Exception, ex:
+                cls.getLogger().exception('%s' % ex)
+                raise CdbException(exception=ex)
+        return decorate

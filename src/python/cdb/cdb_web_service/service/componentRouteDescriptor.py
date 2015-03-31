@@ -76,7 +76,7 @@ class ComponentRouteDescriptor:
             # component names can contain slashes
             {
                 'name' : 'addComponent',
-                'path' : '%s/components/new' % contextRoot,
+                'path' : '%s/components/add' % contextRoot,
                 'controller' : componentSessionController,
                 'action' : 'addComponent', 
                 'method' : ['POST']

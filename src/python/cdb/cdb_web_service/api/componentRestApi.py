@@ -77,7 +77,7 @@ class ComponentRestApi(CdbRestApi):
 
     def addComponent(self, name, componentTypeId, ownerUserId, ownerGroupId, isGroupWriteable, description):
         try:
-            url = '%s/components/new' % (self.getContextRoot())
+            url = '%s/components/add' % (self.getContextRoot())
             if name is None or not len(name):
                 raise InvalidRequest('Component name must be provided.')
             url += '?name=%s' % Encoder.encode(name)
