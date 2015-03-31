@@ -46,6 +46,7 @@ CDB_DIST_DIR=$CDB_ROOT_DIR/src/java/CdbWebPortal/dist
 CDB_BUILD_WAR_FILE=CdbWebPortal.war
 CDB_WAR_FILE=$CDB_CONTEXT_ROOT.war
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
+CDB_WEB_SERVICE_HOST=`hostname -f`
 CDB_DATE=`date +%Y.%m.%d`
 
 if [ ! -f $CDB_DIST_DIR/$CDB_BUILD_WAR_FILE ]; then
@@ -78,6 +79,8 @@ eval $cmd
 
 configFile=WEB-INF/classes/cdb.portal.properties
 cmd="cat $configFile | sed 's?storageDirectory=.*?storageDirectory=${CDB_DATA_DIR}?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+cmd="cat $configFile | sed 's?cdb.webService.url=.*?cdb.webService.url=https://${CDB_WEB_SERVICE_HOST}:${CDB_WEB_SERVICE_PORT}/cdb?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
 configFile=WEB-INF/classes/resources.properties
