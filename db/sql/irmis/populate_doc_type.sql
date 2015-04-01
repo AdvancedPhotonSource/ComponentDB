@@ -1,1 +1,0 @@
-INSERT INTO `doc_type` VALUES (3,'Block Diagram'),(13,'CCWP'),(12,'Design Specification'),(14,'Feature Sheet'),(10,'Functional Criteria'),(6,'IOC Boot Startup Command'),(9,'Other'),(2,'Quick Reference Manual'),(11,'Script'),(5,'Trouble Shooting Guide'),(1,'Tutorial'),(7,'Undefined'),(4,'Validation Procedure'),(8,'Wiring/Cabling');

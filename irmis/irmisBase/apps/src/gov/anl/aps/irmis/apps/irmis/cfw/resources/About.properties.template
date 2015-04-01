@@ -1,6 +1,0 @@
-name = IRMIS
-version = 2.0 (@build-id@)
-date = @build-date@
-authors = Claude Saunders, Don Dohan, Ned Arnold
-organization = Argonne National Laboratory
-description = IRMIS Desktop

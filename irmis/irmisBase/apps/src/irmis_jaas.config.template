@@ -1,5 +1,0 @@
-
-IRMIS {
-  @irmis.login@ required debug=false;
-};
-
