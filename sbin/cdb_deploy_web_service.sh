@@ -54,7 +54,7 @@ CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/$CDB_DB_NAME.$CDB_WEB_SERVICE_DAEMON.log
 CDB_WEB_SERVICE_INIT_CMD=${CDB_ROOT_DIR}/etc/init.d/$CDB_WEB_SERVICE_DAEMON
 CDB_DB_PASSWORD_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.db.passwd 
 CDB_USER_SETUP_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.setup.sh
-CDB_SERVICE_HOST=`hostname -f`
+CDB_WEB_SERVICE_HOST=`hostname -f`
 CDB_DATE=`date +%Y.%m.%d`
 
 echo "CDB install directory: $CDB_INSTALL_DIR"
@@ -118,8 +118,8 @@ echo "Preparing setup file"
 cmd="cat $CDB_ROOT_DIR/etc/setup.sh.template \
         | sed 's?CDB_ROOT_DIR=.*?CDB_ROOT_DIR=$CDB_ROOT_DIR?g' \
         | sed 's?CDB_SERVICE_PROTOCOL=.*?CDB_SERVICE_PROTOCOL=https?g' \
-        | sed 's?CDB_SERVICE_HOST=.*?CDB_SERVICE_HOST=$CDB_SERVICE_HOST?g' \
-        | sed 's?CDB_SERVICE_PORT=.*?CDB_SERVICE_PORT=$CDB_SERVICE_PORT?g' \
+        | sed 's?CDB_SERVICE_HOST=.*?CDB_SERVICE_HOST=$CDB_WEB_SERVICE_HOST?g' \
+        | sed 's?CDB_SERVICE_PORT=.*?CDB_SERVICE_PORT=$CDB_WEB_SERVICE_PORT?g' \
         > $CDB_USER_SETUP_FILE"
     eval $cmd || exit 1
 
