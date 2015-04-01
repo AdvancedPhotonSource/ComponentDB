@@ -1,3 +1,12 @@
+Release 2.0 (Tag 20150331) (03/31/2015)
+=======================================
+
+- Added python web service framework and corresponding API and CLI layers
+- Introduced python DB support (including API layer)
+- Added PDMLink handler and PDMLink search tool
+- Developed support for loading lattice files as designs (via web service)
+- Enhanced search functionality for designs and design elements
+
 Release 1.2 (Tag 20150228) (02/28/2015)
 =======================================
 
