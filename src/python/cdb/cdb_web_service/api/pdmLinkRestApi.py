@@ -13,45 +13,29 @@ class PdmLinkRestApi(CdbRestApi):
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
+    @CdbRestApi.execute
     def getDrawing(self, name):
-        try:
-            if name is None:
-                raise InvalidRequest('Drawing name must be provided.')
-            url = '%s/pdmLink/drawings/%s' % (self.getContextRoot(), name)
-            responseData = self.sendRequest(url=url, method='GET')
-            return PdmLinkDrawing(responseData)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
+        if name is None:
+            raise InvalidRequest('Drawing name must be provided.')
+        url = '%s/pdmLink/drawings/%s' % (self.getContextRoot(), name)
+        responseData = self.sendRequest(url=url, method='GET')
+        return PdmLinkDrawing(responseData)
 
+    @CdbRestApi.execute
     def getDrawingThumbnail(self, ufid):
-        try:
-            if ufid is None:
-                raise InvalidRequest('Drawing revision ufid must be provided.')
-            url = '%s/pdmLink/drawingThumbnails/%s' % (self.getContextRoot(), ufid)
-            responseData = self.sendRequest(url=url, method='GET')
-            return Image(responseData)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
+        if ufid is None:
+            raise InvalidRequest('Drawing revision ufid must be provided.')
+        url = '%s/pdmLink/drawingThumbnails/%s' % (self.getContextRoot(), ufid)
+        responseData = self.sendRequest(url=url, method='GET')
+        return Image(responseData)
 
+    @CdbRestApi.execute
     def getDrawingImage(self, ufid):
-        try:
-            if ufid is None:
-                raise InvalidRequest('Drawing revision ufid must be provided.')
-            url = '%s/pdmLink/drawingImages/%s' % (self.getContextRoot(), ufid)
-            responseData = self.sendRequest(url=url, method='GET')
-            return Image(responseData)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
-
+        if ufid is None:
+            raise InvalidRequest('Drawing revision ufid must be provided.')
+        url = '%s/pdmLink/drawingImages/%s' % (self.getContextRoot(), ufid)
+        responseData = self.sendRequest(url=url, method='GET')
+        return Image(responseData)
 
 #######################################################################
 # Testing.

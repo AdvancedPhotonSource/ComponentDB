@@ -39,14 +39,14 @@ class CdbCli(object):
         self.addOptionToGroup(commonGroup, '-h', '--help', action='help', help='Show this help message and exit.')
         self.addOptionToGroup(commonGroup, '-?', '',       action='help', help='Show this help message and exit.')
         self.addOptionToGroup(commonGroup, '-v', '--version', action='store_true', dest='version', default=False, help='Print version and exit.')
-        self.addOptionToGroup(commonGroup, '-d', '--debug', dest='consoleLogLevel', help='Set debug level (valid values: CRITICAL, ERROR, WARNING, INFO, DEBUG).')
+        self.addOptionToGroup(commonGroup, '-d', '--debug', dest='consoleLogLevel', help='Set debug level (valid values: CRITICAL, ERROR, WARNING, INFO, DEBUG). Console log level can also be set via CDB_CONSOLE_LOG_LEVEL environment variable,')
         self.addOptionToGroup(commonGroup, '', '--display-format', dest='displayFormat', default=CdbObject.TEXT_DISPLAY_FORMAT, help='Display format for output objects. Possible options are: %s, %s, and %s (default: %s).' % (CdbObject.TEXT_DISPLAY_FORMAT, CdbObject.DICT_DISPLAY_FORMAT, CdbObject.JSON_DISPLAY_FORMAT, CdbObject.TEXT_DISPLAY_FORMAT)) 
         self.addOptionToGroup(commonGroup, '', '--display-keys', dest='displayKeys', default=CdbObject.DEFAULT_KEYS, help='List of output object keys to display. Possible options are: %s, %s, and string containing comma-separated keys (default: %s, represents class default keys).' % (CdbObject.DEFAULT_KEYS, CdbObject.ALL_KEYS, CdbObject.DEFAULT_KEYS)) 
 
         # These will be set via env variables
-        #self.addOptionToGroup(commonGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s).' % self.getDefaultServiceHost())
-        #self.addOptionToGroup(commonGroup, '', '--service-port', dest='servicePort', default=self.getDefaultServicePort(), help='Service port (default: %s).' % self.getDefaultServicePort())
-        #self.addOptionToGroup(commonGroup, '', '--service-protocol', dest='serviceProtocol', default=self.getDefaultServiceProtocol(), help='Service protocol (default: %s, can be set via CDB_SERVICE_PROTOCOL environment variable).' % self.getDefaultServiceProtocol())
+        self.addOptionToGroup(commonGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s, can be set via CDB_SERVICE_HOST environment variable).' % self.getDefaultServiceHost())
+        self.addOptionToGroup(commonGroup, '', '--service-port', dest='servicePort', default=self.getDefaultServicePort(), help='Service port (default: %s, can be set via CDB_SERVICE_PORT environment variable).' % self.getDefaultServicePort())
+        self.addOptionToGroup(commonGroup, '', '--service-protocol', dest='serviceProtocol', default=self.getDefaultServiceProtocol(), help='Service protocol (default: %s, can be set via CDB_SERVICE_PROTOCOL environment variable).' % self.getDefaultServiceProtocol())
 
         # SSL options, disabled for now.
         #self.addOptionToGroup(commonGroup, '', '--ssl-key', dest='sslKeyFile', help='SSL key file (needed if service requires peer verification, can be set via CDB_SSL_KEY_FILE environment variable).')
@@ -130,13 +130,13 @@ class CdbCli(object):
                 LoggingManager.getInstance().setConsoleLogLevel(consoleLogLevel)
 
         # Service host, port, etc.
-        #configManager = ConfigurationManager.getInstance()
-        #self.serviceHost = self.options.serviceHost
-        #configManager.setServiceHost(self.serviceHost)
-        #self.servicePort = self.options.servicePort
-        #configManager.setServicePort(self.servicePort)
-        #self.serviceProtocol = self.options.serviceProtocol
-        #configManager.setServiceProtocol(self.serviceProtocol)
+        configManager = ConfigurationManager.getInstance()
+        self.serviceHost = self.options.serviceHost
+        configManager.setServiceHost(self.serviceHost)
+        self.servicePort = self.options.servicePort
+        configManager.setServicePort(self.servicePort)
+        self.serviceProtocol = self.options.serviceProtocol
+        configManager.setServiceProtocol(self.serviceProtocol)
 
         # SSL options, comment out for now
         #self.sslCaCertFile = self.options.sslCaCertFile

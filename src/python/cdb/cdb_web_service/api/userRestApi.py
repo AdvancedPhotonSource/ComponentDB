@@ -15,53 +15,33 @@ class UserRestApi(CdbRestApi):
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
+    @CdbRestApi.execute
     def getUserGroups(self):
-        try:
-            url = '%s/userGroups' % (self.getContextRoot())
-            responseData = self.sendRequest(url=url, method='GET')
-            return self.toCdbObjectList(responseData, UserGroup)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
+        url = '%s/userGroups' % (self.getContextRoot())
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, UserGroup)
 
+    @CdbRestApi.execute
     def getUsers(self):
-        try:
-            url = '%s/users' % (self.getContextRoot())
-            responseData = self.sendRequest(url=url, method='GET')
-            return self.toCdbObjectList(responseData, UserInfo)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
+        url = '%s/users' % (self.getContextRoot())
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, UserInfo)
 
+    @CdbRestApi.execute
     def getUserById(self, id):
-        try:
-            if id is None:
-                raise InvalidRequest('User id must be provided.')
-            url = '%s/users/%s' % (self.getContextRoot(), id)
-            responseData = self.sendRequest(url=url, method='GET')
-            return UserInfo(responseData)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
+        if id is None:
+            raise InvalidRequest('User id must be provided.')
+        url = '%s/users/%s' % (self.getContextRoot(), id)
+        responseData = self.sendRequest(url=url, method='GET')
+        return UserInfo(responseData)
 
+    @CdbRestApi.execute
     def getUserByUsername(self, username):
-        try:
-            if username is None:
-                raise InvalidRequest('Username must be provided.')
-            url = '%s/usersByUsername/%s' % (self.getContextRoot(), username)
-            responseData = self.sendRequest(url=url, method='GET')
-            return UserInfo(responseData)
-        except CdbException, ex:
-            raise
-        except Exception, ex:
-            self.getLogger().exception('%s' % ex)
-            raise CdbException(exception=ex)
+        if username is None:
+            raise InvalidRequest('Username must be provided.')
+        url = '%s/usersByUsername/%s' % (self.getContextRoot(), username)
+        responseData = self.sendRequest(url=url, method='GET')
+        return UserInfo(responseData)
 
 #######################################################################
 # Testing.
