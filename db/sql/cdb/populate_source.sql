@@ -22,6 +22,11 @@ INSERT INTO `source` VALUES
 (19,'Wiener, Plien & Baus,  GmbH ','','','http://www.wiener-us.com/'),
 (20,'Concurrent Technologies','','','http://www.gocct.com/'),
 (21,'Instrumentation Technologies (I-Tech)','','','www.i-tech.si'),
-(22,'Micro-Research Finland Oy (MRF)','','','http://www.mrf.fi/');
+(22,'Micro-Research Finland Oy (MRF)','','','http://www.mrf.fi/'),
+(23,'Opal Kelly','FPGA Boards','','http://www.opalkelly.com'),
+(24,'Midwest Vacuum','Vacuum Components Vendor','Hans Luedi, 630-323-5399, hluedi@midwestvacuum.com','http://www.midwestvacuum.com/Home.9.0.html'),
+(25,'Vacuum One','Vacumm Components Vendor','Scott Dix, 408-510-2459, info@vacuumone.com','http://www.vacuumone.com/'),
+(26,'VACOM','Vacuum Components Vendor','Michael Pick, +49 3641 4275-33, michael.pick@vacom.de','http://www.vacom.de/en/'),
+(27,'Edwards','Vacuum products manufacturer','','https://www.edwardsvacuum.com');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

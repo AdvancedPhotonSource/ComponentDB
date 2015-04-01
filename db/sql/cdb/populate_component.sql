@@ -1,8 +1,8 @@
 LOCK TABLES `component` WRITE;
 /*!40000 ALTER TABLE `component` DISABLE KEYS */;
 INSERT INTO `component` VALUES
-(1,'Gate Valve (RF Shielded)','Ag-coated SST liner, 22 mm ID, standard SST 2 3/8\\ CF flanges\"',75,1),
-(2,'Gate Valve (xray extraction)','Ag-coated SST liner, 22 mm ID with pocket for x-ray extraction, standard 2 3/8\\ SST CF flanges\"',75,2),
+(1,'Gate Valve, R&D Vacuum Sector Mockup, DN-40','VAT series 48, DN-40, CF-F, pneumatic actuator with 24VDC solenoid, dual position indicator',75,1),
+(2,'Gate Valve, R&D Vacuum Sector Mockup, DN-63','VAT series 48, DN-63, CF-F, pneumatic actuator with 24VDC solenoid, dual position indicator',75,2),
 (3,'VacChamberAssy1','GTAW-welded SST 316L tube, SST 316L standard and chain-clamped CF flanges',64,3),
 (4,'VacChamberAssy2','GTAW-welded SST 316L tube, SST 316L standard and chain-clamped CF flanges',64,4),
 (5,'VacChamberAssy3','GTAW-welded aluminum extrusion with antechamber, AL chain-clamped CF flanges',64,5),
@@ -29,18 +29,18 @@ INSERT INTO `component` VALUES
 (26,'VacChamberAssy24','GTAW-welded SST316L rectandular tube, standard SST316L 2 3/4\\ CF flanges\"',64,26),
 (27,'VacChamberAssy25','GTAW-welded SST316L rectandular tube, standard SST316L 2 3/4\\ CF flanges\"',64,27),
 (28,'BpmRfShieldedBelAssy1','Bolted assembly of furnace-brazed Cu and BeCu liner, and SST 316L edge-welded bellows with SST 316L CF chain-clamped flanges',87,28),
-(29,'WedgeAbsorber1','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,29),
-(30,'WedgeAbsorber2','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,30),
-(31,'WedgeAbsorber3','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,31),
-(32,'WedgeAbsorber4','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,32),
+(29,'EndAbsorber1','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,29),
+(30,'EndAbsorber2','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,30),
+(31,'EndAbsorber3','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,31),
+(32,'EndAbsorber4','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,32),
 (33,'CrotchAbsorber1','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,33),
 (34,'CrotchAbsorber2','Furnace-brazed Glidcop, copper tube, and SST 304 CF flange',67,34),
 (35,'VacGgTreeAssy1','Bolted assembly of vendor items, SST 304 chambers, standard SST 304 CF flanges',72,35),
-(36,'Ion Pump (Storage Ring)','Vendor item, Ti/Ta electrodes with standard SST 304 CF flange',66,36),
-(37,'RGA (Ametek)','Residual Gas Analyzer',21,37),
-(38,'IonPumpCtlr1','Rack-mountable chasis',11,38),
+(36,'Ion Pump, Storage Ring, 45 L/s','Double port 4.5/2.75 CFR,Differential electrodes for enhanced pumping of noble gases.',66,36),
+(37,'RGA, R&D Vacuum Sector Mockup, Ametek','Residual Gas Analyzer',29,37),
+(38,'Ion Pump Controller, R&D Vacuum Sector Mockup','Rack-mountable chasis, powers and montors two ion pumps',11,38),
 (39,'IonPumpHvCable1','Copper conductor with radiation-resistant insulation',34,39),
-(40,'VacGaugeCtlr1','Rack-mountable chasis',13,40),
+(40,'Vacuum Gauge Controller, R&D Vacuum Sector Mockup','Rack-mountable chasis; Powers and monitors two convection gauges and two cold cathode gauges.',13,40),
 (41,'ConvGaugeCable1','Copper conductor with radiation-resistant insulation',34,41),
 (42,'ColdCathodeGaugeCable1','Copper conductor with radiation-resistant insulation',34,42),
 (43,'RgaCable1','Copper conductor with radiation-resistant insulation',34,43),
@@ -54,7 +54,6 @@ INSERT INTO `component` VALUES
 (56,'Generic: Cabinet',NULL,6,56),
 (57,'Generic: Enclosure',NULL,7,57),
 (58,'Generic: Card Cage',NULL,8,58),
-(59,'Generic: Instrumentation Component',NULL,9,59),
 (60,'Generic: Controller - Generic',NULL,10,60),
 (61,'Generic: Controller - Ion Pump',NULL,11,61),
 (62,'Generic: Controller - Gate Valve',NULL,12,62),
@@ -200,6 +199,10 @@ INSERT INTO `component` VALUES
 (205,'PCIe-EVR-300','PCIe Event Receiver (Gen 2)',56,482),
 (206,'MARK','',126,484),
 (207,'MicroTCA Chassis Fan Unit','Used in Model 11850-026',127,485),
-(208,'MicroTCA Chassis Assembly','Includes chassis, 2 fan units, power supply',8,486);
+(208,'MicroTCA Chassis Assembly','Includes chassis, 2 fan units, power supply',8,486),
+(209,'Generic: Instrumentation Component','',9,499),
+(210,'Ion Pump, R&D Vacuum Sector Mockup, 45 L/s','Double port 4.5/2.75 CFR,Differential electrodes for enhanced pumping of noble gases, integrated N200 NEG cartridge pump',66,500),
+(211,'NEG Pump Controller, R&D Vacuum Sector Mockup','',10,516),
+(212,'Turbo Pump Cart, R&D Vacuum Sector Mockup','TStation 75',66,520);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -1,13 +1,13 @@
 LOCK TABLES `property_type` WRITE;
 /*!40000 ALTER TABLE `property_type` DISABLE KEYS */;
 INSERT INTO `property_type` VALUES
-(1,'EDP Collection',NULL,4,4,NULL,NULL),
-(2,'QA Level','',2,NULL,'D',NULL),
+(1,'EDP Collection','Provides a link to an EDP collection of documents. The handler will accept the full EDP ID string (e.g. EDP_000123) or just the collection number (e.g. 123)',4,4,'',''),
+(2,'QA Level','Enumerated values of A | B | C | D',2,NULL,'D',''),
 (3,'QA Inspection Template','Inspection Procedure Document',2,NULL,NULL,NULL),
 (4,'QA Inspection Report','Inspection Result Document',2,NULL,NULL,NULL),
 (5,'Electrical Equipment Status','NRTL Approved or APS Inspection Required or Not Required',2,NULL,NULL,NULL),
 (6,'Electrical Inspection #','Inspection # from DEEI (use desc of Status?)',2,NULL,NULL,NULL),
-(7,'Documentation URI','',4,3,NULL,NULL),
+(7,'Documentation URI','Provides a link to any web address (URL)',4,3,'',''),
 (8,'Form Factor','',3,NULL,'',''),
 (9,'Slot Length','',3,NULL,NULL,NULL),
 (10,'Required Water Flow',NULL,3,NULL,NULL,NULL),
@@ -17,9 +17,9 @@ INSERT INTO `property_type` VALUES
 (14,'Image',NULL,4,2,NULL,NULL),
 (15,'Document',NULL,4,1,NULL,NULL),
 (16,'ICMS Document/Drawing',NULL,4,5,NULL,NULL),
-(17,'PDMLink Drawing',NULL,4,6,NULL,NULL),
-(18,'AMOS Order',NULL,4,7,NULL,NULL),
-(19,'Purchase Requisition',NULL,4,8,NULL,NULL),
+(17,'PDMLink Drawing','Provides a link to PDMLink, enter the drawing number including the extension e.g. U221020202-110001.asm',4,6,'',''),
+(18,'AMOS Order','Provides a link to AMOS, enter the Master Order number, e.g. MO_nnnnnn ',4,7,'',''),
+(19,'Purchase Requisition','Provides a link to PARIS. Enter the PR number, e.g. Fy-xxxxxx , in the Value field',4,8,'',''),
 (20,'Cost',NULL,4,9,NULL,NULL),
 (21,'QA Inspection Complete','',2,10,'false',NULL),
 (22,'Pressure System Component','',2,10,NULL,NULL),
@@ -60,6 +60,7 @@ INSERT INTO `property_type` VALUES
 (57,'B1L','',7,NULL,'',''),
 (58,'K1','',7,NULL,'',''),
 (59,'K2','',7,NULL,'',''),
-(60,'B2L','',7,NULL,'','');
+(60,'B2L','',7,NULL,'',''),
+(61,'Magnet Measurement Procedure','',9,3,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

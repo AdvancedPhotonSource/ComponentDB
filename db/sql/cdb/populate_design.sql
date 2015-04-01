@@ -1,7 +1,6 @@
 LOCK TABLES `design` WRITE;
 /*!40000 ALTER TABLE `design` DISABLE KEYS */;
 INSERT INTO `design` VALUES
-(1,'Design Option 2 - NEG-Coated Copper Chambers in FODO Section','MBA Vacuum System Component Listing; Sector 01 (Typical)',156),
 (2,'A Generic Collection of Generic Components','A typical parts list for an IOC using generic components',157),
 (4,'Top DAQ Collection','This collection contains the central DAQ server(s) and references child collections to each DAQ IOC',160),
 (5,'RTFB DAQ IOC','IOC with Reflective Memory board tapped in to the existing RTFB network',161),
@@ -24,6 +23,8 @@ INSERT INTO `design` VALUES
 (29,'Girder 1','',428),
 (31,'S27 RTFB Teststand (4x4)','',447),
 (32,'Double Sector Controller - uTCA Version','uTCA crate and modules for double sector controller prototype',448),
-(33,'S27 Integrated orbit feedback prototype','',459);
+(33,'S27 Integrated orbit feedback prototype','',459),
+(34,'R&D - Vacuum sector mockup','Includes all major components required to build a simplified mockup of one sector of the APS-U storage ring vacuum system.',493),
+(35,'R&D - Vacuum flange and joint test stand','',498);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;
