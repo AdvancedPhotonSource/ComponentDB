@@ -131,6 +131,7 @@ CDB_DB_TABLES="\
     user_info \
     user_group \
     user_user_group \
+    user_setting \
     entity_info \
     source \
     property_type_category \
@@ -143,6 +144,7 @@ CDB_DB_TABLES="\
     location \
     location_link \
     resource_type_category \
+    resource_type \
     connector_type_category \
     connector_type \
     component_type_category \
@@ -150,6 +152,8 @@ CDB_DB_TABLES="\
     resource_type \
     log_topic \
     log \
+    attachment \
+    log_attachment \
     component \
     component_source \
     component_property \
@@ -159,6 +163,9 @@ CDB_DB_TABLES="\
     component_instance \
     component_instance_property \
     component_instance_log \
+    component_connector \
+    assembly_component \
+    assembly_component_connection \
     design \
     design_property \
     design_link \
@@ -167,6 +174,7 @@ CDB_DB_TABLES="\
     design_element_property \
     design_element_link \
     design_element_log \
+    design_element_connection \
 "
 for dbTable in $CDB_DB_TABLES; do
     dbFile=populate_$dbTable.sql
