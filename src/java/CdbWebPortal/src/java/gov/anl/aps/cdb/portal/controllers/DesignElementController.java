@@ -204,7 +204,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     }
 
     public String prepareViewToDesign(DesignElement designElement) {
-        return "/views/design/view.xhtml?faces-redirect=true?id=" + designElement.getParentDesign().getId();
+        return "/views/design/view.xhtml?faces-redirect=true&id=" + designElement.getParentDesign().getId();
     }
 
     public String followBreadcrumbOrPrepareViewToDesign(DesignElement designElement) {
@@ -214,7 +214,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         } 
         breadcrumbViewParam = null;
         breadcrumbObjectIdViewParam = null;
-        return loadView;
+        return loadView + "?faces-redirect=true";
     }
     
     public void prepareAddLog(DesignElement designElement) {
