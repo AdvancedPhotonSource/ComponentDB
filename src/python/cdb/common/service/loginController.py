@@ -88,7 +88,8 @@ class LoginController(CdbController):
     def checkCredentials(cls, username, password):
         """ Verifies credentials for username and password."""
         logger = LoggingManager.getInstance().getLogger('LoginController:checkCredentials')
-        logger.debug('Checking credential for User: %s, Password: %s' % (username, password))
+        logger.debug('Checking credential for User: %s' % (username))
+        #logger.debug('Checking credential for User: %s, Password: %s' % (username, password))
         logger.debug('Session id: %s' % cherrypy.serving.session.id)
         principal = AuthorizationManager.getInstance().getAuthorizationPrincipal(username, password)
         logger.debug('Principal: %s' % (principal))
