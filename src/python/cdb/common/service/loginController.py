@@ -115,8 +115,8 @@ class LoginController(CdbController):
         logger = LoggingManager.getInstance().getLogger('LoginController:checkAuthorization')
         conditions = cherrypy.request.config.get('auth.require', None)
         #logger.debug('Headers: %s' % (cherrypy.request.headers))
-        logger.debug('Request params: %s' % (cherrypy.request.params))
-        logger.debug('Request query string: %s' % (cherrypy.request.query_string))
+        #logger.debug('Request params: %s' % (cherrypy.request.params))
+        #logger.debug('Request query string: %s' % (cherrypy.request.query_string))
         method = urllib.quote(cherrypy.request.request_line.split()[0])
         params = urllib.quote(cherrypy.request.request_line.split()[1])
 
