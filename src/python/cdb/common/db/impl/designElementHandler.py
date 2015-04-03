@@ -90,6 +90,19 @@ class DesignElementHandler(CdbDbEntityHandler):
         self.logger.debug('Inserted design element id %s' % dbDesignElement.id)
         return dbDesignElement
 
+    def addUnverifiedDesignElement(self, session, name, parentDesignId, childDesignId, componentId, locationId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, sortOrder, description):
+
+        # Create entity info
+        dbEntityInfo = self.entityInfoHandler.createUnverifiedEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable)
+
+        # Create design element
+        dbDesignElement = DesignElement(name=name, parent_design_id=parentDesignId, child_design_id=childDesignId, component_id=componentId, location_id=locationId, sort_order=sortOrder, description=description)
+        dbDesignElement.entityInfo = dbEntityInfo
+        session.add(dbDesignElement)
+        session.flush()
+        self.logger.debug('Inserted design element id %s' % dbDesignElement.id)
+        return dbDesignElement
+
     def addDesignElementProperty(self, session, designElementId, propertyTypeName, tag, value, units, description, enteredByUserId):
         dbDesignElement = self.findDesignElementById(session, designElementId)
         dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId)
@@ -99,6 +112,16 @@ class DesignElementHandler(CdbDbEntityHandler):
         session.add(dbDesignElementProperty)
         session.flush()
         return dbDesignElementProperty
+
+    def addUnverifiedDesignElementProperty(self, session, designElementId, propertyTypeName, tag, value, units, description, enteredByUserId):
+        dbPropertyValue = self.propertyValueHandler.createUnverifiedPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId)
+        dbDesignElementProperty = DesignElementProperty(design_element_id=designElementId)
+        dbDesignElementProperty.propertyValue = dbPropertyValue
+        session.add(dbDesignElementProperty)
+        session.flush()
+        return dbDesignElementProperty
+
+
 
 
 

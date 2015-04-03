@@ -6,6 +6,8 @@ from cdb.common.db.impl.designHandler import DesignHandler
 from cdb.common.db.impl.designElementHandler import DesignElementHandler
 from cdb.common.db.impl.componentHandler import ComponentHandler
 from cdb.common.db.impl.locationHandler import LocationHandler
+from cdb.common.db.impl.userInfoHandler import UserInfoHandler
+from cdb.common.db.impl.userGroupHandler import UserGroupHandler
 
 class DesignDbApi(CdbDbApi):
 
@@ -15,6 +17,8 @@ class DesignDbApi(CdbDbApi):
         self.designElementHandler = DesignElementHandler()
         self.componentHandler = ComponentHandler()
         self.locationHandler = LocationHandler()
+        self.userInfoHandler = UserInfoHandler()
+        self.userGroupHandler = UserGroupHandler()
 
     @CdbDbApi.executeQuery
     def getDesigns(self, **kwargs):
@@ -46,6 +50,11 @@ class DesignDbApi(CdbDbApi):
         session = kwargs['session']
         dbDesign = self.designHandler.addDesign(session, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
 
+        # Verify users/group.
+        self.userInfoHandler.findUserInfoById(session, createdByUserId)
+        self.userInfoHandler.findUserInfoById(session, ownerUserId)
+        dbUserGroup = self.userGroupHandler.findUserGroupById(session, ownerGroupId)
+
         # Go over all design elements
         for designElementDict in designElementList: 
             designElementName = designElementDict.get('name')
@@ -71,7 +80,7 @@ class DesignDbApi(CdbDbApi):
             locationId = self.locationHandler.findLocationIdByIdOrName(session, locationId, locationName)
 
             # Add design element
-            dbDesignElement = self.designElementHandler.addDesignElement(session, designElementName, parentDesignId, childDesignId, componentId, locationId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, sortOrder, description)
+            dbDesignElement = self.designElementHandler.addUnverifiedDesignElement(session, designElementName, parentDesignId, childDesignId, componentId, locationId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, sortOrder, description)
 
             # Go over design element properties 
             designElementPropertyList = designElementDict.get('propertyList', [])
@@ -83,7 +92,7 @@ class DesignDbApi(CdbDbApi):
                 units = designElementPropertyDict.get('units')
                 description = designElementPropertyDict.get('description')
                 enteredByUserId = createdByUserId 
-                dbDesignElementProperty = self.designElementHandler.addDesignElementProperty(session, designElementId, propertyTypeName, tag, value, units, description, enteredByUserId)
+                dbDesignElementProperty = self.designElementHandler.addUnverifiedDesignElementProperty(session, designElementId, propertyTypeName, tag, value, units, description, enteredByUserId)
                         
         # Done
         return dbDesign.getCdbObject()

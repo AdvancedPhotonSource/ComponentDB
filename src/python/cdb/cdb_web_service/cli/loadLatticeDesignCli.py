@@ -89,6 +89,7 @@ Description:
             index += 1
         designElementList = []
         nColumns = index
+        sortOrder = 1.0
         for line in lineList[1:]:
             if not line:
                 break
@@ -96,7 +97,7 @@ Description:
             if len(valueList) != nColumns:
                 break
 
-            designElementDict = {}
+            designElementDict = { 'sortOrder' : sortOrder }
             for (key, index) in headerMap.items():
                 if valueList[index] is None:
                     continue
@@ -105,11 +106,14 @@ Description:
                     designElementDict[replacementKeyMap.get(key)] = valueList[index]
                 else:
                     # Design element property
-                    propertyList = designElementDict.get('propertyList', [])
-                    property = { 'name' : key, 'value' : valueList[index] }
-                    propertyList.append(property)
-                    designElementDict['propertyList'] = propertyList
+                    value = '%s' % valueList[index] 
+                    if len(value) > 0:
+                        propertyList = designElementDict.get('propertyList', [])
+                        property = { 'name' : key, 'value' : valueList[index] }
+                        propertyList.append(property)
+                        designElementDict['propertyList'] = propertyList
             designElementList.append(designElementDict)
+            sortOrder += 1.0
         return designElementList
 
 #######################################################################

@@ -12,6 +12,13 @@ class UserGroupHandler(CdbDbEntityHandler):
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
 
+    def findUserGroupById(self, session, id):
+        try:
+            dbUserGroup = session.query(UserGroup).filter(UserGroup.id==id).one()
+            return dbUserGroup
+        except NoResultFound, ex:
+            raise ObjectNotFound('User group id %s does not exist.' % (id))
+
     def getUserGroups(self, session):
         self.logger.debug('Retrieving user group list')
         dbUserGroups = session.query(UserGroup).all()

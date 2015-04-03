@@ -41,3 +41,10 @@ class PropertyValueHandler(CdbDbEntityHandler):
         dbPropertyValue.propertyType = dbPropertyType
         return dbPropertyValue
 
+    def createUnverifiedPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId):
+        enteredOnDateTime = datetime.datetime.now()
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, propertyTypeName)
+        dbPropertyValue = PropertyValue(tag=tag, value=value, units=units, description=description, entered_by_user_id=enteredByUserId, entered_on_date_time=enteredOnDateTime)
+        dbPropertyValue.propertyType = dbPropertyType
+        return dbPropertyValue
+

@@ -15,6 +15,13 @@ class UserInfoHandler(CdbDbEntityHandler):
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
 
+    def findUserInfoById(self, session, id):
+        try:
+            dbUserInfo = session.query(UserInfo).filter(UserInfo.id==id).one()
+            return dbUserInfo 
+        except NoResultFound, ex:
+            raise ObjectNotFound('User id %s does not exist.' % (id))
+
     def getUserInfos(self, session):
         self.logger.debug('Retrieving user info list')
         dbUserInfos = session.query(UserInfo).all()

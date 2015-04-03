@@ -9,3 +9,9 @@ class CdbDbEntityHandler:
     def getLogger(self):
         return self.logger
 
+    @classmethod
+    def toIntegerFromBoolean(cls, value):
+        if value:
+            return 1
+        else:
+            return 0
