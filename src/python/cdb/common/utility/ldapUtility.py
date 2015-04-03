@@ -28,7 +28,7 @@ class LdapUtility:
 
             # perform a synchronous bind
             ldapClient.simple_bind_s(ldapUsername, password)
-            ldapClient.whoami_s()
+            #ldapClient.whoami_s()
         except ldap.INVALID_CREDENTIALS, ex:
             ldapClient.unbind()
             raise AuthenticationError('Invalid LDAP credentials for user %s' % username)

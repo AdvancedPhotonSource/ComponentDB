@@ -9,7 +9,7 @@ sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
 principalRetriever=DbPrincipalRetriever()
 #principalRetriever=NoOpPrincipalRetriever()
 principalAuthenticator1=CryptedPasswordPrincipalAuthenticator()
-principalAuthenticator2=LdapPasswordPrincipalAuthenticator(serverUrl='ldaps://ldap.anl.gov:636', dnFormat='uid=%s,dc=anl,dc=gov')
+principalAuthenticator2=LdapPasswordPrincipalAuthenticator(serverUrl='ldaps://phoebusldap.aps.anl.gov:636', dnFormat='uid=%s,ou=people,o=aps.anl.gov,dc=aps,dc=anl,dc=gov')
 
 [DbManager]
 dbSchema=CDB_DB_NAME
