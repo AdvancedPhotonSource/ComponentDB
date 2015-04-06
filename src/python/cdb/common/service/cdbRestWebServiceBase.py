@@ -73,7 +73,7 @@ class CdbRestWebServiceBase:
             dest='sslKeyFile', default=None, 
             help='SSL key path. SSL operation requires both --ssl-key and --ssl-cert. Client SSL certificate verification also requires --ssl-ca-cert.')
         p.add_option('', '--n-server-threads', 
-        dest='nServerThreads', default=CdbRestWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS,
+            dest='nServerThreads', default=CdbRestWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS,
             help='Number of service request handler threads (defaut: %s).' % CdbRestWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS)
         return p
 
