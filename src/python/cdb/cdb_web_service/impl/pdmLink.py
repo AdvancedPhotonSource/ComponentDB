@@ -27,14 +27,16 @@ from cdb.common.objects.image import Image
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.sslUtility import SslUtility 
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
+from icms import ICMS
 
 class PdmLink:
 
-    ICMS_DOC_URL = '/docs/idcplg?IdcService=DISPLAY_URL&dDocName='
-    ICMS_REVISION_PARAM = '&dRevLabel='
     WINDCHILL_WEBPARTS_URL = '/servlet/SimpleTaskDispatcher?CLASS=com.ptc.windchill.webparts'
     WINDCHILL_WS_URL = '/servlet/SimpleTaskDispatcher?CLASS=com.ptc.windchill.ws'
     SOAP_ENCODING_SCHEMA_URL = 'http://schemas.xmlsoap.org/soap/encoding/'
+    ICMS_USER = 'cdb_soap'
+    ICMS_PASS = 'soap$4cdb'
+
 
     def __init__(self, username, password, windchillUrl, icmsUrl):
         self.username = username
@@ -43,6 +45,7 @@ class PdmLink:
         self.icmsUrl = icmsUrl
         self.windchillWs = None
         self.windchillWebparts = None
+        self.icmsConnection = None
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
         # searchArgs are used in search functions of Windchill webparts class
@@ -71,6 +74,13 @@ class PdmLink:
 
         self.windchillWebparts = Client(fullWebpartsUrl, plugins=[ImportDoctor(imp)], username=self.username, password=self.password)
         self.windchillWs = Client(fullWsUrl, plugins=[ImportDoctor(imp)], username=self.username, password=self.password)
+
+    def __createICMSClient(self):
+        if(self.icmsConnection != None):
+            return
+
+        #initalize icmsClass
+        self.icmsConnection = ICMS(self.ICMS_USER, self.ICMS_PASS, self.icmsUrl)
 
     # Find PDMLink drawing objects by name pattern
     @SslUtility.useUnverifiedSslContext
@@ -112,7 +122,13 @@ class PdmLink:
         propertyMap = {}
         for property in pdmObject.properties:
             propertyMap[property.name] = property.value
-        return propertyMap 
+        return propertyMap
+
+    # initialize icms Client, if needed and get revisions
+    def getICMSRevisions(self, name):
+        self.__createICMSClient()
+        return self.icmsConnection.getICMSRevisions(name)
+
 
     # Get complete drawing object
     @SslUtility.useUnverifiedSslContext
@@ -142,15 +158,17 @@ class PdmLink:
         name = propertyMap.get('name')
         oid = propertyMap.get('oid')
 
+        icmsRevisions = self.getICMSRevisions(name)
+
         response = self.windchillWebparts.service.GetActionUrl('object.view')
         actionUrl = str(response[0].value)
         actionUrl = actionUrl.replace('INSERTOID', oid)
 
-        # Add ICMS link if revision is released
-        for revision in revisionList:
-            if (revision['state'] == 'RELEASED'):
-                fullIcmsUrl = self.icmsUrl + self.ICMS_DOC_URL + name + self.ICMS_REVISION_PARAM + revision['version'] + str(revision['iteration']).rjust(3, '0')
-                revision['icmsUrl'] = fullIcmsUrl
+        # Add ICMS link to revisions that have an ICMS link
+        for pdmRevision in revisionList:
+            for icmsRevision in icmsRevisions:
+                if (pdmRevision['version'] == icmsRevision['revision']['version']) and (pdmRevision['iteration'] == icmsRevision['revision']['iteration']):
+                        pdmRevision['icmsUrl'] = icmsRevision['url']
 
         return PdmLinkDrawing({'name' : name, 'windchillUrl' : actionUrl, 'revisionList': revisionList})
 
@@ -200,9 +218,20 @@ class PdmLink:
 if __name__ == '__main__':
     pdmLink = PdmLink('edp', 'PakTai8', 'http://windchill-vm.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
     drawingName = 'D14100201-113160.asm'
+
     print 'Drawing: ', drawingName
     drawing = pdmLink.getDrawing(drawingName)
     print drawing
+
+    drawingName2 = 'U221020202-104210.DRW'
+
+    print 'Drawing2: ', drawingName2
+    drawing2 = pdmLink.getDrawing(drawingName2)
+
+    print drawing2
+
+
+
     print ''
     print 'Thumbnails'
     print drawing['revisionList'][1]
