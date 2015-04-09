@@ -158,7 +158,14 @@ class PdmLink:
         name = propertyMap.get('name')
         oid = propertyMap.get('oid')
 
+        # retrieve the revisions from ICMS
         icmsRevisions = self.getICMSRevisions(name)
+
+        # retrieve the details about a drawing
+        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5"]
+        drawingDetailsRaw = self.windchillWs.service.Fetch([ufid], reqDetails)
+        drawingDetails = self.getPdmLinkObjectPropertyMap(drawingDetailsRaw[0])
+
 
         response = self.windchillWebparts.service.GetActionUrl('object.view')
         actionUrl = str(response[0].value)
@@ -170,7 +177,16 @@ class PdmLink:
                 if (pdmRevision['version'] == icmsRevision['revision']['version']) and (pdmRevision['iteration'] == icmsRevision['revision']['iteration']):
                         pdmRevision['icmsUrl'] = icmsRevision['url']
 
-        return PdmLinkDrawing({'name' : name, 'windchillUrl' : actionUrl, 'revisionList': revisionList})
+        # Populate a drawing information object
+        drawingInfo = {}
+        for detail in reqDetails:
+            drawingInfo[detail] = drawingDetails.get(detail)
+
+        drawingInfo['name'] = name
+        drawingInfo['windchillUrl'] = actionUrl
+        drawingInfo['revisionList'] = revisionList
+
+        return PdmLinkDrawing(drawingInfo)
 
     # Get drawing 
     def getDrawing(self, drawingName):
