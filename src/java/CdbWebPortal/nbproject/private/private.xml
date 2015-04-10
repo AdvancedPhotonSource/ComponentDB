@@ -3,7 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/userInfo/private/userInfoEditPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/userInfo/private/userInfoCreatePanelGrid.xhtml</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/private/designElementViewPanelGrid.xhtml</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/UserInfoController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/DesignElementController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/PropertyValueController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/web/views/designElement/view.xhtml</file>
