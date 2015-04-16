@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL: $
- *   $Date: $
- *   $Revision: $
- *   $Author: $
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.controllers;
 
