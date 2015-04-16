@@ -5,6 +5,8 @@
         <group>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/AllowedPropertyValueController.java</file>
             <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/AssemblyComponentController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CdbEntityController.java</file>
+            <file>file:/home/sveseli/Work/CDB/dev/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/beans/CdbEntityDbFacade.java</file>
         </group>
     </open-files>
 </project-private>

@@ -67,7 +67,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     /**
-     * Get CDB entity DB facade.
+     * Get entity DB facade.
      *
      * @return entity DB facade
      */
@@ -77,7 +77,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     /**
-     * Create CDB entity instance.
+     * Create entity instance.
      *
      * @return new entity instance
      */
@@ -121,7 +121,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     /**
-     * Retrieve list of all available allowed property type objects.
+     * Retrieve list of all available allowed property value objects.
      *
      * @return list of available allowed property value objects
      */
@@ -371,9 +371,15 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AllowedPropertyValueController controller = (AllowedPropertyValueController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "allowedPropertyValueController");
-            return controller.getEntity(getKey(value));
+            try {
+                AllowedPropertyValueController controller = (AllowedPropertyValueController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "allowedPropertyValueController");
+                return controller.getEntity(getKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to allowed property valueS object.");
+                return null;
+            }
         }
 
         /**
