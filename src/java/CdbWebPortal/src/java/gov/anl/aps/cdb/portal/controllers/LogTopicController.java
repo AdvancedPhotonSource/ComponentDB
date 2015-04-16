@@ -29,7 +29,7 @@ public class LogTopicController extends CdbEntityController<LogTopic, LogTopicDb
     }
 
     @Override
-    protected LogTopicDbFacade getFacade() {
+    protected LogTopicDbFacade getEntityDbFacade() {
         return logTopicFacade;
     }
 

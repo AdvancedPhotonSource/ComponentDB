@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
@@ -5,6 +14,9 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.util.Map;
 import javax.xml.bind.DatatypeConverter;
 
+/**
+ * Utility class for processing and checking function arguments.
+ */
 public class ArgumentUtility {
 
     /**
@@ -14,17 +26,15 @@ public class ArgumentUtility {
      * @return true if input string is not null and not empty, false otherwise
      */
     public static boolean isNonEmptyString(String arg) {
-        if (arg == null || arg.isEmpty()) {
-            return false;
-        }
-        return true;
+        return arg != null && !arg.isEmpty();
     }
 
     /**
      * Convert input argument to string.
      *
      * @param arg input argument to be checked
-     * @return original argument string representation, or empty string if argument is null
+     * @return original argument string representation, or empty string if
+     * argument is null
      */
     public static String toNonNullString(Object arg) {
         if (arg == null) {
@@ -36,7 +46,8 @@ public class ArgumentUtility {
     /**
      * Verify that input string is not null and not empty.
      *
-     * @param argName name of the argument to be verified; used for error message
+     * @param argName name of the argument to be verified; used for error
+     * message
      * @param arg input argument to be checked
      * @throws InvalidArgument if input string is null or empty
      */
@@ -49,10 +60,12 @@ public class ArgumentUtility {
     /**
      * Verify that input string contains given pattern.
      *
-     * @param argName name of the argument to be verified; used for error message
+     * @param argName name of the argument to be verified; used for error
+     * message
      * @param arg input argument to be checked
      * @param pattern string that must be contained in the input argument
-     * @throws InvalidArgument if input string is null or empty, or if it does not contain specified pattern
+     * @throws InvalidArgument if input string is null or empty, or if it does
+     * not contain specified pattern
      */
     public static void verifyStringContainsPattern(String argName, String arg, String pattern) throws InvalidArgument {
         verifyNonEmptyString(argName, arg);
@@ -65,7 +78,8 @@ public class ArgumentUtility {
     /**
      * Verify that input integer is not null and greater than zero.
      *
-     * @param argName name of the argument to be verified; used for error message
+     * @param argName name of the argument to be verified; used for error
+     * message
      * @param arg input argument to be checked
      * @throws InvalidArgument if input number is null or not positive
      */
@@ -78,7 +92,8 @@ public class ArgumentUtility {
     /**
      * Verify that input double is not null and greater than zero.
      *
-     * @param argName name of the argument to be verified; used for error message
+     * @param argName name of the argument to be verified; used for error
+     * message
      * @param arg input argument to be checked
      * @throws InvalidArgument if input number is null or not positive
      */
@@ -91,7 +106,8 @@ public class ArgumentUtility {
     /**
      * Verify that input object is not null.
      *
-     * @param argName name of the argument to be verified; used for error message
+     * @param argName name of the argument to be verified; used for error
+     * message
      * @param arg input argument to be checked
      * @throws InvalidArgument if input string is null or empty
      */
@@ -108,7 +124,7 @@ public class ArgumentUtility {
      * @param key key
      * @param value string that will be added to map if it is not null or empty
      */
-    public static void addNonEmptyKeyValuePair(Map<String,String> map, String key, String value) {
+    public static void addNonEmptyKeyValuePair(Map<String, String> map, String key, String value) {
         if (value != null && !value.isEmpty()) {
             map.put(key, value);
         }
@@ -119,9 +135,10 @@ public class ArgumentUtility {
      *
      * @param map target map
      * @param key key
-     * @param valueObject object that will be added to map if it has non-empty string representation
+     * @param valueObject object that will be added to map if it has non-empty
+     * string representation
      */
-    public static void addNonEmptyKeyValuePair(Map<String,String> map, String key, Object valueObject) {
+    public static void addNonEmptyKeyValuePair(Map<String, String> map, String key, Object valueObject) {
         if (valueObject != null) {
             String value = valueObject.toString();
             if (!value.isEmpty()) {
@@ -136,7 +153,6 @@ public class ArgumentUtility {
      * @param input input string
      * @return base 64 encoded string
      * @throws CdbException in case of any errors
-     *
      */
     public static String encode(String input) throws CdbException {
         try {
@@ -159,7 +175,6 @@ public class ArgumentUtility {
      * @param input base 64 encoded string
      * @return decoded string
      * @throws CdbException in case of any errors
-     *
      */
     public static String decode(String input) throws CdbException {
         try {

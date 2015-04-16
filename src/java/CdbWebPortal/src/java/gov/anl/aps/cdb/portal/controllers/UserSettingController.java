@@ -36,7 +36,7 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     }
 
     @Override
-    protected UserSettingDbFacade getFacade() {
+    protected UserSettingDbFacade getEntityDbFacade() {
         return userSettingFacade;
     }
 

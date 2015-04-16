@@ -1,5 +1,13 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.api;
-
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.InvalidSession;
@@ -7,43 +15,23 @@ import java.io.Serializable;
 import java.net.HttpCookie;
 
 /**
- * @author Sinisa Veseli
- * @version 13.03
- *
- * Cdb session class.
+ * CDB session class, used for keeping all session-related information (session
+ * id, username, role, etc.).
  */
 public class CdbSession implements Serializable {
 
-    /*
-     * UID
-     */
     private static final long serialVersionUID = 1L;
 
-
-    /*
-     * Session id.
-     */
     private String id = null;
-
-    /*
-     * Session username.
-     */
     private String username = null;
-
-    /*
-     * Session cookie.
-     */
     private String cookie = null;
-
-    /*
-     * Session role.
-     */
     private CdbRole role = null;
 
-    /*
+    /**
      * Constructor.
      */
-    public CdbSession() {}
+    public CdbSession() {
+    }
 
     /**
      * Get session username.
@@ -63,11 +51,10 @@ public class CdbSession implements Serializable {
         this.username = username;
     }
 
-
     /**
      * Get session id.
      *
-     * @return session id
+     * @return session id string
      */
     public String getId() {
         return id;
@@ -76,7 +63,7 @@ public class CdbSession implements Serializable {
     /**
      * Set session id.
      *
-     * @param id default session id
+     * @param id session id
      */
     public void setId(String id) {
         this.id = id;
@@ -85,28 +72,26 @@ public class CdbSession implements Serializable {
     /**
      * Get session cookie.
      *
-     * @return session cookie
+     * @return session cookie string
      */
     public String getCookie() {
         return cookie;
     }
 
-
     /**
      * Set session cookie.
      *
-     * @param cookie session cookie
+     * @param cookie session cookie string
      */
     public void setCookie(String cookie) {
         this.cookie = cookie;
     }
 
-
     /**
      * Verify session cookie.
      *
      * @return session cookie
-     * @throws InvalidSession if session cookie is expired or null
+     * @throws InvalidSession if session cookie is expired, or null
      */
     public String verifyCookie() throws InvalidSession {
         if (cookie == null) {
@@ -129,7 +114,6 @@ public class CdbSession implements Serializable {
         return role;
     }
 
-
     /**
      * Set session role.
      *
@@ -140,9 +124,9 @@ public class CdbSession implements Serializable {
     }
 
     /**
-     * Check if session is for admin role.
+     * Check if session is for administrator role.
      *
-     * @return true if this is an admin session, false otherwise
+     * @return true if this is an administrator session, false otherwise
      */
     public boolean isAdminRole() {
         if (role != null) {
@@ -164,7 +148,7 @@ public class CdbSession implements Serializable {
     }
 
     /**
-     * Cdb session string representation.
+     * CDB session string representation.
      *
      * @return session string representation
      */

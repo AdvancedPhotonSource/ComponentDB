@@ -69,7 +69,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
 
     @Override
-    protected PropertyValueHistoryDbFacade getFacade() {
+    protected PropertyValueHistoryDbFacade getEntityDbFacade() {
         return propertyValueHistoryFacade;
     }
 

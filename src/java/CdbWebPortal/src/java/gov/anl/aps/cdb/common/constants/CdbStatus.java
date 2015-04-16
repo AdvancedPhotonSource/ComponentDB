@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.constants;
 
 /**
@@ -24,4 +33,3 @@ public class CdbStatus {
     public static final int CDB_INVALID_OBJECT_STATE = 16;
     public static final int CDB_IMAGE_PROCESSING_FAILED = 17;
 }
-

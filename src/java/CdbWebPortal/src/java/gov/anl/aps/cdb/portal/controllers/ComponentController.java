@@ -147,7 +147,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
 
     @Override
-    protected ComponentDbFacade getFacade() {
+    protected ComponentDbFacade getEntityDbFacade() {
         return componentFacade;
     }
 

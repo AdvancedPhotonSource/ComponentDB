@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.objects;
 
 import com.google.gson.Gson;
@@ -5,6 +14,9 @@ import com.google.gson.GsonBuilder;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.io.Serializable;
 
+/**
+ * Base CDB object class.
+ */
 public class CdbObject implements Serializable {
 
     protected Long id = null;
@@ -12,9 +24,10 @@ public class CdbObject implements Serializable {
     protected String description = null;
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public CdbObject() {}
+    public CdbObject() {
+    }
 
     /**
      * Get object id.
@@ -71,9 +84,9 @@ public class CdbObject implements Serializable {
     }
 
     /**
-     * Get JSON representation.
+     * Conversion to JSON string representation.
      *
-     * @return json string
+     * @return JSON string
      */
     public String toJson() {
         Gson gson = new GsonBuilder().create();
@@ -85,13 +98,14 @@ public class CdbObject implements Serializable {
      *
      * @throws CdbException in case of any errors
      */
-    public void encode() throws CdbException {}
+    public void encode() throws CdbException {
+    }
 
     /**
      * Decode object.
      *
      * @throws CdbException in case of any errors
      */
-    public void decode() throws CdbException {}
-}    
-
+    public void decode() throws CdbException {
+    }
+}

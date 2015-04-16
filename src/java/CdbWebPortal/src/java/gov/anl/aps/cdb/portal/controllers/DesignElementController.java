@@ -120,7 +120,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     }
 
     @Override
-    protected DesignElementDbFacade getFacade() {
+    protected DesignElementDbFacade getEntityDbFacade() {
         return designElementFacade;
     }
 
@@ -286,7 +286,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         setCurrent(designElement);
         try {
             logger.debug("Destroying " + designElement.getName());
-            getFacade().remove(designElement);
+            getEntityDbFacade().remove(designElement);
             SessionUtility.addInfoMessage("Success", "Deleted design element id " + designElement.getId() + ".");
             return "/views/design/view.xhtml?faces-redirect=true?id=" + parentDesign.getId();
         } catch (Exception ex) {

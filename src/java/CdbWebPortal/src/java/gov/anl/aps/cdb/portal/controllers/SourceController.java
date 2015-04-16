@@ -49,7 +49,7 @@ public class SourceController extends CdbEntityController<Source, SourceDbFacade
     }
 
     @Override
-    protected SourceDbFacade getFacade() {
+    protected SourceDbFacade getEntityDbFacade() {
         return sourceFacade;
     }
 

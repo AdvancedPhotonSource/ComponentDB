@@ -1,59 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Image processing failed exception class.
+ * Image processing failed exception.
  */
-public class ImageProcessingFailed extends CdbException 
-{
+public class ImageProcessingFailed extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public ImageProcessingFailed() 
-    {
+    public ImageProcessingFailed() {
         super();
         setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public ImageProcessingFailed(String message) 
-    {
+    public ImageProcessingFailed(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public ImageProcessingFailed(Throwable throwable) 
-    {
+    public ImageProcessingFailed(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public ImageProcessingFailed(String message, Throwable throwable) 
-    {
+    public ImageProcessingFailed(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }

@@ -75,7 +75,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     }
 
     @Override
-    protected DesignDbFacade getFacade() {
+    protected DesignDbFacade getEntityDbFacade() {
         return designFacade;
     }
 

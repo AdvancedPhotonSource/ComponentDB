@@ -1,59 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Object already exists exception class.
+ * Authentication error exception.
  */
-public class AuthenticationError extends CdbException 
-{
+public class AuthenticationError extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public AuthenticationError() 
-    {
+    public AuthenticationError() {
         super();
         setErrorCode(CdbStatus.CDB_AUTHENTICATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public AuthenticationError(String message) 
-    {
+    public AuthenticationError(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_AUTHENTICATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public AuthenticationError(Throwable throwable) 
-    {
+    public AuthenticationError(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_AUTHENTICATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public AuthenticationError(String message, Throwable throwable) 
-    {
+    public AuthenticationError(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_AUTHENTICATION_ERROR);
     }

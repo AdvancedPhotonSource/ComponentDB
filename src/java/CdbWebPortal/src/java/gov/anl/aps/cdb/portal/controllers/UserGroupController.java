@@ -38,7 +38,7 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     }
 
     @Override
-    protected UserGroupDbFacade getFacade() {
+    protected UserGroupDbFacade getEntityDbFacade() {
         return userGroupFacade;
     }
 

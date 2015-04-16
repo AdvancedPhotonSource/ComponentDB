@@ -67,7 +67,7 @@ public class PropertyValueImageUploadBean {
                 String originalExtension = "." + uploadedExtension + ".original";
                 if (uploadedExtension.isEmpty()) {
                     originalExtension = ".original";
-                    imageFormat = ImageUtility.DefaultImageFormat;
+                    imageFormat = ImageUtility.DEFAULT_IMAGE_FORMAT;
                 }
                 File originalFile = File.createTempFile("image.", originalExtension, uploadDir);
                 String baseName = originalFile.getName().replace(".original", "");

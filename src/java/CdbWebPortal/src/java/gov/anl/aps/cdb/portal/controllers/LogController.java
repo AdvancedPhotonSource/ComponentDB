@@ -59,7 +59,7 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     @Override
-    protected LogDbFacade getFacade() {
+    protected LogDbFacade getEntityDbFacade() {
         return logFacade;
     }
 

@@ -1,54 +1,56 @@
-
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Object already exists exception class.
+ * Invalid request exception.
  */
-public class InvalidRequest extends CdbException 
-{
+public class InvalidRequest extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public InvalidRequest() 
-    {
+    public InvalidRequest() {
         super();
         setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public InvalidRequest(String message) 
-    {
+    public InvalidRequest(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public InvalidRequest(Throwable throwable) 
-    {
+    public InvalidRequest(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public InvalidRequest(String message, Throwable throwable) 
-    {
+    public InvalidRequest(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }

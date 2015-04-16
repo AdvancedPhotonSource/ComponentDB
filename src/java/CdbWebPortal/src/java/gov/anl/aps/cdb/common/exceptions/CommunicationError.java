@@ -1,59 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Object already exists exception class.
+ * Communication error exception.
  */
-public class CommunicationError extends CdbException 
-{
+public class CommunicationError extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public CommunicationError() 
-    {
+    public CommunicationError() {
         super();
         setErrorCode(CdbStatus.CDB_COMMUNICATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public CommunicationError(String message) 
-    {
+    public CommunicationError(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_COMMUNICATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public CommunicationError(Throwable throwable) 
-    {
+    public CommunicationError(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_COMMUNICATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public CommunicationError(String message, Throwable throwable) 
-    {
+    public CommunicationError(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_COMMUNICATION_ERROR);
     }

@@ -35,7 +35,7 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
     }
 
     @Override
-    protected PropertyTypeDbFacade getFacade() {
+    protected PropertyTypeDbFacade getEntityDbFacade() {
         return propertyTypeFacade;
     }
 

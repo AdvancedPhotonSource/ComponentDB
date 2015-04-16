@@ -1,14 +1,16 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.portal.constants;
 
 /**
- *
- * @author sveseli
+ * Display type enum.
  */
 public enum DisplayType {
     FREE_FORM_TEXT(0),

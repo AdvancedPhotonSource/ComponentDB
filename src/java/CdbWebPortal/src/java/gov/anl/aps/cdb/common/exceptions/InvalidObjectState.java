@@ -1,59 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Object already exists exception class.
+ * Invalid object state exception.
  */
-public class InvalidObjectState extends CdbException 
-{
+public class InvalidObjectState extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public InvalidObjectState() 
-    {
+    public InvalidObjectState() {
         super();
         setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public InvalidObjectState(String message) 
-    {
+    public InvalidObjectState(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public InvalidObjectState(Throwable throwable) 
-    {
+    public InvalidObjectState(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public InvalidObjectState(String message, Throwable throwable) 
-    {
+    public InvalidObjectState(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }

@@ -58,7 +58,7 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
     }
 
     @Override
-    protected ComponentInstanceLocationHistoryDbFacade getFacade() {
+    protected ComponentInstanceLocationHistoryDbFacade getEntityDbFacade() {
         return componentInstanceLocationHistoryFacade;
     }
 

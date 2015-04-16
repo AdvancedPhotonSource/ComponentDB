@@ -74,7 +74,7 @@ public class LocationController extends CdbEntityController<Location, LocationDb
     }
 
     @Override
-    protected LocationDbFacade getFacade() {
+    protected LocationDbFacade getEntityDbFacade() {
         return locationFacade;
     }
 

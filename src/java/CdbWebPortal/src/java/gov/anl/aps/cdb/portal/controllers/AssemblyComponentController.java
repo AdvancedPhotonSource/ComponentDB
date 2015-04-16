@@ -62,7 +62,7 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
     }
 
     @Override
-    protected AssemblyComponentDbFacade getFacade() {
+    protected AssemblyComponentDbFacade getEntityDbFacade() {
         return assemblyComponentFacade;
     }
 
@@ -128,7 +128,7 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         setCurrent(assemblyComponent);
         try {
             logger.debug("Destroying " + assemblyComponent.getComponent().getName());
-            getFacade().remove(assemblyComponent);
+            getEntityDbFacade().remove(assemblyComponent);
             SessionUtility.addInfoMessage("Success", "Deleted assembly component id " + assemblyComponent.getId() + ".");
             return "/views/component/view.xhtml?faces-redirect=true?id=" + assembly.getId();
         } catch (Exception ex) {

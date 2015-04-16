@@ -38,7 +38,7 @@ public class ComponentTypeCategoryController extends CdbEntityController<Compone
     }
 
     @Override
-    protected ComponentTypeCategoryDbFacade getFacade() {
+    protected ComponentTypeCategoryDbFacade getEntityDbFacade() {
         return componentTypeCategoryFacade;
     }
 

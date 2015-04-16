@@ -38,7 +38,7 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     }
 
     @Override
-    protected PropertyTypeCategoryDbFacade getFacade() {
+    protected PropertyTypeCategoryDbFacade getEntityDbFacade() {
         return propertyTypeCategoryFacade;
     }
 

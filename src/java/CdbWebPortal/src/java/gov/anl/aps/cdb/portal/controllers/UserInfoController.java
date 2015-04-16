@@ -68,7 +68,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
     }
 
     @Override
-    protected UserInfoDbFacade getFacade() {
+    protected UserInfoDbFacade getEntityDbFacade() {
         return userInfoFacade;
     }
 

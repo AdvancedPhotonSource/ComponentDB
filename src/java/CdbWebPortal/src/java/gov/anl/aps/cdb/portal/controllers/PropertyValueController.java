@@ -80,7 +80,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     @Override
-    protected PropertyValueDbFacade getFacade() {
+    protected PropertyValueDbFacade getEntityDbFacade() {
         return propertyValueFacade;
     }
 

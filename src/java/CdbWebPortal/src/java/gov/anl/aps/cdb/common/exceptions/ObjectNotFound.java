@@ -1,59 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Object already exists exception class.
+ * Object not found exception.
  */
-public class ObjectNotFound extends CdbException 
-{
+public class ObjectNotFound extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public ObjectNotFound() 
-    {
+    public ObjectNotFound() {
         super();
         setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public ObjectNotFound(String message) 
-    {
+    public ObjectNotFound(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public ObjectNotFound(Throwable throwable) 
-    {
+    public ObjectNotFound(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public ObjectNotFound(String message, Throwable throwable) 
-    {
+    public ObjectNotFound(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }

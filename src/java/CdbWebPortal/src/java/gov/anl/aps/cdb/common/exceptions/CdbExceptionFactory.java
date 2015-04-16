@@ -1,12 +1,25 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.exceptions;
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 import org.apache.log4j.Logger;
 
+/**
+ * CDB exception factory class.
+ *
+ */
 public class CdbExceptionFactory {
 
-    private static final Logger logger =
-            Logger.getLogger(CdbExceptionFactory.class.getName());
+    private static final Logger logger
+            = Logger.getLogger(CdbExceptionFactory.class.getName());
 
     /**
      * Generate CDB exception.
@@ -19,7 +32,9 @@ public class CdbExceptionFactory {
     public static CdbException generateCdbException(String type, int code, String error) {
         CdbException exc = new CdbException();
         try {
-            String fullType = "gov.anl.aps.cdb.exceptions." + type;
+            String fullType = "gov.anl.aps.cdb.common.exceptions." + type;
+            // Having trouble getting code below to work in all cases, so
+            // use code for now.
             // exc = (CdbException) Class.forName(fullType).newInstance();
             switch (code) {
 
@@ -57,17 +72,15 @@ public class CdbExceptionFactory {
     }
 
     /**
-     * Throw cdb exception.
+     * Throw CDB exception.
      *
      * @param type exception type
      * @param code exception code
      * @param error exception error message
-     * @throws CdbException generated cdb exception whenever this method is called
+     * @throws CdbException generated CDB exception whenever this method is called
      */
     public static void throwCdbException(String type, int code, String error) throws CdbException {
         CdbException exc = generateCdbException(type, code, error);
         throw exc;
     }
 }
-
-

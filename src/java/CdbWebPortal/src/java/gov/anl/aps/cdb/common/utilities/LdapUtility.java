@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
 package gov.anl.aps.cdb.common.utilities;
 
@@ -14,11 +18,11 @@ import javax.naming.directory.InitialDirContext;
 import org.apache.log4j.Logger;
 
 /**
- *
- * @author sveseli
+ * LDAP utility class for verifying user credentials.
+ * 
+ * @see NoServerVerificationSSLSocketFactory
  */
-public class LdapUtility
-{
+public class LdapUtility {
 
     private static final String LdapUrlPropertyName = "cdb.portal.ldapUrl";
     private static final String LdapDnStringPropertyName = "cdb.portal.ldapDnString";
@@ -28,13 +32,15 @@ public class LdapUtility
     private static final Logger logger = Logger.getLogger(LdapUtility.class.getName());
 
     /**
-     * Use username and password to attempt initial connection and bind with APS
+     * Validate user credentials.
+     *
+     * Use username and password to attempt initial connection and bind with
      * LDAP server. Successful connection implies that credentials are accepted.
      *
      * @param username username
      * @param password password
      *
-     * @return true if valid, false otherwise
+     * @return true if credentials are valid, false otherwise
      */
     public static boolean validateCredentials(String username, String password) {
 
@@ -54,12 +60,10 @@ public class LdapUtility
         env.put(Context.SECURITY_CREDENTIALS, password);
         // the below property allows us to circumvent server certificate checks
         env.put("java.naming.ldap.factory.socket", "gov.anl.aps.cdb.common.utilities.NoServerVerificationSSLSocketFactory");
-
         try {
             DirContext ctx = new InitialDirContext(env);
             validated = true;
-        }
-        catch (NamingException ex) {
+        } catch (NamingException ex) {
             logger.error(ex);
         }
         return validated;

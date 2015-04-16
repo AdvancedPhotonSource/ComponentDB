@@ -80,7 +80,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     }
 
     @Override
-    protected PropertyTypeDbFacade getFacade() {
+    protected PropertyTypeDbFacade getEntityDbFacade() {
         return propertyTypeFacade;
     }
 
@@ -271,7 +271,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     public void prepareSelectPropertyTypesForComponentType(ComponentType componentType) {
         clearSelectFilters();
         resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         List<PropertyType> componentTypePropertyList = componentType.getPropertyTypeList();
         selectPropertyTypeList.removeAll(componentTypePropertyList);
         createSelectDataModel(selectPropertyTypeList);
@@ -280,28 +280,28 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     public void prepareSelectPropertyTypesForComponent(Component component) {
         clearSelectFilters();
         resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
 
     public void prepareSelectPropertyTypesForComponentInstance(ComponentInstance componentInstance) {
         clearSelectFilters();
         resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
 
     public void prepareSelectPropertyTypesForDesign(Design design) {
         clearSelectFilters();
         resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
     
     public void prepareSelectPropertyTypesForDesignElement(DesignElement designElement) {
         clearSelectFilters();
         resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getFacade().findAll();
+        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
     

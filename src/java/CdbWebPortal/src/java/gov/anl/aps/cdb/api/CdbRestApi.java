@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
 package gov.anl.aps.cdb.api;
 
@@ -34,50 +38,59 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.log4j.Logger;
 
+/**
+ * CDB REST Web Service API class.
+ *
+ * This class serves as superclass for all CDB web service interface classes. It
+ * handles basic communication with web service (establishing sessions, sending
+ * requests, receiving responses, generating exceptions, etc.).
+ */
 public class CdbRestApi {
 
-
-    public static final String DEFAULT_SESSION_ID = "defaultSession";
+    /**
+     * Relative URL for login requests.
+     */
     public static final String LOGIN_REQUEST_URL = "/login";
 
-
-    /*
-     * Logger.
-     */
+    private static final String defaultSessionId = "defaultSession";
     private static final Logger logger = Logger.getLogger(CdbRestApi.class.getName());
+    private static final boolean httpsInitialized = initializeHttpsConnection();
 
-    private URL serviceUrl;
-    private CdbSession session = new CdbSession();
-
-    private static boolean httpsInitialized = initializeHttpsConnection();
     private static boolean initializeHttpsConnection() {
         HttpsURLConnection.setDefaultSSLSocketFactory(new NoServerVerificationSSLSocketFactory());
         return true;
     }
 
+    private URL serviceUrl;
+    private CdbSession session = new CdbSession();
+
     /**
-     * Constructor. Initializes service url from system properties.
+     * Constructor.
      *
-     * @throws ConfigurationError if protocol is not http or https
+     * Initializes web service URL from system properties.
+     *
+     * @throws ConfigurationError if web service URL property is malformed or
+     * null
      */
     public CdbRestApi() throws ConfigurationError {
         configureFromProperties();
     }
-    
+
     /**
      * Constructor.
      *
-     * @param webServiceUrl web service url
-     * @throws ConfigurationError if specified protocol is not http or https
+     * @param webServiceUrl web service URL
+     * @throws ConfigurationError if web service URL is malformed or null
      */
     public CdbRestApi(String webServiceUrl) throws ConfigurationError {
         configureFromString(webServiceUrl);
     }
 
     /**
-     * Set variables from Java VM properties.
+     * Configure web service URL from Java VM properties.
      *
-     * @throws ConfigurationError if specified protocol is not http or https
+     * @throws ConfigurationError if web service URL property is malformed or
+     * null
      */
     public final void configureFromProperties() throws ConfigurationError {
         String webServiceUrl = System.getProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
@@ -85,10 +98,11 @@ public class CdbRestApi {
     }
 
     /**
-     * Set variables from Java VM properties.
+     * Configure web service URL from string.
      *
-     * @param webServiceUrl web service url
-     * @throws ConfigurationError if specified protocol is not http or https
+     * @param webServiceUrl web service URL
+     * @throws ConfigurationError if web service URL property is malformed or
+     * null
      */
     public final void configureFromString(String webServiceUrl) throws ConfigurationError {
         if (webServiceUrl == null) {
@@ -96,8 +110,7 @@ public class CdbRestApi {
         }
         try {
             serviceUrl = new URL(webServiceUrl);
-        }
-        catch (MalformedURLException ex) {
+        } catch (MalformedURLException ex) {
             throw new ConfigurationError("Malformed CDB web service url: " + webServiceUrl);
         }
 
@@ -106,12 +119,11 @@ public class CdbRestApi {
             throw new ConfigurationError("Unsupported service protocol specified in " + webServiceUrl);
         }
     }
-    
 
     /**
      * Get service url.
      *
-     * @return service protocol (http or https)
+     * @return web service URL
      */
     public URL getServiceUrl() {
         return serviceUrl;
@@ -120,7 +132,7 @@ public class CdbRestApi {
     /**
      * Get session.
      *
-     * @return cdb session object
+     * @return CDB session object
      */
     public CdbSession getSession() {
         return session;
@@ -129,7 +141,7 @@ public class CdbRestApi {
     /**
      * Set session.
      *
-     * @param session cdb session object
+     * @param session CDB session object
      */
     public void setSession(CdbSession session) {
         this.session = session;
@@ -139,7 +151,7 @@ public class CdbRestApi {
      * Check HTTP response for exceptions.
      *
      * @param connection HTTP connection
-     * @throws CdbException when cdb error is detected
+     * @throws CdbException when CDB error is detected
      */
     public static void checkHttpResponseForCdbException(HttpURLConnection connection) throws CdbException {
         String exceptionType = connection.getHeaderField(CdbHttpHeader.CDB_EXCEPTION_TYPE_HEADER);
@@ -156,7 +168,7 @@ public class CdbRestApi {
      *
      * @param httpError HTTP error
      * @param connection HTTP connection
-     * @return generated cdb exception
+     * @return generated CDB exception
      */
     public static CdbException convertHttpErrorToCdbException(Exception httpError, HttpURLConnection connection) {
         String exceptionType = connection.getHeaderField(CdbHttpHeader.CDB_EXCEPTION_TYPE_HEADER);
@@ -170,9 +182,8 @@ public class CdbRestApi {
         }
     }
 
-
     /**
-     * Get request URL.
+     * Get full request URL.
      *
      * @param requestUrl relative request URL, e.g. /object
      * @return full request URL string, e.g. http://localhost:17524/cdb/object
@@ -191,13 +202,13 @@ public class CdbRestApi {
     public String verifySessionCookie() throws InvalidSession {
         return session.verifyCookie();
     }
+
     /*
      * Get all response headers in a single string.
      *
-     * @param connection http connection @return string containing response
-     * headers
+     * @param connection HTTP connection 
+     * @return string containing response headers
      */
-
     private static String getResponseHeaders(HttpURLConnection connection) {
         String headerString = "";
         Map<String, List<String>> headerMap = connection.getHeaderFields();
@@ -305,7 +316,7 @@ public class CdbRestApi {
     }
 
     /**
-     * Set common POST request headers.
+     * Set common POST request headers plus session cookie.
      *
      * @param connection HTTP connection
      * @param sessionCookie session cookie (may be null)
@@ -334,7 +345,7 @@ public class CdbRestApi {
     }
 
     /**
-     * Set common GET request headers.
+     * Set common GET request headers plus session cookie.
      *
      * @param connection HTTP connection
      * @param sessionCookie session cookie (may be null)
@@ -361,7 +372,7 @@ public class CdbRestApi {
     }
 
     /**
-     * Set common PUT request headers.
+     * Set common PUT request headers plus session cookie.
      *
      * @param connection HTTP connection
      * @param sessionCookie session cookie (may be null)
@@ -390,7 +401,7 @@ public class CdbRestApi {
     }
 
     /**
-     * Set common DELETE request headers.
+     * Set common DELETE request headers plus session cookie.
      *
      * @param connection HTTP connection
      * @param sessionCookie session cookie (may be null)
@@ -417,7 +428,7 @@ public class CdbRestApi {
     }
 
     /**
-     * Login with a given username and password, for specified session id.
+     * Login with a given username and password, and with specified session id.
      *
      * @param username username
      * @param password password
@@ -472,14 +483,14 @@ public class CdbRestApi {
      * @throws CdbException in case of any other errors
      */
     public void login(String username, String password) throws CdbException {
-        login(username, password, DEFAULT_SESSION_ID);
+        login(username, password, defaultSessionId);
     }
 
     /**
      * Invoke GET request.
      *
      * @param requestUrl relative request URL, e.g. /object
-     * @return response service response
+     * @return service response string
      * @throws CdbException in case of any errors
      */
     public String invokeSessionGetRequest(String requestUrl) throws CdbException {
@@ -517,7 +528,7 @@ public class CdbRestApi {
      * Invoke GET request.
      *
      * @param requestUrl relative request URL, e.g. /object
-     * @return response service response
+     * @return service response string
      * @throws CdbException in case of any errors
      */
     public String invokeGetRequest(String requestUrl) throws CdbException {
@@ -547,13 +558,13 @@ public class CdbRestApi {
             }
         }
     }
-    
+
     /**
      * Invoke POST request.
      *
      * @param requestUrl relative request URL, e.g. /object
      * @param data request data
-     * @return response service response
+     * @return service response string
      * @throws CdbException in case of any errors
      */
     public String invokeSessionPostRequest(String requestUrl, Map<String, String> data) throws CdbException {
@@ -593,7 +604,7 @@ public class CdbRestApi {
      *
      * @param requestUrl relative request URL, e.g. /object
      * @param data request data
-     * @return response service response
+     * @return service response string
      * @throws CdbException in case of any errors
      */
     public String invokeSessionPutRequest(String requestUrl, Map<String, String> data) throws CdbException {
@@ -632,7 +643,7 @@ public class CdbRestApi {
      * Invoke DELETE request.
      *
      * @param requestUrl relative request URL, e.g. /cdb/object
-     * @return service response
+     * @return service response string
      * @throws CdbException in case of any errors
      */
     public String invokeSessionDeleteRequest(String requestUrl) throws CdbException {
@@ -668,7 +679,7 @@ public class CdbRestApi {
 
 
     /*
-     * Main method for testing.
+     * Main method, used for simple testing.
      *
      * @param args main arguments
      */

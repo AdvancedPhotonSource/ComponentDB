@@ -1,59 +1,56 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
  */
-
 package gov.anl.aps.cdb.common.exceptions;
-
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
 /**
- * Object already exists exception class.
+ * Configuration error exception.
  */
-public class ConfigurationError extends CdbException 
-{
+public class ConfigurationError extends CdbException {
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public ConfigurationError() 
-    {
+    public ConfigurationError() {
         super();
         setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public ConfigurationError(String message) 
-    {
+    public ConfigurationError(String message) {
         super(message);
         setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor sing throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public ConfigurationError(Throwable throwable) 
-    {
+    public ConfigurationError(Throwable throwable) {
         super(throwable);
         setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public ConfigurationError(String message, Throwable throwable) 
-    {
+    public ConfigurationError(String message, Throwable throwable) {
         super(message, throwable);
         setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }

@@ -1,115 +1,111 @@
-
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.exceptions;
 
 import gov.anl.aps.cdb.common.constants.CdbStatus;
 
-
 /**
- * Generic CDB exception.
+ * Generic CDB exception, used as base class for all CDB exceptions.
  */
-public class CdbException extends Exception
-{
+public class CdbException extends Exception {
 
     /**
      * Exception keys.
      */
-    public static final String SIGNATURE_KEY = "__cdb_portal_exception__";
+    public static final String SIGNATURE_KEY = "__cdb_exception__";
     public static final String TYPE_KEY = "type";
     public static final String CODE_KEY = "code";
     public static final String ARGS_KEY = "args";
-
 
     private int errorCode = CdbStatus.CDB_ERROR;
     private String error = null;
 
     /**
-     * Constructor.
+     * Default constructor.
      */
-    public CdbException() 
-    {
+    public CdbException() {
         super();
     }
 
     /**
-     * Constructor.
+     * Constructor using error message.
      *
-     * @param message Error message
+     * @param message error message
      */
-    public CdbException(String message) 
-    {
+    public CdbException(String message) {
         super(message);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and code.
      *
-     * @param message Error message
-     * @param errorCode Error code
+     * @param message error message
+     * @param errorCode error code
      */
-    public CdbException(String message, int errorCode) 
-    {
+    public CdbException(String message, int errorCode) {
         super(message);
         this.errorCode = errorCode;
     }
 
     /**
-     * Constructor.
+     * Constructor using throwable object.
      *
-     * @param throwable Throwable object
+     * @param throwable throwable object
      */
-    public CdbException(Throwable throwable) 
-    {
+    public CdbException(Throwable throwable) {
         super(throwable);
     }
 
     /**
-     * Constructor.
+     * Constructor using error message and throwable object.
      *
-     * @param message Error message
-     * @param throwable Throwable object
+     * @param message error message
+     * @param throwable throwable object
      */
-    public CdbException(String message, Throwable throwable) 
-    {
+    public CdbException(String message, Throwable throwable) {
         super(message, throwable);
     }
 
     /**
      * Set error code.
-     * 
-     * @param errorCode Error code
+     *
+     * @param errorCode error code
      */
-    public void setErrorCode(int errorCode) 
-    {
+    public void setErrorCode(int errorCode) {
         this.errorCode = errorCode;
     }
 
     /**
      * Get error code.
-     * 
-     * @return Error code
+     *
+     * @return error code
      */
-    public int getErrorCode() 
-    {
+    public int getErrorCode() {
         return errorCode;
     }
 
     /**
      * Set error message.
-     * 
-     * @param error Error message
+     *
+     * @param error error message
      */
-    public void setErrorMessage(String error) 
-    {
+    public void setErrorMessage(String error) {
         this.error = error;
     }
 
     /**
      * Get error message.
-     * 
-     * @return Error message
+     *
+     * @return error message
      */
-    public String getErrorMessage() 
-    {
+    public String getErrorMessage() {
         if (error != null) {
             return error;
         }
@@ -117,17 +113,16 @@ public class CdbException extends Exception
     }
 
     /**
-     * Override string output if error message is set.
-     * 
-     * @return error message
+     * Convert exception to string, overriding string output if error message is
+     * set.
+     *
+     * @return exception string
      */
     @Override
-    public String toString() 
-    {
-        if(error != null) {
+    public String toString() {
+        if (error != null) {
             return error;
-        }
-        else {
+        } else {
             return super.toString();
         }
     }

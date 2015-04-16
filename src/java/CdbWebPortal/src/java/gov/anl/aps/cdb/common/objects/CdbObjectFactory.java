@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.objects;
 
 import com.google.gson.Gson;
@@ -9,6 +18,9 @@ import java.util.LinkedList;
 import java.util.List;
 import org.apache.log4j.Logger;
 
+/**
+ * CDB object factory class.
+ */
 public class CdbObjectFactory {
 
     private static final Logger logger = Logger.getLogger(CdbObjectFactory.class.getName());
@@ -18,7 +30,7 @@ public class CdbObjectFactory {
      * Create object from JSON string.
      *
      * @param <T> template class
-     * @param jsonString json string
+     * @param jsonString JSON string
      * @param objectClass object class
      * @return generated object
      */
@@ -32,9 +44,9 @@ public class CdbObjectFactory {
      * Create CDB object from JSON string.
      *
      * @param <T> template class
-     * @param jsonString json string
-     * @param cdbClass cdb object class
-     * @return generated cdb object
+     * @param jsonString JSON string
+     * @param cdbClass CDB object class
+     * @return generated CDB object
      * @throws CdbException in case of any errors
      */
     public static <T extends CdbObject> T createCdbObject(String jsonString, Class<T> cdbClass) throws CdbException {
@@ -45,17 +57,18 @@ public class CdbObjectFactory {
     }
 
     /**
-     * Create list of cdb objects from JSON string.
+     * Create list of CDB objects from JSON string.
      *
      * @param <T> template class
-     * @param jsonString json string
-     * @return generated list of cdb objects
+     * @param jsonString CDB string
+     * @return generated list of CDB objects
      */
     public static <T extends CdbObject> List<T> createCdbObjectList(String jsonString) {
         // This method does not appear to work as template, so we have
         // to write specific methods for each object type.
         logger.debug("Converting JSON string to cdb object list: " + jsonString);
-        Type cdbType = new TypeToken<LinkedList<T>>(){}.getType();
+        Type cdbType = new TypeToken<LinkedList<T>>() {
+        }.getType();
         List<T> cdbObjectList = gson.fromJson(jsonString, cdbType);
         return cdbObjectList;
     }
@@ -63,15 +76,15 @@ public class CdbObjectFactory {
     /**
      * Create list of string objects from JSON string.
      *
-     * @param jsonString json string
+     * @param jsonString JSON string
      * @return generated list of string objects
      */
     public static List<String> createStringObjectList(String jsonString) {
         logger.debug("Converting JSON string to string object list: " + jsonString);
-        Type cdbType = new TypeToken<LinkedList<String>>(){}.getType();
+        Type cdbType = new TypeToken<LinkedList<String>>() {
+        }.getType();
         List<String> cdbObjectList = gson.fromJson(jsonString, cdbType);
         return cdbObjectList;
     }
-
 
 }

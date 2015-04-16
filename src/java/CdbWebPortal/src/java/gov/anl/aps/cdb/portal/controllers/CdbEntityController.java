@@ -165,7 +165,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
-    protected abstract FacadeType getFacade();
+    protected abstract FacadeType getEntityDbFacade();
 
     protected abstract EntityType createEntityInstance();
 
@@ -481,7 +481,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         } else {
             if (breadcrumbObjectIdViewParam != null) {
                 Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
-                loadView = prepareView(getFacade().find(entityId));
+                loadView = prepareView(getEntityDbFacade().find(entityId));
             }
         }
         breadcrumbViewParam = null;
@@ -633,7 +633,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         try {
             EntityType newEntity = current;
             prepareEntityInsert(current);
-            getFacade().create(current);
+            getEntityDbFacade().create(current);
             SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetSelectDataModel();
@@ -668,7 +668,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         try {
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(current);
-            EntityType updatedEntity = getFacade().edit(current);
+            EntityType updatedEntity = getEntityDbFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetSelectDataModel();
@@ -694,7 +694,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         try {
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdateOnRemoval(current);
-            EntityType updatedEntity = getFacade().edit(current);
+            EntityType updatedEntity = getEntityDbFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetSelectDataModel();
@@ -734,7 +734,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         try {
             logger.debug("Destroying " +  getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityDestroy(current);
-            getFacade().remove(current);
+            getEntityDbFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetSelectDataModel();
@@ -753,7 +753,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     public DataModel createListDataModel() {
-        listDataModel = new ListDataModel(getFacade().findAll());
+        listDataModel = new ListDataModel(getEntityDbFacade().findAll());
         return listDataModel;
     }
 
@@ -768,7 +768,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     public DataModel createSelectDataModel() {
-        List<EntityType> selectEntityList = getFacade().findAll();
+        List<EntityType> selectEntityList = getEntityDbFacade().findAll();
         prepareEntityListForSelection(selectEntityList);
         selectDataModel = new ListDataModel(selectEntityList);
         return selectDataModel;
@@ -899,11 +899,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     public List<EntityType> getAvailableItems() {
-        return getFacade().findAll();
+        return getEntityDbFacade().findAll();
     }
 
     public List<EntityType> getAvailableItemsWithoutCurrent() {
-        List<EntityType> entityList = getFacade().findAll();
+        List<EntityType> entityList = getEntityDbFacade().findAll();
         if (current.getId() != null) {
             entityList.remove(current);
         }
@@ -911,15 +911,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     public EntityType getEntity(Integer id) {
-        return getFacade().find(id);
+        return getEntityDbFacade().find(id);
     }
 
     public SelectItem[] getAvailableItemsForSelectMany() {
-        return CollectionUtility.getSelectItems(getFacade().findAll(), false);
+        return CollectionUtility.getSelectItems(getEntityDbFacade().findAll(), false);
     }
 
     public SelectItem[] getAvailableItemsForSelectOne() {
-        return CollectionUtility.getSelectItems(getFacade().findAll(), true);
+        return CollectionUtility.getSelectItems(getEntityDbFacade().findAll(), true);
     }
 
     public String getCurrentViewId() {

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL: $
+ *   $Date: $
+ *   $Revision: $
+ *   $Author: $
+ */
 package gov.anl.aps.cdb.common.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.ImageProcessingFailed;
@@ -12,19 +21,39 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
 import org.apache.log4j.Logger;
 
-//import java.nio.file.Files;
-//import java.nio.file.Paths;
-//import java.nio.file.Path;
+/**
+ * Utility class for manipulating images.
+ */
 public class ImageUtility {
 
-    public static final String DefaultImageFormat = "jpg";
+    /**
+     * Default image format.
+     */
+    public static final String DEFAULT_IMAGE_FORMAT = "jpg";
 
     private static final Logger logger = Logger.getLogger(ImageUtility.class.getName());
 
+    /**
+     * Resize image using default format.
+     *
+     * @param imageData image data
+     * @param maxDim largest dimension of the resized image
+     * @return resized image
+     * @throws ImageProcessingFailed if processing fails for any reason
+     */
     public static byte[] resizeImage(byte[] imageData, int maxDim) throws ImageProcessingFailed {
-        return resizeImage(imageData, maxDim, DefaultImageFormat);
+        return resizeImage(imageData, maxDim, DEFAULT_IMAGE_FORMAT);
     }
 
+    /**
+     * Resize image using provided format.
+     *
+     * @param imageData image data
+     * @param maxDim largest dimension of the resized image
+     * @param imageFormat image format
+     * @return resized image
+     * @throws ImageProcessingFailed if processing fails for any reason
+     */
     public static byte[] resizeImage(byte[] imageData, int maxDim, String imageFormat) throws ImageProcessingFailed {
         try {
             ImageIcon imageIcon = new ImageIcon(imageData);
@@ -87,12 +116,5 @@ public class ImageUtility {
             throw new ImageProcessingFailed(ex);
         }
     }
-//
-//    public static void main(String[] args) throws Exception {
-//        Path path = Paths.get("hard_drive.jpg");
-//        byte[] data = Files.readAllBytes(path);
-//        byte[] outImage = ImageUtility.resizeImage(data, 100);
-//        Path path2 = Paths.get("hard_drive_thumb.jpg");
-//        Files.write(path2, outImage); 
-//    }
+
 }

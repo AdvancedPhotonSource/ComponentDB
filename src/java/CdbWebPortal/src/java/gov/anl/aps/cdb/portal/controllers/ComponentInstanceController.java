@@ -128,7 +128,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
     }
 
     @Override
-    protected ComponentInstanceDbFacade getFacade() {
+    protected ComponentInstanceDbFacade getEntityDbFacade() {
         return componentInstanceFacade;
     }
 
@@ -199,7 +199,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
 
     @Override
     public DataModel createListDataModel() {
-        listDataModel = new ListDataModel(getFacade().findAllOrderByQrId());
+        listDataModel = new ListDataModel(getEntityDbFacade().findAllOrderByQrId());
         return listDataModel;
     }
 
@@ -394,7 +394,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         setCurrent(componentInstance);
         try {
             logger.debug("Destroying " + getCurrentEntityInstanceName());
-            getFacade().remove(componentInstance);
+            getEntityDbFacade().remove(componentInstance);
             SessionUtility.addInfoMessage("Success", "Deleted component instance id " + componentInstance.getId() + ".");
             return "/views/component/view.xhtml?faces-redirect=true?id=" + component.getId();
         } catch (Exception ex) {
