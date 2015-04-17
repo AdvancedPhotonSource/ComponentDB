@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -16,6 +20,9 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
+/**
+ * JSF bean for design element list tree view.
+ */
 @Named("designElementListTreeViewBean")
 @RequestScoped
 public class DesignElementListTreeViewBean implements Serializable {
@@ -68,7 +75,5 @@ public class DesignElementListTreeViewBean implements Serializable {
         }
         return rootNode;
     }
-
-
 
 }

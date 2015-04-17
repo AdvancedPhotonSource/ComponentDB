@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.view.jsf.components;
 
 import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
@@ -10,9 +19,12 @@ import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.export.CSVExporter;
 
 /**
- * Override standard csv exporter in order to use displayed http link values.
- * 
- * See http://stackoverflow.com/questions/14411389/pdataexporter-does-not-recognize-pcelleditor/14413932#14413932
+ * CDB CSV exporter class.
+ *
+ * Overrides standard CSV exporter in order to use display values for HTTP links.
+ *
+ * @see
+ * http://stackoverflow.com/questions/14411389/pdataexporter-does-not-recognize-pcelleditor/14413932#14413932
  */
 public class CdbCsvExporter extends CSVExporter {
 
@@ -39,12 +51,10 @@ public class CdbCsvExporter extends CSVExporter {
         if (component instanceof CellEditor) {
             // Get editor output facet
             return exportValue(context, ((CellEditor) component).getFacet("output"));
-        }
-        else if (component instanceof HtmlGraphicImage) {
+        } else if (component instanceof HtmlGraphicImage) {
             // Get image alt attribute
             return (String) component.getAttributes().get("alt");
-        }
-        else if (component instanceof HtmlOutputLink) {
+        } else if (component instanceof HtmlOutputLink) {
             // Go over all link children and combine their exported values
             HtmlOutputLink link = (HtmlOutputLink) component;
             String value = "";
@@ -54,16 +64,13 @@ public class CdbCsvExporter extends CSVExporter {
                     String childValue = (String) super.exportValue(context, childComponent);
                     value += delimiter + childValue;
                 }
-            }
-            else {
-               value = (String) super.exportValue(context, component);             
+            } else {
+                value = (String) super.exportValue(context, component);
             }
             return value;
-        }
-        else {
+        } else {
             return super.exportValue(context, component);
         }
     }
-
 
 }

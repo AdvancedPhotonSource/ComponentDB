@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
@@ -23,8 +27,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author sveseli
+ * Component source entity class.
  */
 @Entity
 @Table(name = "component_source")
@@ -218,14 +221,13 @@ public class ComponentSource extends CdbEntity {
         cloned.component = null;
         return cloned;
     }
-    
+
     public ComponentSource copyAndSetComponent(Component component) {
         ComponentSource copied = null;
         try {
             copied = clone();
             copied.component = component;
-        }
-        catch (CloneNotSupportedException ex) {
+        } catch (CloneNotSupportedException ex) {
             // will not happen
         }
         return copied;

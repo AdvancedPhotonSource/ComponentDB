@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
@@ -24,10 +33,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Controller class for property value history objects.
+ */
 @Named("propertyValueHistoryController")
 @SessionScoped
 public class PropertyValueHistoryController extends CdbEntityController<PropertyValueHistory, PropertyValueHistoryDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValueHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValueHistory.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "PropertyValueHistory.List.Display.Description";
@@ -35,7 +50,6 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.Display.EnteredOnDateTime";
     private static final String DisplayTagSettingTypeKey = "PropertyValueHistory.List.Display.Tag";
     private static final String DisplayUnitsSettingTypeKey = "PropertyValueHistory.List.Display.Units";
-
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValueHistory.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredOnDateTime";
@@ -188,6 +202,9 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
         filterByValue = null;
     }
 
+    /**
+     * Converter class for property value history objects.
+     */
     @FacesConverter(forClass = PropertyValueHistory.class)
     public static class PropertyValueHistoryControllerConverter implements Converter {
 
@@ -199,7 +216,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
                 }
                 PropertyValueHistoryController controller = (PropertyValueHistoryController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "propertyValueHistoryController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to property value history object.");
@@ -207,13 +224,11 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

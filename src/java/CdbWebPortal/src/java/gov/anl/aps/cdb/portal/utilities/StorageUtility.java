@@ -1,7 +1,19 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.utilities;
 
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 
+/**
+ * Utility class for manipulating file system storage.
+ */
 public class StorageUtility {
 
     public static final String STORAGE_DIRECTORY = ConfigurationUtility.getPortalProperty(CdbProperty.STORAGE_DIRECTORY_PROPERTY_NAME);
@@ -25,19 +37,19 @@ public class StorageUtility {
             return SessionUtility.getContextRoot() + getApplicationLogAttachmentsDirectory() + "/" + attachmentName;
         }
         return null;
-    } 
-    
+    }
+
     public static String getFileSystemLogAttachmentsDirectory() {
         return STORAGE_DIRECTORY + getApplicationLogAttachmentsDirectory();
-    }    
-    
+    }
+
     public static String getFileSystemLogAttachmentPathDirectory(String attachmentName) {
         if (attachmentName != null) {
             return getFileSystemLogAttachmentsDirectory() + "/" + attachmentName;
         }
         return null;
-    }    
-    
+    }
+
     public static String getApplicationPropertyValueDocumentsDirectory() {
         return "/propertyValue/documents";
     }
@@ -47,16 +59,16 @@ public class StorageUtility {
             return SessionUtility.getContextRoot() + getApplicationPropertyValueDocumentsDirectory() + "/" + documentName;
         }
         return null;
-    }   
-    
+    }
+
     public static String getFileSystemPropertyValueDocumentsDirectory() {
         return STORAGE_DIRECTORY + getApplicationPropertyValueDocumentsDirectory();
-    }    
-    
+    }
+
     public static String getFileSystemPropertyValueDocumentPathDirectory(String documentName) {
         if (documentName != null) {
             return getFileSystemPropertyValueDocumentsDirectory() + "/" + documentName;
         }
         return null;
-    }        
+    }
 }

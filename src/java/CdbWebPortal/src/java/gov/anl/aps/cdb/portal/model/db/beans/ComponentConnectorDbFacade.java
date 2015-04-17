@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentConnector;
@@ -12,12 +15,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for component connectors.
  */
 @Stateless
-public class ComponentConnectorDbFacade extends CdbEntityDbFacade<ComponentConnector>
-{
+public class ComponentConnectorDbFacade extends CdbEntityDbFacade<ComponentConnector> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -29,5 +31,5 @@ public class ComponentConnectorDbFacade extends CdbEntityDbFacade<ComponentConne
     public ComponentConnectorDbFacade() {
         super(ComponentConnector.class);
     }
-    
+
 }

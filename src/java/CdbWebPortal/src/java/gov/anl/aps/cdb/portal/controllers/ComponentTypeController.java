@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
@@ -24,11 +33,13 @@ import org.primefaces.component.datatable.DataTable;
 @SessionScoped
 public class ComponentTypeController extends CdbEntityController<ComponentType, ComponentTypeDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentType.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "ComponentType.List.Display.Description";
     private static final String DisplayCategorySettingTypeKey = "ComponentType.List.Display.Category";
-
     private static final String FilterByNameSettingTypeKey = "ComponentType.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "ComponentType.List.FilterBy.Description";
     private static final String FilterByCategorySettingTypeKey = "ComponentType.List.FilterBy.Category";
@@ -39,11 +50,11 @@ public class ComponentTypeController extends CdbEntityController<ComponentType, 
     private ComponentTypeDbFacade componentTypeFacade;
 
     private Boolean displayCategory = null;
-    
+
     private Boolean selectDisplayCategory = true;
-    
+
     private String filterByCategory = null;
-    
+
     private String selectFilterByCategory = null;
 
     private ComponentType selectedComponentType = null;
@@ -250,6 +261,9 @@ public class ComponentTypeController extends CdbEntityController<ComponentType, 
         componentTypePropertyTypeList.addAll(propertyTypeList);
     }
 
+    /**
+     * Converter class for component type objects.
+     */
     @FacesConverter(value = "componentTypeConverter", forClass = ComponentType.class)
     public static class ComponentTypeControllerConverter implements Converter {
 
@@ -261,7 +275,7 @@ public class ComponentTypeController extends CdbEntityController<ComponentType, 
             try {
                 ComponentTypeController controller = (ComponentTypeController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "componentTypeController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to component type object.");
@@ -269,15 +283,11 @@ public class ComponentTypeController extends CdbEntityController<ComponentType, 
             }
         }
 
-
-        
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

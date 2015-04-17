@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.List;
@@ -27,8 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Connector type entity class.
  */
 @Entity
 @Table(name = "connector_type")
@@ -38,8 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorType.findById", query = "SELECT c FROM ConnectorType c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorType.findByName", query = "SELECT c FROM ConnectorType c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorType.findByDescription", query = "SELECT c FROM ConnectorType c WHERE c.description = :description")})
-public class ConnectorType extends CdbEntity
-{
+public class ConnectorType extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -154,7 +156,7 @@ public class ConnectorType extends CdbEntity
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ConnectorType[ id=" + id + " ]";
+        return "ConnectorType[ id=" + id + " ]";
     }
-    
+
 }

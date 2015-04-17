@@ -1,12 +1,14 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -23,8 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Resource type category entity class.
  */
 @Entity
 @Table(name = "resource_type_category")
@@ -34,9 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ResourceTypeCategory.findById", query = "SELECT r FROM ResourceTypeCategory r WHERE r.id = :id"),
     @NamedQuery(name = "ResourceTypeCategory.findByName", query = "SELECT r FROM ResourceTypeCategory r WHERE r.name = :name"),
     @NamedQuery(name = "ResourceTypeCategory.findByDescription", query = "SELECT r FROM ResourceTypeCategory r WHERE r.description = :description")})
-public class ResourceTypeCategory implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class ResourceTypeCategory extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -62,6 +62,7 @@ public class ResourceTypeCategory implements Serializable
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -109,15 +110,12 @@ public class ResourceTypeCategory implements Serializable
             return false;
         }
         ResourceTypeCategory other = (ResourceTypeCategory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ResourceTypeCategory[ id=" + id + " ]";
+        return "ResourceTypeCategory[ id=" + id + " ]";
     }
-    
+
 }

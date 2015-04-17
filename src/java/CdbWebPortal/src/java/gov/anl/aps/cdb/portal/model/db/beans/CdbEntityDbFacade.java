@@ -1,21 +1,25 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import java.util.List;
 import javax.persistence.EntityManager;
 
 /**
+ * Generic CDB entity database facade class.
  *
- * @author sveseli
+ * @param <T> entity type
  */
-public abstract class CdbEntityDbFacade<T>
-{
-    private Class<T> entityClass;
+public abstract class CdbEntityDbFacade<T> {
+
+    private final Class<T> entityClass;
 
     public CdbEntityDbFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
@@ -61,9 +65,10 @@ public abstract class CdbEntityDbFacade<T>
         javax.persistence.Query q = getEntityManager().createQuery(cq);
         return ((Long) q.getSingleResult()).intValue();
     }
-    
+
     public void flush() {
-        getEntityManager().flush(); // to clear cache: getEntityManager().getEntityManagerFactory().getCache().evictAll();
+        // To clear cache: getEntityManager().getEntityManagerFactory().getCache().evictAll();
+        getEntityManager().flush();
     }
-    
+
 }

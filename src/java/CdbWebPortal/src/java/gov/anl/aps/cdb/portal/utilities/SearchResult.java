@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.utilities;
 
@@ -9,11 +13,9 @@ import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
- *
- * @author sveseli
+ * Search result class.
  */
-public class SearchResult
-{
+public class SearchResult {
 
     private final Integer objectId;
     private final String objectName;
@@ -54,7 +56,7 @@ public class SearchResult
         }
         return false;
     }
-    
+
     public boolean doesValueContainPattern(String key, String value, Pattern searchPattern) {
         if (value == null || value.isEmpty()) {
             return false;

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
@@ -18,14 +27,19 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
+/**
+ * Controller class for user groups.
+ */
 @Named("userGroupController")
 @SessionScoped
 public class UserGroupController extends CdbEntityController<UserGroup, UserGroupDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserGroup.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserGroup.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "UserGroup.List.Display.Description";
-
     private static final String FilterByNameSettingTypeKey = "UserGroup.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "UserGroup.List.FilterBy.Description";
 
@@ -74,7 +88,7 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     public List<UserGroup> getAvailableItems() {
         return super.getAvailableItems();
     }
-    
+
     @Override
     public void prepareEntityInsert(UserGroup userGroup) throws ObjectAlreadyExists {
         UserGroup existingUserGroup = userGroupFacade.findByName(userGroup.getName());
@@ -91,7 +105,7 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
             throw new ObjectAlreadyExists("User group " + userGroup.getName() + " already exists.");
         }
         logger.debug("Updating user group " + userGroup.getName());
-    }    
+    }
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -135,6 +149,9 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
+    /**
+     * Converter class for user group objects.
+     */
     @FacesConverter(value = "userGroupConverter", forClass = UserGroup.class)
     public static class UserGroupControllerConverter implements Converter {
 
@@ -146,7 +163,7 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
             try {
                 UserGroupController controller = (UserGroupController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "userGroupController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to user group object.");
@@ -154,13 +171,11 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

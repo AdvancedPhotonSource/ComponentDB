@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
@@ -5,8 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 
 /**
- *
- * @author sveseli
+ * HTTP link property type handler.
  */
 public class HttpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
@@ -19,17 +27,17 @@ public class HttpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public DisplayType getValueDisplayType() {
         return DisplayType.HTTP_LINK;
-    }    
-    
+    }
+
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
         String linkValue = shortenHttpLinkDisplayValueIfNeeded(propertyValue.getValue());
         propertyValue.setDisplayValue(linkValue);
-    } 
-    
+    }
+
     @Override
     public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
         String linkValue = shortenHttpLinkDisplayValueIfNeeded(propertyValueHistory.getValue());
         propertyValueHistory.setDisplayValue(linkValue);
-    }     
+    }
 }

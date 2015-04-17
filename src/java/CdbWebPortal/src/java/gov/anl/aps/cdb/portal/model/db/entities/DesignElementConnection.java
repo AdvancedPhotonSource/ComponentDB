@@ -1,12 +1,14 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,8 +24,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author sveseli
+ * Design element connection entity class.
  */
 @Entity
 @Table(name = "design_element_connection")
@@ -34,9 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "DesignElementConnection.findByLinkComponentQuantity", query = "SELECT d FROM DesignElementConnection d WHERE d.linkComponentQuantity = :linkComponentQuantity"),
     @NamedQuery(name = "DesignElementConnection.findByLabel", query = "SELECT d FROM DesignElementConnection d WHERE d.label = :label"),
     @NamedQuery(name = "DesignElementConnection.findByDescription", query = "SELECT d FROM DesignElementConnection d WHERE d.description = :description")})
-public class DesignElementConnection implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class DesignElementConnection extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -73,6 +73,7 @@ public class DesignElementConnection implements Serializable
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -167,15 +168,12 @@ public class DesignElementConnection implements Serializable
             return false;
         }
         DesignElementConnection other = (DesignElementConnection) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.DesignElementConnection[ id=" + id + " ]";
+        return "DesignElementConnection[ id=" + id + " ]";
     }
-    
+
 }

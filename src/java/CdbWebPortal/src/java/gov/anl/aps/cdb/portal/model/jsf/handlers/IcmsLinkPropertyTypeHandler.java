@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.common.constants.CdbProperty;
@@ -8,15 +17,15 @@ import static gov.anl.aps.cdb.portal.model.jsf.handlers.EdpLinkPropertyTypeHandl
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 
 /**
- *
- * @author sveseli
+ * ICMS link property type handler.
  */
 public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static final String HANDLER_NAME = "ICMS Link";
-    public static final String IcmsUrl = ConfigurationUtility.getPortalProperty(
+
+    private static final String IcmsUrl = ConfigurationUtility.getPortalProperty(
             CdbProperty.ICMS_URL_STRING_PROPERTY_NAME);
-    
+
     public IcmsLinkPropertyTypeHandler() {
         super(HANDLER_NAME);
     }
@@ -27,10 +36,10 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     }
 
     public static String formatIcmsLink(String contentId) {
-        //Given a document ContentID # like APS_1273342  or just 1273342, use the link ...
+        //Given a document ContentID # like APS_1273342  or just 1273342, use link
         // https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_1273342
 
-        // Given a drawing ContentID # like U2210207-100102.DRW, use the link ...
+        // Given a drawing ContentID # like U2210207-100102.DRW, use link
         // https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=U2210207-100102.DRW
         if (contentId == null) {
             return null;
@@ -42,7 +51,7 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             docId = contentId.replace("APS_", "");
             docId = "APS_" + docId;
         }
-        return IcmsUrl.replace("CONTENT_ID", docId);        
+        return IcmsUrl.replace("CONTENT_ID", docId);
     }
 
     @Override

@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -17,6 +21,11 @@ import javax.inject.Named;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+/**
+ * JSF bean for location selection using tree view.
+ *
+ * @author sveseli
+ */
 @Named("locationSelectTreeViewBean")
 @RequestScoped
 public class LocationSelectTreeViewBean implements Serializable {
@@ -68,7 +77,7 @@ public class LocationSelectTreeViewBean implements Serializable {
         }
         skipLocationList.add(location);
     }
-   
+
     public boolean skipLocation(Location location) {
         if (skipLocationList == null) {
             return false;
@@ -77,9 +86,9 @@ public class LocationSelectTreeViewBean implements Serializable {
     }
 
     public void removeLocationNode(Location location) {
-        
+
     }
-    
+
     public TreeNode createLocationRoot() {
         TreeNode locationRoot = new DefaultTreeNode(new Location(), null);
         List<Location> locationsWithoutParents = locationFacade.findLocationsWithoutParents();

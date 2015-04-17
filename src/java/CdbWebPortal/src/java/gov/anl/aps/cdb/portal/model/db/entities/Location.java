@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
@@ -32,8 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Location entity class.
  */
 @Entity
 @Table(name = "location")
@@ -47,6 +50,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Location.findBySortOrder", query = "SELECT l FROM Location l WHERE l.sortOrder = :sortOrder"),
     @NamedQuery(name = "Location.findLocationsWithoutParents", query = "SELECT l FROM Location l WHERE l.id NOT IN (SELECT l2.id FROM Location l2 JOIN l2.parentLocationList cll2) ORDER BY l.name")})
 public class Location extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -64,12 +68,12 @@ public class Location extends CdbEntity {
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "sort_order")
     private Float sortOrder;
-    @JoinTable(name = "location_link", 
+    @JoinTable(name = "location_link",
             joinColumns = {
-        @JoinColumn(name = "child_location_id", referencedColumnName = "id")}, 
+                @JoinColumn(name = "child_location_id", referencedColumnName = "id")},
             inverseJoinColumns = {
-        @JoinColumn(name = "parent_location_id", referencedColumnName = "id")})
-    @ManyToMany(cascade = {CascadeType.MERGE,CascadeType.REFRESH})
+                @JoinColumn(name = "parent_location_id", referencedColumnName = "id")})
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     private List<Location> parentLocationList;
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "parentLocationList")
     private List<Location> childLocationList;
@@ -80,7 +84,7 @@ public class Location extends CdbEntity {
     private List<ComponentInstance> componentInstanceList;
     @OneToMany(mappedBy = "location")
     private List<DesignElement> designElementList;
-    
+
     public Location() {
     }
 
@@ -117,7 +121,7 @@ public class Location extends CdbEntity {
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public boolean getIsUserWriteable() {
         return isUserWriteable;
     }
@@ -133,7 +137,7 @@ public class Location extends CdbEntity {
     public void setSortOrder(Float sortOrder) {
         this.sortOrder = sortOrder;
     }
-    
+
     @XmlTransient
     public List<Location> getChildLocationList() {
         return childLocationList;
@@ -188,7 +192,7 @@ public class Location extends CdbEntity {
     public void resetParentLocation() {
         parentLocationList = null;
     }
-    
+
     public void setParentLocation(Location parentLocation) {
         Location oldParentLocation = getParentLocation();
         if (oldParentLocation != null) {
@@ -198,7 +202,7 @@ public class Location extends CdbEntity {
             List<Location> oldParentLocationChildList = oldParentLocation.getChildLocationList();
             oldParentLocationChildList.remove(this);
         }
-        
+
         parentLocationList = new ArrayList<>();
         if (parentLocation != null) {
             parentLocationList.add(parentLocation);
@@ -211,7 +215,6 @@ public class Location extends CdbEntity {
         }
     }
 
-    
     @Override
     public int hashCode() {
         int hash = 0;

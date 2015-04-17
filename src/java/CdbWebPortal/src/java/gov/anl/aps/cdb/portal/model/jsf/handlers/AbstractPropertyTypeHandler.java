@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
@@ -6,8 +15,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 
 /**
+ * Abstract property type handler.
  *
- * @author sveseli
+ * This class is used as a base for all property type handlers.
  */
 public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandlerInterface {
 

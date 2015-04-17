@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
@@ -12,12 +16,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for property type handlers.
  */
 @Stateless
-public class PropertyTypeHandlerDbFacade extends CdbEntityDbFacade<PropertyTypeHandler>
-{
+public class PropertyTypeHandlerDbFacade extends CdbEntityDbFacade<PropertyTypeHandler> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -36,8 +38,7 @@ public class PropertyTypeHandlerDbFacade extends CdbEntityDbFacade<PropertyTypeH
             return (PropertyTypeHandler) em.createNamedQuery("PropertyTypeHandler.findByName")
                     .setParameter("name", name)
                     .getSingleResult();
-        }
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
         }
         return null;
     }

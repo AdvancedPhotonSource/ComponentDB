@@ -35,7 +35,7 @@ public class PdmLinkApi extends CdbRestApi {
     /**
      * Constructor.
      *
-     * @param webServiceUrl web service url
+     * @param webServiceUrl web service URL
      * @throws ConfigurationError if web service URL is malformed or null
      */
     public PdmLinkApi(String webServiceUrl) throws ConfigurationError {

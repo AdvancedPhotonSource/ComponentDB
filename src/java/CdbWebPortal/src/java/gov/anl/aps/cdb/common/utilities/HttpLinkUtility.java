@@ -24,7 +24,7 @@ public class HttpLinkUtility {
             CdbProperty.HTTP_LINK_DISPLAY_LENGTH_PROPERTY_NAME);
 
     /**
-     * Prepare display value for a given URL.
+     * Prepare display value for a given URL by shortening it if needed.
      *
      * @param url HTTP link
      * @return link display value

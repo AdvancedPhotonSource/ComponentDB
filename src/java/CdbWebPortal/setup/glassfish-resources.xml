@@ -6,7 +6,7 @@
         <property name="portNumber" value="3306"/>
         <property name="databaseName" value="cdb"/>
         <property name="User" value="cdb"/>
-        <property name="Password" value="CBD_DB_PASSWORD"/>
+        <property name="Password" value="cdb"/>
         <property name="URL" value="jdbc:mysql://localhost:3306/cdb?zeroDateTimeBehavior=convertToNull"/>
         <property name="driverClass" value="com.mysql.jdbc.Driver"/>
     </jdbc-connection-pool>

@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -20,6 +24,9 @@ import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuModel;
 
+/**
+ * JSF bean for location selection.
+ */
 @Named("locationSelectMenuViewBean")
 @RequestScoped
 public class LocationSelectMenuViewBean implements Serializable {
@@ -71,7 +78,7 @@ public class LocationSelectMenuViewBean implements Serializable {
         }
         skipLocationList.add(location);
     }
-    
+
     public boolean skipLocation(Location location) {
         if (skipLocationList == null) {
             return false;
@@ -100,8 +107,7 @@ public class LocationSelectMenuViewBean implements Serializable {
         for (Location childLocation : location.getChildLocationList()) {
             if (childLocation.getChildLocationList().isEmpty()) {
                 subMenu.addElement(new DefaultMenuItem(childLocation.getName()));
-            }
-            else {
+            } else {
                 DefaultSubMenu childSubMenu = new DefaultSubMenu(childLocation.getName());
                 populateLocationSubMenu(childSubMenu, childLocation);
                 subMenu.addElement(childSubMenu);

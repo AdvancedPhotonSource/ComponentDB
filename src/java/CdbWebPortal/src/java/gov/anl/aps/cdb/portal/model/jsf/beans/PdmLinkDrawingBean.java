@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.api.PdmLinkApi;
@@ -12,23 +21,24 @@ import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
-
+/**
+ * JSF bean for handling PDMLink drawings.
+ *
+ * This bean uses CDB web service.
+ */
 @Named("pdmLinkDrawingBean")
 @SessionScoped
 public class PdmLinkDrawingBean implements Serializable {
-    
+
     private static final Logger logger = Logger.getLogger(PdmLinkDrawingBean.class.getName());
-    
+
     private String drawingName;
     private PdmLinkDrawing drawing;
     private PdmLinkApi pdmLinkApi;
-    
+
     @PostConstruct
     public void init() {
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
@@ -36,43 +46,43 @@ public class PdmLinkDrawingBean implements Serializable {
             pdmLinkApi = new PdmLinkApi(webServiceUrl);
         } catch (ConfigurationError ex) {
             String error = "PDMLink Service is not accessible:  " + ex.getErrorMessage();
-            logger.error(error);            
+            logger.error(error);
             SessionUtility.addErrorMessage("Error", error);
         }
     }
-    
+
     public PdmLinkDrawing getDrawing() {
         return drawing;
     }
-    
+
     public void setDrawingName(String drawingName) {
         this.drawingName = drawingName;
     }
-    
+
     public String getDrawingName() {
         return drawingName;
     }
-    
+
     public List<PdmLinkDrawingRevision> getDrawingRevisionList() {
         if (drawing == null) {
             return null;
         }
         return drawing.getRevisionList();
     }
-    
+
     public void findDrawing() {
         drawing = null;
         if (pdmLinkApi == null) {
-            SessionUtility.addErrorMessage("Error", "PDMLink Service is not accessible.");   
+            SessionUtility.addErrorMessage("Error", "PDMLink Service is not accessible.");
             return;
         }
-        
+
         if (drawingName != null && !drawingName.isEmpty()) {
             if (!PdmLinkDrawing.isExtensionValid(drawingName)) {
-                SessionUtility.addWarningMessage("Warning", "Valid drawing name extensions are: " + PdmLinkDrawing.VALID_EXTENSION_LIST);   
+                SessionUtility.addWarningMessage("Warning", "Valid drawing name extensions are: " + PdmLinkDrawing.VALID_EXTENSION_LIST);
                 return;
             }
-            
+
             try {
                 logger.debug("Searching for drawing: " + drawingName);
                 drawing = pdmLinkApi.getDrawing(drawingName);
@@ -81,9 +91,8 @@ public class PdmLinkDrawingBean implements Serializable {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             }
-        }
-        else {
-            SessionUtility.addWarningMessage("Warning", "Drawing name cannot be empty.");   
+        } else {
+            SessionUtility.addWarningMessage("Warning", "Drawing name cannot be empty.");
         }
     }
 }

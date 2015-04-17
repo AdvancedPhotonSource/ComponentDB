@@ -1,4 +1,12 @@
-
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
@@ -24,7 +32,10 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class SearchController implements Serializable {
 
-    private static final String CaseInsensitiveSettingTypeKey = "Search.CaseInsensitive";  
+    /* 
+     * Controller specific settings
+     */
+    private static final String CaseInsensitiveSettingTypeKey = "Search.CaseInsensitive";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Search.Display.NumberOfItemsPerPage";
     private static final String DisplayAssemblyComponentsSettingTypeKey = "Search.Display.AssemblyComponents";
     private static final String DisplayComponentsSettingTypeKey = "Search.Display.Components";
@@ -50,7 +61,7 @@ public class SearchController implements Serializable {
 
     protected Integer displayNumberOfItemsPerPage = null;
 
-    protected Boolean displayAssemblyComponents = null;    
+    protected Boolean displayAssemblyComponents = null;
     protected Boolean displayComponents = null;
     protected Boolean displayComponentInstances = null;
     protected Boolean displayComponentTypes = null;
@@ -136,7 +147,7 @@ public class SearchController implements Serializable {
         if (settingTypeMap == null) {
             return;
         }
-        
+
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         caseInsensitive = Boolean.parseBoolean(settingTypeMap.get(CaseInsensitiveSettingTypeKey).getDefaultValue());
         displayAssemblyComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayAssemblyComponentsSettingTypeKey).getDefaultValue());

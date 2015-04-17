@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
@@ -46,6 +55,15 @@ import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.export.Exporter;
 
+/**
+ * Base class for all CDB entity controllers. It encapsulates common
+ * functionality related to entity creation, views, updates and deletion,
+ * manages user settings and session customization relevant for a given entity
+ * type, entity search, etc.
+ *
+ * @param <EntityType> CDB entity type
+ * @param <FacadeType> CDB DB facade type
+ */
 public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityDbFacade<EntityType>> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
@@ -122,24 +140,45 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private boolean caseInsensitive = true;
     private LinkedList<SearchResult> searchResultList;
 
+    /**
+     * Default constructor.
+     */
     public CdbEntityController() {
     }
 
+    /**
+     * Initialize controller and update its settings.
+     */
     @PostConstruct
     public void initialize() {
         updateSettings();
     }
 
+    /**
+     * Navigate to invalid request error page.
+     *
+     * @param error error message
+     */
     public void handleInvalidSessionRequest(String error) {
         SessionUtility.setLastSessionError(error);
         SessionUtility.navigateTo("/views/error/invalidRequest?faces-redirect=true");
     }
 
+    /**
+     * Reset log text and topic fields.
+     */
     public void resetLogText() {
         logText = "";
         logTopicId = null;
     }
 
+    /**
+     * Get list of setting types.
+     *
+     * If not set, this list is retrieved from the database.
+     *
+     * @return setting type list
+     */
     public List<SettingType> getSettingTypeList() {
         if (settingTypeList == null) {
             settingTypeList = settingTypeFacade.findAll();
@@ -147,6 +186,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return settingTypeList;
     }
 
+    /**
+     * Get setting type map.
+     *
+     * If not set, this map is constructed from list of setting types retrieved
+     * from the database.
+     *
+     * @return setting type map
+     */
     public Map<String, SettingType> getSettingTypeMap() {
         if (settingTypeMap == null) {
             settingTypeMap = new HashMap<>();
@@ -157,6 +204,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return settingTypeMap;
     }
 
+    /**
+     * Parse setting value as integer.
+     *
+     * @param settingValue setting string value
+     * @return integer value, or null in case string value cannot be parsed
+     */
     public static Integer parseSettingValueAsInteger(String settingValue) {
         try {
             return Integer.parseInt(settingValue);
@@ -165,46 +218,133 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Abstract method for returning entity DB facade.
+     *
+     * @return entity DB facade
+     */
     protected abstract FacadeType getEntityDbFacade();
 
+    /**
+     * Abstract method for creating new entity instance.
+     *
+     * @return created entity instance
+     */
     protected abstract EntityType createEntityInstance();
 
+    /**
+     * Abstract method for retrieving entity type name.
+     *
+     * @return entity type name
+     */
     public abstract String getEntityTypeName();
 
+    /**
+     * Get entity type group name.
+     *
+     * By default this method returns null, and should be overridden in derived
+     * controllers when corresponding entities have groups.
+     *
+     * @return entity type group name
+     */
     public String getEntityTypeGroupName() {
         return null;
     }
 
+    /**
+     * Get entity type category name.
+     *
+     * By default this method returns null, and should be overridden in derived
+     * controllers when corresponding entities have categories.
+     *
+     * @return entity type category name
+     */
     public String getEntityTypeCategoryName() {
         return null;
     }
 
+    /**
+     * Get entity type type name.
+     *
+     * By default this method returns null, and should be overridden in derived
+     * controllers when corresponding entities have types.
+     *
+     * @return entity type type name
+     */
     public String getEntityTypeTypeName() {
         return null;
     }
 
+    /**
+     * Get display string for entity type name.
+     *
+     * By default this method simply returns entity type name, and should be
+     * overridden in derived controllers for entities with complex names (i.e.,
+     * those that consist of two or more words).
+     *
+     * @return entity type name display string
+     */
     public String getDisplayEntityTypeName() {
         return getEntityTypeName();
     }
 
+    /**
+     * Get current entity instance name.
+     *
+     * By default this method returns null, and should be overridden in derived
+     * controllers.
+     *
+     * @return current entity instance name
+     */
     public abstract String getCurrentEntityInstanceName();
 
+    /**
+     * Get current entity instance.
+     *
+     * @return entity
+     */
     public EntityType getCurrent() {
         return current;
     }
 
+    /**
+     * Find entity instance by id.
+     *
+     * @param id entity instance id
+     * @return entity instance
+     */
     public EntityType findById(Integer id) {
         return null;
     }
 
+    /**
+     * Set current entity instance.
+     *
+     * @param current entity instance
+     */
     public void setCurrent(EntityType current) {
         this.current = current;
     }
 
+    /**
+     * Get entity info object that belongs to the given entity.
+     *
+     * By default this method returns null. It should be overridden in derived
+     * controllers for those entities that contain entity info object.
+     *
+     * @param entity entity object
+     * @return entity info
+     */
     public EntityInfo getEntityInfo(EntityType entity) {
         return null;
     }
 
+    /**
+     * Process view request parameters.
+     *
+     * If request is not valid, user will be redirected to appropriate error
+     * page.
+     */
     public void processViewRequestParams() {
         try {
             EntityType entity = selectByViewRequestParams();
@@ -216,6 +356,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Set breadcrumb variables from request parameters.
+     */
     protected void setBreadcrumbRequestParams() {
         if (breadcrumbViewParam == null) {
             breadcrumbViewParam = SessionUtility.getRequestParameterValue("breadcrumb");
@@ -225,6 +368,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Select current entity instance for view from request parameters.
+     *
+     * @return selected entity instance
+     * @throws CdbException in case of invalid request parameter values
+     */
     public EntityType selectByViewRequestParams() throws CdbException {
         setBreadcrumbRequestParams();
         Integer idParam = null;
@@ -249,6 +398,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return current;
     }
 
+    /**
+     * Process edit request parameters.
+     *
+     * If request is not valid or not authorized, user will be redirected to
+     * appropriate error page.
+     */
     public void processEditRequestParams() {
         try {
             selectByEditRequestParams();
@@ -257,6 +412,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Select current entity instance for edit from request parameters.
+     *
+     * @return selected entity instance
+     * @throws CdbException in case of invalid request parameter values
+     */
     public EntityType selectByEditRequestParams() throws CdbException {
         setBreadcrumbRequestParams();
         Integer idParam = null;
@@ -304,6 +465,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return current;
     }
 
+    /**
+     * Process create request parameters.
+     *
+     * If request is not valid or not authorized, user will be redirected to
+     * appropriate error page.
+     */
     public void processCreateRequestParams() {
         try {
             selectByCreateRequestParams();
@@ -312,6 +479,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Create new entity instance based on request parameters.
+     *
+     * @return new entity instance
+     * @throws CdbException in case of invalid request parameter values
+     */
     public EntityType selectByCreateRequestParams() throws CdbException {
         setBreadcrumbRequestParams();
 
@@ -334,6 +507,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return null;
     }
 
+    /**
+     * Get selected entity instance, or create new instance if none has been
+     * selected previously.
+     *
+     * @return entity instance
+     */
     public EntityType getSelected() {
         if (current == null) {
             current = createEntityInstance();
@@ -341,10 +520,19 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return current;
     }
 
+    /**
+     * Listener for updating controller session settings.
+     *
+     * @param actionEvent event
+     */
     public void updateSettingsActionListener(ActionEvent actionEvent) {
         updateSettings();
     }
 
+    /**
+     * Update controller session settings based on session user and settings
+     * modification date.
+     */
     public void updateSettings() {
         try {
             UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
@@ -366,12 +554,22 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Customize display for entity list.
+     *
+     * @return current view URL for page reload
+     */
     public String customizeListDisplay() {
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
     }
 
+    /**
+     * Customize display for selection dialog.
+     *
+     * @return current view URL for page reload
+     */
     public String customizeSelectDisplay() {
         resetSelectDataModel();
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
@@ -379,15 +577,45 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return returnPage;
     }
 
+    /**
+     * Update controller session settings with setting type default values.
+     *
+     * This method should be overridden in any derived controller class that has
+     * its own settings.
+     *
+     * @param settingTypeMap map of setting types
+     */
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
     }
 
+    /**
+     * Update controller session settings with user-specific values from the
+     * database.
+     *
+     * This method should be overridden in any derived controller class that has
+     * its own settings.
+     *
+     * @param sessionUser current session user
+     */
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
     }
 
+    /**
+     * Save controller session settings for the current user.
+     *
+     * This method should be overridden in any derived controller class that has
+     * its own settings.
+     *
+     * @param sessionUser current session user
+     */
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
     }
 
+    /**
+     * Listener for saving session user settings.
+     *
+     * @param actionEvent event
+     */
     public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
         logger.debug("Saving settings");
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
@@ -399,6 +627,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Update entity list display settings using current data table values.
+     *
+     * This method should be overridden in any derived controller class that has
+     * its own settings.
+     *
+     * @param dataTable entity list data table
+     */
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
         if (dataTable == null) {
             return;
@@ -415,6 +651,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         filterByLastModifiedOnDateTime = (String) filters.get("entityInfo.lastModifiedOnDateTime");
     }
 
+    /**
+     * Clear entity list filters.
+     *
+     * This method should be overridden in any derived controller class that has
+     * its own filters.
+     */
     public void clearListFilters() {
         filterByName = null;
         filterByDescription = null;
@@ -426,6 +668,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         filterByLastModifiedOnDateTime = null;
     }
 
+    /**
+     * Clear entity selection list filters.
+     *
+     * This method should be overridden in any derived controller class that has
+     * its own select filters.
+     */
     public void clearSelectFilters() {
         if (selectDataTable != null) {
             selectDataTable.getFilters().clear();
@@ -440,6 +688,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         selectFilterByLastModifiedOnDateTime = null;
     }
 
+    /**
+     * Reset list variables and associated filter values and data model.
+     *
+     * @return URL to entity list view
+     */
     public String resetList() {
         logger.debug("Resetting list data model for " + getDisplayEntityTypeName());
         clearListFilters();
@@ -447,6 +700,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return prepareList();
     }
 
+    /**
+     * Prepare entity list view.
+     *
+     * @return URL to entity list view
+     */
     public String prepareList() {
         logger.debug("Preparing list data model for " + getDisplayEntityTypeName());
         current = null;
@@ -456,10 +714,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return "list?faces-redirect=true";
     }
 
+    /**
+     * Prepare list view from a given view path.
+     *
+     * @param viewPath
+     * @return URL to entity list view
+     */
     public String prepareListFromViewPath(String viewPath) {
         return viewPath + "/" + prepareList();
     }
 
+    /**
+     * Reset list and return entity view.
+     *
+     * @return URL to selected entity instance view
+     */
     public String resetListForView() {
         logger.debug("Resetting list for " + getDisplayEntityTypeName() + " view ");
         clearListFilters();
@@ -467,6 +736,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return view();
     }
 
+    /**
+     * Reset list and return entity instance edit page.
+     *
+     * @return URL to selected entity instance edit page.
+     */
     public String resetListForEdit() {
         logger.debug("Resetting list for " + getDisplayEntityTypeName() + " edit");
         clearListFilters();
@@ -474,6 +748,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return edit();
     }
 
+    /**
+     * Follow breadcrumb if it is set, or prepare entity list view.
+     *
+     * @return previous view if breadcrumb parameters are set, or entity list
+     * view otherwise
+     */
     public String followBreadcrumbOrPrepareList() {
         String loadView = breadcrumbViewParam;
         if (loadView == null) {
@@ -489,6 +769,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return loadView;
     }
 
+    /**
+     * Check if user settings changed or not.
+     *
+     * @return true if user just logged in or modified settings, false otherwise
+     */
     public boolean userSettingsChanged() {
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser == null) {
@@ -504,6 +789,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return false;
     }
 
+    /**
+     * Get entity list data table.
+     *
+     * @return list data table
+     */
     public DataTable getListDataTable() {
         if (userSettingsChanged()) {
             resetListDataModel();
@@ -515,19 +805,37 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return listDataTable;
     }
 
+    /**
+     * Set entity list data table.
+     *
+     * @param listDataTable list data table
+     */
     public void setListDataTable(DataTable listDataTable) {
         this.listDataTable = listDataTable;
         updateListSettingsFromListDataTable(listDataTable);
     }
 
+    /**
+     * Get entity selection list data table.
+     *
+     * @return selection list data table
+     */
     public DataTable getSelectDataTable() {
         return selectDataTable;
     }
 
+    /**
+     * Set entity selection list data table.
+     *
+     * @param selectDataTable selection list data table
+     */
     public void setSelectDataTable(DataTable selectDataTable) {
         this.selectDataTable = selectDataTable;
     }
 
+    /**
+     * Clear all list filters.
+     */
     public void clearAllListFilters() {
         if (listDataTable == null) {
             return;
@@ -538,6 +846,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Check if any list filter is set.
+     *
+     * @return true if filter is set, false otherwise
+     */
     public boolean isAnyListFilterSet() {
         if (listDataTable == null) {
             return false;
@@ -552,6 +865,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return false;
     }
 
+    /**
+     * Update session view settings based on settings modification timestamp.
+     */
     public void updateViewSettings() {
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         boolean settingsUpdated = false;
@@ -569,6 +885,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Listener for saving user session settings.
+     *
+     * @param actionEvent event
+     */
     public void saveViewSettingsForSessionUserActionListener(ActionEvent actionEvent) {
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
@@ -578,21 +899,46 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Customize view display and reload current page.
+     *
+     * @return URL for the current view
+     */
     public String customizeViewDisplay() {
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
     }
 
+    /**
+     * Verify that view is valid.
+     *
+     * If not, redirect user to appropriate error page.
+     *
+     * @throws IOException in case of IO errors
+     */
     public void verifyView() throws IOException {
         if (current != null) {
             SessionUtility.redirectTo("/views/error/invalidRequest.xhtml");
         }
     }
 
+    /**
+     * Prepare entity view.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     */
     protected void prepareEntityView(EntityType entity) {
     }
 
+    /**
+     * Prepare entity view and return view URL.
+     *
+     * @param entity entity instance
+     * @return entity view URL
+     */
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
@@ -601,15 +947,31 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return view();
     }
 
+    /**
+     * Return entity view page.
+     *
+     * @return URL to view page in the entity folder
+     */
     public String view() {
         return "view?faces-redirect=true";
     }
 
+    /**
+     * Return entity create page.
+     *
+     * @return URL to create page in the entity folder
+     */
     public String prepareCreate() {
         current = createEntityInstance();
         return "create?faces-redirect=true";
     }
 
+    /**
+     * Clone entity instance.
+     *
+     * @param entity entity instance to be cloned
+     * @return cloned entity instance
+     */
     public EntityType cloneEntityInstance(EntityType entity) {
         EntityType clonedEntity;
         try {
@@ -621,14 +983,33 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return clonedEntity;
     }
 
+    /**
+     * Prepare entity instance clone and return view to the cloned instance.
+     *
+     * @param entity entity instance to be cloned
+     * @return URL to cloned instance view
+     */
     public String prepareClone(EntityType entity) {
         current = cloneEntityInstance(entity);
         return "/views/" + getEntityTypeName() + "/create?faces-redirect=true";
     }
 
+    /**
+     * Prepare entity insert.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     * @throws CdbException in case of any errors
+     */
     protected void prepareEntityInsert(EntityType entity) throws CdbException {
     }
 
+    /**
+     * Create new entity instance and return view to the new instance.
+     *
+     * @return URL to the new entity instance view
+     */
     public String create() {
         try {
             EntityType newEntity = current;
@@ -650,20 +1031,44 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
+    /**
+     * Prepare entity instance edit.
+     *
+     * @param entity entity instance to be updated
+     * @return URL to edit page
+     */
     public String prepareEdit(EntityType entity) {
         resetLogText();
         current = entity;
         return edit();
     }
 
+    /**
+     * Return entity edit page.
+     *
+     * @return URL to edit page in the entity folder
+     */
     public String edit() {
         clearSelectFiltersAndResetSelectDataModel();
         return "edit?faces-redirect=true";
     }
 
+    /**
+     * Prepare entity update.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     * @throws CdbException in case of any errors
+     */
     protected void prepareEntityUpdate(EntityType entity) throws CdbException {
     }
 
+    /**
+     * Update current entity and save changes in the database.
+     *
+     * @return URL to current entity instance view page
+     */
     public String update() {
         try {
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
@@ -680,16 +1085,33 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
-            logger.error("Could not update " + getDisplayEntityTypeName() + " " 
+            logger.error("Could not update " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
 
+    /**
+     * Prepare entity update when changes involve removing associated objects
+     * from the database.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     * @throws CdbException in case of any errors
+     */
     protected void prepareEntityUpdateOnRemoval(EntityType entity) throws CdbException {
     }
 
+    /**
+     * Update current entity and save changes in the database.
+     *
+     * This method is used when changes involve only removing associated objects
+     * from the database.
+     *
+     * @return URL to current entity instance view page
+     */
     public String updateOnRemoval() {
         try {
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
@@ -706,21 +1128,40 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
-            logger.error("Could not update " + getDisplayEntityTypeName() + " " 
+            logger.error("Could not update " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
 
+    /**
+     * Prepare entity removal from the database.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     * @throws CdbException in case of any errors
+     */
     protected void prepareEntityDestroy(EntityType entity) throws CdbException {
     }
 
+    /**
+     * Remove entity instance from the database.
+     *
+     * @param entity entity instance to be deleted
+     */
     public void destroy(EntityType entity) {
         current = entity;
         destroy();
     }
 
+    /**
+     * Remove current (selected) entity instance from the database and reset
+     * list variables and data model.
+     *
+     * @return URL to entity list page
+     */
     public String destroy() {
         if (current == null) {
             logger.warn("Current item is not set");
@@ -732,7 +1173,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
         try {
-            logger.debug("Destroying " +  getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
+            logger.debug("Destroying " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityDestroy(current);
             getEntityDbFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
@@ -745,18 +1186,30 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
-            logger.error("Could not delete " + getDisplayEntityTypeName() + " " 
+            logger.error("Could not delete " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());
             return null;
         }
     }
 
+    /**
+     * Create data model from list of all available entity instances.
+     *
+     * @return created list data model
+     */
     public DataModel createListDataModel() {
         listDataModel = new ListDataModel(getEntityDbFacade().findAll());
         return listDataModel;
     }
 
+    /**
+     * Get list data model.
+     *
+     * If model is not set, this method will create it.
+     *
+     * @return list data model
+     */
     public DataModel getListDataModel() {
         if (listDataModel == null) {
             createListDataModel();
@@ -764,9 +1217,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return listDataModel;
     }
 
+    /**
+     * Prepare entity list for selection.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param selectEntityList entity list to be used for selection
+     */
     public void prepareEntityListForSelection(List<EntityType> selectEntityList) {
     }
 
+    /**
+     * Create data model for entity selection.
+     *
+     * @return selection data model
+     */
     public DataModel createSelectDataModel() {
         List<EntityType> selectEntityList = getEntityDbFacade().findAll();
         prepareEntityListForSelection(selectEntityList);
@@ -774,11 +1239,24 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return selectDataModel;
     }
 
+    /**
+     * Create data model for entity selection using provided list.
+     *
+     * @param selectEntityList entity list to be used for selection
+     * @return selection data model
+     */
     public DataModel createSelectDataModel(List<EntityType> selectEntityList) {
         selectDataModel = new ListDataModel(selectEntityList);
         return selectDataModel;
     }
 
+    /**
+     * Get data model for entity selection.
+     *
+     * If selection data model is null, it will be created.
+     *
+     * @return selection data model
+     */
     public DataModel getSelectDataModel() {
         if (selectDataModel == null) {
             createSelectDataModel();
@@ -786,6 +1264,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return selectDataModel;
     }
 
+    /**
+     * Create data model for entity selection, but without current (selected)
+     * entity.
+     *
+     * @return selection data model
+     */
     public DataModel createSelectDataModelWithoutCurrent() {
         List<EntityType> selectEntityList = getAvailableItemsWithoutCurrent();
 
@@ -794,6 +1278,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return selectDataModel;
     }
 
+    /**
+     * Get data model for entity selection, but without current (selected)
+     * entity.
+     *
+     * If selection data model is null, it will be created.
+     *
+     * @return selection data model
+     */
     public DataModel getSelectDataModelWithoutCurrent() {
         if (selectDataModel == null) {
             createSelectDataModelWithoutCurrent();
@@ -801,10 +1293,20 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return selectDataModel;
     }
 
+    /**
+     * Get data model using list of all entity instances.
+     *
+     * @return data model
+     */
     public DataModel getItems() {
         return getListDataModel();
     }
 
+    /**
+     * Get list of selected objects and reset selection data model.
+     *
+     * @return list of selected objects
+     */
     public List<EntityType> getSelectedObjectListAndResetSelectDataModel() {
         List<EntityType> returnList = selectedObjectList;
         resetSelectDataModel();
@@ -823,6 +1325,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return filteredObjectList;
     }
 
+    /**
+     * Reset selected object list to null.
+     */
     public void resetSelectedObjectList() {
         selectedObjectList = null;
     }
@@ -847,11 +1352,20 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.selectedObject = selectedObject;
     }
 
+    /**
+     * Reset list data model and set current entity.
+     *
+     * @param currentEntity current entity
+     */
     public void resetListDataModelAndSetCurrent(EntityType currentEntity) {
         resetListDataModel();
         current = currentEntity;
     }
 
+    /**
+     * Reset various list variables to null so that they can be recreated for
+     * next request.
+     */
     public void resetListDataModel() {
         listDataModel = null;
         listDataTable = null;
@@ -862,6 +1376,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         //getFacade().flush();
     }
 
+    /**
+     * Reset various selection variables so that they can be recreated for next
+     * request.
+     */
     public void resetSelectDataModel() {
         selectDataModel = null;
         selectDataTable = null;
@@ -885,6 +1403,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         resetSelectDataModel();
     }
 
+    /**
+     * Create log object if log text is not null.
+     *
+     * @return new log entry
+     */
     public Log prepareLogEntry() {
         Log logEntry = null;
         if (logText != null && !logText.isEmpty()) {
@@ -931,6 +1454,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return CollectionUtility.displayItemListWithoutOutsideDelimiters(entityList, itemDelimiter);
     }
 
+    /**
+     * Search all entities for a given string.
+     *
+     * @param searchString search string
+     * @param caseInsensitive use case insensitive search
+     * @return list of search results
+     */
     public List<SearchResult> getSearchResultList(String searchString, boolean caseInsensitive) {
         searchHasResults = false;
         if (searchString == null || searchString.isEmpty()) {
@@ -939,9 +1469,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
         if (searchString.equals(this.searchString) && caseInsensitive == this.caseInsensitive) {
             // Return old results
-            return searchResultList;            
+            return searchResultList;
         }
-        
+
         // Start new search
         this.searchString = searchString;
         this.caseInsensitive = caseInsensitive;

@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.List;
@@ -22,8 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Property type handler entity class.
  */
 @Entity
 @Table(name = "property_type_handler")
@@ -34,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyTypeHandler.findByName", query = "SELECT p FROM PropertyTypeHandler p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyTypeHandler.findByDescription", query = "SELECT p FROM PropertyTypeHandler p WHERE p.description = :description")})
 public class PropertyTypeHandler extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -46,7 +49,7 @@ public class PropertyTypeHandler extends CdbEntity {
     private String description;
     @OneToMany(mappedBy = "propertyTypeHandler")
     private List<PropertyType> propertyTypeList;
-    
+
     public PropertyTypeHandler() {
     }
 

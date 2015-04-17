@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -11,6 +20,9 @@ import java.util.List;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+/**
+ * DB utility class for design elements.
+ */
 public class DesignElementUtility {
 
     public static TreeNode createDesignElementRoot(Design parentDesign) throws CdbException {
@@ -70,5 +82,5 @@ public class DesignElementUtility {
             populateAssemblyNode(childDesignElementNode, component);
         }
     }
-    
+
 }

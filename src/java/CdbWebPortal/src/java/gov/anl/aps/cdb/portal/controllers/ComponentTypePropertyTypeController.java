@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -10,25 +19,25 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
-import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Controller class for component type property type objects.
+ */
 @Named("componentTypePropertyTypeController")
 @SessionScoped
-public class ComponentTypePropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable
-{
+public class ComponentTypePropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable {
 
-    private static final String DisplayIdSettingTypeKey = "ComponentTypePropertyType.List.Display.Id";    
+    /*
+     * Controller specific settings 
+     */
+    private static final String DisplayIdSettingTypeKey = "ComponentTypePropertyType.List.Display.Id";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypePropertyType.List.Display.NumberOfItemsPerPage";
-
     private static final String FilterByPropertyTypeNameSettingTypeKey = "ComponentTypePropertyType.List.FilterBy.PropertyTypeName";
-    
-    
-    private static final Logger logger = Logger.getLogger(ComponentTypePropertyTypeController.class.getName());
 
     @EJB
     private PropertyTypeDbFacade propertyTypeFacade;
-    
+
     private String filterByPropertyTypeName = null;
 
     public ComponentTypePropertyTypeController() {
@@ -50,7 +59,6 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
         return "componentTypePropertyType";
     }
 
-    
     @Override
     public String getDisplayEntityTypeName() {
         return "component type property type";
@@ -70,9 +78,9 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
             return;
         }
 
-        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());        
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        filterByPropertyTypeName = settingTypeMap.get(FilterByPropertyTypeNameSettingTypeKey).getDefaultValue();                
+        filterByPropertyTypeName = settingTypeMap.get(FilterByPropertyTypeNameSettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -82,10 +90,10 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
         }
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        filterByPropertyTypeName = sessionUser.getUserSettingValueAsString(FilterByPropertyTypeNameSettingTypeKey, filterByPropertyTypeName);        
+        filterByPropertyTypeName = sessionUser.getUserSettingValueAsString(FilterByPropertyTypeNameSettingTypeKey, filterByPropertyTypeName);
     }
 
-@Override
+    @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
         super.updateListSettingsFromListDataTable(dataTable);
         if (dataTable == null) {
@@ -94,7 +102,7 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
         Map<String, Object> filters = dataTable.getFilters();
         filterByPropertyTypeName = (String) filters.get("propertyType.name");
     }
-    
+
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -103,16 +111,15 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
 
         sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
         sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(FilterByPropertyTypeNameSettingTypeKey, filterByPropertyTypeName);        
+        sessionUser.setUserSettingValue(FilterByPropertyTypeNameSettingTypeKey, filterByPropertyTypeName);
     }
 
-    
     @Override
     public void clearListFilters() {
         super.clearListFilters();
         filterByPropertyTypeName = null;
     }
-    
+
     public String getFilterByPropertyTypeName() {
         return filterByPropertyTypeName;
     }
@@ -121,5 +128,4 @@ public class ComponentTypePropertyTypeController extends CdbEntityController<Pro
         this.filterByPropertyTypeName = filterByPropertyTypeName;
     }
 
-    
 }

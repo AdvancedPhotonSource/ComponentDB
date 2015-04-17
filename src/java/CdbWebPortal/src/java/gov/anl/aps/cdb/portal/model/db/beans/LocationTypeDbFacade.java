@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
@@ -13,12 +16,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for location types.
  */
 @Stateless
-public class LocationTypeDbFacade extends CdbEntityDbFacade<LocationType>
-{
+public class LocationTypeDbFacade extends CdbEntityDbFacade<LocationType> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -30,15 +32,13 @@ public class LocationTypeDbFacade extends CdbEntityDbFacade<LocationType>
     public LocationTypeDbFacade() {
         super(LocationType.class);
     }
-   
-    
+
     public LocationType findByName(String name) {
         try {
-            return (LocationType)em.createNamedQuery("LocationType.findByName")
-                .setParameter("name", name)
-                .getSingleResult();
-        }
-        catch (NoResultException ex) {
+            return (LocationType) em.createNamedQuery("LocationType.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
         }
         return null;
     }
@@ -48,10 +48,8 @@ public class LocationTypeDbFacade extends CdbEntityDbFacade<LocationType>
             return (LocationType) em.createNamedQuery("LocationType.findById")
                     .setParameter("id", id)
                     .getSingleResult();
-        } 
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
         }
         return null;
-    }        
-}    
-
+    }
+}

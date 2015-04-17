@@ -70,27 +70,14 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
     private List<Component> selectComponentCandidateList = null;
     private Component selectedAssembly = null;
 
-    /**
-     * Default constructor.
-     */
     public AssemblyComponentController() {
     }
 
-    /**
-     * Get entity DB facade.
-     *
-     * @return entity DB facade
-     */
     @Override
     protected AssemblyComponentDbFacade getEntityDbFacade() {
         return assemblyComponentFacade;
     }
 
-    /**
-     * Create entity instance.
-     *
-     * @return new entity instance
-     */
     @Override
     protected AssemblyComponent createEntityInstance() {
         AssemblyComponent assemblyComponent = new AssemblyComponent();
@@ -98,42 +85,21 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         return assemblyComponent;
     }
 
-    /**
-     * Find assembly component by id.
-     *
-     * @param id assembly component id
-     * @return assembly component object
-     */
     @Override
     public AssemblyComponent findById(Integer id) {
         return assemblyComponentFacade.findById(id);
     }
 
-    /**
-     * Get entity type name.
-     *
-     * @return entity type name
-     */
     @Override
     public String getEntityTypeName() {
         return "assemblyComponent";
     }
 
-    /**
-     * Get display string for entity type name.
-     *
-     * @return entity type name display string
-     */
     @Override
     public String getDisplayEntityTypeName() {
         return "assembly component";
     }
 
-    /**
-     * Get name of the current entity instance.
-     *
-     * @return current entity instance name
-     */
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -142,11 +108,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         return "";
     }
 
-    /**
-     * Retrieve list of all available assembly component objects.
-     *
-     * @return list of available assembly component objects
-     */
     @Override
     public List<AssemblyComponent> getAvailableItems() {
         return super.getAvailableItems();
@@ -194,11 +155,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         }
     }
 
-    /**
-     * Update controller session settings with setting type default values.
-     *
-     * @param settingTypeMap map of setting types
-     */
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
@@ -212,12 +168,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
     }
 
-    /**
-     * Update controller session settings with user-specific values from the
-     * database.
-     *
-     * @param sessionUser current session user
-     */
     @Override
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
@@ -231,11 +181,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
     }
 
-    /**
-     * Update entity list display settings using current data table values.
-     *
-     * @param dataTable entity list data table
-     */
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
         super.updateListSettingsFromListDataTable(dataTable);
@@ -247,11 +192,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         filterBySortOrder = (String) filters.get("sortOrder");
     }
 
-    /**
-     * Save controller session settings for the current user.
-     *
-     * @param sessionUser current session user
-     */
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -269,9 +209,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
         sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
     }
 
-    /**
-     * Clear entity list filters.
-     */
     @Override
     public void clearListFilters() {
         super.clearListFilters();
@@ -284,15 +221,6 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
     @FacesConverter(forClass = AssemblyComponent.class)
     public static class AssemblyComponentControllerConverter implements Converter {
 
-        /**
-         * Convert string to allowed property value object.
-         *
-         * @param facesContext JSF context
-         * @param component UI component
-         * @param value string value
-         * @return assembly component object, or null if string cannot be
-         * converted
-         */
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
@@ -301,7 +229,7 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
             try {
                 AssemblyComponentController controller = (AssemblyComponentController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "assemblyComponentController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to assembly component object.");
@@ -309,38 +237,16 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
             }
         }
 
-        /**
-         * Get object key (id) as integer from its string value.
-         *
-         * @param value string key value
-         * @return integer key value
-         */
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        private Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        /**
-         * Get object key (id) as string from its integer value.
-         *
-         * @param value integer key value
-         * @return string key value
-         */
-        String getStringKey(java.lang.Integer value) {
+        private String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
         }
 
-        /**
-         * Get object string key.
-         *
-         * @param facesContext JSF context
-         * @param component UI component
-         * @param object object to be converted
-         * @return object key as string
-         */
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {
@@ -356,78 +262,34 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
 
     }
 
-    /**
-     * Get display flat table view flag (determines whether or not flat table
-     * view should be displayed).
-     *
-     * @return flag value
-     */
     public Boolean getDisplayFlatTableView() {
         return displayFlatTableView;
     }
 
-    /**
-     * Set display flat table view flag (determines whether or not flat table
-     * view should be displayed).
-     *
-     * @param displayFlatTableView flag value
-     */
     public void setDisplayFlatTableView(Boolean displayFlatTableView) {
         this.displayFlatTableView = displayFlatTableView;
     }
 
-    /**
-     * Get display sort order flag (determines whether or not allowed property
-     * value sort order column should be displayed).
-     *
-     * @return flag value
-     */
     public Boolean getDisplaySortOrder() {
         return displaySortOrder;
     }
 
-    /**
-     * Set display sort order flag (determines whether or not allowed property
-     * value sort order column should be displayed).
-     *
-     * @param displaySortOrder flag value
-     */
     public void setDisplaySortOrder(Boolean displaySortOrder) {
         this.displaySortOrder = displaySortOrder;
     }
 
-    /**
-     * Get sort order column filter.
-     *
-     * @return filter value
-     */
     public String getFilterBySortOrder() {
         return filterBySortOrder;
     }
 
-    /**
-     * Set sort order column filter,
-     *
-     * @param filterBySortOrder filter value
-     */
     public void setFilterBySortOrder(String filterBySortOrder) {
         this.filterBySortOrder = filterBySortOrder;
     }
 
-    /**
-     * Get selected assembly.
-     *
-     * @return selected assembly
-     */
     public Component getSelectedAssembly() {
         return selectedAssembly;
     }
 
-    /**
-     * Set selected assembly.
-     *
-     * @param selectedAssembly selected assembly
-     */
     public void setSelectedAssembly(Component selectedAssembly) {
         this.selectedAssembly = selectedAssembly;
     }

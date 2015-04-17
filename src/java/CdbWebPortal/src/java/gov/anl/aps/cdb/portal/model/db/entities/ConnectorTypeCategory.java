@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.List;
@@ -22,8 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Connector type category entity class.
  */
 @Entity
 @Table(name = "connector_type_category")
@@ -33,8 +35,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorTypeCategory.findById", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorTypeCategory.findByName", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorTypeCategory.findByDescription", query = "SELECT c FROM ConnectorTypeCategory c WHERE c.description = :description")})
-public class ConnectorTypeCategory extends CdbEntity
-{
+public class ConnectorTypeCategory extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -60,6 +62,7 @@ public class ConnectorTypeCategory extends CdbEntity
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -107,15 +110,12 @@ public class ConnectorTypeCategory extends CdbEntity
             return false;
         }
         ConnectorTypeCategory other = (ConnectorTypeCategory) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ConnectorTypeCategory[ id=" + id + " ]";
+        return "ConnectorTypeCategory[ id=" + id + " ]";
     }
-    
+
 }

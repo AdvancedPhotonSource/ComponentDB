@@ -140,7 +140,7 @@ public class NoServerVerificationSSLSocketFactory extends SSLSocketFactory {
     }
 
     /**
-     * Get default cipher suites.
+     * Get default cipher suites from socket factory.
      *
      * @return list of default ciphers
      */
@@ -150,7 +150,7 @@ public class NoServerVerificationSSLSocketFactory extends SSLSocketFactory {
     }
 
     /**
-     * Get supported cipher suites.
+     * Get supported cipher suites from socket factory.
      *
      * @return list of supported ciphers
      */

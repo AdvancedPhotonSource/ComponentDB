@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -16,6 +20,9 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
+/**
+ * JSF bean for assembly component list tree view.
+ */
 @Named("assemblyComponentListTreeViewBean")
 @RequestScoped
 public class AssemblyComponentListTreeViewBean implements Serializable {
@@ -46,7 +53,7 @@ public class AssemblyComponentListTreeViewBean implements Serializable {
         this.assembly = assembly;
         if (rootNode == null) {
             // rootNode = createAssemblyRoot();
-                        try {
+            try {
                 // rootNode = createAssemblyRoot();
                 rootNode = AssemblyComponentUtility.createAssemblyRoot(assembly);
             } catch (CdbException ex) {
@@ -69,45 +76,5 @@ public class AssemblyComponentListTreeViewBean implements Serializable {
         }
         return rootNode;
     }
-
-//    public TreeNode createAssemblyRoot() {
-//        TreeNode assemblyRoot = new DefaultTreeNode(new AssemblyComponent(), null);
-//        if (assembly == null) {
-//            String error = "Cannot create assembly tree view: assembly is not set.";
-//            logger.error(error);
-//            SessionUtility.addErrorMessage("Error", error);
-//            return assemblyRoot;
-//        }
-//
-//        // Use "tree branch" list to prevent circular trees
-//        // Whenever new assembly is encountered, it will be added to the tree branch list before populating
-//        // element node, and removed from the branch list after population is done
-//        // If an object is encountered twice in the tree branch, this indicates an error.
-//        List<Component> componentTreeBranch = new ArrayList<>();
-//        populateAssemblyComponentNode(assemblyRoot, assembly, componentTreeBranch);
-//        return assemblyRoot;
-//    }
-//
-//    private void populateAssemblyComponentNode(TreeNode assemblyComponentNode, Component component, List<Component> componentTreeBranch) {
-//        List<AssemblyComponent> childAssemblyComponentList = component.getAssemblyComponentList();
-//        if (childAssemblyComponentList == null) {
-//            return;
-//        }
-//        componentTreeBranch.add(component);
-//        for (AssemblyComponent childAssemblyComponent : childAssemblyComponentList) {
-//            Component childComponent = childAssemblyComponent.getComponent();
-//
-//            if (componentTreeBranch.contains(childComponent)) {
-//                String error = "Cannot create assembly tree view: circular child/parent relationship found with assembly "
-//                        + childComponent.getName() + ".";
-//                logger.error(error);
-//                SessionUtility.addErrorMessage("Error", error);
-//                break;
-//            }
-//            TreeNode childComponentNode = new DefaultTreeNode(childAssemblyComponent, assemblyComponentNode);
-//            populateAssemblyComponentNode(childComponentNode, childComponent, componentTreeBranch);
-//        }
-//        componentTreeBranch.remove(component);
-//    }
 
 }

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
@@ -9,6 +18,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * DB utility class for log objects.
+ */
 public class LogUtility {
 
     public static Log createLogEntry() {

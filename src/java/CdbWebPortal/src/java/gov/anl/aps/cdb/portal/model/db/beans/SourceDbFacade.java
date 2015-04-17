@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
@@ -14,12 +17,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for sources.
  */
 @Stateless
-public class SourceDbFacade extends CdbEntityDbFacade<Source>
-{
+public class SourceDbFacade extends CdbEntityDbFacade<Source> {
+
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
@@ -37,7 +39,7 @@ public class SourceDbFacade extends CdbEntityDbFacade<Source>
         return (List<Source>) em.createNamedQuery("Source.findAll")
                 .getResultList();
     }
-    
+
     public Source findById(Integer id) {
         try {
             return (Source) em.createNamedQuery("Source.findById")
@@ -46,8 +48,8 @@ public class SourceDbFacade extends CdbEntityDbFacade<Source>
         } catch (NoResultException ex) {
         }
         return null;
-    }  
-    
+    }
+
     public Source findByName(String name) {
         try {
             return (Source) em.createNamedQuery("Source.findByName")
@@ -56,8 +58,8 @@ public class SourceDbFacade extends CdbEntityDbFacade<Source>
         } catch (NoResultException ex) {
         }
         return null;
-    }   
-    
+    }
+
     public List<Source> findAllSortedByName() {
         javax.persistence.criteria.CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         javax.persistence.criteria.CriteriaQuery cq = cb.createQuery();

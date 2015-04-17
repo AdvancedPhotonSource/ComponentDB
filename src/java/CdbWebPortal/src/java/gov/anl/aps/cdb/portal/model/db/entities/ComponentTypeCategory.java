@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
@@ -25,8 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Component type category entity class.
  */
 @Entity
 @Table(name = "component_type_category")
@@ -36,8 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentTypeCategory.findById", query = "SELECT c FROM ComponentTypeCategory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentTypeCategory.findByName", query = "SELECT c FROM ComponentTypeCategory c WHERE c.name = :name"),
     @NamedQuery(name = "ComponentTypeCategory.findByDescription", query = "SELECT c FROM ComponentTypeCategory c WHERE c.description = :description")})
-public class ComponentTypeCategory extends CdbEntity
-{
+public class ComponentTypeCategory extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -110,7 +112,7 @@ public class ComponentTypeCategory extends CdbEntity
         }
         return ObjectUtility.equals(this.name, other.name);
     }
-    
+
     @Override
     public boolean equals(Object object) {
         if (!(object instanceof ComponentTypeCategory)) {
@@ -120,11 +122,11 @@ public class ComponentTypeCategory extends CdbEntity
         if (this.id == null && other.id == null) {
             return equalsByName(other);
         }
-        
+
         if (this.id == null || other.id == null) {
             return false;
         }
-        return this.id.equals(other.id); 
+        return this.id.equals(other.id);
     }
 
     @Override
@@ -138,7 +140,6 @@ public class ComponentTypeCategory extends CdbEntity
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
         return searchResult;
-    }      
-    
-    
+    }
+
 }

@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
@@ -13,8 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for components.
  */
 @Stateless
 public class ComponentDbFacade extends CdbEntityDbFacade<Component> {
@@ -35,8 +38,8 @@ public class ComponentDbFacade extends CdbEntityDbFacade<Component> {
     public List<Component> findAll() {
         return (List<Component>) em.createNamedQuery("Component.findAll")
                 .getResultList();
-    }    
-    
+    }
+
     public Component findByName(String name) {
         try {
             return (Component) em.createNamedQuery("Component.findByName")

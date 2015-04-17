@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.utilities;
 
 import java.io.IOException;
@@ -15,7 +24,7 @@ import javax.servlet.http.HttpSession;
 public class SessionUtility {
 
     /**
-     * Keys.
+     * Session keys.
      */
     public static final String MESSAGES_KEY = "messages";
     public static final String USER_KEY = "user";
@@ -23,74 +32,37 @@ public class SessionUtility {
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
     public static final String ROLE_KEY = "role";
 
-    /**
-     * Constructor.
-     */
     public SessionUtility() {
     }
 
-    /**
-     * Add error message.
-     *
-     * @param summary message summary
-     * @param detail detailed message
-     */
     public static void addErrorMessage(String summary, String detail) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
         context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
     }
 
-    /**
-     * Add warning message.
-     *
-     * @param summary message summary
-     * @param detail detailed message
-     */
     public static void addWarningMessage(String summary, String detail) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
         context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail));
     }
 
-    /**
-     * Add info message.
-     *
-     * @param summary message summary
-     * @param detail detailed message
-     */
     public static void addInfoMessage(String summary, String detail) {
         FacesContext context = FacesContext.getCurrentInstance();
         context.getExternalContext().getFlash().setKeepMessages(true);
         context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
     }
 
-    /**
-     * Get request parameter value.
-     *
-     * @param parameterName parameter name
-     * @return parameter value
-     */
     public static String getRequestParameterValue(String parameterName) {
         Map parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         return (String) parameterMap.get(parameterName);
     }
 
-    /**
-     * Set user.
-     *
-     * @param user user
-     */
     public static void setUser(Object user) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         sessionMap.put(USER_KEY, user);
     }
 
-    /**
-     * Get user.
-     *
-     * @return user
-     */
     public static Object getUser() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         return sessionMap.get(USER_KEY);

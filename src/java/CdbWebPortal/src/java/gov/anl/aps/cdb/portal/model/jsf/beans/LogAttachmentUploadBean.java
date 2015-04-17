@@ -1,4 +1,12 @@
-
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Attachment;
@@ -21,6 +29,9 @@ import org.apache.log4j.Logger;
 
 import org.primefaces.model.UploadedFile;
 
+/**
+ * JSF bean for log attachment uploads.
+ */
 @Named("logAttachmentUploadBean")
 @RequestScoped
 public class LogAttachmentUploadBean {
@@ -52,14 +63,14 @@ public class LogAttachmentUploadBean {
         try {
             if (uploadedFile != null && !uploadedFile.getFileName().isEmpty()) {
                 String uploadedExtension = FileUtility.getFileExtension(uploadedFile.getFileName());
-      
+
                 uploadDirPath = Paths.get(StorageUtility.getFileSystemLogAttachmentsDirectory());
                 logger.debug("Using log attachments directory: " + uploadDirPath.toString());
                 if (Files.notExists(uploadDirPath)) {
                     Files.createDirectory(uploadDirPath);
                 }
                 File uploadDir = uploadDirPath.toFile();
-                
+
                 String originalExtension = "." + uploadedExtension;
                 File originalFile = File.createTempFile("attachment.", originalExtension, uploadDir);
                 InputStream input = uploadedFile.getInputstream();
@@ -75,8 +86,7 @@ public class LogAttachmentUploadBean {
                 attachmentList.add(attachment);
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + uploadedFile.getFileName() + ".");
             }
-        } 
-        catch (IOException ex) {
+        } catch (IOException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.toString());
         }

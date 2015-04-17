@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
@@ -21,8 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Source entity class.
  */
 @Entity
 @Table(name = "source")
@@ -54,7 +62,7 @@ public class Source extends CdbEntity {
 
     private transient String targetUrl;
     private transient String displayUrl;
-    
+
     public Source() {
     }
 
@@ -117,7 +125,7 @@ public class Source extends CdbEntity {
         }
         return displayUrl;
     }
-    
+
     public void setUrl(String url) {
         this.url = url;
         this.targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);

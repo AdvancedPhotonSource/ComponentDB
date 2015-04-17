@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -16,6 +20,9 @@ import javax.inject.Named;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+/**
+ * JSF bean for location list tree view.
+ */
 @Named("locationListTreeViewBean")
 @RequestScoped
 public class LocationListTreeViewBean implements Serializable {
@@ -33,10 +40,10 @@ public class LocationListTreeViewBean implements Serializable {
     public void resetRootNode() {
         rootNode = null;
     }
-    
+
     public TreeNode getRootNode() {
         if (rootNode == null) {
-            rootNode = createLocationRoot(); 
+            rootNode = createLocationRoot();
         }
         return rootNode;
     }

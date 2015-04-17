@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.controllers;
 
@@ -34,8 +38,8 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class LoginController implements Serializable {
 
-    private static final int MILISECONDS_IN_SECOND = 1000;
-    private static final int SESSION_TIMEOUT_DECREASE_IN_SECONDS = 10;
+    private static final int MilisecondsInSecond = 1000;
+    private static final int SessionTimeoutDecreaseInSeconds = 10;
 
     @EJB
     private UserInfoDbFacade userFacade;
@@ -53,89 +57,41 @@ public class LoginController implements Serializable {
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
     private static final Logger logger = Logger.getLogger(LoginController.class.getName());
 
-    /**
-     * Constructor.
-     */
     public LoginController() {
     }
 
-    /**
-     * Get password.
-     *
-     * @return login password
-     */
     public String getPassword() {
         return password;
     }
 
-    /**
-     * Set password.
-     *
-     * @param password login password
-     */
     public void setPassword(String password) {
         this.password = password;
     }
 
-    /**
-     * Get username.
-     *
-     * @return login username
-     */
     public String getUsername() {
         return username;
     }
 
-    /**
-     * Set username.
-     *
-     * @param username login username
-     */
     public void setUsername(String username) {
         this.username = username;
     }
 
-    /**
-     * Check if user is logged in.
-     *
-     * @return true if admin is logged in, false otherwise
-     */
     public boolean isLoggedIn() {
         return (loggedInAsAdmin || loggedInAsUser);
     }
 
-    /**
-     * Check if admin is logged in.
-     *
-     * @return true if admin is logged in, false otherwise
-     */
     public boolean isLoggedInAsAdmin() {
         return loggedInAsAdmin;
     }
 
-    /**
-     * Set admin login flag.
-     *
-     * @param loggedInAsAdmin login flag
-     */
     public void setLoggedInAsAdmin(boolean loggedInAsAdmin) {
         this.loggedInAsAdmin = loggedInAsAdmin;
     }
 
-    /**
-     * Check if user is logged in.
-     *
-     * @return true if user is logged in, false otherwise
-     */
     public boolean isLoggedInAsUser() {
         return loggedInAsUser;
     }
 
-    /**
-     * Set user login flag.
-     *
-     * @param loggedInAsUser login flag
-     */
     public void setLoggedInAsUser(boolean loggedInAsUser) {
         this.loggedInAsUser = loggedInAsUser;
     }
@@ -152,8 +108,8 @@ public class LoginController implements Serializable {
     /**
      * Login action.
      *
-     * @return url to service home page if login is successful, or null in case
-     * of errors
+     * @return URL to home page if login is successful, or null in case of
+     * errors
      */
     public String login() {
         loggedInAsAdmin = false;
@@ -287,9 +243,6 @@ public class LoginController implements Serializable {
         user = null;
     }
 
-    /**
-     * Navigate to home page
-     */
     public void handleInvalidSessionRequest() {
         SessionUtility.addWarningMessage("Warning", "Invalid session request");
         SessionUtility.navigateTo("/views/home?faces-redirect=true");
@@ -298,7 +251,7 @@ public class LoginController implements Serializable {
     /**
      * Logout action.
      *
-     * @return url to logout page
+     * @return URL to home page
      */
     public String logout() {
         logger.debug("Logging out user: " + user);
@@ -329,7 +282,7 @@ public class LoginController implements Serializable {
             int timeoutInSeconds = SessionUtility.getSessionTimeoutInSeconds();
             logger.debug("Session timeout in seconds: " + timeoutInSeconds);
             // reduce configured value slightly to avoid premature session expiration issues
-            sessionTimeoutInMiliseconds = (timeoutInSeconds - SESSION_TIMEOUT_DECREASE_IN_SECONDS) * MILISECONDS_IN_SECOND;
+            sessionTimeoutInMiliseconds = (timeoutInSeconds - SessionTimeoutDecreaseInSeconds) * MilisecondsInSecond;
         }
         // logger.debug("Idle timeout in miliseconds: " + sessionTimeoutInMiliseconds);
         return sessionTimeoutInMiliseconds;

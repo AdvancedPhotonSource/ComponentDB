@@ -120,29 +120,14 @@ public class CdbRestApi {
         }
     }
 
-    /**
-     * Get service url.
-     *
-     * @return web service URL
-     */
     public URL getServiceUrl() {
         return serviceUrl;
     }
 
-    /**
-     * Get session.
-     *
-     * @return CDB session object
-     */
     public CdbSession getSession() {
         return session;
     }
 
-    /**
-     * Set session.
-     *
-     * @param session CDB session object
-     */
     public void setSession(CdbSession session) {
         this.session = session;
     }

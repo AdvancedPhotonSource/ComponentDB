@@ -1,12 +1,14 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,8 +24,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author sveseli
+ * Assembly component connection entity class.
  */
 @Entity
 @Table(name = "assembly_component_connection")
@@ -34,9 +35,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AssemblyComponentConnection.findByLinkAssemblyComponentQuantity", query = "SELECT a FROM AssemblyComponentConnection a WHERE a.linkAssemblyComponentQuantity = :linkAssemblyComponentQuantity"),
     @NamedQuery(name = "AssemblyComponentConnection.findByLabel", query = "SELECT a FROM AssemblyComponentConnection a WHERE a.label = :label"),
     @NamedQuery(name = "AssemblyComponentConnection.findByDescription", query = "SELECT a FROM AssemblyComponentConnection a WHERE a.description = :description")})
-public class AssemblyComponentConnection implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class AssemblyComponentConnection extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -70,6 +70,7 @@ public class AssemblyComponentConnection implements Serializable
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -156,15 +157,12 @@ public class AssemblyComponentConnection implements Serializable
             return false;
         }
         AssemblyComponentConnection other = (AssemblyComponentConnection) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.AssemblyComponentConnection[ id=" + id + " ]";
+        return "AssemblyComponentConnection[ id=" + id + " ]";
     }
-    
+
 }

@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
@@ -13,8 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for property type categories.
  */
 @Stateless
 public class PropertyTypeCategoryDbFacade extends CdbEntityDbFacade<PropertyTypeCategory> {
@@ -35,8 +38,8 @@ public class PropertyTypeCategoryDbFacade extends CdbEntityDbFacade<PropertyType
     public List<PropertyTypeCategory> findAll() {
         return (List<PropertyTypeCategory>) em.createNamedQuery("PropertyTypeCategory.findAll")
                 .getResultList();
-    }    
-    
+    }
+
     public PropertyTypeCategory findByName(String name) {
         try {
             return (PropertyTypeCategory) em.createNamedQuery("PropertyTypeCategory.findByName")

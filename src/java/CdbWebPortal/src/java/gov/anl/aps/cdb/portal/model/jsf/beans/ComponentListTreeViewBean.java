@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -17,6 +21,9 @@ import javax.inject.Named;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+/**
+ * JSF bean for component list tree view.
+ */
 @Named("componentListTreeViewBean")
 @RequestScoped
 public class ComponentListTreeViewBean implements Serializable {
@@ -34,10 +41,10 @@ public class ComponentListTreeViewBean implements Serializable {
     public void resetRootNode() {
         rootNode = null;
     }
-    
+
     public TreeNode getRootNode() {
         if (rootNode == null) {
-            rootNode = createComponentRoot(); 
+            rootNode = createComponentRoot();
         }
         return rootNode;
     }

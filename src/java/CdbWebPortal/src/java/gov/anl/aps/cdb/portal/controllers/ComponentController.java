@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -49,10 +58,16 @@ import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.model.TreeNode;
 
+/**
+ * Component controller class.
+ */
 @Named("componentController")
 @SessionScoped
 public class ComponentController extends CdbEntityController<Component, ComponentDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayCategorySettingTypeKey = "Component.List.Display.Category";
     private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Component.List.Display.CreatedOnDateTime";
@@ -69,7 +84,6 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private static final String DisplayPropertyTypeId4SettingTypeKey = "Component.List.Display.PropertyTypeId4";
     private static final String DisplayPropertyTypeId5SettingTypeKey = "Component.List.Display.PropertyTypeId5";
     private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
-
     private static final String FilterByCategorySettingTypeKey = "Component.List.FilterBy.Category";
     private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
@@ -207,7 +221,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
             return entity.getEntityInfo();
         }
         return null;
-    }    
+    }
 
     @Override
     public void prepareEntityView(Component component) {
@@ -665,24 +679,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
         return true;
     }
 
-//    public String getListOfOpenedTabs() {
-//        String openedTabs = "";
-//        Component component = getCurrent();
-//        if (displayComponentImages) {
-//            openedTabs += "0,";
-//        }
-//        if (!component.getPropertyValueList().isEmpty()) {
-//            openedTabs += "1,";
-//        }
-//        if (!component.getComponentSourceList().isEmpty()) {
-//            openedTabs += "2,";
-//        }
-//        int length = openedTabs.length();
-//        if (length > 0) {
-//            openedTabs = openedTabs.substring(0,length-1);
-//        }
-//        return openedTabs;
-//    } 
+    /**
+     * Converter class for component objects.
+     */
     @FacesConverter(value = "componentConverter", forClass = Component.class)
     public static class ComponentControllerConverter implements Converter {
 
@@ -694,7 +693,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
             try {
                 ComponentController controller = (ComponentController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "componentController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to component object.");
@@ -702,13 +701,11 @@ public class ComponentController extends CdbEntityController<Component, Componen
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        private Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        private String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -972,7 +969,6 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
 
     public SelectOneMenu getComponentTypeSelectOneMenu() {
-
         return componentTypeSelectOneMenu;
     }
 
@@ -983,7 +979,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     public List<PropertyValue> prepareComponentImageList(Component component) {
         if (component == null) {
             return null;
-        } 
+        }
         List<PropertyValue> componentImageList = PropertyValueUtility.prepareImagePropertyValueList(component.getPropertyValueList());
         component.setImagePropertyList(componentImageList);
         return componentImageList;

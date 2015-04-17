@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.utilities;
 
 import java.io.IOException;
@@ -7,6 +16,9 @@ import java.util.List;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 
+/**
+ * Utility class for managing portal configuration.
+ */
 public class ConfigurationUtility {
 
     public static final String PROPERTIES_PATH = "cdb.portal.properties";
@@ -54,13 +66,7 @@ public class ConfigurationUtility {
         logger.debug("Resulting property list: " + propertyList);
         return propertyList;
     }    
-    
-    /**
-     * Load properties.
-     *
-     * @param path
-     * @return loaded properties
-     */
+
     public static Properties loadProperties(String path) {
         Properties properties = new Properties();
         if (path != null) {
@@ -89,7 +95,7 @@ public class ConfigurationUtility {
     }
 
     /**
-     * Get system property.
+     * Get system property, and return default if property is unknown.
      *
      * @param propertyName property name
      * @param defaultValue default property value

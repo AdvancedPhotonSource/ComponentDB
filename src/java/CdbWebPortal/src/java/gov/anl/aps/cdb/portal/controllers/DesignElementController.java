@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DesignElementType;
@@ -43,10 +52,16 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.event.SelectEvent;
 
+/**
+ * Design element controller class.
+ */
 @Named("designElementController")
 @SessionScoped
 public class DesignElementController extends CdbEntityController<DesignElement, DesignElementDbFacade> implements Serializable {
 
+    /**
+     * Controller specific settings
+     */
     private static final String DisplayChildDesignSettingTypeKey = "DesignElement.List.Display.ChildDesign";
     private static final String DisplayComponentSettingTypeKey = "DesignElement.List.Display.Component";
     private static final String DisplayComponentTypeSettingTypeKey = "DesignElement.List.Display.ComponentType";
@@ -62,7 +77,6 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     private static final String DisplayOwnerUserSettingTypeKey = "DesignElement.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "DesignElement.List.Display.OwnerGroup";
     private static final String DisplaySortOrderSettingTypeKey = "DesignElement.List.Display.SortOrder";
-
     private static final String FilterByChildDesignSettingTypeKey = "DesignElement.List.FilterBy.ChildDesign";
     private static final String FilterByComponentSettingTypeKey = "DesignElement.List.FilterBy.Component";
     private static final String FilterByComponentTypeSettingTypeKey = "DesignElement.List.FilterBy.ComponentType";
@@ -130,7 +144,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         designElement.setEntityInfo(entityInfo);
 
-        // clear location list
+        // clear selection lists
         selectLocationCandidateList = null;
         selectChildDesignCandidateList = null;
         selectComponentCandidateList = null;
@@ -210,13 +224,13 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     public String followBreadcrumbOrPrepareViewToDesign(DesignElement designElement) {
         String loadView = breadcrumbViewParam;
         if (loadView == null) {
-            loadView = prepareViewToDesign(designElement) ;
-        } 
+            loadView = prepareViewToDesign(designElement);
+        }
         breadcrumbViewParam = null;
         breadcrumbObjectIdViewParam = null;
         return loadView + "?faces-redirect=true";
     }
-    
+
     public void prepareAddLog(DesignElement designElement) {
         Log logEntry = LogUtility.createLogEntry();
         List<Log> designElementLogList = designElement.getLogList();
@@ -431,6 +445,9 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         filterBySortOrder = null;
     }
 
+    /**
+     * Converter class for design element objects.
+     */
     @FacesConverter(forClass = DesignElement.class)
     public static class DesignElementControllerConverter implements Converter {
 
@@ -442,7 +459,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
             try {
                 DesignElementController controller = (DesignElementController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "designElementController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to design element object.");
@@ -451,13 +468,11 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
 
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

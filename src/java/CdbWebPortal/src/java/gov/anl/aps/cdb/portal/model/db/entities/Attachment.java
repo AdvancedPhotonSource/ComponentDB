@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
@@ -23,8 +26,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Attachment entity class.
  */
 @Entity
 @Table(name = "attachment")
@@ -36,6 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Attachment.findByTag", query = "SELECT a FROM Attachment a WHERE a.tag = :tag"),
     @NamedQuery(name = "Attachment.findByDescription", query = "SELECT a FROM Attachment a WHERE a.description = :description")})
 public class Attachment extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -52,7 +55,7 @@ public class Attachment extends CdbEntity {
     private List<Log> logList;
 
     private transient String filePath = null;
-    
+
     public Attachment() {
     }
 
@@ -126,9 +129,9 @@ public class Attachment extends CdbEntity {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.Attachment[ id=" + id + " ]";
+        return "Attachment[ id=" + id + " ]";
     }
-    
+
     public String getFilePath() {
         if (filePath == null) {
             filePath = StorageUtility.getApplicationLogAttachmentPathDirectory(name);

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
 import java.util.Iterator;
@@ -5,6 +14,9 @@ import java.util.Map;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+/**
+ * Utility class for manipulating UI components.
+ */
 public class UiComponentUtility {
 
     static public final String EXPORT_VALUE_ATTR_KEY = "exportValue";

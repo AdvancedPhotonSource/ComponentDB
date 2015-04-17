@@ -77,7 +77,8 @@ public class CdbExceptionFactory {
      * @param type exception type
      * @param code exception code
      * @param error exception error message
-     * @throws CdbException generated CDB exception whenever this method is called
+     * @throws CdbException generated CDB exception whenever this method is
+     * called
      */
     public static void throwCdbException(String type, int code, String error) throws CdbException {
         CdbException exc = generateCdbException(type, code, error);

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
@@ -18,14 +27,19 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
+/**
+ * Controller class for component type categories.
+ */
 @Named("componentTypeCategoryController")
 @SessionScoped
 public class ComponentTypeCategoryController extends CdbEntityController<ComponentTypeCategory, ComponentTypeCategoryDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentTypeCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentTypeCategory.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "ComponentTypeCategory.List.Display.Description";
-
     private static final String FilterByNameSettingTypeKey = "ComponentTypeCategory.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "ComponentTypeCategory.List.FilterBy.Description";
 
@@ -70,7 +84,7 @@ public class ComponentTypeCategoryController extends CdbEntityController<Compone
         }
         return "";
     }
-    
+
     @Override
     public List<ComponentTypeCategory> getAvailableItems() {
         return super.getAvailableItems();
@@ -92,7 +106,7 @@ public class ComponentTypeCategoryController extends CdbEntityController<Compone
             throw new ObjectAlreadyExists("Component type category " + componentTypeCategory.getName() + " already exists.");
         }
         logger.debug("Updating component type category " + componentTypeCategory.getName());
-    }  
+    }
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -137,8 +151,11 @@ public class ComponentTypeCategoryController extends CdbEntityController<Compone
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
+    /**
+     * Converter class for component type category objects.
+     */
     @FacesConverter(forClass = ComponentTypeCategory.class)
-    public static class ComponentCategoryControllerConverter implements Converter {
+    public static class ComponentTypeCategoryControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
@@ -146,9 +163,9 @@ public class ComponentTypeCategoryController extends CdbEntityController<Compone
                 return null;
             }
             try {
-            ComponentTypeCategoryController controller = (ComponentTypeCategoryController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "componentTypeCategoryController");
-            return controller.getEntity(getKey(value));
+                ComponentTypeCategoryController controller = (ComponentTypeCategoryController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "componentTypeCategoryController");
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to component type category object.");
@@ -156,13 +173,11 @@ public class ComponentTypeCategoryController extends CdbEntityController<Compone
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

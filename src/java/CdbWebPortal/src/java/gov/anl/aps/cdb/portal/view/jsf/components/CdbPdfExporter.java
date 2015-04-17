@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.view.jsf.components;
 
 import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
@@ -11,9 +20,11 @@ import org.primefaces.component.celleditor.CellEditor;
 import org.primefaces.component.export.PDFExporter;
 
 /**
- * Override standard pdf exporter in order to use displayed http link values.
+ * CDB PDF exporter class.
+ * 
+ * Overrides standard PDF exporter in order to use display values for HTTP links.
  *
- * See
+ * @see
  * http://stackoverflow.com/questions/14411389/pdataexporter-does-not-recognize-pcelleditor/14413932#14413932
  */
 public class CdbPdfExporter extends PDFExporter {

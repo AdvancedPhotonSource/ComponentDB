@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
@@ -5,6 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * DB utility class for designs.
+ */
 public class DesignUtility {
 
     public static List<Design> filterDesign(String query, List<Design> candidateDesignList) {
@@ -19,5 +31,5 @@ public class DesignUtility {
         }
         return filteredDesignList;
     }
-    
+
 }

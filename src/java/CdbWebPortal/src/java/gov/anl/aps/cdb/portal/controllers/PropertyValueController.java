@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
@@ -22,10 +31,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Controller class for property values.
+ */
 @Named("propertyValueController")
 @SessionScoped
 public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValue.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValue.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "PropertyValue.List.Display.Description";
@@ -36,7 +51,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     private static final String DisplayTagSettingTypeKey = "PropertyValue.List.Display.Tag";
     private static final String DisplayTypeCategorySettingTypeKey = "PropertyValue.List.Display.TypeCategory";
     private static final String DisplayUnitsSettingTypeKey = "PropertyValue.List.Display.Units";
-
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValue.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValue.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.FilterBy.EnteredOnDateTime";
@@ -288,6 +302,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DATE);
     }
 
+    /**
+     * Converter class for property value objects.
+     */
     @FacesConverter(forClass = PropertyValue.class)
     public static class PropertyValueControllerConverter implements Converter {
 
@@ -299,7 +316,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
                 }
                 PropertyValueController controller = (PropertyValueController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "propertyValueController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to property value object.");
@@ -307,13 +324,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

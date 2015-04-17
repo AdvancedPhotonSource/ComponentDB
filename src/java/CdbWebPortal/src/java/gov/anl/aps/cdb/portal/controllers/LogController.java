@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
@@ -18,17 +27,22 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Log controller class.
+ */
 @Named("logController")
 @SessionScoped
 public class LogController extends CdbEntityController<Log, LogDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayAttachmentsSettingTypeKey = "Log.List.Display.Attachments";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Log.List.Display.Id";
     private static final String DisplayEnteredByUserSettingTypeKey = "Log.List.Display.EnteredByUser";
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "Log.List.Display.EnteredOnDateTime";
     private static final String DisplayTopicSettingTypeKey = "Log.List.Display.Topic";
-
     private static final String FilterByEnteredByUserSettingTypeKey = "Log.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "Log.List.FilterBy.EnteredOnDateTime";
     private static final String FilterByTextSettingTypeKey = "Log.List.FilterBy.Text";
@@ -165,6 +179,9 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
         filterByTopic = null;
     }
 
+    /**
+     * Converter class for log objects.
+     */
     @FacesConverter(forClass = Log.class)
     public static class LogControllerConverter implements Converter {
 
@@ -176,7 +193,7 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
                 }
                 LogController controller = (LogController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "logController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to log object.");
@@ -184,13 +201,11 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -306,8 +321,8 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
 
     public void setComponentInstanceLogListDataTable(DataTable componentInstanceLogListDataTable) {
         this.componentInstanceLogListDataTable = componentInstanceLogListDataTable;
-    } 
-    
+    }
+
     public DataTable getDesignElementLogListDataTable() {
         if (userSettingsChanged() || isListDataModelReset()) {
             designElementLogListDataTable = new DataTable();
@@ -317,7 +332,5 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
 
     public void setDesignElementLogListDataTable(DataTable designElementLogListDataTable) {
         this.designElementLogListDataTable = designElementLogListDataTable;
-    }    
+    }
 }
-    
-

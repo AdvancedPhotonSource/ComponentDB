@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.common.constants.CdbProperty;
@@ -7,13 +16,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 
 /**
- *
- * @author sveseli
+ * EDP link property type handler.
  */
 public class EdpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static final String HANDLER_NAME = "EDP Link";
-    public static final String EdpUrl = ConfigurationUtility.getPortalProperty(
+
+    private static final String EdpUrl = ConfigurationUtility.getPortalProperty(
             CdbProperty.EDP_URL_STRING_PROPERTY_NAME);
 
     public EdpLinkPropertyTypeHandler() {

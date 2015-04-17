@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
@@ -5,8 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.HashMap;
 
 /**
- *
- * @author sveseli
+ * Property type handler factory.
  */
 public class PropertyTypeHandlerFactory {
 

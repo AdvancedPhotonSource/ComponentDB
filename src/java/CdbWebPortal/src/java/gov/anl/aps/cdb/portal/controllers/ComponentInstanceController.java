@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -39,10 +48,16 @@ import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 
+/**
+ * Controller class for component instances.
+ */
 @Named("componentInstanceController")
 @SessionScoped
 public class ComponentInstanceController extends CdbEntityController<ComponentInstance, ComponentInstanceDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayCreatedByUserSettingTypeKey = "ComponentInstance.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.Display.CreatedOnDateTime";
     private static final String DisplayDescriptionSettingTypeKey = "ComponentInstance.List.Display.Description";
@@ -60,7 +75,6 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId5";
     private static final String DisplayQrIdSettingTypeKey = "ComponentInstance.List.Display.QrId";
     private static final String DisplaySerialNumberSettingTypeKey = "ComponentInstance.List.Display.SerialNumber";
-
     private static final String FilterByComponentSettingTypeKey = "ComponentInstance.List.FilterBy.Component";
     private static final String FilterByCreatedByUserSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedOnDateTime";
@@ -610,6 +624,9 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         return true;
     }
 
+    /**
+     * Converter class for component instance objects.
+     */    
     @FacesConverter(forClass = ComponentInstance.class)
     public static class ComponentInstanceControllerConverter implements Converter {
 
@@ -621,7 +638,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
             try {
                 ComponentInstanceController controller = (ComponentInstanceController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "componentInstanceController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to component instance object.");
@@ -629,13 +646,11 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        private Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        private String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -897,7 +912,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
     public void prepareComponentInstancePropertyValueDisplay(ComponentInstance componentInstance) {
         if (componentInstance == null) {
             return;
-        }        
+        }
         List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyValueUtility.configurePropertyValueDisplay(propertyValue);

@@ -32,12 +32,6 @@ public class PdmLinkDrawing extends CdbObject {
 
     private transient String displayWindchillUrl;
 
-    /**
-     * Check if drawing extension is valid.
-     *
-     * @param drawingName drawing name
-     * @return true if extension is valid, false otherwise
-     */
     public static boolean isExtensionValid(String drawingName) {
         if (drawingName == null || drawingName.isEmpty()) {
             return false;
@@ -46,32 +40,20 @@ public class PdmLinkDrawing extends CdbObject {
         return VALID_EXTENSION_LIST.contains(extension);
     }
 
-    /**
-     * Default constructor.
-     */
+
     public PdmLinkDrawing() {
     }
 
-    /**
-     * Get windchill web service URL.
-     *
-     * @return windchill URL string
-     */
     public String getWindchillUrl() {
         return windchillUrl;
     }
 
-    /**
-     * Set windchill web service URL.
-     *
-     * @param windchillUrl windchill URL string
-     */
     public void setWindchillUrl(String windchillUrl) {
         this.windchillUrl = windchillUrl;
     }
 
     /**
-     * Get windchill URL string suitable for display on a web page.
+     * Shorten windchill URL string so that it is suitable for display on a web page.
      *
      * @return display value for windchill URL string
      */
@@ -82,20 +64,10 @@ public class PdmLinkDrawing extends CdbObject {
         return displayWindchillUrl;
     }
 
-    /**
-     * Get list of drawing revisions.
-     *
-     * @return list of drawing revision objects
-     */
     public LinkedList<PdmLinkDrawingRevision> getRevisionList() {
         return revisionList;
     }
 
-    /**
-     * Set list of drawing revisions.
-     *
-     * @param revisionList list of drawing revision objects
-     */
     public void setRevisionList(LinkedList<PdmLinkDrawingRevision> revisionList) {
         this.revisionList = revisionList;
     }

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -35,10 +44,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Design controller class.
+ */
 @Named("designController")
 @SessionScoped
 public class DesignController extends CdbEntityController<Design, DesignDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Design.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "Design.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "Design.List.Display.Description";
@@ -48,7 +63,6 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Design.List.Display.CreatedOnDateTime";
     private static final String DisplayLastModifiedByUserSettingTypeKey = "Design.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Design.List.Display.LastModifiedOnDateTime";
-
     private static final String FilterByNameSettingTypeKey = "Design.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "Design.List.FilterBy.Description";
     private static final String FilterByOwnerUserSettingTypeKey = "Design.List.FilterBy.OwnerUser";
@@ -175,12 +189,12 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
         // Catch circular dependency issues.
         DesignElementUtility.createDesignElementRoot(design);
-        
+
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = designFacade.findById(design.getId()).getPropertyValueList();
         List<PropertyValue> newPropertyValueList = design.getPropertyValueList();
         logger.debug("Verifying properties for design " + design);
-        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);        
+        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
         prepareDesignImageList(design);
         logger.debug("Updating design " + design.getName()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
@@ -204,8 +218,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             return entity.getEntityInfo();
         }
         return null;
-    } 
-    
+    }
+
     public void prepareAddProperty() {
         Design design = getCurrent();
         List<PropertyValue> propertyList = design.getPropertyValueList();
@@ -392,6 +406,9 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         return true;
     }
 
+    /**
+     * Converter class for design objects.
+     */
     @FacesConverter(value = "designConverter", forClass = Design.class)
     public static class DesignControllerConverter implements Converter {
 
@@ -403,7 +420,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             try {
                 DesignController controller = (DesignController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "designController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to design object.");
@@ -411,13 +428,11 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

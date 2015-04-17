@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
@@ -16,8 +25,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author sveseli
+ * Allowed property value entity class.
  */
 @Entity
 @Table(name = "allowed_property_value")
@@ -30,8 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AllowedPropertyValue.findByDescription", query = "SELECT a FROM AllowedPropertyValue a WHERE a.description = :description"),
     @NamedQuery(name = "AllowedPropertyValue.findBySortOrder", query = "SELECT a FROM AllowedPropertyValue a WHERE a.sortOrder = :sortOrder"),
     @NamedQuery(name = "AllowedPropertyValue.findAllByPropertyTypeId", query = "SELECT a FROM AllowedPropertyValue a WHERE a.propertyType.id = :propertyTypeId")})
-public class AllowedPropertyValue extends CdbEntity
-{
+public class AllowedPropertyValue extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -116,11 +124,11 @@ public class AllowedPropertyValue extends CdbEntity
         if (other == null) {
             return false;
         }
-        
+
         if (!ObjectUtility.equals(this.propertyType, other.propertyType)) {
             return false;
         }
-        
+
         return ObjectUtility.equals(this.value, other.value);
     }
 
@@ -145,7 +153,7 @@ public class AllowedPropertyValue extends CdbEntity
         if (units != null && !units.isEmpty()) {
             return value + " [" + units + "]";
         }
-        return value;        
+        return value;
     }
-    
+
 }

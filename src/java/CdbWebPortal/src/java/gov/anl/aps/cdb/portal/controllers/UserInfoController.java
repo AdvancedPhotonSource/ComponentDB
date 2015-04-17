@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -23,10 +32,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Controller class for user info objects.
+ */
 @Named("userInfoController")
 @SessionScoped
 public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserInfo.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "UserInfo.List.Display.Description";
@@ -35,7 +50,6 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
     private static final String DisplayGroupsSettingTypeKey = "UserInfo.List.Display.Groups";
     private static final String DisplayLastNameSettingTypeKey = "UserInfo.List.Display.LastName";
     private static final String DisplayMiddleNameSettingTypeKey = "UserInfo.List.Display.MiddleName";
-
     private static final String FilterByDescriptionSettingTypeKey = "UserInfo.List.FilterBy.Description";
     private static final String FilterByEmailSettingTypeKey = "UserInfo.List.FilterBy.Email";
     private static final String FilterByFirstNameSettingTypeKey = "UserInfo.List.FilterBy.FirstName";
@@ -402,6 +416,9 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
         this.passwordEntry = passwordEntry;
     }
 
+    /**
+     * Converter class for user info objects.
+     */    
     @FacesConverter(forClass = UserInfo.class)
     public static class UserInfoControllerConverter implements Converter {
 
@@ -413,7 +430,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
             try {
                 UserInfoController controller = (UserInfoController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "userInfoController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to user info object.");
@@ -421,13 +438,11 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

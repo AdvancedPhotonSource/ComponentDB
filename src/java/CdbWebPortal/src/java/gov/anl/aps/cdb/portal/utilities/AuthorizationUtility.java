@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -6,6 +15,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 
+/**
+ * Utility for handling user authorization for manipulating CDB entities.
+ */
 public class AuthorizationUtility {
 
     public static boolean isEntityWriteableByUser(EntityInfo entityInfo, UserInfo userInfo) {
@@ -15,7 +27,7 @@ public class AuthorizationUtility {
         if (entityInfo == null || userInfo == null) {
             return false;
         }
-        
+
         UserInfo ownerUser = entityInfo.getOwnerUser();
         if (ownerUser != null && ownerUser.getId().equals(userInfo.getId())) {
             return true;
@@ -38,7 +50,7 @@ public class AuthorizationUtility {
         }
         return false;
     }
-    
+
     public static <EntityType extends CdbEntity> boolean isEntityWriteableByUser(EntityType entity, UserInfo userInfo) {
         if (entity instanceof UserInfo) {
             return ObjectUtility.equals(entity, userInfo);

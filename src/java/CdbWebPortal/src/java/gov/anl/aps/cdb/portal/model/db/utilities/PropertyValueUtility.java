@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
@@ -13,6 +22,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 
+/**
+ * DB utility class for property values.
+ */
 public class PropertyValueUtility {
 
     private static final Logger logger = Logger.getLogger(PropertyValueUtility.class.getName());
@@ -34,7 +46,7 @@ public class PropertyValueUtility {
         return imagePropertyValueList;
     }
 
-    public static void preparePropertyValueHistory(List<PropertyValue> originalPropertyValueList, 
+    public static void preparePropertyValueHistory(List<PropertyValue> originalPropertyValueList,
             List<PropertyValue> newPropertyValueList, EntityInfo entityInfo) {
         for (PropertyValue newPropertyValue : newPropertyValueList) {
             int index = originalPropertyValueList.indexOf(newPropertyValue);
@@ -117,7 +129,7 @@ public class PropertyValueUtility {
     public static boolean displayDocumentValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DOCUMENT);
     }
-    
+
     public static void searchPropertyValueList(List<PropertyValue> propertyValueList, Pattern searchPattern, SearchResult searchResult) {
         for (PropertyValue propertyValue : propertyValueList) {
             String baseKey = "propertyValue/id:" + propertyValue.getId();
@@ -126,5 +138,5 @@ public class PropertyValueUtility {
             propertyValueKey = baseKey + "/description";
             searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getDescription(), searchPattern);
         }
-    }    
+    }
 }

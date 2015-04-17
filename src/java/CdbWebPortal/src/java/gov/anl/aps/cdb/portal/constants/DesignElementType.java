@@ -20,12 +20,7 @@ public enum DesignElementType {
     private DesignElementType(String type) {
         this.type = type;
     }
-    
-    /**
-     * Convert enum to string.
-     * 
-     * @return design element type string 
-     */
+
     @Override
     public String toString() {
         return type;

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -7,6 +16,9 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * DB utility class for entity info objects.
+ */
 public class EntityInfoUtility {
 
     public static EntityInfo createEntityInfo() {

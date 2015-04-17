@@ -23,22 +23,11 @@ public enum CdbServiceProtocol {
         this.type = type;
     }
 
-    /**
-     * Convert protocol type to string.
-     *
-     * @return protocol type string
-     */
     @Override
     public String toString() {
         return type;
     }
 
-    /**
-     * Convert string to protocol.
-     *
-     * @param type service protocol type
-     * @return CDB service protocol
-     */
     public static CdbServiceProtocol fromString(String type) {
         CdbServiceProtocol protocol = null;
         switch (type) {

@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 
 /**
  * LDAP utility class for verifying user credentials.
- * 
+ *
  * @see NoServerVerificationSSLSocketFactory
  */
 public class LdapUtility {

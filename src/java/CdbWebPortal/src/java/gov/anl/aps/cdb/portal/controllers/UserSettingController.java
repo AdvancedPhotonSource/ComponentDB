@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
@@ -18,10 +27,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * User setting controller.
+ */
 @Named("userSettingController")
 @SessionScoped
 public class UserSettingController extends CdbEntityController<UserSetting, UserSettingDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserSetting.List.Display.NumberOfItemsPerPage";
 
     @EJB
@@ -130,6 +145,9 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
         this.filterByValue = filterByValue;
     }
 
+    /**
+     * Converter class for user setting objects.
+     */
     @FacesConverter(forClass = UserSetting.class)
     public static class UserSettingControllerConverter implements Converter {
 
@@ -141,7 +159,7 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
             try {
                 UserSettingController controller = (UserSettingController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "userSettingController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to user setting object.");
@@ -149,13 +167,11 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

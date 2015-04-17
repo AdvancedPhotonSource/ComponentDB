@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.List;
@@ -22,8 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Log topic entity class.
  */
 @Entity
 @Table(name = "log_topic")
@@ -34,6 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LogTopic.findByName", query = "SELECT l FROM LogTopic l WHERE l.name = :name"),
     @NamedQuery(name = "LogTopic.findByDescription", query = "SELECT l FROM LogTopic l WHERE l.description = :description")})
 public class LogTopic extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -114,5 +117,5 @@ public class LogTopic extends CdbEntity {
     public String toString() {
         return name;
     }
-    
+
 }

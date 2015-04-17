@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
@@ -29,17 +38,22 @@ import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
 import org.primefaces.model.menu.MenuModel;
 
+/**
+ * Location controller class.
+ */
 @Named("locationController")
 @SessionScoped
 public class LocationController extends CdbEntityController<Location, LocationDbFacade> implements Serializable {
 
+    /* 
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Location.List.Display.NumberOfItemsPerPage";
     private static final String DisplayDescriptionSettingTypeKey = "Location.List.Display.Description";
     private static final String DisplayFlatTableViewSettingTypeKey = "Location.List.Display.FlatTableView";
     private static final String DisplayIdSettingTypeKey = "Location.List.Display.Id";
     private static final String DisplayParentSettingTypeKey = "Location.List.Display.Parent";
     private static final String DisplayTypeSettingTypeKey = "Location.List.Display.Type";
-
     private static final String FilterByNameSettingTypeKey = "Location.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "Location.List.FilterBy.Description";
     private static final String FilterByParentSettingTypeKey = "Location.List.FilterBy.Parent";
@@ -83,7 +97,7 @@ public class LocationController extends CdbEntityController<Location, LocationDb
         Location location = new Location();
         return location;
     }
-    
+
     @Override
     public String getEntityTypeName() {
         return "location";
@@ -93,7 +107,7 @@ public class LocationController extends CdbEntityController<Location, LocationDb
     public String getEntityTypeTypeName() {
         return "locationType";
     }
-    
+
     @Override
     public String getDisplayEntityTypeName() {
         return "location";
@@ -243,6 +257,9 @@ public class LocationController extends CdbEntityController<Location, LocationDb
         selectFilterByType = null;
     }
 
+    /**
+     * Converter class for location objects.
+     */
     @FacesConverter(value = "locationConverter", forClass = Location.class)
     public static class LocationControllerConverter implements Converter {
 
@@ -254,7 +271,7 @@ public class LocationController extends CdbEntityController<Location, LocationDb
             try {
                 LocationController controller = (LocationController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "locationController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to location object.");
@@ -262,13 +279,11 @@ public class LocationController extends CdbEntityController<Location, LocationDb
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -288,7 +303,6 @@ public class LocationController extends CdbEntityController<Location, LocationDb
         }
 
     }
-
 
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.

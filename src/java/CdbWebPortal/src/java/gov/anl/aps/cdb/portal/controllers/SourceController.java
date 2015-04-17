@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
@@ -19,16 +28,21 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Controller class for sources.
+ */
 @Named("sourceController")
 @SessionScoped
 public class SourceController extends CdbEntityController<Source, SourceDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
     private static final String DisplayContactInfoSettingTypeKey = "Source.List.Display.ContactInfo";
     private static final String DisplayDescriptionSettingTypeKey = "Source.List.Display.Description";
     private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
     private static final String DisplayUrlSettingTypeKey = "Source.List.Display.Url";
-
     private static final String FilterByNameSettingTypeKey = "Source.List.FilterBy.Name";
     private static final String FilterByContactInfoSettingTypeKey = "Source.List.FilterBy.ContactInfo";
     private static final String FilterByDescriptionSettingTypeKey = "Source.List.FilterBy.Description";
@@ -176,6 +190,9 @@ public class SourceController extends CdbEntityController<Source, SourceDbFacade
         filterByUrl = null;
     }
 
+    /**
+     * Converter class for source objects.
+     */
     @FacesConverter(forClass = Source.class)
     public static class SourceControllerConverter implements Converter {
 
@@ -187,7 +204,7 @@ public class SourceController extends CdbEntityController<Source, SourceDbFacade
             try {
                 SourceController controller = (SourceController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "sourceController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to source object.");
@@ -195,13 +212,11 @@ public class SourceController extends CdbEntityController<Source, SourceDbFacade
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

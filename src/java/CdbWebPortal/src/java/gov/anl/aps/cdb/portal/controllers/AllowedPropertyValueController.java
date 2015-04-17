@@ -60,58 +60,30 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     private String filterByUnits = null;
     private String filterByValue = null;
 
-    /**
-     * Default constructor.
-     */
     public AllowedPropertyValueController() {
     }
 
-    /**
-     * Get entity DB facade.
-     *
-     * @return entity DB facade
-     */
     @Override
     protected AllowedPropertyValueDbFacade getEntityDbFacade() {
         return allowedPropertyValueFacade;
     }
 
-    /**
-     * Create entity instance.
-     *
-     * @return new entity instance
-     */
     @Override
     protected AllowedPropertyValue createEntityInstance() {
         AllowedPropertyValue allowedPropertyValue = new AllowedPropertyValue();
         return allowedPropertyValue;
     }
 
-    /**
-     * Get entity type name.
-     *
-     * @return entity type name
-     */
     @Override
     public String getEntityTypeName() {
         return "allowedPropertyValue";
     }
 
-    /**
-     * Get display string for entity type name.
-     *
-     * @return entity type name display string
-     */
     @Override
     public String getDisplayEntityTypeName() {
         return "allowed property value";
     }
 
-    /**
-     * Get name of the current entity instance.
-     *
-     * @return current entity instance name
-     */
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -120,11 +92,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         return "";
     }
 
-    /**
-     * Retrieve list of all available allowed property value objects.
-     *
-     * @return list of available allowed property value objects
-     */
     @Override
     public List<AllowedPropertyValue> getAvailableItems() {
         return super.getAvailableItems();
@@ -164,11 +131,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         }
     }
 
-    /**
-     * Update controller session settings with setting type default values.
-     *
-     * @param settingTypeMap map of setting types
-     */
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
@@ -183,12 +145,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();
     }
 
-    /**
-     * Update controller session settings with user-specific values from the
-     * database.
-     *
-     * @param sessionUser current session user
-     */
     @Override
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
@@ -205,11 +161,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
     }
 
-    /**
-     * Update entity list display settings using current data table values.
-     *
-     * @param dataTable entity list data table
-     */
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
         super.updateListSettingsFromListDataTable(dataTable);
@@ -223,11 +174,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         filterByValue = (String) filters.get("value");
     }
 
-    /**
-     * Save controller session settings for the current user.
-     *
-     * @param sessionUser current session user
-     */
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
         if (sessionUser == null) {
@@ -246,9 +192,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
     }
 
-    /**
-     * Clear entity list filters.
-     */
     @Override
     public void clearListFilters() {
         super.clearListFilters();
@@ -257,96 +200,42 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         filterByValue = null;
     }
 
-    /**
-     * Get display units flag (determines whether or not allowed property value
-     * units column should be displayed).
-     *
-     * @return flag value
-     */
     public Boolean getDisplayUnits() {
         return displayUnits;
     }
 
-    /**
-     * Set display units flag (determines whether or not allowed property value
-     * units column should be displayed).
-     *
-     * @param displayUnits flag value
-     */
     public void setDisplayUnits(Boolean displayUnits) {
         this.displayUnits = displayUnits;
     }
 
-    /**
-     * Get display sort order flag (determines whether or not allowed property
-     * value sort order column should be displayed).
-     *
-     * @return flag value
-     */
     public Boolean getDisplaySortOrder() {
         return displaySortOrder;
     }
 
-    /**
-     * Set display sort order flag (determines whether or not allowed property
-     * value sort order column should be displayed).
-     *
-     * @param displaySortOrder flag value
-     */
     public void setDisplaySortOrder(Boolean displaySortOrder) {
         this.displaySortOrder = displaySortOrder;
     }
 
-    /**
-     * Get sort order column filter.
-     *
-     * @return filter value
-     */
     public String getFilterBySortOrder() {
         return filterBySortOrder;
     }
 
-    /**
-     * Set sort order column filter,
-     *
-     * @param filterBySortOrder filter value
-     */
     public void setFilterBySortOrder(String filterBySortOrder) {
         this.filterBySortOrder = filterBySortOrder;
     }
 
-    /**
-     * Get units column filter.
-     *
-     * @return filter value
-     */
     public String getFilterByUnits() {
         return filterByUnits;
     }
 
-    /**
-     * Set units column filter.
-     *
-     * @param filterByUnits filter value
-     */
     public void setFilterByUnits(String filterByUnits) {
         this.filterByUnits = filterByUnits;
     }
 
-    /**
-     * Get value column filter.
-     *
-     * @return filter value
-     */
     public String getFilterByValue() {
         return filterByValue;
     }
 
-    /**
-     * Set value column filter.
-     *
-     * @param filterByValue filter value
-     */
     public void setFilterByValue(String filterByValue) {
         this.filterByValue = filterByValue;
     }
@@ -357,15 +246,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     @FacesConverter(forClass = AllowedPropertyValue.class)
     public static class AllowedPropertyValueControllerConverter implements Converter {
 
-        /**
-         * Convert string to allowed property value object.
-         *
-         * @param facesContext JSF context
-         * @param component UI component
-         * @param value string value
-         * @return allowed property value object, or null if string cannot be
-         * converted
-         */
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
@@ -374,7 +254,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
             try {
                 AllowedPropertyValueController controller = (AllowedPropertyValueController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "allowedPropertyValueController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to allowed property valueS object.");
@@ -382,38 +262,16 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
             }
         }
 
-        /**
-         * Get object key (id) as integer from its string value.
-         *
-         * @param value string key value
-         * @return integer key value
-         */
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        private Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        /**
-         * Get object key (id) as string from its integer value.
-         *
-         * @param value integer key value
-         * @return string key value
-         */
-        String getStringKey(java.lang.Integer value) {
+        private String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
         }
 
-        /**
-         * Get object string key.
-         *
-         * @param facesContext JSF context
-         * @param component UI component
-         * @param object object to be converted
-         * @return object key as string
-         */
         @Override
         public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
             if (object == null) {

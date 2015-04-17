@@ -1,12 +1,14 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -29,8 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * Resource type entity class.
  */
 @Entity
 @Table(name = "resource_type")
@@ -43,9 +44,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ResourceType.findByHandlerName", query = "SELECT r FROM ResourceType r WHERE r.handlerName = :handlerName"),
     @NamedQuery(name = "ResourceType.findByDefaultValue", query = "SELECT r FROM ResourceType r WHERE r.defaultValue = :defaultValue"),
     @NamedQuery(name = "ResourceType.findByDefaultUnits", query = "SELECT r FROM ResourceType r WHERE r.defaultUnits = :defaultUnits")})
-public class ResourceType implements Serializable
-{
-    private static final long serialVersionUID = 1L;
+public class ResourceType extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -92,6 +92,7 @@ public class ResourceType implements Serializable
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -198,15 +199,12 @@ public class ResourceType implements Serializable
             return false;
         }
         ResourceType other = (ResourceType) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
+        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
     }
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ResourceType[ id=" + id + " ]";
+        return "ResourceType[ id=" + id + " ]";
     }
-    
+
 }

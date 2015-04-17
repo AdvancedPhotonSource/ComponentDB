@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
@@ -25,22 +34,25 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Controller class for property types.
+ */
 @Named("propertyTypeController")
 @SessionScoped
 public class PropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyType.List.Display.Id";
     private static final String DisplayDescriptionSettingTypeKey = "PropertyType.List.Display.Description";
-
     private static final String DisplayCategorySettingTypeKey = "PropertyType.List.Display.Category";
     private static final String DisplayDefaultUnitsSettingTypeKey = "PropertyType.List.Display.DefaultUnits";
     private static final String DisplayDefaultValueSettingTypeKey = "PropertyType.List.Display.DefaultValue";
     private static final String DisplayHandlerSettingTypeKey = "PropertyType.List.Display.Handler";
-
     private static final String FilterByNameSettingTypeKey = "PropertyType.List.FilterBy.Name";
     private static final String FilterByDescriptionSettingTypeKey = "PropertyType.List.FilterBy.Description";
-
     private static final String FilterByCategorySettingTypeKey = "PropertyType.List.FilterBy.Category";
     private static final String FilterByDefaultUnitsSettingTypeKey = "PropertyType.List.FilterBy.DefaultUnits";
     private static final String FilterByDefaultValueSettingTypeKey = "PropertyType.List.FilterBy.DefaultValue";
@@ -297,14 +309,17 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
-    
+
     public void prepareSelectPropertyTypesForDesignElement(DesignElement designElement) {
         clearSelectFilters();
         resetSelectDataModel();
         List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
     }
-    
+
+    /**
+     * Converter class for property type objects.
+     */
     @FacesConverter(forClass = PropertyType.class)
     public static class PropertyTypeControllerConverter implements Converter {
 
@@ -316,7 +331,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             try {
                 PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "propertyTypeController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + "cannot be converted to property type object.");
@@ -324,13 +339,11 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

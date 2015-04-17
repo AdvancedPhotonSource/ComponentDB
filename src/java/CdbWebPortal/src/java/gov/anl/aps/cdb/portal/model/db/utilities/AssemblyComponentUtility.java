@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -9,6 +18,9 @@ import java.util.List;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+/**
+ * DB utility class for assembly components.
+ */
 public class AssemblyComponentUtility {
 
     public static TreeNode createAssemblyRoot(Component assembly) throws CdbException {
@@ -45,5 +57,4 @@ public class AssemblyComponentUtility {
         componentTreeBranch.remove(component);
     }
 
-    
 }

@@ -1,6 +1,14 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 
@@ -15,6 +23,9 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
+/**
+ * Log topic controller class.
+ */
 @Named("logTopicController")
 @SessionScoped
 public class LogTopicController extends CdbEntityController<LogTopic, LogTopicDbFacade> implements Serializable {
@@ -67,7 +78,7 @@ public class LogTopicController extends CdbEntityController<LogTopic, LogTopicDb
                 }
                 LogTopicController controller = (LogTopicController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "logTopicController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to log topic object.");
@@ -75,13 +86,11 @@ public class LogTopicController extends CdbEntityController<LogTopic, LogTopicDb
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

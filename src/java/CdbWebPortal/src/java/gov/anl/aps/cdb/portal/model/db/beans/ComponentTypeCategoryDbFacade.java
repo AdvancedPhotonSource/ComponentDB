@@ -1,4 +1,12 @@
-
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentTypeCategory;
@@ -9,8 +17,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
- *
- * @author sveseli
+ * DB facade for component type category objects.
  */
 @Stateless
 public class ComponentTypeCategoryDbFacade extends CdbEntityDbFacade<ComponentTypeCategory> {
@@ -32,14 +39,13 @@ public class ComponentTypeCategoryDbFacade extends CdbEntityDbFacade<ComponentTy
         return (List<ComponentTypeCategory>) em.createNamedQuery("ComponentTypeCategory.findAll")
                 .getResultList();
     }
-    
+
     public ComponentTypeCategory findByName(String name) {
         try {
             return (ComponentTypeCategory) em.createNamedQuery("ComponentTypeCategory.findByName")
                     .setParameter("name", name)
                     .getSingleResult();
-        } 
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
         }
         return null;
     }
@@ -49,8 +55,7 @@ public class ComponentTypeCategoryDbFacade extends CdbEntityDbFacade<ComponentTy
             return (ComponentTypeCategory) em.createNamedQuery("ComponentTypeCategory.findById")
                     .setParameter("id", id)
                     .getSingleResult();
-        } 
-        catch (NoResultException ex) {
+        } catch (NoResultException ex) {
         }
         return null;
     }

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.api.PdmLinkApi;
@@ -13,14 +22,15 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import org.apache.log4j.Logger;
 
 /**
+ * PDMLink property type handler.
  *
- * @author sveseli
+ * This handler uses CDB web service.
  */
 public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
-    private static final Logger logger = Logger.getLogger(PdmLinkPropertyTypeHandler.class.getName());
-
     public static final String HANDLER_NAME = "PDMLink";
+
+    private static final Logger logger = Logger.getLogger(PdmLinkPropertyTypeHandler.class.getName());
 
     private PdmLinkApi pdmLinkApi;
 

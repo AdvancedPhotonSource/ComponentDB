@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template uploadedFile, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -16,6 +20,9 @@ import org.apache.log4j.Logger;
 
 import org.primefaces.model.UploadedFile;
 
+/**
+ * JSF file upload bean.
+ */
 @Named("fileUploadBean")
 @RequestScoped
 public class FileUploadBean {
@@ -42,8 +49,7 @@ public class FileUploadBean {
             try (InputStream input = uploadedFile.getInputstream()) {
                 Files.copy(input, file.toPath());
                 logger.debug("Saved file: " + file.toPath());
-            } 
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 logger.error(ex);
             }
 

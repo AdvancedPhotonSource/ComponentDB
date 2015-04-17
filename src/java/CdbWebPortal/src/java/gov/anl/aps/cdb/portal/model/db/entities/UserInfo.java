@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
@@ -33,8 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- *
- * @author sveseli
+ * User info entity class.
  */
 @Entity
 @Table(name = "user_info")
@@ -49,8 +51,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserInfo.findByEmail", query = "SELECT u FROM UserInfo u WHERE u.email = :email"),
     @NamedQuery(name = "UserInfo.findByPassword", query = "SELECT u FROM UserInfo u WHERE u.password = :password"),
     @NamedQuery(name = "UserInfo.findByDescription", query = "SELECT u FROM UserInfo u WHERE u.description = :description")})
-public class UserInfo extends CdbEntity
-{
+public class UserInfo extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -107,7 +109,7 @@ public class UserInfo extends CdbEntity
     private transient HashMap<String, UserSetting> userSettingMap = null;
     private transient Date userSettingsModificationDate = null;
     private transient String fullNameForSelection = null;
-    
+
     public UserInfo() {
     }
 
@@ -266,8 +268,7 @@ public class UserInfo extends CdbEntity
         UserSetting oldUserSetting = userSettingMap.get(name);
         if (oldUserSetting != null) {
             oldUserSetting.setValue(userSetting.getValue());
-        }
-        else {
+        } else {
             userSettingMap.put(name, userSetting);
         }
         userSettingsModificationDate = new Date();
@@ -339,7 +340,6 @@ public class UserInfo extends CdbEntity
     public boolean hasUserSettings() {
         return userSettingList != null && !userSettingList.isEmpty();
     }
-
 
     public boolean equalsByUsername(UserInfo other) {
         if (other != null) {
@@ -422,17 +422,17 @@ public class UserInfo extends CdbEntity
         searchResult.doesValueContainPattern("email", email, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
         return searchResult;
-    }        
-    
+    }
+
     public String getFullNameForSelection() {
         if (fullNameForSelection != null) {
             return fullNameForSelection;
-        } 
-        
+        }
+
         if (lastName == null || lastName.isEmpty()) {
             return username;
         }
-        
+
         fullNameForSelection = lastName;
         if (firstName != null && !firstName.isEmpty()) {
             fullNameForSelection += ", " + firstName;
@@ -442,5 +442,5 @@ public class UserInfo extends CdbEntity
         }
         return fullNameForSelection;
     }
-    
+
 }

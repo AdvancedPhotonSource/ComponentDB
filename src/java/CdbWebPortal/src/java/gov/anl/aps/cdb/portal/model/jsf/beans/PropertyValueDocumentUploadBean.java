@@ -1,7 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template uploadedFile, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
@@ -22,6 +26,9 @@ import org.apache.log4j.Logger;
 
 import org.primefaces.model.UploadedFile;
 
+/**
+ * JSF bean for property value document upload.
+ */
 @Named("propertyValueDocumentUploadBean")
 @RequestScoped
 public class PropertyValueDocumentUploadBean {
@@ -35,7 +42,6 @@ public class PropertyValueDocumentUploadBean {
         return uploadedFile;
     }
 
-    
     public void setUploadedFile(UploadedFile uploadedFile) {
         this.uploadedFile = uploadedFile;
     }

@@ -1,8 +1,16 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceLocationHistoryDbFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -19,17 +27,22 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Component instance location history controller class.
+ */
 @Named("componentInstanceLocationHistoryController")
 @SessionScoped
 public class ComponentInstanceLocationHistoryController extends CdbEntityController<ComponentInstanceLocationHistory, ComponentInstanceLocationHistoryDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.Id";
     private static final String DisplayEnteredByUserSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.EnteredByUser";
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.EnteredOnDateTime";
     private static final String DisplayLocationSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.Location";
     private static final String DisplayLocationDetailsSettingTypeKey = "ComponentInstanceLocationHistory.List.Display.LocationDetails";
-
     private static final String FilterByEnteredByUserSettingTypeKey = "ComponentInstanceLocationHistory.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "ComponentInstanceLocationHistory.List.FilterBy.EnteredOnDateTime";
     private static final String FilterByLocationSettingTypeKey = "ComponentInstanceLocationHistory.List.FilterBy.Location";
@@ -44,9 +57,6 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
     private String filterByEnteredOnDateTime = null;
     private String filterByLocation = null;
     private String filterByLocationDetails = null;
-
-    private List<ComponentInstanceLocationHistory> selectedComponentInstanceLocationHistoryList;
-    private Location selectedComponentInstanceLocation = null;
 
     private static final Logger logger = Logger.getLogger(ComponentInstanceLocationHistoryController.class.getName());
 
@@ -163,6 +173,9 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
         filterByLocationDetails = null;
     }
 
+    /**
+     * Converter class for component instance location history objects.
+     */
     @FacesConverter(forClass = ComponentInstanceLocationHistory.class)
     public static class ComponentInstanceLocationHistoryControllerConverter implements Converter {
 
@@ -174,7 +187,7 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
             try {
                 ComponentInstanceLocationHistoryController controller = (ComponentInstanceLocationHistoryController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "componentInstanceLocationHistoryController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to component instance location history object.");
@@ -182,13 +195,11 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

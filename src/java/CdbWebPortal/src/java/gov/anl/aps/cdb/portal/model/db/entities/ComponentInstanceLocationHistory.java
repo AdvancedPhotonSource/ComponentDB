@@ -1,9 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
  */
-
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.util.Date;
@@ -25,8 +28,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author sveseli
+ * Component instance location history entity class.
  */
 @Entity
 @Table(name = "component_instance_location_history")
@@ -36,8 +38,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ComponentInstanceLocationHistory.findById", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.id = :id"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findByLocationDetails", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstanceLocationHistory.findByEnteredOnDateTime", query = "SELECT c FROM ComponentInstanceLocationHistory c WHERE c.enteredOnDateTime = :enteredOnDateTime")})
-public class ComponentInstanceLocationHistory extends CdbEntity
-{
+public class ComponentInstanceLocationHistory extends CdbEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -140,7 +142,7 @@ public class ComponentInstanceLocationHistory extends CdbEntity
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.entities.ComponentInstanceLocationHistory[ id=" + id + " ]";
+        return "ComponentInstanceLocationHistory[ id=" + id + " ]";
     }
-    
+
 }

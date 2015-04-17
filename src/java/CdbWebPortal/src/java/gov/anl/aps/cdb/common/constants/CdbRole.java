@@ -23,22 +23,11 @@ public enum CdbRole {
         this.type = type;
     }
 
-    /**
-     * Convert role to string.
-     *
-     * @return role type string
-     */
     @Override
     public String toString() {
         return type;
     }
 
-    /**
-     * Convert string to role.
-     *
-     * @param type role type string
-     * @return CDB role
-     */
     public static CdbRole fromString(String type) {
         CdbRole role = null;
         switch (type) {

@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentSource;
@@ -20,10 +29,16 @@ import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
+/**
+ * Component source controller class.
+ */
 @Named("componentSourceController")
 @SessionScoped
 public class ComponentSourceController extends CdbEntityController<ComponentSource, ComponentSourceDbFacade> implements Serializable {
 
+    /*
+     * Controller specific settings
+     */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentSource.List.Display.NumberOfItemsPerPage";
     private static final String DisplayContactInfoSettingTypeKey = "ComponentSource.List.Display.ContactInfo";
     private static final String DisplayCostSettingTypeKey = "ComponentSource.List.Display.Cost";
@@ -33,7 +48,6 @@ public class ComponentSourceController extends CdbEntityController<ComponentSour
     private static final String DisplayIsVendorSettingTypeKey = "ComponentSource.List.Display.IsVendor";
     private static final String DisplayPartNumberSettingTypeKey = "ComponentSource.List.Display.PartNumber";
     private static final String DisplayUrlSettingTypeKey = "ComponentSource.List.Display.Url";
-
     private static final String FilterByContactInfoSettingTypeKey = "ComponentSource.List.FilterBy.ContactInfo";
     private static final String FilterByCostSettingTypeKey = "ComponentSource.List.FilterBy.Cost";
     private static final String FilterByDescriptionSettingTypeKey = "ComponentSource.List.FilterBy.Description";
@@ -215,6 +229,9 @@ public class ComponentSourceController extends CdbEntityController<ComponentSour
         filterByUrl = null;
     }
 
+    /**
+     * Converter class for component source objects.
+     */
     @FacesConverter(forClass = ComponentSource.class)
     public static class ComponentSourceControllerConverter implements Converter {
 
@@ -226,7 +243,7 @@ public class ComponentSourceController extends CdbEntityController<ComponentSour
             try {
                 ComponentSourceController controller = (ComponentSourceController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "componentSourceController");
-                return controller.getEntity(getKey(value));
+                return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to component source object.");
@@ -234,13 +251,11 @@ public class ComponentSourceController extends CdbEntityController<ComponentSour
             }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

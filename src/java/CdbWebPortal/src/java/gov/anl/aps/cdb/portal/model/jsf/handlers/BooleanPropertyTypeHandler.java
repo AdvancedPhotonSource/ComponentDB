@@ -1,12 +1,18 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 
 /**
- *
- * @author sveseli
+ * Boolean property type handler.
  */
 public class BooleanPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
@@ -19,6 +25,6 @@ public class BooleanPropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public DisplayType getValueDisplayType() {
         return DisplayType.BOOLEAN;
-    }    
-    
+    }
+
 }

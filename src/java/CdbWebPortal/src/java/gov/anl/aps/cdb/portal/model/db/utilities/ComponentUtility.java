@@ -1,3 +1,12 @@
+/*
+ * Copyright (c) 2014-2015, Argonne National Laboratory.
+ *
+ * SVN Information:
+ *   $HeadURL$
+ *   $Date$
+ *   $Revision$
+ *   $Author$
+ */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -10,6 +19,9 @@ import java.util.regex.Pattern;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
+/**
+ * DB utility class for components.
+ */
 public class ComponentUtility {
 
     public static List<Component> filterComponent(String query, List<Component> candidateComponentList) {
@@ -29,7 +41,7 @@ public class ComponentUtility {
         TreeNode assemblyRoot = new DefaultTreeNode(new Component(), null);
         if (assembly != null) {
 
-        // Use "tree branch" list to prevent circular trees
+            // Use "tree branch" list to prevent circular trees
             // Whenever new design is encountered, it will be added to the tree branch list before populating
             // element node, and removed from the branch list after population is done
             // If an object is encountered twice in the tree branch, this designates an error.
