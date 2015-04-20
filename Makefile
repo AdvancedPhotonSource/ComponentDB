@@ -67,5 +67,29 @@ undeploy-web-portal-dev:
 undeploy-web-service-dev: 
 	$(TOP)/sbin/cdb_undeploy_web_service.sh cdb_dev
 
+db-lcls2:
+	$(TOP)/sbin/cdb_create_db.sh cdb_lcls2
+
+backup-lcls2:
+	$(TOP)/sbin/cdb_backup_all.sh cdb_lcls2
+
+deploy-web-portal-lcls2: dist
+	$(TOP)/sbin/cdb_deploy_web_portal.sh cdb_lcls2
+
+configure-web-portal-lcls2: dist
+	$(TOP)/sbin/cdb_configure_web_portal.sh cdb_lcls2
+
+deploy-web-service-lcls2: 
+	$(TOP)/sbin/cdb_deploy_web_service.sh cdb_lcls2
+
+unconfigure-web-portal-lcls2: 
+	$(TOP)/sbin/cdb_unconfigure_web_portal.sh cdb_lcls2
+
+undeploy-web-portal-lcls2: 
+	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_lcls2
+
+undeploy-web-service-lcls2: 
+	$(TOP)/sbin/cdb_undeploy_web_service.sh cdb_lcls2
+
 include $(TOP)/tools/make/RULES_CDB
 
