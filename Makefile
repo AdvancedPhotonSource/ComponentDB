@@ -25,11 +25,17 @@ db:
 backup:
 	$(TOP)/sbin/cdb_backup_all.sh 
 
+configure-web-portal: dist
+	$(TOP)/sbin/cdb_configure_web_portal.sh
+
 deploy-web-portal: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh
 
 deploy-web-service: 
 	$(TOP)/sbin/cdb_deploy_web_service.sh
+
+unconfigure-web-portal: 
+	$(TOP)/sbin/cdb_unconfigure_web_portal.sh
 
 undeploy-web-portal: 
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh
@@ -46,8 +52,14 @@ backup-dev:
 deploy-web-portal-dev: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh cdb_dev
 
+configure-web-portal-dev: dist
+	$(TOP)/sbin/cdb_configure_web_portal.sh cdb_dev
+
 deploy-web-service-dev: 
 	$(TOP)/sbin/cdb_deploy_web_service.sh cdb_dev
+
+unconfigure-web-portal-dev: 
+	$(TOP)/sbin/cdb_unconfigure_web_portal.sh cdb_dev
 
 undeploy-web-portal-dev: 
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_dev
