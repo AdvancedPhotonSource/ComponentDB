@@ -121,7 +121,7 @@ cmd="cat $CDB_ROOT_DIR/etc/setup.sh.template \
         | sed 's?CDB_SERVICE_HOST=.*?CDB_SERVICE_HOST=$CDB_WEB_SERVICE_HOST?g' \
         | sed 's?CDB_SERVICE_PORT=.*?CDB_SERVICE_PORT=$CDB_WEB_SERVICE_PORT?g' \
         > $CDB_USER_SETUP_FILE"
-    eval $cmd || exit 1
+eval $cmd || exit 1
 
 echo "Starting web service for $CDB_DB_NAME"
 $CDB_WEB_SERVICE_INIT_CMD start $CDB_DB_NAME
