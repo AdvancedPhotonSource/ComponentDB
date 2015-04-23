@@ -4,6 +4,7 @@ Release 2.0.1 (Tag 20150430) (04/30/2015)
 - Maintenance release; number of small bugs fixed
 - Improved web service design loading
 - Enhanced PDMLink handler
+- Added first version of user manual
 
 Release 2.0 (Tag 20150331) (03/31/2015)
 =======================================
