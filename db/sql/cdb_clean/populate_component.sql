@@ -1,0 +1,4 @@
+LOCK TABLES `component` WRITE;
+/*!40000 ALTER TABLE `component` DISABLE KEYS */;
+/*!40000 ALTER TABLE `component` ENABLE KEYS */;
+UNLOCK TABLES;
