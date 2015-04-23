@@ -6,7 +6,7 @@
 
 from suds.client import Client
 
-class ICMS:
+class Icms:
 
     ICMS_DOC_URL = '/docs/idcplg?IdcService=DISPLAY_URL&dDocName='
     ICMS_REVISION_PARAM = '&dRevLabel='
@@ -23,7 +23,7 @@ class ICMS:
         self.icmsUrlRevs = self.ICMS_REVISION_PARAM
         
     
-    def getICMSRevisions(self, keyword):
+    def getIcmsRevisions(self, keyword):
         docSearch = self.icmsInfoClass.service.DocInfoByName(keyword)
         result = []
         if(docSearch['StatusInfo']['statusCode'] != 0):
@@ -44,8 +44,8 @@ class ICMS:
         return result
     
 if __name__ == '__main__':
-    icmsConnection = ICMS("cdb_soap", "soap$4cdb", 'https://icmsdocs.aps.anl.gov')
-    print icmsConnection.getICMSRevisions('D14100201-113160.ASM') 
-    print icmsConnection.getICMSRevisions('u2210203-101600.drw')
-    print icmsConnection.getICMSRevisions('U1340201-102000.DRW')
-    print icmsConnection.getICMSRevisions('U221020202-104210.DRW') 
+    icmsConnection = Icms("cdb_soap", "soap$4cdb", 'https://icmsdocs.aps.anl.gov')
+    print icmsConnection.getIcmsRevisions('D14100201-113160.ASM') 
+    print icmsConnection.getIcmsRevisions('u2210203-101600.drw')
+    print icmsConnection.getIcmsRevisions('U1340201-102000.DRW')
+    print icmsConnection.getIcmsRevisions('U221020202-104210.DRW') 

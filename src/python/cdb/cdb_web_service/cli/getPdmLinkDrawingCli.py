@@ -2,7 +2,6 @@
 
 from cdbWebServiceCli import CdbWebServiceCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
-from cdb.common.utility.errorChecker import ErrorChecker
 from cdb.common.objects.pdmLinkDrawing import PdmLinkDrawing
 
 from cdb.cdb_web_service.api.pdmLinkRestApi import PdmLinkRestApi

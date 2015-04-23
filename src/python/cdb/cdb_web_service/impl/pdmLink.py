@@ -27,7 +27,7 @@ from cdb.common.objects.image import Image
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.sslUtility import SslUtility 
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
-from icms import ICMS
+from icms import Icms
 
 class PdmLink:
 
@@ -75,12 +75,12 @@ class PdmLink:
         self.windchillWebparts = Client(fullWebpartsUrl, plugins=[ImportDoctor(imp)], username=self.username, password=self.password)
         self.windchillWs = Client(fullWsUrl, plugins=[ImportDoctor(imp)], username=self.username, password=self.password)
 
-    def __createICMSClient(self):
+    def __createIcmsClient(self):
         if(self.icmsConnection != None):
             return
 
         #initalize icmsClass
-        self.icmsConnection = ICMS(self.ICMS_USER, self.ICMS_PASS, self.icmsUrl)
+        self.icmsConnection = Icms(self.ICMS_USER, self.ICMS_PASS, self.icmsUrl)
 
     # Find PDMLink drawing objects by name pattern
     @SslUtility.useUnverifiedSslContext
@@ -125,9 +125,9 @@ class PdmLink:
         return propertyMap
 
     # initialize icms Client, if needed and get revisions
-    def getICMSRevisions(self, name):
-        self.__createICMSClient()
-        return self.icmsConnection.getICMSRevisions(name)
+    def getIcmsRevisions(self, name):
+        self.__createIcmsClient()
+        return self.icmsConnection.getIcmsRevisions(name)
 
 
     # Get complete drawing object
@@ -159,7 +159,7 @@ class PdmLink:
         oid = propertyMap.get('oid')
 
         # retrieve the revisions from ICMS
-        icmsRevisions = self.getICMSRevisions(name)
+        icmsRevisions = self.getIcmsRevisions(name)
 
         # retrieve the details about a drawing
         reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5"]
