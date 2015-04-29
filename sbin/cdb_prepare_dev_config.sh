@@ -58,6 +58,6 @@ cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
     | sed 's?handler=TimedRotatingFileLoggingHandler.*?handler=TimedRotatingFileLoggingHandler(\"$CDB_WEB_SERVICE_LOG_FILE\")?g' \
     > $CDB_WEB_SERVICE_CONFIG_FILE"
 eval $cmd || exit 1
-rsync -ar $CDB_DB_PASSWORD_FILE $CDB_ETC_DIR || exit 1
+#rsync -ar $CDB_DB_PASSWORD_FILE $CDB_ETC_DIR || exit 1
 
 echo "Done preparing development configuration"

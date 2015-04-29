@@ -27,13 +27,13 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
     CDB_ROOT_DIR=$MY_DIR/..
 fi
 CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/cdb
-CDB_ETC_DIR=$CDB_ROOT_DIR/etc
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
     echo "Environment file ${CDB_ENV_FILE} does not exist." 
     exit 1
 fi
 . ${CDB_ENV_FILE} > /dev/null 
+CDB_ETC_DIR=$CDB_INSTALL_DIR/etc
 
 # Use first argument as db name, if provided
 if [ ! -z "$1" ]; then
@@ -85,6 +85,18 @@ fi
 if [ -z "$CDB_DB_PASSWORD" ]; then
     echo "$CDB_DB_USER user password cannot be empty."
     exit 1
+fi
+
+# Prepare mysql config if needed
+mysqlConfig=mysql.conf
+if [ -d $CDB_SUPPORT_DIR/mysql ]; then
+    cmd="cat $CDB_ROOT_DIR/etc/$mysqlConfig.template \
+        | sed 's?CDB_DB_HOST?$CDB_DB_HOST?g' \
+        | sed 's?CDB_DB_PORT$CDB_DB_PORT?g' \
+        | sed 's?CDB_INSTALL_DIR?$CDB_INSTALL_DIR?g' \
+        > $CDB_ETC_DIR/$mysqlConfig
+    "
+    eval $cmd 
 fi
 
 mysqlCmd="mysql --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
