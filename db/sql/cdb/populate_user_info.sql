@@ -29,11 +29,11 @@ INSERT INTO `user_info` VALUES
 (26,'djarosz','Dariusz','Jarosz','Piotr','djarosz@aps.anl.gov',NULL,NULL),
 (27,'mwhite','Marion','White','','mwhite@aps.anl.gov',NULL,NULL),
 (28,'brianr','Brian','Rusthoven','','brianr@aps.anl.gov',NULL,NULL),
-(29,'shoaf','Steve','Shoaf','','shoaf@aps.anl.gov','',''),
-(30,'hbui','Hanh','Bui','','hbui@aps.anl.gov','NO!poTcbt!',''),
-(31,'sereno','Nick','Sereno','','sereno@aps.anl.ogv','',''),
-(32,'xusf','Shifu','Xu','','xusf@aps.anl.gov','',''),
-(33,'afp','Tony','Pietryla','','afp','',''),
-(34,'rblake','Ron','Blake','','rblake@aps.anl.gov','','');
+(29,'shoaf','Steve','Shoaf','','shoaf@aps.anl.gov',NULL,NULL),
+(30,'hbui','Hanh','Bui','','hbui@aps.anl.gov',NULL,NULL),
+(31,'sereno','Nick','Sereno','','sereno@aps.anl.ogv',NULL,NULL),
+(32,'xusf','Shifu','Xu','','xusf@aps.anl.gov',NULL,NULL),
+(33,'afp','Tony','Pietryla','','afp',NULL,NULL),
+(34,'rblake','Ron','Blake','','rblake@aps.anl.gov',NULL,NULL);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
