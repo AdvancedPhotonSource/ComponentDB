@@ -66,7 +66,6 @@ public class CdbExceptionFactory {
             String err = "Cannot generate exception of type " + type + ": " + ex;
             logger.error(err);
         }
-        exc.setErrorCode(code);
         exc.setErrorMessage(error);
         return exc;
     }

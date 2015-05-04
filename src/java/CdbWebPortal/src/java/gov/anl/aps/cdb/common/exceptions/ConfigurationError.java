@@ -21,7 +21,6 @@ public class ConfigurationError extends CdbException {
      */
     public ConfigurationError() {
         super();
-        setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
     /**
@@ -31,7 +30,6 @@ public class ConfigurationError extends CdbException {
      */
     public ConfigurationError(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
     /**
@@ -41,7 +39,6 @@ public class ConfigurationError extends CdbException {
      */
     public ConfigurationError(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
     /**
@@ -52,7 +49,10 @@ public class ConfigurationError extends CdbException {
      */
     public ConfigurationError(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_CONFIGURATION_ERROR);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_CONFIGURATION_ERROR;
+    }    
 }

@@ -21,7 +21,6 @@ public class InvalidRequest extends CdbException {
      */
     public InvalidRequest() {
         super();
-        setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
     /**
@@ -31,7 +30,6 @@ public class InvalidRequest extends CdbException {
      */
     public InvalidRequest(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
     /**
@@ -41,7 +39,6 @@ public class InvalidRequest extends CdbException {
      */
     public InvalidRequest(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
     /**
@@ -52,7 +49,10 @@ public class InvalidRequest extends CdbException {
      */
     public InvalidRequest(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_REQUEST);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_INVALID_REQUEST;
+    }    
 }

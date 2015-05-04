@@ -21,7 +21,6 @@ public class InvalidSession extends CdbException {
      */
     public InvalidSession() {
         super();
-        setErrorCode(CdbStatus.CDB_INVALID_SESSION);
     }
 
     /**
@@ -31,7 +30,6 @@ public class InvalidSession extends CdbException {
      */
     public InvalidSession(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_INVALID_SESSION);
     }
 
     /**
@@ -41,7 +39,6 @@ public class InvalidSession extends CdbException {
      */
     public InvalidSession(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_SESSION);
     }
 
     /**
@@ -52,7 +49,10 @@ public class InvalidSession extends CdbException {
      */
     public InvalidSession(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_SESSION);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_INVALID_SESSION;
+    }    
 }

@@ -21,7 +21,6 @@ public class InvalidArgument extends CdbException {
      */
     public InvalidArgument() {
         super();
-        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
     /**
@@ -31,7 +30,6 @@ public class InvalidArgument extends CdbException {
      */
     public InvalidArgument(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
     /**
@@ -41,7 +39,6 @@ public class InvalidArgument extends CdbException {
      */
     public InvalidArgument(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
     /**
@@ -52,7 +49,10 @@ public class InvalidArgument extends CdbException {
      */
     public InvalidArgument(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_ARGUMENT);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_INVALID_ARGUMENT;
+    }    
 }

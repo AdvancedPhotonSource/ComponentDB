@@ -21,7 +21,6 @@ public class ObjectNotFound extends CdbException {
      */
     public ObjectNotFound() {
         super();
-        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
@@ -31,7 +30,6 @@ public class ObjectNotFound extends CdbException {
      */
     public ObjectNotFound(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
@@ -41,7 +39,6 @@ public class ObjectNotFound extends CdbException {
      */
     public ObjectNotFound(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
     /**
@@ -52,7 +49,10 @@ public class ObjectNotFound extends CdbException {
      */
     public ObjectNotFound(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_OBJECT_NOT_FOUND);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_OBJECT_NOT_FOUND;
+    }    
 }

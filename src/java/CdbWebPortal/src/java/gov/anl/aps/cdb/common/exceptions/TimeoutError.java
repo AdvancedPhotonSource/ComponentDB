@@ -21,7 +21,6 @@ public class TimeoutError extends CdbException {
      */
     public TimeoutError() {
         super();
-        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
     /**
@@ -31,7 +30,6 @@ public class TimeoutError extends CdbException {
      */
     public TimeoutError(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
     /**
@@ -41,7 +39,6 @@ public class TimeoutError extends CdbException {
      */
     public TimeoutError(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
     /**
@@ -52,7 +49,10 @@ public class TimeoutError extends CdbException {
      */
     public TimeoutError(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_TIMEOUT_ERROR);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_TIMEOUT_ERROR;
+    }    
 }

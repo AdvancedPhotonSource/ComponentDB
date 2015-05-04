@@ -21,7 +21,6 @@ public class InvalidObjectState extends CdbException {
      */
     public InvalidObjectState() {
         super();
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
     /**
@@ -31,7 +30,6 @@ public class InvalidObjectState extends CdbException {
      */
     public InvalidObjectState(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
     /**
@@ -41,7 +39,6 @@ public class InvalidObjectState extends CdbException {
      */
     public InvalidObjectState(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
     /**
@@ -52,7 +49,10 @@ public class InvalidObjectState extends CdbException {
      */
     public InvalidObjectState(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_INVALID_OBJECT_STATE);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_INVALID_OBJECT_STATE;
+    }    
 }

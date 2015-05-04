@@ -21,7 +21,6 @@ public class ObjectAlreadyExists extends CdbException {
      */
     public ObjectAlreadyExists() {
         super();
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
     }
 
     /**
@@ -31,7 +30,6 @@ public class ObjectAlreadyExists extends CdbException {
      */
     public ObjectAlreadyExists(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
     }
 
     /**
@@ -41,7 +39,6 @@ public class ObjectAlreadyExists extends CdbException {
      */
     public ObjectAlreadyExists(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
     }
 
     /**
@@ -52,7 +49,10 @@ public class ObjectAlreadyExists extends CdbException {
      */
     public ObjectAlreadyExists(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_OBJECT_ALREADY_EXISTS);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_OBJECT_ALREADY_EXISTS;
+    }    
 }

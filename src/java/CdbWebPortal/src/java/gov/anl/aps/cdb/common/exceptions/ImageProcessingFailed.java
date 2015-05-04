@@ -21,7 +21,6 @@ public class ImageProcessingFailed extends CdbException {
      */
     public ImageProcessingFailed() {
         super();
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
     /**
@@ -31,7 +30,6 @@ public class ImageProcessingFailed extends CdbException {
      */
     public ImageProcessingFailed(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
     /**
@@ -41,7 +39,6 @@ public class ImageProcessingFailed extends CdbException {
      */
     public ImageProcessingFailed(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
     /**
@@ -52,7 +49,10 @@ public class ImageProcessingFailed extends CdbException {
      */
     public ImageProcessingFailed(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_IMAGE_PROCESSING_FAILED);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_IMAGE_PROCESSING_FAILED;
+    }    
 }

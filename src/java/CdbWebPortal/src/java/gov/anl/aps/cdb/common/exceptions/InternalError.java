@@ -21,7 +21,6 @@ public class InternalError extends CdbException {
      */
     public InternalError() {
         super();
-        setErrorCode(CdbStatus.CDB_INTERNAL_ERROR);
     }
 
     /**
@@ -31,7 +30,6 @@ public class InternalError extends CdbException {
      */
     public InternalError(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_INTERNAL_ERROR);
     }
 
     /**
@@ -41,7 +39,6 @@ public class InternalError extends CdbException {
      */
     public InternalError(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_INTERNAL_ERROR);
     }
 
     /**
@@ -52,7 +49,10 @@ public class InternalError extends CdbException {
      */
     public InternalError(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_INTERNAL_ERROR);
     }
-
+    
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_INTERNAL_ERROR;
+    }
 }

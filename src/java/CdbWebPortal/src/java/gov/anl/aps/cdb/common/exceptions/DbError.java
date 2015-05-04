@@ -21,7 +21,6 @@ public class DbError extends CdbException {
      */
     public DbError() {
         super();
-        setErrorCode(CdbStatus.CDB_DB_ERROR);
     }
 
     /**
@@ -31,7 +30,6 @@ public class DbError extends CdbException {
      */
     public DbError(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_DB_ERROR);
     }
 
     /**
@@ -41,7 +39,6 @@ public class DbError extends CdbException {
      */
     public DbError(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_DB_ERROR);
     }
 
     /**
@@ -52,7 +49,10 @@ public class DbError extends CdbException {
      */
     public DbError(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_DB_ERROR);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_DB_ERROR;
+    }    
 }

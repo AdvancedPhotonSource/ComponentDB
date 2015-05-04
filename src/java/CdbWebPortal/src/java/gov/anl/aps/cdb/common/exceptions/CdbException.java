@@ -24,7 +24,6 @@ public class CdbException extends Exception {
     public static final String CODE_KEY = "code";
     public static final String ARGS_KEY = "args";
 
-    private int errorCode = CdbStatus.CDB_ERROR;
     private String error = null;
 
     /**
@@ -41,17 +40,6 @@ public class CdbException extends Exception {
      */
     public CdbException(String message) {
         super(message);
-    }
-
-    /**
-     * Constructor using error message and code.
-     *
-     * @param message error message
-     * @param errorCode error code
-     */
-    public CdbException(String message, int errorCode) {
-        super(message);
-        this.errorCode = errorCode;
     }
 
     /**
@@ -73,38 +61,14 @@ public class CdbException extends Exception {
         super(message, throwable);
     }
 
-    /**
-     * Set error code.
-     *
-     * @param errorCode error code
-     */
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    /**
-     * Get error code.
-     *
-     * @return error code
-     */
     public int getErrorCode() {
-        return errorCode;
+        return CdbStatus.CDB_ERROR;
     }
 
-    /**
-     * Set error message.
-     *
-     * @param error error message
-     */
     public void setErrorMessage(String error) {
         this.error = error;
     }
 
-    /**
-     * Get error message.
-     *
-     * @return error message
-     */
     public String getErrorMessage() {
         if (error != null) {
             return error;

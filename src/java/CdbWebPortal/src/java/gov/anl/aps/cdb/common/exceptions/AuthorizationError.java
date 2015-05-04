@@ -21,7 +21,6 @@ public class AuthorizationError extends CdbException {
      */
     public AuthorizationError() {
         super();
-        setErrorCode(CdbStatus.CDB_AUTHORIZATION_ERROR);
     }
 
     /**
@@ -31,7 +30,6 @@ public class AuthorizationError extends CdbException {
      */
     public AuthorizationError(String message) {
         super(message);
-        setErrorCode(CdbStatus.CDB_AUTHORIZATION_ERROR);
     }
 
     /**
@@ -41,7 +39,6 @@ public class AuthorizationError extends CdbException {
      */
     public AuthorizationError(Throwable throwable) {
         super(throwable);
-        setErrorCode(CdbStatus.CDB_AUTHORIZATION_ERROR);
     }
 
     /**
@@ -52,7 +49,10 @@ public class AuthorizationError extends CdbException {
      */
     public AuthorizationError(String message, Throwable throwable) {
         super(message, throwable);
-        setErrorCode(CdbStatus.CDB_AUTHORIZATION_ERROR);
     }
 
+    @Override
+    public int getErrorCode() {
+        return CdbStatus.CDB_AUTHORIZATION_ERROR;
+    }      
 }
