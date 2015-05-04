@@ -20,8 +20,12 @@ public class StorageUtility {
     public static final Integer SCALED_IMAGE_SIZE = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.SCALED_IMAGE_SIZE_PROPERTY_NAME);
     public static final Integer THUMBNAIL_IMAGE_SIZE = ConfigurationUtility.getPortalPropertyAsInteger(CdbProperty.THUMBNAIL_IMAGE_PROPERTY_NAME);
 
+    private static final String PropertyValueImagesDirectory = "/propertyValue/images";
+    private static final String PropertyValueDocumentsDirectory = "/propertyValue/documents";
+    private static final String LogAttachmentsDirectory = "/log/attachments";
+    
     public static String getApplicationPropertyValueImagesDirectory() {
-        return "/propertyValue/images";
+        return PropertyValueImagesDirectory;
     }
 
     public static String getFileSystemPropertyValueImagesDirectory() {
@@ -29,7 +33,7 @@ public class StorageUtility {
     }
 
     public static String getApplicationLogAttachmentsDirectory() {
-        return "/log/attachments";
+        return LogAttachmentsDirectory;
     }
 
     public static String getApplicationLogAttachmentPathDirectory(String attachmentName) {
@@ -51,7 +55,7 @@ public class StorageUtility {
     }
 
     public static String getApplicationPropertyValueDocumentsDirectory() {
-        return "/propertyValue/documents";
+        return PropertyValueDocumentsDirectory;
     }
 
     public static String getApplicationPropertyValueDocumentPathDirectory(String documentName) {
