@@ -48,13 +48,14 @@ import org.apache.log4j.Logger;
 public class CdbRestApi {
 
     /**
-     * Relative URL for login requests.
+     * Relative path for login requests.
      */
     public static final String LOGIN_REQUEST_URL = "/login";
 
-    private static final String defaultSessionId = "defaultSession";
+    private static final String DefaultSessionId = "defaultSession";
+
+    private static final boolean httpsInitialized = initializeHttpsConnection();    
     private static final Logger logger = Logger.getLogger(CdbRestApi.class.getName());
-    private static final boolean httpsInitialized = initializeHttpsConnection();
 
     private static boolean initializeHttpsConnection() {
         HttpsURLConnection.setDefaultSSLSocketFactory(new NoServerVerificationSSLSocketFactory());
@@ -170,7 +171,7 @@ public class CdbRestApi {
     /**
      * Get full request URL.
      *
-     * @param requestUrl relative request URL, e.g. /object
+     * @param requestUrl relative request path, e.g. /object
      * @return full request URL string, e.g. http://localhost:17524/cdb/object
      */
     public String getFullRequestUrl(String requestUrl) {
@@ -468,13 +469,13 @@ public class CdbRestApi {
      * @throws CdbException in case of any other errors
      */
     public void login(String username, String password) throws CdbException {
-        login(username, password, defaultSessionId);
+        login(username, password, DefaultSessionId);
     }
 
     /**
      * Invoke GET request.
      *
-     * @param requestUrl relative request URL, e.g. /object
+     * @param requestUrl relative request path, e.g. /object
      * @return service response string
      * @throws CdbException in case of any errors
      */
@@ -512,7 +513,7 @@ public class CdbRestApi {
     /**
      * Invoke GET request.
      *
-     * @param requestUrl relative request URL, e.g. /object
+     * @param requestUrl relative request path, e.g. /object
      * @return service response string
      * @throws CdbException in case of any errors
      */
@@ -547,7 +548,7 @@ public class CdbRestApi {
     /**
      * Invoke POST request.
      *
-     * @param requestUrl relative request URL, e.g. /object
+     * @param requestUrl relative request path, e.g. /object
      * @param data request data
      * @return service response string
      * @throws CdbException in case of any errors
@@ -587,7 +588,7 @@ public class CdbRestApi {
     /**
      * Invoke PUT request.
      *
-     * @param requestUrl relative request URL, e.g. /object
+     * @param requestUrl relative request path, e.g. /object
      * @param data request data
      * @return service response string
      * @throws CdbException in case of any errors
@@ -627,7 +628,7 @@ public class CdbRestApi {
     /**
      * Invoke DELETE request.
      *
-     * @param requestUrl relative request URL, e.g. /cdb/object
+     * @param requestUrl relative request path, e.g. /cdb/object
      * @return service response string
      * @throws CdbException in case of any errors
      */
