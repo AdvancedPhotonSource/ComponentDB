@@ -10,6 +10,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -367,4 +369,20 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     public boolean displayDocumentValue() {
         return displayType.equals(DisplayType.DOCUMENT);
     }
+    
+    public String getOriginalImageApplicationPath(PropertyValueHistory propertyValueHistory) {
+        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.ORIGINAL;   
+    }
+
+    public String getThumbnailImageApplicationPath(PropertyValueHistory propertyValueHistory) {
+        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.THUMBNAIL;   
+    }
+    
+    public String getOriginalImageFileSystemPath(PropertyValueHistory propertyValueHistory) {
+        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.ORIGINAL;   
+    }
+
+    public String getThumbnailImageFileSystemPath(PropertyValueHistory propertyValueHistory) {
+        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.THUMBNAIL;  
+    }    
 }

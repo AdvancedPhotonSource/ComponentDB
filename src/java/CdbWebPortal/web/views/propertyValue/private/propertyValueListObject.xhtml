@@ -33,9 +33,12 @@
         <h:outputText value="#{propertyValueObject.value}"
                       rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
 
-        <p:graphicImage value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
-                        alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
-                        rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
+        <h:outputLink value="#{propertyValueController.getOriginalImageFileSystemPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
+                      rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
+            <p:graphicImage value="#{propertyValueController.getThumbnailImageApplicationPath(propertyValueObject)}" 
+                            alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
+                            rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
+        </h:outputLink>
 
         <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">

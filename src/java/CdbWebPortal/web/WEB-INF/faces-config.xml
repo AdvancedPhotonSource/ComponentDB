@@ -11,7 +11,7 @@
     </application>
     
     <!--  
-    Solution for file upload issue with servlet exception being thrown
+    Solution for file upload issue with servlet exception being thrown; still applies for 5.x
     See: http://stackoverflow.com/questions/19262356/file-upload-doesnt-work-with-ajax-in-primefaces-4-0-jsf-2-2-x-javax-servlet-s/19752138#19752138
     -->
     <render-kit>

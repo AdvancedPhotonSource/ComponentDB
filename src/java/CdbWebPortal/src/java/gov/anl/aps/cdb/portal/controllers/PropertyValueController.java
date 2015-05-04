@@ -10,6 +10,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -302,6 +304,22 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DATE);
     }
 
+    public String getOriginalImageApplicationPath(PropertyValue propertyValue) {
+        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.ORIGINAL;   
+    }
+
+    public String getThumbnailImageApplicationPath(PropertyValue propertyValue) {
+        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.THUMBNAIL;   
+    }
+    
+    public String getOriginalImageFileSystemPath(PropertyValue propertyValue) {
+        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.ORIGINAL;   
+    }
+
+    public String getThumbnailImageFileSystemPath(PropertyValue propertyValue) {
+        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.THUMBNAIL;  
+    }
+    
     /**
      * Converter class for property value objects.
      */
@@ -478,7 +496,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     public DataTable getDesignPropertyValueListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             designPropertyValueListDataTable = new DataTable();
         }
         return designPropertyValueListDataTable;
@@ -489,7 +507,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     public DataTable getComponentPropertyValueListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             componentPropertyValueListDataTable = new DataTable();
         }
         return componentPropertyValueListDataTable;
@@ -500,7 +518,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     public DataTable getComponentInstancePropertyValueListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             componentInstancePropertyValueListDataTable = new DataTable();
         }
         return componentInstancePropertyValueListDataTable;
