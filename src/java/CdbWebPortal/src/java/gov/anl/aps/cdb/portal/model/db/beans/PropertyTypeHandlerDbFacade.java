@@ -11,23 +11,13 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for property type handlers.
  */
 @Stateless
 public class PropertyTypeHandlerDbFacade extends CdbEntityDbFacade<PropertyTypeHandler> {
-
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public PropertyTypeHandlerDbFacade() {
         super(PropertyTypeHandler.class);

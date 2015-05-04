@@ -11,22 +11,12 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ResourceTypeCategory;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for resource type categories.
  */
 @Stateless
 public class ResourceTypeCategoryDbFacade extends CdbEntityDbFacade<ResourceTypeCategory> {
-
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public ResourceTypeCategoryDbFacade() {
         super(ResourceTypeCategory.class);

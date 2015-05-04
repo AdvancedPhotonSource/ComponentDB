@@ -11,8 +11,6 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for connector types.
@@ -20,14 +18,6 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class ConnectorTypeDbFacade extends CdbEntityDbFacade<ConnectorType>
 {
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public ConnectorTypeDbFacade() {
         super(ConnectorType.class);
     }

@@ -12,23 +12,13 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for component types.
  */
 @Stateless
 public class ComponentTypeDbFacade extends CdbEntityDbFacade<ComponentType> {
-
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     @Override
     public List<ComponentType> findAll() {

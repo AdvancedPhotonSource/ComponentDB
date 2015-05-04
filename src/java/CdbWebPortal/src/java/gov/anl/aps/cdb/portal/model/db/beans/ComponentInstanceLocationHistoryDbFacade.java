@@ -11,8 +11,6 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for component instance location history objects.
@@ -20,14 +18,6 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class ComponentInstanceLocationHistoryDbFacade extends CdbEntityDbFacade<ComponentInstanceLocationHistory>
 {
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
-
     public ComponentInstanceLocationHistoryDbFacade() {
         super(ComponentInstanceLocationHistory.class);
     }

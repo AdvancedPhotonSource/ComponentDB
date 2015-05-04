@@ -13,23 +13,13 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for component instances.
  */
 @Stateless
 public class ComponentInstanceDbFacade extends CdbEntityDbFacade<ComponentInstance> {
-
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public ComponentInstanceDbFacade() {
         super(ComponentInstance.class);

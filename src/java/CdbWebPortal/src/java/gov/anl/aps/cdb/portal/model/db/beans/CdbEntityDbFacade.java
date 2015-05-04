@@ -11,6 +11,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * Generic CDB entity database facade class.
@@ -19,14 +20,21 @@ import javax.persistence.EntityManager;
  */
 public abstract class CdbEntityDbFacade<T> {
 
+    public static final String CDB_PU_NAME = "CdbWebPortalPU";
+
+    @PersistenceContext(unitName = CDB_PU_NAME)
+    protected EntityManager em;
+
     private final Class<T> entityClass;
 
     public CdbEntityDbFacade(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
-    protected abstract EntityManager getEntityManager();
-
+    public EntityManager getEntityManager() {
+        return em;
+    }    
+    
     public void create(T entity) {
         getEntityManager().persist(entity);
     }

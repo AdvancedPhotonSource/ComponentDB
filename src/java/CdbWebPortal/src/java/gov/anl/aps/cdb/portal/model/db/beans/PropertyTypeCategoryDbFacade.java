@@ -12,23 +12,13 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import java.util.List;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 
 /**
  * DB facade for property type categories.
  */
 @Stateless
 public class PropertyTypeCategoryDbFacade extends CdbEntityDbFacade<PropertyTypeCategory> {
-
-    @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     public PropertyTypeCategoryDbFacade() {
         super(PropertyTypeCategory.class);
