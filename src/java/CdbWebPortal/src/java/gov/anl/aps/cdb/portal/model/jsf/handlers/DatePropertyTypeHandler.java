@@ -19,12 +19,7 @@ public class DatePropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String HANDLER_NAME = "Date";
 
     public DatePropertyTypeHandler() {
-        super(HANDLER_NAME);
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.DATE;
+        super(HANDLER_NAME, DisplayType.DATE);
     }
 
 }

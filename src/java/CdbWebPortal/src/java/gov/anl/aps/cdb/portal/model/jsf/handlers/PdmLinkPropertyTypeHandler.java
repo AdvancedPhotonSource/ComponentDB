@@ -35,7 +35,7 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private PdmLinkApi pdmLinkApi;
 
     public PdmLinkPropertyTypeHandler() {
-        super(HANDLER_NAME);
+        super(HANDLER_NAME, DisplayType.HTTP_LINK);
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
         try {
             pdmLinkApi = new PdmLinkApi(webServiceUrl);
@@ -44,11 +44,6 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             logger.error(error);
             SessionUtility.addErrorMessage("Error", error);
         }
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.HTTP_LINK;
     }
 
     @Override

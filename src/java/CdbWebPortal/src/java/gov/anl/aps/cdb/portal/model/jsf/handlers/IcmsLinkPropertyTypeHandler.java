@@ -27,12 +27,7 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             CdbProperty.ICMS_URL_STRING_PROPERTY_NAME);
 
     public IcmsLinkPropertyTypeHandler() {
-        super(HANDLER_NAME);
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.HTTP_LINK;
+        super(HANDLER_NAME, DisplayType.HTTP_LINK);
     }
 
     public static String formatIcmsLink(String contentId) {

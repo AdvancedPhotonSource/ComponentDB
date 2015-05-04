@@ -19,12 +19,7 @@ public class BooleanPropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String HANDLER_NAME = "Boolean";
 
     public BooleanPropertyTypeHandler() {
-        super(HANDLER_NAME);
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.BOOLEAN;
+        super(HANDLER_NAME, DisplayType.BOOLEAN);
     }
 
 }

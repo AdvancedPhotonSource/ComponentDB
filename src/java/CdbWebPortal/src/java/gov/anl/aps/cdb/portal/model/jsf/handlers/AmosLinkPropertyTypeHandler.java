@@ -26,12 +26,7 @@ public class AmosLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             CdbProperty.AMOS_URL_STRING_PROPERTY_NAME);
 
     public AmosLinkPropertyTypeHandler() {
-        super(HANDLER_NAME);
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.HTTP_LINK;
+        super(HANDLER_NAME, DisplayType.HTTP_LINK);
     }
 
     public static String formatOrderId(String orderId) {
@@ -46,9 +41,9 @@ public class AmosLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static String formatAmosLink(String orderId) {
         // For an AMOS order # like MOnnnnnn , create link
-        // https://apps.anl.gov/webcompadapter/viewrpt.cwr?id=10211&apsuser=irisuser&apspassword=irisuser2a&apsauthtype=secEnterprise&cmd=EXPORT&EXPORT_FMT=U2FPDF%3A0&promptex-ORDER_NO=nnnnnn
+        // https://apps.anl.gov/webcompadapter/viewrpt.cwr?id=10211&apsuser=USER&apspassword=PASSWORD&apsauthtype=secEnterprise&cmd=EXPORT&EXPORT_FMT=U2FPDF%3A0&promptex-ORDER_NO=nnnnnn
         // Example: MO352645   
-        // https://apps.anl.gov/webcompadapter/viewrpt.cwr?id=10211&apsuser=irisushttpser&apspassword=irisuser2a&apsauthtype=secEnterprise&cmd=EXPORT&EXPORT_FMT=U2FPDF%3A0&promptex-ORDER_NO=352645
+        // https://apps.anl.gov/webcompadapter/viewrpt.cwr?id=10211&apsuser=USER&apspassword=PASSWORD&apsauthtype=secEnterprise&cmd=EXPORT&EXPORT_FMT=U2FPDF%3A0&promptex-ORDER_NO=352645
         if (orderId == null) {
             return null;
         }

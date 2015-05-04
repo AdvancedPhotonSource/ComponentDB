@@ -22,7 +22,7 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String HANDLER_NAME = "Document";
 
     public DocumentPropertyTypeHandler() {
-        super(HANDLER_NAME);
+        super(HANDLER_NAME, DisplayType.DOCUMENT);
     }
 
     @Override
@@ -38,11 +38,6 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public String getEditActionBean() {
         return "propertyValueDocumentUploadBean";
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.DOCUMENT;
     }
 
     @Override

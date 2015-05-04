@@ -21,7 +21,8 @@ import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
  */
 public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandlerInterface {
 
-    protected String name;
+    private String name = null;
+    private DisplayType displayType = null;
 
     public static String shortenHttpLinkDisplayValueIfNeeded(String displayValue) {
         return HttpLinkUtility.prepareHttpLinkDisplayValue(displayValue);
@@ -30,11 +31,21 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     public AbstractPropertyTypeHandler(String name) {
         this.name = name;
     }
+    
+    public AbstractPropertyTypeHandler(String name, DisplayType displayType) {
+        this.name = name;
+        this.displayType = displayType;
+    }
 
     public String getName() {
         return name;
     }
 
+    @Override
+    public DisplayType getValueDisplayType() {
+        return displayType;
+    }
+    
     @Override
     public String getEditActionOncomplete() {
         return null;
@@ -53,11 +64,6 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     @Override
     public Boolean getDisplayEditActionButton() {
         return getEditActionIcon() != null;
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return null;
     }
 
     @Override

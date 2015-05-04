@@ -19,7 +19,7 @@ public class ImagePropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String HANDLER_NAME = "Image";
 
     public ImagePropertyTypeHandler() {
-        super(HANDLER_NAME);
+        super(HANDLER_NAME, DisplayType.IMAGE);
     }
 
     @Override
@@ -35,10 +35,5 @@ public class ImagePropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public String getEditActionBean() {
         return "propertyValueImageUploadBean";
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.IMAGE;
     }
 }

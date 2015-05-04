@@ -32,12 +32,7 @@ public class CurrencyPropertyTypeHandler extends AbstractPropertyTypeHandler {
     }
 
     public CurrencyPropertyTypeHandler() {
-        super(HANDLER_NAME);
-    }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.FREE_FORM_TEXT;
+        super(HANDLER_NAME, DisplayType.FREE_FORM_TEXT);
     }
 
     @Override

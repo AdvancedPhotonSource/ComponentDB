@@ -21,14 +21,9 @@ public class HttpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String HANDLER_NAME = "HTTP Link";
 
     public HttpLinkPropertyTypeHandler() {
-        super(HANDLER_NAME);
+        super(HANDLER_NAME, DisplayType.HTTP_LINK);
     }
-
-    @Override
-    public DisplayType getValueDisplayType() {
-        return DisplayType.HTTP_LINK;
-    }
-
+    
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
         String linkValue = shortenHttpLinkDisplayValueIfNeeded(propertyValue.getValue());
