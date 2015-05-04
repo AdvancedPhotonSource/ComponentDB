@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.common.exceptions.ImageProcessingFailed;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.common.utilities.ImageUtility;
+import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
@@ -34,7 +35,8 @@ import org.primefaces.model.UploadedFile;
 @Named("propertyValueImageUploadBean")
 @RequestScoped
 public class PropertyValueImageUploadBean {
-
+    
+    private static final String ImagePrefix = "image.";
     private static final Logger logger = Logger.getLogger(PropertyValueImageUploadBean.class.getName());
 
     private UploadedFile uploadedFile;
@@ -71,23 +73,23 @@ public class PropertyValueImageUploadBean {
                 File uploadDir = uploadDirPath.toFile();
 
                 String imageFormat = uploadedExtension;
-                String originalExtension = "." + uploadedExtension + ".original";
+                String originalExtension = "." + uploadedExtension + ImageQualifierExtension.ORIGINAL;
                 if (uploadedExtension.isEmpty()) {
-                    originalExtension = ".original";
+                    originalExtension = ImageQualifierExtension.ORIGINAL.toString();
                     imageFormat = ImageUtility.DEFAULT_IMAGE_FORMAT;
                 }
-                File originalFile = File.createTempFile("image.", originalExtension, uploadDir);
-                String baseName = originalFile.getName().replace(".original", "");
+                File originalFile = File.createTempFile(ImagePrefix, originalExtension, uploadDir);
+                String baseName = originalFile.getName().replace(ImageQualifierExtension.ORIGINAL.toString(), "");
                 InputStream input = uploadedFile.getInputstream();
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
                 byte[] originalData = Files.readAllBytes(originalFile.toPath());
                 byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
-                String thumbFileName = originalFile.getAbsolutePath().replace("original", "thumbnail");
+                String thumbFileName = originalFile.getAbsolutePath().replace(ImageQualifierExtension.ORIGINAL.toString(), ImageQualifierExtension.THUMBNAIL.toString());
                 Path thumbPath = Paths.get(thumbFileName);
                 Files.write(thumbPath, thumbData);
                 byte[] scaledData = ImageUtility.resizeImage(originalData, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
-                String scaledFileName = originalFile.getAbsolutePath().replace("original", "scaled");
+                String scaledFileName = originalFile.getAbsolutePath().replace(ImageQualifierExtension.ORIGINAL.toString(), ImageQualifierExtension.SCALED.toString());
                 Path scaledPath = Paths.get(scaledFileName);
                 Files.write(scaledPath, scaledData);
                 propertyValue.setValue(baseName);
