@@ -302,7 +302,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
             logger.debug("Destroying " + designElement.getName());
             getEntityDbFacade().remove(designElement);
             SessionUtility.addInfoMessage("Success", "Deleted design element id " + designElement.getId() + ".");
-            return "/views/design/view.xhtml?faces-redirect=true?id=" + parentDesign.getId();
+            return "/views/design/view.xhtml?faces-redirect=true&id=" + parentDesign.getId();
         } catch (Exception ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
@@ -791,7 +791,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     }
 
     public DataTable getDesignElementPropertyValueListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             designElementPropertyValueListDataTable = new DataTable();
         }
         return designElementPropertyValueListDataTable;

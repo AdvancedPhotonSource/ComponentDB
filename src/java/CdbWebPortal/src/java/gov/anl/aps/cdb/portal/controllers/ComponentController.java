@@ -1006,7 +1006,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
 
     public DataTable getComponentPropertyValueListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             componentPropertyValueListDataTable = new DataTable();
         }
         return componentPropertyValueListDataTable;

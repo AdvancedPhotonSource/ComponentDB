@@ -291,7 +291,7 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     public DataTable getDesignLogListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             designLogListDataTable = new DataTable();
         }
         return designLogListDataTable;
@@ -302,7 +302,7 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     public DataTable getComponentLogListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             componentLogListDataTable = new DataTable();
         }
         return componentLogListDataTable;
@@ -313,7 +313,7 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     public DataTable getComponentInstanceLogListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             componentInstanceLogListDataTable = new DataTable();
         }
         return componentInstanceLogListDataTable;
@@ -324,7 +324,7 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     public DataTable getDesignElementLogListDataTable() {
-        if (userSettingsChanged() || isListDataModelReset()) {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
             designElementLogListDataTable = new DataTable();
         }
         return designElementLogListDataTable;

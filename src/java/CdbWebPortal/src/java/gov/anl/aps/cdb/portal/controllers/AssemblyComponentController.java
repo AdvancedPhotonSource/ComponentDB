@@ -148,7 +148,7 @@ public class AssemblyComponentController extends CdbEntityController<AssemblyCom
             logger.debug("Destroying " + assemblyComponent.getComponent().getName());
             getEntityDbFacade().remove(assemblyComponent);
             SessionUtility.addInfoMessage("Success", "Deleted assembly component id " + assemblyComponent.getId() + ".");
-            return "/views/component/view.xhtml?faces-redirect=true?id=" + assembly.getId();
+            return "/views/component/view.xhtml?faces-redirect=true&id=" + assembly.getId();
         } catch (Exception ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;

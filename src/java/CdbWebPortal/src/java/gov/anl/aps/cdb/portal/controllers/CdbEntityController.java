@@ -214,6 +214,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         try {
             return Integer.parseInt(settingValue);
         } catch (NumberFormatException ex) {
+            logger.warn("Could not parse setting value: " + settingValue);
             return null;
         }
     }
@@ -1670,7 +1671,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.filterByLastModifiedOnDateTime = filterByLastModifiedOnDateTime;
     }
 
-    public boolean isListDataModelReset() {
+    /**
+     * If list data model needs to be reset this method will return true, and modify reset flag.
+     * 
+     * @return true if list data model needs to be reset, false otherwise 
+     */
+    public boolean shouldResetListDataModel() {
         if (listDataModelReset) {
             listDataModelReset = false;
             return true;
@@ -1678,7 +1684,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return false;
     }
 
-    public boolean isSelectDataModelReset() {
+    /**
+     * If select data model needs to be reset this method will return true, and modify reset flag.
+     * 
+     * @return true if select data model needs to be reset, false otherwise 
+     */    
+    public boolean shouldResetSelectDataModel() {
         if (selectDataModelReset) {
             selectDataModelReset = false;
             return true;
