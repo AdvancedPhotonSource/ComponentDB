@@ -18,7 +18,7 @@ import org.primefaces.component.fileupload.FileUploadRenderer;
  * CDB file upload renderer class.
  *
  * Solution for file uploader issue: servlet exception being thrown if request
- * content type is not multipart/form-data
+ * content type is not multipart/form-data. Problem is still present in Primefaces 5.x
  *
  * @see
  * http://stackoverflow.com/questions/19262356/file-upload-doesnt-work-with-ajax-in-primefaces-4-0-jsf-2-2-x-javax-servlet-s/19752138#19752138
