@@ -24,7 +24,7 @@
         <h:outputText value="#{propertyValueHistoryObject.value}"
                       rendered="#{propertyValueHistoryController.displayTextValue()}"/>
 
-        <h:outputLink value="#{propertyValueHistoryController.getOriginalImageFileSystemPath(propertyValueHistoryObject)}" 
+        <h:outputLink value="#{propertyValueHistoryController.getOriginalImageApplicationPath(propertyValueHistoryObject)}" 
                       target="_page_#{propertyValueHistoryObject.targetValue}" title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayImageValue()}">
             <p:graphicImage value="#{propertyValueHistoryController.getThumbnailImageApplicationPath(propertyValueHistoryObject)}" 

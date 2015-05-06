@@ -33,7 +33,7 @@
         <h:outputText value="#{propertyValueObject.value}"
                       rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
 
-        <h:outputLink value="#{propertyValueController.getOriginalImageFileSystemPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
+        <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
             <p:graphicImage value="#{propertyValueController.getThumbnailImageApplicationPath(propertyValueObject)}" 
                             alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
