@@ -11,7 +11,6 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
-import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;

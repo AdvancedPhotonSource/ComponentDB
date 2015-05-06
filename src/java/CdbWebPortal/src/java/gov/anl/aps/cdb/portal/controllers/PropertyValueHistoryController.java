@@ -11,7 +11,6 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
-import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -369,6 +368,14 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
 
     public boolean displayDocumentValue() {
         return displayType.equals(DisplayType.DOCUMENT);
+    }
+
+    public boolean displayBooleanValue() {
+        return displayType.equals(DisplayType.BOOLEAN);
+    }
+
+    public boolean displayDateValue() {
+        return displayType.equals(DisplayType.DATE);
     }
     
     public String getOriginalImageApplicationPath(PropertyValueHistory propertyValueHistory) {

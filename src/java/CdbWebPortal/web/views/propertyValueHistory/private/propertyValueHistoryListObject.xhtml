@@ -42,7 +42,15 @@
                       title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayDocumentValue()}">
             <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
-        </h:outputLink>        
+        </h:outputLink>  
+        
+        <h:outputText value="#{propertyValueHistoryObject.displayValue}"
+                      rendered="#{propertyValueHistoryController.displayDateValue()}"/>        
+
+        <ui:fragment rendered="#{propertyValueHistoryController.displayBooleanValue()}">         
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{propertyValueHistoryObject.value}"/>
+        </ui:fragment>        
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"
