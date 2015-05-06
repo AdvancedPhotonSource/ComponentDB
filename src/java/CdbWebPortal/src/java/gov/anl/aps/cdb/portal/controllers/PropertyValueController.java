@@ -9,6 +9,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -305,19 +306,19 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     public String getOriginalImageApplicationPath(PropertyValue propertyValue) {
-        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.ORIGINAL;   
+        return StorageUtility.getApplicationPropertyValueImagePath(propertyValue.getValue() + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION);   
     }
 
     public String getThumbnailImageApplicationPath(PropertyValue propertyValue) {
-        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.THUMBNAIL;   
+        return StorageUtility.getApplicationPropertyValueImagePath(propertyValue.getValue() + CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);   
     }
     
     public String getOriginalImageFileSystemPath(PropertyValue propertyValue) {
-        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.ORIGINAL;   
+        return StorageUtility.getFileSystemPropertyValueImagePath(propertyValue.getValue() + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION);   
     }
 
     public String getThumbnailImageFileSystemPath(PropertyValue propertyValue) {
-        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValue.getValue() + ImageQualifierExtension.THUMBNAIL;  
+        return StorageUtility.getFileSystemPropertyValueImagePath(propertyValue.getValue() + CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);  
     }
     
     /**

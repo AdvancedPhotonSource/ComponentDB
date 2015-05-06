@@ -9,6 +9,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.constants.ImageQualifierExtension;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryDbFacade;
@@ -371,18 +372,18 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
     
     public String getOriginalImageApplicationPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.ORIGINAL;   
+        return StorageUtility.getApplicationPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION);   
     }
 
     public String getThumbnailImageApplicationPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getApplicationPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.THUMBNAIL;   
+        return StorageUtility.getApplicationPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);   
     }
     
     public String getOriginalImageFileSystemPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.ORIGINAL;   
+        return StorageUtility.getFileSystemPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION);   
     }
 
     public String getThumbnailImageFileSystemPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getFileSystemPropertyValueImagesDirectory() + "/" + propertyValueHistory.getValue() + ImageQualifierExtension.THUMBNAIL;  
+        return StorageUtility.getFileSystemPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);  
     }    
 }

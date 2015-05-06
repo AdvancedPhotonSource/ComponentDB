@@ -35,5 +35,5 @@ public class ImagePropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public String getEditActionBean() {
         return "propertyValueImageUploadBean";
-    }
+    } 
 }
