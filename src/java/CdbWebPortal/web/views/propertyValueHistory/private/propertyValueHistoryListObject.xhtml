@@ -27,7 +27,7 @@
         <h:outputLink value="#{propertyValueHistoryController.getOriginalImageApplicationPath(propertyValueHistoryObject)}" 
                       target="_page_#{propertyValueHistoryObject.targetValue}" title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayImageValue()}">
-            <p:graphicImage value="#{propertyValueHistoryController.getThumbnailImageApplicationPath(propertyValueHistoryObject)}" 
+            <p:graphicImage value="#{propertyValueHistoryController.getThumbnailImagePath(propertyValueHistoryObject)}" 
                             alt="#{propertyValueHistoryObject.value}" title="#{propertyValueHistoryObject.value}"
                             rendered="#{propertyValueHistoryController.displayImageValue()}"/>
         </h:outputLink>

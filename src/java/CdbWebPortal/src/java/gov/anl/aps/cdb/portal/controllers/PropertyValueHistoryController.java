@@ -372,18 +372,11 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
     
     public String getOriginalImageApplicationPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getApplicationPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION);   
+        return StorageUtility.getApplicationPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION);   
     }
 
-    public String getThumbnailImageApplicationPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getApplicationPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);   
+    public String getThumbnailImagePath(PropertyValueHistory propertyValueHistory) {
+        return StorageUtility.getPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);   
     }
-    
-    public String getOriginalImageFileSystemPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getFileSystemPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION);   
-    }
-
-    public String getThumbnailImageFileSystemPath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getFileSystemPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);  
-    }    
+ 
 }

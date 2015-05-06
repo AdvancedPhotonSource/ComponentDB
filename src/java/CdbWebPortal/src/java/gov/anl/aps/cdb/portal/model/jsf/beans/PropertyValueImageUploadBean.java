@@ -72,23 +72,23 @@ public class PropertyValueImageUploadBean {
                 File uploadDir = uploadDirPath.toFile();
 
                 String imageFormat = uploadedExtension;
-                String originalExtension = "." + uploadedExtension + CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION;
+                String originalExtension = "." + uploadedExtension + CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
                 if (uploadedExtension.isEmpty()) {
-                    originalExtension = CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION;
+                    originalExtension = CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
                     imageFormat = ImageUtility.DEFAULT_IMAGE_FORMAT;
                 }
                 File originalFile = File.createTempFile(CdbPropertyValue.IMAGE_PREFIX, originalExtension, uploadDir);
-                String baseName = originalFile.getName().replace(CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION, "");
+                String baseName = originalFile.getName().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
                 InputStream input = uploadedFile.getInputstream();
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
                 byte[] originalData = Files.readAllBytes(originalFile.toPath());
                 byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
-                String thumbFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION, CdbPropertyValue.IMAGE_THUMBNAIL_EXTENSION);
+                String thumbFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);
                 Path thumbPath = Paths.get(thumbFileName);
                 Files.write(thumbPath, thumbData);
                 byte[] scaledData = ImageUtility.resizeImage(originalData, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
-                String scaledFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.IMAGE_ORIGINAL_EXTENSION, CdbPropertyValue.IMAGE_SCALED_EXTENSION);
+                String scaledFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, CdbPropertyValue.SCALED_IMAGE_EXTENSION);
                 Path scaledPath = Paths.get(scaledFileName);
                 Files.write(scaledPath, scaledData);
                 propertyValue.setValue(baseName);

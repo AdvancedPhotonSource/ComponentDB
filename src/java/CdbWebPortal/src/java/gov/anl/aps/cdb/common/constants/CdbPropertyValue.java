@@ -15,7 +15,7 @@ package gov.anl.aps.cdb.common.constants;
 public class CdbPropertyValue {
 
     public static final String IMAGE_PREFIX = "image.";
-    public static final String IMAGE_ORIGINAL_EXTENSION = ".original";
-    public static final String IMAGE_THUMBNAIL_EXTENSION = ".thumbnail";
-    public static final String IMAGE_SCALED_EXTENSION = ".scaled";    
+    public static final String ORIGINAL_IMAGE_EXTENSION = ".original";
+    public static final String THUMBNAIL_IMAGE_EXTENSION = ".thumbnail";
+    public static final String SCALED_IMAGE_EXTENSION = ".scaled";    
 }

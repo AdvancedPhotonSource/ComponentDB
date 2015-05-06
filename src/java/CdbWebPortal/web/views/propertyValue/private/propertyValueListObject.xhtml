@@ -35,7 +35,7 @@
 
         <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                       rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
-            <p:graphicImage value="#{propertyValueController.getThumbnailImageApplicationPath(propertyValueObject)}" 
+            <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
                             alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
                             rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
         </h:outputLink>
