@@ -382,10 +382,8 @@ public class Component extends CdbEntity {
     public Component clone() throws CloneNotSupportedException {
         Component cloned = (Component) super.clone();
         cloned.id = null;
-        cloned.name = "Cloned name: " + cloned.name;
-        if (description != null && !description.isEmpty()) {
-            cloned.description = "Cloned description: " + description;
-        }
+        cloned.name = "Cloned from: " + cloned.name;
+        cloned.description = description;
         cloned.componentConnectorList = null;
         cloned.componentInstanceList = null;
         cloned.assemblyList = null;

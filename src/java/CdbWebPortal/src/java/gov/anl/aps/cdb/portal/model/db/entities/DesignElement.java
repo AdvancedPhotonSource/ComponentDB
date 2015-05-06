@@ -357,12 +357,8 @@ public class DesignElement extends CdbEntity {
     public DesignElement clone() throws CloneNotSupportedException {
         DesignElement cloned = (DesignElement) super.clone();
         cloned.id = null;
-        cloned.name = "Cloned name: " + name;
-
-        if (description != null && !description.isEmpty()) {
-            cloned.description = "Cloned description: " + description;
-        }
-
+        cloned.name = "Cloned from: " + name;
+        cloned.description = description;
         cloned.logList = null;
         cloned.imagePropertyList = null;
         cloned.propertyValueList = null;

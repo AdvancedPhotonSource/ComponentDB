@@ -434,14 +434,8 @@ public class ComponentInstance extends CdbEntity {
         cloned.id = null;
         cloned.qrId = null;
         cloned.serialNumber = null;
-        if (tag != null && !tag.isEmpty()) {
-            cloned.tag = "Cloned tag: " + tag;
-        }
-
-        if (description != null && !description.isEmpty()) {
-            cloned.description = "Cloned description: " + description;
-        }
-
+        cloned.tag = tag;
+        cloned.description = description;
         cloned.designElementList = null;
         cloned.logList = null;
         cloned.componentInstanceLocationHistoryList = null;

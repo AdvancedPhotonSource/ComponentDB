@@ -369,12 +369,8 @@ public class PropertyValue extends CdbEntity {
         cloned.componentList = null;
         cloned.designElementList = null;
         cloned.propertyValueHistoryList = null;
-        if (cloned.tag != null && !cloned.tag.isEmpty()) {
-            cloned.tag = "Cloned tag: " + tag;
-        }
-        if (cloned.description != null && !cloned.description.isEmpty()) {
-            cloned.description = "Cloned description: " + description;
-        }
+        cloned.tag = tag;
+        cloned.description = description;
         return cloned;
     }
 

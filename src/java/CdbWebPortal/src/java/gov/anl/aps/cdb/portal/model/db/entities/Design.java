@@ -225,10 +225,8 @@ public class Design extends CdbEntity {
     public Design clone() throws CloneNotSupportedException {
         Design cloned = (Design) super.clone();
         cloned.id = null;
-        cloned.name = "Cloned name: " + cloned.name;
-        if (description != null && !description.isEmpty()) {
-            cloned.description = "Cloned description: " + description;
-        }
+        cloned.name = "Cloned from: " + cloned.name;
+        cloned.description = description;
         cloned.designElementList = null;
         cloned.logList = null;
         cloned.propertyValueList = null;
