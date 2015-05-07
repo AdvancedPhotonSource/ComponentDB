@@ -6,13 +6,18 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
+    <ui:param name="breadcrumb" value="#{componentInstanceController.currentViewId}"/>    
+    <ui:param name="breadcrumbObjectId" value="#{componentInstanceObject.id}"/>  
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="qrId" value="QR Id" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}" title="QR Id" styleClass="entityDataEmphasizedText"/>
 
         <h:outputLabel for="component" value="Component" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="component" value="#{componentInstanceObject.component.displayNameWithTypeAndCategory}" title="Component" styleClass="entityDataEmphasizedText"/>
+        <h:outputLink id="component" value="../component/view.xhtml?id=#{componentInstanceObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
+                      title="Component: #{componentInstanceObject.component.displayNameWithTypeAndCategory}">
+            <h:outputText value="#{componentInstanceObject.component.displayNameWithTypeAndCategory}" styleClass="entityDataEmphasizedText"/>
+        </h:outputLink>
 
         <h:outputLabel for="tag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="tag" value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>

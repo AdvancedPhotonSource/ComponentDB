@@ -764,7 +764,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         } else {
             if (breadcrumbObjectIdViewParam != null) {
                 Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
-                loadView = prepareView(getEntityDbFacade().find(entityId));
+                loadView = breadcrumbViewParam + "?faces-redirect=true&id=" + entityId;
             }
         }
         breadcrumbViewParam = null;
