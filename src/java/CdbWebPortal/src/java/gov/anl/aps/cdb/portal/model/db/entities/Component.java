@@ -11,6 +11,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -431,6 +432,7 @@ public class Component extends CdbEntity {
         searchResult.doesValueContainPattern("description", description, searchPattern);
         LogUtility.searchLogList(logList, searchPattern, searchResult);
         PropertyValueUtility.searchPropertyValueList(propertyValueList, searchPattern, searchResult);
+        EntityInfoUtility.searchEntityInfo(entityInfo, searchPattern, searchResult);
         return searchResult;
     }
 

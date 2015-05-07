@@ -12,9 +12,11 @@ package gov.anl.aps.cdb.portal.model.db.utilities;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * DB utility class for entity info objects.
@@ -49,5 +51,17 @@ public class EntityInfoUtility {
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
+    }
+
+    public static void searchEntityInfo(EntityInfo entityInfo, Pattern searchPattern, SearchResult searchResult) {
+        String baseKey = "entityInfo/id:" + entityInfo.getId();
+        String entityInfoKey = baseKey + "/ownerUsername";
+        searchResult.doesValueContainPattern(entityInfoKey, entityInfo.getOwnerUser().getUsername(), searchPattern);
+        entityInfoKey = baseKey + "/ownerLastName";
+        searchResult.doesValueContainPattern(entityInfoKey, entityInfo.getOwnerUser().getLastName(), searchPattern);
+        entityInfoKey = baseKey + "/ownerFirstName";
+        searchResult.doesValueContainPattern(entityInfoKey, entityInfo.getOwnerUser().getFirstName(), searchPattern);
+        entityInfoKey = baseKey + "/ownerGroupName";
+        searchResult.doesValueContainPattern(entityInfoKey, entityInfo.getOwnerUserGroup().getName(), searchPattern);
     }
 }

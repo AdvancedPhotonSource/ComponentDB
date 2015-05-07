@@ -135,7 +135,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected String breadcrumbViewParam = null;
     protected String breadcrumbObjectIdViewParam = null;
 
-    private boolean searchHasResults = false;
     private String searchString = null;
     private boolean caseInsensitive = true;
     private LinkedList<SearchResult> searchResultList;
@@ -211,6 +210,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return integer value, or null in case string value cannot be parsed
      */
     public static Integer parseSettingValueAsInteger(String settingValue) {
+        if (settingValue == null || settingValue.isEmpty()) {
+            return null;
+        }
         try {
             return Integer.parseInt(settingValue);
         } catch (NumberFormatException ex) {
@@ -1463,7 +1465,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return list of search results
      */
     public List<SearchResult> getSearchResultList(String searchString, boolean caseInsensitive) {
-        searchHasResults = false;
         if (searchString == null || searchString.isEmpty()) {
             searchResultList = new LinkedList<>();
             return searchResultList;
@@ -1488,19 +1489,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         Iterator<EntityType> iterator = dataModel.iterator();
         while (iterator.hasNext()) {
             EntityType entity = iterator.next();
-            SearchResult searchResult = entity.search(searchPattern);
-            if (!searchResult.isEmpty()) {
-                searchResultList.add(searchResult);
+            try {
+                SearchResult searchResult = entity.search(searchPattern);
+                if (!searchResult.isEmpty()) {
+                    searchResultList.add(searchResult);
+                }
+            } catch (RuntimeException ex) {
+                logger.warn("Could not search entity " + entity.toString() + " (Error: " + ex.toString() + ")");
             }
-        }
-        if (!searchResultList.isEmpty()) {
-            searchHasResults = true;
+
         }
         return searchResultList;
     }
 
     public boolean searchHasResults() {
-        return searchHasResults;
+        return !searchResultList.isEmpty();
     }
 
     public boolean entityHasCategories() {
@@ -1672,9 +1675,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * If list data model needs to be reset this method will return true, and modify reset flag.
-     * 
-     * @return true if list data model needs to be reset, false otherwise 
+     * If list data model needs to be reset this method will return true, and
+     * modify reset flag.
+     *
+     * @return true if list data model needs to be reset, false otherwise
      */
     public boolean shouldResetListDataModel() {
         if (listDataModelReset) {
@@ -1685,10 +1689,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * If select data model needs to be reset this method will return true, and modify reset flag.
-     * 
-     * @return true if select data model needs to be reset, false otherwise 
-     */    
+     * If select data model needs to be reset this method will return true, and
+     * modify reset flag.
+     *
+     * @return true if select data model needs to be reset, false otherwise
+     */
     public boolean shouldResetSelectDataModel() {
         if (selectDataModelReset) {
             selectDataModelReset = false;
