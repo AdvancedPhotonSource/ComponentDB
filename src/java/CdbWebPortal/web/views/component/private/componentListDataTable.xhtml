@@ -44,11 +44,9 @@
             </ui:fragment>
             <ui:fragment rendered="#{isAssembly}">
                 <p:treeTable id="assemblyComponentListTreeTable"
-                             widgetVar="assemblyComponentListTreeTableWidget" 
                              value="#{componentController.createAssemblyRoot(componentObject)}"
                              var="assemblyComponentObject"
-                             styleClass="assemblyTreeTable"
-                             emptyMessage="No assembly components found.">
+                             styleClass="assemblyTreeTable">
                     <p:column>
                         <h:outputLink value="view.xhtml?id=#{assemblyComponentObject.id}" title="View component details">
                             <h:outputText value="#{assemblyComponentObject.name}"/>
