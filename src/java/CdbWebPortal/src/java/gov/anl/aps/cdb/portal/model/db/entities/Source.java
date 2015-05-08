@@ -57,7 +57,7 @@ public class Source extends CdbEntity {
     private String contactInfo;
     @Size(max = 256)
     private String url;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "source")
     private List<ComponentSource> componentSourceList;
 
     private transient String targetUrl;

@@ -534,7 +534,7 @@ CREATE TABLE `component_source` (
   KEY `component_source_k1` (`component_id`),
   CONSTRAINT `component_source_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_source_k2` (`source_id`),
-  CONSTRAINT `component_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  CONSTRAINT `component_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

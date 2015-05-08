@@ -269,4 +269,8 @@ public class SourceController extends CdbEntityController<Source, SourceDbFacade
         this.filterByUrl = filterByUrl;
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }    
 }
