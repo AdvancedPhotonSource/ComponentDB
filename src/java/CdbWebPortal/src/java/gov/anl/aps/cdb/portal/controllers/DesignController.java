@@ -43,6 +43,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.TreeNode;
 
 /**
  * Design controller class.
@@ -75,7 +76,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
     private DataTable designPropertyValueListDataTable = null;
-
+    private TreeNode designElementListTreeTableRootNode = null;
+    
     private List<PropertyValue> filteredPropertyValueList;
 
     @EJB
@@ -127,6 +129,17 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         return super.getAvailableItems();
     }
 
+    @Override
+    public void prepareEntityView(Design design) {
+        try {
+            if (design != current || designElementListTreeTableRootNode == null) {
+                designElementListTreeTableRootNode = DesignElementUtility.createDesignElementRoot(design);
+            }
+        } catch (CdbException ex) {
+            logger.warn("Could not create design element list for tree view: " + ex.toString());
+        }
+    }
+    
     @Override
     public void prepareEntityInsert(Design design) throws ObjectAlreadyExists {
         Design existingElement = designFacade.findByName(design.getName());
@@ -487,6 +500,14 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
+    }
+
+    public TreeNode getDesignElementListTreeTableRootNode() {
+        return designElementListTreeTableRootNode;
+    }
+
+    public void setDesignElementListTreeTableRootNode(TreeNode designElementListTreeTableRootNode) {
+        this.designElementListTreeTableRootNode = designElementListTreeTableRootNode;
     }
 
 }

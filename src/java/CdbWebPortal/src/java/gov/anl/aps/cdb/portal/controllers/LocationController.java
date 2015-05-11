@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.LocationType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -33,6 +34,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
@@ -82,6 +84,7 @@ public class LocationController extends CdbEntityController<Location, LocationDb
     private Location selectedParentLocation = null;
 
     private MenuModel locationMenu = null;
+    private TreeNode locationListTreeTableRootNode = null;
 
     public LocationController() {
         selectDisplayDescription = true;
@@ -129,6 +132,12 @@ public class LocationController extends CdbEntityController<Location, LocationDb
     @Override
     public List<Location> getAvailableItems() {
         return super.getAvailableItems();
+    }
+
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel();
+        locationListTreeTableRootNode = null;
     }
 
     @Override
@@ -482,4 +491,14 @@ public class LocationController extends CdbEntityController<Location, LocationDb
         this.selectedParentLocation = selectedParentLocation;
     }
 
+    public TreeNode getLocationListTreeTableRootNode() {
+        if (locationListTreeTableRootNode == null) {
+            locationListTreeTableRootNode = LocationUtility.createLocationRoot(locationFacade.findLocationsWithoutParents());
+        }
+        return locationListTreeTableRootNode;
+    }
+
+    public void setLocationListTreeTableRootNode(TreeNode designElementListTreeTableRootNode) {
+        this.locationListTreeTableRootNode = designElementListTreeTableRootNode;
+    }
 }

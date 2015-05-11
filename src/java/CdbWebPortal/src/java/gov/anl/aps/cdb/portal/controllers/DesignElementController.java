@@ -129,7 +129,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     private DataTable componentPropertyValueListDataTable = null;
     private DataTable childDesignPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
-
+    
     public DesignElementController() {
     }
 
@@ -883,4 +883,5 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     public void setChildDesignPropertyValueListDataTable(DataTable childDesignPropertyValueListDataTable) {
         this.childDesignPropertyValueListDataTable = childDesignPropertyValueListDataTable;
     }
+  
 }

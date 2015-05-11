@@ -8,8 +8,7 @@
     <ui:param name="breadcrumb" value="#{designElementController.currentViewId}"/>
     <ui:param name="designObject" value="#{designController.current}"/>
     <p:treeTable id="designElementListTreeTable"
-                 widgetVar="designElementListTreeTableWidget" 
-                 value="#{designElementListTreeViewBean.createRootNodeForDesign(designObject)}"
+                 value="#{designController.designElementListTreeTableRootNode}"
                  var="designElementObject"
                  emptyMessage="No design elements found.">
 
