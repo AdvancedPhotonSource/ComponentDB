@@ -28,9 +28,8 @@ public class DatePropertyTypeHandler extends AbstractPropertyTypeHandler {
         try {
             Date date = PropertyValue.InputDateFormat.parse(value);
             return outputDateFormat.format(date);
-        } catch (ParseException ex) {
+        } catch (ParseException | RuntimeException ex) {
             // ok, simply return null
-            System.out.println(ex);
         }
         return null;
     }
