@@ -104,7 +104,9 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
 else
     echo "Service config file exists"
 fi
-rsync -ar $CDB_ROOT_DIR/etc/$CDB_DB_NAME.db.passwd $CDB_ETC_DIR || exit 1
+if [ -f $CDB_ROOT_DIR/etc/$CDB_DB_NAME.db.passwd ]; then
+    rsync -ar $CDB_ROOT_DIR/etc/$CDB_DB_NAME.db.passwd $CDB_ETC_DIR || exit 1
+fi
 
 # Modify version
 echo "Modifying python module version"

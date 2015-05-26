@@ -1,3 +1,10 @@
+Release 2.0.2 (Tag 20150531) (05/31/2015)
+=========================================
+
+- Maintenance release; number of small bugs fixed
+- Resolved issues with tree views
+- Enhanced search capabilities
+
 Release 2.0.1 (Tag 20150430) (04/30/2015)
 =========================================
 
