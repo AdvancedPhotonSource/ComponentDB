@@ -3,6 +3,7 @@ Release 2.0.3 (Tag 20150615) (06/15/2015)
 
 - Maintenance release
 - Resolved issues with design element list view
+- Added custom http filter that prevents browser from caching jsf pages
 
 Release 2.0.2 (Tag 20150531) (05/31/2015)
 =========================================
