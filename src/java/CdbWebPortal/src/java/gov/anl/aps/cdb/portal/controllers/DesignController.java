@@ -77,7 +77,6 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
     private DataTable designPropertyValueListDataTable = null;
     private TreeNode designElementListTreeTableRootNode = null;
-    private Integer designIdForDesignElementListTreeTableRootNode = null;
 
     private List<PropertyValue> filteredPropertyValueList;
 
@@ -133,7 +132,6 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     void prepareDesignElementListTreeTable(Design design) {
         try {
             designElementListTreeTableRootNode = DesignElementUtility.createDesignElementRoot(design);
-            designIdForDesignElementListTreeTableRootNode = design.getId();
         } catch (CdbException ex) {
             logger.warn("Could not create design element list for tree view: " + ex.toString());
         }        
@@ -507,12 +505,6 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     }
 
     public TreeNode getDesignElementListTreeTableRootNode() {
-        Design design = getCurrent();
-        if (designIdForDesignElementListTreeTableRootNode == null ||
-            !designIdForDesignElementListTreeTableRootNode.equals(design.getId())) {
-            logger.debug("Rebuilding design element list tree table for design id " + design.getId());
-            prepareDesignElementListTreeTable(design);
-        }
         return designElementListTreeTableRootNode;
     }
 
