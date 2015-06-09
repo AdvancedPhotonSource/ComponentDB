@@ -13,6 +13,14 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
+    <filter>
+        <filter-name>DmNoCacheFilter</filter-name>
+        <filter-class>gov.anl.aps.cdb.portal.utilities.DmNoCacheFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>DmNoCacheFilter</filter-name>
+        <servlet-name>Faces Servlet</servlet-name>
+    </filter-mapping>
     <session-config>
         <session-timeout>
             60
