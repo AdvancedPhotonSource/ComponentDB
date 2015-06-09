@@ -397,6 +397,8 @@ INSERT INTO `location` VALUES
 (395,'Shelf 5','',7,1,NULL),
 (396,'B2145','Glenn\'s office',3,0,NULL),
 (397,'B4185','Ned\'s Office',3,0,NULL),
-(398,'382','APS Vacuum Factory',1,0,NULL);
+(398,'382','APS Vacuum Factory',1,0,NULL),
+(399,'C2257','Shifu\'s Office',3,0,NULL),
+(400,'314','',1,0,NULL);
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;

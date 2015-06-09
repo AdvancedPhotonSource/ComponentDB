@@ -32,6 +32,8 @@ INSERT INTO `log` VALUES
 (34,'Verified location and applied barcode sticker on 2/13/15.','2015-03-31 15:16:52',2,NULL),
 (35,'Verified location and applied barcode sticker 2/13/15.','2015-03-31 15:28:33',2,NULL),
 (36,'Verified location and applied barcode sticker 2/13/15.','2015-03-31 15:29:04',2,NULL),
-(37,'Verified location and applied barcode sticker 2/13/15,','2015-03-31 15:30:44',2,NULL);
+(37,'Verified location and applied barcode sticker 2/13/15,','2015-03-31 15:30:44',2,NULL),
+(38,'Updated NAT-MCH firmware to V2.17 (HUB-PCIe board AVR firmware to V1.10).  Attached is the successful result indication.','2015-04-20 14:40:35',3,NULL),
+(39,'Cloned from Quad Dublet Plinth (Type A)','2015-04-22 12:53:47',3,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

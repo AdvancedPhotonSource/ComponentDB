@@ -122,6 +122,10 @@ INSERT INTO `component_type` VALUES
 (124,'Flash Disk','',3),
 (125,'BPM Processor','Takes BPM signals, converts to X/Y/Sum',8),
 (126,'MARK','',12),
-(127,'Fan','',1);
+(127,'Fan','',1),
+(128,'Measurement System','',3),
+(129,'Data Logging System','',3),
+(130,'Gateway/Protocol Converter','',3),
+(131,'Current Transformer','',7);
 /*!40000 ALTER TABLE `component_type` ENABLE KEYS */;
 UNLOCK TABLES;

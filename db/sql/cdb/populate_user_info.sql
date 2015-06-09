@@ -23,7 +23,7 @@ INSERT INTO `user_info` VALUES
 (20,'lhm','Leonard','Morrison','','lhm@aps.anl.gov',NULL,NULL),
 (21,'jieliu','Jie','Liu','','jieliu@aps.anl.gov',NULL,NULL),
 (22,'doose','Charles','Doose','','doose@aps.anl.gov',NULL,NULL),
-(23,'tfors','Tom','Fors','','tfors@aps.anl.gov',NULL,NULL),
+(23,'tfors','Tom','Fors','','tfors@aps.anl.gov',NULL,''),
 (24,'bran','Bran','Brajuskovic','','bran@aps.anl.gov',NULL,NULL),
 (25,'jzientek','John','Zientek','','jzientek@aps.anl.gov',NULL,NULL),
 (26,'djarosz','Dariusz','Jarosz','Piotr','djarosz@aps.anl.gov',NULL,NULL),
@@ -34,6 +34,13 @@ INSERT INTO `user_info` VALUES
 (31,'sereno','Nick','Sereno','','sereno@aps.anl.ogv',NULL,NULL),
 (32,'xusf','Shifu','Xu','','xusf@aps.anl.gov',NULL,NULL),
 (33,'afp','Tony','Pietryla','','afp',NULL,NULL),
-(34,'rblake','Ron','Blake','','rblake@aps.anl.gov',NULL,NULL);
+(34,'rblake','Ron','Blake','','rblake@aps.anl.gov',NULL,NULL),
+(35,'dejus','Roger','Dejus','','dejus@aps.anl.gov',NULL,NULL),
+(36,'collins','Jeff','Collins','','collins@aps.anl.gov',NULL,NULL),
+(37,'keane','Rob','Keane','','keane@aps.anl.gov',NULL,NULL),
+(38,'jzxu','Joe','Xu','','jzxu@aps.anl.gov',NULL,NULL),
+(39,'jnudell','Jeremy','Nudell','','jnudell@aps.anl.gov',NULL,NULL),
+(40,'borland','Michael','Borland','','borland@aps.anl.gov',NULL,NULL),
+(41,'soprondek','Samuel','Oprondek','','soprondek@aps.anl.gov','ziZy$VHwn+tdgAX6uwMZf1mA2c0By8DdnuCbp',NULL);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -29,6 +29,7 @@ INSERT INTO `user_user_group` VALUES
 (20,5),
 (21,5),
 (22,11),
+(23,1),
 (23,8),
 (24,5),
 (24,12),
@@ -42,6 +43,14 @@ INSERT INTO `user_user_group` VALUES
 (31,10),
 (32,4),
 (33,4),
-(34,10);
+(34,10),
+(35,5),
+(35,11),
+(36,5),
+(37,10),
+(38,4),
+(39,5),
+(40,9),
+(41,5);
 /*!40000 ALTER TABLE `user_user_group` ENABLE KEYS */;
 UNLOCK TABLES;

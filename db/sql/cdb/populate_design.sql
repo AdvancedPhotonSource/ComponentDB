@@ -22,9 +22,12 @@ INSERT INTO `design` VALUES
 (28,'Lattice','',207),
 (29,'Girder 1','',428),
 (31,'S27 RTFB Teststand (4x4)','',447),
-(32,'Double Sector Controller - uTCA Version','uTCA crate and modules for double sector controller prototype',448),
+(32,'Double Sector Controller (DSC) - uTCA Version','uTCA crate and modules for double sector controller prototype',448),
 (33,'S27 Integrated orbit feedback prototype','',459),
 (34,'R&D - Vacuum sector mockup','Includes all major components required to build a simplified mockup of one sector of the APS-U storage ring vacuum system.',493),
-(35,'R&D - Vacuum flange and joint test stand','',498);
+(35,'R&D - Vacuum flange and joint test stand','',498),
+(36,'M1 Dipole Prototypes','Container for the M1 design alternative prototypes',534),
+(37,'M1 Measurement in MM1','Test setup for M1 measurements',547),
+(38,'M1 Measurement PS Control/Monitoring','Required power supply components to support M1 measurements in MM1',569);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -6,6 +6,7 @@ INSERT INTO `component_instance_log` VALUES
 (8,8),
 (33,16),
 (33,17),
+(40,38),
 (42,18),
 (43,19),
 (44,23),

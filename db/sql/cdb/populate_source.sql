@@ -27,6 +27,16 @@ INSERT INTO `source` VALUES
 (24,'Midwest Vacuum','Vacuum Components Vendor','Hans Luedi, 630-323-5399, hluedi@midwestvacuum.com','http://www.midwestvacuum.com/Home.9.0.html'),
 (25,'Vacuum One','Vacumm Components Vendor','Scott Dix, 408-510-2459, info@vacuumone.com','http://www.vacuumone.com/'),
 (26,'VACOM','Vacuum Components Vendor','Michael Pick, +49 3641 4275-33, michael.pick@vacom.de','http://www.vacom.de/en/'),
-(27,'Edwards','Vacuum products manufacturer','','https://www.edwardsvacuum.com');
+(27,'Edwards','Vacuum products manufacturer','','https://www.edwardsvacuum.com'),
+(28,'Pulse Research Lab','','sales@pulseresearchlab.com','www.pulseresearchlab.com'),
+(29,'Danfysik','','','http://www.danfysik.com/'),
+(31,'Moxa','','','http://www.moxa.com/'),
+(32,'Danisense','','','www.danisense.com'),
+(33,'APS/DIAG','','',''),
+(34,'Dukane Precast','','','www.dukaneprecast.com'),
+(35,'American Grinding','','',''),
+(36,'BiRa Systems','','Pawel Kowalski [pawel@bira.com]','http://www.bira.com'),
+(37,'Krohn-Hite','','','http://www.krohn-hite.com/'),
+(38,'Vishay','','','http://vpgsensors.com/');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;
