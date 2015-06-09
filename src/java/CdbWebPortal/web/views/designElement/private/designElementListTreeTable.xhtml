@@ -5,15 +5,16 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="designObject" value="#{designController.current}"/>    
     <ui:param name="breadcrumb" value="#{designElementController.currentViewId}"/>
-    <ui:param name="designObject" value="#{designController.current}"/>
+    <ui:param name="breadcrumbObjectId" value="#{designObject.id}"/>
     <p:treeTable id="designElementListTreeTable"
                  value="#{designController.designElementListTreeTableRootNode}"
                  var="designElementObject"
                  emptyMessage="No design elements found.">
 
         <p:column sortBy="#{designElementObject.name}" headerText="Element Name">
-            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Design Element: #{designElementObject.name}">
+            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Design Element: #{designElementObject.name}">
                 <h:outputText value="#{designElementObject.name}"/>
             </h:outputLink>
         </p:column>
@@ -29,13 +30,13 @@
 
         <p:column sortBy="#{designElementObject.containedObjectComponentType}" headerText="Component Type"
                   rendered="#{designElementController.displayComponentType}">
-            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.containedObjectComponentType.id}&amp;breadcrumb=#{breadcrumb}" title="Component Type: #{designElementObject.component.componentType.name}">
+            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.containedObjectComponentType.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Component Type: #{designElementObject.component.componentType.name}">
                 <h:outputText value="#{designElementObject.containedObjectComponentType}"/>
             </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.containedObjectName}" headerText="Component | Design">
-            <h:outputLink value="../#{designElementObject.containedObjectType}/view.xhtml?id=#{designElementObject.containedObjectId}&amp;breadcrumb=#{breadcrumb}" title="View #{designElementObject.containedObjectType} details">
+            <h:outputLink value="../#{designElementObject.containedObjectType}/view.xhtml?id=#{designElementObject.containedObjectId}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="View #{designElementObject.containedObjectType} details">
                 <h:outputText value="#{designElementObject.containedObjectName}"/>
             </h:outputLink>  
         </p:column>

@@ -77,7 +77,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
     private DataTable designPropertyValueListDataTable = null;
     private TreeNode designElementListTreeTableRootNode = null;
-    
+
     private List<PropertyValue> filteredPropertyValueList;
 
     @EJB
@@ -132,14 +132,12 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     @Override
     public void prepareEntityView(Design design) {
         try {
-            if (design != current || designElementListTreeTableRootNode == null) {
-                designElementListTreeTableRootNode = DesignElementUtility.createDesignElementRoot(design);
-            }
+            designElementListTreeTableRootNode = DesignElementUtility.createDesignElementRoot(design);
         } catch (CdbException ex) {
             logger.warn("Could not create design element list for tree view: " + ex.toString());
         }
     }
-    
+
     @Override
     public void prepareEntityInsert(Design design) throws ObjectAlreadyExists {
         Design existingElement = designFacade.findByName(design.getName());

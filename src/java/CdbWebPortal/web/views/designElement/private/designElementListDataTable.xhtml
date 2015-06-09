@@ -5,8 +5,9 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="designObject" value="#{designController.current}"/>    
     <ui:param name="breadcrumb" value="#{designElementController.currentViewId}"/>
-    <ui:param name="design" value="#{designController.selected}"/>    
+    <ui:param name="breadcrumbObjectId" value="#{designObject.id}"/>  
     <p:dataTable id="designElementListDataTable" 
                  widgetVar="designElementListDataTableWidget"
                  var="designElementObject" 
@@ -24,28 +25,28 @@
         </p:column>
 
         <p:column sortBy="#{designElementObject.name}" headerText="Element Name">
-            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}" title="Design Element: #{designElementObject.name}">
+            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Design Element: #{designElementObject.name}">
                 <h:outputText value="#{designElementObject.name}"/>
             </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.component.componentType.name}" headerText="Component Type"
                   rendered="#{designElementController.displayComponentType}">
-            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.component.componentType.id}&amp;breadcrumb=#{breadcrumb}" title="Component Type: #{designElementObject.component.componentType.name}">
+            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.component.componentType.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Component Type: #{designElementObject.component.componentType.name}">
                 <h:outputText value="#{designElementObject.component.componentType.name}"/>
             </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
                   rendered="#{designElementController.displayComponent}">
-            <h:outputLink value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}" title="Component: #{designElementObject.component.name}">
+            <h:outputLink value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Component: #{designElementObject.component.name}">
                 <h:outputText value="#{designElementObject.component.name}"/>
             </h:outputLink>
         </p:column>
 
         <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
                   rendered="#{designElementController.displayChildDesign}">
-            <h:outputLink value="../design/view.xhtml?id=#{designElementObject.childDesign.id}&amp;breadcrumb=#{breadcrumb}" title="Child Design: #{designElementObject.childDesign.name}">
+            <h:outputLink value="../design/view.xhtml?id=#{designElementObject.childDesign.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Child Design: #{designElementObject.childDesign.name}">
                 <h:outputText value="#{designElementObject.childDesign.name}"/>
             </h:outputLink>
         </p:column>
