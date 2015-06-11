@@ -17,6 +17,9 @@
                  emptyMessage="No user groups found.">
 
         <p:column sortBy="#{userGroupObject.id}" headerText="Id"
+                  filterBy="#{userGroupObject.id}" filterMatchMode="contains"
+                  filterValue="#{userGroupController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{userGroupController.displayId}">
             <h:outputText value="#{userGroupObject.id}"/>
         </p:column>

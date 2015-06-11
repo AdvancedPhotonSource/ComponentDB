@@ -17,6 +17,9 @@
                  emptyMessage="No designs found.">
 
         <p:column sortBy="#{designObject.id}" headerText="Id"
+                  filterBy="#{designObject.id}" filterMatchMode="contains"
+                  filterValue="#{designController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{designController.displayId}">
             <h:outputText value="#{designObject.id}"/>
         </p:column>

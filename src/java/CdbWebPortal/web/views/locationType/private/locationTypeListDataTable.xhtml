@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="locationTypeListDataTable"
-                 widgetVar="locationTypeListWidget" 
+                 widgetVar="locationTypeListDataTableWidget" 
                  var="locationTypeObject"
                  value="#{locationTypeController.listDataModel}" 
                  filteredValue="#{locationTypeController.filteredObjectList}"
@@ -17,6 +17,9 @@
                  emptyMessage="No location types found.">
 
         <p:column sortBy="#{locationTypeObject.id}" headerText="Id"
+                  filterBy="#{locationTypeObject.id}" filterMatchMode="contains"
+                  filterValue="#{locationTypeController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{locationTypeController.displayId}">
             <h:outputText value="#{locationTypeObject.id}"/>
         </p:column>

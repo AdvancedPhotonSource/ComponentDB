@@ -17,6 +17,9 @@
                  emptyMessage="No sources found.">
 
         <p:column sortBy="#{sourceObject.id}" headerText="Id"
+                  filterBy="#{sourceObject.id}" filterMatchMode="contains"
+                  filterValue="#{sourceController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{sourceController.displayId}">
             <h:outputText value="#{sourceObject.id}"/>
         </p:column>

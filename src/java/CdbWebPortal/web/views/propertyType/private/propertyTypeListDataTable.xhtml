@@ -17,6 +17,9 @@
                  emptyMessage="No property types found.">
 
         <p:column sortBy="#{propertyTypeObject.id}" headerText="Id"
+                  filterBy="#{propertyTypeObject.id}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{propertyTypeController.displayId}">
             <h:outputText value="#{propertyTypeObject.id}"/>
         </p:column>

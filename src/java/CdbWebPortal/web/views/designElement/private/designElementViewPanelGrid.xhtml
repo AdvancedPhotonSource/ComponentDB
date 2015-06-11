@@ -6,19 +6,30 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="designElementObject" value="#{designElementController.selected}"/>
+    <ui:param name="breadcrumb" value="#{designElementController.currentViewId}"/>    
+    <ui:param name="breadcrumbObjectId" value="#{designElementObject.id}"/>  
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="name" value="#{designElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
 
         <h:outputLabel for="parentDesign" value="Parent Design" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="parentDesign" value="#{designElementObject.parentDesign.name}" title="Parent Design" styleClass="entityDataEmphasizedText"/>
+         <h:outputLink id="parentDesign" value="../design/view.xhtml?id=#{designElementObject.parentDesign.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
+                      title="Parent Design: #{designElementObject.parentDesign.name}">
+            <h:outputText value="#{designElementObject.parentDesign.name}" styleClass="entityDataEmphasizedText"/>
+        </h:outputLink>
         
         <h:outputLabel for="component" value="Component" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="component" value="#{designElementObject.component.displayNameWithTypeAndCategory}" title="Component" styleClass="entityDataEmphasizedText"/>
+         <h:outputLink id="component" value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
+                      title="Component: #{componentInstanceObject.component.displayNameWithTypeAndCategory}">
+            <h:outputText value="#{designElementObject.component.displayNameWithTypeAndCategory}" styleClass="entityDataEmphasizedText"/>
+        </h:outputLink>
 
         <h:outputLabel for="childDesign" value="Child Design" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="childDesign" value="#{designElementObject.childDesign.name}" title="Child Design" styleClass="entityDataEmphasizedText"/>
+         <h:outputLink id="childDesign" value="../design/view.xhtml?id=#{designElementObject.childDesign.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
+                      title="Child Design: #{designElementObject.childDesign.name}">
+            <h:outputText value="#{designElementObject.childDesign.name}" styleClass="entityDataEmphasizedText"/>
+        </h:outputLink>
 
         <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="location" value="#{designElementObject.location.name}" title="Location" styleClass="entityDataEmphasizedText"/>

@@ -473,8 +473,8 @@ h2 {
     color: #4e80b6;
 }
 
-.shortFilterColumn {
-    width: 40px;
+.shortFilterBox {
+    width: 30px !important;
 }
 
 .imagePanel {

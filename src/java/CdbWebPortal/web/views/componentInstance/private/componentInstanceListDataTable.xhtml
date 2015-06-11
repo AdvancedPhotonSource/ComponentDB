@@ -17,6 +17,9 @@
                  emptyMessage="No component instances found.">
 
         <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
+                  filterBy="#{componentInstanceObject.id}" filterMatchMode="contains"
+                  filterValue="#{componentInstanceController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{componentInstanceController.displayId}">
             <h:outputText value="#{componentInstanceObject.id}"/>
         </p:column>

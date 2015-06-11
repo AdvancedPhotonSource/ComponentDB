@@ -27,6 +27,9 @@
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No components found.">
         <p:column sortBy="#{componentObject.id}" headerText="Id"
+                  filterBy="#{componentObject.id}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{componentController.displayId}">
             <h:outputText value="#{componentObject.id}"/>
         </p:column>

@@ -17,6 +17,9 @@
                  emptyMessage="No users found.">
 
         <p:column sortBy="#{userInfoObject.id}" headerText="Id"
+                  filterBy="#{userInfoObject.id}" filterMatchMode="contains"
+                  filterValue="#{userInfoController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{userInfoController.displayId}">
             <h:outputText value="#{userInfoObject.id}"/>
         </p:column>

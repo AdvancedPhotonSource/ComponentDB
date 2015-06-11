@@ -90,7 +90,7 @@ public class DesignElement extends CdbEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstDesignElementId")
     private List<DesignElementConnection> designElementConnectionList1;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     @ManyToOne

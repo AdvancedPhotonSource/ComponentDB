@@ -6,6 +6,8 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <p:column sortBy="#{designObject.id}" headerText="Id"
+              filterBy="#{designObject.id}" filterMatchMode="contains"
+              filterValue="#{designController.filterById}">
               rendered="#{designController.displayId}">
         <h:outputText value="#{designObject.id}"/>
     </p:column>

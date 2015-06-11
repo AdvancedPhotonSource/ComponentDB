@@ -104,6 +104,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected Boolean displayLastModifiedByUser = null;
     protected Boolean displayLastModifiedOnDateTime = null;
 
+    protected String filterById = null;
     protected String filterByName = null;
     protected String filterByDescription = null;
     protected String filterByOwnerUser = null;
@@ -123,6 +124,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected Boolean selectDisplayLastModifiedByUser = false;
     protected Boolean selectDisplayLastModifiedOnDateTime = false;
 
+    protected String selectFilterById = null;    
     protected String selectFilterByName = null;
     protected String selectFilterByDescription = null;
     protected String selectFilterByOwnerUser = null;
@@ -644,6 +646,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
 
         Map<String, Object> filters = dataTable.getFilters();
+        filterById = (String) filters.get("id");
         filterByName = (String) filters.get("name");
         filterByDescription = (String) filters.get("description");
         filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username");
@@ -661,6 +664,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * its own filters.
      */
     public void clearListFilters() {
+        filterById = null;
         filterByName = null;
         filterByDescription = null;
         filterByOwnerUser = null;
@@ -681,6 +685,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         if (selectDataTable != null) {
             selectDataTable.getFilters().clear();
         }
+        selectFilterById = null;
         selectFilterByName = null;
         selectFilterByDescription = null;
         selectFilterByOwnerUser = null;
@@ -1610,6 +1615,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.displayLastModifiedOnDateTime = displayLastModifiedOnDateTime;
     }
 
+    public void setFilterById(String filterById) {
+        this.filterById = filterById;
+    }
+
+    public String getFilterById() {
+        return filterById;
+    }
+    
     public void setFilterByName(String filterByName) {
         this.filterByName = filterByName;
     }
@@ -1774,6 +1787,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.selectDisplayLastModifiedOnDateTime = selectDisplayLastModifiedOnDateTime;
     }
 
+    public String getSelectFilterById() {
+        return selectFilterById;
+    }
+
+    public void setSelectFilterById(String selectFilterById) {
+        this.selectFilterById = selectFilterById;
+    }
+    
     public String getSelectFilterByName() {
         return selectFilterByName;
     }

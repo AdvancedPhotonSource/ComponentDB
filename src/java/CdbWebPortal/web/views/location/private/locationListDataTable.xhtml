@@ -17,6 +17,9 @@
                  emptyMessage="No locations found.">
 
         <p:column sortBy="#{locationObject.id}" headerText="Id"
+                  filterBy="#{locationObject.id}" filterMatchMode="contains"
+                  filterValue="#{locationController.filterById}"
+                  filterStyleClass="shortFilterBox"
                   rendered="#{locationController.displayId}">
             <h:outputText value="#{locationObject.id}"/>
         </p:column>
