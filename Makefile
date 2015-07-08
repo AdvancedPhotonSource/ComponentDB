@@ -5,7 +5,7 @@ TOP = .
 #SUBDIRS = irmis src
 SUBDIRS = src
 
-.PHONY: support dev-config
+.PHONY: support support-mysql dev-config
 .PHONY: db backup db-dev deploy-web-portal undeploy-web-portal deploy-web-service undeploy-web-service
 .PHONY: db-dev backup-dev deploy-web-portal-dev undeploy-web-portal-dev deploy-web-service-dev undeploy-web-service-dev
 
@@ -18,6 +18,10 @@ dev-config:
 
 support:
 	$(TOP)/sbin/cdb_install_support.sh
+
+support-mysql:
+	$(TOP)/sbin/cdb_install_support_mysql.sh
+	$(TOP)/sbin/cdb_deploy_mysqld.sh
 
 db:
 	$(TOP)/sbin/cdb_create_db.sh
