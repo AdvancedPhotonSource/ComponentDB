@@ -20,8 +20,7 @@ support:
 	$(TOP)/sbin/cdb_install_support.sh
 
 support-mysql:
-	$(TOP)/sbin/cdb_install_support_mysql.sh
-	$(TOP)/sbin/cdb_deploy_mysqld.sh
+	$(TOP)/sbin/cdb_install_support_mysql.sh && $(TOP)/sbin/cdb_deploy_mysqld.sh
 
 db:
 	$(TOP)/sbin/cdb_create_db.sh

@@ -90,15 +90,17 @@ fi
 # Prepare mysql config if needed
 mysqlConfig=mysql.conf
 if [ -d $CDB_SUPPORT_DIR/mysql ]; then
-    echo "Local MySQL installation exists, preparing server configuration file"
-    cmd="cat $CDB_ROOT_DIR/etc/$mysqlConfig.template \
-        | sed 's?CDB_DB_HOST?$CDB_DB_HOST?g' \
-        | sed 's?CDB_DB_PORT?$CDB_DB_PORT?g' \
-        | sed 's?CDB_INSTALL_DIR?$CDB_INSTALL_DIR?g' \
-        > $CDB_ETC_DIR/$mysqlConfig
-    "
-    eval $cmd || exit 1
-    $CDB_ROOT_DIR/etc/init.d/cdb-mysqld restart
+    if [ ! -f $CDB_ETC_DIR/$mysqlConfig ]; then
+        echo "Local MySQL installation exists, preparing server configuration file"
+        cmd="cat $CDB_ROOT_DIR/etc/$mysqlConfig.template \
+            | sed 's?CDB_DB_HOST?$CDB_DB_HOST?g' \
+            | sed 's?CDB_DB_PORT?$CDB_DB_PORT?g' \
+            | sed 's?CDB_INSTALL_DIR?$CDB_INSTALL_DIR?g' \
+            > $CDB_ETC_DIR/$mysqlConfig
+        "
+        eval $cmd || exit 1
+        $CDB_ROOT_DIR/etc/init.d/cdb-mysqld restart
+    fi
 fi
 
 mysqlCmd="mysql --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
