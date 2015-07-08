@@ -36,11 +36,12 @@ if [ ! -f ${CDB_ENV_FILE} ]; then
 fi
 . ${CDB_ENV_FILE} > /dev/null 
 
-CDB_DAEMON=/usr/bin/mysqld_safe
+MYSQL_BIN_DIR=/usr/bin
 if [ -d $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysqld_safe ]; then
     # Use our own mysqld binary if it exists
-    CDB_DAEMON=$CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysqld_safe
+    MYSQL_BIN_DIR=$CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin
 fi
+CDB_DAEMON=$MYSQL_BIN_DIR/mysqld_safe
 CDB_DAEMON_NAME=mysqld
 CDB_DAEMON_PORT=3306
 CDB_DAEMON_RUN_DIR=${CDB_INSTALL_DIR}/var/run/${CDB_DAEMON_NAME}
@@ -61,7 +62,7 @@ STOP_TIMEOUT=60
 # We use my_print_defaults which prints all options from multiple files,
 # with the more specific ones later; hence take the last match.
 get_mysql_option(){
-    result=`/usr/bin/my_print_defaults --defaults-file=$CDB_DAEMON_CONFIG_FILE "$1" | sed -n "s/^--$2=//p" | tail -n 1`
+    result=`$MYSQL_BIN_DIR/my_print_defaults --defaults-file=$CDB_DAEMON_CONFIG_FILE "$1" | sed -n "s/^--$2=//p" | tail -n 1`
     if [ -z "$result" ]; then
         # not found, use default
         result="$3"
@@ -88,7 +89,7 @@ start(){
             CDB_DAEMON_RUNNING=1
         fi
     fi
-    RESPONSE=`/usr/bin/mysqladmin --socket="$socketfile" --user=UNKNOWN_MYSQL_USER ping 2>&1`
+    RESPONSE=`$MYSQL_BIN_DIR/mysqladmin --socket="$socketfile" --user=UNKNOWN_MYSQL_USER ping 2>&1`
     if [ $CDB_DAEMON_RUNNING = 1 ] && [ $? = 0 ]; then
         # already running, do nothing
         action $"Starting $CDB_DAEMON_NAME: " /bin/true
@@ -119,7 +120,7 @@ start(){
             chmod 0755 "$datadir"
             [ -x /sbin/restorecon ] && /sbin/restorecon "$datadir"
             # Now create the database
-            action $"Initializing CDB MySQL database: " /usr/bin/mysql_install_db --datadir="$datadir" --user=$CDB_USER
+            action $"Initializing CDB MySQL database: " $MYSQL_BIN_DIR/mysql_install_db --datadir="$datadir" --user=$CDB_USER
             ret=$?
             chown -R $CDB_USER "$datadir"
             if [ $ret -ne 0 ] ; then
@@ -145,9 +146,10 @@ start(){
 	    #cmd="$CDB_DAEMON --defaults-file=$CDB_DAEMON_CONFIG_FILE --datadir=$datadir --socket=$socketfile --pid-file=$mypidfile --basedir=/usr --user=$CDB_USER" 
         #echo $cmd
 
+        basedir=`dirname $MYSQL_BIN_DIR`
 	    $CDB_DAEMON --defaults-file=$CDB_DAEMON_CONFIG_FILE \
             --datadir="$datadir" --socket="$socketfile" \
-            --pid-file="$mypidfile" --basedir=/usr --user=$CDB_USER \
+            --pid-file="$mypidfile" --basedir=$basedir --user=$CDB_USER \
             > /dev/null 2>&1 &
 	    safe_pid=$!
 	    # Spin for a maximum of N seconds waiting for the server to come up;
@@ -157,7 +159,7 @@ start(){
 	    ret=0
 	    TIMEOUT="$START_TIMEOUT"
 	    while [ $TIMEOUT -gt 0 ]; do
-	        RESPONSE=`/usr/bin/mysqladmin --socket="$socketfile" --user=UNKNOWN_MYSQL_USER ping 2>&1`
+	        RESPONSE=`$MYSQL_BIN_DIR/mysqladmin --socket="$socketfile" --user=UNKNOWN_MYSQL_USER ping 2>&1`
 	        mret=$?
 	        if [ $mret -eq 0 ]; then
 		        break
