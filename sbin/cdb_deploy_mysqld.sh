@@ -50,6 +50,7 @@ mkdir -p $CDB_ETC_DIR
 mkdir -p $CDB_LOG_DIR
 
 echo "Checking service configuration file"
+setRootPassword=false
 if [ ! -f $CDB_MYSQLD_CONFIG_FILE ]; then
     echo "Generating service config file"
     cmd="cat $CDB_ROOT_DIR/etc/mysql.conf.template \
@@ -58,12 +59,26 @@ if [ ! -f $CDB_MYSQLD_CONFIG_FILE ]; then
         | sed 's?CDB_DB_PORT?$CDB_DB_PORT?g' \
         > $CDB_MYSQLD_CONFIG_FILE"
     eval $cmd || exit 1
+    setRootPassword=true
 else
     echo "Service config file exists"
 fi
 
 echo "Restarting mysqld service"
 $CDB_MYSQLD_INIT_CMD restart 
+
+if [ $setRootPassword = "true" ]; then
+    if [ -z "$CDB_DB_ADMIN_PASSWORD" ]; then
+        sttyOrig=`stty -g`
+        stty -echo
+        read -p "Enter DB root password: " CDB_DB_ADMIN_PASSWORD
+        stty $sttyOrig
+        echo
+    fi
+    echo "Setting DB root password"
+    cmd="echo \"SET PASSWORD FOR 'root'@'$CDB_DB_HOST' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST" 
+    eval $cmd || exit 1
+fi
 
 echo "Done deploying mysqld service"
 

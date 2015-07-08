@@ -100,6 +100,9 @@ if [ -d $CDB_SUPPORT_DIR/mysql ]; then
         "
         eval $cmd || exit 1
         $CDB_ROOT_DIR/etc/init.d/cdb-mysqld restart
+        echo "Setting DB root password"
+        cmd="echo \"SET PASSWORD FOR 'root'@'$CDB_DB_HOST' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST"
+        eval $cmd || exit 1
     fi
 fi
 
