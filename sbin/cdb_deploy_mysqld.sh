@@ -76,7 +76,7 @@ if [ $setRootPassword = "true" ]; then
         echo
     fi
     echo "Setting DB root password"
-    cmd="echo \"SET PASSWORD FOR 'root'@'$CDB_DB_HOST' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST" 
+    cmd="echo \"SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST" 
     eval $cmd || exit 1
 fi
 
