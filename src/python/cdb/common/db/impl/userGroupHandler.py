@@ -19,6 +19,13 @@ class UserGroupHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('User group id %s does not exist.' % (id))
 
+    def findUserGroupByName(self, session, name):
+        try:
+            dbUserGroup = session.query(UserGroup).filter(UserGroup.name==name).one()
+            return dbUserGroup
+        except NoResultFound, ex:
+            raise ObjectNotFound('User group %s does not exist.' % (name))
+
     def getUserGroups(self, session):
         self.logger.debug('Retrieving user group list')
         dbUserGroups = session.query(UserGroup).all()

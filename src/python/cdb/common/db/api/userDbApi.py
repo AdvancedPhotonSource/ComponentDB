@@ -42,6 +42,18 @@ class UserDbApi(CdbDbApi):
         dbUserInfo = self.userInfoHandler.getUserInfoWithPasswordByUsername(session, username)
         return dbUserInfo.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def addUser(self, username, firstName, lastName, middleName, email, description, password, **kwargs):
+        session = kwargs['session']
+        dbUserInfo = self.userInfoHandler.addUser(session, username, firstName, lastName, middleName, email, description, password)
+        return dbUserInfo.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addUserToGroup(self, username, groupName, **kwargs):
+        session = kwargs['session']
+        dbUserUserGroup = self.userInfoHandler.addUserToGroup(session, username, groupName)
+        return dbUserUserGroup.getCdbObject()
+
 #######################################################################
 # Testing.
 if __name__ == '__main__':
@@ -62,3 +74,4 @@ if __name__ == '__main__':
     for userGroup in userGroups:
         print userGroup.getDictRep()
 
+    print api.addUserToGroup('sv', 'CDB_ADMIN')
