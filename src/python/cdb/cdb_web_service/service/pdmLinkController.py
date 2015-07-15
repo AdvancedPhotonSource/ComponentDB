@@ -17,6 +17,16 @@ class PdmLinkController(CdbController):
 
     @cherrypy.expose
     @CdbController.execute
+    def getDrawings(self, drawingNamePattern, **kwargs):
+        return self.listToJson(self.pdmLinkControllerImpl.getDrawings(drawingNamePattern))
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getDrawingSearchResults(self, drawingNamePattern, **kwargs):
+        return self.listToJson(self.pdmLinkControllerImpl.getDrawingSearchResults(drawingNamePattern))
+
+    @cherrypy.expose
+    @CdbController.execute
     def getDrawingThumbnail(self, ufid, **kwargs):
         return self.pdmLinkControllerImpl.getDrawingThumbnail(ufid).getFullJsonRep()
 

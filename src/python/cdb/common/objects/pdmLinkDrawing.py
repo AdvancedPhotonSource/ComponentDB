@@ -5,8 +5,8 @@ from cdb.common.exceptions.invalidArgument import InvalidArgument
 
 class PdmLinkDrawing(CdbObject):
 
-    DEFAULT_KEY_LIST = ['name', 'windchillUrl', 'RESP_ENG', 'DRAFTER', 'WBS_DESCRIPTION', 'TITLE1',
-                        'TITLE2', 'TITLE3', 'TITLE4', 'TITLE5', 'revisionList']
+    DEFAULT_KEY_LIST = ['name', 'windchillUrl', 'respEng', 'drafter', 'wbsDescription', 'title1',
+                        'title2', 'title3', 'title4', 'title5', 'revisionList']
     VALID_EXTENSION_LIST = [ 'drw', 'prt', 'asm' ]
 
     def __init__(self, dict):
