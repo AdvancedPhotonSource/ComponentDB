@@ -273,6 +273,7 @@ class PdmLink:
         :return: PDMLink Drawing
         :raises ExternalServiceError: Could occur during the PDM Link search
         :raises ObjectNotFound: The requested drawing was not found
+        :raises InvalidArgument: The drawing name is not complete
         """
         def findNameInList(name):
             for drawing in drawingList:
@@ -329,6 +330,7 @@ class PdmLink:
         :return: CDBObject of type PdmLinkDrawing
         :raises ExternalServiceError: Could occur during the PDM Link search
         :raises ObjectNotFound: The requested drawing was not found
+        :raises InvalidArgument: The drawing name is not complete
         """
         pdmLinkDrawingObject = self.findPdmLinkDrawing(drawingName)
         return self.__getDrawing(pdmLinkDrawingObject)
