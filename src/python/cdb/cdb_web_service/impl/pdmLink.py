@@ -277,8 +277,8 @@ class PdmLink:
         """
         def findNameInList(name):
             for drawing in drawingList:
-                drawingName = drawing.properties[0].value
-                if drawingName.lower() == drawingName.lower():
+                curDrawingName = drawing.properties[0].value
+                if curDrawingName.lower() == drawingName.lower():
                     return drawing
             return None
 
@@ -448,7 +448,9 @@ if __name__ == '__main__':
     getDrawingFromPDMLink('D14100201-113160.asm')
     # Get drawings that aren't found unless extension is removed
     getDrawingFromPDMLink('pole_top_bolt_on.drw')
+    getDrawingFromPDMLink('pole_top_bolt_on.prt')
 
+    raise Exception
     # Search for drawings
     # Use wild cards: ?, *
     searchDrawingFromPDMLink('U221020205-12212?.DRW')
