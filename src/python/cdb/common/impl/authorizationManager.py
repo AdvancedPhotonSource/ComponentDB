@@ -40,6 +40,7 @@ class AuthorizationManager(CdbObjectManager):
         self.principalRetriever = None
         self.principalAuthenticatorList = []
         self.objectCache = ObjectCache(AuthorizationManager.DEFAULT_CACHE_SIZE, AuthorizationManager.DEFAULT_CACHE_OBJECT_LIFETIME)
+        self.adminGroupName = None
         self.configure()
 
     def createObjectInstance(self, moduleName, className, constructor):
@@ -58,10 +59,14 @@ class AuthorizationManager(CdbObjectManager):
     def cryptPasswordWithPbkdf2(cls, cleartext):
         return CryptUtility.cryptPasswordWithPbkdf2(cleartext)
 
+    def getAdminGroupName(self):
+        return self.adminGroupName 
+
     def configure(self):
         configItems = self.configurationManager.getConfigItems(AuthorizationManager.CONFIG_SECTION_NAME)
         self.logger.debug('Got config items: %s' % configItems)
         adminGroupName = self.configurationManager.getConfigOption(AuthorizationManager.CONFIG_SECTION_NAME, AuthorizationManager.ADMIN_GROUP_NAME_KEY)
+        self.adminGroupName = adminGroupName 
 
         # Create principal retriever
         principalRetriever = self.configurationManager.getConfigOption(AuthorizationManager.CONFIG_SECTION_NAME, AuthorizationManager.PRINCIPAL_RETRIEVER_KEY)

@@ -91,3 +91,11 @@ class DesignHandler(CdbDbEntityHandler):
         self.logger.debug('Inserted design id %s' % dbDesign.id)
         return dbDesign
 
+    def addDesignProperty(self, session, dbDesign, dbPropertyValue):
+        dbDesignProperty = DesignProperty()
+        dbDesignProperty.design = dbDesign
+        dbDesignProperty.propertyValue = dbPropertyValue
+        session.add(dbDesignProperty)
+        session.flush()
+        return dbDesignProperty
+

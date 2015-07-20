@@ -10,6 +10,10 @@ class CdbDbApi:
     def __init__(self):
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
         self.dbManager = DbManager.getInstance()
+        self.adminGroupName = None
+
+    def setAdminGroupName(self, adminGroupName):
+        self.adminGroupName = adminGroupName
 
     # Decorator for all DB queries
     @classmethod

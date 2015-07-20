@@ -8,6 +8,7 @@ from cdb.common.db.impl.componentHandler import ComponentHandler
 from cdb.common.db.impl.locationHandler import LocationHandler
 from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 from cdb.common.db.impl.userGroupHandler import UserGroupHandler
+from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
 
 class DesignDbApi(CdbDbApi):
 
@@ -16,6 +17,7 @@ class DesignDbApi(CdbDbApi):
         self.designHandler = DesignHandler()
         self.designElementHandler = DesignElementHandler()
         self.componentHandler = ComponentHandler()
+        self.propertyValueHandler = PropertyValueHandler()
         self.locationHandler = LocationHandler()
         self.userInfoHandler = UserInfoHandler()
         self.userGroupHandler = UserGroupHandler()
@@ -97,6 +99,14 @@ class DesignDbApi(CdbDbApi):
         # Done
         return dbDesign.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def addDesignPropertyByTypeId(self, designId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
+        session = kwargs['session']
+        dbDesign = self.designHandler.findDesignById(session, designId)
+        dbPropertyValue = self.propertyValueHandler.createPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        dbDesignProperty = self.designHandler.addDesignProperty(session, dbDesign, dbPropertyValue)
+        return dbDesignProperty.getCdbObject()
+
     @CdbDbApi.executeQuery
     def getDesignElements(self, designId, **kwargs):
         session = kwargs['session']
@@ -115,6 +125,14 @@ class DesignDbApi(CdbDbApi):
         dbDesignElementProperty = self.designElementHandler.addDesignElementProperty(session, designElementId, propertyTypeName, tag, value, units, description, enteredByUserId)
         return dbDesignElementProperty.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def addDesignElementPropertyByTypeId(self, designElementId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
+        session = kwargs['session']
+        dbDesignElement = self.designElementHandler.findDesignElementById(session, designElementId)
+        dbPropertyValue = self.propertyValueHandler.createPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        dbDesignElementProperty = self.designElementHandler.addDesignElementProperty(session, dbDesignElement, dbPropertyValue)
+        return dbDesignElementProperty.getCdbObject()
+
 #######################################################################
 # Testing.
 if __name__ == '__main__':
@@ -131,9 +149,9 @@ if __name__ == '__main__':
         print "JSON"
         print design.getJsonRep()
 
-    print 'Getting design'
-    design = api.getDesignById(1)
-    print design.getDictRep()
+    #print 'Getting design'
+    #design = api.getDesignById(1)
+    #print design.getDictRep()
 
     #print 'Adding design'
     #design = api.addDesign(name='ab5', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Design')
@@ -158,43 +176,45 @@ if __name__ == '__main__':
     #print "Added design element property"
     #print designElementProperty
 
-    print 'Loading design'
-    designElementList = [
-        { 'name' : 'e1',
-          'componentId' : 3,
-          'locationId' : 3,
-          'description' : 'element 1',
-          'sortOrder' : 1.0,
-          'propertyList' : [
-              {
-                  'propertyTypeName' : 'alphax',
-                  'value' : '1.123',
-              },
-              {
-                  'propertyTypeName' : 'alphay',
-                  'value' : '3.234',
-              },
-          ]
-        },
-        { 'name' : 'e2',
-          'componentId' : 4,
-          'locationId' : 4,
-          'description' : 'element 2',
-          'sortOrder' : 2.0,
-          'propertyList' : [
-              {
-                  'propertyTypeName' : 'alphax',
-                  'value' : '7.234',
-              },
-              {
-                  'propertyTypeName' : 'alphay',
-                  'value' : '8.235',
-              },
-          ]
-        },
-    ]
-    design = api.loadDesign(name='sv2', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Loaded Design', designElementList=designElementList)
-    print "Added Design"
-    print design
+    #print 'Loading design'
+    #designElementList = [
+    #    { 'name' : 'e1',
+    #      'componentId' : 3,
+    #      'locationId' : 3,
+    #      'description' : 'element 1',
+    #      'sortOrder' : 1.0,
+    #      'propertyList' : [
+    #          {
+    #              'propertyTypeName' : 'alphax',
+    #              'value' : '1.123',
+    #          },
+    #          {
+    #              'propertyTypeName' : 'alphay',
+    #              'value' : '3.234',
+    #          },
+    #      ]
+    #    },
+    #    { 'name' : 'e2',
+    #      'componentId' : 4,
+    #      'locationId' : 4,
+    #      'description' : 'element 2',
+    #      'sortOrder' : 2.0,
+    #      'propertyList' : [
+    #          {
+    #              'propertyTypeName' : 'alphax',
+    #              'value' : '7.234',
+    #          },
+    #          {
+    #              'propertyTypeName' : 'alphay',
+    #              'value' : '8.235',
+    #          },
+    #      ]
+    #    },
+    #]
+    #design = api.loadDesign(name='sv2', createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Loaded Design', designElementList=designElementList)
+    #print "Added Design"
+    #print design
 
+    print api.addDesignPropertyByTypeId(designId=2, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+    print api.addDesignElementPropertyByTypeId(designElementId=219, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
 

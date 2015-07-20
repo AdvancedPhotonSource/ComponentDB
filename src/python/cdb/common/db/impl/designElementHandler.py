@@ -121,6 +121,13 @@ class DesignElementHandler(CdbDbEntityHandler):
         session.flush()
         return dbDesignElementProperty
 
+    def addDesignElementProperty(self, session, dbDesignElement, dbPropertyValue):
+        dbDesignElementProperty = DesignElementProperty()
+        dbDesignElementProperty.designElement = dbDesignElement
+        dbDesignElementProperty.propertyValue = dbPropertyValue
+        session.add(dbDesignElementProperty)
+        session.flush()
+        return dbDesignElementProperty
 
 
 

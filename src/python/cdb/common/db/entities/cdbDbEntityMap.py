@@ -4,6 +4,9 @@ from cdb.common.db.entities.allowedPropertyValue import AllowedPropertyValue
 from cdb.common.db.entities.componentTypeCategory import ComponentTypeCategory
 from cdb.common.db.entities.componentType import ComponentType
 from cdb.common.db.entities.component import Component
+from cdb.common.db.entities.componentProperty import ComponentProperty
+from cdb.common.db.entities.componentInstance import ComponentInstance
+from cdb.common.db.entities.componentInstanceProperty import ComponentInstanceProperty
 from cdb.common.db.entities.design import Design
 from cdb.common.db.entities.designProperty import DesignProperty
 from cdb.common.db.entities.designElement import DesignElement
@@ -23,7 +26,7 @@ from cdb.common.db.entities.userUserGroup import UserUserGroup
 # Map db table/db entity class
 CDB_DB_ENTITY_MAP = {
     'allowed_property_value' : (AllowedPropertyValue, {
-        'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : False }, 
+        'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : True }, 
     }),
     'component_type_category' : (ComponentTypeCategory, {}),
     'component_type' : (ComponentType, {
@@ -33,11 +36,24 @@ CDB_DB_ENTITY_MAP = {
         'componentType' : { 'parentEntity' : ComponentType, 'lazy' : False }, 
         'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False }, 
     }),
+    'component_instance' : (ComponentInstance, {
+        'component' : { 'parentEntity' : Component, 'lazy' : False }, 
+        'location' : { 'parentEntity' : Location, 'lazy' : False }, 
+        'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False }, 
+    }),
+    'component_instance_property' : (ComponentInstanceProperty, {
+        'componentInstance' : { 'parentEntity' : ComponentInstance, 'lazy' : True}, 
+        'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
+    }),
+    'component_property' : (ComponentProperty, {
+        'component' : { 'parentEntity' : Component, 'lazy' : True }, 
+        'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
+    }),
     'design' : (Design, {
         'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False }, 
     }),
     'design_property' : (DesignProperty, {
-        'design' : { 'parentEntity' : Design, 'lazy' : False }, 
+        'design' : { 'parentEntity' : Design, 'lazy' : True }, 
         'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
     }),
     'design_element' : (DesignElement, {

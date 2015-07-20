@@ -5,6 +5,7 @@ from cdb.common.db.entities.entityInfo import EntityInfo
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from userInfoHandler import UserInfoHandler
 from userGroupHandler import UserGroupHandler
+from cdb.common.exceptions.authorizationError import AuthorizationError
 
 
 class EntityInfoHandler(CdbDbEntityHandler):
@@ -13,6 +14,31 @@ class EntityInfoHandler(CdbDbEntityHandler):
         CdbDbEntityHandler.__init__(self)
         self.userInfoHandler = UserInfoHandler()
         self.userGroupHandler = UserGroupHandler()
+
+    @classmethod
+    def checkEntityIsWriteable(cls, dbEntityInfo, dbUserInfo, adminGroupName=None):
+        if dbUserInfo is None:
+            raise AuthorizationError('User info has not been provided.');
+        if adminGroupName is not None:
+            for dbUserGroup in dbUserInfo.userGroupList:
+                if dbUserGroup.name == adminGroupName:
+                    # User belongs to admin group which can always edit entity
+                    return
+
+        if dbEntityInfo is None:
+            raise AuthorizationError('Entity info has not been provided.');
+
+        if dbEntityInfo.owner_user_id == dbUserInfo.id:
+            # User owns this entity
+            return
+
+        if dbEntityInfo.is_group_writeable:
+            # Entity is group writeable
+            for dbUserGroup in dbUserInfo.userGroupList:
+                if dbEntityInfo.owner_user_group_id == dbUserGroup.id:
+                    # User belongs to group which can edit entity
+                    return
+        raise AuthorizationError('User %s is not authorized to modify this entity.' % (dbUserInfo.username));
 
 
     def createEntityInfo(self, session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable):

@@ -8,6 +8,7 @@ from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.db.entities.componentType import ComponentType
 from cdb.common.db.entities.component import Component
+from cdb.common.db.entities.componentProperty import ComponentProperty
 from cdb.common.db.entities.entityInfo import EntityInfo
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from componentTypeHandler import ComponentTypeHandler
