@@ -47,6 +47,15 @@ class PDMLinkRouteDescriptor:
                 'method': ['GET']
             },
 
+            # Complete drawing info using ufid and oid from search result
+            {
+                'name': 'getDrawings',
+                'path': '%s/pdmLink/completeDrawings/:(ufid)/:(oid)' % contextRoot,
+                'controller': pdmLinkController,
+                'action': 'completeDrawingInformation',
+                'method': ['GET']
+            },
+
             # Get PdmLink drawing thumbnail 
             {
                 'name': 'getDrawingThumbnail',

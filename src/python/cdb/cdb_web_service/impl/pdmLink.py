@@ -140,21 +140,30 @@ class PdmLink:
         return self.findPdmLinkDrawings(newName, startResults=0, maxResults=maxResults)
 
     @SslUtility.useUnverifiedSslContext
-    def __getDrawing(self, pdmLinkDrawingObject):
+    def __getDrawing(self, pdmLinkDrawingObject, ufid=None, oid=None):
         """
         Get complete drawing object including drawing information and revision information from PDMLink and ICMS
 
         :param pdmLinkDrawingObject: (PDMLink Drawing Object) One drawing result from PDMLink
         :return: CDBObject of type PdmLinkDrawing
         """
-        if pdmLinkDrawingObject.ufid is None:
+        if pdmLinkDrawingObject is not None:
+            if (pdmLinkDrawingObject.ufid is None) and (ufid is None):
+                return None
+        if pdmLinkDrawingObject is None and ufid is None:
             return None
-        self.logger.debug('Retrieving iteration history for UFID: %s' % pdmLinkDrawingObject.ufid)
+
+        if ufid is None:
+            ufid = pdmLinkDrawingObject.ufid
+
+        self.logger.debug('Retrieving iteration history for UFID: %s' % ufid)
         iterationHistory = self.windchillWs.service.GetIterationHistory(
-            [pdmLinkDrawingObject.ufid],
+            [ufid],
             ['versionInfo.identifier.versionId',
             'iterationInfo.identifier.iterationId',
-            'state.state'])
+            'state.state',
+            'thePersistInfo.updateStamp'])
+
         revisionList = []
         for iteration in iterationHistory:
             ufid = iteration.ufid
@@ -162,23 +171,27 @@ class PdmLink:
             versionId = propertyMap.get('versionInfo.identifier.versionId')
             iterationId = propertyMap.get('iterationInfo.identifier.iterationId')
             state = propertyMap.get('state.state')
+            dateUpdated = propertyMap.get('thePersistInfo.updateStamp')
             revisionList.append(PdmLinkDrawingRevision({
                 'version' : versionId,
                 'iteration' : iterationId,
                 'state' : state,
-                'ufid' : ufid
+                'ufid' : ufid,
+                'dateUpdated' : dateUpdated
             }))
-        propertyMap = self.getPdmLinkObjectPropertyMap(pdmLinkDrawingObject)
-        name = propertyMap.get('name')
-        oid = propertyMap.get('oid')
+
+        if(oid is None):
+            propertyMap = self.getPdmLinkObjectPropertyMap(pdmLinkDrawingObject)
+            oid = propertyMap.get('oid')
+
+        # retrieve the details about a drawing
+        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5", "name"]
+        drawingDetailsRaw = self.windchillWs.service.Fetch([ufid], reqDetails)
+        drawingDetails = self.getPdmLinkObjectPropertyMap(drawingDetailsRaw[0])
+        name = drawingDetails.get('name')
 
         # retrieve the revisions from ICMS
         icmsRevisions = self.getIcmsRevisions(name)
-
-        # retrieve the details about a drawing
-        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5"]
-        drawingDetailsRaw = self.windchillWs.service.Fetch([ufid], reqDetails)
-        drawingDetails = self.getPdmLinkObjectPropertyMap(drawingDetailsRaw[0])
 
         # Create a windchill url for the drawing
         response = self.windchillWebparts.service.GetActionUrl('object.view')
@@ -371,8 +384,20 @@ class PdmLink:
 
         searchResultsMap = []
         for pdmLinkDrawing in pdmLinkDrawingObjectList:
-            searchResultsMap.append(PdmLinkSearchResult(self.getPdmLinkObjectPropertyMap(pdmLinkDrawing)))
+            propertyMap = PdmLinkSearchResult(self.getPdmLinkObjectPropertyMap(pdmLinkDrawing))
+            propertyMap['ufid'] = pdmLinkDrawing.ufid
+            searchResultsMap.append(propertyMap)
         return searchResultsMap
+
+    def completeDrawingInformation(self, ufid, oid):
+        """
+        Completes the drawing details by providing only ufid and oid of the drawing that is a result of the search.
+
+        :param ufid: (str) drawing search result ufid
+        :param odi: (str) drawing search result oid
+        :return: CDBObject of type PdmLinkDrawing
+        """
+        return self.__getDrawing(None,ufid, oid)
 
     @SslUtility.useUnverifiedSslContext
     def getDrawingImage(self, ufid):
@@ -435,6 +460,7 @@ if __name__ == '__main__':
         for result in results:
             print result.getDisplayString(PdmLinkSearchResult.DEFAULT_KEY_LIST)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+        return results
 
     def getThumbnailImage(drawingName):
         print 'Get Thumbnail and Image for: ', drawingName
@@ -443,6 +469,11 @@ if __name__ == '__main__':
         print pdmLink.getDrawingThumbnail(drawing['revisionList'][1]['ufid']).getDisplayString(Image.DEFAULT_KEY_LIST)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
+    # Complete results of a search result
+    results = searchDrawingFromPDMLink('pole Top')
+    oid = results[0]['oid']
+    ufid = results[0]['ufid']
+    print pdmLink.completeDrawingInformation(ufid, oid)
 
     # Getting a drawing from PDMLink
     getDrawingFromPDMLink('D14100201-113160.asm')
@@ -450,7 +481,6 @@ if __name__ == '__main__':
     getDrawingFromPDMLink('pole_top_bolt_on.drw')
     getDrawingFromPDMLink('pole_top_bolt_on.prt')
 
-    raise Exception
     # Search for drawings
     # Use wild cards: ?, *
     searchDrawingFromPDMLink('U221020205-12212?.DRW')

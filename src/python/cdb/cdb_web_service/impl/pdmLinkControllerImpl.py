@@ -24,6 +24,9 @@ class PdmLinkControllerImpl(CdbObjectManager):
     def getDrawingSearchResults(self, drawingNamePattern):
         return self.pdmLink.getDrawingSearchResults(drawingNamePattern)
 
+    def completeDrawingInformation(self, ufid, oid):
+        return self.pdmLink.completeDrawingInformation(ufid, oid)
+
     def getDrawingThumbnail(self, ufid):
         return self.pdmLink.getDrawingThumbnail(ufid)
 

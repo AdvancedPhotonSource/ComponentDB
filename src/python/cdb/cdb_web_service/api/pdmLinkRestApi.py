@@ -25,11 +25,6 @@ class PdmLinkRestApi(CdbRestApi):
 
     @CdbRestApi.execute
     def getDrawing(self, name):
-        """
-
-        :param name:
-        :return:
-        """
         if name is None:
             raise InvalidRequest('Drawing name must be provided.')
         url = '%s/pdmLink/drawings/%s' % (self.getContextRoot(), name)
@@ -53,6 +48,16 @@ class PdmLinkRestApi(CdbRestApi):
         url = '%s/pdmLink/search/%s' % (self.getContextRoot(), drawingNamePattern)
         responseData = self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, PdmLinkSearchResult)
+
+    @CdbRestApi.execute
+    def completeDrawingInformation(self, ufid, oid):
+        if ufid is None:
+            raise InvalidRequest('A drawing ufid must be provided.')
+        if oid is None:
+            raise InvalidRequest('A drawing oid must be provided.')
+        url = '%s/pdmLink/completeDrawings/%s/%s' % (self.getContextRoot(), ufid, oid)
+        responseData = self.sendRequest(url=url, method='GET')
+        return PdmLinkDrawing(responseData)
 
     @CdbRestApi.execute
     def getDrawingThumbnail(self, ufid):
