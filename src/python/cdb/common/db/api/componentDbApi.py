@@ -5,6 +5,7 @@ from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.componentHandler import ComponentHandler
 from cdb.common.db.impl.componentInstanceHandler import ComponentInstanceHandler
 from cdb.common.db.impl.componentPropertyHandler import ComponentPropertyHandler
+from cdb.common.db.impl.componentInstancePropertyHandler import ComponentInstancePropertyHandler
 from cdb.common.db.impl.componentTypeHandler import ComponentTypeHandler
 from cdb.common.db.impl.componentTypeCategoryHandler import ComponentTypeCategoryHandler
 from cdb.common.db.impl.propertyTypeHandler import PropertyTypeHandler
@@ -23,6 +24,7 @@ class ComponentDbApi(CdbDbApi):
         self.propertyValueHandler = PropertyValueHandler()
         self.componentHandler = ComponentHandler()
         self.componentPropertyHandler = ComponentPropertyHandler()
+        self.componentInstancePropertyHandler = ComponentInstancePropertyHandler()
         self.userInfoHandler = UserInfoHandler()
         self.entityInfoHandler = EntityInfoHandler()
 
@@ -66,8 +68,8 @@ class ComponentDbApi(CdbDbApi):
     def addComponentPropertyByTypeId(self, componentId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
         session = kwargs['session']
         dbComponent = self.componentHandler.findComponentById(session, componentId)
-        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
         # Make sure user can update component
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
         self.entityInfoHandler.checkEntityIsWriteable(dbComponent.entityInfo, dbUserInfo, self.adminGroupName)
 
         dbPropertyValue = self.propertyValueHandler.createPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
@@ -79,17 +81,37 @@ class ComponentDbApi(CdbDbApi):
         session = kwargs['session']
         dbComponent = self.componentHandler.findComponentById(session, componentId)
         dbComponentProperty = self.componentPropertyHandler.findComponentProperty(session, componentId, propertyValueId)
-        dbPropertyValue = self.propertyValueHandler.updatedPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
-        dbComponentProperty = self.componentPropertyHandler.addComponentProperty(session, dbComponent, dbPropertyValue)
-        return dbComponentProperty.getCdbObject()
+        # Make sure user can update component
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbComponent.entityInfo, dbUserInfo, self.adminGroupName)
+
+        dbPropertyValue = self.propertyValueHandler.updatePropertyValueById(session, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        return dbPropertyValue.getCdbObject()
 
     @CdbDbApi.executeTransaction
     def addComponentInstancePropertyByTypeId(self, componentInstanceId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
         session = kwargs['session']
         dbComponentInstance = self.componentInstanceHandler.findComponentInstanceById(session, componentInstanceId)
+        # Make sure user can update component instance
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbComponentInstance.entityInfo, dbUserInfo, self.adminGroupName)
+
         dbPropertyValue = self.propertyValueHandler.createPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
         dbComponentInstanceProperty = self.componentInstanceHandler.addComponentInstanceProperty(session, dbComponentInstance, dbPropertyValue)
         return dbComponentInstanceProperty.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def updateComponentInstancePropertyByValueId(self, componentInstanceId, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
+        session = kwargs['session']
+        dbComponentInstance = self.componentInstanceHandler.findComponentInstanceById(session, componentInstanceId)
+        dbComponentInstanceProperty = self.componentInstancePropertyHandler.findComponentInstanceProperty(session, componentInstanceId, propertyValueId)
+
+        # Make sure user can update component instance
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbComponentInstance.entityInfo, dbUserInfo, self.adminGroupName)
+
+        dbPropertyValue = self.propertyValueHandler.updatePropertyValueById(session, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        return dbPropertyValue.getCdbObject()
 
 #######################################################################
 # Testing.
@@ -127,5 +149,15 @@ if __name__ == '__main__':
     #component = api.getComponentById(10)
     #print component.getDictRep()
     api.setAdminGroupName('CDB_ADMIN')
+    print 'ADD COMPONENT PROPERTY'
     print api.addComponentPropertyByTypeId(componentId=10, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
-    #print api.addComponentInstancePropertyByTypeId(componentInstanceId=50, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
+    print 'UPDATE COMPONENT PROPERTY'
+    print api.updateComponentPropertyByValueId(componentId=207, propertyValueId=212, tag='mytag', value='NIM', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
+    print 'ADD COMPONENT INSTANCE PROPERTY'
+    print api.addComponentInstancePropertyByTypeId(componentInstanceId=50, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
+    print 'UPDATE COMPONENT INSTANCE PROPERTY'
+    print api.updateComponentInstancePropertyByValueId(componentInstanceId=50, propertyValueId=344, tag='mytag', value='B', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+

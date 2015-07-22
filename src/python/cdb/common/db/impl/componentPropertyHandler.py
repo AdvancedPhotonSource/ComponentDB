@@ -14,7 +14,7 @@ class ComponentPropertyHandler(CdbDbEntityHandler):
 
     def findComponentProperty(self, session, componentId, propertyValueId):
         try:
-            dbComponentProperty = session.query(ComponentProperty).filter(and_(ComponentProperty.component_id==componentId, ComponentProperty.property_value_id)).one()
+            dbComponentProperty = session.query(ComponentProperty).filter(and_(ComponentProperty.component_id==componentId, ComponentProperty.property_value_id==propertyValueId)).one()
             return dbComponentProperty
         except NoResultFound, ex:
             raise ObjectNotFound('Property for component id %s with value id %s does not exist.' % (componentId, propertyValueId))
@@ -26,4 +26,5 @@ class ComponentPropertyHandler(CdbDbEntityHandler):
         session.add(dbComponentProperty)
         session.flush()
         return dbComponentProperty
+
 

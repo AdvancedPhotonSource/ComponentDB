@@ -61,7 +61,7 @@ class PropertyValueHandler(CdbDbEntityHandler):
         dbPropertyValue = self.findPropertyValueById(session, id)
         enteredByDbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
         enteredOnDateTime = datetime.datetime.now()
-        dbPropertyType = self.propertyTypeHandler.getPropertyTypeById(session, ddbPropertyValue.property_type_id)
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeById(session, dbPropertyValue.property_type_id)
         self.propertyTypeHandler.checkPropertyValueIsAllowed(value, dbPropertyType.allowedPropertyValueList)
 
         dbPropertyValue.entered_by_user_id = enteredByUserId
@@ -78,6 +78,8 @@ class PropertyValueHandler(CdbDbEntityHandler):
             dbPropertyValue.is_dynamic = isDynamic
         if isUserWriteable is not None:
             dbPropertyValue.is_user_writeable = isUserWriteable 
+        session.add(dbPropertyValue)
+        session.flush()
         return dbPropertyValue
 
     def createUnverifiedPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId):

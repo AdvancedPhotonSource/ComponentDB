@@ -3,12 +3,15 @@
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.designHandler import DesignHandler
+from cdb.common.db.impl.designPropertyHandler import DesignPropertyHandler
 from cdb.common.db.impl.designElementHandler import DesignElementHandler
+from cdb.common.db.impl.designElementPropertyHandler import DesignElementPropertyHandler
 from cdb.common.db.impl.componentHandler import ComponentHandler
 from cdb.common.db.impl.locationHandler import LocationHandler
 from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 from cdb.common.db.impl.userGroupHandler import UserGroupHandler
 from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
+from cdb.common.db.impl.entityInfoHandler import EntityInfoHandler
 
 class DesignDbApi(CdbDbApi):
 
@@ -21,6 +24,9 @@ class DesignDbApi(CdbDbApi):
         self.locationHandler = LocationHandler()
         self.userInfoHandler = UserInfoHandler()
         self.userGroupHandler = UserGroupHandler()
+        self.designPropertyHandler = DesignPropertyHandler()
+        self.designElementPropertyHandler = DesignElementPropertyHandler()
+        self.entityInfoHandler = EntityInfoHandler()
 
     @CdbDbApi.executeQuery
     def getDesigns(self, **kwargs):
@@ -126,28 +132,69 @@ class DesignDbApi(CdbDbApi):
         return dbDesignElementProperty.getCdbObject()
 
     @CdbDbApi.executeTransaction
+    def addDesignPropertyByTypeId(self, designId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
+        session = kwargs['session']
+        dbDesign = self.designHandler.findDesignById(session, designId)
+        # Make sure user can update design
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbDesign.entityInfo, dbUserInfo, self.adminGroupName)
+
+        dbPropertyValue = self.propertyValueHandler.createPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        dbDesignProperty = self.designPropertyHandler.addDesignProperty(session, dbDesign, dbPropertyValue)
+        return dbDesignProperty.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def updateDesignPropertyByValueId(self, designId, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
+        session = kwargs['session']
+        dbDesign = self.designHandler.findDesignById(session, designId)
+        dbDesignProperty = self.designPropertyHandler.findDesignProperty(session, designId, propertyValueId)
+        # Make sure user can update design
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbDesign.entityInfo, dbUserInfo, self.adminGroupName)
+
+        dbPropertyValue = self.propertyValueHandler.updatePropertyValueById(session, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        return dbPropertyValue.getCdbObject()
+
+    @CdbDbApi.executeTransaction
     def addDesignElementPropertyByTypeId(self, designElementId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
         session = kwargs['session']
         dbDesignElement = self.designElementHandler.findDesignElementById(session, designElementId)
+        # Make sure user can update design element 
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbDesignElement.entityInfo, dbUserInfo, self.adminGroupName)
+
         dbPropertyValue = self.propertyValueHandler.createPropertyValueByTypeId(session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
         dbDesignElementProperty = self.designElementHandler.addDesignElementProperty(session, dbDesignElement, dbPropertyValue)
         return dbDesignElementProperty.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def updateDesignElementPropertyByValueId(self, designElementId, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
+        session = kwargs['session']
+        dbDesignElement = self.designElementHandler.findDesignElementById(session, designElementId)
+        dbDesignElementProperty = self.designElementPropertyHandler.findDesignElementProperty(session, designElementId, propertyValueId)
+
+        # Make sure user can update design element
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbDesignElement.entityInfo, dbUserInfo, self.adminGroupName)
+
+        dbPropertyValue = self.propertyValueHandler.updatePropertyValueById(session, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+        return dbPropertyValue.getCdbObject()
 
 #######################################################################
 # Testing.
 if __name__ == '__main__':
     api = DesignDbApi()
-    designs = api.getDesigns()
-    for design in designs:
-        print
-        print "********************"
-        print design
-        print "TEXT"
-        print design.getTextRep()
-        print "DICT"
-        print design.getDictRep()
-        print "JSON"
-        print design.getJsonRep()
+    #designs = api.getDesigns()
+    #for design in designs:
+    #    print
+    #    print "********************"
+    #    print design
+    #    print "TEXT"
+    #    print design.getTextRep()
+    #    print "DICT"
+    #    print design.getDictRep()
+    #    print "JSON"
+    #    print design.getJsonRep()
 
     #print 'Getting design'
     #design = api.getDesignById(1)
@@ -215,6 +262,18 @@ if __name__ == '__main__':
     #print "Added Design"
     #print design
 
+    api.setAdminGroupName('CDB_ADMIN')
+
+    print 'ADD DESIGN PROPERTY'
     print api.addDesignPropertyByTypeId(designId=2, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
+    print 'UPDATE DESIGN PROPERTY'
+    print api.updateDesignPropertyByValueId(designId=2, propertyValueId=323, tag='mytag', value='B', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
+    print 'ADD DESIGN ELEMENT PROPERTY'
     print api.addDesignElementPropertyByTypeId(designElementId=219, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
+    print 'UPDATE DESIGN ELEMENT PROPERTY'
+    print api.updateDesignElementPropertyByValueId(designElementId=219, propertyValueId=359, tag='mytag', value='B', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+
 
