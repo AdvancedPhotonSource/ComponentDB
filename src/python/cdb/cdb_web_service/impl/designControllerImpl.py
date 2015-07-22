@@ -7,6 +7,7 @@
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
 from cdb.common.db.api.designDbApi import DesignDbApi
+from cdb.common.impl.authorizationManager import AuthorizationManager
 
 class DesignControllerImpl(CdbObjectManager):
     """ Design controller implementation class. """
@@ -14,6 +15,9 @@ class DesignControllerImpl(CdbObjectManager):
     def __init__(self):
         CdbObjectManager.__init__(self)
         self.designDbApi = DesignDbApi()
+        adminGroupName = AuthorizationManager.getInstance().getAdminGroupName()
+        self.designDbApi.setAdminGroupName(adminGroupName)
+        self.logger.debug('Using admin group: %s' % adminGroupName)
 
     def getDesigns(self):
         return self.designDbApi.getDesigns()
@@ -29,3 +33,10 @@ class DesignControllerImpl(CdbObjectManager):
 
     def loadDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList):
         return self.designDbApi.loadDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, designElementList)
+
+    def addDesignProperty(self, designId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable):
+        return self.designDbApi.addDesignPropertyByTypeId(designId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+
+    def addDesignElementProperty(self, designElementId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable):
+        return self.designDbApi.addDesignElementPropertyByTypeId(designElementId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+

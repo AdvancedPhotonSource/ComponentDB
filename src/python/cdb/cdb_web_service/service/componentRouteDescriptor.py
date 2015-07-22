@@ -82,6 +82,23 @@ class ComponentRouteDescriptor:
                 'method' : ['POST']
             },
 
+            # Add component property
+            {
+                'name' : 'addComponentProperty',
+                'path' : '%s/components/:(componentId)/propertiesByType/:(propertyTypeId)' % contextRoot,
+                'controller' : componentSessionController,
+                'action' : 'addComponentProperty', 
+                'method' : ['POST']
+            },
+
+            # Add component instance property
+            {
+                'name' : 'addComponentInstanceProperty',
+                'path' : '%s/componentInstances/:(componentInstanceId)/propertiesByType/:(propertyTypeId)' % contextRoot,
+                'controller' : componentSessionController,
+                'action' : 'addComponentInstanceProperty', 
+                'method' : ['POST']
+            },
         ]
        
         return routes

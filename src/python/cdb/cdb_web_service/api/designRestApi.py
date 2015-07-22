@@ -8,6 +8,8 @@ from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.design import Design
+from cdb.common.objects.designProperty import DesignProperty
+from cdb.common.objects.designElementProperty import DesignElementProperty
 
 class DesignRestApi(CdbRestApi):
     
@@ -73,6 +75,62 @@ class DesignRestApi(CdbRestApi):
 
         responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
         return Design(responseData)
+
+    @CdbRestApi.execute
+    def addDesignProperty(self, designId, propertyTypeId, tag, value, units, description, isDynamic, isUserWriteable):
+        if designId is None:
+            raise InvalidRequest('Design id must be provided.')
+        if propertyTypeId is None:
+            raise InvalidRequest('Property type id must be provided.')
+
+        url = '%s/designs/%s/propertiesByType/%s' % (self.getContextRoot(), designId, propertyTypeId)
+
+        parameters = ''
+        if tag:
+            parameters += '&tag=%s' % Encoder.encode(tag)
+        if value:
+            parameters += '&value=%s' % Encoder.encode(value)
+        if units:
+            parameters += '&units=%s' % Encoder.encode(units)
+        if description:
+            parameters += '&description=%s' % Encoder.encode(description)
+        if isDynamic is not None:
+            parameters += '&isDynamic=%s' % isDynamic
+        if isUserWriteable is not None:
+            parameters += '&isUserWriteable=%s' % isUserWriteable
+        if len(parameters):
+            url += '?%s' % parameters[1:]
+
+        responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+        return DesignProperty(responseData)
+
+    @CdbRestApi.execute
+    def addDesignElementProperty(self, designElementId, propertyTypeId, tag, value, units, description, isDynamic, isUserWriteable):
+        if designElementId is None:
+            raise InvalidRequest('Design element id must be provided.')
+        if propertyTypeId is None:
+            raise InvalidRequest('Property type id must be provided.')
+
+        url = '%s/designElements/%s/propertiesByType/%s' % (self.getContextRoot(), designElementId, propertyTypeId)
+
+        parameters = ''
+        if tag:
+            parameters += '&tag=%s' % Encoder.encode(tag)
+        if value:
+            parameters += '&value=%s' % Encoder.encode(value)
+        if units:
+            parameters += '&units=%s' % Encoder.encode(units)
+        if description:
+            parameters += '&description=%s' % Encoder.encode(description)
+        if isDynamic is not None:
+            parameters += '&isDynamic=%s' % isDynamic
+        if isUserWriteable is not None:
+            parameters += '&isUserWriteable=%s' % isUserWriteable
+        if len(parameters):
+            url += '?%s' % parameters[1:]
+
+        responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+        return DesignElementProperty(responseData)
 
 #######################################################################
 # Testing.

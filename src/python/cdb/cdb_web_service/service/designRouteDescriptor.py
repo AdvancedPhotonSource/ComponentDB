@@ -69,6 +69,24 @@ class DesignRouteDescriptor:
                 'method' : ['POST']
             },
 
+            # Add design property
+            {
+                'name' : 'addDesignProperty',
+                'path' : '%s/designs/:(designId)/propertiesByType/:(propertyTypeId)' % contextRoot,
+                'controller' : designSessionController,
+                'action' : 'addDesignProperty',
+                'method' : ['POST']
+            },
+
+            # Add design element property
+            {
+                'name' : 'addDesignElementProperty',
+                'path' : '%s/designElements/:(designElementId)/propertiesByType/:(propertyTypeId)' % contextRoot,
+                'controller' : designSessionController,
+                'action' : 'addDesignElementProperty',
+                'method' : ['POST']
+            },
+
         ]
        
         return routes

@@ -5,6 +5,7 @@ import cherrypy
 from cdb.common.service.cdbSessionController import CdbSessionController
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
+from cdb.common.utility.valueUtility import ValueUtility
 from cdb.cdb_web_service.impl.componentControllerImpl import ComponentControllerImpl
 
 class ComponentSessionController(CdbSessionController):
@@ -38,4 +39,36 @@ class ComponentSessionController(CdbSessionController):
             description = Encoder.decode(description)
 
         return self.componentControllerImpl.addComponent(name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description).getFullJsonRep()
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def addComponentProperty(self, componentId, propertyTypeId, **kwargs):
+        tag = Encoder.decode(kwargs.get('tag'))
+        units = Encoder.decode(kwargs.get('units'))
+        value = Encoder.decode(kwargs.get('value'))
+        description  = Encoder.decode(kwargs.get('description'))
+        isDynamic = ValueUtility.toBoolean(kwargs.get('isDynamic', False))
+        isUserWriteable = ValueUtility.toBoolean(kwargs.get('isUserWriteable', False))
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        return self.componentControllerImpl.addComponentProperty(componentId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable).getFullJsonRep()
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def addComponentInstanceProperty(self, componentInstanceId, propertyTypeId, **kwargs):
+        tag = Encoder.decode(kwargs.get('tag'))
+        units = Encoder.decode(kwargs.get('units'))
+        value = Encoder.decode(kwargs.get('value'))
+        description  = Encoder.decode(kwargs.get('description'))
+        isDynamic = ValueUtility.toBoolean(kwargs.get('isDynamic', False))
+        isUserWriteable = ValueUtility.toBoolean(kwargs.get('isUserWriteable', False))
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        return self.componentControllerImpl.addComponentInstanceProperty(componentInstanceId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable).getFullJsonRep()
 

@@ -8,6 +8,8 @@ from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.component import Component
+from cdb.common.objects.componentProperty import ComponentProperty
+from cdb.common.objects.componentInstanceProperty import ComponentInstanceProperty
 from cdb.common.objects.componentType import ComponentType
 from cdb.common.objects.componentTypeCategory import ComponentTypeCategory
 
@@ -71,11 +73,67 @@ class ComponentRestApi(CdbRestApi):
         responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
         return Component(responseData)
 
+    @CdbRestApi.execute
+    def addComponentProperty(self, componentId, propertyTypeId, tag, value, units, description, isDynamic, isUserWriteable):
+        if componentId is None:
+            raise InvalidRequest('Component id must be provided.')
+        if propertyTypeId is None:
+            raise InvalidRequest('Property type id must be provided.')
+
+        url = '%s/components/%s/propertiesByType/%s' % (self.getContextRoot(), componentId, propertyTypeId)
+
+        parameters = ''
+        if tag:
+            parameters += '&tag=%s' % Encoder.encode(tag)
+        if value:
+            parameters += '&value=%s' % Encoder.encode(value)
+        if units:
+            parameters += '&units=%s' % Encoder.encode(units)
+        if description:
+            parameters += '&description=%s' % Encoder.encode(description)
+        if isDynamic is not None:
+            parameters += '&isDynamic=%s' % isDynamic
+        if isUserWriteable is not None:
+            parameters += '&isUserWriteable=%s' % isUserWriteable
+        if len(parameters):
+            url += '?%s' % parameters[1:]
+
+        responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+        return ComponentProperty(responseData)
+
+    @CdbRestApi.execute
+    def addComponentInstanceProperty(self, componentInstanceId, propertyTypeId, tag, value, units, description, isDynamic, isUserWriteable):
+        if componentInstanceId is None:
+            raise InvalidRequest('Component instance id must be provided.')
+        if propertyTypeId is None:
+            raise InvalidRequest('Property type id must be provided.')
+
+        url = '%s/componentInstances/%s/propertiesByType/%s' % (self.getContextRoot(), componentInstanceId, propertyTypeId)
+
+        parameters = ''
+        if tag:
+            parameters += '&tag=%s' % Encoder.encode(tag)
+        if value:
+            parameters += '&value=%s' % Encoder.encode(value)
+        if units:
+            parameters += '&units=%s' % Encoder.encode(units)
+        if description:
+            parameters += '&description=%s' % Encoder.encode(description)
+        if isDynamic is not None:
+            parameters += '&isDynamic=%s' % isDynamic
+        if isUserWriteable is not None:
+            parameters += '&isUserWriteable=%s' % isUserWriteable
+        if len(parameters):
+            url += '?%s' % parameters[1:]
+
+        responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+        return ComponentInstanceProperty(responseData)
+
 #######################################################################
 # Testing.
 
 if __name__ == '__main__':
-    api = ComponentRestApi('sveseli', 'sveseli', 'zagreb.svdev.net', 10232, 'http')
+    api = ComponentRestApi('sveseli', 'sv', 'zagreb.svdev.net', 10232, 'http')
     componentTypes = api.getComponentTypes()
     print 'Component Types'
     print '***************'
@@ -96,6 +154,10 @@ if __name__ == '__main__':
     for component in components:
         print component.getDisplayString()
 
+    print
+    print 'Adding Component Property'
+    print '*************************'
+    print api.addComponentProperty(componentId=10, propertyTypeId=2, tag='mytag2', value='A', units=None, description=None, isDynamic=False, isUserWriteable=False)
 
 
 
