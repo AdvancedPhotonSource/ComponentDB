@@ -21,6 +21,7 @@ public class PdmLinkDrawingRevision extends CdbObject {
     private Integer iteration;
     private String version;
     private String icmsUrl;
+    private String dateUpdated; 
 
     private transient String displayIcmsUrl;
 
@@ -66,6 +67,14 @@ public class PdmLinkDrawingRevision extends CdbObject {
 
     public void setIcmsUrl(String icmsUrl) {
         this.icmsUrl = icmsUrl;
+    }
+
+    public String getDateUpdated() {
+        return dateUpdated;
+    }
+
+    public void setDateUpdated(String dateUpdated) {
+        this.dateUpdated = dateUpdated;
     }
 
     /**

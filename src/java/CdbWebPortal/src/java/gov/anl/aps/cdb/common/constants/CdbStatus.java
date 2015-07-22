@@ -32,4 +32,5 @@ public class CdbStatus {
     public static final int CDB_OBJECT_NOT_FOUND = 15;
     public static final int CDB_INVALID_OBJECT_STATE = 16;
     public static final int CDB_IMAGE_PROCESSING_FAILED = 17;
+    public static final int CDB_EXTERNAL_SERVICE_ERROR = 18; 
 }

@@ -14,10 +14,6 @@
                  paginatorAlwaysVisible="false"
                  emptyMessage="No drawing revisions found.">
 
-        <p:column sortBy="#{pdmLinkDrawingRevisionObject.ufid}" headerText="UFID">
-            <h:outputText value="#{pdmLinkDrawingRevisionObject.ufid}"/>
-        </p:column>
-
         <p:column sortBy="#{pdmLinkDrawingRevisionObject.state}" headerText="State">
             <h:outputText value="#{pdmLinkDrawingRevisionObject.state}"/>
         </p:column>
@@ -29,6 +25,10 @@
         <p:column sortBy="#{pdmLinkDrawingRevisionObject.iteration}" headerText="Iteration">
             <h:outputText value="#{pdmLinkDrawingRevisionObject.iteration}"/>
         </p:column>
+        
+        <p:column sortBy="#{pdmLinkDrawingRevisionObject.dateUpdated}" headerText="Date Updated">
+            <h:outputText value="#{pdmLinkDrawingRevisionObject.dateUpdated}"/> 
+        </p:column>
 
         <p:column sortBy="#{pdmLinkDrawingRevisionObject.icmsUrl}" headerText="ICMS URL">
             <h:outputLink value="#{pdmLinkDrawingRevisionObject.icmsUrl}" target="ICMS Document">
@@ -36,6 +36,6 @@
             </h:outputLink> 
         </p:column>
     </p:dataTable>
-
+    
 </ui:composition>
 
