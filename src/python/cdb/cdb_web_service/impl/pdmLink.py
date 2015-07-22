@@ -486,9 +486,7 @@ if __name__ == '__main__':
     searchDrawingFromPDMLink('U221020205-12212?.DRW')
     searchDrawingFromPDMLink('AG1250E-QA_*.prt')
     searchDrawingFromPDMLink('D14100201-110*')
-    # Search for drawings that aren't searchable unless extension is removed
-    searchDrawingFromPDMLink('pole_top_bolt_on.drw')
-
+    
     # Fetch information about multiple drawings from PDMLink
     getDrawingsFromPDMLink('AG1250E-QA_*.prt')
 
@@ -497,6 +495,7 @@ if __name__ == '__main__':
 
     # Handling drawings where ICMS and PDMLink do not have matching revisions
     getDrawingFromPDMLink('41050401-500000.drw')
+    getDrawingFromPDMLink('31020301-100009.drw')
 
     # Causes an external service error exception
     # print pdmLink.getDrawings('stillwell ben')

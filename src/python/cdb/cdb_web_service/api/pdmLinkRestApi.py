@@ -21,6 +21,8 @@ class PdmLinkRestApi(CdbRestApi):
         :param searchPattern: A variable that is used to perform search. May include wildcard chars such as ? or *
         :return: a search pattern with the URL Character code applied
         """
+        searchPattern = str(searchPattern).replace("?", "%3F")
+        searchPattern = str(searchPattern).replace(" ", "%20")
         return str(searchPattern).replace("?", "%3F")
 
     @CdbRestApi.execute
