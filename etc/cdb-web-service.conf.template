@@ -6,6 +6,7 @@ sslKeyFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.key
 sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
 
 [AuthorizationManager]
+adminGroupName=CDB_ADMIN
 principalRetriever=DbPrincipalRetriever()
 #principalRetriever=NoOpPrincipalRetriever()
 principalAuthenticator1=CryptedPasswordPrincipalAuthenticator()
