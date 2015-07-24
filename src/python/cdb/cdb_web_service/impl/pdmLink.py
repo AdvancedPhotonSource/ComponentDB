@@ -386,6 +386,8 @@ class PdmLink:
         for pdmLinkDrawing in pdmLinkDrawingObjectList:
             propertyMap = PdmLinkSearchResult(self.getPdmLinkObjectPropertyMap(pdmLinkDrawing))
             propertyMap['ufid'] = pdmLinkDrawing.ufid
+            propertyMap['modifyStamp'] = propertyMap['thePersistInfo.modifyStamp']
+            del propertyMap['thePersistInfo.modifyStamp']
             searchResultsMap.append(propertyMap)
         return searchResultsMap
 
