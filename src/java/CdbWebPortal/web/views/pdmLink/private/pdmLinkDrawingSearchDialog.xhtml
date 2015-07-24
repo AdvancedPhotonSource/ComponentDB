@@ -10,45 +10,64 @@
               header="Search for PDMLink Drawing" 
               styleClass="dialog">
         <h:form id="drawingSearchForm">
-            <div class="dialog">
-                <p:panelGrid columns="3" styleClass="viewEntityDetails">
-                    <h:outputLabel for="drawingName" value="Search Name" styleClass="entityDataLabel"/>
-                    <h:inputText id="drawingName" value="#{pdmLinkDrawingBean.searchKeywords}" title="Search Name" styleClass="entityDataText"/>
-                    <p:message for="drawingName"/> 
+            <p:panelGrid columns="3" styleClass="viewEntityDetails">
+                <h:outputLabel for="drawingName" value="Search Name" styleClass="entityDataLabel"/>
+                <h:inputText id="drawingName" value="#{pdmLinkDrawingBean.searchKeywords}" title="Search Name" styleClass="entityDataText"/>
+                <p:message for="drawingName"/> 
 
-                    <p:commandButton action="#{pdmLinkDrawingBean.searchDrawings()}" 
-                                     value="Search" alt="Search" 
-                                     icon="ui-icon-search" 
-                                     oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition()"
-                                     update="@form"/>
-                    <h:outputText/>
-                    <h:outputText/>
-                </p:panelGrid>
+                <p:commandButton action="#{pdmLinkDrawingBean.searchDrawings()}" 
+                                 value="Search" alt="Search" 
+                                 onstart="PF('pdmLinkLoading').show();"
+                                 icon="ui-icon-search" 
+                                 oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('pdmLinkLoading').hide();"
+                                 update="@form"/>
+                <h:outputText/>
+                <p:commandLink onclick="PF('PDMLinkHelp').show();"
+                               title="Help"
+                               value="Help"/>
+            </p:panelGrid>
 
 
-                <p/>
+            <p/>
 
-                <p:panelGrid columns="2">
-                    <ui:fragment rendered="#{pdmLinkDrawingBean.searchResults != null}">
-                        <ui:include src="pdmLinkSearchResultListDataTable.xhtml"/>
-                    </ui:fragment>
+            <p:panelGrid columns="2">
+                <ui:fragment rendered="#{pdmLinkDrawingBean.searchResults != null}">
+                    <ui:include src="pdmLinkSearchResultListDataTable.xhtml"/>
+                </ui:fragment>
 
-                    <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
-                        <p:accordionPanel multiple="true" activeIndex="0,1">
-                            <p:tab title="Drawing Details">
-                                <ui:include src="pdmLinkDrawingViewPanelGrid.xhtml"/>
-                            </p:tab>
-                            <p:tab title="Drawing Revisions">
-                                <ui:include src="pdmLinkDrawingRevisionListDataTable.xhtml"/>                       
-                            </p:tab>  
-                        </p:accordionPanel>
-                    </ui:fragment>
-                </p:panelGrid>
-            </div>
+                <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
+                    <p:accordionPanel multiple="true" activeIndex="0,1">
+                        <p:tab title="Drawing Details">
+                            <ui:include src="pdmLinkDrawingViewPanelGrid.xhtml"/>
+                        </p:tab>
+                        <p:tab title="Drawing Revisions">
+                            <ui:include src="pdmLinkDrawingRevisionListDataTable.xhtml"/>                       
+                        </p:tab>  
+                    </p:accordionPanel>
+                </ui:fragment>
+            </p:panelGrid>
 
         </h:form>
     </p:dialog>
-    
+
+
+    <p:dialog modal="true" 
+              widgetVar="pdmLinkLoading" 
+              showHeader="false" 
+              resizable="false">
+        <h:outputText value="Loading Results... Please Wait..." />
+        <p/>
+        <p:graphicImage library="images" name="ajax-loader.gif" />
+    </p:dialog>
+
+    <p:dialog header="Using the PDMLink search utility" 
+              widgetVar="PDMLinkHelp" 
+              styleClass="dialogHelp" 
+              resizable="false"
+              modal="true">
+        <ui:include src="pdmLinkHelp.xhtml"/>
+    </p:dialog>
+
 </ui:composition>
 
 

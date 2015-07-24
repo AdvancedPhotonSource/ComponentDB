@@ -14,6 +14,7 @@ public class PdmLinkSearchResult extends CdbObject {
     
     private String ufid;
     private String oid;
+    private String modifyStamp; 
 
     public String getUfid() {
         return ufid;
@@ -23,6 +24,10 @@ public class PdmLinkSearchResult extends CdbObject {
         return oid;
     }
 
+    public String getModifyStamp() {
+        return modifyStamp;
+    }
+
     public void setUfid(String ufid) {
         this.ufid = ufid;
     }
@@ -30,7 +35,10 @@ public class PdmLinkSearchResult extends CdbObject {
     public void setOid(String oid) {
         this.oid = oid;
     }
-    
+
+    public void setModifyStamp(String modifyStamp) {
+        this.modifyStamp = modifyStamp;
+    }
     
     
 }

@@ -13,19 +13,29 @@
         var="searchResult" 
         value="#{pdmLinkDrawingBean.searchResults}" 
         paginator="true" 
+        paginatorPosition="bottom"
+        pageLinks="5"
         rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
         paginatorAlwaysVisible="false"
         emptyMessage="No drawings found">
         <p:column sortBy="#{searchResult.name}" 
-                  headerText="Name">
-            <p:commandButton actionListener="#{pdmLinkDrawingBean.completeDrawing(searchResult.ufid, searchResult.oid)}" 
-                           oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition()"  
+                  headerText="Name" 
+                  styleClass="dataTableName">
+            <p:commandLink actionListener="#{pdmLinkDrawingBean.completeDrawing(searchResult.ufid, searchResult.oid)}" 
+                           onstart="PF('pdmLinkLoading').show();"
+                           oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('pdmLinkLoading').hide();"  
                            value="#{searchResult.name}"
-                           update="@form"
-                           styleClass="dataTableButton">
-            </p:commandButton>
-            
+                           update="@form">
+            </p:commandLink>
+        </p:column>
+        <p:column headerText="Date Modified"
+                  rendered="#{pdmLinkDrawingBean.drawing == null}">
+            <h:outputText value="#{searchResult.modifyStamp}" /> 
         </p:column>
     </p:dataTable>
+
+    <h:outputText rendered="#{pdmLinkDrawingBean.drawing == null}"
+                  value="* Due to issues with PDMLink web services, the date is not guaranteed to be latest."/> 
+    
 </ui:composition>
 

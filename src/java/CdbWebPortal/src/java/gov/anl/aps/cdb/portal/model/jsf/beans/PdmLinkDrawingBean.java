@@ -47,6 +47,7 @@ public class PdmLinkDrawingBean implements Serializable {
 
     private String drawingName;
     private String searchKeywords;
+    private String prevSearchKeywords; 
     private PdmLinkDrawing drawing;
     private PdmLinkApi pdmLinkApi;
     private PdmLinkSearchResults searchResults;
@@ -57,7 +58,7 @@ public class PdmLinkDrawingBean implements Serializable {
     public void init() {
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
         try {
-            pdmLinkApi = new PdmLinkApi(webServiceUrl);
+            pdmLinkApi = new PdmLinkApi(webServiceUrl); 
         } catch (ConfigurationError ex) {
             String error = "PDMLink Service is not accessible:  " + ex.getErrorMessage();
             logger.error(error);
@@ -121,6 +122,29 @@ public class PdmLinkDrawingBean implements Serializable {
      * a list of drawing names, perform correct action based on criteria. 
      */
     public void searchDrawings() {
+        
+        //Check if the required search result is already loaded. 
+        if(prevSearchKeywords == null){
+            prevSearchKeywords = ""; 
+        }
+        else if(prevSearchKeywords.equals(searchKeywords) && drawing != null){
+            //Show only loaded search results 
+            if(searchResults != null){
+                drawing = null; 
+                return;
+            }
+        }else if(searchKeywords.equals(drawingName) && searchResults != null){
+            //Show only loaded drawing 
+            if(drawing != null){
+               searchResults = null; 
+               //The image needs to be reloaded. 
+               loadImageForDrawing();
+               return;  
+            }
+        }
+        
+            
+        prevSearchKeywords = searchKeywords;     
         searchResults = null;
         drawing = null;
 
@@ -231,6 +255,12 @@ public class PdmLinkDrawingBean implements Serializable {
             //SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             pdmLinkImage = null;
         } catch (Exception ex) {
+            logger.error(ex);
+            //The extension of the image is not in standard format cannot be loaded
+            if(ex.getMessage().equals("image == null!")){
+                //Don't inform user of this exception. No valid image exits. 
+                return; 
+            }
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
     }
@@ -254,6 +284,7 @@ public class PdmLinkDrawingBean implements Serializable {
             try {
                 logger.debug("Completing drawing with oid: " + oid);
                 drawing = pdmLinkApi.completeDrawingInfo(ufid, oid);
+                drawingName = drawing.getName(); 
                 loadImageForDrawing();
                 logger.debug("Found drawing, windchill URL: " + drawing.getWindchillUrl());
             } catch (CdbException ex) {

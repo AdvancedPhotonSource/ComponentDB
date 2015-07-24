@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+
+
+    <h:outputText value="The searches could be done using a full drawing name or wildcards: */?"/>
+    <p/>
+    <p:accordionPanel multiple="true" activeIndex="0,1">
+        <p:tab title="Full drawing number">
+            When a full drawing number is entered, no search results will appear. Only the information for the particular drawing.
+            <ul>
+                <li>ex: D14100201-113000.ASM</li>
+            </ul>
+        </p:tab>
+        <p:tab title="Partial drawing name/keywords/wildcards">
+            When partial drawing number, keywords, or wildcards are used. Search results will appear.
+            <ul>
+                <li>Using Wildcards</li>
+                <ul>
+                    <li>* - Fill in any amount of characters</li>
+                    <ul><li>ex: D14100201-113*.ASM</li></ul>
+                     <li>? - Fill in exactly one character</li>
+                    <ul><li>ex: D14100201-113?1?.???</li></ul>
+                </ul>
+                <li>Using Keywords</li>
+                <ul>
+                    <li>Specify keywords that describe the drawing</li>
+                    <ul><li>ex: dipole support assembly drw</li></ul>  
+                </ul>
+            </ul>
+            Clicking on a search result will load drawing details. 
+        </p:tab>  
+    </p:accordionPanel>
+
+</ui:composition>
+
