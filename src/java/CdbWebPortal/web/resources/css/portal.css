@@ -318,6 +318,16 @@ tr:hover .actionLink {
 }
 
 .dialog {
+    background: #6da5d8;
+    box-shadow: 0px 3px 5px #d5d5d5;    
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.pdmLinkdialog {
     background: #EFF1F5;
     box-shadow: 0px 3px 5px #d5d5d5;    
     vertical-align: central;
@@ -327,13 +337,15 @@ tr:hover .actionLink {
     margin-right: auto;
 }
 
-.dialog .dataTableName {
+.pdmLinkdialog .dataTableName {
     width: 220px; 
 }
 
 .dialogHelp {
+    background: #EFF1F5;
     text-align: left;
 }
+
 .locationSelectDialog {
     background: #6da5d8;
     box-shadow: 0px 3px 5px #d5d5d5;    
