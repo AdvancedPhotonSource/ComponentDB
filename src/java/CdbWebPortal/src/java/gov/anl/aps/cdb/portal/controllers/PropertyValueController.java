@@ -250,8 +250,12 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     public DisplayType configurePropertyValueDisplay(PropertyValue propertyValue) {
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+        propertyTypeHandler.setInfoActionCommand(propertyValue);
         propertyTypeHandler.setDisplayValue(propertyValue);
-        propertyTypeHandler.setTargetValue(propertyValue);
+        String targetValue = propertyValue.getTargetValue();
+        //Field is stored in db... update if empty. 
+        if(targetValue == null || targetValue.isEmpty())
+            propertyTypeHandler.setTargetValue(propertyValue);
         PropertyType propertyType = propertyValue.getPropertyType();
         DisplayType displayType = propertyTypeHandler.getValueDisplayType();
         if (displayType == null) {
@@ -261,6 +265,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
             }
         }
         propertyType.setDisplayType(displayType);
+        propertyValue.setHandlerInfoSet(true);
         return displayType;
     }
 
@@ -270,7 +275,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         }
         String displayValue = propertyValue.getDisplayValue();
         DisplayType result = propertyValue.getPropertyType().getDisplayType();
-        if (result == null || displayValue == null || displayValue.isEmpty()) {
+        if (result == null || displayValue == null || displayValue.isEmpty() || !propertyValue.isHandlerInfoSet()) {
             result = configurePropertyValueDisplay(propertyValue);
         }
         return result;

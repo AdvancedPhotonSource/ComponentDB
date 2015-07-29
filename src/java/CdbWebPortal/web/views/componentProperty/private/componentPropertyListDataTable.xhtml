@@ -5,7 +5,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-
+    
     <p:dataTable id="componentPropertyListDataTable" 
                  widgetVar="componentPropertyListDataTableWidget"
                  var="propertyValueObject" 
@@ -22,6 +22,7 @@
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:commandLink id="componentPropertyValueHistoryListViewButton" 
+                               onstart="PF('loadingDialog').show();"
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
                                styleClass="ui-icon ui-icon-history" 
                                title="View property value history."
@@ -30,13 +31,28 @@
                                                  value="#{propertyValueObject}"/>
                     <p:tooltip for="componentPropertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
+                <p:commandLink id="componentPropertInfoActionButton" 
+                               rendered="#{propertyValueObject.infoActionCommand != null}"
+                               onstart="PF('loadingDialog').show();"
+                               oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.infoActionCommand}"
+                               styleClass="ui-icon ui-icon-info2" 
+                               title="View property info"
+                               update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
+                                                 value="#{propertyValueObject}"/>
+                    <p:tooltip for="componentPropertInfoActionButton" value="View property info."/>
+                </p:commandLink>
             </div>
         </p:column>       
 
     </p:dataTable>
-
+    
+    <ui:include src="../../pdmLink/private/pdmLinkComponentPropertyInfoDialog.xhtml"/>
+    
+    <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
+    
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
-
+   
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>

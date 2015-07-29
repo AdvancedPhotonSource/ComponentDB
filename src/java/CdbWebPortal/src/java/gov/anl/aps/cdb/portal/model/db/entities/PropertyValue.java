@@ -108,6 +108,9 @@ public class PropertyValue extends CdbEntity {
     
     private transient Boolean booleanValue;
     private transient Date dateValue;
+    
+    private transient String infoActionCommand; 
+    private transient boolean handlerInfoSet;
 
     public PropertyValue() {
     }
@@ -307,6 +310,22 @@ public class PropertyValue extends CdbEntity {
         if (dateValue != null) {
             this.value = dateValue.toString();
         }
+    }
+
+    public String getInfoActionCommand() {
+        return infoActionCommand;
+    }
+
+    public void setInfoActionCommand(String infoActionCommand) {
+        this.infoActionCommand = infoActionCommand;
+    }
+
+    public boolean isHandlerInfoSet() {
+        return handlerInfoSet;
+    }
+
+    public void setHandlerInfoSet(boolean handlerInfoSet) {
+        this.handlerInfoSet = handlerInfoSet;
     }
 
     @Override

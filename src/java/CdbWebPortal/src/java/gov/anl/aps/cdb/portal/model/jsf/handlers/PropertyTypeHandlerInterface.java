@@ -28,6 +28,8 @@ public interface PropertyTypeHandlerInterface
     
     public abstract DisplayType getValueDisplayType();
     
+    public abstract void setInfoActionCommand(PropertyValue propertyValue); 
+    
     public abstract void setDisplayValue(PropertyValue propertyValue);
     
     public abstract void setDisplayValue(PropertyValueHistory propertyValueHistory);

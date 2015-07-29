@@ -57,7 +57,12 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         String targetLink = getDrawingWindchillUrl(propertyValueHistory.getValue(), false);
         propertyValueHistory.setTargetValue(targetLink);
     }
-
+    
+    @Override
+    public void setInfoActionCommand(PropertyValue propertyValue){
+        propertyValue.setInfoActionCommand("PF('pdmLinkDrawingPropertyInfoDialogWidget').show();");
+    }
+    
     private String getDrawingWindchillUrl(String drawingName, boolean displayErrorIfNotFound) {
         if (drawingName == null || drawingName.isEmpty()) {
             return null;

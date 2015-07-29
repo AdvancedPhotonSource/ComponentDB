@@ -22,8 +22,8 @@
                   headerText="Name" 
                   styleClass="dataTableName">
             <p:commandLink actionListener="#{pdmLinkDrawingBean.completeDrawing(searchResult.ufid, searchResult.oid)}" 
-                           onstart="PF('pdmLinkLoading').show();"
-                           oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('pdmLinkLoading').hide();"  
+                           onstart="PF('loadingDialog').show();"
+                           oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"  
                            value="#{searchResult.name}"
                            update="@form">
             </p:commandLink>

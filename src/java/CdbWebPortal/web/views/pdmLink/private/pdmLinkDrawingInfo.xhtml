@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+        <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
+            <p:accordionPanel multiple="true" activeIndex="0,1">
+                <p:tab title="Drawing Details">
+                    <ui:include src="pdmLinkDrawingViewPanelGrid.xhtml"/>
+                </p:tab>
+                <p:tab title="Drawing Revisions">
+                    <ui:include src="pdmLinkDrawingRevisionListDataTable.xhtml"/>                       
+                </p:tab>  
+            </p:accordionPanel>
+        </ui:fragment>
+
+</ui:composition>
+

@@ -47,6 +47,11 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     }
     
     @Override
+    public void setInfoActionCommand(PropertyValue propertyValue){
+        propertyValue.setInfoActionCommand(null);
+    }
+    
+    @Override
     public String getEditActionOncomplete() {
         return null;
     }
@@ -65,7 +70,7 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     public Boolean getDisplayEditActionButton() {
         return getEditActionIcon() != null;
     }
-
+    
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
         propertyValue.setDisplayValueToValue();

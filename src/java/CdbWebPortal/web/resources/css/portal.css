@@ -578,7 +578,7 @@ h2 {
 .ui-icon-history {
     background-image: url(../../resources/images/history.ico) !important;
     background-repeat: no-repeat;
-    background-position: bottom;
+    background-position: center;
 }
 
 .ui-galleria-panel element.style {

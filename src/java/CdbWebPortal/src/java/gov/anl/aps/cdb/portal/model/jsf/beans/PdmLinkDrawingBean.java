@@ -253,6 +253,7 @@ public class PdmLinkDrawingBean implements Serializable {
             logger.error(ex);
             //No need to notify user since many drawings do not include image
             //SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            logger.error(ex);
             pdmLinkImage = null;
         } catch (Exception ex) {
             logger.error(ex);

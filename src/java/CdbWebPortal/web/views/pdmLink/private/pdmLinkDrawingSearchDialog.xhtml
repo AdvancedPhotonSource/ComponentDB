@@ -17,9 +17,9 @@
 
                 <p:commandButton action="#{pdmLinkDrawingBean.searchDrawings()}" 
                                  value="Search" alt="Search" 
-                                 onstart="PF('pdmLinkLoading').show();"
+                                 onstart="PF('loadingDialog').show();"
                                  icon="ui-icon-search" 
-                                 oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('pdmLinkLoading').hide();"
+                                 oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"
                                  update="@form"/>
                 <h:outputText/>
                 <p:commandLink onclick="PF('PDMLinkHelp').show();"
@@ -30,44 +30,13 @@
 
             <p/>
 
-            <p:panelGrid columns="2">
-                <ui:fragment rendered="#{pdmLinkDrawingBean.searchResults != null}">
-                    <ui:include src="pdmLinkSearchResultListDataTable.xhtml"/>
-                </ui:fragment>
-
-                <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
-                    <p:accordionPanel multiple="true" activeIndex="0,1">
-                        <p:tab title="Drawing Details">
-                            <ui:include src="pdmLinkDrawingViewPanelGrid.xhtml"/>
-                        </p:tab>
-                        <p:tab title="Drawing Revisions">
-                            <ui:include src="pdmLinkDrawingRevisionListDataTable.xhtml"/>                       
-                        </p:tab>  
-                    </p:accordionPanel>
-                </ui:fragment>
-            </p:panelGrid>
+            <ui:include src="pdmLinkDrawingSearchResult.xhtml" />
 
         </h:form>
     </p:dialog>
 
 
-    <p:dialog modal="true" 
-              widgetVar="pdmLinkLoading" 
-              showHeader="false" 
-              resizable="false">
-        <h:outputText value="Loading Results... Please Wait..." />
-        <p/>
-        <p:graphicImage library="images" name="ajax-loader.gif" />
-    </p:dialog>
-
-    <p:dialog header="Using the PDMLink search utility" 
-              widgetVar="PDMLinkHelp" 
-              styleClass="dialogHelp" 
-              resizable="false"
-              modal="true">
-        <ui:include src="pdmLinkHelp.xhtml"/>
-    </p:dialog>
-
+    <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
+    <ui:include src="pdmLinkHelpDialog.xhtml"/>
+   
 </ui:composition>
-
-
