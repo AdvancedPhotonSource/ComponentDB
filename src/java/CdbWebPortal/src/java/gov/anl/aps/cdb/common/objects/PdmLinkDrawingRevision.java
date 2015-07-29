@@ -84,7 +84,14 @@ public class PdmLinkDrawingRevision extends CdbObject {
      */
     public String getDisplayIcmsUrl() {
         if (displayIcmsUrl == null && icmsUrl != null) {
-            displayIcmsUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(icmsUrl);
+            String icmsDocNameKey = "&dDocName="; 
+            String icmsRevLabelKey = "&dRevLabel="; 
+            
+            int startName = icmsUrl.indexOf(icmsDocNameKey) + icmsDocNameKey.length();
+            int endName = icmsUrl.indexOf(icmsRevLabelKey); 
+            int startRev = endName + icmsRevLabelKey.length(); 
+
+            displayIcmsUrl = icmsUrl.substring(startName, endName) + " RevLabel: " + icmsUrl.substring(startRev);
         }
         return displayIcmsUrl;
     }
