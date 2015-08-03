@@ -100,19 +100,52 @@ class PdmLink:
         :param drawingList: (PDMLink Drawing Object List) original list of drawings from PDMLink
         :return: new list of unique drawings
         """
-        newList = []
-        prevName = ''
 
-        for drawing in drawingList:
+        verInx = 6
+        itrInx = 5
+
+        def findLatestRev(revisions):
+            maxRev = 0
+            maxRevIndex = 0
+
+            for i in range(0, revisions.__len__()):
+                curRev = int(revisions[i].properties[verInx].value + revisions[i].properties[itrInx].value)
+                if curRev > maxRev:
+                    maxRev = curRev
+                    maxRevIndex = i
+
+            return revisions[maxRevIndex]
+
+        newList = []
+        revList = []
+
+        # Drawing list is empty
+        if str(drawingList[0].properties[0].name) == 'hasMore':
+            return
+
+        prevNumber = drawingList[0].properties[1].value
+        revList.append(drawingList[0])
+
+        for drawing in drawingList[1:]:
             # hasMore property is currently not used in this web service
-            if(str(drawing.properties[0].name) == 'hasMore'):
+            if str(drawing.properties[0].name) == 'hasMore':
                 continue
 
             # Add non-repeated values
-            currentName = drawing.properties[0].value
-            if prevName != currentName:
-                prevName = currentName
-                newList.append(drawing)
+            currentNumber = drawing.properties[1].value
+            if prevNumber == currentNumber:
+                revList.append(drawing)
+                continue
+            elif prevNumber != currentNumber:
+                prevNumber = currentNumber
+                if revList.__len__() > 0:
+                    newList.append(findLatestRev(revList))
+                else:
+                    newList.append(drawing)
+
+                # empty the temp list with multiples of drawing
+                del revList[:]
+                revList.append(drawing)
 
         return newList
 
@@ -162,36 +195,39 @@ class PdmLink:
             ['versionInfo.identifier.versionId',
             'iterationInfo.identifier.iterationId',
             'state.state',
-            'thePersistInfo.updateStamp'])
+            'thePersistInfo.createStamp'])
 
         revisionList = []
         for iteration in iterationHistory:
-            ufid = iteration.ufid
+            iterationUfid = iteration.ufid
             propertyMap = self.getPdmLinkObjectPropertyMap(iteration)
             versionId = propertyMap.get('versionInfo.identifier.versionId')
             iterationId = propertyMap.get('iterationInfo.identifier.iterationId')
             state = propertyMap.get('state.state')
-            dateUpdated = propertyMap.get('thePersistInfo.updateStamp')
+            dateCreated = propertyMap.get('thePersistInfo.createStamp')
             revisionList.append(PdmLinkDrawingRevision({
                 'version' : versionId,
                 'iteration' : iterationId,
                 'state' : state,
-                'ufid' : ufid,
-                'dateUpdated' : dateUpdated
+                'ufid' : iterationUfid,
+                'dateCreated' : dateCreated
             }))
 
         if(oid is None):
             propertyMap = self.getPdmLinkObjectPropertyMap(pdmLinkDrawingObject)
             oid = propertyMap.get('oid')
 
-        # retrieve the details about a drawing
-        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5", "name"]
+        # retrieve the details about a drawing for the latest revision
+        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5", "number","name"]
+        # get latest ufid
+        ufid = iterationHistory[0].ufid
         drawingDetailsRaw = self.windchillWs.service.Fetch([ufid], reqDetails)
         drawingDetails = self.getPdmLinkObjectPropertyMap(drawingDetailsRaw[0])
+        number = drawingDetails.get('number')
         name = drawingDetails.get('name')
 
         # retrieve the revisions from ICMS
-        icmsRevisions = self.getIcmsRevisions(name)
+        icmsRevisions = self.getIcmsRevisions(number)
 
         # Create a windchill url for the drawing
         response = self.windchillWebparts.service.GetActionUrl('object.view')
@@ -228,6 +264,7 @@ class PdmLink:
         drawingInfo["title4"] = drawingDetails.get("TITLE4")
         drawingInfo["title5"] = drawingDetails.get("TITLE5")
         drawingInfo['name'] = name
+        drawingInfo['number'] = number
         drawingInfo['windchillUrl'] = actionUrl
         drawingInfo['revisionList'] = revisionList
 
@@ -399,7 +436,8 @@ class PdmLink:
         :param odi: (str) drawing search result oid
         :return: CDBObject of type PdmLinkDrawing
         """
-        return self.__getDrawing(None,ufid, oid)
+        self.__createWindchillClients()
+        return self.__getDrawing(None, ufid, oid)
 
     @SslUtility.useUnverifiedSslContext
     def getDrawingImage(self, ufid):
@@ -412,7 +450,7 @@ class PdmLink:
         """
         self.__createWindchillClients()
         listContentResults = self.windchillWs.service.ListContent(ufid)
-        if (len(listContentResults) > 2):
+        if len(listContentResults) > 2:
             for attrib in listContentResults[2]['properties']:
                 if attrib.name == 'urlLocation':
                     return Image({'imageUrl' : attrib.value})
