@@ -9,7 +9,6 @@
  */
 package gov.anl.aps.cdb.common.objects;
 
-import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 
 /**
  * PDMLink drawing revision object.
@@ -21,7 +20,7 @@ public class PdmLinkDrawingRevision extends CdbObject {
     private Integer iteration;
     private String version;
     private String icmsUrl;
-    private String dateUpdated; 
+    private String dateCreated; 
 
     private transient String displayIcmsUrl;
 
@@ -69,12 +68,12 @@ public class PdmLinkDrawingRevision extends CdbObject {
         this.icmsUrl = icmsUrl;
     }
 
-    public String getDateUpdated() {
-        return dateUpdated;
+    public String getDateCreated() {
+        return dateCreated;
     }
 
-    public void setDateUpdated(String dateUpdated) {
-        this.dateUpdated = dateUpdated;
+    public void setDateCreated(String dateUpdated) {
+        this.dateCreated = dateUpdated;
     }
 
     /**

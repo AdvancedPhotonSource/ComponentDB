@@ -27,6 +27,7 @@ public class PdmLinkDrawing extends CdbObject {
     public static final List<String> VALID_EXTENSION_LIST = Collections.unmodifiableList(
             Arrays.asList("drw", "asm", "prt", "sec","frm"));
 
+    private String number; 
     private String windchillUrl;
     private String respEng; 
     private String drafter; 
@@ -53,6 +54,14 @@ public class PdmLinkDrawing extends CdbObject {
     public PdmLinkDrawing() {
     }
 
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+    
     public String getWindchillUrl() {
         return windchillUrl;
     }

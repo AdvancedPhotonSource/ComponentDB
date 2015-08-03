@@ -18,13 +18,13 @@
         rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
         paginatorAlwaysVisible="false"
         emptyMessage="No drawings found">
-        <p:column sortBy="#{searchResult.name}" 
-                  headerText="Name" 
+        <p:column sortBy="#{searchResult.number}" 
+                  headerText="Number" 
                   styleClass="dataTableName">
             <p:commandLink actionListener="#{pdmLinkDrawingBean.completeDrawing(searchResult.ufid, searchResult.oid)}" 
                            onstart="PF('loadingDialog').show();"
                            oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"  
-                           value="#{searchResult.name}"
+                           value="#{searchResult.number}"
                            update="@form">
             </p:commandLink>
         </p:column>
