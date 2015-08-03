@@ -103,25 +103,27 @@ class PdmLink:
 
         verInx = 6
         itrInx = 5
-
-        def findLatestRev(revisions):
-            maxRev = 0
-            maxRevIndex = 0
-
-            for i in range(0, revisions.__len__()):
-                curRev = int(revisions[i].properties[verInx].value + revisions[i].properties[itrInx].value)
-                if curRev > maxRev:
-                    maxRev = curRev
-                    maxRevIndex = i
-
-            return revisions[maxRevIndex]
-
         newList = []
         revList = []
 
+        def addLatestRev(curDrawing=None):
+            maxRev = 0
+            maxRevIndex = 0
+            if revList.__len__() > 0:
+                for i in range(0, revList.__len__()):
+                    curRev = int(revList[i].properties[verInx].value + revList[i].properties[itrInx].value)
+                    if curRev > maxRev:
+                        maxRev = curRev
+                        maxRevIndex = i
+                newList.append(revList[maxRevIndex])
+            elif curDrawing is not None:
+                newList.append(curDrawing)
+
         # Drawing list is empty
+        if drawingList.__len__() == 0:
+            return newList
         if str(drawingList[0].properties[0].name) == 'hasMore':
-            return
+            return newList
 
         prevNumber = drawingList[0].properties[1].value
         revList.append(drawingList[0])
@@ -129,19 +131,16 @@ class PdmLink:
         for drawing in drawingList[1:]:
             # hasMore property is currently not used in this web service
             if str(drawing.properties[0].name) == 'hasMore':
+                addLatestRev()
                 continue
 
             # Add non-repeated values
             currentNumber = drawing.properties[1].value
             if prevNumber == currentNumber:
                 revList.append(drawing)
-                continue
             elif prevNumber != currentNumber:
                 prevNumber = currentNumber
-                if revList.__len__() > 0:
-                    newList.append(findLatestRev(revList))
-                else:
-                    newList.append(drawing)
+                addLatestRev(drawing)
 
                 # empty the temp list with multiples of drawing
                 del revList[:]
