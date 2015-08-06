@@ -26,4 +26,12 @@ class ComponentTypeHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('Component type id %s does not exist.' % (id))
 
+    def getComponentTypeByName(self, session, name):
+        try:
+            self.logger.debug('Retrieving component type name "%s"' % name)
+            dbComponentType = session.query(ComponentType).filter(ComponentType.name==name).one()
+            return dbComponentType
+        except NoResultFound, ex:
+            raise ObjectNotFound('Component type name "%s" does not exist.' % (name))
+
 

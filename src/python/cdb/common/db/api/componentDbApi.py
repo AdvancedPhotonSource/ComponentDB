@@ -41,6 +41,12 @@ class ComponentDbApi(CdbDbApi):
         return self.toCdbObjectList(dbComponentTypes)
 
     @CdbDbApi.executeQuery
+    def getComponentTypeByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbComponentTypes = self.componentTypeHandler.getComponentTypeByName(session,name)
+        return dbComponentTypes.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getComponents(self, **kwargs):
         session = kwargs['session']
         dbComponents = self.componentHandler.getComponents(session)
@@ -63,6 +69,12 @@ class ComponentDbApi(CdbDbApi):
         session = kwargs['session']
         dbComponent = self.componentHandler.addComponent(session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
         return dbComponent.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypeByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, name)
+        return dbPropertyType.getCdbObject()
 
     @CdbDbApi.executeTransaction
     def addComponentPropertyByTypeId(self, componentId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable, **kwargs):
