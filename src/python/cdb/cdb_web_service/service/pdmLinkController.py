@@ -40,3 +40,7 @@ class PdmLinkController(CdbController):
     def getDrawingImage(self, ufid, **kwargs):
         return self.pdmLinkControllerImpl.getDrawingImage(ufid).getFullJsonRep()
 
+    @cherrypy.expose
+    @CdbController.execute
+    def generateComponentInfo(self, drawingNumber, **kwargs):
+        return self.pdmLinkControllerImpl.generateComponentInfo(drawingNumber).getFullJsonRep()

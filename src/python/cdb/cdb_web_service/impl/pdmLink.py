@@ -25,11 +25,15 @@ from suds import WebFault
 from cdb.common.objects.pdmLinkDrawing import PdmLinkDrawing 
 from cdb.common.objects.pdmLinkDrawingRevision import PdmLinkDrawingRevision
 from cdb.common.objects.pdmLinkSearchResult import PdmLinkSearchResult
+from cdb.common.objects.pdmLinkComponent import PdmLinkComponent
+from cdb.common.db.api.componentDbApi import ComponentDbApi
 from cdb.common.objects.image import Image
 from cdb.common.utility.loggingManager import LoggingManager
-from cdb.common.utility.sslUtility import SslUtility 
+from cdb.common.utility.sslUtility import SslUtility
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.exceptions.externalServiceError import ExternalServiceError
+from cdb.common.exceptions.invalidRequest import InvalidRequest
+from cdb.common.exceptions.invalidArgument import InvalidArgument
 from icms import Icms
 
 class PdmLink:
@@ -49,6 +53,7 @@ class PdmLink:
         self.windchillWs = None
         self.windchillWebparts = None
         self.icmsConnection = None
+        self.componentDbApi = None
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
         # searchArgs are used in search functions of Windchill webparts class
@@ -88,8 +93,18 @@ class PdmLink:
         if(self.icmsConnection != None):
             return
 
-        #initalize icmsClass
+        # initialize icmsClass
         self.icmsConnection = Icms(self.ICMS_USER, self.ICMS_PASS, self.icmsUrl)
+
+    def __createComponentDbApi(self):
+        """
+        Initialize db API for components
+        """
+        if(self.componentDbApi != None):
+            return
+
+        # initialize db api
+        self.componentDbApi = ComponentDbApi()
 
     def __cleanPDMLinkDrawingList(self, drawingList):
         """
@@ -163,11 +178,11 @@ class PdmLink:
         splitNamePattern = namePattern.split('.')
         # No extension to remove
         # No need to reattempt to search
-        if splitNamePattern.__len__() < 2:
+        if splitNamePattern[-1] == '???':
             return []
 
         # Part of name before a '.'
-        newName = splitNamePattern[0]
+        newName = splitNamePattern[0] + '.???'
 
         return self.findPdmLinkDrawings(newName, startResults=0, maxResults=maxResults)
 
@@ -216,14 +231,9 @@ class PdmLink:
             propertyMap = self.getPdmLinkObjectPropertyMap(pdmLinkDrawingObject)
             oid = propertyMap.get('oid')
 
-        # retrieve the details about a drawing for the latest revision
-        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5", "number","name"]
-        # get latest ufid
-        ufid = iterationHistory[0].ufid
-        drawingDetailsRaw = self.windchillWs.service.Fetch([ufid], reqDetails)
-        drawingDetails = self.getPdmLinkObjectPropertyMap(drawingDetailsRaw[0])
-        number = drawingDetails.get('number')
-        name = drawingDetails.get('name')
+        latestUfid = iterationHistory[0].ufid
+        drawingInfo = self.__getDrawingDetails(latestUfid)
+        number = drawingInfo['number']
 
         # retrieve the revisions from ICMS
         icmsRevisions = self.getIcmsRevisions(number)
@@ -253,6 +263,23 @@ class PdmLink:
                 revisionList.append(newRev)
 
         # Populate a drawing information object
+        drawingInfo['windchillUrl'] = actionUrl
+        drawingInfo['revisionList'] = revisionList
+
+        return PdmLinkDrawing(drawingInfo)
+
+    def __getDrawingDetails(self, ufid):
+        """
+        Get detailed metadata about a drawing
+
+        :param ufid: unique identifier of a drawing revision
+        :return: dictionary with drawing details.
+        """
+        # retrieve the details about a drawing for the latest revision
+        reqDetails = ["RESP_ENG", "DRAFTER", "WBS_DESCRIPTION", "TITLE1", "TITLE2", "TITLE3", "TITLE4", "TITLE5", "number","name"]
+        drawingDetailsRaw = self.windchillWs.service.Fetch([ufid], reqDetails)
+        drawingDetails = self.getPdmLinkObjectPropertyMap(drawingDetailsRaw[0])
+
         drawingInfo = {}
         drawingInfo["respEng"] = drawingDetails.get("RESP_ENG")
         drawingInfo["drafter"] = drawingDetails.get("DRAFTER")
@@ -262,12 +289,137 @@ class PdmLink:
         drawingInfo["title3"] = drawingDetails.get("TITLE3")
         drawingInfo["title4"] = drawingDetails.get("TITLE4")
         drawingInfo["title5"] = drawingDetails.get("TITLE5")
-        drawingInfo['name'] = name
-        drawingInfo['number'] = number
-        drawingInfo['windchillUrl'] = actionUrl
-        drawingInfo['revisionList'] = revisionList
+        drawingInfo['name'] = drawingDetails.get('name')
+        drawingInfo['number'] = drawingDetails.get('number')
 
-        return PdmLinkDrawing(drawingInfo)
+        return drawingInfo
+
+    @SslUtility.useUnverifiedSslContext
+    def __getDrawingDetailsWithoutSSL(self, ufid):
+        return self.__getDrawingDetails(ufid)
+
+    def __generateComponentInfo(self, drawingNumber=None, ufid=None):
+        """
+        see generateComponentInfo
+        """
+        if drawingNumber is None and ufid is None:
+            raise InvalidRequest('drawingNumber and or ufid must be provided to create a component')
+
+        drawingDetails = None
+
+        # Get a drawing Number to search by
+        if ufid is not None and drawingNumber is None:
+            if drawingDetails is None:
+                drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
+            drawingNumber = drawingDetails['number']
+
+        # Component Info
+        pdmPropertyValues = []
+        pdmComponentName = None
+
+        # Search using the drawing name provided
+        PdmLinkDrawing.checkDrawingName(drawingNumber)
+        drawingNumberBase = str(drawingNumber).split('.')[0]
+        searchResults = self.getDrawingSearchResults(drawingNumberBase + '.???')
+
+        # Generate list of PDM Link properties and component Name
+        # Drawing is searchable only by UFID provided
+        if searchResults.__len__() == 0 and ufid is not None:
+            if drawingDetails is None:
+                drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
+            pdmPropertyValues.append(drawingDetails['number'])
+            pdmComponentName = drawingDetails['name']
+        elif searchResults.__len__() == 0 and ufid is None:
+            raise ObjectNotFound("PDMLink drawing " + drawingNumber + " could not be found")
+        else:
+            for searchResult in searchResults:
+                resultNumber = searchResult['number'].split('.')[0]
+                resultExt = searchResult['number'].split('.')[-1]
+                if str(resultNumber).lower() == str(drawingNumberBase).lower():
+                    pdmPropertyValues.append(searchResult['number'])
+                    if str(resultExt).lower() == 'drw':
+                        # set UFID for getting drawing metadata if needed
+                        if ufid is None:
+                            ufid = searchResult['ufid']
+                        # Set pdmComponentName
+                        if str(searchResult['name']).split('.')[-1].__len__() == 3:
+                            pdmComponentName = str(searchResult['name']).split('.')[0]
+                        else:
+                            pdmComponentName = searchResult['name']
+
+        if pdmComponentName is None:
+            pdmComponentName = drawingNumberBase
+        if ufid is None:
+            # DRW was not found use titles of the first search result
+            for searchResult in searchResults:
+                if str(resultNumber).lower() == str(drawingNumberBase).lower():
+                    ufid = searchResults[0]['ufid']
+                    break
+
+        componentInfo = {}
+        componentInfo['name'] = pdmComponentName
+        componentInfo['pdmPropertyValues'] = pdmPropertyValues
+
+        # Generate component type suggestions
+        self.__createComponentDbApi()
+
+        # Get a list of available types
+        componentTypes = self.componentDbApi.getComponentTypes()
+
+        # Get drawing details for keywords
+        if drawingDetails is None:
+            drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
+
+        # Add WBS description
+        componentInfo['wbsDescription'] = None
+        wbsDescription = drawingDetails['wbsDescription']
+        if wbsDescription is not None:
+            if wbsDescription != '' and wbsDescription != '-':
+                componentInfo['wbsDescription'] = wbsDescription
+
+
+        # Generate a keyword list from drawings titles
+        keywordList = []
+        for i in range(1, 6):
+            tmpKeywordList = str(drawingDetails['title'+str(i)]).split(' ')
+            for keyword in tmpKeywordList:
+                if keyword != '-':
+                    keywordList.append(keyword)
+
+        # Key is id of a component type and value is commonality of a component type based on keywords.
+        stats = {}
+        suggestedTypeList = []
+        for componentType in componentTypes:
+            componentTypeName = str(componentType['name']).lower()
+            for keyword in keywordList:
+                keyword = keyword.lower()
+                if keyword + ' ' in componentTypeName \
+                        or ' ' + keyword in componentTypeName \
+                        or componentTypeName.startswith(keyword):
+                    curID = str(componentType['id'])
+                    if curID not in stats.keys():
+                        stats[curID] = 1
+                    else:
+                        stats[curID] += 1
+            # Add the default component type first
+            if PdmLinkComponent.DEFAULT_COMPONENT_TYPE.lower() == componentTypeName:
+                suggestedTypeList.append(componentType)
+
+        # Sort dictionary keys by value
+        sortedIds = sorted(stats, key=stats.get)
+
+        # Add the suggested types from most to least popular
+        for i in range(sortedIds.__len__() -1, -1, -1):
+            for componentType in componentTypes:
+                if int(componentType['id']) == int(sortedIds[i]):
+                    # Part of the list already
+                    if componentType['name'] != PdmLinkComponent.DEFAULT_COMPONENT_TYPE:
+                        suggestedTypeList.append(componentType)
+                        continue
+
+        componentInfo['suggestedComponentTypes'] = suggestedTypeList
+
+        return PdmLinkComponent(componentInfo)
 
     @SslUtility.useUnverifiedSslContext
     def findPdmLinkDrawings(self, drawingNamePattern, startResults=0, maxResults=1):
@@ -474,6 +626,92 @@ class PdmLink:
         else:
             raise ObjectNotFound('Thumbnail for the requested ufid was not found.')
 
+    def generateComponentInfo(self, drawingNumber=None, ufid=None):
+        """
+        Generates information that would be helpful/used when creating a component using a PDM Link drawing number:
+        Name:
+            Component Name
+        PdmLink Properties:
+            List of related drawings
+        Suggested Type:
+            No concept of component types exist in PDMLink, Generates a list of suggested component types based on metadata entered by engineer.
+        WBS information:
+            Extracted from PdmLink metadata
+
+        :param drawingNumber: The full name of the drawing
+        :param ufid: optional currently not implemented for REST API
+        :return: pdmLinkComponentObject with all the information gathered.
+        :raises ObjectNotFound: if a drawing cannot be found
+        :raises InvalidArguments: if a drawing number is not complete
+        :raises InvalidRequest: if required parameters aren't provided
+        """
+        return self.__generateComponentInfo(drawingNumber, ufid)
+
+    def createComponent(self, drawingNumber, createdByUserId, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName):
+        """
+        Uses the generateComponentInfo to gather information required to create a component.
+        Uses default componentTypeid if componentTypeId or componentTypeName is not provided
+        Sets properties for all related PDMLink drawings
+        Sets wbs property if possible and value is allowed.
+
+        :param drawingNumber: (str) Pdm Link drawing number
+        :param createdByUserId: (int)User id of user that is creating the component
+        :param componentTypeId: (int) id of the type of component is being added
+        :param description: (str) description of the component
+        :param ownerUserId: (int) User id of user that owns the component
+        :param ownerGroupId: (int) Group id of group that owns the component
+        :param isGroupWriteable: (boolean) Could group modify the component
+        :param componentTypeName: (str) user could provide component type name instead of id which will be searched for.
+        :return: ComponentObject with the resulting component after it has been added
+        :raises ObjectNotFound: if a drawing cannot be found, if a component type name provided cannot be found
+        :raises InvalidArguments: if a drawing number is not complete
+        :raises InvalidRequest: if required parameters aren't provided
+        """
+        # use default values for adding properties
+        def addProperty(componentId, propertyId, propertyValue):
+            self.componentDbApi.addComponentPropertyByTypeId(componentId, propertyId, tag='',
+                                                                     value=propertyValue, units=None, description=None,
+                                                                     enteredByUserId=createdByUserId, isDynamic=False,
+                                                                     isUserWriteable=False)
+
+        # Throws invalid arguments if user does not provide complete drawingNumber
+        componentInfo = self.__generateComponentInfo(drawingNumber)
+
+        # It is already created in the above function
+        self.__createComponentDbApi()
+
+        # Figure component type id if one was provided textually or use default
+        if componentTypeId is None and componentTypeName is not None:
+            # Raises ObjectNotFound
+            componentTypeId = self.componentDbApi.getComponentTypeByName(componentTypeName)['id']
+        if componentTypeId is None:
+            componentTypeId = componentInfo['suggestedComponentTypes'][0]['id']
+
+
+        # Add the new component
+        newComponent = self.componentDbApi.addComponent(componentInfo['name'], componentTypeId, createdByUserId, ownerUserId,
+                                                        ownerGroupId, isGroupWriteable, description)
+
+        componentId = newComponent['id']
+
+        # Add PDMLink properties
+        # Get id of pdmLink property
+        pdmPropertyTypeId = self.componentDbApi.getPropertyTypeByName(PdmLinkComponent.PROPERTY_TYPE_PDM_NAME)['id']
+        pdmPropertyValues = componentInfo['pdmPropertyValues']
+        for pdmPropertyValue in pdmPropertyValues:
+            addProperty(componentId, pdmPropertyTypeId, pdmPropertyValue)
+
+        # Attempt to add wbs description
+        wbsDescription = componentInfo['wbsDescription']
+        if wbsDescription is not None:
+            wbsPropertyTypeId = self.componentDbApi.getPropertyTypeByName(PdmLinkComponent.PROPERTY_TYPE_WBS_NAME)['id']
+            try:
+                addProperty(componentId, wbsPropertyTypeId, wbsDescription)
+            except InvalidArgument as invalidArgsEx:
+                self.logger.debug('Could not add WBS information for drawing: %s' % str(invalidArgsEx.getErrorMessage()))
+
+        return self.componentDbApi.getComponentById(componentId)
+
 
 #######################################################################
 # Testing.
@@ -539,5 +777,8 @@ if __name__ == '__main__':
     # Causes an external service error exception
     # print pdmLink.getDrawings('stillwell ben')
 
-
-
+    # Tests below alter the database remove quit to run them.
+    quit()
+    # Create component from pdmLink Drawing
+    pdmLink.createComponent(createdByUserId=26, ownerUserId=26, ownerGroupId=4, isGroupWriteable=True,
+                            description='PDM Link Utility Test', drawingNumber='D14100201-113160.asm', componentTypeId=None, componentTypeName='Absorber')

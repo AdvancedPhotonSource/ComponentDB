@@ -5,8 +5,11 @@ from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.api.cdbRestApi import CdbRestApi
 
 from cdb.common.objects.pdmLinkDrawing import PdmLinkDrawing
+from cdb.common.objects.pdmLinkComponent import PdmLinkComponent
 from cdb.common.objects.pdmLinkSearchResult import PdmLinkSearchResult
+from cdb.common.objects.component import Component
 from cdb.common.objects.image import Image
+from cdb.common.utility.encoder import Encoder
 
 
 class PdmLinkRestApi(CdbRestApi):
@@ -76,6 +79,40 @@ class PdmLinkRestApi(CdbRestApi):
         url = '%s/pdmLink/drawingImages/%s' % (self.getContextRoot(), ufid)
         responseData = self.sendRequest(url=url, method='GET')
         return Image(responseData)
+
+    @CdbRestApi.execute
+    def generateComponentInfo(self, drawingNumber):
+        if drawingNumber is None:
+            raise InvalidRequest('Drawing number must be provided.')
+        url = '%s/pdmLink/componentInfo/%s' % (self.getContextRoot(), drawingNumber)
+        responseData = self.sendRequest(url=url, method='GET')
+        return PdmLinkComponent(responseData)
+
+    @CdbRestApi.execute
+    def createComponent(self, drawingNumber, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName):
+        if drawingNumber is None:
+            raise InvalidRequest('Drawing Number must be provided')
+        url = '%s/pdmLink/createComponent/%s' % (self.getContextRoot(), drawingNumber)
+
+        parameters = ''
+        if componentTypeId is not None:
+            parameters += '&componentTypeId=%s' % componentTypeId
+        if ownerUserId is not None:
+            parameters += '&ownerUserId=%s' % ownerUserId
+        if ownerGroupId is not None:
+            parameters += '&ownerGroupId=%s' % ownerGroupId
+        if description is not None:
+            parameters += '&description=%s' % Encoder.encode(description)
+        if isGroupWriteable is not None:
+            parameters += '&isGroupWriteable=%s' % isGroupWriteable
+        if componentTypeName is not None:
+            parameters += '&componentTypeName=%s' % Encoder.encode(componentTypeName)
+        if len(parameters):
+            url += '?%s' % parameters[1:]
+
+        responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
+        return Component(responseData)
+
 
 #######################################################################
 # Testing.
