@@ -1,0 +1,28 @@
+1) make db backup 
+
+make backup-lcls2
+
+2) checkout code from a branch, or merge from trunk, e.g.
+
+svn merge https://svn.aps.anl.gov/cdb/trunk
+
+3) copy backed up db data, edit as needed
+
+rsync -arvlP ../backup/cdb_lcls2/20150811/populate_* db/sql/cdb/
+
+4) recreate db
+
+make db-lcls2
+
+5) deploy web portal
+
+make deploy-web-portal-lcls2
+
+6) deploy web-service
+
+make deploy-web-service-lcls2
+
+7) commit changes
+
+svn commit -m "updating lcls2 branch"
+

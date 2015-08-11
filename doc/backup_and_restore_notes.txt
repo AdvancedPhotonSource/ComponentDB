@@ -1,5 +1,5 @@
 #
-# All commands relative to CMS_ROOT_DIR
+# All commands relative to CDB_ROOT_DIR
 # Deployment files are in the etc directory, named using database name. 
 # For example:
 #   etc/cdb.deploy.conf describes deployment of "cdb" database/webapp
