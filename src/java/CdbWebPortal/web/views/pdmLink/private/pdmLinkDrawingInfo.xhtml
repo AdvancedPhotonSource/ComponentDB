@@ -6,16 +6,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-        <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
-            <p:accordionPanel multiple="true" activeIndex="0,1">
-                <p:tab title="Drawing Details">
-                    <ui:include src="pdmLinkDrawingViewPanelGrid.xhtml"/>
-                </p:tab>
-                <p:tab title="Drawing Revisions">
-                    <ui:include src="pdmLinkDrawingRevisionListDataTable.xhtml"/>                       
-                </p:tab>  
-            </p:accordionPanel>
-        </ui:fragment>
+    <ui:fragment rendered="#{pdmLinkDrawingBean.drawing != null}">
+        <ui:include src="pdmLinkDrawingInfoAccordion.xhtml"/>
+    </ui:fragment>
 
 </ui:composition>
 

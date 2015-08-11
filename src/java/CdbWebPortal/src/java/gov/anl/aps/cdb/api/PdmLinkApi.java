@@ -18,7 +18,11 @@ import gov.anl.aps.cdb.common.objects.CdbObjectFactory;
 import gov.anl.aps.cdb.common.objects.PdmLinkDrawing;
 import gov.anl.aps.cdb.common.objects.PdmLinkSearchResults;
 import gov.anl.aps.cdb.common.objects.Image;
+import gov.anl.aps.cdb.common.objects.PdmLinkComponent;
+import gov.anl.aps.cdb.common.objects.Component; 
 import gov.anl.aps.cdb.common.utilities.ArgumentUtility;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * PDMLink API class, used for retrieving information about PDMLink drawings.
@@ -122,6 +126,27 @@ public class PdmLinkApi extends CdbRestApi {
         Image image = (Image) CdbObjectFactory.createCdbObject(jsonString, Image.class);
         return image; 
     }
+    
+    public PdmLinkComponent generateComponentInformation(String drawingNumber) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
+        ArgumentUtility.verifyNonEmptyString("Drawing Number", drawingNumber);
+        String requestUrl = "/pdmLink/componentInfo/" + drawingNumber;
+        String jsonString = invokeGetRequest(requestUrl);
+        PdmLinkComponent pdmLinkComponent = (PdmLinkComponent) CdbObjectFactory.createCdbObject(jsonString, PdmLinkComponent.class); 
+        return pdmLinkComponent;
+    }
+    
+    public Component createComponent(String drawingNumber, int componentTypeId, String description) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
+        ArgumentUtility.verifyNonEmptyString("Drawing Number", drawingNumber);
+        String requestUrl = "/pdmLink/createComponent/" + drawingNumber;
+        Map data = new HashMap();  
+        description = ArgumentUtility.encode(description); 
+        data.put("componentTypeId", componentTypeId+""); 
+        data.put("description", description);
+        String jsonString = invokeSessionPostRequest(requestUrl, data);
+        Component component = (Component) CdbObjectFactory.createCdbObject(jsonString, Component.class); 
+        return component;
+    }
+    
 
     /*
      * Main method, used for simple testing.
@@ -147,6 +172,25 @@ public class PdmLinkApi extends CdbRestApi {
             }
             
             
+            // Generate component info
+            PdmLinkComponent pdmLinkComponent = client.generateComponentInformation("D14100201-113160.asm"); 
+            System.out.println("Name: " + pdmLinkComponent.getName());
+            System.out.println("Suggested Comonent Types:"); 
+            for(int i = 0; i<pdmLinkComponent.getSuggestedComponentTypes().size(); i++){
+                System.out.println("    " + pdmLinkComponent.getSuggestedComponentTypes().get(i).getName());
+            }
+            System.out.println("WBS: " + pdmLinkComponent.getWbsDescription());
+            System.out.println("Pdm Property Values:"); 
+            for(int i = 0; i<pdmLinkComponent.getPdmPropertyValues().length; i++){
+                System.out.println("    " +pdmLinkComponent.getPdmPropertyValues()[i]);
+            }
+            
+            //Create a component from pdmLinkDrawing number 
+            /* Uncoment to test - modifies database by adding a component. 
+            client.login("djarosz", "cdb");
+            Component newComponent = client.createComponent("2101-161910.DRW", 5, "Testing PDMLink class");
+            System.out.println("New Component: " + newComponent.getName());
+            */
         } catch (CdbException ex) {
             System.out.println("Sorry: " + ex);
         }

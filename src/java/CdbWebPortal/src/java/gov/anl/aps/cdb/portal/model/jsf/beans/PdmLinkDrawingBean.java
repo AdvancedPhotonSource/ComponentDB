@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.common.objects.PdmLinkDrawingRevision;
 import gov.anl.aps.cdb.common.objects.PdmLinkSearchResults;
 import gov.anl.aps.cdb.common.objects.PdmLinkSearchResult;
 import gov.anl.aps.cdb.common.objects.Image;
+import gov.anl.aps.cdb.common.objects.PdmLinkComponent;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
@@ -51,9 +52,10 @@ public class PdmLinkDrawingBean implements Serializable {
     private PdmLinkDrawing drawing;
     private PdmLinkApi pdmLinkApi;
     private PdmLinkSearchResults searchResults;
+    private PdmLinkComponent pdmLinkComponent; 
     //Getting image from server 
     private StreamedContent pdmLinkImage;
-
+    
     @PostConstruct
     public void init() {
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
@@ -104,6 +106,10 @@ public class PdmLinkDrawingBean implements Serializable {
         return pdmLinkImage;
     }
 
+    public PdmLinkComponent getPdmLinkComponent() {
+        return pdmLinkComponent;
+    }
+    
     /**
      * Check if the pdmLinkApi was successfully initialized. 
      * 
@@ -116,7 +122,49 @@ public class PdmLinkDrawingBean implements Serializable {
         }
         return true;
     }
-
+    
+     public void generateComponentInfo(){
+        if(!checkAPIStatus()){
+            return;
+        }
+        if(drawing == null){
+            SessionUtility.addErrorMessage("Error", "No drawing is loaded");
+            pdmLinkComponent = null; 
+        }
+        
+        String drawingNumber = drawing.getNumber(); 
+        if(drawingNumber != null && !drawingNumber.isEmpty()) { 
+            try{
+                pdmLinkComponent = pdmLinkApi.generateComponentInformation(drawingNumber); 
+            } catch (CdbException ex){
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                pdmLinkComponent = null; 
+            }
+        } else{
+            SessionUtility.addWarningMessage("Error", "Drawing Number is empty");
+            pdmLinkComponent = null; 
+        }
+    }
+    
+    public void createComponentFromDrawingNumber(int componentTypeId, String description){
+        if(!checkAPIStatus()){
+            return;
+        }
+        if(pdmLinkComponent != null){
+            try{
+                logger.debug(pdmLinkComponent.getDrawingNumber());
+                
+                pdmLinkApi.createComponent(pdmLinkComponent.getDrawingNumber(), componentTypeId, description); 
+            } catch(CdbException ex){
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            }
+        }else{
+            SessionUtility.addErrorMessage("Error", "No pdmlink component has been generated.");
+        }
+    }
+     
     /**
      * Determine whether the user wants to search for a particular drawing or
      * a list of drawing names, perform correct action based on criteria. 

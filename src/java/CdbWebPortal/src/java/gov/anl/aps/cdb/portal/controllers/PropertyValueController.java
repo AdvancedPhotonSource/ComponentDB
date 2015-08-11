@@ -254,8 +254,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         propertyTypeHandler.setDisplayValue(propertyValue);
         String targetValue = propertyValue.getTargetValue();
         //Field is stored in db... update if empty. 
-        if(targetValue == null || targetValue.isEmpty())
+        if(targetValue == null || targetValue.isEmpty()){
             propertyTypeHandler.setTargetValue(propertyValue);
+        }
         PropertyType propertyType = propertyValue.getPropertyType();
         DisplayType displayType = propertyTypeHandler.getValueDisplayType();
         if (displayType == null) {
