@@ -7,6 +7,10 @@ class ComponentType(CdbDbEntity):
 
     cdbObjectClass = componentType.ComponentType
 
+    mappedColumnDict = {
+        'component_type_category_id' : 'componentTypeCategoryId',
+    }
+
     def __init__(self, **kwargs):
         CdbDbEntity.__init__(self, **kwargs)
 

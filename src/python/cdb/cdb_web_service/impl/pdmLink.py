@@ -358,6 +358,7 @@ class PdmLink:
 
         componentInfo = {}
         componentInfo['name'] = pdmComponentName
+        componentInfo['drawingNumber'] = drawingNumber
         componentInfo['pdmPropertyValues'] = pdmPropertyValues
 
         # Generate component type suggestions
