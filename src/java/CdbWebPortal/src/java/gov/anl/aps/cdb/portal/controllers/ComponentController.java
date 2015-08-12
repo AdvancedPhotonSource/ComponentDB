@@ -28,7 +28,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.AssemblyComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
@@ -168,16 +167,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     @Override
     protected Component createEntityInstance() {
         Component component = new Component();
-        UserInfo ownerUser = (UserInfo) SessionUtility.getUser();
-        if (ownerUser == null) {
-            return null;
-        }
-        EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(ownerUser);
-        List<UserGroup> ownerUserGroupList = ownerUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
-        }
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         component.setEntityInfo(entityInfo);
 
         selectComponentTypeCandidateList = null;
@@ -239,8 +229,8 @@ public class ComponentController extends CdbEntityController<Component, Componen
             throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
         }
 
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        component.setEntityInfo(entityInfo);
+        // EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        // component.setEntityInfo(entityInfo);
         Log logEntry = prepareLogEntry();
         if (logEntry != null) {
             List<Log> logList = new ArrayList<>();
@@ -250,7 +240,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
 
         component.addComponentTypeProperties();
         logger.debug("Inserting new component " + component.getName() + " (user: "
-                + entityInfo.getCreatedByUser().getUsername() + ")");
+                + component.getEntityInfo().getCreatedByUser().getUsername() + ")");
     }
 
     @Override
@@ -304,15 +294,13 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
 
     @Override
-    public void prepareEntityUpdateOnRemoval(Component component
-    ) {
+    public void prepareEntityUpdateOnRemoval(Component component) {
         EntityInfo entityInfo = component.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
     }
 
     @Override
-    public String prepareEdit(Component component
-    ) {
+    public String prepareEdit(Component component) {
         locationList = locationFacade.findAll();
         return super.prepareEdit(component);
     }
