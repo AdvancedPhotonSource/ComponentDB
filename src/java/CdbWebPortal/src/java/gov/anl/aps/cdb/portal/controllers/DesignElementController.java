@@ -129,13 +129,19 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     private DataTable componentPropertyValueListDataTable = null;
     private DataTable childDesignPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
-    
+
     public DesignElementController() {
     }
 
     @Override
     protected DesignElementDbFacade getEntityDbFacade() {
         return designElementFacade;
+    }
+
+    private void resetSelectObjectLists() {
+        selectLocationCandidateList = null;
+        selectChildDesignCandidateList = null;
+        selectComponentCandidateList = null;
     }
 
     @Override
@@ -145,9 +151,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         designElement.setEntityInfo(entityInfo);
 
         // clear selection lists
-        selectLocationCandidateList = null;
-        selectChildDesignCandidateList = null;
-        selectComponentCandidateList = null;
+        resetSelectObjectLists();
         return designElement;
     }
 
@@ -202,6 +206,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         logger.debug("Verifying properties for design element " + designElement);
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
         prepareDesignElementImageList(designElement);
+        resetSelectObjectLists();
     }
 
     @Override
@@ -209,6 +214,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         EntityInfo entityInfo = designElement.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
         prepareDesignElementImageList(designElement);
+        resetSelectObjectLists();
     }
 
     public String prepareViewFromDesign(DesignElement designElement) {
@@ -632,9 +638,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     }
 
     public List<Location> getSelectLocationCandidateList() {
-        if (selectLocationCandidateList == null) {
-            selectLocationCandidateList = locationFacade.findAll();
-        }
+        selectLocationCandidateList = locationFacade.findAll();
         return selectLocationCandidateList;
     }
 
@@ -702,9 +706,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     }
 
     public List<Component> getSelectComponentCandidateList() {
-        if (selectComponentCandidateList == null) {
-            selectComponentCandidateList = componentFacade.findAll();
-        }
+        selectComponentCandidateList = componentFacade.findAll();
         return selectComponentCandidateList;
     }
 
@@ -883,5 +885,5 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     public void setChildDesignPropertyValueListDataTable(DataTable childDesignPropertyValueListDataTable) {
         this.childDesignPropertyValueListDataTable = childDesignPropertyValueListDataTable;
     }
-  
+
 }
