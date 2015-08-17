@@ -13,16 +13,16 @@
 
         <ui:include src="pdmLinkDrawingInfoAccordion.xhtml"/>
 
-        <ui:remove>
-            <p:commandButton value="Add Component" icon="ui-icon-plus" rendered="#{displayAddButton}"
-                             actionListener="#{pdmLinkDrawingBean.generateComponentInfo}"
-                             onstart="PF('loadingDialog').show(); "
-                             oncomplete="PF('loadingDialog').hide(); 
-                             PF('pdmLinkAddComponentDialog').initPosition();
-                             PF('pdmLinkAddComponentDialog').show();"
-                             update=":pdmLinkAddComponentDialog"> 
-            </p:commandButton>
-        </ui:remove>
+
+        <p:commandButton value="Add Component" icon="ui-icon-plus" rendered="#{displayAddButton}"
+                         actionListener="#{pdmLinkDrawingBean.generateComponentInfo(componentController)}"
+                         onstart="PF('loadingDialog').show(); "
+                         oncomplete="PF('loadingDialog').hide(); 
+                         PF('pdmLinkAddComponentDialogWidget').initPosition();
+                         PF('pdmLinkAddComponentDialogWidget').show();"
+                         update=":pdmLinkAddComponentDialog"> 
+        </p:commandButton>
+
 
     </ui:fragment>
 
