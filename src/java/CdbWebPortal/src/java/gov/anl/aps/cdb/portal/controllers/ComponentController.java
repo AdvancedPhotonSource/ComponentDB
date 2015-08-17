@@ -317,19 +317,29 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
 
     public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
+        for (PropertyType propertyType : propertyTypeList) {
+            preparePropertyTypeValueAdd(propertyType);
+        }
+    }
+    
+    public void preparePropertyTypeValueAdd(PropertyType propertyType){
+        preparePropertyTypeValueAdd(propertyType, propertyType.getDefaultValue()); 
+    }
+    
+    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString){
         Component component = getCurrent();
+        List<PropertyValue> propertyValueList = component.getPropertyValueList();
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
-        List<PropertyValue> propertyValueList = component.getPropertyValueList();
-        for (PropertyType propertyType : propertyTypeList) {
-            PropertyValue propertyValue = new PropertyValue();
-            propertyValue.setPropertyType(propertyType);
-            propertyValue.setValue(propertyType.getDefaultValue());
-            propertyValue.setUnits(propertyType.getDefaultUnits());
-            propertyValueList.add(propertyValue);
-            propertyValue.setEnteredByUser(lastModifiedByUser);
-            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        }
+        
+        PropertyValue propertyValue = new PropertyValue();
+        propertyValue.setPropertyType(propertyType);
+        propertyValue.setValue(propertyValueString);
+        propertyValue.setUnits(propertyType.getDefaultUnits());
+        propertyValueList.add(propertyValue);
+        propertyValue.setEnteredByUser(lastModifiedByUser);
+        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+        
     }
 
     public void deleteProperty(PropertyValue componentProperty) {
