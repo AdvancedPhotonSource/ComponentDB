@@ -129,6 +129,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     public PropertyType findById(Integer id) {
         return propertyTypeFacade.findById(id);
     }
+    
+    public PropertyType findByName(String name) {
+        return propertyTypeFacade.findByName(name); 
+    }
 
     @Override
     public List<PropertyType> getAvailableItems() {
