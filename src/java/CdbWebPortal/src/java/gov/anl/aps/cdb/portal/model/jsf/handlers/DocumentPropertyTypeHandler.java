@@ -42,13 +42,19 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     @Override
     public void setTargetValue(PropertyValue propertyValue) {
-        String targetLink = StorageUtility.getApplicationPropertyValueDocumentPath(propertyValue.getValue());
-        propertyValue.setTargetValue(targetLink);
+        String targetLink = propertyValue.getValue();
+        if (targetLink != null && !targetLink.isEmpty()) {
+            targetLink = StorageUtility.getApplicationPropertyValueDocumentPath(targetLink);
+            propertyValue.setTargetValue(targetLink);
+        }
     }
 
     @Override
     public void setTargetValue(PropertyValueHistory propertyValueHistory) {
-        String targetLink = StorageUtility.getApplicationPropertyValueDocumentPath(propertyValueHistory.getValue());
-        propertyValueHistory.setTargetValue(targetLink);
+        String targetLink = propertyValueHistory.getValue();
+        if (targetLink != null && !targetLink.isEmpty()) {
+            targetLink = StorageUtility.getApplicationPropertyValueDocumentPath(targetLink);
+            propertyValueHistory.setTargetValue(targetLink);
+        }
     }
 }
