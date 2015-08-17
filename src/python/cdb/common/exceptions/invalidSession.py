@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-# Invalid request error class.
+# Invalid session error class.
 #
 
 #######################################################################
@@ -11,6 +11,6 @@ from cdb.common.exceptions.cdbException import CdbException
 
 #######################################################################
 
-class InvalidRequest(CdbException):
+class InvalidSession(CdbException):
     def __init__ (self, error='', **kwargs):
         CdbException.__init__(self, error, cdbStatus.CDB_INVALID_SESSION, **kwargs)

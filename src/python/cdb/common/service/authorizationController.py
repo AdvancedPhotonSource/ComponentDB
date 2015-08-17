@@ -130,12 +130,12 @@ def require(*conditions):
 # Conditions are callables that return True if the user 
 # fulfills the conditions they define, False otherwise.
 # They can access the current username as cherrypy.request.login
-def isAcdbinRole():
-    return (cherrypy.session.get(SESSION_ROLE_KEY, None) == cdbRole.CDB_ACDBIN_ROLE)
+def isAdminRole():
+    return (cherrypy.session.get(SESSION_ROLE_KEY, None) == cdbRole.CDB_ADMIN_ROLE)
 
-def isUserOrAcdbinRole():
+def isUserOrAdminRole():
     role = cherrypy.session.get(SESSION_ROLE_KEY, None)
-    if role == cdbRole.CDB_ACDBIN_ROLE or role == cdbRole.CDB_USER_ROLE:
+    if role == cdbRole.CDB_ADMIN_ROLE or role == cdbRole.CDB_USER_ROLE:
         return True
     return False
 
@@ -145,9 +145,6 @@ def isUser(username):
 
 def getSessionUser():
     return cherrypy.session.get(SESSION_USERNAME_KEY, None)
-
-def memberOf(groupname):
-    return cherrypy.request.login == 'cdb' and groupname == 'acdbin'
 
 def nameIs(reqd_username):
     return lambda: reqd_username == cherrypy.request.login

@@ -13,6 +13,7 @@ import types
 from cdb.common.constants import cdbServiceConstants
 from cdb.common.exceptions.configurationError import ConfigurationError
 from cdb.common.exceptions.authorizationError import AuthorizationError
+from cdb.common.exceptions.invalidSession import InvalidSession
 from cdb.common.exceptions.urlError import UrlError
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
@@ -68,7 +69,7 @@ class SessionManager:
         self.logger.debug('User %s session cookie: %s' % (username, self.sessionCookie))
 
     def getUsername(self, username):
-        if not len(username) and self.requireSessionCredentials:
+        if username is None and self.requireSessionCredentials:
             return self.askForUsername()
         return username
 
@@ -81,7 +82,7 @@ class SessionManager:
         return username
 
     def getPassword(self, password):
-        if not len(password) and self.requireSessionCredentials:
+        if password is None and self.requireSessionCredentials:
             return self.askForPassword()
         return password
 
@@ -196,7 +197,12 @@ class SessionManager:
         """ Send session request. """
         if self.sessionCookie is None:
             self.establishSession(self.host, self.username, self.password)
-        return self.sendRequest(url, method, contentType, data)
+        try:
+            return self.sendRequest(url, method, contentType, data)
+        except InvalidSession, ex:
+            self.clearSessionFile()
+            self.establishSession(self.host, self.username, self.password)
+            return self.sendRequest(url, method, contentType, data)
 
     def checkResponseHeadersForErrorsAndSaveSession(self, responseHeaders):
         try:
@@ -204,7 +210,7 @@ class SessionManager:
             sessionCookie = responseHeaders.get('Set-Cookie')
             self.saveSession(sessionCookie)
             return sessionCookie
-        except AuthorizationError, ex:
+        except (AuthorizationError, InvalidSession), ex:
             self.clearSessionFile()
             raise
 

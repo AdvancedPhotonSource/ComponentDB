@@ -10,6 +10,7 @@ from cdb.common.constants import cdbHttpStatus
 from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.cdbHttpError import CdbHttpError
 from cdb.common.exceptions.authorizationError import AuthorizationError
+from cdb.common.exceptions.invalidSession import InvalidSession
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.service.cdbController import CdbController
 from cdb.common.impl.authorizationManager import AuthorizationManager
@@ -135,7 +136,7 @@ class LoginController(CdbController):
         if not sessionCache.has_key(sessionId):
             errorMsg = 'Invalid or expired session id: %s.' % sessionId
             logger.debug(errorMsg)
-            raise CdbHttpError(cdbHttpStatus.CDB_HTTP_UNAUTHORIZED, 'User Not Authorized', AuthorizationError(errorMsg))
+            raise CdbHttpError(cdbHttpStatus.CDB_HTTP_UNAUTHORIZED, 'User Not Authorized', InvalidSession(errorMsg))
 
         username = cherrypy.session.get(LoginController.SESSION_USERNAME_KEY)
         logger.debug('Session id %s is valid (username: %s)' % (sessionId, username))
