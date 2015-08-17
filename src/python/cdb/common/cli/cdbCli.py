@@ -21,6 +21,8 @@ from cdb.common.constants import cdbStatus
 class CdbCli(object):
     """ Base cdb command line interface class. """
     DEFAULT_SESSION_CACHE_FILE = OsUtility.getUserHomeDir() + '/.cdb/.session.cache'
+    ANY_NUMBER_OF_POSITIONAL_ARGS = 10000000
+
     def __init__(self, validArgCount=0):
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
         # Do not log into a file for CLIs
@@ -30,8 +32,6 @@ class CdbCli(object):
         self.options = {}
         self.args = []
         self.validArgCount = validArgCount
-        self.serviceHost = None
-        self.servicePort = None
         self.optionGroupDict = {}
 
         commonGroup = 'Common Options'
@@ -43,16 +43,6 @@ class CdbCli(object):
         self.addOptionToGroup(commonGroup, '', '--display-format', dest='displayFormat', default=CdbObject.TEXT_DISPLAY_FORMAT, help='Display format for output objects. Possible options are: %s, %s, and %s (default: %s).' % (CdbObject.TEXT_DISPLAY_FORMAT, CdbObject.DICT_DISPLAY_FORMAT, CdbObject.JSON_DISPLAY_FORMAT, CdbObject.TEXT_DISPLAY_FORMAT)) 
         self.addOptionToGroup(commonGroup, '', '--display-keys', dest='displayKeys', default=CdbObject.DEFAULT_KEYS, help='List of output object keys to display. Possible options are: %s, %s, and string containing comma-separated keys (default: %s, represents class default keys).' % (CdbObject.DEFAULT_KEYS, CdbObject.ALL_KEYS, CdbObject.DEFAULT_KEYS)) 
 
-        # These will be set via env variables
-        self.addOptionToGroup(commonGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s, can be set via CDB_SERVICE_HOST environment variable).' % self.getDefaultServiceHost())
-        self.addOptionToGroup(commonGroup, '', '--service-port', dest='servicePort', default=self.getDefaultServicePort(), help='Service port (default: %s, can be set via CDB_SERVICE_PORT environment variable).' % self.getDefaultServicePort())
-        self.addOptionToGroup(commonGroup, '', '--service-protocol', dest='serviceProtocol', default=self.getDefaultServiceProtocol(), help='Service protocol (default: %s, can be set via CDB_SERVICE_PROTOCOL environment variable).' % self.getDefaultServiceProtocol())
-
-        # SSL options, disabled for now.
-        #self.addOptionToGroup(commonGroup, '', '--ssl-key', dest='sslKeyFile', help='SSL key file (needed if service requires peer verification, can be set via CDB_SSL_KEY_FILE environment variable).')
-        #self.addOptionToGroup(commonGroup, '', '--ssl-cert', dest='sslCertFile', help='SSL certificate file (needed if service requires peer verification, can be set via CDB_SSL_CERT_FILE environment variable).')
-        #self.addOptionToGroup(commonGroup, '', '--ssl-ca-cert', dest='sslCaCertFile', help='SSL CA certificate file (needed if client requires peer verification, can be set via CDB_SSL_CA_CERT_FILE environment variable).')
-        
     def getDefaultServiceHost(self):
         return ConfigurationManager.getInstance().getServiceHost()
 
@@ -129,27 +119,9 @@ class CdbCli(object):
             if consoleLogLevel:
                 LoggingManager.getInstance().setConsoleLogLevel(consoleLogLevel)
 
-        # Service host, port, etc.
-        configManager = ConfigurationManager.getInstance()
-        self.serviceHost = self.options.serviceHost
-        configManager.setServiceHost(self.serviceHost)
-        self.servicePort = self.options.servicePort
-        configManager.setServicePort(self.servicePort)
-        self.serviceProtocol = self.options.serviceProtocol
-        configManager.setServiceProtocol(self.serviceProtocol)
-
-        # SSL options, comment out for now
-        #self.sslCaCertFile = self.options.sslCaCertFile
-        #if self.sslCaCertFile:
-        #    configManager.setSslCaCertFile(self.sslCaCertFile)
-        #self.sslCertFile = self.options.sslCertFile
-        #if self.sslCertFile:
-        #    configManager.setSslCertFile(self.sslCertFile)
-        #self.sslKeyFile = self.options.sslKeyFile
-        #if self.sslKeyFile:
-        #    configManager.setSslKeyFile(self._sslKeyFile)
 
         # Check session cache.
+        configManager = ConfigurationManager.getInstance()
         try:
             self.checkSessionCache()
         except Exception, ex:
@@ -187,6 +159,19 @@ class CdbCli(object):
     def getArgs(self):
         """ Returns the command line argument list. """
         return self.args
+
+    def splitArgsIntoDict(self, keyValueDelimiter=':'):
+        """ Returns the command line argument list as dictionary of key/value
+        pairs. Each argument is split using specified delimiter. """
+        argDict = {}
+        for a in self.args:
+            sList = a.split(keyValueDelimiter)
+            key = sList[0]
+            value = ''
+            if len(sList) > 1:
+                value = keyValueDelimiter.join(sList[1:])
+            argDict[key] = value
+        return argDict
 
     def getArg(self, i):
         """ Returns the i-th command line argument. """

@@ -12,23 +12,23 @@ class CdbRestSessionCli(CdbRestCli):
 
         loginGroup = 'Login Options'
         self.addOptionGroup(loginGroup, None)
-        self.addOptionToGroup(loginGroup, '', '--username', dest='username', help='Login username.')
-        self.addOptionToGroup(loginGroup, '', '--password', dest='password', help='Login password.')
+        self.addOptionToGroup(loginGroup, '', '--login-username', dest='loginUsername', help='Login username.')
+        self.addOptionToGroup(loginGroup, '', '--login-password', dest='loginPassword', help='Login password.')
 
     def parseArgs(self, usage=None):
         CdbRestCli.parseArgs(self, usage)
-        self.username = self.options.username
-        self.password = self.options.password
+        self.loginUsername = self.options.loginUsername
+        self.loginPassword = self.options.loginPassword
         return (self.options, self.args)
 
-    def getUsername(self):
-        return self.username
+    def getLoginUsername(self):
+        return self.loginUsername
 
-    def getPassword(self):
-        return self.password
+    def getLoginPassword(self):
+        return self.loginPassword
 
     def hasCredentials(self):
-        return (self.username != None and self.password != None)
+        return (self.loginUsername != None and self.loginPassword != None)
 
 #######################################################################
 # Testing

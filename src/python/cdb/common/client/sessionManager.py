@@ -69,7 +69,7 @@ class SessionManager:
         self.logger.debug('User %s session cookie: %s' % (username, self.sessionCookie))
 
     def getUsername(self, username):
-        if username is None and self.requireSessionCredentials:
+        if not username and self.requireSessionCredentials:
             return self.askForUsername()
         return username
 
@@ -82,7 +82,7 @@ class SessionManager:
         return username
 
     def getPassword(self, password):
-        if password is None and self.requireSessionCredentials:
+        if not password and self.requireSessionCredentials:
             return self.askForPassword()
         return password
 
