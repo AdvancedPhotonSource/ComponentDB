@@ -390,13 +390,14 @@ class PdmLink:
         cdbDescription = ''
         for i in range(1, 6):
             title = str(drawingDetails['title'+str(i)])
-            cdbDescription += title+"\n"
+            cdbDescription += title+"; "
             tmpKeywordList = title.split(' ')
             for keyword in tmpKeywordList:
                 if keyword != '-':
                     keywordList.append(keyword)
 
-        componentInfo['cdbDescription'] = cdbDescription
+        # Remove the last semicolon and set cdbDescription
+        componentInfo['cdbDescription'] = cdbDescription[0:-2]
 
         # Key is id of a component type and value is commonality of a component type based on keywords.
         stats = {}
