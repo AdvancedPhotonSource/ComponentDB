@@ -9,7 +9,7 @@ class PdmLinkComponent(CdbObject):
     PROPERTY_TYPE_PDM_NAME = 'PDMLink Drawing'
     PROPERTY_TYPE_WBS_NAME = 'WBS'
 
-    DEFAULT_KEY_LIST = ['name', 'pdmPropertyValues', 'suggestedComponentTypes', 'wbsDescription']
+    DEFAULT_KEY_LIST = ['name', 'pdmPropertyValues', 'suggestedComponentTypes', 'wbsDescription', 'cdbDescription']
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)

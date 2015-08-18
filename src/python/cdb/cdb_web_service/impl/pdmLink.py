@@ -376,16 +376,27 @@ class PdmLink:
         wbsDescription = drawingDetails['wbsDescription']
         if wbsDescription is not None:
             if wbsDescription != '' and wbsDescription != '-':
-                componentInfo['wbsDescription'] = wbsDescription
+                wbsSplitArray = wbsDescription.split('.')
+                cdbWbsFormat = wbsSplitArray[0]
+                del wbsSplitArray[0]
+                for letter in wbsSplitArray:
+                    if letter.isdigit():
+                        cdbWbsFormat += ".%02d" % int(letter)
+                componentInfo['wbsDescription'] = cdbWbsFormat
 
 
         # Generate a keyword list from drawings titles
         keywordList = []
+        cdbDescription = ''
         for i in range(1, 6):
-            tmpKeywordList = str(drawingDetails['title'+str(i)]).split(' ')
+            title = str(drawingDetails['title'+str(i)])
+            cdbDescription += title+"\n"
+            tmpKeywordList = title.split(' ')
             for keyword in tmpKeywordList:
                 if keyword != '-':
                     keywordList.append(keyword)
+
+        componentInfo['cdbDescription'] = cdbDescription
 
         # Key is id of a component type and value is commonality of a component type based on keywords.
         stats = {}
@@ -677,6 +688,10 @@ class PdmLink:
 
         # Throws invalid arguments if user does not provide complete drawingNumber
         componentInfo = self.__generateComponentInfo(drawingNumber)
+
+        # Check if description was entered
+        if description is None:
+            description = componentInfo['cdbDescription']
 
         # It is already created in the above function
         self.__createComponentDbApi()
