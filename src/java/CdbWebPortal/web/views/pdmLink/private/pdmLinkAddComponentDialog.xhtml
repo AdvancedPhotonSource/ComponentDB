@@ -60,7 +60,6 @@
                                          update=":comonentTypeSelectDialogForm"
                                          styleClass="selectButtonForAutocomplete"
                                          icon="ui-icon-search">
-                            <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{designElementObject.component}"/>
                             <p:tooltip for="componentTypeSelectAllButton" value="Search for all component types."/>
                             <p:ajax process="@form" update="@form"/>
                         </p:commandButton>
@@ -77,7 +76,8 @@
                                        immediate="true"
                                        oncomplete="PF('pdmLinkcomponentTypeSelectDialogWidget').initPosition(); 
                                        PF('pdmLinkcomponentTypeSelectDialogWidget').show();"
-                                       update=":comonentTypeSelectDialogForm">     
+                                       update=":comonentTypeSelectDialogForm">
+                            <p:ajax process="@form" update="@form"/>
                         </p:commandLink>
                          <p:tooltip for="componentTypeSelectSuggestedButton" value="Show list of suggested component types."/>
                     </p:column>
@@ -133,7 +133,9 @@
                         <p:commandButton 
                             value="Add Component"
                             actionListener='#{pdmLinkDrawingBean.createComponentFromDrawingNumber(componentController, propertyTypeController)}'
-                            oncomplete="if (!args.validationFailed) PF('pdmLinkAddComponentDialogWidget').hide()"/>
+                            oncomplete="if (!args.validationFailed) PF('pdmLinkAddComponentDialogWidget').hide()">
+                            <p:ajax process="@form" update="@form"/>
+                        </p:commandButton>
                     </p:column>
                 </p:row>
             </p:panelGrid>
