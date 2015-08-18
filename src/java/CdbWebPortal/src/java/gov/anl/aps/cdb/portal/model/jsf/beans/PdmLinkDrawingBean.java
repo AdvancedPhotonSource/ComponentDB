@@ -185,6 +185,8 @@ public class PdmLinkDrawingBean implements Serializable {
         if (drawingNumber != null && !drawingNumber.isEmpty()) {
             try {
                 pdmLinkComponent = pdmLinkApi.generateComponentInformation(drawingNumber);
+                // Add generated description to current component 
+                componentController.getSelected().setDescription(pdmLinkComponent.getCdbDescription()) ;
             } catch (CdbException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());

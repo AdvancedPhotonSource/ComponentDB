@@ -16,11 +16,11 @@ import java.util.LinkedList;
  */
 public class PdmLinkComponent extends CdbObject {
 
-    // DEFAULT_KEY_LIST = ['name', 'pdmPropertyValues', 'suggestedComponentTypes', 'wbsDescription']
     private LinkedList<ComponentType> suggestedComponentTypes;
     private String[] pdmPropertyValues; 
     private String wbsDescription;  
     private String drawingNumber; 
+    private String cdbDescription;
     
     public PdmLinkComponent() {
     }
@@ -40,7 +40,15 @@ public class PdmLinkComponent extends CdbObject {
     public String getDrawingNumber() {
         return drawingNumber;
     }
-
+    
+    public String getCdbDescription() {
+        return cdbDescription;
+    }
+    
+    public void setCdbDescription(String cdbDescription) {
+        this.cdbDescription = cdbDescription; 
+    }
+    
     public void setPdmPropertyValues(String[] pdmPropertyValues) {
         this.pdmPropertyValues = pdmPropertyValues;
     }
