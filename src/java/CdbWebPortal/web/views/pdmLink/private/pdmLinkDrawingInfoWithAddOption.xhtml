@@ -14,7 +14,7 @@
         <ui:include src="pdmLinkDrawingInfoAccordion.xhtml"/>
 
 
-        <p:commandButton value="Add Component" icon="ui-icon-plus" rendered="#{displayAddButton}"
+        <p:commandButton value="Add Component to CDB" icon="ui-icon-plus" rendered="#{displayAddButton}"
                          actionListener="#{pdmLinkDrawingBean.generateComponentInfo(componentController)}"
                          onstart="PF('loadingDialog').show(); "
                          oncomplete="PF('loadingDialog').hide(); 
