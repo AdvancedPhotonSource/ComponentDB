@@ -342,10 +342,8 @@ class PdmLink:
                         if ufid is None:
                             ufid = searchResult['ufid']
                         # Set pdmComponentName
-                        if str(searchResult['name']).split('.')[-1].__len__() == 3:
-                            pdmComponentName = str(searchResult['name']).split('.')[0]
-                        else:
-                            pdmComponentName = searchResult['name']
+                        pdmComponentName = str(searchResult['number']).split('.')[0]
+
 
         if pdmComponentName is None:
             pdmComponentName = drawingNumberBase
