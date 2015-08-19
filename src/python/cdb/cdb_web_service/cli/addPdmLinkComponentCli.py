@@ -44,7 +44,7 @@ class AddPdmLinkComponentCli(CdbWebServiceCli):
         self.parseArgs(usage="""
     cdb-add-component --drawing-number=DRAWINGNUMBER
         [--component-type-id=COMPONENTTYPEID]
-        [--component-type-id=COMPONENTTYPENAME]
+        [--component-type-name=COMPONENTTYPENAME]
         [--description=DESCRIPTION]
         [--owner-user-id=OWNERUSERID]
         [--owner-group-id=OWNERGROUPID]
