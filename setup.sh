@@ -25,8 +25,8 @@ if [ -z $CDB_DATA_DIR ]; then
     fi
 fi
 if [ ! -d $CDB_DATA_DIR ]; then
-    #echo "WARNING: $CDB_DATA_DIR directory does not exist. Developers should point CDB_DATA_DIR to the desired area." 
-    unset CDB_DATA_DIR
+    echo "WARNING: $CDB_DATA_DIR directory does not exist. Developers should point CDB_DATA_DIR to the desired area." 
+    #unset CDB_DATA_DIR
 fi
 
 if [ -z $CDB_VAR_DIR ]; then
@@ -52,7 +52,7 @@ if [ -z $CDB_SUPPORT_DIR ]; then
 fi
 if [ ! -d $CDB_SUPPORT_DIR ]; then
     echo "Warning: $CDB_SUPPORT_DIR directory does not exist. Developers should point CDB_SUPPORT_DIR to the desired area." 
-    unset CDB_SUPPORT_DIR
+    #unset CDB_SUPPORT_DIR
 else
     export CDB_GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
 fi
