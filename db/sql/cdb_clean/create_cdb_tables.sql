@@ -480,11 +480,13 @@ DROP TABLE IF EXISTS `component`;
 CREATE TABLE `component` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
+  `model_number` varchar(64) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
   `component_type_id` int(11) unsigned NOT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `component_u1` (`name`),
+  UNIQUE KEY `component_u1` (`name`, `part_number`),
+  UNIQUE KEY `component_u2` (`part_number`),
   KEY `component_k1` (`component_type_id`),
   CONSTRAINT `component_fk1` FOREIGN KEY (`component_type_id`) REFERENCES `component_type` (`id`) ON UPDATE CASCADE,
   KEY `component_k2` (`entity_info_id`),
@@ -534,7 +536,7 @@ CREATE TABLE `component_source` (
   KEY `component_source_k1` (`component_id`),
   CONSTRAINT `component_source_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_source_k2` (`source_id`),
-  CONSTRAINT `component_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+  CONSTRAINT `component_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
