@@ -25,7 +25,7 @@ class PDMLinkRouteDescriptor:
             # Get drawing 
             {
                 'name': 'getDrawing',
-                'path': '%s/pdmLink/drawings/:(name)' % contextRoot,
+                'path': '%s/pdmLink/drawings/:(drawingNumber)' % contextRoot,
                 'controller': pdmLinkController,
                 'action': 'getDrawing',
                 'method': ['GET']
@@ -34,7 +34,7 @@ class PDMLinkRouteDescriptor:
             # Get multiple drawings using keywords/wildcards
             {
                 'name': 'getDrawings',
-                'path': '%s/pdmLink/drawingsByKeyword/:(drawingNamePattern)' % contextRoot,
+                'path': '%s/pdmLink/drawingsByKeyword/:(searchPattern)' % contextRoot,
                 'controller': pdmLinkController,
                 'action': 'getDrawings',
                 'method': ['GET']
@@ -43,7 +43,7 @@ class PDMLinkRouteDescriptor:
             # Search for drawings using using keywords/wildcards
             {
                 'name': 'getDrawingSearchResults',
-                'path': '%s/pdmLink/search/:(drawingNamePattern)' % contextRoot,
+                'path': '%s/pdmLink/search/:(searchPattern)' % contextRoot,
                 'controller': pdmLinkController,
                 'action': 'getDrawingSearchResults',
                 'method': ['GET']

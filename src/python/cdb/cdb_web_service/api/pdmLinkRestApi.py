@@ -29,28 +29,28 @@ class PdmLinkRestApi(CdbRestApi):
         return str(searchPattern).replace("?", "%3F")
 
     @CdbRestApi.execute
-    def getDrawing(self, name):
-        if name is None:
-            raise InvalidRequest('Drawing name must be provided.')
-        url = '%s/pdmLink/drawings/%s' % (self.getContextRoot(), name)
+    def getDrawing(self, drawingNumber):
+        if drawingNumber is None:
+            raise InvalidRequest('Drawing number must be provided.')
+        url = '%s/pdmLink/drawings/%s' % (self.getContextRoot(), drawingNumber)
         responseData = self.sendRequest(url=url, method='GET')
         return PdmLinkDrawing(responseData)
 
     @CdbRestApi.execute
-    def getDrawings(self, drawingNamePattern):
-        if drawingNamePattern is None:
-            raise InvalidRequest('PDMLink drawing pattern using keywords/wildcards(*/?) must be provided.')
-        drawingNamePattern = self.__applyURLCharCodes(drawingNamePattern)
-        url = '%s/pdmLink/drawingsByKeyword/%s' % (self.getContextRoot(), drawingNamePattern)
+    def getDrawings(self, searchPattern):
+        if searchPattern is None:
+            raise InvalidRequest('PDMLink drawing search pattern using keywords/wildcards(*/?) must be provided.')
+        searchPattern = self.__applyURLCharCodes(searchPattern)
+        url = '%s/pdmLink/drawingsByKeyword/%s' % (self.getContextRoot(), searchPattern)
         responseData = self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, PdmLinkDrawing)
 
     @CdbRestApi.execute
-    def getDrawingSearchResults(self, drawingNamePattern):
-        if drawingNamePattern is None:
-            raise InvalidRequest('PDMLink drawing pattern using keywords/wildcards(*/?) must be provided.')
-        drawingNamePattern = self.__applyURLCharCodes(drawingNamePattern)
-        url = '%s/pdmLink/search/%s' % (self.getContextRoot(), drawingNamePattern)
+    def getDrawingSearchResults(self, searchPattern):
+        if searchPattern is None:
+            raise InvalidRequest('PDMLink drawing search pattern using keywords/wildcards(*/?) must be provided.')
+        searchPattern = self.__applyURLCharCodes(searchPattern)
+        url = '%s/pdmLink/search/%s' % (self.getContextRoot(), searchPattern)
         responseData = self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, PdmLinkSearchResult)
 

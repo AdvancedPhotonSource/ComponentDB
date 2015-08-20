@@ -163,28 +163,28 @@ class PdmLink:
 
         return newList
 
-    def __searchWithoutExtension(self, namePattern, maxResults=100):
+    def __searchWithoutExtension(self, searchPattern, maxResults=100):
         """
         Some drawings cannot be found when full name is given
         Function strips the extension if possible searches for drawing
         More results need to be fetched without extension max is defaulted to 100 for single drawing searches
 
-        :param namePattern: (str) Pattern to search PDMLink
+        :param searchPattern: (str) Pattern to search PDMLink
         :param maxResults: (int) specify number of drawing results
         :return: List of drawings if modified(there was an extension to remove) search was performed
         :raises ExternalServiceError: Could occur during the PDM Link search
         """
-        # Check if extension exists
-        splitNamePattern = namePattern.split('.')
+
+        splitNumber = searchPattern.split('.')
         # No extension to remove
         # No need to reattempt to search
-        if splitNamePattern[-1] == '???':
+        if splitNumber[-1] == '???':
             return []
 
-        # Part of name before a '.'
-        newName = splitNamePattern[0] + '.???'
+        # Part of number before a '.'
+        newSearchPattern = splitNumber[0] + '.???'
 
-        return self.findPdmLinkDrawings(newName, startResults=0, maxResults=maxResults)
+        return self.findPdmLinkDrawings(newSearchPattern, startResults=0, maxResults=maxResults)
 
     @SslUtility.useUnverifiedSslContext
     def __getDrawing(self, pdmLinkDrawingObject, ufid=None, oid=None):
@@ -318,7 +318,7 @@ class PdmLink:
         pdmComponentName = None
 
         # Search using the drawing name provided
-        PdmLinkDrawing.checkDrawingName(drawingNumber)
+        PdmLinkDrawing.checkDrawingNumber(drawingNumber)
         drawingNumberBase = str(drawingNumber).split('.')[0]
         searchResults = self.getDrawingSearchResults(drawingNumberBase + '.???')
 
@@ -343,7 +343,6 @@ class PdmLink:
                             ufid = searchResult['ufid']
                         # Set pdmComponentName
                         pdmComponentName = str(searchResult['number']).split('.')[0]
-
 
         if pdmComponentName is None:
             pdmComponentName = drawingNumberBase
@@ -433,21 +432,21 @@ class PdmLink:
         return PdmLinkComponent(componentInfo)
 
     @SslUtility.useUnverifiedSslContext
-    def findPdmLinkDrawings(self, drawingNamePattern, startResults=0, maxResults=1):
+    def findPdmLinkDrawings(self, searchPattern, startResults=0, maxResults=1):
         """
         Finds PDMLink drawing object(s) by name pattern
 
-        :param drawingNamePattern: (str) The keyword/pattern by which to search PDM Link for drawings
+        :param searchPattern: (str) The keyword/pattern by which to search PDM Link for drawings
         :param startResults: (int) Results could be fetched incrementally from PDM Link. Specifies start of fetching
         :param maxResults: (int) Specifies how many results should be fetched from PDM Link
         :return: A cleaned up list of PDM Link drawings resulting from the search
         :raises ExternalServiceError: Could occur during the PDM Link search
         """
-        self.logger.debug('Looking for name pattern: %s ' % drawingNamePattern)
+        self.logger.debug('Looking for name pattern: %s ' % searchPattern)
         self.__createWindchillClients()
         self.searchArgs['START'] = startResults
         self.searchArgs['MAX'] = maxResults
-        self.searchArgs['keyword'] = drawingNamePattern
+        self.searchArgs['keyword'] = searchPattern
 
         # This call actually returns list of objects, and the last one will
         # be of the form
@@ -470,44 +469,44 @@ class PdmLink:
 
         # The search results came back empty, try to remove extension
         if drawingList[0].ufid is None:
-            drawingList = self.__searchWithoutExtension(drawingNamePattern)
+            drawingList = self.__searchWithoutExtension(searchPattern)
 
         # Group and clean up results
         drawingList = self.__cleanPDMLinkDrawingList(drawingList)
 
         return drawingList
 
-    def findPdmLinkDrawing(self, drawingName):
+    def findPdmLinkDrawing(self, drawingNumber):
         """
         Find PDMLink drawing object by name.
 
-        :param drawingName: (str) The full name/number of the PDMLink drawing
+        :param drawingNumber: (str) The full number of the PDMLink drawing
         :return: PDMLink Drawing
         :raises ExternalServiceError: Could occur during the PDM Link search
         :raises ObjectNotFound: The requested drawing was not found
         :raises InvalidArgument: The drawing name is not complete
         """
-        def findNameInList(name):
+        def findNameInList():
             for drawing in drawingList:
-                curDrawingName = drawing.properties[0].value
-                if curDrawingName.lower() == drawingName.lower():
+                curDrawingNumber = drawing.properties[1].value
+                if curDrawingNumber.lower() == drawingNumber.lower():
                     return drawing
             return None
 
         # Getting a single PDM Link requires the full name with extension.
-        PdmLinkDrawing.checkDrawingName(drawingName)
-        drawingList = self.findPdmLinkDrawings(drawingName)
+        PdmLinkDrawing.checkDrawingNumber(drawingNumber)
+        drawingList = self.findPdmLinkDrawings(drawingNumber)
 
         # Find the requested drawing from results
-        reqDrawing = findNameInList(drawingName)
+        reqDrawing = findNameInList()
 
         # List did not contain requested drawing
         if not reqDrawing:
             # Try searching without extension
-            drawingList = self.__searchWithoutExtension(drawingName)
-            reqDrawing = findNameInList(drawingName)
+            drawingList = self.__searchWithoutExtension(drawingNumber)
+            reqDrawing = findNameInList()
             if not reqDrawing:
-                raise ObjectNotFound('PDMLink drawing %s could not be found.' % drawingName)
+                raise ObjectNotFound('PDMLink drawing %s could not be found.' % drawingNumber)
 
         return reqDrawing
 
@@ -524,30 +523,30 @@ class PdmLink:
             propertyMap[property.name] = property.value
         return propertyMap
 
-    def getIcmsRevisions(self, name):
+    def getIcmsRevisions(self, drawingNumber):
         """
         initialize ICMS Client, if needed and get revisions
 
-        :param name: (str) Name or number as referred to in PDM Link or Contend ID as referred to in ICMS
+        :param drawingNumber: (str) Name or number as referred to in PDM Link or Contend ID as referred to in ICMS
         :return: revisions and pdf url for those revisions
         """
         self.__createIcmsClient()
-        return self.icmsConnection.getIcmsRevisions(name)
+        return self.icmsConnection.getIcmsRevisions(drawingNumber)
 
-    def getDrawing(self, drawingName):
+    def getDrawing(self, drawingNumber):
         """
         Find PDMLink drawing and get extra info such as revision, url and metadata.
 
-        :param drawingName: (str) Drawing name or drawing number
+        :param drawingNumber: (str) Drawing name or drawing number
         :return: CDBObject of type PdmLinkDrawing
         :raises ExternalServiceError: Could occur during the PDM Link search
         :raises ObjectNotFound: The requested drawing was not found
         :raises InvalidArgument: The drawing name is not complete
         """
-        pdmLinkDrawingObject = self.findPdmLinkDrawing(drawingName)
+        pdmLinkDrawingObject = self.findPdmLinkDrawing(drawingNumber)
         return self.__getDrawing(pdmLinkDrawingObject)
 
-    def getDrawings(self, drawingNamePattern):
+    def getDrawings(self, searchPattern):
         """
         Find multiple drawings in PDMLink and get extra info for each one.
 
@@ -555,11 +554,11 @@ class PdmLink:
             * "*" - fill in any character(s) where the * exists
             * "?" - fill in exactly one character in the place of ?
 
-        :param drawingNamePattern: (str) Keyword used to search for the list of drawings
+        :param searchPattern: (str) Keyword used to search for the list of drawings
         :return: A list CDBObjects from the function getDrawings
         :raises ExternalServiceError: Could occur during the PDM Link search
         """
-        pdmLinkDrawingObjectList = self.findPdmLinkDrawings(drawingNamePattern, startResults=0, maxResults=9999)
+        pdmLinkDrawingObjectList = self.findPdmLinkDrawings(searchPattern, startResults=0, maxResults=9999)
         drawingList = []
         for pdmLinkDrawingObject in pdmLinkDrawingObjectList:
             drawing = self.__getDrawing(pdmLinkDrawingObject)
@@ -702,7 +701,6 @@ class PdmLink:
         if componentTypeId is None:
             componentTypeId = componentInfo['suggestedComponentTypes'][0]['id']
 
-
         # Add the new component
         newComponent = self.componentDbApi.addComponent(componentInfo['name'], componentTypeId, createdByUserId, ownerUserId,
                                                         ownerGroupId, isGroupWriteable, description)
@@ -733,30 +731,30 @@ class PdmLink:
 if __name__ == '__main__':
     pdmLink = PdmLink('edp', 'PakTai8', 'http://windchill-vm.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
 
-    def getDrawingFromPDMLink(drawingName):
-        print 'Get Drawing: ', drawingName
-        drawing = pdmLink.getDrawing(drawingName)
+    def getDrawingFromPDMLink(drawingNumber):
+        print 'Get Drawing: ', drawingNumber
+        drawing = pdmLink.getDrawing(drawingNumber)
         print drawing.getDisplayString(PdmLinkDrawing.DEFAULT_KEY_LIST)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-    def getDrawingsFromPDMLink(drawingPattern):
-        print 'Get Drawings: ', drawingPattern
-        drawings = pdmLink.getDrawings(drawingPattern)
+    def getDrawingsFromPDMLink(searchPattern):
+        print 'Get Drawings: ', searchPattern
+        drawings = pdmLink.getDrawings(searchPattern)
         for drawing in drawings:
             print drawing.getDisplayString(PdmLinkDrawing.DEFAULT_KEY_LIST)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
-    def searchDrawingFromPDMLink(drawingPattern):
-        print 'Search Drawing: ', drawingPattern
-        results = pdmLink.getDrawingSearchResults(drawingPattern)
+    def searchDrawingFromPDMLink(searchPattern):
+        print 'Search Drawing: ', searchPattern
+        results = pdmLink.getDrawingSearchResults(searchPattern)
         for result in results:
             print result.getDisplayString(PdmLinkSearchResult.DEFAULT_KEY_LIST)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         return results
 
-    def getThumbnailImage(drawingName):
-        print 'Get Thumbnail and Image for: ', drawingName
-        drawing = pdmLink.getDrawing(drawingName)
+    def getThumbnailImage(drawingNumber):
+        print 'Get Thumbnail and Image for: ', drawingNumber
+        drawing = pdmLink.getDrawing(drawingNumber)
         print pdmLink.getDrawingImage(drawing['revisionList'][1]['ufid']).getDisplayString(Image.DEFAULT_KEY_LIST)
         print pdmLink.getDrawingThumbnail(drawing['revisionList'][1]['ufid']).getDisplayString(Image.DEFAULT_KEY_LIST)
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

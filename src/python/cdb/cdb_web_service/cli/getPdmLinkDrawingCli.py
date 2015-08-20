@@ -10,27 +10,27 @@ from cdb.cdb_web_service.api.pdmLinkRestApi import PdmLinkRestApi
 class GetPdmLinkDrawingCli(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
-        self.addOption('', '--name', dest='name', help='PDMLink drawing name (valid extensions: %s).' % PdmLinkDrawing.VALID_EXTENSION_LIST)
+        self.addOption('', '--drawing-number', dest='drawingNumber', help='PDMLink drawing number (valid extensions: %s).' % PdmLinkDrawing.VALID_EXTENSION_LIST)
         
     def checkArgs(self):
-        name = self.options.name
-        if name is None:
-            raise InvalidRequest('PDMLink drawing name must be supplied.')
-        PdmLinkDrawing.checkDrawingName(name)
+        drawingNumber = self.options.drawingNumber
+        if drawingNumber is None:
+            raise InvalidRequest('PDMLink drawing number must be supplied.')
+        PdmLinkDrawing.checkDrawingNumber(drawingNumber)
             
-    def getName(self):
-        return self.options.name
+    def getDrawingNumber(self):
+        return self.options.drawingNumber
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-get-pdmlink-drawing --name=NAME
+    cdb-get-pdmlink-drawing --drawing-number=DRAWINGNUMBER
 
 Description:
     Retrieves PDMLink drawing information.
         """)
         self.checkArgs()
         api = PdmLinkRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
-        drawing = api.getDrawing(self.getName())
+        drawing = api.getDrawing(self.getDrawingNumber())
         print drawing.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 
 #######################################################################

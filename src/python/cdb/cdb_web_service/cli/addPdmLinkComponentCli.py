@@ -42,7 +42,7 @@ class AddPdmLinkComponentCli(CdbWebServiceCli):
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-add-component --drawing-number=DRAWINGNUMBER
+    cdb-add-pdmlink-component --drawing-number=DRAWINGNUMBER
         [--component-type-id=COMPONENTTYPEID]
         [--component-type-name=COMPONENTTYPENAME]
         [--description=DESCRIPTION]

@@ -16,14 +16,14 @@ class GetPdmLinkGenerateComponentInfoCli(CdbWebServiceCli):
         drawingNumber = self.options.drawingNumber
         if drawingNumber is None:
             raise InvalidRequest('PDMLink drawing number must be supplied.')
-        PdmLinkDrawing.checkDrawingName(drawingNumber)
+        PdmLinkDrawing.checkDrawingNumber(drawingNumber)
             
     def getDrawingNumber(self):
         return self.options.drawingNumber
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-get-pdmlink-drawing --drawing-number=DRAWINGNUMBER
+    cdb-generate-pdmlink-drawing --drawing-number=DRAWINGNUMBER
 
 Description:
     Retrieves information needed to create a component using a pdmLink drawing number.

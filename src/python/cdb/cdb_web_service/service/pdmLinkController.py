@@ -12,18 +12,18 @@ class PdmLinkController(CdbController):
 
     @cherrypy.expose
     @CdbController.execute
-    def getDrawing(self, name, **kwargs):
-        return self.pdmLinkControllerImpl.getDrawing(name).getFullJsonRep()
+    def getDrawing(self, drawingNumber, **kwargs):
+        return self.pdmLinkControllerImpl.getDrawing(drawingNumber).getFullJsonRep()
 
     @cherrypy.expose
     @CdbController.execute
-    def getDrawings(self, drawingNamePattern, **kwargs):
-        return self.listToJson(self.pdmLinkControllerImpl.getDrawings(drawingNamePattern))
+    def getDrawings(self, searchPattern, **kwargs):
+        return self.listToJson(self.pdmLinkControllerImpl.getDrawings(searchPattern))
 
     @cherrypy.expose
     @CdbController.execute
-    def getDrawingSearchResults(self, drawingNamePattern, **kwargs):
-        return self.listToJson(self.pdmLinkControllerImpl.getDrawingSearchResults(drawingNamePattern))
+    def getDrawingSearchResults(self, searchPattern, **kwargs):
+        return self.listToJson(self.pdmLinkControllerImpl.getDrawingSearchResults(searchPattern))
 
     @cherrypy.expose
     @CdbController.execute

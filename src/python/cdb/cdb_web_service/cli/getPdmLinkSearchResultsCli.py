@@ -10,19 +10,19 @@ from cdb.cdb_web_service.api.pdmLinkRestApi import PdmLinkRestApi
 class GetPdmLinkDrawingCli(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
-        self.addOption('', '--name-pattern', dest='drawingNamePattern', help='PDMLink drawing pattern using keywords/wildcards(*/?) must be provided.')
+        self.addOption('', '--search-pattern', dest='searchPattern', help='PDMLink drawing search pattern using keywords/wildcards(*/?) must be provided.')
         
     def checkArgs(self):
-        drawingNamePattern = self.options.drawingNamePattern
-        if drawingNamePattern is None:
-            raise InvalidRequest('PDMLink drawing name pattern using keywords/wildcards(*/?) must be provided.')
+        searchPattern = self.getSearchPattern()
+        if searchPattern is None:
+            raise InvalidRequest('PDMLink drawing search pattern using keywords/wildcards(*/?) must be provided.')
             
     def getSearchPattern(self):
-        return self.options.drawingNamePattern
+        return self.options.searchPattern
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-get-pdmlink-drawing --name-pattern=NAMEPATTERN
+    cdb-get-pdmlink-drawing --search-pattern=SEARCHPATTERN
 
 Description:
     Retrieves PDMLink search results.

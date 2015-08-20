@@ -20,7 +20,7 @@ class GetPdmLinkDrawingImageCli(CdbWebServiceCli):
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-get-pdmlink-drawing-thumbnail --ufid=UFID
+    cdb-get-pdmlink-drawing-image --ufid=UFID
 
 Description:
     Retrieves image url for a given PDMLink drawing revision ufid.

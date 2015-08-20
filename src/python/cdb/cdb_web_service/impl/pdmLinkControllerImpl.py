@@ -15,14 +15,14 @@ class PdmLinkControllerImpl(CdbObjectManager):
         CdbObjectManager.__init__(self)
         self.pdmLink = PdmLink('edp', 'PakTai8', 'http://windchill-vm.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
 
-    def getDrawing(self, name):
-        return self.pdmLink.getDrawing(name)
+    def getDrawing(self, drawingNumber):
+        return self.pdmLink.getDrawing(drawingNumber)
 
-    def getDrawings(self, drawingNamePattern):
-        return self.pdmLink.getDrawings(drawingNamePattern)
+    def getDrawings(self, searchPattern):
+        return self.pdmLink.getDrawings(searchPattern)
 
-    def getDrawingSearchResults(self, drawingNamePattern):
-        return self.pdmLink.getDrawingSearchResults(drawingNamePattern)
+    def getDrawingSearchResults(self, searchPattern):
+        return self.pdmLink.getDrawingSearchResults(searchPattern)
 
     def completeDrawingInformation(self, ufid, oid):
         return self.pdmLink.completeDrawingInformation(ufid, oid)
