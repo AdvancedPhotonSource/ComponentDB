@@ -52,16 +52,16 @@ public class PdmLinkApi extends CdbRestApi {
     /**
      * Retrieve drawing information.
      *
-     * @param name drawing name
+     * @param drawingNumber drawing number
      * @return PDMLink drawing object
      * @throws InvalidArgument if provided name is empty or null
      * @throws ObjectNotFound when specified drawing does not exist
      * @throws CdbException in case of all other errors
      * @throws ExternalServiceError the PDMLink web service threw an error
      */
-    public PdmLinkDrawing getDrawing(String name) throws InvalidArgument, ObjectNotFound, ExternalServiceError, CdbException {
-        ArgumentUtility.verifyNonEmptyString("Drawing name", name);
-        String requestUrl = "/pdmLink/drawings/" + name;
+    public PdmLinkDrawing getDrawing(String drawingNumber) throws InvalidArgument, ObjectNotFound, ExternalServiceError, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Drawing name", drawingNumber);
+        String requestUrl = "/pdmLink/drawings/" + drawingNumber;
         String jsonString = invokeGetRequest(requestUrl);
         PdmLinkDrawing drawing = (PdmLinkDrawing) CdbObjectFactory.createCdbObject(jsonString, PdmLinkDrawing.class);
         return drawing;

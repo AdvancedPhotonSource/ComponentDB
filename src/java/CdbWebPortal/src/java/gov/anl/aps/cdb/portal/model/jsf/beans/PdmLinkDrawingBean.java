@@ -56,7 +56,7 @@ public class PdmLinkDrawingBean implements Serializable {
 
     private static final Logger logger = Logger.getLogger(PdmLinkDrawingBean.class.getName());
 
-    private String drawingName;
+    private String drawingNumber;
     private String searchKeywords;
     private String prevSearchKeywords;
     private PdmLinkDrawing drawing;
@@ -68,8 +68,8 @@ public class PdmLinkDrawingBean implements Serializable {
     //Add component form 
     private boolean exposeSuggestedComponentType;
     private ListDataModel suggestedComponentTypeListDataModel;
-    private String PDMLINK_PROPERTY_NAME = "PDMLink Drawing";
-    private String WBS_PROPERTY_NAME = "WBS"; 
+    private final String PDMLINK_PROPERTY_NAME = "PDMLink Drawing";
+    private final String WBS_PROPERTY_NAME = "WBS"; 
     private PropertyType pdmPropertyType; 
     private PropertyType wbsPropertyType; 
 
@@ -89,12 +89,12 @@ public class PdmLinkDrawingBean implements Serializable {
         return drawing;
     }
 
-    public void setDrawingName(String drawingName) {
-        this.drawingName = drawingName;
+    public void setDrawingNumber(String drawingName) {
+        this.drawingNumber = drawingName;
     }
 
-    public String getDrawingName() {
-        return drawingName;
+    public String getDrawingNumber() {
+        return drawingNumber;
     }
 
     public List<PdmLinkSearchResult> getSearchResults() {
@@ -294,7 +294,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 drawing = null;
                 return;
             }
-        } else if (searchKeywords.equals(drawingName) && searchResults != null) {
+        } else if (searchKeywords.equals(drawingNumber) && searchResults != null) {
             //Show only loaded drawing 
             if (drawing != null) {
                 searchResults = null;
@@ -314,7 +314,7 @@ public class PdmLinkDrawingBean implements Serializable {
                     || !PdmLinkDrawing.isExtensionValid(searchKeywords)) {
                 searchPdmLink();
             } else {
-                drawingName = searchKeywords;
+                drawingNumber = searchKeywords;
                 findDrawing();
             }
         }else{
@@ -336,15 +336,15 @@ public class PdmLinkDrawingBean implements Serializable {
         drawing = null;
         pdmLinkImage = null;
 
-        if (drawingName != null && !drawingName.isEmpty()) {
-            if (!PdmLinkDrawing.isExtensionValid(drawingName)) {
-                SessionUtility.addWarningMessage("Warning", "Valid drawing name extensions are: " + PdmLinkDrawing.VALID_EXTENSION_LIST);
+        if (drawingNumber != null && !drawingNumber.isEmpty()) {
+            if (!PdmLinkDrawing.isExtensionValid(drawingNumber)) {
+                SessionUtility.addWarningMessage("Warning", "Valid drawing number extensions are: " + PdmLinkDrawing.VALID_EXTENSION_LIST);
                 return;
             }
 
             try {
-                logger.debug("Searching for drawing: " + drawingName);
-                drawing = pdmLinkApi.getDrawing(drawingName);
+                logger.debug("Searching for drawing: " + drawingNumber);
+                drawing = pdmLinkApi.getDrawing(drawingNumber);
                 loadImageForDrawing();
                 logger.debug("Found drawing, windchill URL: " + drawing.getWindchillUrl());
             } catch (CdbException ex) {
@@ -352,7 +352,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             }
         } else {
-            SessionUtility.addWarningMessage("Warning", "Drawing name cannot be empty.");
+            SessionUtility.addWarningMessage("Warning", "Drawing number cannot be empty.");
         }
     }
 
@@ -360,10 +360,10 @@ public class PdmLinkDrawingBean implements Serializable {
      * Polymorphic function that call the function after setting drawingName
      * from its parameter.
      *
-     * @param drawingName drawing number/name to search for
+     * @param drawingNumber drawing number/name to search for
      */
-    public void findDrawing(String drawingName) {
-        this.drawingName = drawingName;
+    public void findDrawing(String drawingNumber) {
+        this.drawingNumber = drawingNumber;
         findDrawing();
     }
 
@@ -446,7 +446,7 @@ public class PdmLinkDrawingBean implements Serializable {
             try {
                 logger.debug("Completing drawing with oid: " + oid);
                 drawing = pdmLinkApi.completeDrawingInfo(ufid, oid);
-                drawingName = drawing.getName();
+                drawingNumber = drawing.getName();
                 loadImageForDrawing();
                 logger.debug("Found drawing, windchill URL: " + drawing.getWindchillUrl());
             } catch (CdbException ex) {

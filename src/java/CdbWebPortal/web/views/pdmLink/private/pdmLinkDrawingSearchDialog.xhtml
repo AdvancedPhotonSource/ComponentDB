@@ -10,21 +10,24 @@
               header="Search for PDMLink Drawing" 
               styleClass="pdmLinkdialog">
         <h:form id="drawingSearchForm">
-            <p:panelGrid columns="3" styleClass="viewEntityDetails">
-                <h:outputLabel for="drawingName" value="Search Name" styleClass="entityDataLabel"/>
-                <h:inputText id="drawingName" value="#{pdmLinkDrawingBean.searchKeywords}" title="Search Name" styleClass="entityDataText"/>
-                <p:message for="drawingName"/> 
-
-                <p:commandButton action="#{pdmLinkDrawingBean.searchDrawings()}" 
-                                 value="Search" alt="Search" 
-                                 onstart="PF('loadingDialog').show();"
-                                 icon="ui-icon-search" 
-                                 oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"
-                                 update="@form"/>
-                <h:outputText/>
-                <p:commandLink onclick="PF('PDMLinkHelp').show();"
-                               title="Help"
-                               value="Help"/>
+            <p:panelGrid columns="1" styleClass="viewEntityDetails">
+                <p:column>
+                    <h:inputText id="searchKeywords" value="#{pdmLinkDrawingBean.searchKeywords}" 
+                                 title="Use ? to replace one character and * to replace many. Example: 2101-1601*.???" 
+                                 styleClass="entityDataText"/>
+                    <p:message for="searchKeywords"/> 
+                </p:column>
+                <p:column>
+                    <p:commandButton action="#{pdmLinkDrawingBean.searchDrawings()}" 
+                                     value="Search" alt="Search" 
+                                     onstart="PF('loadingDialog').show();"
+                                     icon="ui-icon-search" 
+                                     oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"
+                                     update="@form"/>
+                    <p:commandButton onclick="PF('PDMLinkHelp').show();"
+                                   title="Help"
+                                   value="Help"/>
+                </p:column>
             </p:panelGrid>
 
 

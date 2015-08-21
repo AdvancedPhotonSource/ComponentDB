@@ -42,11 +42,11 @@ public class PdmLinkDrawing extends CdbObject {
 
     private transient String displayWindchillUrl;
 
-    public static boolean isExtensionValid(String drawingName) {
-        if (drawingName == null || drawingName.isEmpty()) {
+    public static boolean isExtensionValid(String drawingNumber) {
+        if (drawingNumber == null || drawingNumber.isEmpty()) {
             return false;
         }
-        String extension = FileUtility.getFileExtension(drawingName).toLowerCase();
+        String extension = FileUtility.getFileExtension(drawingNumber).toLowerCase();
         return VALID_EXTENSION_LIST.contains(extension);
     }
 
