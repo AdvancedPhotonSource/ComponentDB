@@ -303,7 +303,7 @@ class PdmLink:
         see generateComponentInfo
         """
         if drawingNumber is None and ufid is None:
-            raise InvalidRequest('drawingNumber and or ufid must be provided to create a component')
+            raise InvalidRequest('drawingNumber or ufid must be provided to create a component')
 
         drawingDetails = None
 
@@ -411,9 +411,6 @@ class PdmLink:
                         stats[curID] = 1
                     else:
                         stats[curID] += 1
-            # Add the default component type first
-            if PdmLinkComponent.DEFAULT_COMPONENT_TYPE.lower() == componentTypeName:
-                suggestedTypeList.append(componentType)
 
         # Sort dictionary keys by value
         sortedIds = sorted(stats, key=stats.get)
@@ -422,10 +419,8 @@ class PdmLink:
         for i in range(sortedIds.__len__() -1, -1, -1):
             for componentType in componentTypes:
                 if int(componentType['id']) == int(sortedIds[i]):
-                    # Part of the list already
-                    if componentType['name'] != PdmLinkComponent.DEFAULT_COMPONENT_TYPE:
-                        suggestedTypeList.append(componentType)
-                        continue
+                    suggestedTypeList.append(componentType)
+                    continue
 
         componentInfo['suggestedComponentTypes'] = suggestedTypeList
 
@@ -684,7 +679,11 @@ class PdmLink:
                                                                      enteredByUserId=createdByUserId, isDynamic=False,
                                                                      isUserWriteable=False)
 
-        # Throws invalid arguments if user does not provide complete drawingNumber
+        if (componentTypeId is None or componentTypeId == '' ) and (componentTypeName is None or componentTypeName == ''):
+            raise InvalidRequest('componentTypeId or componentTypeName must be provided to create a component.')
+
+        # Throws invalidArguments if user does not provide complete drawingNumber
+        # Throws InvalidRequest if no number is provided
         componentInfo = self.__generateComponentInfo(drawingNumber)
 
         # Check if description was entered

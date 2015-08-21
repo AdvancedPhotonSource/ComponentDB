@@ -5,7 +5,6 @@ from cdb.common.exceptions.invalidArgument import InvalidArgument
 
 class PdmLinkComponent(CdbObject):
 
-    DEFAULT_COMPONENT_TYPE = 'Accelerator Component Temporary Assignment'
     PROPERTY_TYPE_PDM_NAME = 'PDMLink Drawing'
     PROPERTY_TYPE_WBS_NAME = 'WBS'
 

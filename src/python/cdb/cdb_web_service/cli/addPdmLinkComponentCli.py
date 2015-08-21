@@ -8,7 +8,7 @@ class AddPdmLinkComponentCli(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
         self.addOption('', '--drawing-number', dest='drawingNumber', help='Drawing number (required).')
-        self.addOption('', '--component-type-id', dest='componentTypeId', help='Component type id (highly recommended). Defaults to a temp assignment')
+        self.addOption('', '--component-type-id', dest='componentTypeId', help='Component type id. (Required but alternative could be provided instead: component-type-name)')
         self.addOption('', '--component-type-name', dest='componentTypeName', help='Component type name could be provided instead of component type id')
         self.addOption('', '--description', dest='description', help='Component description.')
         self.addOption('', '--owner-user-id', dest='ownerUserId', help='Owner user id. If not provided, user who created component will own it.')
@@ -16,8 +16,10 @@ class AddPdmLinkComponentCli(CdbWebServiceCli):
         self.addOption('', '--is-group-writeable', dest='isGroupWriteable', default=False, help='Group writeable flag (default: False).')
 
     def checkArgs(self):
-        if self.options.drawingNumber is None:
+        if self.getDrawingNumber() is None:
             raise InvalidRequest('Drawing Number must be provided.')
+        if self.getComponentTypeId() is None and self.getComponentTypeName() is None:
+            raise InvalidRequest("Component type Id or Name must be provided.")
 
     def getDrawingNumber(self):
         return self.options.drawingNumber

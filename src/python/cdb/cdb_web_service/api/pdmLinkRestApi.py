@@ -92,6 +92,8 @@ class PdmLinkRestApi(CdbRestApi):
     def createComponent(self, drawingNumber, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName):
         if drawingNumber is None:
             raise InvalidRequest('Drawing Number must be provided')
+        if componentTypeId is None and componentTypeName is None:
+            raise InvalidRequest('Component Type ID or Name must be provided')
         url = '%s/pdmLink/createComponent/%s' % (self.getContextRoot(), drawingNumber)
 
         parameters = ''

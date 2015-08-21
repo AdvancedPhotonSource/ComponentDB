@@ -25,7 +25,7 @@ public class PdmLinkDrawing extends CdbObject {
      * List of valid drawing extensions.
      */
     public static final List<String> VALID_EXTENSION_LIST = Collections.unmodifiableList(
-            Arrays.asList("drw", "asm", "prt", "sec","frm"));
+            Arrays.asList("drw", "asm", "prt", "sec","frm", "pdf"));
 
     private String number; 
     private String windchillUrl;
