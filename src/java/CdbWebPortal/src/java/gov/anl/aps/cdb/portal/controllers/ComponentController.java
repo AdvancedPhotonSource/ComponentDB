@@ -75,6 +75,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private static final String DisplayIdSettingTypeKey = "Component.List.Display.Id";
     private static final String DisplayLastModifiedByUserSettingTypeKey = "Component.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Component.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayModelNumberSettingTypeKey = "Component.List.Display.ModelNumber";
     private static final String DisplayOwnerUserSettingTypeKey = "Component.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
     private static final String DisplayPropertyTypeId1SettingTypeKey = "Component.List.Display.PropertyTypeId1";
@@ -90,6 +91,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
     private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Component.List.FilterBy.LastModifiedOnDateTime";
     private static final String FilterByNameSettingTypeKey = "Component.List.FilterBy.Name";
+    private static final String FilterByModelNumberSettingTypeKey = "Component.List.FilterBy.ModelNumber";
     private static final String FilterByOwnerUserSettingTypeKey = "Component.List.FilterBy.OwnerUser";
     private static final String FilterByOwnerGroupSettingTypeKey = "Component.List.FilterBy.OwnerGroup";
     private static final String FilterByPropertyValue1SettingTypeKey = "Component.List.FilterBy.PropertyValue1";
@@ -119,16 +121,20 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private Boolean displayType = null;
     private Boolean displayCategory = null;
     private Boolean displaySources = true;
+    private Boolean displayModelNumber = null;
 
     private String filterByType = null;
     private String filterByCategory = null;
+    private String filterByModelNumber = null;
     private String filterBySources = null;
 
     private Boolean selectDisplayType = true;
     private Boolean selectDisplayCategory = true;
+    private Boolean selectDisplayModelNumber = true;
 
     private String selectFilterByType = null;
     private String selectFilterByCategory = null;
+    private String selectFilterByModelNumber = null;
 
     private Integer displayPropertyTypeId1 = null;
     private Integer displayPropertyTypeId2 = null;
@@ -511,6 +517,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+        displayModelNumber = Boolean.parseBoolean(settingTypeMap.get(DisplayModelNumberSettingTypeKey).getDefaultValue());
 
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
@@ -522,6 +529,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
         filterByCategory = settingTypeMap.get(FilterByCategorySettingTypeKey).getDefaultValue();
+        filterByModelNumber = settingTypeMap.get(FilterByModelNumberSettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
         filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
         filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
@@ -557,6 +565,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        displayModelNumber = sessionUser.getUserSettingValueAsBoolean(DisplayModelNumberSettingTypeKey, displayModelNumber);
 
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -568,6 +577,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
         filterByCategory = sessionUser.getUserSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
+        filterByModelNumber = sessionUser.getUserSettingValueAsString(FilterByModelNumberSettingTypeKey, filterByModelNumber);
         filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
         filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
         filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
@@ -594,6 +604,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         Map<String, Object> filters = dataTable.getFilters();
         filterByType = (String) filters.get("componentType");
         filterByCategory = (String) filters.get("componentTypeCategory");
+        filterByModelNumber = (String) filters.get("modelNumber");
 
         filterByPropertyValue1 = (String) filters.get("propertyValue1");
         filterByPropertyValue2 = (String) filters.get("propertyValue2");
@@ -617,6 +628,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        sessionUser.setUserSettingValue(DisplayModelNumberSettingTypeKey, displayModelNumber);
 
         sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
         sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
@@ -639,6 +651,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
 
         sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
         sessionUser.setUserSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
+        sessionUser.setUserSettingValue(FilterByModelNumberSettingTypeKey, filterByModelNumber);
 
         sessionUser.setUserSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         sessionUser.setUserSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
@@ -653,6 +666,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         super.clearListFilters();
         filterByType = null;
         filterByCategory = null;
+        filterByModelNumber = null;
 
         filterByPropertyValue1 = null;
         filterByPropertyValue2 = null;
@@ -666,6 +680,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         super.clearSelectFilters();
         selectFilterByType = null;
         selectFilterByCategory = null;
+        selectFilterByModelNumber = null;
     }
 
     public Boolean getDisplayType() {
@@ -865,6 +880,22 @@ public class ComponentController extends CdbEntityController<Component, Componen
         this.selectFilterByCategory = selectFilterByCategory;
     }
 
+    public Boolean getSelectDisplayModelNumber() {
+        return selectDisplayModelNumber;
+    }
+
+    public void setSelectDisplayModelNumber(Boolean selectDisplayModelNumber) {
+        this.selectDisplayModelNumber = selectDisplayModelNumber;
+    }
+
+    public String getSelectFilterByModelNumber() {
+        return selectFilterByModelNumber;
+    }
+
+    public void setSelectFilterByModelNumber(String selectFilterByModelNumber) {
+        this.selectFilterByModelNumber = selectFilterByModelNumber;
+    }
+
     public Boolean getDisplaySources() {
         return displaySources;
     }
@@ -879,6 +910,22 @@ public class ComponentController extends CdbEntityController<Component, Componen
 
     public void setFilterBySources(String filterBySources) {
         this.filterBySources = filterBySources;
+    }
+
+    public Boolean getDisplayModelNumber() {
+        return displayModelNumber;
+    }
+
+    public void setDisplayModelNumber(Boolean displayModelNumber) {
+        this.displayModelNumber = displayModelNumber;
+    }
+
+    public String getFilterByModelNumber() {
+        return filterByModelNumber;
+    }
+
+    public void setFilterByModelNumber(String filterByModelNumber) {
+        this.filterByModelNumber = filterByModelNumber;
     }
 
     public Integer getDisplayPropertyTypeId1() {

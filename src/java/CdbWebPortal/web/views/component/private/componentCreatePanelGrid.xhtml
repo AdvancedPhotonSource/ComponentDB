@@ -12,8 +12,13 @@
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <h:inputText id="name" value="#{componentObject.name}" required="true" title="Name" styleClass="entityDataEmphasizedText"/>
         <p:message for="name"/> 
-        <p:tooltip for="name" value="Component name is required."/>
+        <p:tooltip for="name" value="Component name is required. Component name/model number must be unique."/>
 
+        <h:outputLabel for="modelNumber" value="Model Number" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="modelNumber" value="#{componentObject.modelNumber}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+        <p:message for="modelNumber"/> 
+        <p:tooltip for="modelNumber" value="Model number must be unique."/>
+        
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:inputText id="description" value="#{componentObject.description}" title="Description" styleClass="entityDataText"/>
         <p:message for="description"/> 

@@ -23,6 +23,13 @@
             <h:outputText value="#{componentObject.id}"/>
         </p:column>
 
+        <p:column sortBy="#{componentObject.modelNumber}" headerText="Model Number" 
+                  filterBy="#{componentObject.modelNumber}" filterMatchMode="contains"
+                  filterValue="#{componentController.filterByModelNumber}"
+                  rendered="#{componentController.displayModelNumber}">
+            <h:outputText value="#{componentObject.modelNumber}"/>
+        </p:column>
+
         <p:column sortBy="#{componentObject.description}" headerText="Description" 
                   rendered="#{componentController.displayDescription}">
             <h:outputText value="#{componentObject.description}"/>

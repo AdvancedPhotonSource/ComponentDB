@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -61,6 +62,9 @@ public class Component extends CdbEntity {
     @NotNull
     @Size(max = 64)
     private String name;
+    @Size(max = 64)
+    @Column(name = "model_number")
+    private String modelNumber;    
     @Size(max = 256)
     private String description;
     @JoinTable(name = "component_log", joinColumns = {
@@ -140,6 +144,14 @@ public class Component extends CdbEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getModelNumber() {
+        return modelNumber;
+    }
+
+    public void setModelNumber(String modelNumber) {
+        this.modelNumber = modelNumber;
     }
 
     public String getDescription() {
