@@ -37,10 +37,10 @@
             </h:outputLink>
         </p:column>
 
-        <p:column sortBy="#{designElementObject.component.name}" headerText="Component"
+        <p:column sortBy="#{designElementObject.component.nameAndModelNumber}" headerText="Component"
                   rendered="#{designElementController.displayComponent}">
             <h:outputLink value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Component: #{designElementObject.component.name}">
-                <h:outputText value="#{designElementObject.component.name}"/>
+                <h:outputText value="#{designElementObject.component.nameAndModelNumber}"/>
             </h:outputLink>
         </p:column>
 

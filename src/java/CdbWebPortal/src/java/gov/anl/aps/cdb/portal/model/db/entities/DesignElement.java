@@ -253,7 +253,7 @@ public class DesignElement extends CdbEntity {
 
     public String getContainedObjectName() {
         if (component != null) {
-            return component.getName();
+            return component.getNameAndModelNumber();
         }
         if (childDesign != null) {
             return childDesign.getName();

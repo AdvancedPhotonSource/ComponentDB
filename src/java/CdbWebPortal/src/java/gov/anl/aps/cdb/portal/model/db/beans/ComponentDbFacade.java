@@ -30,16 +30,27 @@ public class ComponentDbFacade extends CdbEntityDbFacade<Component> {
                 .getResultList();
     }
 
-    public Component findByName(String name) {
+    public Component findByNameAndModelNumber(String name, String modelNumber) {
         try {
-            return (Component) em.createNamedQuery("Component.findByName")
+            return (Component) em.createNamedQuery("Component.findByNameAndModelNumber")
                     .setParameter("name", name)
+                    .setParameter("modelNumber", modelNumber)
                     .getSingleResult();
         } catch (NoResultException ex) {
         }
         return null;
     }
 
+    public Component findByModelNumber(String modelNumber) {
+        try {
+            return (Component) em.createNamedQuery("Component.findByModelNumber")
+                    .setParameter("modelNumber", modelNumber)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
     public Component findById(Integer id) {
         try {
             return (Component) em.createNamedQuery("Component.findById")

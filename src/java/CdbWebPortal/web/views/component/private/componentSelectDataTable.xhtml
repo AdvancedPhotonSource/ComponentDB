@@ -30,6 +30,13 @@
             <h:outputText value="#{selectComponentObject.name}"/>
         </p:column>
 
+        <p:column sortBy="#{selectComponentObject.modelNumber}" headerText="Model Number" 
+                  filterBy="#{selectComponentObject.modelNumber}" filterMatchMode="contains"
+                  filterValue="#{componentController.selectFilterByModelNumber}"
+                  rendered="#{componentController.selectDisplayModelNumber}">
+            <h:outputText value="#{selectComponentObject.modelNumber}"/>
+        </p:column>
+        
         <p:column sortBy="#{selectComponentObject.description}" headerText="Description" 
                   filterBy="#{selectComponentObject.description}" filterMatchMode="contains"
                   filterValue="#{componentController.selectFilterByDescription}"

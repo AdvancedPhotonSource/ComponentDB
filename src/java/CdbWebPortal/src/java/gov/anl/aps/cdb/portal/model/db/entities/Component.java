@@ -50,7 +50,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Component.findAll", query = "SELECT c FROM Component c ORDER BY c.name"),
     @NamedQuery(name = "Component.findById", query = "SELECT c FROM Component c WHERE c.id = :id"),
-    @NamedQuery(name = "Component.findByName", query = "SELECT c FROM Component c WHERE c.name = :name"),
+    @NamedQuery(name = "Component.findByNameAndModelNumber", query = "SELECT c FROM Component c WHERE c.name = :name AND c.modelNumber = :modelNumber"),
+    @NamedQuery(name = "Component.findByModelNumber", query = "SELECT c FROM Component c WHERE c.modelNumber = :modelNumber"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
 public class Component extends CdbEntity {
 
@@ -369,9 +370,16 @@ public class Component extends CdbEntity {
         return this.id.equals(other.id);
     }
 
+    public String getNameAndModelNumber() {
+        if (modelNumber != null && !modelNumber.isEmpty()) {
+            return name + "/" + modelNumber;
+        }
+        return name;
+    }
+    
     @Override
     public String toString() {
-        return name;
+        return getNameAndModelNumber();
     }
 
     public void addComponentTypeProperties() {
@@ -396,6 +404,9 @@ public class Component extends CdbEntity {
         Component cloned = (Component) super.clone();
         cloned.id = null;
         cloned.name = "Cloned from: " + cloned.name;
+        if (modelNumber != null && !modelNumber.isEmpty()) {
+            cloned.modelNumber = "Cloned from: " + cloned.modelNumber;
+        }
         cloned.description = description;
         cloned.componentConnectorList = null;
         cloned.componentInstanceList = null;
@@ -441,6 +452,7 @@ public class Component extends CdbEntity {
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult = new SearchResult(id, name);
         searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("modelNumber", modelNumber, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
         LogUtility.searchLogList(logList, searchPattern, searchResult);
         PropertyValueUtility.searchPropertyValueList(propertyValueList, searchPattern, searchResult);

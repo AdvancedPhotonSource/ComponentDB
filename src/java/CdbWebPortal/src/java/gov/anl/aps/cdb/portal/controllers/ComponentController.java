@@ -201,7 +201,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
-            return getCurrent().getName();
+            return getCurrent().toString();
         }
         return "";
     }
@@ -224,19 +224,27 @@ public class ComponentController extends CdbEntityController<Component, Componen
         prepareComponentImageList(component);
     }
 
+    private void checkComponent(Component component) throws CdbException {
+       Component existingComponent = null;
+        String modelNumber = component.getModelNumber();
+        if (modelNumber != null && !modelNumber.isEmpty()) {
+            existingComponent = componentFacade.findByModelNumber(modelNumber);           
+        }
+        if (existingComponent == null) {
+            existingComponent = componentFacade.findByNameAndModelNumber(component.getName(), modelNumber);            
+        }
+        if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
+            throw new ObjectAlreadyExists("Component " + component.toString() + " already exists with id " + existingComponent.getId() + ".");
+        }
+        if (component.getComponentType() == null) {
+            throw new InvalidObjectState("Component type for " + component.toString() + " must be selected.");
+        }
+         
+    }
+    
     @Override
     public void prepareEntityInsert(Component component) throws CdbException {
-        Component existingComponent = componentFacade.findByName(component.getName());
-        if (existingComponent != null) {
-            throw new ObjectAlreadyExists("Component " + component.getName() + " already exists.");
-        }
-        ComponentType componentType = component.getComponentType();
-        if (componentType == null) {
-            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
-        }
-
-        // EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        // component.setEntityInfo(entityInfo);
+        checkComponent(component);
         Log logEntry = prepareLogEntry();
         if (logEntry != null) {
             List<Log> logList = new ArrayList<>();
@@ -251,13 +259,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
 
     @Override
     public void prepareEntityUpdate(Component component) throws CdbException {
-        Component existingComponent = componentFacade.findByName(component.getName());
-        if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
-            throw new ObjectAlreadyExists("Component " + component.getName() + " already exists with id " + existingComponent.getId() + ".");
-        }
-        if (component.getComponentType() == null) {
-            throw new InvalidObjectState("Component type for " + component.getName() + " must be selected.");
-        }
+        checkComponent(component);
         EntityInfo entityInfo = component.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
         Log logEntry = prepareLogEntry();
