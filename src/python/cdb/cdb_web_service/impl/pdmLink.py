@@ -122,11 +122,28 @@ class PdmLink:
         revList = []
 
         def addLatestRev(curDrawing=None):
+            def getKeyAtIndex(revision, index, key):
+                ver = revision.properties[index]
+                if ver.name == key:
+                    return ver.value
+                else:
+                    revisionMap = self.getPdmLinkObjectPropertyMap(revision)
+                    if key in revisionMap:
+                        return revisionMap[key]
+                    else:
+                        return 0
+
+            def getVersion(revision):
+                return getKeyAtIndex(revision, verInx, 'versionInfo.identifier.versionId')
+
+            def getIteration(revision):
+                return getKeyAtIndex(revision, itrInx, 'versionInfo.identifier.versionId')
+
             maxRev = 0
             maxRevIndex = 0
             if revList.__len__() > 0:
                 for i in range(0, revList.__len__()):
-                    curRev = int(revList[i].properties[verInx].value + revList[i].properties[itrInx].value)
+                    curRev = int(str(getVersion(revList[i])) + str(getIteration(revList[i])))
                     if curRev > maxRev:
                         maxRev = curRev
                         maxRevIndex = i
