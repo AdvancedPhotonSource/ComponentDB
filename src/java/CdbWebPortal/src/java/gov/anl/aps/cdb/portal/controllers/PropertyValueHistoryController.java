@@ -351,6 +351,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
         for (PropertyValueHistory propertyValueHistory : selectedPropertyValueHistoryList) {
             propertyTypeHandler.setDisplayValue(propertyValueHistory);
             propertyTypeHandler.setTargetValue(propertyValueHistory);
+            propertyTypeHandler.setInfoActionCommand(propertyValueHistory);
         }
     }
 
@@ -365,6 +366,10 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     public boolean displayHttpLinkValue() {
         return displayType.equals(DisplayType.HTTP_LINK);
     }
+    
+    public boolean displayInfoActionValue(){
+        return displayType.equals(displayType.INFO_ACTION); 
+    }
 
     public boolean displayDocumentValue() {
         return displayType.equals(DisplayType.DOCUMENT);
@@ -377,7 +382,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     public boolean displayDateValue() {
         return displayType.equals(DisplayType.DATE);
     }
-    
+        
     public String getOriginalImageApplicationPath(PropertyValueHistory propertyValueHistory) {
         return StorageUtility.getApplicationPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION);   
     }

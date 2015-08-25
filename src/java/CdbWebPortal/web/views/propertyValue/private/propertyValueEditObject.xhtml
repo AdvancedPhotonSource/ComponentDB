@@ -49,7 +49,11 @@
 
         <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
-        <p:tooltip for="httpLinkValue" value="Enter link value."/>     
+        <p:tooltip for="httpLinkValue" value="Enter link value."/>
+        
+        <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="cellInput"
+                     rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
+        <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
 
         <h:inputText id="documentValue" value="#{propertyValueObject.value}"
                       rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>

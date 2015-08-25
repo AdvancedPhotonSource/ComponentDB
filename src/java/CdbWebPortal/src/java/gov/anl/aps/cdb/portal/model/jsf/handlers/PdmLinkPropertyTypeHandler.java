@@ -11,9 +11,7 @@ package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.api.PdmLinkApi;
 import gov.anl.aps.cdb.common.constants.CdbProperty;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
-import gov.anl.aps.cdb.common.objects.PdmLinkDrawing;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -29,13 +27,15 @@ import org.apache.log4j.Logger;
 public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static final String HANDLER_NAME = "PDMLink";
+    
+    private static final String INFO_ACTION_COMMAND = "PF('pdmLinkDrawingPropertyInfoDialogWidget').show();";
 
     private static final Logger logger = Logger.getLogger(PdmLinkPropertyTypeHandler.class.getName());
-
+    
     private PdmLinkApi pdmLinkApi;
 
     public PdmLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.HTTP_LINK);
+        super(HANDLER_NAME, DisplayType.INFO_ACTION);
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
         try {
             pdmLinkApi = new PdmLinkApi(webServiceUrl);
@@ -45,47 +45,15 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             SessionUtility.addErrorMessage("Error", error);
         }
     }
-
-    @Override
-    public void setTargetValue(PropertyValue propertyValue) {
-        String targetLink = getDrawingWindchillUrl(propertyValue.getValue(), true);
-        propertyValue.setTargetValue(targetLink);
-    }
-
-    @Override
-    public void setTargetValue(PropertyValueHistory propertyValueHistory) {
-        String targetLink = getDrawingWindchillUrl(propertyValueHistory.getValue(), false);
-        propertyValueHistory.setTargetValue(targetLink);
-    }
     
     @Override
     public void setInfoActionCommand(PropertyValue propertyValue){
-        propertyValue.setInfoActionCommand("PF('pdmLinkDrawingPropertyInfoDialogWidget').show();");
+        propertyValue.setInfoActionCommand(INFO_ACTION_COMMAND);
     }
     
-    private String getDrawingWindchillUrl(String drawingName, boolean displayErrorIfNotFound) {
-        if (drawingName == null || drawingName.isEmpty()) {
-            return null;
-        }
-
-        if (pdmLinkApi == null) {
-            logger.error("Cannot get windchill url for drawing: " + drawingName + ": PDMLink Service is not accesible.");
-            return null;
-        }
-
-        String windchillUrl = null;
-        try {
-            logger.debug("Searching for drawing: " + drawingName);
-            PdmLinkDrawing drawing = pdmLinkApi.getDrawing(drawingName);
-            windchillUrl = drawing.getWindchillUrl();
-            logger.debug("Found drawing, windchill URL: " + windchillUrl);
-        } catch (CdbException ex) {
-            if (displayErrorIfNotFound) {
-                // Avoid multiple errors for history
-                logger.error(ex);
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-            }
-        }
-        return windchillUrl;
+    @Override
+    public void setInfoActionCommand(PropertyValueHistory propertyValueHistory){
+        propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
     }
+    
 }

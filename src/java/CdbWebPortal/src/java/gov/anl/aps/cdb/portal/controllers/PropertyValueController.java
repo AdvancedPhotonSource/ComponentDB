@@ -309,6 +309,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public boolean displayDateValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DATE);
     }
+    
+    public boolean displayInfoActionValue(PropertyValue propertyValue) { 
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.INFO_ACTION); 
+    }
 
     public String getOriginalImageApplicationPath(PropertyValue propertyValue) {
         return StorageUtility.getApplicationPropertyValueImagePath(propertyValue.getValue() + CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION);   

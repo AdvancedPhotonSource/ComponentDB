@@ -19,7 +19,8 @@ public enum DisplayType {
     IMAGE(3),
     DOCUMENT(4),
     BOOLEAN(5),
-    DATE(6);
+    DATE(6),
+    INFO_ACTION(7);
     
     private final int type;
     private DisplayType(int type) {

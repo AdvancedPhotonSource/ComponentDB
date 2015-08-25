@@ -21,6 +21,16 @@
 
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
+                <p:remoteCommand name="componentPropertyInfoAction#{propertyValueObject.id}"
+                                 rendered="#{propertyValueObject.infoActionCommand != null}"
+                                 onstart="PF('loadingDialog').show();"
+                                 onerror="PF('loadingDialog').hide();"
+                                 oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.infoActionCommand}"
+                                 update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
+                                                 value="#{propertyValueObject}"/>
+                </p:remoteCommand>
+                
                 <p:commandLink id="componentPropertyValueHistoryListViewButton" 
                                onstart="PF('loadingDialog').show();"
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
@@ -33,24 +43,22 @@
                 </p:commandLink>
                 <p:commandLink id="componentPropertInfoActionButton" 
                                rendered="#{propertyValueObject.infoActionCommand != null}"
-                               onstart="PF('loadingDialog').show();"
-                               oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.infoActionCommand}"
                                styleClass="ui-icon ui-icon-info2" 
                                title="View property info"
-                               update="@form">
-                    <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
-                                                 value="#{propertyValueObject}"/>
+                               onclick="componentPropertyInfoAction#{propertyValueObject.id}()">
                     <p:tooltip for="componentPropertInfoActionButton" value="View property info."/>
-                </p:commandLink>
+                </p:commandLink>                       
             </div>
         </p:column>       
 
     </p:dataTable>
     
-    <ui:include src="../../pdmLink/private/pdmLinkComponentPropertyInfoDialog.xhtml"/>
+    <p:outputPanel id="infoActionIncludesPanel" >
+        <ui:include src="../../pdmLink/private/pdmLinkComponentPropertyInfoDialog.xhtml"/>
+    </p:outputPanel>
     
     <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
-    
+        
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
    
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>

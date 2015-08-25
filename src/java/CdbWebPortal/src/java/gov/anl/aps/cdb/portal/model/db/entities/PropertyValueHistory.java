@@ -71,7 +71,8 @@ public class PropertyValueHistory extends CdbEntity {
     private UserInfo enteredByUser;
     @JoinColumn(name = "property_value_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private PropertyValue propertyValue;
+    private PropertyValue propertyValue; 
+    private transient String infoActionCommand; 
 
     public PropertyValueHistory() {
     }
@@ -172,6 +173,14 @@ public class PropertyValueHistory extends CdbEntity {
 
     public void setTargetValueToValue() {
         targetValue = value;
+    }
+
+    public String getInfoActionCommand() {
+        return infoActionCommand;
+    }
+
+    public void setInfoActionCommand(String infoActionCommand) {
+        this.infoActionCommand = infoActionCommand;
     }
 
     @Override

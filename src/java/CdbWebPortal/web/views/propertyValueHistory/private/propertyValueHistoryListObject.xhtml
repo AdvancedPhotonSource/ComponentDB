@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:column sortBy="#{propertyValueHistoryObject.id}" headerText="Id"
               rendered="#{propertyValueHistoryController.displayId}">
@@ -37,7 +38,18 @@
                       rendered="#{propertyValueHistoryController.displayHttpLinkValue()}">
             <h:outputText value="#{propertyValueHistoryObject.displayValue}"/>
         </h:outputLink>
-
+        
+        <p:commandLink rendered="#{propertyValueHistoryController.displayInfoActionValue()}"
+                       onstart="PF('loadingDialog').show();"
+                       onerror="PF('loadingDialog').hide();"
+                       oncomplete="#{propertyValueHistoryObject.infoActionCommand}  PF('loadingDialog').hide(); "
+                       update="@([id$=infoActionIncludesPanel])">
+            <h:outputText value="#{propertyValueHistoryObject.value}"  />
+            <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValueHistory}" 
+                                        value="#{propertyValueHistoryObject}" />
+            <p:ajax onsuccess=""/>
+        </p:commandLink>
+        
         <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
                       title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayDocumentValue()}">
@@ -45,8 +57,8 @@
         </h:outputLink>  
         
         <h:outputText value="#{propertyValueHistoryObject.displayValue}"
-                      rendered="#{propertyValueHistoryController.displayDateValue()}"/>        
-
+                      rendered="#{propertyValueHistoryController.displayDateValue()}"/>
+        
         <ui:fragment rendered="#{propertyValueHistoryController.displayBooleanValue()}">         
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueHistoryObject.value}"/>

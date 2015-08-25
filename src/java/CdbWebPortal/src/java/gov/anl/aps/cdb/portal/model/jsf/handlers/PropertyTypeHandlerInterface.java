@@ -30,6 +30,8 @@ public interface PropertyTypeHandlerInterface
     
     public abstract void setInfoActionCommand(PropertyValue propertyValue); 
     
+    public abstract void setInfoActionCommand(PropertyValueHistory propertyValueHistory); 
+    
     public abstract void setDisplayValue(PropertyValue propertyValue);
     
     public abstract void setDisplayValue(PropertyValueHistory propertyValueHistory);

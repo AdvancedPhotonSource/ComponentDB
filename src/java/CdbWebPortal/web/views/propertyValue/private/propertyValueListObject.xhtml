@@ -51,8 +51,12 @@
         </h:outputLink>
 
         <h:outputText value="#{propertyValueObject.displayValue}"
-                      rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>        
-
+                      rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
+        
+        <p:commandLink rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"
+                       onclick="componentPropertyInfoAction#{propertyValueObject.id}()">
+            <h:outputText value="#{propertyValueObject.displayValue}"  />
+        </p:commandLink>
 
         <ui:fragment rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}">         
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 

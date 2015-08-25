@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 import java.io.Serializable;
 import javax.inject.Named;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PdmLinkPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import javax.enterprise.context.RequestScoped;
@@ -39,15 +40,25 @@ public class PropertyValueInfoActionBean implements Serializable {
      * 
      * @param propertyValue property value of current row 
      */
-    public void setPropertyValue(PropertyValue propertyValue) {
+    public void setPropertyValue(PropertyValue propertyValue, String value) {
         //Check if propertyvalue is of type PDM-Link 
         if (PropertyTypeHandlerFactory.getHandler(propertyValue) instanceof PdmLinkPropertyTypeHandler) {
-            logger.debug("Info action of type PDMLink, drawing #: " + propertyValue.getValue());
+            if(value == null){
+                value = propertyValue.getValue();
+            }
+            logger.debug("Info action of type PDMLink, drawing #: " + value);
             
-            pdmLinkDrawingBean.findDrawing(propertyValue.getValue());
+            pdmLinkDrawingBean.findDrawing(value);
         }
 
         this.propertyValue = propertyValue;
     }
-
+    
+    public void setPropertyValue(PropertyValue propertyValue) {
+        setPropertyValue(propertyValue, null);
+    }
+   
+    public void setPropertyValueHistory(PropertyValueHistory propertyValueHistory){
+        setPropertyValue(propertyValueHistory.getPropertyValue(), propertyValueHistory.getValue());
+    }
 }

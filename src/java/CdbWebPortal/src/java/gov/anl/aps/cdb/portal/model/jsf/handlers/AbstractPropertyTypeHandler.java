@@ -52,6 +52,11 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     }
     
     @Override
+    public void setInfoActionCommand(PropertyValueHistory propertyValueHistory){
+        propertyValueHistory.setInfoActionCommand(null);
+    }
+    
+    @Override
     public String getEditActionOncomplete() {
         return null;
     }
