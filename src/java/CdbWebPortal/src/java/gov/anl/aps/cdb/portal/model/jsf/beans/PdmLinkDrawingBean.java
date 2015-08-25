@@ -72,6 +72,7 @@ public class PdmLinkDrawingBean implements Serializable {
     private final String WBS_PROPERTY_NAME = "WBS"; 
     private PropertyType pdmPropertyType; 
     private PropertyType wbsPropertyType; 
+    private String dialogErrorMessage; 
 
     @PostConstruct
     public void init() {
@@ -80,8 +81,8 @@ public class PdmLinkDrawingBean implements Serializable {
             pdmLinkApi = new PdmLinkApi(webServiceUrl);
         } catch (ConfigurationError ex) {
             String error = "PDMLink Service is not accessible:  " + ex.getErrorMessage();
-            logger.error(error);
-            SessionUtility.addErrorMessage("Error", error);
+            showErrorMessage(error);
+            logger.error(error); 
         }
     }
 
@@ -149,6 +150,20 @@ public class PdmLinkDrawingBean implements Serializable {
         return pdmLinkComponent;
     }
 
+    public String getDialogErrorMessage() {
+        return dialogErrorMessage;
+    }
+    
+    private void showErrorMessage(String error){
+        dialogErrorMessage = "Error: " + error; 
+        SessionUtility.addErrorMessage("Error", error);
+    }
+    
+    private void showWarningMessage(String warning){
+        dialogErrorMessage = "Warning: " + warning; 
+        SessionUtility.addWarningMessage("Warning", warning);
+    }
+
     /**
      * Check if the pdmLinkApi was successfully initialized.
      *
@@ -156,7 +171,7 @@ public class PdmLinkDrawingBean implements Serializable {
      */
     private boolean checkAPIStatus() {
         if (pdmLinkApi == null) {
-            SessionUtility.addErrorMessage("Error", "PDMLink Service is not accessible.");
+            showErrorMessage("PDMLink Service is not accessible.");
             return false;
         }
         return true;
@@ -178,7 +193,7 @@ public class PdmLinkDrawingBean implements Serializable {
             return;
         }
         if (drawing == null) {
-            SessionUtility.addErrorMessage("Error", "No drawing is loaded");
+            showErrorMessage("No drawing is loaded");
         }
 
         String drawingNumber = drawing.getNumber();
@@ -188,11 +203,11 @@ public class PdmLinkDrawingBean implements Serializable {
                 // Add generated description to current component 
                 componentController.getSelected().setDescription(pdmLinkComponent.getCdbDescription()) ;
             } catch (CdbException ex) {
+                showErrorMessage(ex.getErrorMessage());
                 logger.error(ex);
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             }
         } else {
-            SessionUtility.addWarningMessage("Error", "Drawing Number is empty");
+            showWarningMessage("Drawing Number is empty");
         }
     }
 
@@ -218,7 +233,7 @@ public class PdmLinkDrawingBean implements Serializable {
                         componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue);
                     }
                 }else {
-                    SessionUtility.addErrorMessage("Error", "Couldn't find " + PDMLINK_PROPERTY_NAME + " property type");
+                    showErrorMessage("Couldn't find " + PDMLINK_PROPERTY_NAME + " property type");
                 }
                 //Attempt to add WBS property
                 getWbsPropertyType(propertyTypeController); 
@@ -236,10 +251,10 @@ public class PdmLinkDrawingBean implements Serializable {
                     if(foundAllowedValue){
                         componentController.preparePropertyTypeValueAdd(wbsPropertyType, wbsNumber);  
                     }else{
-                        SessionUtility.addWarningMessage("WBS not added", "WBS number is not in the allowed value list for WBS property.");
+                        showWarningMessage("WBS number is not in the allowed value list for WBS property.");
                     }
                 }else{
-                    SessionUtility.addErrorMessage("Error", "Couldn't find " + WBS_PROPERTY_NAME + " property type");
+                    showErrorMessage("Couldn't find " + WBS_PROPERTY_NAME + " property type");
                 }
                 
                 //Attempt to update the component with the new properties 
@@ -248,7 +263,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 }
             }
         }else{
-            SessionUtility.addErrorMessage("Error", "No pdmLink drawing information was generated");
+            showErrorMessage("No pdmLink drawing information was generated");
         }
     }
     
@@ -318,7 +333,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 findDrawing();
             }
         }else{
-            SessionUtility.addWarningMessage("Warning", "Search pattern cannot be empty.");
+            showWarningMessage("Search pattern cannot be empty.");
         }
     }
 
@@ -338,7 +353,7 @@ public class PdmLinkDrawingBean implements Serializable {
 
         if (drawingNumber != null && !drawingNumber.isEmpty()) {
             if (!PdmLinkDrawing.isExtensionValid(drawingNumber)) {
-                SessionUtility.addWarningMessage("Warning", "Valid drawing number extensions are: " + PdmLinkDrawing.VALID_EXTENSION_LIST);
+                showWarningMessage("Valid drawing number extensions are: " + PdmLinkDrawing.VALID_EXTENSION_LIST);
                 return;
             }
 
@@ -349,10 +364,10 @@ public class PdmLinkDrawingBean implements Serializable {
                 logger.debug("Found drawing, windchill URL: " + drawing.getWindchillUrl());
             } catch (CdbException ex) {
                 logger.error(ex);
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                showErrorMessage(ex.getErrorMessage());
             }
         } else {
-            SessionUtility.addWarningMessage("Warning", "Drawing number cannot be empty.");
+            showWarningMessage("Drawing number cannot be empty.");
         }
     }
 
@@ -382,7 +397,7 @@ public class PdmLinkDrawingBean implements Serializable {
             logger.debug("Found " + searchResults.getSearchResults().size() + " drwaing(s)");
         } catch (CdbException ex) {
             logger.error(ex);
-            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            showErrorMessage(ex.getErrorMessage());
         }
     }
 
@@ -413,7 +428,6 @@ public class PdmLinkDrawingBean implements Serializable {
         } catch (CdbException ex) {
             logger.error(ex);
             //No need to notify user since many drawings do not include image
-            //SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             logger.error(ex);
             pdmLinkImage = null;
         } catch (Exception ex) {
@@ -423,7 +437,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 //Don't inform user of this exception. No valid image exits. 
                 return;
             }
-            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            showErrorMessage(ex.getMessage());
         }
     }
 
@@ -451,10 +465,10 @@ public class PdmLinkDrawingBean implements Serializable {
                 logger.debug("Found drawing, windchill URL: " + drawing.getWindchillUrl());
             } catch (CdbException ex) {
                 logger.error(ex);
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                showErrorMessage(ex.getErrorMessage());
             }
         } else {
-            SessionUtility.addWarningMessage("Warning", "UFID and or OID were not provided by search result");
+            showWarningMessage("UFID and or OID were not provided by search result");
         }
 
     }

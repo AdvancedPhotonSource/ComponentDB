@@ -15,6 +15,12 @@
         
         <ui:include src="pdmLinkDrawingInfo.xhtml" />
         
+        <p:panel rendered="#{pdmLinkDrawingBean.drawing == null}">
+            <h:outputText value="An error occured while getting information for #{drawingNumber}"/>
+            <br/>
+            <h:outputText value="#{pdmLinkDrawingBean.dialogErrorMessage}" />
+        </p:panel>
+        
     </p:dialog>
 
 </ui:composition>
