@@ -225,19 +225,20 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
 
     private void checkComponent(Component component) throws CdbException {
-       Component existingComponent = null;
+        Component existingComponent;
         String modelNumber = component.getModelNumber();
-        if (modelNumber != null) {
-            if (!modelNumber.isEmpty()) {
-                existingComponent = componentFacade.findByModelNumber(modelNumber);
-            }
-            else {
-                component.setModelNumber(null);
-            }
+        String name = component.getName();
+        if (modelNumber != null && modelNumber.isEmpty()) {
+            modelNumber = null;
+            component.setModelNumber(null);
         }
-        if (existingComponent == null) {
-            existingComponent = componentFacade.findByNameAndModelNumber(component.getName(), modelNumber);            
+        if (modelNumber == null) {
+            existingComponent = componentFacade.findByNameWithNullModelNumber(name);
         }
+        else {
+            existingComponent = componentFacade.findByNameAndModelNumber(name, modelNumber);            
+        }
+
         if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
             throw new ObjectAlreadyExists("Component " + component.toString() + " already exists with id " + existingComponent.getId() + ".");
         }

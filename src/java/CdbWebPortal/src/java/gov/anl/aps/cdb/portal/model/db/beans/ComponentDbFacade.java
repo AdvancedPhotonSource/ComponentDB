@@ -30,6 +30,12 @@ public class ComponentDbFacade extends CdbEntityDbFacade<Component> {
                 .getResultList();
     }
 
+    public List<Component> findByName(String name) {
+        return (List<Component>) em.createNamedQuery("Component.findByName")
+                .setParameter("name", name)
+                .getResultList();
+    }
+
     public Component findByNameAndModelNumber(String name, String modelNumber) {
         try {
             return (Component) em.createNamedQuery("Component.findByNameAndModelNumber")
@@ -41,6 +47,16 @@ public class ComponentDbFacade extends CdbEntityDbFacade<Component> {
         return null;
     }
 
+    public Component findByNameWithNullModelNumber(String name) {
+        try {
+            return (Component) em.createNamedQuery("Component.findByNameWithNullModelNumber")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
     public Component findByModelNumber(String modelNumber) {
         try {
             return (Component) em.createNamedQuery("Component.findByModelNumber")
@@ -50,7 +66,7 @@ public class ComponentDbFacade extends CdbEntityDbFacade<Component> {
         }
         return null;
     }
-    
+
     public Component findById(Integer id) {
         try {
             return (Component) em.createNamedQuery("Component.findById")

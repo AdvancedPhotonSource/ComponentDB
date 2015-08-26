@@ -50,7 +50,9 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Component.findAll", query = "SELECT c FROM Component c ORDER BY c.name"),
     @NamedQuery(name = "Component.findById", query = "SELECT c FROM Component c WHERE c.id = :id"),
+    @NamedQuery(name = "Component.findByName", query = "SELECT c FROM Component c WHERE c.name = :name"),
     @NamedQuery(name = "Component.findByNameAndModelNumber", query = "SELECT c FROM Component c WHERE c.name = :name AND c.modelNumber = :modelNumber"),
+    @NamedQuery(name = "Component.findByNameWithNullModelNumber", query = "SELECT c FROM Component c WHERE c.name = :name AND c.modelNumber IS NULL"),
     @NamedQuery(name = "Component.findByModelNumber", query = "SELECT c FROM Component c WHERE c.modelNumber = :modelNumber"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
 public class Component extends CdbEntity {
