@@ -67,13 +67,15 @@ public class PdmLinkDrawingBean implements Serializable {
     private StreamedContent pdmLinkImage;
     //Add component form 
     private boolean exposeSuggestedComponentType;
+    //Info action form. Full info action includes results of related drawings. 
+    private boolean fullInfoAction; 
     private ListDataModel suggestedComponentTypeListDataModel;
     private final String PDMLINK_PROPERTY_NAME = "PDMLink Drawing";
     private final String WBS_PROPERTY_NAME = "WBS"; 
     private PropertyType pdmPropertyType; 
     private PropertyType wbsPropertyType; 
     private String dialogErrorMessage; 
-
+    
     @PostConstruct
     public void init() {
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
@@ -144,6 +146,14 @@ public class PdmLinkDrawingBean implements Serializable {
 
     public boolean isExposeSuggestedComponentType() {
         return exposeSuggestedComponentType;
+    }
+
+    public void setFullInfoAction(boolean fullInfoAction) {
+        this.fullInfoAction = fullInfoAction;
+    }
+
+    public boolean isFullInfoAction() {
+        return fullInfoAction;
     }
     
     public PdmLinkComponent getPdmLinkComponent() {
@@ -221,6 +231,7 @@ public class PdmLinkDrawingBean implements Serializable {
         if (pdmLinkComponent != null) {
             Component currentComponent = componentController.getSelected();
             currentComponent.setName(pdmLinkComponent.getName());
+            currentComponent.setModelNumber(pdmLinkComponent.getModelNumber());
 
             componentController.create();
 
@@ -348,8 +359,7 @@ public class PdmLinkDrawingBean implements Serializable {
             return;
         }
 
-        drawing = null;
-        pdmLinkImage = null;
+        resetDrawingInfo(); 
 
         if (drawingNumber != null && !drawingNumber.isEmpty()) {
             if (!PdmLinkDrawing.isExtensionValid(drawingNumber)) {
@@ -394,6 +404,26 @@ public class PdmLinkDrawingBean implements Serializable {
 
         try {
             searchResults = pdmLinkApi.search(searchKeywords);
+            logger.debug("Found " + searchResults.getSearchResults().size() + " drwaing(s)");
+        } catch (CdbException ex) {
+            logger.error(ex);
+            showErrorMessage(ex.getErrorMessage());
+        }
+    }
+    
+    /**
+     * Sets search results to a list of related drawings. 
+     * @param drawingNumberBase drawing number with or without extension. 
+     */
+    public void getRelatedDrawings(String drawingNumberBase){
+        searchResults = null; 
+        
+        if (!checkAPIStatus()) {
+            return;
+        }
+        
+        try {
+            searchResults = pdmLinkApi.searchRelatedDrawings(drawingNumberBase);
             logger.debug("Found " + searchResults.getSearchResults().size() + " drwaing(s)");
         } catch (CdbException ex) {
             logger.error(ex);
@@ -471,5 +501,14 @@ public class PdmLinkDrawingBean implements Serializable {
             showWarningMessage("UFID and or OID were not provided by search result");
         }
 
+    }
+
+    public void resetDrawingInfo() {
+        drawing = null;
+        pdmLinkImage = null;
+    }
+    
+    public boolean isDisplayInfoActionErrorMessage(){
+        return (drawing == null && fullInfoAction == false) || (searchResults == null && fullInfoAction == true);
     }
 }
