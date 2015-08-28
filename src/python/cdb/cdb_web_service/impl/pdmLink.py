@@ -354,7 +354,7 @@ class PdmLink:
         drawingDetails = None
         ufid = None
         # Component Info
-        pdmComponentName = None
+        pdmComponentModel = None
         pdmPropertyValues = []
 
         # Search using the drawing name provided
@@ -370,11 +370,11 @@ class PdmLink:
             if str(resultExt).lower() == 'drw':
                 # set UFID for getting drawing metadata
                 ufid = searchResult['ufid']
-                # Set pdmComponentName
-                pdmComponentName = str(searchResult['number']).split('.')[0]
+                # Set pdmComponentModel
+                pdmComponentModel = str(searchResult['number']).split('.')[0]
 
-        if pdmComponentName is None:
-            pdmComponentName = drawingNumberBase
+        if pdmComponentModel is None:
+            pdmComponentModel = drawingNumberBase
 
         if ufid is None:
             # DRW was not found use titles of the first search result
@@ -382,7 +382,7 @@ class PdmLink:
 
 
         componentInfo = {}
-        componentInfo['name'] = pdmComponentName
+        componentInfo['modelNumber'] = pdmComponentModel
         componentInfo['drawingNumber'] = drawingNumber
         componentInfo['pdmPropertyValues'] = pdmPropertyValues
 
@@ -415,7 +415,8 @@ class PdmLink:
         cdbDescription = ''
         for i in range(1, 6):
             title = str(drawingDetails['title'+str(i)])
-            cdbDescription += title+"; "
+            if title != 'None' and title is not None:
+                cdbDescription += title+"; "
             tmpKeywordList = title.split(' ')
             for keyword in tmpKeywordList:
                 if keyword != '-':
@@ -423,6 +424,10 @@ class PdmLink:
 
         # Remove the last semicolon and set cdbDescription
         componentInfo['cdbDescription'] = cdbDescription[0:-2]
+        if drawingDetails['title5'] != None and drawingDetails['title5'] != '' and drawingDetails['title5'] != '-':
+            componentInfo['name'] = drawingDetails['title5']
+        else:
+            componentInfo['name'] = pdmComponentModel
 
         # Key is id of a component type and value is commonality of a component type based on keywords.
         stats = {}
