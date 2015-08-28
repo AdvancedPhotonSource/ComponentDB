@@ -47,7 +47,6 @@
             <h:outputText value="#{propertyValueHistoryObject.value}"  />
             <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValueHistory}" 
                                         value="#{propertyValueHistoryObject}" />
-            <p:ajax onsuccess=""/>
         </p:commandLink>
         
         <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
