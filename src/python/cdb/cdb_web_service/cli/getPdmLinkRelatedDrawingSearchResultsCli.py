@@ -2,33 +2,32 @@
 
 from cdbWebServiceCli import CdbWebServiceCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
-
 from cdb.cdb_web_service.api.pdmLinkRestApi import PdmLinkRestApi
 
 
 class GetPdmLinkDrawingCli(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
-        self.addOption('', '--search-pattern', dest='searchPattern', help='PDMLink drawing search pattern using keywords/wildcards(*/?) must be provided.')
+        self.addOption('', '--drawing-number-base', dest='drawingNumberBase', help='.')
         
     def checkArgs(self):
-        searchPattern = self.getSearchPattern()
-        if searchPattern is None:
-            raise InvalidRequest('PDMLink drawing search pattern using keywords/wildcards(*/?) must be provided.')
+        drawingNumberBase = self.getDrawingNumberBase()
+        if drawingNumberBase is None:
+            raise InvalidRequest('A full PDMLink drawing number or drawing number without extension must be provided.')
             
-    def getSearchPattern(self):
-        return self.options.searchPattern
+    def getDrawingNumberBase(self):
+        return self.options.drawingNumberBase
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-get-pdmlink-search-results --search-pattern=SEARCHPATTERN
+    cdb-get-pdmlink-related-search-results --drawing-number-base=DRAWINGNUMBERBASE
 
 Description:
-    Retrieves PDMLink search results.
+    Retrieves PDMLink drawings that are related to each other.
         """)
         self.checkArgs()
         api = PdmLinkRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
-        results = api.getDrawingSearchResults(self.getSearchPattern())
+        results = api.getRelatedDrawingSearchResults(self.getDrawingNumberBase())
         for result in results:
             print result.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 

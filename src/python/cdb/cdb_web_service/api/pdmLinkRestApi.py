@@ -55,6 +55,14 @@ class PdmLinkRestApi(CdbRestApi):
         return self.toCdbObjectList(responseData, PdmLinkSearchResult)
 
     @CdbRestApi.execute
+    def getRelatedDrawingSearchResults(self, drawingNumberBase):
+        if drawingNumberBase is None:
+            raise InvalidRequest("Drawing number base with the full drawing number or drawing number before extension must be provided")
+        url = '%s/pdmLink/searchRelated/%s' % (self.getContextRoot(), drawingNumberBase)
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, PdmLinkSearchResult)
+
+    @CdbRestApi.execute
     def completeDrawingInformation(self, ufid, oid):
         if ufid is None:
             raise InvalidRequest('A drawing ufid must be provided.')
