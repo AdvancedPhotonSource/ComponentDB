@@ -9,7 +9,7 @@
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{componentController.processCreateRequestParams}"/>
     </f:metadata>
-    
+
     <ui:define name="pageTitle">: Create Component</ui:define>        
     <ui:define name="middleCenter">
 
@@ -24,6 +24,14 @@
             <ui:param name="entityController" value="#{componentController}"/>
             <ui:include src="../common/private/commonCreateActionButtons.xhtml"/>
 
+        </h:form>
+
+        <h:form id="componentTypeSelectDialogForm">
+            <ui:include src="../componentType/private/componentTypeSelectDialog.xhtml">
+                <ui:param name="updateTarget" value=":addComponentForm:componentCreatePanelGrid"/>
+            </ui:include>
+
+            <ui:include src="../componentType/private/componentTypeSelectCustomizeDisplayDialog.xhtml"/>
         </h:form>
 
     </ui:define>

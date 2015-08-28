@@ -50,7 +50,8 @@
                              alt="Select Component" 
                              styleClass="selectButtonForAutocomplete"
                              icon="ui-icon-search">
-                <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{designElementObject.component}"/>
+                <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{componentObject.componentType}"/>
+                <p:ajax process="@form" update="@form" /> 
                 <p:tooltip for="componentTypeSelectButton" value="Search for component type."/>
             </p:commandButton>
         </p:column>
@@ -81,14 +82,7 @@
             <p:tooltip for="logTopic" value="Log topic is optional."/>
         </ui:fragment>
     </p:panelGrid>
-
-
-    <ui:include src="../../componentType/private/componentTypeSelectDialog.xhtml">
-        <ui:param name="updateTarget" value="componentCreatePanelGrid"/>
-    </ui:include>
-
-    <ui:include src="../../componentType/private/componentTypeSelectCustomizeDisplayDialog.xhtml"/>
-
+ 
 </ui:composition>
 
 
