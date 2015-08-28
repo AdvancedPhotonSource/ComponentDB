@@ -49,6 +49,15 @@ class PDMLinkRouteDescriptor:
                 'method': ['GET']
             },
 
+            # Search for related drawings using a drawing number or drawing number without extension.
+            {
+                'name': 'getRelatedDrawingSearchResults',
+                'path': '%s/pdmLink/searchRelated/:(drawingNumberBase)' % contextRoot,
+                'controller': pdmLinkController,
+                'action': 'getRelatedDrawingSearchResults',
+                'method': ['GET']
+            },
+
             # Complete drawing info using ufid and oid from search result
             {
                 'name': 'getDrawings',
