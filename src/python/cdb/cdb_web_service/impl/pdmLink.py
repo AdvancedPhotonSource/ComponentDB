@@ -315,60 +315,71 @@ class PdmLink:
     def __getDrawingDetailsWithoutSSL(self, ufid):
         return self.__getDrawingDetails(ufid)
 
-    def __generateComponentInfo(self, drawingNumber=None, ufid=None):
+    def __findRelatedDrawings(self, drawingNumberBase):
+        """
+        See getRelatedDrawingSearchResults
+        """
+        if drawingNumberBase is None:
+            raise InvalidRequest('drawingNumber or drawing number base must be provided')
+
+        # Check if something with extension was given
+        splitPattern = drawingNumberBase.split('.')
+        if splitPattern.__len__() > 1:
+            # raises InvalidArgument
+            PdmLinkDrawing.checkDrawingNumber(drawingNumberBase)
+            drawingNumberBase = splitPattern[0]
+
+        searchPattern = drawingNumberBase + '.???'
+
+        searchResults = self.getDrawingSearchResults(searchPattern)
+
+        relatedDrawings = []
+
+        for searchResult in searchResults:
+            if searchResult['number'].split('.')[0].lower() == drawingNumberBase.lower():
+                relatedDrawings.append(searchResult)
+
+        if relatedDrawings.__len__() == 0:
+            raise ObjectNotFound("Related PDMLink drawings for '" + drawingNumberBase + "' could not be found")
+
+        return relatedDrawings
+
+    def __generateComponentInfo(self, drawingNumber):
         """
         see generateComponentInfo
         """
-        if drawingNumber is None and ufid is None:
-            raise InvalidRequest('drawingNumber or ufid must be provided to create a component')
+        if drawingNumber is None:
+            raise InvalidRequest('drawingNumber must be provided')
 
         drawingDetails = None
-
-        # Get a drawing Number to search by
-        if ufid is not None and drawingNumber is None:
-            if drawingDetails is None:
-                drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
-            drawingNumber = drawingDetails['number']
-
+        ufid = None
         # Component Info
-        pdmPropertyValues = []
         pdmComponentName = None
+        pdmPropertyValues = []
 
         # Search using the drawing name provided
         PdmLinkDrawing.checkDrawingNumber(drawingNumber)
         drawingNumberBase = str(drawingNumber).split('.')[0]
-        searchResults = self.getDrawingSearchResults(drawingNumberBase + '.???')
+        searchResults = self.__findRelatedDrawings(drawingNumberBase)
 
         # Generate list of PDM Link properties and component Name
         # Drawing is searchable only by UFID provided
-        if searchResults.__len__() == 0 and ufid is not None:
-            if drawingDetails is None:
-                drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
-            pdmPropertyValues.append(drawingDetails['number'])
-            pdmComponentName = drawingDetails['name']
-        elif searchResults.__len__() == 0 and ufid is None:
-            raise ObjectNotFound("PDMLink drawing " + drawingNumber + " could not be found")
-        else:
-            for searchResult in searchResults:
-                resultNumber = searchResult['number'].split('.')[0]
-                resultExt = searchResult['number'].split('.')[-1]
-                if str(resultNumber).lower() == str(drawingNumberBase).lower():
-                    pdmPropertyValues.append(searchResult['number'])
-                    if str(resultExt).lower() == 'drw':
-                        # set UFID for getting drawing metadata if needed
-                        if ufid is None:
-                            ufid = searchResult['ufid']
-                        # Set pdmComponentName
-                        pdmComponentName = str(searchResult['number']).split('.')[0]
+        for searchResult in searchResults:
+            pdmPropertyValues.append(searchResult['number'])
+            resultExt = searchResult['number'].split('.')[-1]
+            if str(resultExt).lower() == 'drw':
+                # set UFID for getting drawing metadata
+                ufid = searchResult['ufid']
+                # Set pdmComponentName
+                pdmComponentName = str(searchResult['number']).split('.')[0]
 
         if pdmComponentName is None:
             pdmComponentName = drawingNumberBase
+
         if ufid is None:
             # DRW was not found use titles of the first search result
-            for searchResult in searchResults:
-                if str(resultNumber).lower() == str(drawingNumberBase).lower():
-                    ufid = searchResults[0]['ufid']
-                    break
+            ufid = searchResults[0]['ufid']
+
 
         componentInfo = {}
         componentInfo['name'] = pdmComponentName
@@ -667,7 +678,7 @@ class PdmLink:
         :raises InvalidArguments: if a drawing number is not complete
         :raises InvalidRequest: if required parameters aren't provided
         """
-        return self.__generateComponentInfo(drawingNumber, ufid)
+        return self.__generateComponentInfo(drawingNumber)
 
     def createComponent(self, drawingNumber, createdByUserId, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName):
         """
@@ -741,7 +752,17 @@ class PdmLink:
 
         return self.componentDbApi.getComponentById(componentId)
 
+    def getRelatedDrawingSearchResults(self, drawingNumberBase):
+        """
+        Searched PDMLink for drawings related to each other. For example a DRW and PRT for the same part.
 
+        :param drawingNumberBase: A drawing number with or without extension
+        :return: A list of CDBObject of type PdmLinkSearchResult
+        :raises ObjectNotFound: if no related drawings were found
+        :raises InvalidArgument: if drawing number with extension is invalid
+        :raises InvalidRequest: if no drawing number is provided
+        """
+        return self.__findRelatedDrawings(drawingNumberBase)
 #######################################################################
 # Testing.
 if __name__ == '__main__':
