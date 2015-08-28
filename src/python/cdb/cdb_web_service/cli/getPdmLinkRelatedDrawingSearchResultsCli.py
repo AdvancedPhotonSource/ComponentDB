@@ -13,7 +13,7 @@ class GetPdmLinkDrawingCli(CdbWebServiceCli):
     def checkArgs(self):
         drawingNumberBase = self.getDrawingNumberBase()
         if drawingNumberBase is None:
-            raise InvalidRequest('A full PDMLink drawing number or drawing number without extension must be provided.')
+            raise InvalidRequest('A full PDMLink drawing number with extension or drawing number without extension must be provided.')
             
     def getDrawingNumberBase(self):
         return self.options.drawingNumberBase
