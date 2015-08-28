@@ -21,6 +21,7 @@ public class PdmLinkComponent extends CdbObject {
     private String wbsDescription;  
     private String drawingNumber; 
     private String cdbDescription;
+    private String modelNumber; 
     
     public PdmLinkComponent() {
     }
@@ -63,6 +64,14 @@ public class PdmLinkComponent extends CdbObject {
 
     public void setDrawingNumber(String drawingNumber) {
         this.drawingNumber = drawingNumber;
+    }
+
+    public void setModelNumber(String modelNumber) {
+        this.modelNumber = modelNumber;
+    }
+
+    public String getModelNumber() {
+        return modelNumber;
     }
     
     public String getDisplayPdmLinkPropertiesString(){
