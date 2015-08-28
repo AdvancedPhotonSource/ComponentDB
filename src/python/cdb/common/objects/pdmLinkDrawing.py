@@ -14,7 +14,7 @@ class PdmLinkDrawing(CdbObject):
 
     # Check drawing name
     @classmethod
-    def checkDrawingNumber(cls, drawingName):
-        if drawingName.find('.') < 0 or drawingName.split('.')[-1].lower() not in cls.VALID_EXTENSION_LIST:
+    def checkDrawingNumber(cls, drawingNumber):
+        if drawingNumber.count('.') != 1 or drawingNumber.split('.')[-1].lower() not in cls.VALID_EXTENSION_LIST:
             raise InvalidArgument('PDMLink drawing name must have one of the following extensions: %s' % cls.VALID_EXTENSION_LIST)
 
