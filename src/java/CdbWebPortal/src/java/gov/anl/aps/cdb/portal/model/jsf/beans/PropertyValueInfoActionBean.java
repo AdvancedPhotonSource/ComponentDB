@@ -9,7 +9,7 @@ import java.io.Serializable;
 import javax.inject.Named;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PdmLinkPropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PdmLinkPropertyTypeHandler; 
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 public class PropertyValueInfoActionBean implements Serializable {
 
     private PropertyValue propertyValue = null;
+    private String value; 
     
     private static final Logger logger = Logger.getLogger(PropertyValueInfoActionBean.class.getName());
     
@@ -41,14 +42,17 @@ public class PropertyValueInfoActionBean implements Serializable {
      * @param propertyValue property value of current row 
      */
     public void setPropertyValue(PropertyValue propertyValue, String value) {
-        //Check if propertyvalue is of type PDM-Link 
-        if (PropertyTypeHandlerFactory.getHandler(propertyValue) instanceof PdmLinkPropertyTypeHandler) {
-            if(value == null){
-                value = propertyValue.getValue();
-            }
+        // Get value for optional parameter
+        if(value == null){
+            value = propertyValue.getValue();
+        }
+        this.value = value; 
+        
+        //Check if propertyvalue is of type PDMLink 
+        if(PropertyTypeHandlerFactory.getHandler(propertyValue) instanceof PdmLinkPropertyTypeHandler) { 
             logger.debug("Info action of type PDMLink, drawing #: " + value);
-            
-            pdmLinkDrawingBean.findDrawing(value);
+            pdmLinkDrawingBean.resetDrawingInfo();
+            pdmLinkDrawingBean.getRelatedDrawings(value);
         }
 
         this.propertyValue = propertyValue;
@@ -60,5 +64,9 @@ public class PropertyValueInfoActionBean implements Serializable {
    
     public void setPropertyValueHistory(PropertyValueHistory propertyValueHistory){
         setPropertyValue(propertyValueHistory.getPropertyValue(), propertyValueHistory.getValue());
+    }
+
+    public String getValue() {
+        return value;
     }
 }
