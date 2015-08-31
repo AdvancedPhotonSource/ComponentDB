@@ -110,14 +110,32 @@ public class PdmLinkApi extends CdbRestApi {
     }
     
     /**
+     * 
+     * @param drawingNumberBase drawing number or drawing number without extension. 
+     * @return PdmLink Search Results object 
+     * @throws InvalidArgument if provided drawing number base is empty or null
+     * @throws ObjectNotFound when specified drawing does not exist
+     * @throws CdbException in case of all other errors
+     * @throws ExternalServiceError the PDMLink web service threw an error
+     */
+    public PdmLinkSearchResults searchRelatedDrawings(String drawingNumberBase) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Drawing number base", drawingNumberBase);
+        String requestUrl = "/pdmLink/searchRelated/" + drawingNumberBase;
+        String jsonString = invokeGetRequest(requestUrl);
+        jsonString = "{\"searchResults\": " + jsonString + "}"; 
+        PdmLinkSearchResults searchResults = (PdmLinkSearchResults) CdbObjectFactory.createCdbObject(jsonString, PdmLinkSearchResults.class);
+        return searchResults;
+    }
+    
+    /**
      * Retrieve a one time use URL to an image of a drawing. 
      * 
      * @param revisionUFID ufid that relates to a specific drawing revision. 
      * @return image object that includes the url to the image. 
-     * @throws InvalidArgument
-     * @throws ExternalServiceError
-     * @throws ObjectNotFound
-     * @throws CdbException 
+     * @throws InvalidArgument if provided revision is empty or null
+     * @throws ObjectNotFound when specified image does not exist
+     * @throws CdbException in case of all other errors
+     * @throws ExternalServiceError the PDMLink web service threw an error
      */
     public Image getOneTimeImageUrl(String revisionUFID) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
         ArgumentUtility.verifyNonEmptyString("Search Pattern", revisionUFID);
@@ -127,6 +145,15 @@ public class PdmLinkApi extends CdbRestApi {
         return image; 
     }
     
+    /**
+     * Generates information required to create a cdb component. Used for the form
+     * @param drawingNumber drawingNumber ofthe drawing to create component from. 
+     * @return pdmLinkComponent Object 
+     * @throws InvalidArgument if provided drawing number is empty or null
+     * @throws ObjectNotFound when specified drawing cannot be found
+     * @throws CdbException in case of all other errors
+     * @throws ExternalServiceError the PDMLink web service threw an error
+     */
     public PdmLinkComponent generateComponentInformation(String drawingNumber) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
         ArgumentUtility.verifyNonEmptyString("Drawing Number", drawingNumber);
         String requestUrl = "/pdmLink/componentInfo/" + drawingNumber;
@@ -135,19 +162,8 @@ public class PdmLinkApi extends CdbRestApi {
         return pdmLinkComponent;
     }
     
-    public Component createComponent(String drawingNumber, int componentTypeId, String description) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
-        ArgumentUtility.verifyNonEmptyString("Drawing Number", drawingNumber);
-        String requestUrl = "/pdmLink/createComponent/" + drawingNumber;
-        Map data = new HashMap();  
-        description = ArgumentUtility.encode(description); 
-        data.put("componentTypeId", componentTypeId+""); 
-        data.put("description", description);
-        String jsonString = invokeSessionPostRequest(requestUrl, data);
-        Component component = (Component) CdbObjectFactory.createCdbObject(jsonString, Component.class); 
-        return component;
-    }
     
-
+    
     /*
      * Main method, used for simple testing.
      *
@@ -163,14 +179,20 @@ public class PdmLinkApi extends CdbRestApi {
             System.out.println("Drawing: \n" + drawing);
             System.out.println("Drawing Name: " + drawing.getName());
             System.out.println("Drawing Url: " + drawing.getWindchillUrl());
-            //Get Search Results 
+            //Get search results 
             PdmLinkSearchResults results =client.search("D14100201-11319?.*"); 
             System.out.println("Search Results: ");
             for(int i =0; i < results.getSearchResults().size(); i++){
                 gov.anl.aps.cdb.common.objects.PdmLinkSearchResult result = results.getSearchResults().get(i);
                 System.out.println("    " + result.getName() + " " + result.getUfid() + " " +result.getOid());
             }
-            
+            //Get related search results
+            PdmLinkSearchResults relatedDrawings = client.searchRelatedDrawings("test.drw"); 
+            System.out.println("Related Drawing Results: ");
+            for(int i =0; i < relatedDrawings.getSearchResults().size(); i++){
+                gov.anl.aps.cdb.common.objects.PdmLinkSearchResult result = relatedDrawings.getSearchResults().get(i);
+                System.out.println("    " + result.getName() + " " + result.getUfid() + " " +result.getOid());
+            }
             
             // Generate component info
             PdmLinkComponent pdmLinkComponent = client.generateComponentInformation("D14100201-113160.asm"); 
@@ -185,12 +207,6 @@ public class PdmLinkApi extends CdbRestApi {
                 System.out.println("    " +pdmLinkComponent.getPdmPropertyValues()[i]);
             }
             
-            //Create a component from pdmLinkDrawing number 
-            /* Uncoment to test - modifies database by adding a component. 
-            client.login("djarosz", "cdb");
-            Component newComponent = client.createComponent("2101-161910.DRW", 5, "Testing PDMLink class");
-            System.out.println("New Component: " + newComponent.getName());
-            */
         } catch (CdbException ex) {
             System.out.println("Sorry: " + ex);
         }
