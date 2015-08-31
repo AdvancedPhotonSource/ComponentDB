@@ -423,10 +423,12 @@ public class PdmLinkDrawingBean implements Serializable {
         }
         
         //See if drawing details should be loaded 
-        for (PdmLinkSearchResult searchResult : searchResults.getSearchResults()) {
-            if(searchResult.getNumber().equalsIgnoreCase(drawingNumberBase)){
-                //load the details for the drawing
-                completeDrawing(searchResult.getUfid(), searchResult.getOid());
+        if (searchResults != null){
+                for (PdmLinkSearchResult searchResult : searchResults.getSearchResults()) {
+                if(searchResult.getNumber().equalsIgnoreCase(drawingNumberBase)){
+                    //load the details for the drawing
+                    completeDrawing(searchResult.getUfid(), searchResult.getOid());
+                }
             }
         }
     }
