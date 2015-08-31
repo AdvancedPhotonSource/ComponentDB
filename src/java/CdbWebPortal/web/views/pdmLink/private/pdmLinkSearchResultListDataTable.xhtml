@@ -6,7 +6,6 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    Search Results: 
     <p:dataTable
         id="searchResultsTable"
         widgetVar="pdmLinkSearchResultListDataTableWidget"
@@ -23,13 +22,13 @@
                   styleClass="dataTableName">
             <p:commandLink actionListener="#{pdmLinkDrawingBean.completeDrawing(searchResult.ufid, searchResult.oid)}" 
                            onstart="PF('loadingDialog').show();"
-                           oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"  
+                           oncomplete="PF('#{parentDialogWidgetVar}').initPosition(); PF('loadingDialog').hide();"  
                            value="#{searchResult.number}"
-                           update="@form">
+                           update="#{searchResultUpdate}">
             </p:commandLink>
         </p:column>
         <p:column headerText="Date Modified"
-                  rendered="#{pdmLinkDrawingBean.drawing == null}">
+                  rendered="#{pdmLinkDrawingBean.drawing == null || parentDialogWidgetVar != 'pdmLinkDrawingSearchDialogWidget'}">
             <h:outputText value="#{searchResult.modifyStamp}" /> 
         </p:column>
     </p:dataTable>
