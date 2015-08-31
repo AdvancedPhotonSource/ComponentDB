@@ -232,7 +232,12 @@ public class PdmLinkDrawingBean implements Serializable {
                 getPdmPropertyType(propertyTypeController);
                 if (pdmPropertyType != null) {
                     for (String pdmPropertyValue : pdmLinkComponent.getPdmPropertyValues()) {
-                        componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue);
+                        //Add tags if needed 
+                        if(pdmPropertyValue.equalsIgnoreCase(pdmLinkComponent.getModelNumber())){
+                            componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue, "Model Ref"); 
+                        }else{
+                           componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue); 
+                        }
                     }
                 }else {
                     showErrorMessage("Couldn't find " + PDMLINK_PROPERTY_NAME + " property type");

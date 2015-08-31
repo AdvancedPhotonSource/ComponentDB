@@ -341,6 +341,10 @@ public class ComponentController extends CdbEntityController<Component, Componen
     }
     
     public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString){
+        preparePropertyTypeValueAdd(propertyType, propertyValueString, null);
+    }
+    
+    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString, String tag){
         Component component = getCurrent();
         List<PropertyValue> propertyValueList = component.getPropertyValueList();
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
@@ -353,7 +357,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
         propertyValueList.add(propertyValue);
         propertyValue.setEnteredByUser(lastModifiedByUser);
         propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        
+        if(tag != null){
+            propertyValue.setTag(tag);
+        }
     }
 
     public void deleteProperty(PropertyValue componentProperty) {
