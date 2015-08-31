@@ -148,7 +148,7 @@
                     </p:column>
                 </p:row>
             </p:panelGrid>
-            <p:panel rendered="#{pdmLinkDrawingBean.pdmLinkComponent == null}">
+            <p:panel rendered="#{pdmLinkDrawingBean.pdmLinkComponent == null}" styleClass="errorPanel">
                 <h:outputText value="An Error occurred in generating a component using current drawing." />
                 <br/>
                 <h:outputText value="#{pdmLinkDrawingBean.dialogErrorMessage}" />

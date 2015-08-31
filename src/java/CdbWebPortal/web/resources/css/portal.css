@@ -346,6 +346,10 @@ tr:hover .actionLink {
     text-align: left;
 }
 
+.errorPanel {
+    background: #F8E6E0;
+}
+
 .locationSelectDialog {
     background: #6da5d8;
     box-shadow: 0px 3px 5px #d5d5d5;    
