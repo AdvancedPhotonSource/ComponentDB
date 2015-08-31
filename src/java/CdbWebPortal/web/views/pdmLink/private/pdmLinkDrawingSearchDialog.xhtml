@@ -8,7 +8,8 @@
     <p:dialog id="pdmLinkDrawingSearchDialog" 
               widgetVar="pdmLinkDrawingSearchDialogWidget" 
               header="Search for PDMLink Drawing" 
-              styleClass="pdmLinkdialog">
+              styleClass="pdmLinkdialog"
+              onShow="#{pdmLinkDrawingBean.reloadPdmLinkImageStreamedContent()}">
         <h:form id="drawingSearchForm">
             <p:panelGrid columns="1" styleClass="viewEntityDetails">
                 <p:column>
@@ -32,8 +33,12 @@
 
 
             <p/>
-
-            <ui:include src="pdmLinkDrawingSearchResult.xhtml" />
+            
+            
+            <ui:include src="pdmLinkDrawingSearchResult.xhtml">
+                <ui:param name="searchResultUpdate" value="@form" />
+                <ui:param name="parentDialogWidgetVar" value="pdmLinkDrawingSearchDialogWidget" />
+            </ui:include>
 
         </h:form>
     </p:dialog>
