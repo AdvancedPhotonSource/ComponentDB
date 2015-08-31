@@ -365,13 +365,14 @@ class PdmLink:
         # Generate list of PDM Link properties and component Name
         # Drawing is searchable only by UFID provided
         for searchResult in searchResults:
-            pdmPropertyValues.append(searchResult['number'])
             resultExt = searchResult['number'].split('.')[-1]
             if str(resultExt).lower() == 'drw':
                 # set UFID for getting drawing metadata
                 ufid = searchResult['ufid']
                 # Set pdmComponentModel
                 pdmComponentModel = str(searchResult['number']).split('.')[0]
+
+        pdmPropertyValues.append(drawingNumberBase)
 
         if pdmComponentModel is None:
             pdmComponentModel = drawingNumberBase
