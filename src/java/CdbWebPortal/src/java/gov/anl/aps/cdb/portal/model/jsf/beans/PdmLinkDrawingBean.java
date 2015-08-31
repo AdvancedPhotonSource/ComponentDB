@@ -65,10 +65,9 @@ public class PdmLinkDrawingBean implements Serializable {
     private PdmLinkComponent pdmLinkComponent;
     //Getting image from server 
     private StreamedContent pdmLinkImage;
+    private byte[] imageByteArray; 
     //Add component form 
     private boolean exposeSuggestedComponentType;
-    //Info action form. Full info action includes results of related drawings. 
-    private boolean fullInfoAction; 
     private ListDataModel suggestedComponentTypeListDataModel;
     private final String PDMLINK_PROPERTY_NAME = "PDMLink Drawing";
     private final String WBS_PROPERTY_NAME = "WBS"; 
@@ -148,14 +147,6 @@ public class PdmLinkDrawingBean implements Serializable {
         return exposeSuggestedComponentType;
     }
 
-    public void setFullInfoAction(boolean fullInfoAction) {
-        this.fullInfoAction = fullInfoAction;
-    }
-
-    public boolean isFullInfoAction() {
-        return fullInfoAction;
-    }
-    
     public PdmLinkComponent getPdmLinkComponent() {
         return pdmLinkComponent;
     }
@@ -417,6 +408,7 @@ public class PdmLinkDrawingBean implements Serializable {
      */
     public void getRelatedDrawings(String drawingNumberBase){
         searchResults = null; 
+        searchKeywords = ""; 
         
         if (!checkAPIStatus()) {
             return;
@@ -429,6 +421,14 @@ public class PdmLinkDrawingBean implements Serializable {
             logger.error(ex);
             showErrorMessage(ex.getErrorMessage());
         }
+        
+        //See if drawing details should be loaded 
+        for (PdmLinkSearchResult searchResult : searchResults.getSearchResults()) {
+            if(searchResult.getNumber().equalsIgnoreCase(drawingNumberBase)){
+                //load the details for the drawing
+                completeDrawing(searchResult.getUfid(), searchResult.getOid());
+            }
+        }
     }
 
     /**
@@ -436,6 +436,8 @@ public class PdmLinkDrawingBean implements Serializable {
      * Set pdmLinkImage variable
      */
     public void loadImageForDrawing() {
+        imageByteArray = null; 
+        
         if (!checkAPIStatus()) {
             return;
         }
@@ -452,8 +454,9 @@ public class PdmLinkDrawingBean implements Serializable {
             ByteArrayOutputStream os;
             os = new ByteArrayOutputStream();
             ImageIO.write(buffImg, "png", os);
+            imageByteArray = os.toByteArray(); 
 
-            pdmLinkImage = new DefaultStreamedContent(new ByteArrayInputStream(os.toByteArray()), "image/jpg");
+            reloadPdmLinkImageStreamedContent();
 
         } catch (CdbException ex) {
             logger.error(ex);
@@ -468,6 +471,14 @@ public class PdmLinkDrawingBean implements Serializable {
                 return;
             }
             showErrorMessage(ex.getMessage());
+        }
+    }
+    
+    public void reloadPdmLinkImageStreamedContent(){
+        pdmLinkImage = null; 
+        
+        if(imageByteArray != null){
+            pdmLinkImage = new DefaultStreamedContent(new ByteArrayInputStream(imageByteArray), "image/jpg");
         }
     }
 
@@ -508,7 +519,4 @@ public class PdmLinkDrawingBean implements Serializable {
         pdmLinkImage = null;
     }
     
-    public boolean isDisplayInfoActionErrorMessage(){
-        return (drawing == null && fullInfoAction == false) || (searchResults == null && fullInfoAction == true);
-    }
 }
