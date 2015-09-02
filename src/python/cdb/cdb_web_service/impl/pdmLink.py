@@ -398,18 +398,7 @@ class PdmLink:
             drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
 
         # Add WBS description
-        componentInfo['wbsDescription'] = None
-        wbsDescription = drawingDetails['wbsDescription']
-        if wbsDescription is not None:
-            if wbsDescription != '' and wbsDescription != '-':
-                wbsSplitArray = wbsDescription.split('.')
-                cdbWbsFormat = wbsSplitArray[0]
-                del wbsSplitArray[0]
-                for letter in wbsSplitArray:
-                    if letter.isdigit():
-                        cdbWbsFormat += ".%02d" % int(letter)
-                componentInfo['wbsDescription'] = cdbWbsFormat
-
+        componentInfo['wbsDescription'] = drawingDetails['wbsDescription']
 
         # Generate a keyword list from drawings titles
         keywordList = []
