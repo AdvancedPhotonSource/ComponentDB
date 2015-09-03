@@ -37,8 +37,14 @@ class ComponentRestApi(CdbRestApi):
         return self.toCdbObjectList(responseData, Component)
 
     @CdbRestApi.execute
+    def getComponentsByName(self, name):
+        url = '%s/componentsByName/%s' % (self.getContextRoot(), Encoder.encode(name))
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Component)
+
+    @CdbRestApi.execute
     def getComponentById(self, id):
-        url = '%s/components/%s' % (self.getContextRoot(), id)
+        url = '%s/componentById/%s' % (self.getContextRoot(), id)
         if id is None:
             raise InvalidRequest('Component id must be provided.')
         responseData = self.sendRequest(url=url, method='GET')
@@ -46,18 +52,28 @@ class ComponentRestApi(CdbRestApi):
 
     @CdbRestApi.execute
     def getComponentByName(self, name):
-        url = '%s/componentsByName/%s' % (self.getContextRoot(), name)
         if name is None or not len(name):
             raise InvalidRequest('Component name must be provided.')
+        url = '%s/componentByName/%s' % (self.getContextRoot(), Encoder.encode(name))
         responseData = self.sendRequest(url=url, method='GET')
         return Component(responseData)
 
     @CdbRestApi.execute
-    def addComponent(self, name, componentTypeId, ownerUserId, ownerGroupId, isGroupWriteable, description):
-        url = '%s/components/add' % (self.getContextRoot())
+    def getComponentByModelNumber(self, modelNumber):
+        if not modelNumber:
+            raise InvalidRequest('Component model number must be provided.')
+        url = '%s/componentByModelNumber/%s' % (self.getContextRoot(), Encoder.encode(modelNumber))
+        responseData = self.sendRequest(url=url, method='GET')
+        return Component(responseData)
+
+    @CdbRestApi.execute
+    def addComponent(self, name, modelNumber, componentTypeId, ownerUserId, ownerGroupId, isGroupWriteable, description):
+        url = '%s/addComponent' % (self.getContextRoot())
         if name is None or not len(name):
             raise InvalidRequest('Component name must be provided.')
         url += '?name=%s' % Encoder.encode(name)
+        if modelNumber:
+            url += '&modelNumber=%s' % Encoder.encode(modelNumber)
         if componentTypeId is None:
             raise InvalidRequest('Component type id must be provided.')
         url += '&componentTypeId=%s' % componentTypeId
@@ -155,9 +171,25 @@ if __name__ == '__main__':
         print component.getDisplayString()
 
     print
-    print 'Adding Component Property'
-    print '*************************'
-    print api.addComponentProperty(componentId=10, propertyTypeId=2, tag='mytag2', value='A', units=None, description=None, isDynamic=False, isUserWriteable=False)
+    print 'Components By Name'
+    print '******************'
+    components = api.getComponentsByName('3458A DVM')
+    for component in components:
+        print component.getDisplayString()
+
+    #component = api.getComponentByName('3458A DVM')
+    component = api.getComponentByModelNumber('xyz0001')
+    print component
+
+    print
+    #print 'Adding Component'
+    #component = api.addComponent('3458A DVM', 'xyz0001', 11, 4, 3, False, 'my new component')
+    #print component
+
+    #print
+    #print 'Adding Component Property'
+    #print '*************************'
+    #print api.addComponentProperty(componentId=10, propertyTypeId=2, tag='mytag2', value='A', units=None, description=None, isDynamic=False, isUserWriteable=False)
 
 
 

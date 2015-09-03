@@ -44,6 +44,9 @@ class ComponentRouteDescriptor:
                 'method' : ['GET']
             },
 
+            # Given complexity of the component interfaces, use
+            # method names for get routes.
+
             # Get component list
             {
                 'name' : 'getComponents',
@@ -53,21 +56,38 @@ class ComponentRouteDescriptor:
                 'method' : ['GET']
             },
 
+            {
+                'name' : 'getComponentsByName',
+                'path' : '%s/componentsByName/:(name)' % contextRoot,
+                'controller' : componentController,
+                'action' : 'getComponentsByName', 
+                'method' : ['GET']
+            },
+
             # Get component by id
             {
                 'name' : 'getComponentById',
-                'path' : '%s/components/:(id)' % contextRoot,
+                'path' : '%s/componentById/:(id)' % contextRoot,
                 'controller' : componentController,
                 'action' : 'getComponentById', 
                 'method' : ['GET']
             },
 
-            # Get component by name
+            # Get component by name. 
             {
                 'name' : 'getComponentByName',
-                'path' : '%s/componentsByName/:(name)' % contextRoot,
+                'path' : '%s/componentByName/:(name)' % contextRoot,
                 'controller' : componentController,
                 'action' : 'getComponentByName', 
+                'method' : ['GET']
+            },
+
+            # Get component by model number. 
+            {
+                'name' : 'getComponentByModelNumber',
+                'path' : '%s/componentByModelNumber/:(modelNumber)' % contextRoot,
+                'controller' : componentController,
+                'action' : 'getComponentByModelNumber', 
                 'method' : ['GET']
             },
 
@@ -76,7 +96,7 @@ class ComponentRouteDescriptor:
             # component names can contain slashes
             {
                 'name' : 'addComponent',
-                'path' : '%s/components/add' % contextRoot,
+                'path' : '%s/addComponent' % contextRoot,
                 'controller' : componentSessionController,
                 'action' : 'addComponent', 
                 'method' : ['POST']

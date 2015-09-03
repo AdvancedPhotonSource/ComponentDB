@@ -24,6 +24,9 @@ class ComponentSessionController(CdbSessionController):
         if not kwargs.has_key('componentTypeId'):
             raise InvalidRequest('Missing component type id.')
         componentTypeId = kwargs.get('componentTypeId')
+        modelNumber = kwargs.get('modelNumber')
+        if modelNumber:
+            modelNumber = Encoder.decode(modelNumber)
 
         sessionUser = self.getSessionUser()
         createdByUserId = sessionUser.get('id')
@@ -38,7 +41,7 @@ class ComponentSessionController(CdbSessionController):
         if description is not None:
             description = Encoder.decode(description)
 
-        return self.componentControllerImpl.addComponent(name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description).getFullJsonRep()
+        return self.componentControllerImpl.addComponent(name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description).getFullJsonRep()
 
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())

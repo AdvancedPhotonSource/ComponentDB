@@ -23,14 +23,20 @@ class ComponentControllerImpl(CdbObjectManager):
     def getComponents(self):
         return self.componentDbApi.getComponents()
 
+    def getComponentsByName(self, name):
+        return self.componentDbApi.getComponentsByName(name)
+
     def getComponentById(self, id):
         return self.componentDbApi.getComponentById(id)
 
     def getComponentByName(self, name):
         return self.componentDbApi.getComponentByName(name)
 
-    def addComponent(self, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
-        return self.componentDbApi.addComponent(name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
+    def getComponentByModelNumber(self, modelNumber):
+        return self.componentDbApi.getComponentByModelNumber(modelNumber)
+
+    def addComponent(self, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
+        return self.componentDbApi.addComponent(name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
 
     def addComponentProperty(self, componentId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable):
         return self.componentDbApi.addComponentPropertyByTypeId(componentId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
