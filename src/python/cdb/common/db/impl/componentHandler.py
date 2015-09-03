@@ -6,6 +6,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
+from cdb.common.exceptions.multipleObjectsFound import MultipleObjectsFound
 from cdb.common.db.entities.componentType import ComponentType
 from cdb.common.db.entities.component import Component
 from cdb.common.db.entities.componentProperty import ComponentProperty
@@ -28,12 +29,25 @@ class ComponentHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('Component id %s does not exist.' % (id))
 
-    def findComponentByName(self, session, name):
+    def findComponentByModelNumber(self, session, modelNumber):
         try:
-            dbComponent = session.query(Component).filter(Component.name==name).one()
+            dbComponent = session.query(Component).filter(Component.model_number==modelNumber).one()
             return dbComponent
         except NoResultFound, ex:
+            raise ObjectNotFound('Component with model number %s does not exist.' % (modelNumber))
+
+    def findComponentsByName(self, session, name):
+        dbComponents = session.query(Component).filter(Component.name==name).all()
+        return dbComponents
+
+    def findComponentByName(self, session, name):
+        dbComponents = self.findComponentsByName(session, name)
+        if len(dbComponents) == 0:
             raise ObjectNotFound('Component with name %s does not exist.' % (name))
+        elif len(dbComponents) == 1:
+            return dbComponents[0]
+        else:
+            raise MultipleObjectsFound('There are multiple components with name %s.' % (name))
 
     # This method will not throw exception if both id and name are none
     def findComponentByIdOrName(self, session, id, name):
@@ -55,6 +69,11 @@ class ComponentHandler(CdbDbEntityHandler):
         dbComponents = session.query(Component).all()
         return dbComponents
 
+    def getComponentsByName(self, session, name):
+        self.logger.debug('Retrieving list of components with name %s' % (name))
+        dbComponents = self.findComponentsByName(session, name)
+        return dbComponents
+
     def getComponentById(self, session, id):
         self.logger.debug('Retrieving component id %s' % id)
         dbComponent = self.findComponentById(session, id)
@@ -65,19 +84,29 @@ class ComponentHandler(CdbDbEntityHandler):
         dbComponent = self.findComponentByName(session, name)
         return dbComponent
 
-    def addComponent(self, session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description=None):
+    def getComponentByModelNumber(self, session, modelNumber):
+        self.logger.debug('Retrieving component model number %s' % modelNumber)
+        dbComponent = self.findComponentByModelNumber(session, modelNumber)
+        return dbComponent
+
+    def addComponent(self, session, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description=None):
         try:
-            dbComponent = session.query(Component).filter(Component.name==name).one()
-            raise ObjectAlreadyExists('Component %s already exists.' % name)
-        except NoResultFound, ex:
+            if not modelNumber:
+                dbComponent = self.findComponentByName(session, name)
+                raise ObjectAlreadyExists('Component with name %s already exists.' % name)
+            else:
+                dbComponent = self.findComponentByModelNumber(session, modelNumber)
+                raise ObjectAlreadyExists('Component with model number %s already exists.' % modelNumber)
+        except ObjectNotFound, ex:
             # OK.
             pass
+
         dbComponentType = self.componentTypeHandler.getComponentTypeById(session, componentTypeId)
         # Create entity info
         dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable)
 
         # Create component
-        dbComponent = Component(name=name, description=description)
+        dbComponent = Component(name=name, model_number=modelNumber, description=description)
         dbComponent.componentType = dbComponentType
         dbComponent.entityInfo = dbEntityInfo
         session.add(dbComponent)

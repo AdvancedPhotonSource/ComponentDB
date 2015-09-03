@@ -53,6 +53,12 @@ class ComponentDbApi(CdbDbApi):
         return self.toCdbObjectList(dbComponents)
 
     @CdbDbApi.executeQuery
+    def getComponentsByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbComponents = self.componentHandler.getComponentsByName(session, name)
+        return self.toCdbObjectList(dbComponents)
+
+    @CdbDbApi.executeQuery
     def getComponentById(self, id, **kwargs):
         session = kwargs['session']
         dbComponent = self.componentHandler.getComponentById(session, id)
@@ -64,10 +70,16 @@ class ComponentDbApi(CdbDbApi):
         dbComponent = self.componentHandler.getComponentByName(session, name)
         return dbComponent.getCdbObject()
 
-    @CdbDbApi.executeTransaction
-    def addComponent(self, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, **kwargs):
+    @CdbDbApi.executeQuery
+    def getComponentByModelNumber(self, modelNumber, **kwargs):
         session = kwargs['session']
-        dbComponent = self.componentHandler.addComponent(session, name, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
+        dbComponent = self.componentHandler.getComponentByModelNumber(session, modelNumber)
+        return dbComponent.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addComponent(self, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, **kwargs):
+        session = kwargs['session']
+        dbComponent = self.componentHandler.addComponent(session, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
         return dbComponent.getCdbObject()
 
     @CdbDbApi.executeQuery
@@ -137,11 +149,11 @@ if __name__ == '__main__':
     #for componentType in componentTypes:
     #    print componentType
 
-    #components = api.getComponents()
-    #for component in components:
-    #    print
-    #    print "********************"
-    #    print component
+    components = api.getComponentsByName('3458A DVM')
+    for component in components:
+        print
+        print "********************"
+        print component
     #    print "TEXT"
     #    print component.getTextRep()
     #    print "DICT"
@@ -153,23 +165,23 @@ if __name__ == '__main__':
     #component = api.getComponentById(10)
     #print component.getDictRep()
 
-    #print 'Adding component'
-    #component = api.addComponent(name='wwz6', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
-    #print "Added Component"
-    #print component
+    print 'Adding component'
+    component = api.addComponent(name='3458A DVM', modelNumber='xy1', componentTypeId=8, createdByUserId=4, ownerUserId=4, ownerGroupId=3, isGroupWriteable=True, description='Test Component')
+    print "Added Component"
+    print component
 
     #component = api.getComponentById(10)
     #print component.getDictRep()
-    api.setAdminGroupName('CDB_ADMIN')
-    print 'ADD COMPONENT PROPERTY'
-    print api.addComponentPropertyByTypeId(componentId=10, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+    #api.setAdminGroupName('CDB_ADMIN')
+    #print 'ADD COMPONENT PROPERTY'
+    #print api.addComponentPropertyByTypeId(componentId=10, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
 
-    print 'UPDATE COMPONENT PROPERTY'
-    print api.updateComponentPropertyByValueId(componentId=207, propertyValueId=212, tag='mytag', value='NIM', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+    #print 'UPDATE COMPONENT PROPERTY'
+    #print api.updateComponentPropertyByValueId(componentId=207, propertyValueId=212, tag='mytag', value='NIM', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
 
-    print 'ADD COMPONENT INSTANCE PROPERTY'
-    print api.addComponentInstancePropertyByTypeId(componentInstanceId=50, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+    #print 'ADD COMPONENT INSTANCE PROPERTY'
+    #print api.addComponentInstancePropertyByTypeId(componentInstanceId=50, propertyTypeId=2, tag='mytag', value='A', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
 
-    print 'UPDATE COMPONENT INSTANCE PROPERTY'
-    print api.updateComponentInstancePropertyByValueId(componentInstanceId=50, propertyValueId=344, tag='mytag', value='B', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
+    #print 'UPDATE COMPONENT INSTANCE PROPERTY'
+    #print api.updateComponentInstancePropertyByValueId(componentInstanceId=50, propertyValueId=344, tag='mytag', value='B', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
 
