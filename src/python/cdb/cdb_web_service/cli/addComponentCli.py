@@ -8,6 +8,7 @@ class AddComponentCli(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
         self.addOption('', '--name', dest='name', help='Component name (required).')
+        self.addOption('', '--model-number', dest='modelNumber', help='Component model number (optional).')
         self.addOption('', '--component-type-id', dest='componentTypeId', help='Component type id (required).')
         self.addOption('', '--description', dest='description', help='Component description.')
         self.addOption('', '--owner-user-id', dest='ownerUserId', help='Owner user id. If not provided, user who created component will own it.')
@@ -22,6 +23,9 @@ class AddComponentCli(CdbWebServiceCli):
 
     def getName(self):
         return self.options.name
+
+    def getModelNumber(self):
+        return self.options.modelNumber
 
     def getComponentTypeId(self):
         return self.options.componentTypeId
@@ -41,6 +45,7 @@ class AddComponentCli(CdbWebServiceCli):
     def runCommand(self):
         self.parseArgs(usage="""
     cdb-add-component --name=NAME --component-type-id=COMPONENTTYPEID 
+        [--model-number=MODELNUMBER]
         [--description=DESCRIPTION]
         [--owner-user-id=OWNERUSERID]
         [--owner-group-id=OWNERGROUPID]
@@ -51,7 +56,7 @@ Description:
         """)
         self.checkArgs()
         api = ComponentRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
-        component = api.addComponent(self.getName(), self.getComponentTypeId(), self.getOwnerUserId(), self.getOwnerGroupId(), self.getIsGroupWriteable(), self.getDescription())
+        component = api.addComponent(self.getName(), self.getModelNumber(), self.getComponentTypeId(), self.getOwnerUserId(), self.getOwnerGroupId(), self.getIsGroupWriteable(), self.getDescription())
         print component.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 
 #######################################################################
