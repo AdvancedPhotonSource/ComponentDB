@@ -50,13 +50,13 @@
         <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
         <p:tooltip for="httpLinkValue" value="Enter link value."/>
-        
+
         <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
         <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
 
         <h:inputText id="documentValue" value="#{propertyValueObject.value}"
-                      rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>
+                     rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>
         <p:tooltip for="documentValue" value="Upload new document using upload action button."/>    
 
         <p:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
@@ -66,7 +66,15 @@
 
         <p:calendar id="dateValue" value="#{propertyValueObject.dateValue}"
                     rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
-        <p:tooltip for="dateValue" value="Use calendar to set date."/>         
+        <p:tooltip for="dateValue" value="Use calendar to set date."/>
+        
+        <p:outputPanel rendered="#{propertyValueController.displayTableRecordReference(propertyValueObject)}" >
+            <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
+                                       == "componentDesignPropertyValueEditPanel"}' styleClass="longCellInput">
+                <ui:include src="../../componentDesignProperty/private/componentDesignPropertyValueEditPanel.xhtml"/>
+            </p:outputPanel>
+        </p:outputPanel>
+
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units">

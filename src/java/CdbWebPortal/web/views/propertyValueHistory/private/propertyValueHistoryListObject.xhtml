@@ -49,6 +49,15 @@
                                         value="#{propertyValueHistoryObject}" />
         </p:commandLink>
         
+        <p:outputPanel rendered="#{propertyValueHistoryController.displayTableRecordReferenceValue()}">
+            <h:outputText value="#{propertyValueHistoryObject.displayValue}"
+                      rendered="#{propertyValueHistoryObject.targetValue == null}"/>
+            <h:outputLink rendered="#{propertyValueHistoryObject.targetValue != null}" 
+                          value="#{propertyValueHistoryObject.targetValue}">
+                <h:outputText value="#{propertyValueHistoryObject.displayValue}"/> 
+            </h:outputLink>
+        </p:outputPanel>
+        
         <h:outputLink value="#{propertyValueHistoryObject.targetValue}" target="_page_#{propertyValueHistoryObject.targetValue}" 
                       title="#{propertyValueHistoryObject.targetValue}"
                       rendered="#{propertyValueHistoryController.displayDocumentValue()}">

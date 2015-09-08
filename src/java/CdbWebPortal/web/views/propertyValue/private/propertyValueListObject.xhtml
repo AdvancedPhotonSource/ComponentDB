@@ -53,6 +53,15 @@
         <h:outputText value="#{propertyValueObject.displayValue}"
                       rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
         
+        <p:outputPanel rendered="#{propertyValueController.displayTableRecordReference(propertyValueObject)}">
+            <h:outputText value="#{propertyValueObject.displayValue}"
+                      rendered="#{propertyValueObject.targetValue == null}"/>
+            <h:outputLink rendered="#{propertyValueObject.targetValue != null}" 
+                          value="#{propertyValueObject.targetValue}">
+                <h:outputText value="#{propertyValueObject.displayValue}"/> 
+            </h:outputLink>
+        </p:outputPanel>
+        
         <p:commandLink rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"
                        onclick="componentPropertyInfoAction#{propertyValueObject.id}()">
             <h:outputText value="#{propertyValueObject.displayValue}"  />
