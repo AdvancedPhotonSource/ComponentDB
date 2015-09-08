@@ -724,7 +724,7 @@ class PdmLink:
             componentTypeId = componentInfo['suggestedComponentTypes'][0]['id']
 
         # Add the new component
-        newComponent = self.componentDbApi.addComponent(componentInfo['name'], componentTypeId, createdByUserId, ownerUserId,
+        newComponent = self.componentDbApi.addComponent(componentInfo['name'], componentInfo['modelNumber'], componentTypeId, createdByUserId, ownerUserId,
                                                         ownerGroupId, isGroupWriteable, description)
 
         componentId = newComponent['id']
