@@ -10,6 +10,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
@@ -48,5 +49,15 @@ public class PropertyTypeDbFacade extends CdbEntityDbFacade<PropertyType> {
         } catch (NoResultException ex) {
         }
         return null;
+    }
+    
+    public List<PropertyType> findByPropertyTypeHandler(PropertyTypeHandler handler){
+        try{
+            return (List<PropertyType>) em.createNamedQuery("PropertyType.findByPropertyTypeHandler")
+                    .setParameter("propertyTypeHandler", handler)
+                    .getResultList(); 
+        }catch (NoResultException ex) {
+        }
+        return null; 
     }
 }
