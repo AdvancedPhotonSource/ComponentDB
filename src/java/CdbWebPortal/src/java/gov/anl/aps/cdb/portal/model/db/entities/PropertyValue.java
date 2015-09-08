@@ -48,6 +48,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByTag", query = "SELECT p FROM PropertyValue p WHERE p.tag = :tag"),
     @NamedQuery(name = "PropertyValue.findByValue", query = "SELECT p FROM PropertyValue p WHERE p.value = :value"),
     @NamedQuery(name = "PropertyValue.findByUnits", query = "SELECT p FROM PropertyValue p WHERE p.units = :units"),
+    @NamedQuery(name = "PropertyValue.findByPropertyType", query = "SELECT p FROM PropertyValue p WHERE p.propertyType = :propertyType"), 
     @NamedQuery(name = "PropertyValue.findByDescription", query = "SELECT p FROM PropertyValue p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyValue.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValue p WHERE p.enteredOnDateTime = :enteredOnDateTime"),
     @NamedQuery(name = "PropertyValue.findByIsUserWriteable", query = "SELECT p FROM PropertyValue p WHERE p.isUserWriteable = :isUserWriteable"),
@@ -111,7 +112,8 @@ public class PropertyValue extends CdbEntity {
     
     private transient String infoActionCommand; 
     private transient boolean handlerInfoSet;
-
+    private transient Design componentDesignPropertySelected; 
+            
     public PropertyValue() {
     }
 
@@ -326,6 +328,14 @@ public class PropertyValue extends CdbEntity {
 
     public void setHandlerInfoSet(boolean handlerInfoSet) {
         this.handlerInfoSet = handlerInfoSet;
+    }
+
+    public void setComponentDesignPropertySelected(Design componentDesignPropertySelected) {
+        this.componentDesignPropertySelected = componentDesignPropertySelected;
+    }
+
+    public Design getComponentDesignPropertySelected() {
+        return componentDesignPropertySelected;
     }
 
     @Override
