@@ -19,10 +19,7 @@ import gov.anl.aps.cdb.common.objects.PdmLinkDrawing;
 import gov.anl.aps.cdb.common.objects.PdmLinkSearchResults;
 import gov.anl.aps.cdb.common.objects.Image;
 import gov.anl.aps.cdb.common.objects.PdmLinkComponent;
-import gov.anl.aps.cdb.common.objects.Component; 
 import gov.anl.aps.cdb.common.utilities.ArgumentUtility;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * PDMLink API class, used for retrieving information about PDMLink drawings.
