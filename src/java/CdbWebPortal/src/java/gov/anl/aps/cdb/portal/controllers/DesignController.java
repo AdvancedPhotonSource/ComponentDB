@@ -24,6 +24,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.DesignElementUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.DesignUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
@@ -85,7 +86,9 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
     @EJB
     private DesignElementDbFacade designElementFacade;
-
+    
+    private List<Design> selectDesignCandidateList = null; 
+    
     public DesignController() {
         super();
     }
@@ -100,6 +103,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         Design design = new Design();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         design.setEntityInfo(entityInfo);
+        
+        selectDesignCandidateList =null; 
         return design;
     }
 
@@ -488,6 +493,17 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         return designImageList;
     }
 
+    public List<Design> getSelectDesignCandidateList() {
+        if(selectDesignCandidateList == null){
+            selectDesignCandidateList = getAvailableItems(); 
+        }
+        return selectDesignCandidateList;
+    }
+    
+    public List<Design> completeDesign(String query){
+        return DesignUtility.filterDesign(query, getSelectDesignCandidateList()); 
+    }
+   
     public DataTable getDesignPropertyValueListDataTable() {
         return designPropertyValueListDataTable;
     }
