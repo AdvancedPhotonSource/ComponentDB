@@ -253,10 +253,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         propertyTypeHandler.setInfoActionCommand(propertyValue);
         propertyTypeHandler.setDisplayValue(propertyValue);
         String targetValue = propertyValue.getTargetValue();
-        //Field is stored in db... update if empty. 
-        if(targetValue == null || targetValue.isEmpty()){
-            propertyTypeHandler.setTargetValue(propertyValue);
-        }
+        propertyTypeHandler.setTargetValue(propertyValue);
         PropertyType propertyType = propertyValue.getPropertyType();
         DisplayType displayType = propertyTypeHandler.getValueDisplayType();
         if (displayType == null) {
@@ -267,7 +264,13 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         }
         propertyType.setDisplayType(displayType);
         propertyValue.setHandlerInfoSet(true);
+        propertyTypeHandler.resetOneTimeUseVariables();
         return displayType;
+    }
+    
+    public String getPropertyEditPage(PropertyValue propertyValue){
+        PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+        return propertyTypeHandler.getPropertyEditPage(); 
     }
 
     public DisplayType getPropertyValueDisplayType(PropertyValue propertyValue) {
@@ -308,6 +311,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     public boolean displayDateValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DATE);
+    }
+    
+    public boolean displayTableRecordReference(PropertyValue propertyValue) { 
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.TABLE_RECORD_REFERENCE); 
     }
     
     public boolean displayInfoActionValue(PropertyValue propertyValue) { 
