@@ -34,6 +34,7 @@ public class PropertyTypeHandlerFactory {
         hMap.put(CurrencyPropertyTypeHandler.HANDLER_NAME, new CurrencyPropertyTypeHandler());
         hMap.put(DatePropertyTypeHandler.HANDLER_NAME, new DatePropertyTypeHandler());
         hMap.put(BooleanPropertyTypeHandler.HANDLER_NAME, new BooleanPropertyTypeHandler());
+        hMap.put(ComponentDesignPropertyTypeHandler.HANDLER_NAME, new ComponentDesignPropertyTypeHandler()); 
         return hMap;
     }
 
