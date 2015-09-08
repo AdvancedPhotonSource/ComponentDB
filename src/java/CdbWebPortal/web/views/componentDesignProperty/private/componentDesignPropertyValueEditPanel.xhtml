@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:fragment>
+        <p:remoteCommand autoRun="true" action="#{componentDesignPropertyBean.setPropertyDesign(propertyValueObject)}" update="designDropDown"/>
+        <p:autoComplete id="designDropDown"                            
+                        var="designObject"
+                        completeMethod="#{designController.completeDesign}"
+                        itemValue="#{designObject}"
+                        itemLabel="#{designObject.name}"
+                        value="#{propertyValueObject.componentDesignPropertySelected}"
+                        converter="designConverter"
+                        dropdown="true"
+                        forceSelection="true"
+                        styleClass="autocomplete"
+                        scrollHeight="200">
+            <p:ajax event="itemSelect" listener="#{componentDesignPropertyBean.changeComponentDesignPropertyValue(propertyValueObject)}" update="@this" />
+        </p:autoComplete>
+        
+        <ui:remove>
+            <p:commandButton id="componentTypeSelectButton"
+                             oncomplete="PF('componentDesignPropertyDesignSelectDialogWidget').show()"
+                             update="@form"
+                             immediate="true"
+                             alt="Select Component" 
+                             styleClass="selectButtonForAutocomplete"
+                             icon="ui-icon-search">
+                <p:tooltip for="componentTypeSelectButton" value="Search for component type."/>
+            </p:commandButton>
+
+            <ui:include src="componentDesignPropertyDesignSelectDialog.xhtml" />
+         </ui:remove>
+    </ui:fragment>
+
+
+</ui:composition>
+
