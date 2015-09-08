@@ -95,4 +95,14 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     public void setTargetValue(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setTargetValueToValue();
     }
+    
+    @Override
+    public void resetOneTimeUseVariables(){
+        
+    }
+    
+    @Override
+    public String getPropertyEditPage(){
+        return null; 
+    }
 }

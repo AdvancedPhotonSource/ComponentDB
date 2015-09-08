@@ -39,4 +39,8 @@ public interface PropertyTypeHandlerInterface
     public abstract void setTargetValue(PropertyValue propertyValue);
     
     public abstract void setTargetValue(PropertyValueHistory propertyValueHistory);    
+    
+    public abstract void resetOneTimeUseVariables(); 
+    
+    public abstract String getPropertyEditPage(); 
 }
