@@ -8,14 +8,10 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 
 import gov.anl.aps.cdb.portal.model.db.beans.DesignDbFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.ComponentDesignPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.List;
