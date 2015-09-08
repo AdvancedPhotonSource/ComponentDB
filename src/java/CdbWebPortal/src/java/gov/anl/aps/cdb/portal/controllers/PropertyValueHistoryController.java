@@ -352,6 +352,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
             propertyTypeHandler.setDisplayValue(propertyValueHistory);
             propertyTypeHandler.setTargetValue(propertyValueHistory);
             propertyTypeHandler.setInfoActionCommand(propertyValueHistory);
+            propertyTypeHandler.resetOneTimeUseVariables();
         }
     }
 
@@ -369,6 +370,10 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     
     public boolean displayInfoActionValue(){
         return displayType.equals(displayType.INFO_ACTION); 
+    }
+    
+    public boolean displayTableRecordReferenceValue(){
+        return displayType.equals(displayType.TABLE_RECORD_REFERENCE); 
     }
 
     public boolean displayDocumentValue() {
