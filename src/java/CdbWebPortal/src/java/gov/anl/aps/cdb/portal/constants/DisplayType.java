@@ -20,7 +20,8 @@ public enum DisplayType {
     DOCUMENT(4),
     BOOLEAN(5),
     DATE(6),
-    INFO_ACTION(7);
+    INFO_ACTION(7),
+    TABLE_RECORD_REFERENCE(8);
     
     private final int type;
     private DisplayType(int type) {
