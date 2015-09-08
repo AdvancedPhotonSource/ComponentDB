@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import cherrypy
+from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.service.cdbController import CdbController
 from cdb.cdb_web_service.impl.designControllerImpl import DesignControllerImpl
 
