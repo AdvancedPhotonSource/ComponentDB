@@ -43,8 +43,8 @@
                     <p:tab title="Sources">
                         <ui:include src="../componentSource/private/componentSourceEditList.xhtml"/>
                     </p:tab> 
-
-                    <p:tab title="Assembly Components">
+                    
+                    <p:tab title="Assembly Components" rendered="#{resources.AssemblyComponentsUIFeatureDisabled == 0}">
                         <ui:include src="private/componentAssemblyComponentEditList.xhtml"/>
                     </p:tab>  
 

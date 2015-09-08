@@ -51,10 +51,10 @@
                         <ui:include src="../componentSource/private/componentSourceList.xhtml"/>
                     </p:tab>
 
-                    <p:tab title="Assembly Components">
+                    <p:tab title="Assembly Components" rendered="#{resources.AssemblyComponentsUIFeatureDisabled == 0}">
                         <ui:include src="private/componentAssemblyComponentList.xhtml"/>
                     </p:tab>  
-
+    
                     <p:tab title="Instances">
                         <ui:include src="private/componentComponentInstanceList.xhtml"/>
                     </p:tab>       

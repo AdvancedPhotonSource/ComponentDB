@@ -53,7 +53,8 @@
                             <ui:param name="searchString" value="#{searchController.searchString}"/>
                             <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
 
-                            <p:tab title="Assembly Components" rendered="#{searchController.displayAssemblyComponents}">
+                            <p:tab title="Assembly Components" rendered="#{searchController.displayAssemblyComponents 
+                                                                           and (resources.AssemblyComponentsUIFeatureDisabled == 0)}">
                                 <ui:include src="../assemblyComponent/private/assemblyComponentSearchDataTable.xhtml"/>
                             </p:tab> 
 

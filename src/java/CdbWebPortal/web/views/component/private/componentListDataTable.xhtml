@@ -16,6 +16,8 @@
     <ui:param name="propertyTypeName4" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId4)}"/>
     <ui:param name="propertyTypeId5" value="#{componentController.displayPropertyTypeId5}"/>
     <ui:param name="propertyTypeName5" value="#{componentController.getDisplayPropertyTypeName(propertyTypeId5)}"/>
+    
+    <ui:param name="assemblyComponentsUIFeatureDisabled" value="#{resources.AssemblyComponentsUIFeatureDisabled == 1}" /> 
     <p:dataTable id="componentListDataTable" 
                  widgetVar="componentListDataTableWidget"
                  var="componentObject" 
@@ -39,23 +41,33 @@
                   filterValue="#{componentController.filterByName}"
                   rendered="true" >
             <f:attribute name="exportValue" value="#{componentObject.name}"/>
-            <ui:param name="isAssembly" value="#{componentObject.isAssembly}"/>
-            <ui:fragment rendered="#{!isAssembly}">
-                <h:outputLink value="view.xhtml?id=#{componentObject.id}" title="View component details">
+            <ui:param name="componentLink" value="view.xhtml?id=#{componentObject.id}" />
+            
+            <ui:fragment rendered="#{assemblyComponentsUIFeatureDisabled}">
+                <h:outputLink value="#{componentLink}" title="View component details">
                     <h:outputText value="#{componentObject.name}"/>
                 </h:outputLink>  
             </ui:fragment>
-            <ui:fragment rendered="#{isAssembly}">
-                <p:treeTable id="assemblyComponentListTreeTable"
-                             value="#{componentController.createAssemblyRoot(componentObject)}"
-                             var="assemblyComponentObject"
-                             styleClass="assemblyTreeTable">
-                    <p:column>
-                        <h:outputLink value="view.xhtml?id=#{assemblyComponentObject.id}" title="View component details">
-                            <h:outputText value="#{assemblyComponentObject.name}"/>
-                        </h:outputLink>             
-                    </p:column>
-                </p:treeTable>
+            
+            <ui:fragment rendered="#{!assemblyComponentsUIFeatureDisabled}">
+                <ui:param name="isAssembly" value="#{componentObject.isAssembly}"/>
+                <ui:fragment rendered="#{!isAssembly}">
+                    <h:outputLink value="#{componentLink}" title="View component details">
+                        <h:outputText value="#{componentObject.name}"/>
+                    </h:outputLink>  
+                </ui:fragment>
+                <ui:fragment rendered="#{isAssembly}">
+                    <p:treeTable id="assemblyComponentListTreeTable"
+                                 value="#{componentController.createAssemblyRoot(componentObject)}"
+                                 var="assemblyComponentObject"
+                                 styleClass="assemblyTreeTable">
+                        <p:column>
+                            <h:outputLink value="view.xhtml?id=#{assemblyComponentObject.id}" title="View component details">
+                                <h:outputText value="#{assemblyComponentObject.name}"/>
+                            </h:outputLink>             
+                        </p:column>
+                    </p:treeTable>
+                </ui:fragment>
             </ui:fragment>
         </p:column>
 
