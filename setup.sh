@@ -39,12 +39,13 @@ if [ -z $CDB_VAR_DIR ]; then
     fi
 fi
 
-# Establish machine architecture
+# Establish machine architecture and host name
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
+CDB_SHORT_HOSTNAME=`hostname -s`
 
 # Check support setup
 if [ -z $CDB_SUPPORT_DIR ]; then
-    export CDB_SUPPORT_DIR=$CDB_INSTALL_DIR/support 
+    export CDB_SUPPORT_DIR=$CDB_INSTALL_DIR/support-$CDB_SHORT_HOSTNAME
     if [ -d $CDB_SUPPORT_DIR ]; then
         cd $CDB_SUPPORT_DIR
         export CDB_SUPPORT_DIR=`pwd`
