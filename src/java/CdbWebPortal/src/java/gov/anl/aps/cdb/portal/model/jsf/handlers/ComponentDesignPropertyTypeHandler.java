@@ -25,7 +25,7 @@ public class ComponentDesignPropertyTypeHandler extends AbstractPropertyTypeHand
     private static final String PROPERTY_EDIT_PAGE = "componentDesignPropertyValueEditPanel";
 
     private static final Logger logger = Logger.getLogger(ComponentDesignPropertyTypeHandler.class.getName());
-
+    
     private Design design;
 
     public ComponentDesignPropertyTypeHandler() {
@@ -53,7 +53,7 @@ public class ComponentDesignPropertyTypeHandler extends AbstractPropertyTypeHand
         if (design == null) {
             propertyValue.setTargetValue(null);
         } else {
-            propertyValue.setTargetValue("/cdb/views/design/view.xhtml?id=" + propertyValue.getValue());
+            propertyValue.setTargetValue("../design/view.xhtml?id=" + propertyValue.getValue());
         }
     }
 
@@ -73,7 +73,7 @@ public class ComponentDesignPropertyTypeHandler extends AbstractPropertyTypeHand
         if (design == null) {
             propertyValueHistory.setTargetValue(null);
         } else {
-            propertyValueHistory.setTargetValue("/cdb/views/design/view.xhtml?id=" + propertyValueHistory.getValue());
+            propertyValueHistory.setTargetValue("../design/view.xhtml?id=" + propertyValueHistory.getValue());
         }
     }
 
