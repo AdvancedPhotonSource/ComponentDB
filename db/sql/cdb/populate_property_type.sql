@@ -70,6 +70,7 @@ INSERT INTO `property_type` VALUES
 (68,'Option / Feature','Used to record an optional feature unique to this component instance.',3,NULL,'',''),
 (69,'Network Node Name','',NULL,NULL,'',''),
 (70,'Traveler Instance (Upload)','',2,1,'',''),
-(71,'Traveler Template (Upload)','',2,1,'','');
+(71,'Traveler Template (Upload)','',2,1,'',''),
+(72,'Component Design','Used to associate a component with a design',8,12,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

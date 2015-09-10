@@ -11,6 +11,7 @@ INSERT INTO `property_type_handler` VALUES
 (8,'PARIS Link','Handler for PARIS purchasing links.'),
 (9,'Currency','Handler for monetary values.'),
 (10,'Boolean','Handler for boolean values.'),
-(11,'Date','Handler for date values.');
+(11,'Date','Handler for date values.'),
+(12,'Component Design','Handler to associate a design with a component.');
 /*!40000 ALTER TABLE `property_type_handler` ENABLE KEYS */;
 UNLOCK TABLES;
