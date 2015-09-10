@@ -105,7 +105,7 @@ while [ $lockCnt -lt $nTableLocks ]; do
     headLine=`expr $lockCnt \* 2`
     tailLine=2
     echo "Working on table lock #: $lockCnt" 
-    grep -n LOCK $fullBackupFilePath | head -$headLine | tail -$tailLine > $processingFile
+    grep -n "LOCK TABLES" $fullBackupFilePath | head -$headLine | tail -$tailLine > $processingFile
     dbTable=`cat $processingFile | head -1 | awk '{print $3}' | sed 's?\`??g'`
     firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
     lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`
