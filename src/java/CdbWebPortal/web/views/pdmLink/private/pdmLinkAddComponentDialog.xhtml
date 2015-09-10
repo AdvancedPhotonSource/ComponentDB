@@ -58,7 +58,7 @@
                                         scrollHeight="200"
                                         dropdown="true" 
                                         styleClass="autocomplete"
-                                        required="true">
+                                        required="false">
                             <p:ajax event="valueChange" immediate="true" process="@this"/>
                         </p:autoComplete>
                         <p:commandButton id="componentTypeSelectAllButton"
@@ -139,11 +139,11 @@
                 <!-- Add Component Button --> 
                 <p:row>
                     <p:column colspan="2">
+                        <ui:param name="onSuccessExecute" value="PF('pdmLinkAddComponentDialogWidget').hide()" />
                         <p:commandButton 
                             value="Add Component"
-                            actionListener='#{pdmLinkDrawingBean.createComponentFromDrawingNumber(componentController, propertyTypeController)}'
-                            oncomplete="if (!args.validationFailed) PF('pdmLinkAddComponentDialogWidget').hide()">
-                            <p:ajax process="@form" update="@form"/>
+                            action="#{pdmLinkDrawingBean.createComponentFromDrawingNumber(componentController, propertyTypeController, onSuccessExecute)}">
+                            <p:ajax process="@form" update="@form"/> 
                         </p:commandButton>
                     </p:column>
                 </p:row>

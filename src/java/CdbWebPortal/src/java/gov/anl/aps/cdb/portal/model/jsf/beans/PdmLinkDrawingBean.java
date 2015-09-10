@@ -39,9 +39,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.imageio.ImageIO;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -218,7 +220,7 @@ public class PdmLinkDrawingBean implements Serializable {
      * @param componentController componentController contains methods required to create and save component in database. 
      * @param propertyTypeController propertyTypeController allows getting a propertyType entity object which define component properties. 
      */
-    public void createComponentFromDrawingNumber(ComponentController componentController, PropertyTypeController propertyTypeController) {
+    public void createComponentFromDrawingNumber(ComponentController componentController, PropertyTypeController propertyTypeController, String onSuccessExecute) {
         if (pdmLinkComponent != null) {
             Component currentComponent = componentController.getSelected();
             currentComponent.setName(pdmLinkComponent.getName());
@@ -268,6 +270,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 if(currentComponent.getPropertyValueList().size() > 0){
                     componentController.update(); 
                 }
+                RequestContext.getCurrentInstance().execute(onSuccessExecute);
             }
         }else{
             showErrorMessage("No pdmLink drawing information was generated");
