@@ -28,6 +28,7 @@ INSERT INTO `design` VALUES
 (35,'R&D - Vacuum flange and joint test stand','',498),
 (36,'M1 Dipole Prototypes','Container for the M1 design alternative prototypes',534),
 (37,'M1 Measurement in MM1','Test setup for M1 measurements',547),
-(38,'M1 Measurement PS Control/Monitoring','Required power supply components to support M1 measurements in MM1',569);
+(38,'M1 Measurement PS Control/Monitoring','Required power supply components to support M1 measurements in MM1',569),
+(39,'S1 Magnet Yoke','',652);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

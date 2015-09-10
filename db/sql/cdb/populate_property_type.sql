@@ -71,6 +71,7 @@ INSERT INTO `property_type` VALUES
 (69,'Network Node Name','',NULL,NULL,'',''),
 (70,'Traveler Instance (Upload)','',2,1,'',''),
 (71,'Traveler Template (Upload)','',2,1,'',''),
-(72,'Component Design','Used to associate a component with a design',8,12,'','');
+(72,'Component Design','Used to associate a component with a design',8,12,'',''),
+(73,'Measurement (plot)','PDF of measurement results',3,1,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

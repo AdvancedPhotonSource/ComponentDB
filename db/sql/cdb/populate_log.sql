@@ -34,6 +34,22 @@ INSERT INTO `log` VALUES
 (36,'Verified location and applied barcode sticker 2/13/15.','2015-03-31 15:29:04',2,NULL),
 (37,'Verified location and applied barcode sticker 2/13/15,','2015-03-31 15:30:44',2,NULL),
 (38,'Updated NAT-MCH firmware to V2.17 (HUB-PCIe board AVR firmware to V1.10).  Attached is the successful result indication.','2015-04-20 14:40:35',3,NULL),
-(39,'Cloned from Quad Dublet Plinth (Type A)','2015-04-22 12:53:47',3,NULL);
+(39,'Cloned from Quad Dublet Plinth (Type A)','2015-04-22 12:53:47',3,NULL),
+(40,'Initial','2015-07-28 11:13:39',18,NULL),
+(41,'Cloned from DMM_VacChamberAssy4','2015-08-07 16:39:56',2,NULL),
+(42,'Cloned from Mockup_VacChamberAssy4','2015-08-07 16:42:22',2,NULL),
+(43,'Cloned from Mockup_VacChamberAssy5','2015-08-07 16:47:28',2,NULL),
+(44,'Cloned from Mockup_VacChamberAssy7','2015-08-07 16:48:52',2,NULL),
+(45,'Cloned from Mockup_VacChamberAssy8','2015-08-07 16:50:21',2,NULL),
+(46,'Cloned from Mockup_VacChamberAssy10','2015-08-07 16:51:16',2,NULL),
+(47,'Cloned from Mockup_VacChamberAssy11','2015-08-07 16:51:58',2,NULL),
+(48,'Cloned from Mockup_VacChamberAssy22','2015-08-07 16:53:13',2,NULL),
+(49,'Cloned from Mockup_VacChamberAssy23','2015-08-07 16:54:03',2,NULL),
+(50,'Cloned from Mockup_VacChamberAssy25','2015-08-07 16:55:02',2,NULL),
+(51,'Cloned from Mockup_VacChamberAssy26','2015-08-07 16:56:02',2,NULL),
+(52,'Cloned from Mockup_VacChamberAssy28','2015-08-07 16:56:41',2,NULL),
+(53,'Cloned from Mockup_VacCross_Mplet','2015-08-07 17:06:08',2,NULL),
+(55,'Cloned from Mockup_VacCross_Mplet','2015-08-07 17:07:13',2,NULL),
+(56,'Cloned from Mockup_VacChamberAssy5','2015-08-10 09:39:02',2,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;
