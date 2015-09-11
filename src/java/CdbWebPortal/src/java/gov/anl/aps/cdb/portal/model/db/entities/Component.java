@@ -14,6 +14,8 @@ import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -476,7 +478,9 @@ public class Component extends CdbEntity {
             cachedValue = "";
             for (PropertyValue propertyValue : propertyValueList) {
                 if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
-                    String value = propertyValue.getValue();
+                    PropertyTypeHandlerInterface propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                    propertyHandler.setDisplayValue(propertyValue);
+                    String value = propertyValue.getDisplayValue(); 
                     if (value != null && !value.isEmpty()) {
                         cachedValue += delimiter + value;
                         delimiter = "|";
