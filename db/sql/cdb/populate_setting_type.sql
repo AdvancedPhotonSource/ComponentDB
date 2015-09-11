@@ -29,7 +29,7 @@ INSERT INTO `setting_type` VALUES
 (29,'Component.List.Display.ModelNumber','Display component model number.','true'),
 (30,'Component.List.Display.OwnerUser','Display owner username.','true'),
 (31,'Component.List.Display.OwnerGroup','Display owner group name.','true'),
-(32,'Component.List.Display.PropertyTypeId1','Display property value for property type id #1.','1'),
+(32,'Component.List.Display.PropertyTypeId1','Display property value for property type id #1.','72'),
 (33,'Component.List.Display.PropertyTypeId2','Display property value for property type id #2.',''),
 (34,'Component.List.Display.PropertyTypeId3','Display property value for property type id #3.',''),
 (35,'Component.List.Display.PropertyTypeId4','Display property value for property type id #4.',''),
