@@ -57,7 +57,8 @@
             <h:outputText value="#{propertyValueObject.displayValue}"
                       rendered="#{propertyValueObject.targetValue == null}"/>
             <h:outputLink rendered="#{propertyValueObject.targetValue != null}" 
-                          value="#{propertyValueObject.targetValue}">
+                          value="#{propertyValueObject.targetValue}"
+                          target="_page_#{propertyValueObject.targetValue}">
                 <h:outputText value="#{propertyValueObject.displayValue}"/> 
             </h:outputLink>
         </p:outputPanel>
