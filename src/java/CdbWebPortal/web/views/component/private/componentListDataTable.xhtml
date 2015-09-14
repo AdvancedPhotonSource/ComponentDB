@@ -106,47 +106,48 @@
                   rendered="#{componentController.displaySources}">
             <h:outputText value="#{componentObject.componentSources}"/>
         </p:column>
-
-        <ui:param name="propertyValue1" value="#{componentObject.getPropertyValue(propertyTypeId1)}"/>
-        <p:column headerText="Property: #{propertyTypeName1}" 
-                  filterBy="#{componentObject.propertyValue1}" filterMatchMode="contains"
-                  filterValue="#{componentController.filterByPropertyValue1}"
-                  rendered="#{propertyTypeId1 != null}">
-            <h:outputText value="#{propertyValue1}"/>
-        </p:column>
-
-        <ui:param name="propertyValue2" value="#{componentObject.getPropertyValue(propertyTypeId2)}"/>
-        <p:column headerText="Property: #{propertyTypeName2}" 
-                  filterBy="#{componentObject.propertyValue2}" filterMatchMode="contains"
-                  filterValue="#{componentController.filterByPropertyValue2}"
-                  rendered="#{propertyTypeId2 != null}">
-            <h:outputText value="#{propertyValue2}"/>
-        </p:column>
-
-        <ui:param name="propertyValue3" value="#{componentObject.getPropertyValue(propertyTypeId3)}"/>
-        <p:column headerText="Property: #{propertyTypeName3}" 
-                  filterBy="#{componentObject.propertyValue3}" filterMatchMode="contains"
-                  filterValue="#{componentController.filterByPropertyValue3}"
-                  rendered="#{propertyTypeId3 != null}">
-            <h:outputText value="#{propertyValue3}"/>
-        </p:column>
-
-        <ui:param name="propertyValue4" value="#{componentObject.getPropertyValue(propertyTypeId4)}"/>
-        <p:column headerText="Property: #{propertyTypeName4}" 
-                  filterBy="#{componentObject.propertyValue4}" filterMatchMode="contains"
-                  filterValue="#{componentController.filterByPropertyValue4}"
-                  rendered="#{propertyTypeId4 != null}">
-            <h:outputText value="#{propertyValue4}"/>
-        </p:column>
-
-        <ui:param name="propertyValue5" value="#{componentObject.getPropertyValue(propertyTypeId5)}"/>
-        <p:column headerText="Property: #{propertyTypeName5}" 
-                  filterBy="#{componentObject.propertyValue5}" filterMatchMode="contains"
-                  filterValue="#{componentController.filterByPropertyValue5}"
-                  rendered="#{propertyTypeId5 != null}">
-            <h:outputText value="#{propertyValue5}"/>
-        </p:column>
-
+        
+        <ui:param name="propertyValueColumn" value="../../propertyValue/private/propertyValueComponentListDataTableColumn.xhtml" />
+        <ui:include src="#{propertyValueColumn}">
+            <ui:param name="propertyTypeName" value="#{propertyTypeName1}" />
+            <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId1)}"/>
+            <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue1}" />
+            <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue1}" />
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId1 != null}" />   
+        </ui:include>
+        
+        <ui:include src="#{propertyValueColumn}">
+            <ui:param name="propertyTypeName" value="#{propertyTypeName2}" />
+            <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId2)}"/>
+            <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue2}" />
+            <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue2}" />
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId2 != null}" />   
+        </ui:include>
+        
+        <ui:include src="#{propertyValueColumn}">
+            <ui:param name="propertyTypeName" value="#{propertyTypeName3}" />
+            <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId3)}"/>
+            <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue3}" />
+            <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue3}" />
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId3 != null}" />   
+        </ui:include>
+        
+        <ui:include src="#{propertyValueColumn}">
+            <ui:param name="propertyTypeName" value="#{propertyTypeName4}" />
+            <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId4)}"/>
+            <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue4}" />
+            <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue4}" />
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId4 != null}" />   
+        </ui:include>
+        
+        <ui:include src="#{propertyValueColumn}">
+            <ui:param name="propertyTypeName" value="#{propertyTypeName5}" />
+            <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId5)}"/>
+            <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue5}" />
+            <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue5}" />
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId5 != null}" />   
+        </ui:include>
+        
         <p:column sortBy="#{componentObject.entityInfo.ownerUser.username}" headerText="Owner"
                   filterBy="#{componentObject.entityInfo.ownerUser.username}" filterMatchMode="contains"
                   filterValue="#{componentController.filterByOwnerUser}"
