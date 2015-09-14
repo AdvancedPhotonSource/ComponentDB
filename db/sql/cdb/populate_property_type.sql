@@ -11,7 +11,7 @@ INSERT INTO `property_type` VALUES
 (8,'Form Factor','',3,NULL,'',''),
 (9,'Slot Length','',3,NULL,NULL,NULL),
 (10,'Required Water Flow',NULL,3,NULL,NULL,NULL),
-(11,'WBS','',1,NULL,NULL,NULL),
+(11,'WBS-P6','',1,NULL,NULL,NULL),
 (12,'Traveler Template (ICMS)','',2,5,'',''),
 (13,'Traveler Instance (ICMS)','',2,5,'',''),
 (14,'Image',NULL,4,2,NULL,NULL),
@@ -72,6 +72,7 @@ INSERT INTO `property_type` VALUES
 (70,'Traveler Instance (Upload)','',2,1,'',''),
 (71,'Traveler Template (Upload)','',2,1,'',''),
 (72,'Component Design','Used to associate a component with a design',8,12,'',''),
-(73,'Measurement (plot)','PDF of measurement results',3,1,'','');
+(73,'Measurement (plot)','PDF of measurement results',3,1,'',''),
+(74, 'WBS-DCC','Document Control Center WBS numbers',1,NULL,NULL,NULL);  
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;
