@@ -39,7 +39,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import javax.faces.context.FacesContext;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.imageio.ImageIO;
@@ -72,7 +71,7 @@ public class PdmLinkDrawingBean implements Serializable {
     private boolean exposeSuggestedComponentType;
     private ListDataModel suggestedComponentTypeListDataModel;
     private final String PDMLINK_PROPERTY_NAME = "PDMLink Drawing";
-    private final String WBS_PROPERTY_NAME = "WBS"; 
+    private final String WBS_PROPERTY_NAME = "WBS-DCC"; 
     private PropertyType pdmPropertyType; 
     private PropertyType wbsPropertyType; 
     private String dialogErrorMessage; 
