@@ -6,7 +6,7 @@ from cdb.common.exceptions.invalidArgument import InvalidArgument
 class PdmLinkComponent(CdbObject):
 
     PROPERTY_TYPE_PDM_NAME = 'PDMLink Drawing'
-    PROPERTY_TYPE_WBS_NAME = 'WBS'
+    PROPERTY_TYPE_WBS_NAME = 'WBS-DCC'
 
     DEFAULT_KEY_LIST = ['name', 'pdmPropertyValues', 'suggestedComponentTypes', 'wbsDescription', 'cdbDescription']
 
