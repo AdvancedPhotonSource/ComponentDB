@@ -11,6 +11,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
@@ -111,7 +112,7 @@ public class Component extends CdbEntity {
     private transient boolean isCloned = false;
     private transient List<PropertyValue> imagePropertyList = null;
 
-    private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
+    private transient final HashMap<Integer, PropertyValueInformation> propertyValueCacheMap = new HashMap<>();
 
     // Used to map property type id to property value number
     private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
@@ -289,7 +290,10 @@ public class Component extends CdbEntity {
     public String getPropertyValueByIndex(Integer index) {
         Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
         if (propertyTypeId != null) {
-            return propertyValueCacheMap.get(propertyTypeId);
+            PropertyValueInformation propertyInfo = propertyValueCacheMap.get(propertyTypeId);
+            if(propertyInfo != null){
+                return propertyInfo.getValue(); 
+            }
         }
         return null;
     }
@@ -300,7 +304,7 @@ public class Component extends CdbEntity {
         }
         Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
         if (propertyTypeId != null) {
-            propertyValueCacheMap.put(propertyTypeId, propertyValue);
+            propertyValueCacheMap.put(propertyTypeId, new PropertyValueInformation(propertyValue, null));
         }
     }
 
@@ -468,28 +472,52 @@ public class Component extends CdbEntity {
         propertyValueCacheMap.clear();
     }
 
-    public String getPropertyValue(Integer propertyTypeId) {
+    public PropertyValueInformation getPropertyValueInformation(Integer propertyTypeId) {
         if (propertyTypeId == null) {
             return null;
         }
-        String cachedValue = propertyValueCacheMap.get(propertyTypeId);
-        if (cachedValue == null) {
+        PropertyValueInformation propertyValueInfo = propertyValueCacheMap.get(propertyTypeId);
+        if (propertyValueInfo == null) {
             String delimiter = "";
-            cachedValue = "";
+            String cachedValue = "";
+            PropertyTypeHandlerInterface propertyHandler = null; 
+            boolean setTargetValue = false;  
+            PropertyValue lastValue = null; 
             for (PropertyValue propertyValue : propertyValueList) {
                 if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
-                    PropertyTypeHandlerInterface propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                    if(propertyHandler == null){
+                        propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                    }                    
                     propertyHandler.setDisplayValue(propertyValue);
                     String value = propertyValue.getDisplayValue(); 
                     if (value != null && !value.isEmpty()) {
                         cachedValue += delimiter + value;
                         delimiter = "|";
                     }
+                    setTargetValue = lastValue == null;
+                    lastValue = propertyValue; 
                 }
             }
-            propertyValueCacheMap.put(propertyTypeId, cachedValue);
+            propertyValueInfo = new PropertyValueInformation(cachedValue, null);
+            if(setTargetValue){
+                propertyValueInfo = attemptSetTargetValue(propertyValueInfo, lastValue, propertyHandler); 
+            }
+            propertyValueCacheMap.put(propertyTypeId, propertyValueInfo);
         }
-        return cachedValue;
+        return propertyValueInfo;
+    }
+    
+    public PropertyValueInformation attemptSetTargetValue(PropertyValueInformation propertyValueInfo, PropertyValue propertyValue, PropertyTypeHandlerInterface propertyHandler){
+        DisplayType displayType = propertyHandler.getValueDisplayType(); 
+        if(displayType.equals(DisplayType.HTTP_LINK) || displayType.equals(DisplayType.TABLE_RECORD_REFERENCE)){
+            propertyHandler.setTargetValue(propertyValue);
+            propertyValueInfo.setTargetValue(propertyValue.getTargetValue());
+        }
+        return propertyValueInfo; 
+    }
+    
+    public String getPropertyValue(Integer propertyTypeId){
+        return getPropertyValueInformation(propertyTypeId).getValue(); 
     }
 
     public String getDisplayNameWithTypeAndCategory() {
@@ -506,5 +534,27 @@ public class Component extends CdbEntity {
 
     public Boolean getIsAssembly() {
         return (assemblyComponentList != null && !assemblyComponentList.isEmpty());
+    }
+    
+    public class PropertyValueInformation{
+        private String value; 
+        private String targetValue;
+
+        public PropertyValueInformation(String value, String targetValue) {
+            this.value = value;
+            this.targetValue = targetValue;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getTargetValue() {
+            return targetValue;
+        }
+
+        public void setTargetValue(String targetValue) {
+            this.targetValue = targetValue;
+        }
     }
 }
