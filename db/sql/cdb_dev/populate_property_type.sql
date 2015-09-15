@@ -11,13 +11,13 @@ INSERT INTO `property_type` VALUES
 (8,'Form Factor','',3,NULL,'',''),
 (9,'Slot Length','',3,NULL,NULL,NULL),
 (10,'Required Water Flow',NULL,3,NULL,NULL,NULL),
-(11,'WBS','',1,NULL,NULL,NULL),
+(11,'WBS-P6','',1,NULL,NULL,NULL),
 (12,'Traveler Template (ICMS)','',2,5,'',''),
 (13,'Traveler Instance (ICMS)','',2,5,'',''),
 (14,'Image',NULL,4,2,NULL,NULL),
 (15,'Document/Drawing (Upload)','',4,1,'',''),
 (16,'Document/Drawing (ICMS)','',4,5,'',''),
-(17,'PDMLink Drawing','Provides a link to PDMLink, enter the drawing number plus optional extension e.g. U221020202-110001[.asm]',4,6,'',''),
+(17,'PDMLink Drawing','Provides a link to PDMLink, enter the drawing number including the extension e.g. U221020202-110001.asm',4,6,'',''),
 (18,'AMOS Order','Provides a link to AMOS, enter the Master Order number, e.g. MO_nnnnnn ',4,7,'',''),
 (19,'Purchase Requisition','Provides a link to PARIS. Enter the PR number, e.g. Fy-xxxxxx , in the Value field',4,8,'',''),
 (21,'QA Inspection Complete','',2,10,'false',NULL),
@@ -73,11 +73,12 @@ INSERT INTO `property_type` VALUES
 (71,'Traveler Template (Upload)','',2,1,'',''),
 (72,'Component Design','Used to associate a component with a design',8,12,'',''),
 (73,'Measurement (plot)','PDF of measurement results',3,1,'',''),
-(74,'Critical Component','',10,10,'',''),
+(74, 'WBS-DCC','Document Control Center WBS numbers',1,NULL,NULL,NULL),
 (75,'Configuration Control','',10,10,'',''),
 (76,'Supplemental Shielding','',10,10,'',''),
 (77,'Distance From Source Point','',10,NULL,'','meters'),
 (78,'Dimension','',3,NULL,'',''),
-(79,'Verified','',10,11,'','');
+(79,'Verified','',10,11,'',''),
+(80,'Critical Component','',10,10,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;
