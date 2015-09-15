@@ -4,7 +4,7 @@ SVN_ROOT=https://svn.aps.anl.gov/cdb
 release=$1
 tag=$2
 if [ -z $release ]; then
-    echo "Usage: $0 <release> [$tag]"
+    echo "Usage: $0 <release> [tag]"
     exit 1
 fi
 if [ -z $tag ]; then
