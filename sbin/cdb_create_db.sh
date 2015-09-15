@@ -26,7 +26,6 @@ cd $CURRENT_DIR
 if [ -z "${CDB_ROOT_DIR}" ]; then
     CDB_ROOT_DIR=$MY_DIR/..
 fi
-CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/cdb
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
     echo "Environment file ${CDB_ENV_FILE} does not exist." 
@@ -52,6 +51,7 @@ else
 fi
 
 # Second argument overrides directory with db population scripts
+CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/$CDB_DB_NAME
 CDB_DB_SCRIPTS_DIR=${CDB_DB_SCRIPTS_DIR:=$CDB_SQL_DIR}
 if [ ! -z "$2" ]; then
     CDB_DB_SCRIPTS_DIR=$2
