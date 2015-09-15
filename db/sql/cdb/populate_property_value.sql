@@ -309,7 +309,7 @@ INSERT INTO `property_value` VALUES
 (443,15,'','document.8000099760150942.xlsx','','','2015-06-08 09:16:26',41,0,0,'document.8000099760150942.xlsx','/cdb/propertyValue/documents/document.8000099760150942.xlsx'),
 (444,15,'','document.7125917058400206768.pdf','','','2015-06-08 09:16:59',41,0,0,'document.7125917058400206768.pdf','/cdb/propertyValue/documents/document.7125917058400206768.pdf'),
 (445,17,'Top Level DMM Assy','U2210203-100000.drw','','','2015-06-09 09:04:44',3,0,0,'U2210203-100000.drw','https://windchill-vm.aps.anl.gov/Windchill/app/#ptc1/tcomp/infoPage?oid=VR:wt.epm.EPMDocument:3219467709&u8=1'),
-(446,17,'DMM Top Level Vacuum','mba_vac_dmm_system.drw','','','2015-08-26 10:00:28',2,0,0,NULL,NULL),
+(446,17,'DMM Top Level Vacuum','mba_vac_dmm_system.drw','','','2015-08-26 10:00:28',2,0,0,'mba_vac_dmm_system.drw','https://windchill-vm.aps.anl.gov/Windchill/app/#ptc1/tcomp/infoPage?oid=VR:wt.epm.EPMDocument:3206970492&u8=1'),
 (447,14,'','image.7031783926521745640.jpg','','','2015-06-10 09:12:49',7,0,0,'image.7031783926521745640.jpg','image.7031783926521745640.jpg'),
 (448,16,'','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/u221020202-110001.drw.pdf','','','2015-06-11 08:47:57',7,0,0,'https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/u221020202-110001.drw.pdf','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/u221020202-110001.drw.pdf'),
 (449,15,'User Guide','document.2175541798448741948.pdf','','Bh560v2Config-UG-04 October 2013','2015-06-24 09:49:32',3,0,0,'document.2175541798448741948.pdf','/cdb/propertyValue/documents/document.2175541798448741948.pdf'),
@@ -372,6 +372,9 @@ INSERT INTO `property_value` VALUES
 (515,17,'','U221020101-160300.drw','','','2015-08-07 17:33:22',2,0,0,'U221020101-160300.drw','https://windchill-vm.aps.anl.gov/Windchill/app/#ptc1/tcomp/infoPage?oid=VR:wt.epm.EPMDocument:3206436642&u8=1'),
 (516,17,'','U221020101-160100.drw','','','2015-08-07 17:39:37',2,0,0,NULL,NULL),
 (517,17,'','U221020101-160100.drw','','','2015-08-07 17:39:49',2,0,0,NULL,NULL),
-(518,17,'','U221020101-111210.drw','','','2015-08-10 09:40:18',2,0,0,NULL,NULL);
+(518,17,'','U221020101-111210.drw','','','2015-08-10 09:40:18',2,0,0,NULL,NULL),
+(519,15,'User Manual','document.8683526051311796844.pdf','','','2015-09-11 14:21:23',23,0,0,'document.8683526051311796844.pdf','/cdb/propertyValue/documents/document.8683526051311796844.pdf'),
+(521,65,'','APS_1688515','','','2015-09-11 14:28:53',23,0,0,'APS_1688515','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_1688515'),
+(522,14,'','image.3385280471239945906.png','','','2015-09-11 14:32:16',23,0,0,'image.3385280471239945906.png','image.3385280471239945906.png');
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;

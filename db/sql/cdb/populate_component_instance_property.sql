@@ -99,6 +99,7 @@ INSERT INTO `component_instance_property` VALUES
 (99,437),
 (100,438),
 (103,443),
-(104,444);
+(104,444),
+(110,521);
 /*!40000 ALTER TABLE `component_instance_property` ENABLE KEYS */;
 UNLOCK TABLES;

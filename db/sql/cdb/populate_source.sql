@@ -39,6 +39,7 @@ INSERT INTO `source` VALUES
 (37,'Krohn-Hite','','','http://www.krohn-hite.com/'),
 (38,'Vishay','','','http://vpgsensors.com/'),
 (39,'Blackhawk','Blackhawkâ„¢ is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
-(40,'Kooltronic, Inc.','','Bruce Kreeley','http://www.kooltronic.com/');
+(40,'Kooltronic, Inc.','','Bruce Kreeley','http://www.kooltronic.com/'),
+(41,'CAEN Technologies, Inc.','','erik@caentechnologies.com','http://www.caenels.com/');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

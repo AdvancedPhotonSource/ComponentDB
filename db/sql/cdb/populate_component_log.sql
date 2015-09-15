@@ -21,6 +21,7 @@ INSERT INTO `component_log` VALUES
 (275,52),
 (277,53),
 (279,55),
-(285,56);
+(285,56),
+(286,57);
 /*!40000 ALTER TABLE `component_log` ENABLE KEYS */;
 UNLOCK TABLES;

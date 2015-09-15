@@ -1,0 +1,4 @@
+LOCK TABLES `design_link` WRITE;
+/*!40000 ALTER TABLE `design_link` DISABLE KEYS */;
+/*!40000 ALTER TABLE `design_link` ENABLE KEYS */;
+UNLOCK TABLES;

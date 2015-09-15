@@ -1,3 +1,13 @@
+Release 2.1 (Tag 20150915) (09/15/2015)
+=========================================
+
+- Introduced Component Design Handler as replacement for assemblies
+- Introduced support for component model number
+- Enhanced PDMLink search functionality to allow for wildcard searches and
+  multiple results)
+- Enhanced PDMLink handler capability (allow retrieving revision history)
+- Developed functionality to create component from PDMLink drawing number
+
 Release 2.0.3 (Tag 20150615) (06/15/2015)
 =========================================
 

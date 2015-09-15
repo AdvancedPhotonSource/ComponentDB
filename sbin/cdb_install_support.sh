@@ -7,10 +7,11 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
     CDB_ROOT_DIR=$MY_DIR/..
 fi
 CDB_INSTALL_DIR=$CDB_ROOT_DIR/..
+CDB_SHORT_HOSTNAME=`hostname -s`
 
 # Check support directory
 if [ -z $CDB_SUPPORT_DIR ]; then
-    export CDB_SUPPORT_DIR=$CDB_INSTALL_DIR/support
+    export CDB_SUPPORT_DIR=$CDB_INSTALL_DIR/support-$CDB_SHORT_HOSTNAME
     if [ -d $CDB_SUPPORT_DIR ]; then
         cd $CDB_SUPPORT_DIR
 	export CDB_SUPPORT_DIR=`pwd`

@@ -252,6 +252,7 @@ INSERT INTO `component` VALUES
 (282,'Mockup_VacChamberSupport_Mplet',NULL,'R&D vacuum chamber support for DMM assembly',120,679),
 (283,'DMM_VacCrossSupport',NULL,'R&D vacuum cross support for DMM assembly',120,683),
 (284,'Mockup_VacCrossSupport',NULL,'R&D vacuum cross support for DMM assembly',120,684),
-(285,'Mockup_VacChamberAssy6',NULL,'R&D vacuum chamber for sector mockup',64,687);
+(285,'Mockup_VacChamberAssy6',NULL,'R&D vacuum chamber for sector mockup',64,687),
+(286,'CT-BOX ',NULL,'DC Current Transducer',9,688);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

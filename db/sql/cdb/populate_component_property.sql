@@ -239,6 +239,8 @@ INSERT INTO `component_property` VALUES
 (282,515),
 (283,516),
 (284,517),
-(285,518);
+(285,518),
+(286,519),
+(286,522);
 /*!40000 ALTER TABLE `component_property` ENABLE KEYS */;
 UNLOCK TABLES;

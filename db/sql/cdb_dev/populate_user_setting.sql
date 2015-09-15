@@ -1,0 +1,4 @@
+LOCK TABLES `user_setting` WRITE;
+/*!40000 ALTER TABLE `user_setting` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_setting` ENABLE KEYS */;
+UNLOCK TABLES;

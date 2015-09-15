@@ -5,6 +5,7 @@ INSERT INTO `property_type_category` VALUES
 (2,'Maintenance',''),
 (3,'Physical',''),
 (4,'QA',''),
-(5,'Status','');
+(5,'Status',''),
+(6,'WBS','');
 /*!40000 ALTER TABLE `property_type_category` ENABLE KEYS */;
 UNLOCK TABLES;
