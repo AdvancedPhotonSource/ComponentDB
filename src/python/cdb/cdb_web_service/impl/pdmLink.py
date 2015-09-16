@@ -366,7 +366,7 @@ class PdmLink:
         # Drawing is searchable only by UFID provided
         for searchResult in searchResults:
             resultExt = searchResult['number'].split('.')[-1]
-            if str(resultExt).lower() == 'drw':
+            if str(resultExt).lower() == drawingNumber.split('.')[-1].lower():
                 # set UFID for getting drawing metadata
                 ufid = searchResult['ufid']
                 # Set pdmComponentModel
