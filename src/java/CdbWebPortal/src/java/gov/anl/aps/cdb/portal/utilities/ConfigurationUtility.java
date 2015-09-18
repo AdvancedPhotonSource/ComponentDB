@@ -22,10 +22,16 @@ import org.apache.log4j.Logger;
 public class ConfigurationUtility {
 
     public static final String PROPERTIES_PATH = "cdb.portal.properties";
+    public static final String UI_PROPERTIES_PATH = "resources.properties"; 
     public static final String PROPERTIES_DELIMITER = ",";
    
     private static final Logger logger = Logger.getLogger(ConfigurationUtility.class.getName());
     private static final Properties portalProperties = loadProperties(PROPERTIES_PATH);
+    private static final Properties uiProperties = loadProperties(UI_PROPERTIES_PATH);
+    
+    public static String getUiProperty(String propertyName) {
+        return uiProperties.getProperty(propertyName, ""); 
+    }
 
     public Properties getPortalProperties() {
         return portalProperties;
