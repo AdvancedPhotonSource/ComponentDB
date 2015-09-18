@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.AssemblyComponent;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import java.util.ArrayList;
 import java.util.List;
 import org.primefaces.model.DefaultTreeNode;
@@ -24,13 +25,19 @@ import org.primefaces.model.TreeNode;
  * DB utility class for design elements.
  */
 public class DesignElementUtility {
+    
+    private static final String ASSEMBLY_COMPONENTS_DISABLED_NAME = "AssemblyComponentsUIFeatureDisabled";
+    private static boolean loadAssemblyComponents; 
 
     public static TreeNode createDesignElementRoot(Design parentDesign) throws CdbException {
         TreeNode designElementRoot = new DefaultTreeNode(new DesignElement(), null);
         if (parentDesign == null) {
             throw new CdbException("Cannot create design element tree view: parent design is not set.");
         }
-
+        
+        String assemblyComponentsDisabled = ConfigurationUtility.getUiProperty(ASSEMBLY_COMPONENTS_DISABLED_NAME); 
+        loadAssemblyComponents = assemblyComponentsDisabled.equals("0");
+        
         // Use "tree branch" list to prevent circular trees
         // Whenever new design is encountered, it will be added to the tree branch list before populating
         // element node, and removed from the branch list after population is done
@@ -61,7 +68,7 @@ public class DesignElementUtility {
                 }
                 populateDesignNode(childDesignElementNode, childDesign, designTreeBranch);
             }
-            if (component != null) {
+            if (component != null && loadAssemblyComponents) {
                 populateAssemblyNode(childDesignElementNode, component);
             }
         }
