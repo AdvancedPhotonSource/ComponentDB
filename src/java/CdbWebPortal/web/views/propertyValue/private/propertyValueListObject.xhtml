@@ -64,7 +64,7 @@
         </p:outputPanel>
         
         <p:commandLink rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"
-                       onclick="componentPropertyInfoAction#{propertyValueObject.id}()">
+                       onclick="#{entityPropertyTypeName}InfoAction#{propertyValueObject.id}()">
             <h:outputText value="#{propertyValueObject.displayValue}"  />
         </p:commandLink>
 

@@ -17,7 +17,10 @@
                  paginatorAlwaysVisible="false"
                  emptyMessage="No component properties found.">
 
-        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml"/>
+        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml">
+            <ui:param name="entityPropertyTypeName" value="componentProperty"/>
+        </ui:include>
+
 
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">

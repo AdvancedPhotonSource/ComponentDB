@@ -5,7 +5,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-
+    
     <p:dataTable id="componentInstancePropertyListDataTable" 
                  widgetVar="componentInstancePropertyListDataTableWidget"
                  var="propertyValueObject" 
@@ -17,23 +17,54 @@
                  paginatorAlwaysVisible="false"
                  emptyMessage="No component instance properties found.">
 
-        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml"/>
+        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml">
+            <ui:param name="entityPropertyTypeName" value="componentInstanceProperty"/>
+        </ui:include>
+
 
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
-                <p:commandLink id="propertyValueHistoryListViewButton" 
+                <p:remoteCommand name="componentInstancePropertyInfoAction#{propertyValueObject.id}"
+                                 rendered="#{propertyValueObject.infoActionCommand != null}"
+                                 onstart="PF('loadingDialog').show();"
+                                 onerror="PF('loadingDialog').hide();"
+                                 oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.infoActionCommand}"
+                                 update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
+                                                 value="#{propertyValueObject}"/>
+                </p:remoteCommand>
+                
+                <p:commandLink id="componentInstancePropertyValueHistoryListViewButton" 
+                               onstart="PF('loadingDialog').show();"
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
                                styleClass="ui-icon ui-icon-history" 
-                               title="View history."
+                               title="View property value history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>
-                    <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                    <p:tooltip for="componentInstancePropertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
+                <p:commandLink id="componentInstancePropertInfoActionButton" 
+                               rendered="#{propertyValueObject.infoActionCommand != null}"
+                               styleClass="ui-icon ui-icon-info2" 
+                               title="View property info"
+                               onclick="componentInstancePropertyInfoAction#{propertyValueObject.id}()">
+                    <p:tooltip for="componentInstancePropertInfoActionButton" value="View property info."/>
+                </p:commandLink>                       
             </div>
         </p:column>       
 
     </p:dataTable>
+    
+    <p:outputPanel id="infoActionIncludesPanel" >
+        <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/>        
+    </p:outputPanel>
+    
+    <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
+        
+    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
+   
+    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 
