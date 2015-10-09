@@ -20,7 +20,7 @@ public class PdmLinkDrawingRevision extends CdbObject {
     private Integer iteration;
     private String version;
     private String icmsUrl;
-    private String dateCreated; 
+    private String dateModified; 
 
     private transient String displayIcmsUrl;
 
@@ -68,12 +68,12 @@ public class PdmLinkDrawingRevision extends CdbObject {
         this.icmsUrl = icmsUrl;
     }
 
-    public String getDateCreated() {
-        return dateCreated;
+    public String getDateModified() {
+        return dateModified;
     }
 
-    public void setDateCreated(String dateUpdated) {
-        this.dateCreated = dateUpdated;
+    public void setDateModified(String dateModified) {
+        this.dateModified = dateModified;
     }
 
     /**
