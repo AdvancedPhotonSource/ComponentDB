@@ -226,7 +226,7 @@ class PdmLink:
             ['versionInfo.identifier.versionId',
             'iterationInfo.identifier.iterationId',
             'state.state',
-            'thePersistInfo.createStamp'])
+            'thePersistInfo.modifyStamp'])
 
         revisionList = []
         for iteration in iterationHistory:
@@ -235,13 +235,13 @@ class PdmLink:
             versionId = propertyMap.get('versionInfo.identifier.versionId')
             iterationId = propertyMap.get('iterationInfo.identifier.iterationId')
             state = propertyMap.get('state.state')
-            dateCreated = propertyMap.get('thePersistInfo.createStamp')
+            dateModified = propertyMap.get('thePersistInfo.modifyStamp')
             revisionList.append(PdmLinkDrawingRevision({
                 'version' : versionId,
                 'iteration' : iterationId,
                 'state' : state,
                 'ufid' : iterationUfid,
-                'dateCreated' : dateCreated
+                'dateModified' : dateModified
             }))
 
         if(oid is None):
