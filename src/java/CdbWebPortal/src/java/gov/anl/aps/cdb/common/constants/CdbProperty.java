@@ -26,4 +26,12 @@ public class CdbProperty {
     public static final String EDP_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.edp.urlString";
     public static final String ICMS_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.icms.urlString";
     public static final String PARIS_URL_STRING_PROPERTY_NAME = "cdb.portal.handler.paris.urlString";
+    
+    public static final String TRAVELER_WEB_SERVICE_URL_PROPERTY_NAME = "traveler.webSerice.url"; 
+    public static final String TRAVELER_WEB_SERVICE_BASIC_AUTH_USERNAME_PROPERTY_NAME = "traveler.webService.basicAuth.username"; 
+    public static final String TRAVELER_WEB_SERVICE_BASIC_AUTH_PASSWORD_PROPERTY_NAME = "traveler.webService.basicAuth.password"; 
+    public static final String TRAVELER_WEB_APPLICATION_URL_PROPERTY_NAME = "traveler.webApp.url";
+    public static final String TRAVELER_WEB_APPLICATION_TEMPLATE_PATH_PROPERTY_NAME = "traveler.webApp.TemplatePath";     
+    public static final String TRAVELER_WEB_APPLICATION_TRAVELER_PATH_PROPERTY_NAME = "traveler.webApp.TravelerPath";
+    
 }
