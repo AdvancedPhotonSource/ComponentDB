@@ -83,9 +83,9 @@ eval $cmd
 cmd="cat $configFile | sed 's?cdb.webService.url=.*?cdb.webService.url=https://${CDB_WEB_SERVICE_HOST}:${CDB_WEB_SERVICE_PORT}/cdb?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 # add traveler integration configuration
-cmd="cat $configFile | sed 's?traveler.webSerice.url=.*?traveler.webSerice.url=${TRAVELER_WEB_SERICE_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
+cmd="cat $configFile | sed 's?traveler.webSerice.url=.*?traveler.webSerice.url=${TRAVELER_WEB_SERVICE_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
-cmd="cat $configFile | sed 's?traveler.webService.basicAuth.password=.*?traveler.webService.basicAuth.password=${TRAVELER_WEB_SERICE_WRITE_PASSWORD}?g' > $configFile.2 && mv $configFile.2 $configFile"
+cmd="cat $configFile | sed 's?traveler.webService.basicAuth.password=.*?traveler.webService.basicAuth.password=${TRAVELER_WEB_SERVICE_WRITE_PASSWORD}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 cmd="cat $configFile | sed 's?traveler.webApp.url=.*?traveler.webApp.url=${TRAVELER_WEB_APP_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
