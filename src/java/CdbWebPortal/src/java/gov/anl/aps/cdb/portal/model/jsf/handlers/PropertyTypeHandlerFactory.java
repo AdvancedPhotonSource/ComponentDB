@@ -35,6 +35,8 @@ public class PropertyTypeHandlerFactory {
         hMap.put(DatePropertyTypeHandler.HANDLER_NAME, new DatePropertyTypeHandler());
         hMap.put(BooleanPropertyTypeHandler.HANDLER_NAME, new BooleanPropertyTypeHandler());
         hMap.put(ComponentDesignPropertyTypeHandler.HANDLER_NAME, new ComponentDesignPropertyTypeHandler()); 
+        hMap.put(TravelerTemplatePropertyTypeHandler.HANDLER_NAME, new TravelerTemplatePropertyTypeHandler()); 
+        hMap.put(TravelerInstancePropertyTypeHandler.HANDLER_NAME, new TravelerInstancePropertyTypeHandler()); 
         return hMap;
     }
 
