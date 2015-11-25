@@ -266,6 +266,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     @Override
     public void prepareEntityUpdate(Component component) throws CdbException {
         checkComponent(component);
+        component.resetAttributesToNullIfEmpty();
         EntityInfo entityInfo = component.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
         Log logEntry = prepareLogEntry();
@@ -309,6 +310,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
 
     @Override
     public void prepareEntityUpdateOnRemoval(Component component) {
+        component.resetAttributesToNullIfEmpty();
         EntityInfo entityInfo = component.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
     }

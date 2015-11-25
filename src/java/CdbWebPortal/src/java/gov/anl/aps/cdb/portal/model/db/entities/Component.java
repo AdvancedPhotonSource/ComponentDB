@@ -536,6 +536,12 @@ public class Component extends CdbEntity {
         return (assemblyComponentList != null && !assemblyComponentList.isEmpty());
     }
     
+    public void resetAttributesToNullIfEmpty() {
+        if (modelNumber != null && modelNumber.isEmpty()) {
+            modelNumber = null;
+        }
+    }
+    
     public class PropertyValueInformation{
         private String value; 
         private String targetValue;
