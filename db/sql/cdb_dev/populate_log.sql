@@ -50,6 +50,12 @@ INSERT INTO `log` VALUES
 (52,'Cloned from Mockup_VacChamberAssy28','2015-08-07 16:56:41',2,NULL),
 (53,'Cloned from Mockup_VacCross_Mplet','2015-08-07 17:06:08',2,NULL),
 (55,'Cloned from Mockup_VacCross_Mplet','2015-08-07 17:07:13',2,NULL),
-(56,'Cloned from Mockup_VacChamberAssy5','2015-08-10 09:39:02',2,NULL);
+(56,'Cloned from Mockup_VacChamberAssy5','2015-08-10 09:39:02',2,NULL),
+(58,'Initial entries','2015-10-29 14:58:31',42,NULL),
+(59,'Enter comments or important info herer\r\n','2015-11-04 09:26:28',42,NULL),
+(60,'enter comments here','2015-11-04 09:53:16',42,NULL),
+(61,'','2015-11-04 10:09:54',42,NULL),
+(62,'','2015-11-04 10:09:58',42,NULL),
+(63,'','2015-11-04 10:13:22',42,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

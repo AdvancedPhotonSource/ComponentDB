@@ -37,6 +37,22 @@ INSERT INTO `design` VALUES
 (44,'1-BM','',734),
 (45,'1-BM-B-MH-1','',737),
 (46,'1-BM-B-MH-2','',756),
-(54,'1-BM-C','',789);
+(54,'1-BM-C','',789),
+(55,'Test','',796),
+(56,'Testq','',798),
+(57,'35-ID','Dynamic Compression Sector (DCS)',799),
+(59,'35-ID-A','',801),
+(60,'35-ID-B','',802),
+(61,'35-ID-C','',803),
+(62,'35-ID-D','',804),
+(63,'35-ID-E','',805),
+(64,'P10 ID White Beam Shutter','4105090910-150000-01',811),
+(65,'M3M2 Movable Mask','',812),
+(66,'Safety Shutter','D14305-110000-00',828),
+(67,'White Beam Stop D14308-110000','D14308-110000-02',831),
+(68,'White Beam Stop D14309-110000','D14309-110000',843),
+(69,'Pink Beam Stop D14306-110000','D14306-110000-00',848),
+(70,'Bremsstrahlung Stop for 35-ID','Movable lead stop and bremsstrahlung stop',851),
+(71,'Mask 35-ID-A-M-02','Mask 3 rigidly mounted to Mask 2',860);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

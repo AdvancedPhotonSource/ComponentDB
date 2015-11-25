@@ -1,1 +1,1 @@
-__version__ = "Development Snapshot (2015.09.09)"
+__version__ = "Development Snapshot (2015.11.25)"
