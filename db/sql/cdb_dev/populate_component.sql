@@ -170,7 +170,7 @@ INSERT INTO `component` VALUES
 (180,'Generic: Laptop/Tablet',NULL,'',121,382),
 (181,'XEM7350-K70T',NULL,'Xilinx Kintex-7 board with USB 3.0',43,388),
 (182,'MULTIPLET R&D MOLD CAVITY ASSEMBLY',NULL,'U221020202-104210',61,390),
-(183,'FID HV Pulser for MBA Injection','','Model #FPG 20-01MC2N6',122,392),
+(183,'FID HV Pulser for MBA Injection',NULL,'Model #FPG 20-01MC2N6',122,392),
 (184,'DSO-S204A Oscilloscope',NULL,'Infiniium S Series 2 GHz 4 channel\r\n',44,393),
 (185,'ATF HV Attenuator','20-025N','\r\n',123,394),
 (186,'FID High Voltage Coax Cable',NULL,'Describe length in Instance Property ',34,395),
