@@ -83,7 +83,8 @@
                 <p:commandLink action="#{componentSourceController.destroy(componentSourceObject)}"
                                actionListener="#{componentController.deleteSource(componentSourceObject)}" 
                                styleClass="ui-icon ui-icon-trash" title="Delete" 
-                               update="componentSourceEditListDataTable"/>
+                               update="componentSourceEditListDataTable"
+                               immediate="true"/>
             </div>
         </p:column>
     </p:dataTable>
