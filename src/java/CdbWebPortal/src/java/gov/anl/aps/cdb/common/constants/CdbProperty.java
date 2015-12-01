@@ -33,5 +33,6 @@ public class CdbProperty {
     public static final String TRAVELER_WEB_APPLICATION_URL_PROPERTY_NAME = "traveler.webApp.url";
     public static final String TRAVELER_WEB_APPLICATION_TEMPLATE_PATH_PROPERTY_NAME = "traveler.webApp.TemplatePath";     
     public static final String TRAVELER_WEB_APPLICATION_TRAVELER_PATH_PROPERTY_NAME = "traveler.webApp.TravelerPath";
+    public static final String TRAVELER_WEB_APPLICATION_TRAVELER_CONFIG_PATH_PROPERTY_NAME = "traveler.webApp.TravelerConfigPath";
     
 }
