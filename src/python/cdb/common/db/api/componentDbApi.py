@@ -76,6 +76,12 @@ class ComponentDbApi(CdbDbApi):
         dbComponent = self.componentHandler.getComponentByModelNumber(session, modelNumber)
         return dbComponent.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getComponentInstanceById(self, id, **kwargs):
+        session = kwargs['session']
+        dbComponentInstance = self.componentInstanceHandler.findComponentInstanceById(session, id)
+        return dbComponentInstance.getCdbObject()
+
     @CdbDbApi.executeTransaction
     def addComponent(self, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, **kwargs):
         session = kwargs['session']

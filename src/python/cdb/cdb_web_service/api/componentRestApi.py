@@ -4,10 +4,10 @@ import os
 import urllib
 
 from cdb.common.utility.encoder import Encoder
-from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.component import Component
+from cdb.common.objects.componentInstance import ComponentInstance
 from cdb.common.objects.componentProperty import ComponentProperty
 from cdb.common.objects.componentInstanceProperty import ComponentInstanceProperty
 from cdb.common.objects.componentType import ComponentType
@@ -44,9 +44,9 @@ class ComponentRestApi(CdbRestApi):
 
     @CdbRestApi.execute
     def getComponentById(self, id):
-        url = '%s/componentById/%s' % (self.getContextRoot(), id)
         if id is None:
             raise InvalidRequest('Component id must be provided.')
+        url = '%s/componentById/%s' % (self.getContextRoot(), id)
         responseData = self.sendRequest(url=url, method='GET')
         return Component(responseData)
 
@@ -65,6 +65,14 @@ class ComponentRestApi(CdbRestApi):
         url = '%s/componentByModelNumber/%s' % (self.getContextRoot(), Encoder.encode(modelNumber))
         responseData = self.sendRequest(url=url, method='GET')
         return Component(responseData)
+
+    @CdbRestApi.execute
+    def getComponentInstanceById(self, id):
+        if id is None:
+            raise InvalidRequest('Component Instance id must be provided.')
+        url = '%s/componentInstanceById/%s' % (self.getContextRoot(), id)
+        responseData = self.sendRequest(url=url, method='GET')
+        return ComponentInstance(responseData)
 
     @CdbRestApi.execute
     def addComponent(self, name, modelNumber, componentTypeId, ownerUserId, ownerGroupId, isGroupWriteable, description):

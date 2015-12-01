@@ -35,6 +35,9 @@ class ComponentControllerImpl(CdbObjectManager):
     def getComponentByModelNumber(self, modelNumber):
         return self.componentDbApi.getComponentByModelNumber(modelNumber)
 
+    def getComponentInstanceById(self, id):
+        return self.componentDbApi.getComponentInstanceById(id) 
+
     def addComponent(self, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
         return self.componentDbApi.addComponent(name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
 

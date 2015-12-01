@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import cherrypy
+from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
 from cdb.common.service.cdbController import CdbController
 from cdb.cdb_web_service.impl.componentControllerImpl import ComponentControllerImpl
@@ -45,3 +46,9 @@ class ComponentController(CdbController):
             raise InvalidRequest('Invalid model number provided.')
         return self.componentControllerImpl.getComponentByModelNumber(modelNumber).getFullJsonRep()
 
+    @cherrypy.expose
+    @CdbController.execute
+    def getComponentInstanceById(self, id, **kwargs):
+        if  not id:
+            raise InvalidRequest('Invalid id provided.')
+        return self.componentControllerImpl.getComponentInstanceById(id).getFullJsonRep()

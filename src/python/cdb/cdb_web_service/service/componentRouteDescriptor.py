@@ -3,6 +3,7 @@
 #
 # Component route descriptor.
 #
+from operator import concat
 
 from cdb.common.utility.configurationManager import ConfigurationManager
 from componentTypeCategoryController import ComponentTypeCategoryController
@@ -88,6 +89,14 @@ class ComponentRouteDescriptor:
                 'path' : '%s/componentByModelNumber/:(modelNumber)' % contextRoot,
                 'controller' : componentController,
                 'action' : 'getComponentByModelNumber', 
+                'method' : ['GET']
+            },
+
+            {
+                'name' : 'getComponentInstanceById',
+                'path' : '%s/componentInstanceById/:(id)' % contextRoot,
+                'controller' : componentController,
+                'action' : 'getComponentInstanceById',
                 'method' : ['GET']
             },
 
