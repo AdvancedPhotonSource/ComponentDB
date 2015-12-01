@@ -248,8 +248,10 @@ public class TravelerBean implements Serializable {
     private void loadPropertyTravelerTemplateList(List<PropertyValue> propertyValues, List<Form> formList) {
         for (PropertyValue curPropertyValue : propertyValues) {
             // Check that they use the traveler template handler. 
-            if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TRAVELER_TEMPLATE_HANDLER_NAME)) {
-                addFormFromPropertyValue(curPropertyValue.getValue(), formList);
+            if (curPropertyValue.getPropertyType().getPropertyTypeHandler() != null){
+                if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TRAVELER_TEMPLATE_HANDLER_NAME)) {
+                    addFormFromPropertyValue(curPropertyValue.getValue(), formList);
+                }
             }
         }
     }
