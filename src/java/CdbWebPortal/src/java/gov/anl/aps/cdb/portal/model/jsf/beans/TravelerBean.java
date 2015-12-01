@@ -41,6 +41,7 @@ public class TravelerBean implements Serializable {
     private static final Logger logger = Logger.getLogger(TravelerBean.class.getName());
 
     private PropertyValue propertyValue;
+    private Traveler currentTravelerInstance; 
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate; 
@@ -56,7 +57,8 @@ public class TravelerBean implements Serializable {
     
     private final String TRAVELER_WEB_APP_URL = ConfigurationUtility.getPortalProperty(CdbProperty.TRAVELER_WEB_APPLICATION_URL_PROPERTY_NAME); 
     private final String TRAVELER_WEB_APP_TEMPLATE_PATH = ConfigurationUtility.getPortalProperty(CdbProperty.TRAVELER_WEB_APPLICATION_TEMPLATE_PATH_PROPERTY_NAME); 
-    private final String TRAVELER_WEB_APP_TRAVELER_PATH = ConfigurationUtility.getPortalProperty(CdbProperty.TRAVELER_WEB_APPLICATION_TRAVELER_PATH_PROPERTY_NAME); 
+    private final String TRAVELER_WEB_APP_TRAVELER_PATH = ConfigurationUtility.getPortalProperty(CdbProperty.TRAVELER_WEB_APPLICATION_TRAVELER_PATH_PROPERTY_NAME);
+    private final String TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH = ConfigurationUtility.getPortalProperty(CdbProperty.TRAVELER_WEB_APPLICATION_TRAVELER_CONFIG_PATH_PROPERTY_NAME);
 
     @PostConstruct
     public void init() {
@@ -137,11 +139,54 @@ public class TravelerBean implements Serializable {
         return travelerTemplateUrl.replace("FORM_ID", formId);
     }
     
-    public String getTravelerInstanceUrl(String travelerId) {
-        String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_PATH;
-        return travelerInstanceUrl.replace("TRAVELER_ID", travelerId);
+    public String getCurrentTravelerInstanceUrl() {
+        if (currentTravelerInstance != null){
+            String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_PATH;
+            return travelerInstanceUrl.replace("TRAVELER_ID", currentTravelerInstance.getId());
+        }
+        return ""; 
+        
     }
     
+    public String getCurrentTravelerInstanceConfigUrl(){
+        if (currentTravelerInstance != null){
+            String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH;
+            return travelerInstanceUrl.replace("TRAVELER_ID", currentTravelerInstance.getId());
+        }
+        return ""; 
+    }
+    
+    public String getCurrentTravelerStatus(){
+        if(currentTravelerInstance != null){
+            String status = currentTravelerInstance.getStatus() + "";
+            switch (status){
+                case "0.0":
+                    return "initalized"; 
+                case "1.0":
+                    return "active";
+                case "1.5":
+                    return "submitted";
+                case "2.0":
+                    return "completed"; 
+                case "3.0":
+                    return "frozen";
+                default:
+                    return ""; 
+            }
+        } 
+        return ""; 
+    }
+    
+    public boolean getCurrentTravelerConfigPermission(){
+        if(currentTravelerInstance != null){
+            String travelerUser = currentTravelerInstance.getCreatedBy(); 
+            if (travelerUser.equals(SessionUtility.getUser().toString())){
+                return true; 
+            }
+        }
+        return false; 
+    }
+        
     public String getTravelerInstanceTitle(PropertyValue propertyValue) {
         if(propertyValue.getDisplayValue() != null) {
             return propertyValue.getDisplayValue(); 
@@ -226,16 +271,18 @@ public class TravelerBean implements Serializable {
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
                 if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {
                     try {
-                        Traveler travelerInstance = travelerApi.createTraveler(
+                        String device = entityController.getEntityTypeName(); 
+                        device += ":"+entityController.getSelected().getId(); 
+                        currentTravelerInstance = travelerApi.createTraveler(
                                 selectedTravelerInstanceTemplate.getId(),
                                 SessionUtility.getUser().toString(),
                                 travelerInstanceTitle,
-                                entityController.getSelected().toString());
+                                device);
                         SessionUtility.addInfoMessage(
                                 "Traveler Instance Created", 
-                                "Traveler Instance '" + travelerInstance.getId() + "' has been created");
+                                "Traveler Instance '" + currentTravelerInstance.getId() + "' has been created");
                         
-                        propertyValue.setValue(travelerInstance.getId());
+                        propertyValue.setValue(currentTravelerInstance.getId());
                         entityController.update();
                         RequestContext.getCurrentInstance().execute(onSuccessCommand);
 
@@ -248,6 +295,25 @@ public class TravelerBean implements Serializable {
                     logger.error("No title for traveler instance was provided");
                 }
 
+            }
+        }
+    }
+    
+    public void loadCurrentTravelerInstance(String onSuccessCommand){
+        if(checkPropertyValue()){
+            if (currentTravelerInstance != null) {
+                    if (currentTravelerInstance.getId().equals(propertyValue.getValue())){
+                         RequestContext.getCurrentInstance().execute(onSuccessCommand);
+                    } else {
+                        currentTravelerInstance = null; 
+                    }
+                }
+            try{
+                currentTravelerInstance = travelerApi.getTraveler(propertyValue.getValue()); 
+                RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            } catch (CdbException ex){
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
             }
         }
     }
@@ -317,6 +383,7 @@ public class TravelerBean implements Serializable {
     public HtmlInputText getTravelerInstanceTitleInputText() {
         return travelerInstanceTitleInputText;
     }
+    
     public void updateTravelerInstanceTitleInputText(){
         if (selectedTravelerInstanceTemplate != null) {
             if(travelerInstanceTitleInputText != null){
@@ -325,4 +392,7 @@ public class TravelerBean implements Serializable {
         } 
     }
 
+    public Traveler getCurrentTravelerInstance() {
+        return currentTravelerInstance;
+    }
 }
