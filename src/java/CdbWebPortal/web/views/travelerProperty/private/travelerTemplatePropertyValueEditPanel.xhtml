@@ -11,20 +11,28 @@
             <ui:param name="actionForTravelerTemplate" value='#{propertyValueObject.value != "" ? "Edit" : "Add" }' />
             
             <p:commandButton value="#{actionForTravelerTemplate} Traveler Template" 
-                             oncomplete="showTravelerTemplatePropertyValueEditDialog#{propertyValueObject.id}();" />
+                             onstart="showTravelerTemplatePropertyValueEditDialog();">
+                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
+                                             value="#{propertyValueObject}" />   
+            </p:commandButton>
 
-            <p:remoteCommand name="updateTemplateProperyValueField#{propertyValueObject.id}"
+            <p:remoteCommand rendered="#{propertyValueObject.id != null}"
+                             name="updateTemplateProperyValueField#{propertyValueObject.id}"
                              update="@parent" 
-                             oncomplete="showTravelerTemplatePropertyValueEditDialog#{propertyValueObject.id}();"/>
-
-            <p:remoteCommand name="showTravelerTemplatePropertyValueEditDialog#{propertyValueObject.id}"
+                             oncomplete="showTravelerTemplatePropertyValueEditDialog();"/>
+            <p:remoteCommand rendered="#{propertyValueObject.id == null}"
+                             name="updateTemplateProperyValueField"
+                             update="@form" 
+                             oncomplete="showTravelerTemplatePropertyValueEditDialog();"/>
+            
+            <p:remoteCommand name="showTravelerTemplatePropertyValueEditDialog"
+                             action="#{travelerBean.loadTravelerTemplateInformation()}"
                              onstart="PF('loadingDialog').show();"
                              onerror="PF('loadingDialog').hide();"
                              oncomplete="updateTravelerTemplatePropertyValueEditDialog(); 
-                             PF('loadingDialog').hide();">
-                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
-                                             value="#{propertyValueObject}"/>   
-            </p:remoteCommand>
+                             PF('loadingDialog').hide();"/>
+
+
 
         </p:outputPanel>
     </ui:fragment>

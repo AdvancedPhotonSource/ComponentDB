@@ -3,54 +3,50 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:fragment>
-        <p:outputPanel id="travelerInstancePropertyValueDataTableValueEditPanel#{propertyValueObject.id}">
+        <p:outputPanel>
             
             <ui:param name="travelerInstanceExists" value='#{propertyValueObject.value != ""}' />
             
             <p:commandButton rendered="#{!travelerInstanceExists}" 
                              value="Create Traveler Instance" 
-                             oncomplete="showTravelerInstancePropertyValueEditDialog#{propertyValueObject.id}();"/>
+                             oncomplete="loadEntityAvailableTemplateList();">
+                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
+                                             value="#{propertyValueObject}"/>   
+            </p:commandButton>
             
             <p:commandButton rendered="#{travelerInstanceExists}"
                              value="Show Traveler Instance Info"
-                             oncomplete="showTravelerInstancePropertyValueInfoDialog#{propertyValueObject.id}();" />
-            
-
-            <p:remoteCommand name="updateInstanceProperyValueField#{propertyValueObject.id}"
-                             update="@parent" />
-
-            <p:remoteCommand name="showTravelerInstancePropertyValueEditDialog#{propertyValueObject.id}"
-                             onstart="PF('loadingDialog').show();"
-                             onerror="PF('loadingDialog').hide();"
-                             oncomplete="loadEntityAvailableTemplateList#{propertyValueObject.id}();">
+                             oncomplete="loadCurrentTravelerInstance();">
                 <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
                                              value="#{propertyValueObject}"/>   
-            </p:remoteCommand>
-            <p:remoteCommand name="loadEntityAvailableTemplateList#{propertyValueObject.id}"
+            </p:commandButton>
+            
+            <p:remoteCommand rendered="#{propertyValueObject.id != null}"
+                             name="updateTravelerInstanceProperyValueField#{propertyValueObject.id}"
+                             update="@parent"
+                             oncomplete="loadCurrentTravelerInstance();"/>
+            
+            <p:remoteCommand rendered="#{propertyValueObject.id == null}"
+                             name="updateTravelerInstanceProperyValueField"
+                             update="@form"
+                             oncomplete="loadCurrentTravelerInstance();"/>
+
+            <p:remoteCommand name="loadEntityAvailableTemplateList"
                              action="#{travelerBean.loadEntityAvailableTemplateList(entityController)}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
                              oncomplete="updateTravelerInstancePropertyValueEditDialog(); 
                                          PF('loadingDialog').hide();"/>
             
-            
-            
-            <p:remoteCommand name="showTravelerInstancePropertyValueInfoDialog#{propertyValueObject.id}"
-                             onstart="PF('loadingDialog').show();"
-                             onerror="PF('loadingDialog').hide();"
-                             oncomplete="loadCurrentTravelerInstance#{propertyValueObject.id}();">
-                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
-                                             value="#{propertyValueObject}"/>   
-            </p:remoteCommand>
-            
-            <p:remoteCommand name="loadCurrentTravelerInstance#{propertyValueObject.id}"
+            <p:remoteCommand name="loadCurrentTravelerInstance"
                              action="#{travelerBean.loadCurrentTravelerInstance('updateTravelerInstancePropertyValueInfoDialog();')}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"                             
                              oncomplete="PF('loadingDialog').hide();"
                              />
-            
-
         </p:outputPanel>
     </ui:fragment>
 </ui:composition>
