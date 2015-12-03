@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
+import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.TravelerTemplatePropertyTypeHandler;
@@ -229,7 +230,17 @@ public class TravelerBean implements Serializable {
                     Design design = (Design) entityController.getSelected();
                     loadPropertyTravelerTemplateList(design.getPropertyValueList(), availableTemplates);
                     break;
-                    //Add Design Element 
+                case "designElement":
+                    // Load Design element templates
+                    DesignElement designElement = (DesignElement) entityController.getSelected();
+                    loadPropertyTravelerTemplateList(designElement.getPropertyValueList(), availableTemplates); 
+                    // Load Component templates
+                    Component component = designElement.getComponent();
+                    loadPropertyTravelerTemplateList(component.getPropertyValueList(), availableTemplates);
+                    // Load design templates 
+                    Design parentDesign = designElement.getParentDesign(); 
+                    loadPropertyTravelerTemplateList(parentDesign.getPropertyValueList(), availableTemplates);  
+                    break;
                 //TODO Add Desgin Instance
             }
         }
