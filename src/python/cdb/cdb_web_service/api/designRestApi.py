@@ -8,6 +8,7 @@ from cdb.common.exceptions.cdbException import CdbException
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.design import Design
+from cdb.common.objects.designElement import DesignElement
 from cdb.common.objects.designProperty import DesignProperty
 from cdb.common.objects.designElementProperty import DesignElementProperty
 
@@ -37,6 +38,14 @@ class DesignRestApi(CdbRestApi):
             raise InvalidRequest('Design name must be provided.')
         responseData = self.sendRequest(url=url, method='GET')
         return Design(responseData)
+
+    @CdbRestApi.execute
+    def getDesignElementById(self, id):
+        url = '%s/designElements/%s' % (self.getContextRoot(), id)
+        if id is None:
+            raise InvalidRequest('Design Element id must be provided.')
+        responseData = self.sendRequest(url=url, method='GET')
+        return DesignElement(responseData)
 
     @CdbRestApi.execute
     def addDesign(self, name, ownerUserId, ownerGroupId, isGroupWriteable, description):

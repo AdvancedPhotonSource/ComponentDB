@@ -49,6 +49,15 @@ class DesignRouteDescriptor:
                 'method' : ['GET']
             },
 
+            # Get design element by id
+            {
+                'name' : 'getDesignElementById',
+                'path' : '%s/designElements/:(id)' % contextRoot,
+                'controller' : designController,
+                'action' : 'getDesignElementById',
+                'method' : ['GET']
+            },
+
             # Add design 
             # We cannot use route like designsByName/:(name) since
             # design names can contain slashes

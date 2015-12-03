@@ -30,3 +30,10 @@ class DesignController(CdbController):
             raise InvalidRequest('Invalid name provided.')
         return self.designControllerImpl.getDesignByName(name).getFullJsonRep()
 
+    @cherrypy.expose
+    @CdbController.execute
+    def getDesignElementById(self, id, **kwargs):
+        if not id:
+            raise InvalidRequest('Invalid id provided.')
+        return self.designControllerImpl.getDesignElementById(id).getFullJsonRep()
+

@@ -28,6 +28,9 @@ class DesignControllerImpl(CdbObjectManager):
     def getDesignByName(self, name):
         return self.designDbApi.getDesignByName(name)
 
+    def getDesignElementById(self, id):
+        return self.designDbApi.getDesginElementById(id)
+
     def addDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
         return self.designDbApi.addDesign(name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
 

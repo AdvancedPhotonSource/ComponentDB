@@ -46,6 +46,12 @@ class DesignDbApi(CdbDbApi):
         dbDesign = self.designHandler.getDesignByName(session, name)
         return dbDesign.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getDesginElementById(self, id, **kwargs):
+        session = kwargs['session']
+        dbDesignElement = self.designElementHandler.findDesignElementById(session, id)
+        return dbDesignElement.getCdbObject()
+
     @CdbDbApi.executeTransaction
     def addDesign(self, name, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description, **kwargs):
         session = kwargs['session']
