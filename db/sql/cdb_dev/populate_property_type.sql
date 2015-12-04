@@ -80,7 +80,7 @@ INSERT INTO `property_type` VALUES
 (78,'Dimension','',3,NULL,'',''),
 (79,'Verified','',10,11,'',''),
 (80,'Critical Component','',10,10,'',''),
-(81,'Traveler Template','Allows integration of traveler templates from traveler application.',5,13,'',''),
-(82,'Traveler Instance','Allows integration of traveler instances from traveler application.',5,14,'','');
+(81,'Traveler Template (Electronic)','Allows integration of traveler templates from traveler application.',2,13,'',''),
+(82,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;
