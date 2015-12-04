@@ -31,6 +31,7 @@ import javax.faces.component.html.HtmlInputText;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
+import org.primefaces.model.chart.PieChartModel;
 
 @Named("travelerBean")
 @SessionScoped
@@ -43,6 +44,7 @@ public class TravelerBean implements Serializable {
 
     private PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
+    private PieChartModel currentTravlerInstnaceCompletionPieModel; 
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
@@ -313,7 +315,23 @@ public class TravelerBean implements Serializable {
             }
             try {
                 currentTravelerInstance = travelerApi.getTraveler(propertyValue.getValue());
-                RequestContext.getCurrentInstance().execute(onSuccessCommand);
+                //Load completion pie chart model
+                int totalInput = currentTravelerInstance.getTotalInput();
+                if(totalInput > 0) {
+                int finishedInput = currentTravelerInstance.getFinishedInput(); 
+                int incomplete = totalInput - finishedInput; 
+                currentTravlerInstnaceCompletionPieModel = new PieChartModel(); 
+                currentTravlerInstnaceCompletionPieModel.set("Incomplete", incomplete);
+                currentTravlerInstnaceCompletionPieModel.set("Complete", finishedInput);
+                
+                currentTravlerInstnaceCompletionPieModel.setLegendPosition("w");
+                currentTravlerInstnaceCompletionPieModel.setShowDataLabels(true);
+                currentTravlerInstnaceCompletionPieModel.setTitle("Traveler Progress");
+                } else {
+                    currentTravlerInstnaceCompletionPieModel = null; 
+                }
+                //Show the GUI since all execution was successful. 
+                RequestContext.getCurrentInstance().execute(onSuccessCommand);                
             } catch (CdbException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
@@ -411,6 +429,10 @@ public class TravelerBean implements Serializable {
         }
     }
 
+    public PieChartModel getCurrentTravlerInstnaceCompletionPieModel() {
+        return currentTravlerInstnaceCompletionPieModel;
+    }
+    
     public Traveler getCurrentTravelerInstance() {
         return currentTravelerInstance;
     }

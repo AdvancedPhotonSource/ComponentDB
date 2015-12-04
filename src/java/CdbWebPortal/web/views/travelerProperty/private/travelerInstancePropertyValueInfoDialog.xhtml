@@ -24,7 +24,17 @@
                         </h:outputLink>
                     </p:column>
                 </p:row>
-                <p:row>
+
+                <p:row rendered="#{travelerBean.currentTravelerInstance.description != ''}">
+                    <p:column>
+                        <p:outputLabel value="Description" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.description}" styleClass="entityDataEmphasizedText" /> 
+                    </p:column>
+                </p:row>
+
+                <p:row id="travelerInstanceStatusPanelGridRow">
                     <p:column>
                         <p:outputLabel value="Status" styleClass="entityDataLabel"/>
                     </p:column>
@@ -32,6 +42,76 @@
                         <p:outputLabel value="#{travelerBean.currentTravelerStatus}" styleClass="entityDataEmphasizedText" /> 
                     </p:column>
                 </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Created By" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.createdBy}" styleClass="entityDataEmphasizedText" /> 
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Created On (UTC)" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.createdOn}" styleClass="entityDataEmphasizedText" /> 
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="${travelerBean.currentTravelerInstance.updatedBy != null}">
+                    <p:column>
+                        <p:outputLabel value="Updated By" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.updatedBy}" styleClass="entityDataEmphasizedText" /> 
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="${travelerBean.currentTravelerInstance.updatedBy != null}">
+                    <p:column>
+                        <p:outputLabel value="Updated On (UTC)" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.updatedOn}" styleClass="entityDataEmphasizedText" /> 
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="${travelerBean.currentTravelerInstance.deadline != null}">
+                    <p:column>
+                        <p:outputLabel value="Deadline (UTC)" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.deadline}" styleClass="entityDataEmphasizedText" /> 
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{travelerBean.currentTravlerInstnaceCompletionPieModel != null}">
+                    <p:column colspan="2">
+                        <p:chart type="pie" 
+                                 model="#{travelerBean.currentTravlerInstnaceCompletionPieModel}" />
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{travelerBean.currentTravelerStatus == 'initalized' }">
+                    <p:column colspan="2">
+                        <h:outputText escape="false"
+                                      value="This traveler is in the initial state, it still needs to be configured before it could be filled out."
+                                      styleClass="entityDataEmphasizedText"/>
+                    </p:column>
+                </p:row>
+
+                <p:row rendered="#{travelerBean.currentTravelerStatus == 'initalized' }">
+                    <p:column colspan="2">
+                        <h:outputText rendered="#{!travelerBean.currentTravelerConfigPermission}"
+                                      escape="false"
+                                      value="Please contact creator, #{travelerBean.currentTravelerInstance.createdBy}, to request configuration."
+                                      styleClass="entityDataEmphasizedText"/>
+                    </p:column>
+                </p:row>
+
                 <p:row rendered="#{travelerBean.currentTravelerConfigPermission}">
                     <p:column colspan="2">
                         <h:outputLink target="_blank" 
@@ -41,9 +121,74 @@
                         </h:outputLink>
                     </p:column>
                 </p:row>
+
             </p:panelGrid>
+
+            <p:tooltip id="travelerInstanceStatusPanelGridRowToolTip"
+                       for="travelerInstanceStatusPanelGridRow">
+                <p:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Initialized" styleClass="entityDataLabel"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel 
+                                value="Traveler instance has not yet been configured. It cannot be filled out." 
+                                styleClass="entityDataEmphasizedText" /> 
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Active" styleClass="entityDataLabel"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel 
+                                value="Traveler instance has been configured. It can be filled out." 
+                                styleClass="entityDataEmphasizedText" /> 
+                        </p:column>
+                    </p:row>
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Submitted" styleClass="entityDataLabel"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel 
+                                value="Traveler instance has been submitted. Completion needs approval." 
+                                styleClass="entityDataEmphasizedText" /> 
+                        </p:column>
+                    </p:row> 
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Completed" styleClass="entityDataLabel"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel 
+                                value="Traveler instance submission has been approved and it is now completed." 
+                                styleClass="entityDataEmphasizedText" /> 
+                        </p:column>
+                    </p:row> 
+                    
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Frozen" styleClass="entityDataLabel"/>
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel 
+                                value="Work on traveler instance has been stopped temporarly." 
+                                styleClass="entityDataEmphasizedText" /> 
+                        </p:column>
+                    </p:row> 
+                    
+                </p:panelGrid>
+
+            </p:tooltip>
+
+
         </div>
-        
+
         <p:remoteCommand name="updateTravelerInstancePropertyValueInfoDialog" 
                          update="travelerInstancePropertyValueInfoDialog" 
                          oncomplete="PF('travelerInstancePropertyValueInfoDialogWidget').initPosition();

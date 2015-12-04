@@ -32,6 +32,8 @@ public class Traveler extends TravelerObject {
     private LinkedList<FormRef> forms; 
     private String html; 
     
+    private String deadline; 
+    
     private LinkedList<SharedGroup> sharedGroup;
     private LinkedList<SharedWith> sharedWith; 
     private LinkedList<String> devices; 
@@ -111,6 +113,9 @@ public class Traveler extends TravelerObject {
     public LinkedList<String> getDevices() {
         return devices;
     }
-    
-    
+
+    public String getDeadline() {
+        return deadline;
+    }
+      
 }
