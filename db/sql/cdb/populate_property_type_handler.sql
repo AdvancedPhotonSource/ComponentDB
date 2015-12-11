@@ -12,6 +12,8 @@ INSERT INTO `property_type_handler` VALUES
 (9,'Currency','Handler for monetary values.'),
 (10,'Boolean','Handler for boolean values.'),
 (11,'Date','Handler for date values.'),
-(12,'Component Design','Handler to associate a design with a component.');
+(12,'Component Design','Handler to associate a design with a component.'),
+(13,'Traveler Template','Handler used for creating/viewing traveler templates in the traveler system.'),
+(14,'Traveler Instance','Handler used for creating/viewing traveler instances in the traveler system.');
 /*!40000 ALTER TABLE `property_type_handler` ENABLE KEYS */;
 UNLOCK TABLES;
