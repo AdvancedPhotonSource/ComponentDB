@@ -8,7 +8,7 @@ INSERT INTO `design` VALUES
 (7,'Double Sector Controller DAQ','Workstation with a PCIe card (SPEC) which contains an FPGA and SFP cage. ',163),
 (13,'DMM  Top Level Design (#1)','Top level design of the Dummy Modular Multiplet prototype',173),
 (14,'DMM Water Handling System','',174),
-(15,'DMM Magnets','',175),
+(15,'DMM MAGNET ASSEMBLY','',175),
 (16,'DMM Vacuum Components','',176),
 (17,'DMM Supports','',177),
 (19,'Quad Doublet (upstream)','',194),
@@ -28,6 +28,13 @@ INSERT INTO `design` VALUES
 (36,'M1 Dipole Prototypes','Container for the M1 design alternative prototypes',534),
 (37,'M1 Measurement in MM1','Test setup for M1 measurements',547),
 (38,'M1 Measurement PS Control/Monitoring','Required power supply components to support M1 measurements in MM1',569),
-(39,'S1 Magnet Yoke','',652);
+(39,'S1 Magnet Yoke','',652),
+(40,'MicroTCA Chassis Assembly','Chassis, Power Supply, 2 fans',690),
+(41,'DMM SEXTUPOLE U221020202-112100','U221020202-112100',718),
+(42,'DMM QUADRUPOLE U221020202-111100','DMM QUADRUPOLE, STEEL POLE TIP, EDM',730),
+(43,'DMM QUADRUPOLE U221020202-113100','DMM QUARUPOLE, STEEL POLE TIP, EDM, CUTOUT FOR SYNCHROTRON VACUUM CHAMBER ',733),
+(44,'DMM QUADRUPOLE U221020202-114100','DMM QUADRUPOLE, VP POLE TIP, EDM',736),
+(45,'DMM QUADRUPOLE U221020202-115100','DMM QUADRUPLE, MUSHROOM STEEL POLE TIP, EDM',739),
+(46,'DMM MAGNET SUPPORT PLATE U221020202-110001','SUPPORT PLATE FOR DMM MAGNETS, INTERFACE TO DMM SUPPORTS AND VACUUM COMPONENTS',742);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -38,8 +38,11 @@ INSERT INTO `source` VALUES
 (36,'BiRa Systems','','Pawel Kowalski [pawel@bira.com]','http://www.bira.com'),
 (37,'Krohn-Hite','','','http://www.krohn-hite.com/'),
 (38,'Vishay','','','http://vpgsensors.com/'),
-(39,'Blackhawk','Blackhawkâ„¢ is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
+(39,'Blackhawk','Blackhawk is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
 (40,'Kooltronic, Inc.','','Bruce Kreeley','http://www.kooltronic.com/'),
-(41,'CAEN Technologies, Inc.','','erik@caentechnologies.com','http://www.caenels.com/');
+(41,'CAEN Technologies, Inc.','','erik@caentechnologies.com','http://www.caenels.com/'),
+(42,'DIAL MACHINE, INC','PRECISION MACHINING, BIG PARTS','(815) 397-6660','http://www.dialmachine.com/'),
+(43,'Emerson','','',''),
+(44,'Arrow','','Jim McTeague; Cell 630-935-2048','');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

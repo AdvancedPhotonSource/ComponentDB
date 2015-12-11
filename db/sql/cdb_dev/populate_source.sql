@@ -38,7 +38,7 @@ INSERT INTO `source` VALUES
 (36,'BiRa Systems','','Pawel Kowalski [pawel@bira.com]','http://www.bira.com'),
 (37,'Krohn-Hite','','','http://www.krohn-hite.com/'),
 (38,'Vishay','','','http://vpgsensors.com/'),
-(39,'Blackhawk','BlackhawkÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
+(39,'Blackhawk','BlackhawkÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
 (40,'Kooltronic, Inc.','','Bruce Kreeley','http://www.kooltronic.com/'),
 (41,'Bellows Tech LLC','Metal Bellows Mfg.','386-615-7530','http://www.bellowstech.com/');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;

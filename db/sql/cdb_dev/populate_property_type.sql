@@ -73,7 +73,7 @@ INSERT INTO `property_type` VALUES
 (71,'Traveler Template (Upload)','',2,1,'',''),
 (72,'Component Design','Used to associate a component with a design',8,12,'',''),
 (73,'Measurement (plot)','PDF of measurement results',3,1,'',''),
-(74, 'WBS-DCC','Document Control Center WBS numbers',1,NULL,NULL,NULL),
+(74,'WBS-DCC','Document Control Center WBS numbers',1,NULL,NULL,NULL),
 (75,'Configuration Control','',10,10,'',''),
 (76,'Supplemental Shielding','',10,10,'',''),
 (77,'Distance From Source Point','',10,NULL,'','meters'),

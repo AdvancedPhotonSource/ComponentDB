@@ -48,10 +48,18 @@ INSERT INTO `log` VALUES
 (50,'Cloned from Mockup_VacChamberAssy25','2015-08-07 16:55:02',2,NULL),
 (51,'Cloned from Mockup_VacChamberAssy26','2015-08-07 16:56:02',2,NULL),
 (52,'Cloned from Mockup_VacChamberAssy28','2015-08-07 16:56:41',2,NULL),
-(53,'Cloned from Mockup_VacCross_Mplet','2015-08-07 17:06:08',2,NULL),
 (55,'Cloned from Mockup_VacCross_Mplet','2015-08-07 17:07:13',2,NULL),
 (56,'Cloned from Mockup_VacChamberAssy5','2015-08-10 09:39:02',2,NULL),
 (57,'','2015-09-11 14:20:03',23,NULL),
-(58,'NRTL Approved E036201','2015-09-11 15:35:29',23,NULL);
+(58,'NRTL Approved E036201','2015-09-11 15:35:29',23,NULL),
+(60,'Moved to EAA Kicker Cage','2015-10-09 11:29:18',18,NULL),
+(61,'Plinth was pulled up from the grout and will be moved on 10-27-2015 to the storage area at S29.','2015-10-27 09:53:53',36,NULL),
+(62,'On 10-26-2015 the DMM plate was moved from plinth PBB4 to plinth PBD1.  ','2015-10-30 10:58:02',36,NULL),
+(63,'10-26-2015: The DMM plate was moved from plinth PBB4 to plinth PBD1.','2015-10-30 10:59:58',36,NULL),
+(64,'10-26-2015: The DMM plate was moved from the grouted plinth (PBB4) to this plinth (PBD1).  Modal analysis tests shall be performed.\r\n','2015-10-30 11:03:20',36,NULL),
+(65,'Originally procured in Jan 2013','2015-11-19 11:17:55',3,NULL),
+(66,'Returned for repair August 2015','2015-11-19 11:18:41',3,NULL),
+(67,'Received from repair ... damaged during shipment','2015-11-19 11:18:57',3,NULL),
+(68,'Returned again for repair','2015-12-10 13:20:16',3,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

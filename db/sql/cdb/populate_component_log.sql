@@ -1,6 +1,7 @@
 LOCK TABLES `component_log` WRITE;
 /*!40000 ALTER TABLE `component_log` DISABLE KEYS */;
 INSERT INTO `component_log` VALUES
+(168,62),
 (187,5),
 (198,15),
 (209,20),
@@ -19,9 +20,9 @@ INSERT INTO `component_log` VALUES
 (273,50),
 (274,51),
 (275,52),
-(277,53),
 (279,55),
 (285,56),
-(286,57);
+(286,57),
+(299,60);
 /*!40000 ALTER TABLE `component_log` ENABLE KEYS */;
 UNLOCK TABLES;

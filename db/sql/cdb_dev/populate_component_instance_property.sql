@@ -9,6 +9,8 @@ INSERT INTO `component_instance_property` VALUES
 (26,127),
 (27,131),
 (28,132),
+(33,1196),
+(33,1197),
 (42,219),
 (43,220),
 (44,236),
