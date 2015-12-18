@@ -82,14 +82,31 @@ cmd="cat $configFile | sed 's?storageDirectory=.*?storageDirectory=${CDB_DATA_DI
 eval $cmd
 cmd="cat $configFile | sed 's?cdb.webService.url=.*?cdb.webService.url=https://${CDB_WEB_SERVICE_HOST}:${CDB_WEB_SERVICE_PORT}/cdb?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
-# add traveler integration configuration
-cmd="cat $configFile | sed 's?traveler.webSerice.url=.*?traveler.webSerice.url=${TRAVELER_WEB_SERVICE_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
-eval $cmd
-cmd="cat $configFile | sed 's?traveler.webService.basicAuth.password=.*?traveler.webService.basicAuth.password=${TRAVELER_WEB_SERVICE_WRITE_PASSWORD}?g' > $configFile.2 && mv $configFile.2 $configFile"
-eval $cmd
-cmd="cat $configFile | sed 's?traveler.webApp.url=.*?traveler.webApp.url=${TRAVELER_WEB_APP_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
-eval $cmd
-
+# Check if traveler integration attributes are specified in config file
+if [ ! -z $TRAVELER_WEB_APP_URL ]; then 
+    # add traveler integration configuration
+    TRAVELER_WEB_SERVICE_WRITE_PASSWD_PATH=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.traveler.passwd
+    if [ -f $TRAVELER_WEB_SERVICE_WRITE_PASSWD_PATH ]; then
+	TRAVELER_WEB_SERVICE_WRITE_PASSWORD=`cat $TRAVELER_WEB_SERVICE_WRITE_PASSWD_PATH`
+    else 
+	read -s -p "Please enter the password for traveler module api_write user: " TRAVELER_WEB_SERVICE_WRITE_PASSWORD
+	echo ""
+	
+	if [ -z $TRAVELER_WEB_SERVICE_WRITE_PASSWORD ]; then
+	    >&2 echo "ERROR: No password was provided" 
+	    exit 1
+	fi
+	echo $TRAVELER_WEB_SERVICE_WRITE_PASSWORD > $TRAVELER_WEB_SERVICE_WRITE_PASSWD_PATH
+	chmod 400 $TRAVELER_WEB_SERVICE_WRITE_PASSWD_PATH
+    fi
+    
+    cmd="cat $configFile | sed 's?traveler.webSerice.url=.*?traveler.webSerice.url=${TRAVELER_WEB_SERVICE_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
+    eval $cmd
+    cmd="cat $configFile | sed 's?traveler.webService.basicAuth.password=.*?traveler.webService.basicAuth.password=${TRAVELER_WEB_SERVICE_WRITE_PASSWORD}?g' > $configFile.2 && mv $configFile.2 $configFile"
+    eval $cmd
+    cmd="cat $configFile | sed 's?traveler.webApp.url=.*?traveler.webApp.url=${TRAVELER_WEB_APP_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
+    eval $cmd
+fi
 configFile=WEB-INF/classes/resources.properties
 cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
