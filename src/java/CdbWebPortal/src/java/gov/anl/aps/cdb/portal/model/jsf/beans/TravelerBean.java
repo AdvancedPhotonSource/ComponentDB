@@ -44,7 +44,7 @@ public class TravelerBean implements Serializable {
 
     private PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
-    private PieChartModel currentTravlerInstnaceCompletionPieModel; 
+    private PieChartModel currentTravlerInstnaceCompletionPieModel;
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
@@ -235,13 +235,13 @@ public class TravelerBean implements Serializable {
                 case "designElement":
                     // Load Design element templates
                     DesignElement designElement = (DesignElement) entityController.getSelected();
-                    loadPropertyTravelerTemplateList(designElement.getPropertyValueList(), availableTemplates); 
+                    loadPropertyTravelerTemplateList(designElement.getPropertyValueList(), availableTemplates);
                     // Load Component templates
                     Component component = designElement.getComponent();
                     loadPropertyTravelerTemplateList(component.getPropertyValueList(), availableTemplates);
                     // Load design templates 
-                    Design parentDesign = designElement.getParentDesign(); 
-                    loadPropertyTravelerTemplateList(parentDesign.getPropertyValueList(), availableTemplates);  
+                    Design parentDesign = designElement.getParentDesign();
+                    loadPropertyTravelerTemplateList(parentDesign.getPropertyValueList(), availableTemplates);
                     break;
                 //TODO Add Desgin Instance
             }
@@ -317,21 +317,21 @@ public class TravelerBean implements Serializable {
                 currentTravelerInstance = travelerApi.getTraveler(propertyValue.getValue());
                 //Load completion pie chart model
                 int totalInput = currentTravelerInstance.getTotalInput();
-                if(totalInput > 0) {
-                int finishedInput = currentTravelerInstance.getFinishedInput(); 
-                int incomplete = totalInput - finishedInput; 
-                currentTravlerInstnaceCompletionPieModel = new PieChartModel(); 
-                currentTravlerInstnaceCompletionPieModel.set("Incomplete", incomplete);
-                currentTravlerInstnaceCompletionPieModel.set("Complete", finishedInput);
-                
-                currentTravlerInstnaceCompletionPieModel.setLegendPosition("w");
-                currentTravlerInstnaceCompletionPieModel.setShowDataLabels(true);
-                currentTravlerInstnaceCompletionPieModel.setTitle("Traveler Progress");
+                int finishedInput = currentTravelerInstance.getFinishedInput();
+                if (totalInput > 0 && finishedInput > 0) {
+                    int incomplete = totalInput - finishedInput;
+                    currentTravlerInstnaceCompletionPieModel = new PieChartModel();
+                    currentTravlerInstnaceCompletionPieModel.set("Incomplete", incomplete);
+                    currentTravlerInstnaceCompletionPieModel.set("Complete", finishedInput);
+
+                    currentTravlerInstnaceCompletionPieModel.setLegendPosition("w");
+                    currentTravlerInstnaceCompletionPieModel.setShowDataLabels(true);
+                    currentTravlerInstnaceCompletionPieModel.setTitle("Traveler Progress");
                 } else {
-                    currentTravlerInstnaceCompletionPieModel = null; 
+                    currentTravlerInstnaceCompletionPieModel = null;
                 }
                 //Show the GUI since all execution was successful. 
-                RequestContext.getCurrentInstance().execute(onSuccessCommand);                
+                RequestContext.getCurrentInstance().execute(onSuccessCommand);
             } catch (CdbException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
@@ -432,7 +432,7 @@ public class TravelerBean implements Serializable {
     public PieChartModel getCurrentTravlerInstnaceCompletionPieModel() {
         return currentTravlerInstnaceCompletionPieModel;
     }
-    
+
     public Traveler getCurrentTravelerInstance() {
         return currentTravelerInstance;
     }
