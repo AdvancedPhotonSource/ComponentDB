@@ -40,10 +40,7 @@
         </h:outputLink>
         
         <p:commandLink rendered="#{propertyValueHistoryController.displayInfoActionValue()}"
-                       onstart="PF('loadingDialog').show();"
-                       onerror="PF('loadingDialog').hide();"
-                       oncomplete="#{propertyValueHistoryObject.infoActionCommand}  PF('loadingDialog').hide(); "
-                       update="@([id$=infoActionIncludesPanel])">
+                       oncomplete="loadInfoActionDialog();" >
             <h:outputText value="#{propertyValueHistoryObject.value}"  />
             <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValueHistory}" 
                                         value="#{propertyValueHistoryObject}" />

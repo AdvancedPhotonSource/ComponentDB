@@ -18,18 +18,35 @@
                  paginatorAlwaysVisible="false"
                  emptyMessage="No component properties found.">
 
-        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml"/>
+        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml">
+            <ui:param name="entityPropertyTypeName" value="designElementComponentProperty" />
+        </ui:include>
 
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
+                <p:remoteCommand name="designElementComponentPropertyInfoAction#{propertyValueObject.id}"
+                                 rendered="#{propertyValueObject.infoActionCommand != null}"
+                                 oncomplete="loadInfoActionDialog();">
+                    <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
+                                                 value="#{propertyValueObject}"/>
+                </p:remoteCommand>
+                
                 <p:commandLink id="designElementComponentPropertyValueHistoryListViewButton" 
+                               onstart="PF('loadingDialog').show();"
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
-                               styleClass="ui-icon ui-icon-info" 
+                               styleClass="ui-icon ui-icon-history"  
                                title="View history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
                                                  value="#{propertyValueObject}"/>
                     <p:tooltip for="designElementComponentPropertyValueHistoryListViewButton" value="View property value history."/>
+                </p:commandLink>
+                <p:commandLink id="designElementComponentPropertyInfoActionButton" 
+                               rendered="#{propertyValueObject.infoActionCommand != null}"
+                               styleClass="ui-icon ui-icon-info2" 
+                               title="View property info"
+                               onclick="designElementComponentPropertyInfoAction#{propertyValueObject.id}()">
+                    <p:tooltip for="designElementComponentPropertyInfoActionButton" value="View property info."/>
                 </p:commandLink>
             </div>
         </p:column>       

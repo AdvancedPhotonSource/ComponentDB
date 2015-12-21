@@ -21,19 +21,15 @@
             <ui:param name="entityPropertyTypeName" value="componentProperty"/>
         </ui:include>
 
-
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:remoteCommand name="componentPropertyInfoAction#{propertyValueObject.id}"
                                  rendered="#{propertyValueObject.infoActionCommand != null}"
-                                 onstart="PF('loadingDialog').show();"
-                                 onerror="PF('loadingDialog').hide();"
-                                 oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.infoActionCommand}"
-                                 update="@form">
+                                 oncomplete="loadInfoActionDialog();">
                     <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
                                                  value="#{propertyValueObject}"/>
                 </p:remoteCommand>
-                
+                   
                 <p:commandLink id="componentPropertyValueHistoryListViewButton" 
                                onstart="PF('loadingDialog').show();"
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
@@ -56,9 +52,13 @@
 
     </p:dataTable>
     
-    <p:outputPanel id="infoActionIncludesPanel" >
-        <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/>        
-    </p:outputPanel>
+    <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/> 
+    <ui:include src="../../travelerProperty/private/travelerInstancePropertyValueInfoDialog.xhtml" />
+    <p:remoteCommand name="loadInfoActionDialog"
+                     onstart="PF('loadingDialog').show();"
+                     onerror="PF('loadingDialog').hide();"
+                     oncomplete="PF('loadingDialog').hide();"
+                     action="#{propertyValueInfoActionBean.loadInfoActionForLoadedPropertyValue()}" />
     
     <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
         

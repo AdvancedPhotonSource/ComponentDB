@@ -21,15 +21,11 @@
             <ui:param name="entityPropertyTypeName" value="designElementProperty"/>
         </ui:include>
 
-
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:remoteCommand name="designElementPropertyInfoAction#{propertyValueObject.id}"
                                  rendered="#{propertyValueObject.infoActionCommand != null}"
-                                 onstart="PF('loadingDialog').show();"
-                                 onerror="PF('loadingDialog').hide();"
-                                 oncomplete="PF('loadingDialog').hide(); #{propertyValueObject.infoActionCommand}"
-                                 update="@form">
+                                 oncomplete="loadInfoActionDialog();">
                     <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
                                                  value="#{propertyValueObject}"/>
                 </p:remoteCommand>
@@ -44,21 +40,25 @@
                                                  value="#{propertyValueObject}"/>
                     <p:tooltip for="designElementPropertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
-                <p:commandLink id="designElementPropertInfoActionButton" 
+                <p:commandLink id="designElementPropertyInfoActionButton" 
                                rendered="#{propertyValueObject.infoActionCommand != null}"
                                styleClass="ui-icon ui-icon-info2" 
                                title="View property info"
                                onclick="designElementPropertyInfoAction#{propertyValueObject.id}()">
-                    <p:tooltip for="designElementPropertInfoActionButton" value="View property info."/>
+                    <p:tooltip for="designElementPropertyInfoActionButton" value="View property info."/>
                 </p:commandLink>                       
             </div>
         </p:column>       
 
     </p:dataTable>
     
-    <p:outputPanel id="infoActionIncludesPanel" >
-        <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/>        
-    </p:outputPanel>
+    <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/> 
+    <ui:include src="../../travelerProperty/private/travelerInstancePropertyValueInfoDialog.xhtml" />
+    <p:remoteCommand name="loadInfoActionDialog"
+                     onstart="PF('loadingDialog').show();"
+                     onerror="PF('loadingDialog').hide();"
+                     oncomplete="PF('loadingDialog').hide();"
+                     action="#{propertyValueInfoActionBean.loadInfoActionForLoadedPropertyValue()}" />
     
     <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
         
