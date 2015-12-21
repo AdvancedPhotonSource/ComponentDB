@@ -66,16 +66,16 @@ public class PdmLinkDrawingBean implements Serializable {
     private PdmLinkComponent pdmLinkComponent;
     //Getting image from server 
     private StreamedContent pdmLinkImage;
-    private byte[] imageByteArray; 
+    private byte[] imageByteArray;
     //Add component form 
     private boolean exposeSuggestedComponentType;
     private ListDataModel suggestedComponentTypeListDataModel;
     private final String PDMLINK_PROPERTY_NAME = "PDMLink Drawing";
-    private final String WBS_PROPERTY_NAME = "WBS-DCC"; 
-    private PropertyType pdmPropertyType; 
-    private PropertyType wbsPropertyType; 
-    private String dialogErrorMessage; 
-    
+    private final String WBS_PROPERTY_NAME = "WBS-DCC";
+    private PropertyType pdmPropertyType;
+    private PropertyType wbsPropertyType;
+    private String dialogErrorMessage;
+
     @PostConstruct
     public void init() {
         String webServiceUrl = ConfigurationUtility.getPortalProperty(CdbProperty.WEB_SERVICE_URL_PROPERTY_NAME);
@@ -84,7 +84,7 @@ public class PdmLinkDrawingBean implements Serializable {
         } catch (ConfigurationError ex) {
             String error = "PDMLink Service is not accessible:  " + ex.getErrorMessage();
             showErrorMessage(error);
-            logger.error(error); 
+            logger.error(error);
         }
     }
 
@@ -127,19 +127,19 @@ public class PdmLinkDrawingBean implements Serializable {
     }
 
     private PropertyType getPdmPropertyType(PropertyTypeController propertyTypeController) {
-        if(pdmPropertyType == null){
-            pdmPropertyType = propertyTypeController.findByName(PDMLINK_PROPERTY_NAME); 
+        if (pdmPropertyType == null) {
+            pdmPropertyType = propertyTypeController.findByName(PDMLINK_PROPERTY_NAME);
         }
         return pdmPropertyType;
     }
 
     private PropertyType getWbsPropertyType(PropertyTypeController propertyTypeController) {
-        if(wbsPropertyType == null){
+        if (wbsPropertyType == null) {
             wbsPropertyType = propertyTypeController.findByName(WBS_PROPERTY_NAME);
         }
         return wbsPropertyType;
     }
-    
+
     public void setExposeSuggestedComponentType(boolean exposeSuggestedComponentType) {
         this.exposeSuggestedComponentType = exposeSuggestedComponentType;
     }
@@ -155,14 +155,14 @@ public class PdmLinkDrawingBean implements Serializable {
     public String getDialogErrorMessage() {
         return dialogErrorMessage;
     }
-    
-    private void showErrorMessage(String error){
-        dialogErrorMessage = "Error: " + error; 
+
+    private void showErrorMessage(String error) {
+        dialogErrorMessage = "Error: " + error;
         SessionUtility.addErrorMessage("Error", error);
     }
-    
-    private void showWarningMessage(String warning){
-        dialogErrorMessage = "Warning: " + warning; 
+
+    private void showWarningMessage(String warning) {
+        dialogErrorMessage = "Warning: " + warning;
         SessionUtility.addWarningMessage("Warning", warning);
     }
 
@@ -180,9 +180,12 @@ public class PdmLinkDrawingBean implements Serializable {
     }
 
     /**
-     * Using the currently loaded drawing. Load up information required to create a component. 
-     * 
-     * @param componentController allows clearing a componentObject. The component object is binded to UI fields on the pdmLink add component dialog. 
+     * Using the currently loaded drawing. Load up information required to
+     * create a component.
+     *
+     * @param componentController allows clearing a componentObject. The
+     * component object is binded to UI fields on the pdmLink add component
+     * dialog.
      */
     public void generateComponentInfo(ComponentController componentController) {
         //Create a new empty cdb component. 
@@ -203,7 +206,7 @@ public class PdmLinkDrawingBean implements Serializable {
             try {
                 pdmLinkComponent = pdmLinkApi.generateComponentInformation(drawingNumber);
                 // Add generated description to current component 
-                componentController.getSelected().setDescription(pdmLinkComponent.getCdbDescription()) ;
+                componentController.getSelected().setDescription(pdmLinkComponent.getCdbDescription());
             } catch (CdbException ex) {
                 showErrorMessage(ex.getErrorMessage());
                 logger.error(ex);
@@ -214,10 +217,13 @@ public class PdmLinkDrawingBean implements Serializable {
     }
 
     /**
-     * Create a component using the component db entity. Once created add pdmLink properties and WBS description if possible. 
-     * 
-     * @param componentController componentController contains methods required to create and save component in database. 
-     * @param propertyTypeController propertyTypeController allows getting a propertyType entity object which define component properties. 
+     * Create a component using the component db entity. Once created add
+     * pdmLink properties and WBS description if possible.
+     *
+     * @param componentController componentController contains methods required
+     * to create and save component in database.
+     * @param propertyTypeController propertyTypeController allows getting a
+     * propertyType entity object which define component properties.
      */
     public void createComponentFromDrawingNumber(ComponentController componentController, PropertyTypeController propertyTypeController, String onSuccessExecute) {
         if (pdmLinkComponent != null) {
@@ -234,53 +240,57 @@ public class PdmLinkDrawingBean implements Serializable {
                 if (pdmPropertyType != null) {
                     for (String pdmPropertyValue : pdmLinkComponent.getPdmPropertyValues()) {
                         //Add tags if needed 
-                        if(pdmPropertyValue.equalsIgnoreCase(pdmLinkComponent.getModelNumber())){
-                            componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue, "Model Ref"); 
-                        }else{
-                           componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue); 
+                        if (pdmPropertyValue.equalsIgnoreCase(pdmLinkComponent.getModelNumber())) {
+                            componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue, "Model Ref");
+                        } else {
+                            componentController.preparePropertyTypeValueAdd(pdmPropertyType, pdmPropertyValue);
                         }
                     }
-                }else {
+                } else {
                     showErrorMessage("Couldn't find " + PDMLINK_PROPERTY_NAME + " property type");
                 }
                 //Attempt to add WBS property
-                getWbsPropertyType(propertyTypeController); 
-                if(wbsPropertyType != null){
+                getWbsPropertyType(propertyTypeController);
+                if (wbsPropertyType != null) {
                     List<AllowedPropertyValue> wbsPropertyAllowedValueList = wbsPropertyType.getAllowedPropertyValueList();
-                    String wbsNumber = pdmLinkComponent.getWbsDescription(); 
-                    boolean foundAllowedValue = false; 
-                    for(AllowedPropertyValue wbsAllowedPropertyValue : wbsPropertyAllowedValueList){
-                        if(wbsAllowedPropertyValue.getValue().equalsIgnoreCase(wbsNumber)){
-                            wbsNumber = wbsAllowedPropertyValue.getValue(); 
-                            foundAllowedValue = true; 
-                            break; 
-                        } 
+                    String wbsNumber = pdmLinkComponent.getWbsDescription();
+                    boolean foundAllowedValue = false;
+                    for (AllowedPropertyValue wbsAllowedPropertyValue : wbsPropertyAllowedValueList) {
+                        if (wbsAllowedPropertyValue.getValue().equalsIgnoreCase(wbsNumber)) {
+                            wbsNumber = wbsAllowedPropertyValue.getValue();
+                            foundAllowedValue = true;
+                            break;
+                        }
                     }
-                    if(foundAllowedValue){
-                        componentController.preparePropertyTypeValueAdd(wbsPropertyType, wbsNumber);  
-                    }else{
+                    if (foundAllowedValue) {
+                        componentController.preparePropertyTypeValueAdd(wbsPropertyType, wbsNumber);
+                    } else {
                         showWarningMessage("WBS number is not in the allowed value list for WBS property.");
                     }
-                }else{
+                } else {
                     showErrorMessage("Couldn't find " + WBS_PROPERTY_NAME + " property type");
                 }
-                
+
                 //Attempt to update the component with the new properties 
-                if(currentComponent.getPropertyValueList().size() > 0){
-                    componentController.update(); 
+                if (currentComponent.getPropertyValueList().size() > 0) {
+                    componentController.update();
                 }
                 RequestContext.getCurrentInstance().execute(onSuccessExecute);
             }
-        }else{
+        } else {
             showErrorMessage("No pdmLink drawing information was generated");
         }
     }
-    
+
     /**
-     * Create a dataModel using information in the the pdmLinkComponent from web service. 
-     * returning null will result the UI to use a dataModel with all component types. 
-     * @param componentTypeController passed from the UI. The standard componentTypeController bean that UI would use. 
-     * @return dataModel that could be used with dataTable and passed to auto-complete drop-down of add component on pdmLink interface. 
+     * Create a dataModel using information in the the pdmLinkComponent from web
+     * service. returning null will result the UI to use a dataModel with all
+     * component types.
+     *
+     * @param componentTypeController passed from the UI. The standard
+     * componentTypeController bean that UI would use.
+     * @return dataModel that could be used with dataTable and passed to
+     * auto-complete drop-down of add component on pdmLink interface.
      */
     public DataModel createSuggestedTypesDataModel(ComponentTypeController componentTypeController) {
         // When exposeSuggesteedComponentType is false the user will get a different datatable with all component types. 
@@ -298,7 +308,7 @@ public class PdmLinkDrawingBean implements Serializable {
                 suggestedComponentTypeListDataModel = new ListDataModel(componentTypeEntityList);
             }
             return suggestedComponentTypeListDataModel;
-        }else{
+        } else {
             return null;
         }
     }
@@ -341,15 +351,14 @@ public class PdmLinkDrawingBean implements Serializable {
                 drawingNumber = searchKeywords;
                 findDrawing();
             }
-        }else{
+        } else {
             showWarningMessage("Search pattern cannot be empty.");
         }
     }
 
     /**
      * Use drawing name variable to attempt to get information for the
-     * particular drawing.
-     * Set drawing variable. 
+     * particular drawing. Set drawing variable.
      */
     public void findDrawing() {
 
@@ -357,7 +366,7 @@ public class PdmLinkDrawingBean implements Serializable {
             return;
         }
 
-        resetDrawingInfo(); 
+        resetDrawingInfo();
 
         if (drawingNumber != null && !drawingNumber.isEmpty()) {
             if (!PdmLinkDrawing.isExtensionValid(drawingNumber)) {
@@ -392,8 +401,7 @@ public class PdmLinkDrawingBean implements Serializable {
 
     /**
      * Search the PDMLink for a list of drawings resulting from the keywords
-     * entered by user. 
-     * Set the searchResults variable
+     * entered by user. Set the searchResults variable
      */
     public void searchPdmLink() {
         if (!checkAPIStatus()) {
@@ -408,45 +416,48 @@ public class PdmLinkDrawingBean implements Serializable {
             showErrorMessage(ex.getErrorMessage());
         }
     }
-    
+
     /**
-     * Sets search results to a list of related drawings. 
-     * @param drawingNumberBase drawing number with or without extension. 
+     * Sets search results to a list of related drawings.
+     *
+     * @param drawingNumberBase drawing number with or without extension.
+     * @param onSuccessCommand command to be executed upon successful completion of request. 
      */
-    public void getRelatedDrawings(String drawingNumberBase){
-        searchResults = null; 
-        searchKeywords = ""; 
-        
+    public void getRelatedDrawings(String drawingNumberBase, String onSuccessCommand) {
+        searchResults = null;
+        searchKeywords = "";
+
         if (!checkAPIStatus()) {
             return;
         }
-        
+
         try {
             searchResults = pdmLinkApi.searchRelatedDrawings(drawingNumberBase);
             logger.debug("Found " + searchResults.getSearchResults().size() + " drwaing(s)");
+
+            //See if drawing details should be loaded 
+            if (searchResults != null) {
+                for (PdmLinkSearchResult searchResult : searchResults.getSearchResults()) {
+                    if (searchResult.getNumber().equalsIgnoreCase(drawingNumberBase)) {
+                        //load the details for the drawing
+                        completeDrawing(searchResult.getUfid(), searchResult.getOid());
+                    }
+                }
+            }
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
         } catch (CdbException ex) {
             logger.error(ex);
             showErrorMessage(ex.getErrorMessage());
         }
-        
-        //See if drawing details should be loaded 
-        if (searchResults != null){
-                for (PdmLinkSearchResult searchResult : searchResults.getSearchResults()) {
-                if(searchResult.getNumber().equalsIgnoreCase(drawingNumberBase)){
-                    //load the details for the drawing
-                    completeDrawing(searchResult.getUfid(), searchResult.getOid());
-                }
-            }
-        }
     }
 
     /**
-     * Loads an image of a particular drawing for the latest revision. 
-     * Set pdmLinkImage variable
+     * Loads an image of a particular drawing for the latest revision. Set
+     * pdmLinkImage variable
      */
     public void loadImageForDrawing() {
-        imageByteArray = null; 
-        
+        imageByteArray = null;
+
         if (!checkAPIStatus()) {
             return;
         }
@@ -463,7 +474,7 @@ public class PdmLinkDrawingBean implements Serializable {
             ByteArrayOutputStream os;
             os = new ByteArrayOutputStream();
             ImageIO.write(buffImg, "png", os);
-            imageByteArray = os.toByteArray(); 
+            imageByteArray = os.toByteArray();
 
             reloadPdmLinkImageStreamedContent();
 
@@ -475,26 +486,26 @@ public class PdmLinkDrawingBean implements Serializable {
         } catch (Exception ex) {
             logger.error(ex);
             //The extension of the image is not in standard format cannot be loaded
-            if(ex.getMessage().equals("image == null!")){
+            if (ex.getMessage().equals("image == null!")) {
                 //Don't inform user of this exception. No valid image exits. 
                 return;
             }
             showErrorMessage(ex.getMessage());
         }
     }
-    
-    public void reloadPdmLinkImageStreamedContent(){
-        pdmLinkImage = null; 
-        
-        if(imageByteArray != null){
+
+    public void reloadPdmLinkImageStreamedContent() {
+        pdmLinkImage = null;
+
+        if (imageByteArray != null) {
             pdmLinkImage = new DefaultStreamedContent(new ByteArrayInputStream(imageByteArray), "image/jpg");
         }
     }
 
     /**
-     * Gets information about a particular drawing using information from 
-     * search result. 
-     * Set the drawing variable. 
+     * Gets information about a particular drawing using information from search
+     * result. Set the drawing variable.
+     *
      * @param ufid attribute of a search result
      * @param oid attribute of a search result
      */
@@ -527,5 +538,5 @@ public class PdmLinkDrawingBean implements Serializable {
         drawing = null;
         pdmLinkImage = null;
     }
-    
+
 }
