@@ -87,11 +87,21 @@
                         <p:outputLabel value="#{travelerBean.currentTravelerInstance.deadline}" styleClass="entityDataEmphasizedText" /> 
                     </p:column>
                 </p:row>
-
-                <p:row rendered="#{travelerBean.currentTravlerInstnaceCompletionPieModel != null}">
+                
+                <p:row>
                     <p:column colspan="2">
-                        <p:chart type="pie" 
-                                 model="#{travelerBean.currentTravlerInstnaceCompletionPieModel}" />
+                        <p:outputLabel value="Estimated Traveler Progress" styleClass="entityDataLabel"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <ui:param name="travelerInstanceProgressLabel"
+                                  value="#{travelerBean.currentTravelerInstance.finishedInput}/#{travelerBean.currentTravelerInstance.totalInput}"
+                                  />
+                        <p:progressBar value="#{travelerBean.travelerInstanceProgress}" 
+                                       labelTemplate="${travelerInstanceProgressLabel}" 
+                                       displayOnly="true" />
                     </p:column>
                 </p:row>
 

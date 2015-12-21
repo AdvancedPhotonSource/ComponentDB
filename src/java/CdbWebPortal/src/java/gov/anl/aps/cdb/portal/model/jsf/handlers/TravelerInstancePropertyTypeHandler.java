@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.common.constants.CdbProperty;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -25,6 +26,8 @@ public class TravelerInstancePropertyTypeHandler extends AbstractPropertyTypeHan
     public static final String HANDLER_NAME = "Traveler Instance";
 
     private static final String PROPERTY_EDIT_PAGE = "travelerInstancePropertyValueEditPanel";
+    
+    private static final String INFO_ACTION_COMMAND = "updateTravelerInstancePropertyValueInfoDialog();";
 
     private static final Logger logger = Logger.getLogger(TravelerInstancePropertyTypeHandler.class.getName());
 
@@ -69,7 +72,7 @@ public class TravelerInstancePropertyTypeHandler extends AbstractPropertyTypeHan
         try {
             Traveler traveler = travelerApi.getTraveler(value);
             return traveler.getTitle();
-        } catch (Exception ex) {
+        } catch (CdbException ex) {
             logger.error(ex);
             if (showError) {
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -86,6 +89,16 @@ public class TravelerInstancePropertyTypeHandler extends AbstractPropertyTypeHan
     @Override
     public void setTargetValue(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setTargetValue(getTargetValue(propertyValueHistory.getValue()));
+    }
+    
+    @Override
+    public void setInfoActionCommand(PropertyValue propertyValue) {
+        propertyValue.setInfoActionCommand(INFO_ACTION_COMMAND);
+    }
+    
+    @Override
+    public void setInfoActionCommand(PropertyValueHistory propertyValueHistory) {
+        propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
     }
 
     private String getTargetValue(String value) {
