@@ -22,7 +22,7 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static final String HANDLER_NAME = "PDMLink";
     
-    private static final String INFO_ACTION_COMMAND = "PF('pdmLinkDrawingPropertyInfoDialogWidget').show();";
+    private static final String INFO_ACTION_COMMAND = "updatePdmLinkDrawingPropertyInfoDialog();";
 
     public PdmLinkPropertyTypeHandler() {
         super(HANDLER_NAME, DisplayType.INFO_ACTION);

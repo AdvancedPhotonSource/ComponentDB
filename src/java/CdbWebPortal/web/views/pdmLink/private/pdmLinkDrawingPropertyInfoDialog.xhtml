@@ -35,6 +35,11 @@
             <br/>
             <h:outputText value="#{pdmLinkDrawingBean.dialogErrorMessage}" />
         </p:panel>
+        
+        <p:remoteCommand name="updatePdmLinkDrawingPropertyInfoDialog" 
+                     update="pdmLinkDrawingPropertyInfoDialog" 
+                     oncomplete="PF('pdmLinkDrawingPropertyInfoDialogWidget').initPosition();
+                     PF('pdmLinkDrawingPropertyInfoDialogWidget').show();"/>
     </p:dialog>
-
+    
 </ui:composition>
