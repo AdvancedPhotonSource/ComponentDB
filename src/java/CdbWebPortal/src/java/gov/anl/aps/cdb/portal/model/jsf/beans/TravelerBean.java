@@ -31,7 +31,6 @@ import javax.faces.component.html.HtmlInputText;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
-import org.primefaces.model.chart.PieChartModel;
 
 @Named("travelerBean")
 @SessionScoped
@@ -44,7 +43,7 @@ public class TravelerBean implements Serializable {
 
     private PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
-    private PieChartModel currentTravlerInstnaceCompletionPieModel;
+    private Integer travelerInstanceProgress; 
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
@@ -183,7 +182,7 @@ public class TravelerBean implements Serializable {
     public boolean getCurrentTravelerConfigPermission() {
         if (currentTravelerInstance != null) {
             String travelerUser = currentTravelerInstance.getCreatedBy();
-            if (travelerUser.equals(SessionUtility.getUser().toString())) {
+            if (SessionUtility.getUser() != null && travelerUser.equals(SessionUtility.getUser().toString())) {
                 return true;
             }
         }
@@ -306,30 +305,13 @@ public class TravelerBean implements Serializable {
 
     public void loadCurrentTravelerInstance(String onSuccessCommand) {
         if (checkPropertyValue()) {
-            if (currentTravelerInstance != null) {
-                if (currentTravelerInstance.getId().equals(propertyValue.getValue())) {
-                    RequestContext.getCurrentInstance().execute(onSuccessCommand);
-                } else {
-                    currentTravelerInstance = null;
-                }
-            }
             try {
                 currentTravelerInstance = travelerApi.getTraveler(propertyValue.getValue());
                 //Load completion pie chart model
                 int totalInput = currentTravelerInstance.getTotalInput();
                 int finishedInput = currentTravelerInstance.getFinishedInput();
-                if (totalInput > 0 && finishedInput > 0) {
-                    int incomplete = totalInput - finishedInput;
-                    currentTravlerInstnaceCompletionPieModel = new PieChartModel();
-                    currentTravlerInstnaceCompletionPieModel.set("Incomplete", incomplete);
-                    currentTravlerInstnaceCompletionPieModel.set("Complete", finishedInput);
-
-                    currentTravlerInstnaceCompletionPieModel.setLegendPosition("w");
-                    currentTravlerInstnaceCompletionPieModel.setShowDataLabels(true);
-                    currentTravlerInstnaceCompletionPieModel.setTitle("Traveler Progress");
-                } else {
-                    currentTravlerInstnaceCompletionPieModel = null;
-                }
+                double progress = (finishedInput * 1.0) / (totalInput * 1.0) * 100; 
+                this.travelerInstanceProgress = (int) progress; 
                 //Show the GUI since all execution was successful. 
                 RequestContext.getCurrentInstance().execute(onSuccessCommand);
             } catch (CdbException ex) {
@@ -429,8 +411,8 @@ public class TravelerBean implements Serializable {
         }
     }
 
-    public PieChartModel getCurrentTravlerInstnaceCompletionPieModel() {
-        return currentTravlerInstnaceCompletionPieModel;
+    public Integer getTravelerInstanceProgress() {
+        return travelerInstanceProgress;
     }
 
     public Traveler getCurrentTravelerInstance() {
