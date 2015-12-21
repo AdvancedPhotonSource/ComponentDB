@@ -418,4 +418,8 @@ public class TravelerBean implements Serializable {
     public Traveler getCurrentTravelerInstance() {
         return currentTravelerInstance;
     }
+
+    public String getTRAVELER_WEB_APP_URL() {
+        return TRAVELER_WEB_APP_URL;
+    }
 }
