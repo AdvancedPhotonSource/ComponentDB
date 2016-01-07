@@ -30,6 +30,54 @@
                 </div>
 
                 <div class="sectionTitle">
+                    <h2>CDB Entities</h2>
+                </div>
+                <h:form id="cdbEntityHelpButtonsForm">
+                    <div class="entityHelpButtonContainer">
+                        <div class="entityHelpButton entityHelpButtonComponent">
+                            <p:commandLink styleClass="entityHelpButtonCommandLink" action="#{componentController.prepareListFromViewPath('/views/component')}">
+                                <div>
+                                    <h2>Component Catalog</h2>
+                                    <div class="entityHelpButtonImageContainer">
+                                        <p:graphicImage styleClass="entityListPageHelpFragmentImage" library="images" name="component-catalog.png" />
+                                    </div>
+                                </div>
+                            </p:commandLink>
+                        </div>
+                        <div class="entityHelpButton entityHelpButtonComponentInstance">
+                            <p:commandLink styleClass="entityHelpButtonCommandLink" action="#{componentController.prepareListFromViewPath('/views/componentInstance')}">
+                                <div>
+                                    <h2>Component Inventory</h2>
+                                    <div class="entityHelpButtonImageContainer"> 
+                                        <p:graphicImage styleClass="entityListPageHelpFragmentImage" library="images" name="component-instances.png" />
+                                    </div>
+                                </div>
+                            </p:commandLink>
+                        </div>
+                        <div class="entityHelpButton entityHelpButtonDesign">
+                            <p:commandLink styleClass="entityHelpButtonCommandLink" action="#{componentController.prepareListFromViewPath('/views/design')}">
+                                <div>
+                                    <h2>Design Library</h2>
+                                    <div class="entityHelpButtonImageContainer">
+                                        <p:graphicImage styleClass="entityListPageHelpFragmentImage" library="images" name="designs.png" />
+                                    </div>
+                                </div>
+                            </p:commandLink>
+
+                        </div>
+                        <div class="entityHelpButton entityHelpButtonDesignInstance">
+                            <h2>Design Implementations*</h2>
+                            <div class="entityHelpButtonImageContainer">
+                                <p:graphicImage styleClass="entityListPageHelpFragmentImage" library="images" name="design-instances.png" />
+                            </div>
+                            <div class="sectionText">
+                                *This feature is coming in the next major release of CDB.
+                            </div>
+                        </div>
+                    </div>
+
+                </h:form>
+                <div class="sectionTitle">
                     <h2>System At A Glance</h2>
                 </div>    
 
