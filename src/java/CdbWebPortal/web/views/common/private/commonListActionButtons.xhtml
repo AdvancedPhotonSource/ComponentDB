@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="entityTypeNames" value="#{entityTypeName}s"/>
@@ -11,6 +12,7 @@
     <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
     <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
+    <ui:param name="displayShowEntityListPageHelpFragmentButton" value="#{entityController.displayListPageHelpFragmentSettingTypeKey != null}" />
     
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
@@ -43,8 +45,12 @@
 
         <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ViewGroupsButton" value="View groups."/>
-        </p:button>        
-
+        </p:button>
+                
+        <p:commandButton id="showEntityListPageHelpFragmentButton" icon="ui-icon-help" styleClass="actionButtonRight" onclick="PF('showEntityListPageHelpFragmentPanelWidget').toggle()" rendered="#{displayShowEntityListPageHelpFragmentButton}">
+            <p:tooltip for="showEntityListPageHelpFragmentButton" value="Toggle help information for this entity"/>
+        </p:commandButton>
+        
         <p:commandButton id="#{entityTypeName}NoOp" style="visibility:hidden" value="NoOp"/>
         <p:defaultCommand target="#{entityTypeName}NoOp"/>
     </div>
