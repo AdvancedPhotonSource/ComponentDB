@@ -75,7 +75,13 @@ public class TravelerBean implements Serializable {
             logger.error(error);
         }
     }
-
+    
+    /**
+     * Checks for property value and displays proper error message when null.
+     * Used to determine if a function should execute. 
+     * 
+     * @return boolean that determines if function should execute. 
+     */
     private boolean checkPropertyValue() {
         if (propertyValue != null) {
             return true;
@@ -86,6 +92,13 @@ public class TravelerBean implements Serializable {
         }
     }
 
+    /**
+     * Checks for template and displays error message when null.
+     * Used to determine if a function should execute. 
+     * 
+     * @param template Template variable that needs to be checked. 
+     * @return boolean that determines if function should execute.  
+     */
     private boolean checkSelectedTemplate(Form template) {
         if (template != null) {
             return true;
@@ -95,7 +108,14 @@ public class TravelerBean implements Serializable {
             return false;
         }
     }
-
+    
+    /**
+     * Creates a traveler template or Form. 
+     * Uses traveler API to create a traveler template or Form. Assigns the newly created id with property and saves. 
+     * 
+     * @param entityController controller for the entity currently being edited by the user. 
+     * @param onSuccessCommand Remote command to execute only on successful completion. 
+     */
     public void createTravelerTemplate(CdbEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
 
@@ -118,6 +138,13 @@ public class TravelerBean implements Serializable {
         }
     }
 
+    /**
+     * Links to an existing traveler template. 
+     * Uses an traveler template or Form fetched from traveler web service to assign id to property value and saves. 
+     * 
+     * @param entityController controller for the entity currently being edited by the user. 
+     * @param onSuccessCommand Remote command to execute only on successful completion. 
+     */
     public void linkTravelerTemplate(CdbEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
@@ -128,6 +155,11 @@ public class TravelerBean implements Serializable {
         }
     }
 
+    /**
+     * Removes the id associated with template property. 
+     * 
+     * @param onSuccessCommand Remote command to execute only on successful completion. 
+     */
     public void unlinkTravelerTemplate(String onSuccessCommand) {
         if (checkPropertyValue()) {
             travelerTemplateTitle = "";
@@ -136,11 +168,23 @@ public class TravelerBean implements Serializable {
         }
     }
 
+    /**
+     * Generates a (traveler template)/form view URL using id and CDB properties. 
+     * 
+     * @param formId traveler template or form id to generate URL for. 
+     * @return generated URL to traveler web application.
+     */
     public String getTravelerTemplateUrl(String formId) {
         String travelerTemplateUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TEMPLATE_PATH;
         return travelerTemplateUrl.replace("FORM_ID", formId);
     }
 
+    /**
+     * Generates a (traveler instance)/traveler view URL using id and CDB properties. 
+     * Uses currentTravlerInstance variable and its ID along with CDB properties to generate URL.
+     * 
+     * @return generated URL to traveler web application.
+     */
     public String getCurrentTravelerInstanceUrl() {
         if (currentTravelerInstance != null) {
             String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_PATH;
@@ -149,7 +193,13 @@ public class TravelerBean implements Serializable {
         return "";
 
     }
-
+    
+    /**
+     * Generates a (traveler instance)/traveler configuration URL using id and CDB properties. 
+     * Uses currentTravlerInstance variable and its ID along with CDB properties to generate URL.
+     * 
+     * @return generated configuration URL to traveler web application.
+     */
     public String getCurrentTravelerInstanceConfigUrl() {
         if (currentTravelerInstance != null) {
             String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH;
@@ -158,6 +208,12 @@ public class TravelerBean implements Serializable {
         return "";
     }
 
+    /**
+     * Gets a string representation of status stored in traveler db.  
+     * Uses currentTravelerInstance variable and its status to generate string status. 
+     * 
+     * @return string representation of status. 
+     */
     public String getCurrentTravelerStatus() {
         if (currentTravelerInstance != null) {
             String status = currentTravelerInstance.getStatus() + "";
@@ -179,6 +235,13 @@ public class TravelerBean implements Serializable {
         return "";
     }
 
+    /**
+     * Determines if the current owner owns the traveler instance.
+     * Uses currentTravlerInstance to determine if current user owns it.
+     * Currently, the traveler could only be configured by user who owns it. 
+     * 
+     * @return boolean, if user can configure the traveler instance. 
+     */
     public boolean getCurrentTravelerConfigPermission() {
         if (currentTravelerInstance != null) {
             String travelerUser = currentTravelerInstance.getCreatedBy();
@@ -189,6 +252,15 @@ public class TravelerBean implements Serializable {
         return false;
     }
 
+    /**
+     * Gets a (traveler instance)/traveler title. 
+     * Uses the traveler web API to get a title. 
+     * Default text is returned if fetch fails. 
+     * returned value is used for a link that user may click to get to traveler.
+     * 
+     * @param propertyValue value of propertyValue holds an id to a traveler instance. 
+     * @return String that will be displayed to user on link to traveler instance.
+     */
     public String getTravelerInstanceTitle(PropertyValue propertyValue) {
         if (propertyValue.getDisplayValue() != null) {
             return propertyValue.getDisplayValue();
@@ -205,10 +277,11 @@ public class TravelerBean implements Serializable {
 
     }
 
-    public void setPropertyValue(PropertyValue propertyValue) {
-        this.propertyValue = propertyValue;
-    }
-
+    /**
+     * Determines all entities that need to have (traveler templates)/forms loaded
+     * 
+     * @param entityController controller for the entity currently being edited by the user. 
+     */
     public void loadEntityAvailableTemplateList(CdbEntityController entityController) {
         if (checkPropertyValue()) {
             availableTemplates = new ArrayList<>();
@@ -247,6 +320,12 @@ public class TravelerBean implements Serializable {
         }
     }
 
+    /**
+     * Check all property values for templates and call function that add each one. 
+     * 
+     * @param propertyValues List of properties for a specific entity.
+     * @param formList List of (traveler templates)/forms that will be displayed to the user. 
+     */
     private void loadPropertyTravelerTemplateList(List<PropertyValue> propertyValues, List<Form> formList) {
         for (PropertyValue curPropertyValue : propertyValues) {
             // Check that they use the traveler template handler. 
@@ -257,7 +336,13 @@ public class TravelerBean implements Serializable {
             }
         }
     }
-
+    
+    /**
+     * Load the form from web service using its ID and add to list. 
+     * 
+     * @param formId id of the (traveler template)/form to fetch from web service
+     * @param formList List of (traveler templates)/forms that will be displayed to the user. 
+     */
     private void addFormFromPropertyValue(String formId, List<Form> formList) {
         if (formId == null || formId.equals("")) {
             return;
@@ -269,7 +354,13 @@ public class TravelerBean implements Serializable {
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
     }
-
+    
+    /**
+     * Create a traveler instance based on the currently selected template and entered title. 
+     * 
+     * @param entityController controller for the entity currently being edited by the user. 
+     * @param onSuccessCommand Remote command to execute only on successful completion
+     */
     public void createTravelerInstance(CdbEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
@@ -302,7 +393,13 @@ public class TravelerBean implements Serializable {
             }
         }
     }
-
+    
+    /**
+     * Load information about the traveler instance property currently loaded. 
+     * Add progress information based on its information which will be displayed to user.
+     * 
+     * @param onSuccessCommand Remote command to execute only on successful completion 
+     */
     public void loadCurrentTravelerInstance(String onSuccessCommand) {
         if (checkPropertyValue()) {
             try {
@@ -320,7 +417,12 @@ public class TravelerBean implements Serializable {
             }
         }
     }
-
+    
+    /**
+     * Get a list of all (traveler templates)/forms for user to view. 
+     * 
+     * @param onSuccessCommand Remote command to execute only on successful completion
+     */
     public void loadTravelerTemplates(String onSuccessCommand) {
         try {
             travelerTemplates = travelerApi.getForms();
@@ -332,6 +434,9 @@ public class TravelerBean implements Serializable {
 
     }
 
+    /**
+     * Load information about the traveler template property currently loaded.  
+     */
     public void loadTravelerTemplateInformation() {
         if (propertyValue != null) {
             if (!propertyValue.getValue().equals("") || propertyValue.getDisplayValue() == null) {
@@ -346,6 +451,21 @@ public class TravelerBean implements Serializable {
             }
         }
 
+    }
+    
+    /**
+     * Function gets called when user selects traveler template to set the default traveler instance title.
+     */
+    public void updateTravelerInstanceTitleInputText() {
+        if (selectedTravelerInstanceTemplate != null) {
+            if (travelerInstanceTitleInputText != null) {
+                travelerInstanceTitleInputText.setValue(selectedTravelerInstanceTemplate.getTitle());
+            }
+        }
+    }
+    
+    public void setPropertyValue(PropertyValue propertyValue) {
+        this.propertyValue = propertyValue;
     }
 
     public String getTravelerTemplateTitle() {
@@ -401,14 +521,6 @@ public class TravelerBean implements Serializable {
 
     public HtmlInputText getTravelerInstanceTitleInputText() {
         return travelerInstanceTitleInputText;
-    }
-
-    public void updateTravelerInstanceTitleInputText() {
-        if (selectedTravelerInstanceTemplate != null) {
-            if (travelerInstanceTitleInputText != null) {
-                travelerInstanceTitleInputText.setValue(selectedTravelerInstanceTemplate.getTitle());
-            }
-        }
     }
 
     public Integer getTravelerInstanceProgress() {
