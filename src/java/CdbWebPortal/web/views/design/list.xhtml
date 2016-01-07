@@ -5,16 +5,19 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../templates/designsViewTemplate.xhtml">
 
-    <ui:define name="pageTitle">: Design Catalog</ui:define>    
+    <ui:define name="pageTitle">: Design Library</ui:define>    
     <ui:define name="middleCenter">
 
         <div class="pageTitle">
-            <h1>Design Catalog</h1>
+            <h1>Design Library</h1>
         </div>
 
         <h:form id="viewDesignListForm">    
 
             <ui:param name="entityController" value="#{designController}"/>
+                                    
+            <ui:include src="private/designListPageHelpFragment.xhtml" />
+          
             <ui:include src="../common/private/commonListActionButtons.xhtml"/>
                         
             <h:panelGroup>  
