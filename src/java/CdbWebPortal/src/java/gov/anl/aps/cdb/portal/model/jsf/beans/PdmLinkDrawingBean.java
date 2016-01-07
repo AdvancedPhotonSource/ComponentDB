@@ -493,7 +493,11 @@ public class PdmLinkDrawingBean implements Serializable {
             showErrorMessage(ex.getMessage());
         }
     }
-
+    
+    /**
+     * Using the byte array containing the image, reload the streamed content to show user the image. 
+     * Prime faces allows use of streamed content only once per request. It needs to be reloaded. 
+     */
     public void reloadPdmLinkImageStreamedContent() {
         pdmLinkImage = null;
 
@@ -533,7 +537,10 @@ public class PdmLinkDrawingBean implements Serializable {
         }
 
     }
-
+    
+    /**
+     * Reset the variables related to the loaded drawing information. 
+     */
     public void resetDrawingInfo() {
         drawing = null;
         pdmLinkImage = null;
