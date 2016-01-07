@@ -304,6 +304,9 @@ INSERT INTO `setting_type` VALUES
 (304,'UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25'),
 (305,'UserGroup.List.FilterBy.Description','Filter for user group description.',NULL),
 (306,'UserGroup.List.FilterBy.Name','Filter for user group name.',NULL),
-(307,'UserSetting.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25');
+(307,'UserSetting.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25'),
+(308, 'Component.Help.ListPage.Display.Fragment', 'Display Help guide to the user on the main list page of the Component entity.', 'true'),
+(309, 'ComponentInstance.Help.ListPage.Display.Fragment', 'Display Help guide to the user on the main list page of the Component Instance entity.', 'true'),
+(310, 'Design.Help.ListPage.Display.Fragment', 'Display Help guide to the user on the main list page of the component entity.', 'true');
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;
