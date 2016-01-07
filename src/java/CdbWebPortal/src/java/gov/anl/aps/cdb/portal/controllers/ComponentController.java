@@ -100,7 +100,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private static final String FilterByPropertyValue4SettingTypeKey = "Component.List.FilterBy.PropertyValue4";
     private static final String FilterByPropertyValue5SettingTypeKey = "Component.List.FilterBy.PropertyValue5";
     private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
-
+    
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Component.Help.ListPage.Display.Fragment"; 
+    
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
@@ -147,7 +149,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private String filterByPropertyValue3 = null;
     private String filterByPropertyValue4 = null;
     private String filterByPropertyValue5 = null;
-
+    
     // There seems to be a problem with primefaces framework, as select one menu does not
     // recognize value change in some case, so we bind this variable to control the menu. 
     private SelectOneMenu componentTypeSelectOneMenu;
@@ -558,6 +560,8 @@ public class ComponentController extends CdbEntityController<Component, Componen
         filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
         filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
+        
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
 
         resetComponentPropertyTypeIdIndexMappings();
     }
@@ -606,6 +610,8 @@ public class ComponentController extends CdbEntityController<Component, Componen
         filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+        
+        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
 
         resetComponentPropertyTypeIdIndexMappings();
     }
@@ -674,6 +680,8 @@ public class ComponentController extends CdbEntityController<Component, Componen
         sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+        
+        sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
     }
 
@@ -1023,7 +1031,12 @@ public class ComponentController extends CdbEntityController<Component, Componen
     public void setFilterByPropertyValue5(String filterByPropertyValue5) {
         this.filterByPropertyValue5 = filterByPropertyValue5;
     }
-
+        
+    @Override
+    public String getDisplayListPageHelpFragmentSettingTypeKey() {
+        return DisplayListPageHelpFragmentSettingTypeKey;
+    }
+    
     public Boolean getDisplayComponentImages() {
         List<PropertyValue> componentImageList = getComponentImageList();
         return (componentImageList != null && !componentImageList.isEmpty());

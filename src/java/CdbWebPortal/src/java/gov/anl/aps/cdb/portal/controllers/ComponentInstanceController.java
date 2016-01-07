@@ -93,6 +93,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
     private static final String FilterByTagSettingTypeKey = "ComponentInstance.List.FilterBy.Tag";
     private static final String FilterByQrIdSettingTypeKey = "ComponentInstance.List.FilterBy.QrId";
     private static final String FilterBySerialNumberSettingTypeKey = "ComponentInstance.List.FilterBy.SerialNumber";
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "ComponentInstance.Help.ListPage.Display.Fragment"; 
 
     private static final Logger logger = Logger.getLogger(ComponentInstanceController.class.getName());
 
@@ -473,6 +474,8 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
         filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
+        
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
 
     }
 
@@ -523,6 +526,8 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+        
+        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
 
         resetComponentInstancePropertyTypeIdIndexMappings();
 
@@ -595,6 +600,8 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+        
+        sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
     }
 
@@ -846,7 +853,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
     public void setDisplayPropertyTypeId5(Integer displayPropertyTypeId5) {
         this.displayPropertyTypeId5 = displayPropertyTypeId5;
     }
-
+    
     public String getFilterByPropertyValue1() {
         return filterByPropertyValue1;
     }
@@ -885,6 +892,11 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
 
     public void setFilterByPropertyValue5(String filterByPropertyValue5) {
         this.filterByPropertyValue5 = filterByPropertyValue5;
+    }
+    
+    @Override
+    public String getDisplayListPageHelpFragmentSettingTypeKey() {
+        return DisplayListPageHelpFragmentSettingTypeKey;
     }
 
     public Integer getQrIdViewParam() {

@@ -73,7 +73,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Design.List.FilterBy.CreatedOnDateTime";
     private static final String FilterByLastModifiedByUserSettingTypeKey = "Design.List.FilterBy.LastModifiedByUser";
     private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Design.List.FilterBy.LastModifiedOnDateTime";
-
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Design.Help.ListPage.Display.Fragment"; 
+    
     private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
     private DataTable designPropertyValueListDataTable = null;
@@ -366,6 +367,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
         filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
         filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
+        
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
     }
 
     @Override
@@ -392,6 +395,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+        
+        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
 
     }
 
@@ -419,6 +424,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+        
+        sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
     }
 
     @Override
@@ -498,6 +505,11 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             selectDesignCandidateList = getAvailableItems(); 
         }
         return selectDesignCandidateList;
+    }
+    
+    @Override
+    public String getDisplayListPageHelpFragmentSettingTypeKey() {
+        return DisplayListPageHelpFragmentSettingTypeKey;
     }
     
     public List<Design> completeDesign(String query){

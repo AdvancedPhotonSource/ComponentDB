@@ -124,7 +124,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected Boolean selectDisplayLastModifiedByUser = false;
     protected Boolean selectDisplayLastModifiedOnDateTime = false;
 
-    protected String selectFilterById = null;    
+    protected String selectFilterById = null;
     protected String selectFilterByName = null;
     protected String selectFilterByDescription = null;
     protected String selectFilterByOwnerUser = null;
@@ -133,6 +133,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected String selectFilterByCreatedOnDateTime = null;
     protected String selectFilterByLastModifiedByUser = null;
     protected String selectFilterByLastModifiedOnDateTime = null;
+
+    protected Boolean displayListPageHelpFragment = true;
 
     protected String breadcrumbViewParam = null;
     protected String breadcrumbObjectIdViewParam = null;
@@ -1622,7 +1624,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String getFilterById() {
         return filterById;
     }
-    
+
     public void setFilterByName(String filterByName) {
         this.filterByName = filterByName;
     }
@@ -1685,6 +1687,33 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public void setFilterByLastModifiedOnDateTime(String filterByLastModifiedOnDateTime) {
         this.filterByLastModifiedOnDateTime = filterByLastModifiedOnDateTime;
+    }
+
+    public Boolean getDisplayListPageHelpFragment() {
+        return displayListPageHelpFragment;
+    }
+
+    public void setDisplayListPageHelpFragment(Boolean displayListPageHelpFragment) {
+        this.displayListPageHelpFragment = displayListPageHelpFragment;
+    }
+
+    public String getDisplayListPageHelpFragmentSettingTypeKey() {
+        return null;
+    }
+
+    public void saveDisplayListPageHelpFragmentActionListener() {
+        logger.debug("Saving settings");
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser != null) {
+            logger.debug("Updating display list settings for " + this.getEntityTypeName() + "Entity");
+            sessionUser.setUserSettingValue(getDisplayListPageHelpFragmentSettingTypeKey(), displayListPageHelpFragment);
+            settingsTimestamp = new Date();
+            SessionUtility.addInfoMessage("Saved", "Saved setting for displaying help info for " + this.getEntityTypeName() + " entity.");
+        } else {
+            String error = "The setting for showing help infomation could not be saved.";
+            SessionUtility.addErrorMessage("Error", error);
+            logger.error(error);
+        }
     }
 
     /**
@@ -1794,7 +1823,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void setSelectFilterById(String selectFilterById) {
         this.selectFilterById = selectFilterById;
     }
-    
+
     public String getSelectFilterByName() {
         return selectFilterByName;
     }
