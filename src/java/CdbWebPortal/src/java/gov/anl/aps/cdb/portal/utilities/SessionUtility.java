@@ -60,6 +60,7 @@ public class SessionUtility {
 
     public static void setUser(Object user) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        sessionMap.remove(USER_KEY); 
         sessionMap.put(USER_KEY, user);
     }
 
