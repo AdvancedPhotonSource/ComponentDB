@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -167,7 +168,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
         if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
         }
-
+       
         logger.debug("Updating user " + userInfo.getUsername());
         List<UserSetting> userSettingList = userInfo.getUserSettingList();
         for (UserSetting userSetting : userSettingList) {
@@ -202,7 +203,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
             user.setUserSettingList(sessionUser.getUserSettingList());
             setCurrent(user);
             update();
-            SessionUtility.setUser(user);
+            SessionUtility.setUser(current); 
         }
 
     }
