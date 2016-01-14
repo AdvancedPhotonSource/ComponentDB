@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
     <ui:param name="breadcrumb" value="#{componentInstanceController.currentViewId}"/>    
@@ -24,9 +25,22 @@
 
         <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>
         <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
+        <p:column>
+            <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
+            <p:commandLink id="componentInstanceComponentPropertyValueHistoryListViewButton" 
+                           onstart="PF('loadingDialog').show();"
+                           oncomplete="PF('componentInstanceLocationHistoryListDialogWidget').show()" 
+                           styleClass="ui-icon ui-icon-history" 
+                           title="View history."
+                           update="@form">
+                <f:setPropertyActionListener target="#{componentInstanceLocationHistoryController.selectedComponentInstance}" 
+                                             value="#{componentInstanceObject}" />
 
-        <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
+                <p:tooltip for="componentInstanceComponentPropertyValueHistoryListViewButton" value="View location value history."/>
+            </p:commandLink>
+        </p:column>
         <h:outputText id="location" value="#{componentInstanceObject.location.name}" title="Location" styleClass="entityDataEmphasizedText"/>
+
 
         <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
         <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}" title="Location Details" styleClass="entityDataText"/>
@@ -42,7 +56,7 @@
         </ui:include>
 
     </p:panelGrid>
-
+    
 </ui:composition>
 
 
