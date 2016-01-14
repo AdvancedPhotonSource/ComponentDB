@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column sortBy="#{componentInstanceLocationHistoryObject.id}" headerText="Id"
+              rendered="#{componentInstanceLocationHistoryController.displayId}">
+        <h:outputText value="#{componentInstanceLocationHistoryObject.id}" />
+    </p:column>
+    
+    <p:column sortBy="#{componentInstanceLocationHistoryObject.locationDetails}" headerText="Location Details"
+              filterBy="#{componentInstanceLocationHistoryObject.locationDetails}" filterMatchMode="contains"
+              filterValue="#{componentInstanceLocationHistoryController.filterByLocationDetails}"
+              rendered="#{componentInstanceLocationHistoryController.displayLocationDetails}">
+        <h:outputText value="#{componentInstanceLocationHistoryObject.locationDetails}" />
+    </p:column>
+    
+    <p:column sortBy="#{componentInstanceLocationHistoryObject.location.name}" headerText="Location"
+              filterBy="#{componentInstanceLocationHistoryObject.location.name}" filterMatchMode="contains"
+              filterValue="#{componentInstanceLocationHistoryController.filterByLocation}"
+              rendered="#{componentInstanceLocationHistoryController.displayLocation}">
+        <h:outputText value="#{componentInstanceLocationHistoryObject.location.name}" />
+    </p:column>
+    
+    <p:column sortBy="#{componentInstanceLocationHistoryObject.enteredByUser.username}" headerText="Entered By"
+              filterBy="#{componentInstanceLocationHistoryObject.enteredByUser.username}" filterMatchMode="contains"
+              filterValue="#{componentInstanceLocationHistoryController.filterByEnteredByUser}"
+              rendered="#{componentInstanceLocationHistoryController.displayEnteredByUser}">
+        <h:outputText value="#{componentInstanceLocationHistoryObject.enteredByUser.username}" />
+    </p:column>
+    
+    <p:column sortBy="#{componentInstanceLocationHistoryObject.enteredOnDateTime}" headerText="Entered On"
+              filterBy="#{componentInstanceLocationHistoryObject.enteredOnDateTime}" filterMatchMode="contains"
+              filterValue="#{componentInstanceLocationHistoryController.filterByEnteredOnDateTime}"
+              rendered="#{componentInstanceLocationHistoryController.displayEnteredOnDateTime}">
+        <h:outputText value="#{componentInstanceLocationHistoryObject.enteredOnDateTime}"/>
+    </p:column>
+
+</ui:composition>
+
+
