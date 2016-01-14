@@ -17,7 +17,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -202,10 +201,15 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
             UserInfo user = getEntity(sessionUser.getId());
             user.setUserSettingList(sessionUser.getUserSettingList());
             setCurrent(user);
-            update();
-            SessionUtility.setUser(current); 
+            update();    
         }
-
+    }
+    
+    @Override
+    public String update(){
+        String result = super.update();
+        SessionUtility.setUser(current); 
+        return result; 
     }
 
     public String prepareSessionUserEdit(String viewPath) {
