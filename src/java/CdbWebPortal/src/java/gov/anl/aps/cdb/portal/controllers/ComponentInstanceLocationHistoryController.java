@@ -11,6 +11,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory;
 import gov.anl.aps.cdb.portal.model.db.beans.ComponentInstanceLocationHistoryDbFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -57,6 +58,9 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
     private String filterByEnteredOnDateTime = null;
     private String filterByLocation = null;
     private String filterByLocationDetails = null;
+    
+    private ComponentInstance selectedComponentInstance = null;
+    private List<ComponentInstanceLocationHistory> selectedComponentInstanceHistoryList; 
 
     private static final Logger logger = Logger.getLogger(ComponentInstanceLocationHistoryController.class.getName());
 
@@ -173,6 +177,88 @@ public class ComponentInstanceLocationHistoryController extends CdbEntityControl
         filterByLocationDetails = null;
     }
 
+    public List<ComponentInstanceLocationHistory> getSelectedComponentInstanceHistoryList() {
+        return selectedComponentInstanceHistoryList;
+    }
+
+    public void setSelectedComponentInstance(ComponentInstance selectedComponentInstance) {
+        this.selectedComponentInstance = selectedComponentInstance;
+        this.selectedComponentInstanceHistoryList = selectedComponentInstance.getComponentInstanceLocationHistoryList(); 
+    }
+
+    public ComponentInstance getSelectedComponentInstance() {
+        return selectedComponentInstance;
+    }
+    
+    @Override
+    public Boolean getDisplayId(){
+        return displayId;
+    }
+
+    public Boolean getDisplayEnteredByUser() {
+        return displayEnteredByUser;
+    }
+
+    public Boolean getDisplayEnteredOnDateTime() {
+        return displayEnteredOnDateTime;
+    }
+
+    public Boolean getDisplayLocation() {
+        return displayLocation;
+    }
+
+    public Boolean getDisplayLocationDetails() {
+        return displayLocationDetails;
+    }
+
+    public String getFilterByEnteredByUser() {
+        return filterByEnteredByUser;
+    }
+
+    public String getFilterByEnteredOnDateTime() {
+        return filterByEnteredOnDateTime;
+    }
+
+    public String getFilterByLocation() {
+        return filterByLocation;
+    }
+
+    public String getFilterByLocationDetails() {
+        return filterByLocationDetails;
+    }
+
+    public void setDisplayEnteredByUser(Boolean displayEnteredByUser) {
+        this.displayEnteredByUser = displayEnteredByUser;
+    }
+
+    public void setDisplayEnteredOnDateTime(Boolean displayEnteredOnDateTime) {
+        this.displayEnteredOnDateTime = displayEnteredOnDateTime;
+    }
+
+    public void setDisplayLocation(Boolean displayLocation) {
+        this.displayLocation = displayLocation;
+    }
+
+    public void setDisplayLocationDetails(Boolean displayLocationDetails) {
+        this.displayLocationDetails = displayLocationDetails;
+    }
+
+    public void setFilterByEnteredByUser(String filterByEnteredByUser) {
+        this.filterByEnteredByUser = filterByEnteredByUser;
+    }
+
+    public void setFilterByEnteredOnDateTime(String filterByEnteredOnDateTime) {
+        this.filterByEnteredOnDateTime = filterByEnteredOnDateTime;
+    }
+
+    public void setFilterByLocation(String filterByLocation) {
+        this.filterByLocation = filterByLocation;
+    }
+
+    public void setFilterByLocationDetails(String filterByLocationDetails) {
+        this.filterByLocationDetails = filterByLocationDetails;
+    }
+    
     /**
      * Converter class for component instance location history objects.
      */
