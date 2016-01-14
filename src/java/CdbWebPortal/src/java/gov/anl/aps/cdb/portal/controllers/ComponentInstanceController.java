@@ -28,6 +28,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -306,6 +307,20 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         componentInstanceFacade.checkUniqueness(componentInstance);
         EntityInfo entityInfo = componentInstance.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
+        ComponentInstance originalComponentInstance = componentInstanceFacade.findById(componentInstance.getId());
+        
+        // Check location change
+        Location originalLocation = originalComponentInstance.getLocation(); 
+        Location newLocation = componentInstance.getLocation(); 
+        
+        if (originalLocation != null && ObjectUtility.equals(originalLocation, newLocation) == false) {
+            logger.debug("Location has been changed from: " + originalLocation.getName()
+                + "to: " + newLocation.getName());
+
+            ComponentInstanceLocationHistory newLocationHistory = new ComponentInstanceLocationHistory(); 
+            newLocationHistory.updateFromComponentInstance(originalComponentInstance, entityInfo);
+            componentInstance.getComponentInstanceLocationHistoryList().add(newLocationHistory);
+         }
 
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = componentInstanceFacade.findById(componentInstance.getId()).getPropertyValueList();
