@@ -57,7 +57,7 @@ public class ComponentInstanceLocationHistory extends CdbEntity {
     private UserInfo enteredByUser;
     @JoinColumn(name = "location_id", referencedColumnName = "id")
     @ManyToOne
-    private ComponentInstance location;
+    private Location location;
     @JoinColumn(name = "component_instance_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private ComponentInstance componentInstance;
@@ -107,11 +107,11 @@ public class ComponentInstanceLocationHistory extends CdbEntity {
         this.enteredByUser = enteredByUser;
     }
 
-    public ComponentInstance getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(ComponentInstance location) {
+    public void setLocation(Location location) {
         this.location = location;
     }
 
@@ -144,5 +144,13 @@ public class ComponentInstanceLocationHistory extends CdbEntity {
     public String toString() {
         return "ComponentInstanceLocationHistory[ id=" + id + " ]";
     }
-
+    
+    public void updateFromComponentInstance(ComponentInstance componentInstance, EntityInfo entityInfo) {
+        this.componentInstance = componentInstance; 
+        this.location = componentInstance.getLocation();
+        this.locationDetails = componentInstance.getLocationDetails(); 
+        this.enteredByUser = entityInfo.getLastModifiedByUser(); 
+        this.enteredOnDateTime = entityInfo.getLastModifiedOnDateTime(); 
+    }
+    
 }
