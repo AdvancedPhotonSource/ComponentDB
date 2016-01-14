@@ -313,12 +313,12 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         Location originalLocation = originalComponentInstance.getLocation(); 
         Location newLocation = componentInstance.getLocation(); 
         
-        if (originalLocation != null && ObjectUtility.equals(originalLocation, newLocation) == false) {
+        if (originalLocation != null) {
             logger.debug("Location has been changed from: " + originalLocation.getName()
                 + "to: " + newLocation.getName());
 
             ComponentInstanceLocationHistory newLocationHistory = new ComponentInstanceLocationHistory(); 
-            newLocationHistory.updateFromComponentInstance(originalComponentInstance, entityInfo);
+            newLocationHistory.updateFromComponentInstance(originalComponentInstance);
             componentInstance.getComponentInstanceLocationHistoryList().add(newLocationHistory);
          }
 

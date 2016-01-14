@@ -145,12 +145,12 @@ public class ComponentInstanceLocationHistory extends CdbEntity {
         return "ComponentInstanceLocationHistory[ id=" + id + " ]";
     }
     
-    public void updateFromComponentInstance(ComponentInstance componentInstance, EntityInfo entityInfo) {
+    public void updateFromComponentInstance(ComponentInstance componentInstance) {
         this.componentInstance = componentInstance; 
         this.location = componentInstance.getLocation();
         this.locationDetails = componentInstance.getLocationDetails(); 
-        this.enteredByUser = entityInfo.getLastModifiedByUser(); 
-        this.enteredOnDateTime = entityInfo.getLastModifiedOnDateTime(); 
+        this.enteredByUser = componentInstance.getEntityInfo().getLastModifiedByUser(); 
+        this.enteredOnDateTime = componentInstance.getEntityInfo().getLastModifiedOnDateTime(); 
     }
     
 }
