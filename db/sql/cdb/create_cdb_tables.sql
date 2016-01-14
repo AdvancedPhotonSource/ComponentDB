@@ -753,7 +753,7 @@ CREATE TABLE `component_instance_location_history` (
   KEY `component_instance_location_k1` (`component_instance_id`),
   CONSTRAINT `component_instance_location_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `component_instance_location_k2` (`location_id`),
-  CONSTRAINT `component_instance_location_fk2` FOREIGN KEY (`location_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `component_instance_location_fk2` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
   KEY `component_instance_location_k3` (`entered_by_user_id`),
   CONSTRAINT `component_instance_location_fk3` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
