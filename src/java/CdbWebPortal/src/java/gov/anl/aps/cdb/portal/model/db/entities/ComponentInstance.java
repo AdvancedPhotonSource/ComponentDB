@@ -85,10 +85,8 @@ public class ComponentInstance extends CdbEntity {
     private List<PropertyValue> propertyValueList;
     @ManyToMany(mappedBy = "componentInstanceList")
     private List<DesignElement> designElementList;
-    @OneToMany(mappedBy = "location")
-    private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentInstance")
-    private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList1;
+    private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
@@ -191,15 +189,6 @@ public class ComponentInstance extends CdbEntity {
 
     public void setComponentInstanceLocationHistoryList(List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList) {
         this.componentInstanceLocationHistoryList = componentInstanceLocationHistoryList;
-    }
-
-    @XmlTransient
-    public List<ComponentInstanceLocationHistory> getComponentInstanceLocationHistoryList1() {
-        return componentInstanceLocationHistoryList1;
-    }
-
-    public void setComponentInstanceLocationHistoryList1(List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList1) {
-        this.componentInstanceLocationHistoryList1 = componentInstanceLocationHistoryList1;
     }
 
     @Override
@@ -440,7 +429,6 @@ public class ComponentInstance extends CdbEntity {
         cloned.designElementList = null;
         cloned.logList = null;
         cloned.componentInstanceLocationHistoryList = null;
-        cloned.componentInstanceLocationHistoryList1 = null;
         cloned.imagePropertyList = null;
         cloned.propertyValueList = null;
         cloned.entityInfo = null;

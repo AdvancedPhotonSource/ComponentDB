@@ -84,7 +84,9 @@ public class Location extends CdbEntity {
     private List<ComponentInstance> componentInstanceList;
     @OneToMany(mappedBy = "location")
     private List<DesignElement> designElementList;
-
+    @OneToMany(mappedBy = "location")
+    private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
+    
     public Location() {
     }
 
@@ -156,6 +158,15 @@ public class Location extends CdbEntity {
         this.parentLocationList = parentLocationList;
     }
 
+    @XmlTransient
+    public List<ComponentInstanceLocationHistory> getComponentInstanceLocationHistoryList() {
+        return componentInstanceLocationHistoryList;
+    }
+
+    public void setComponentInstanceLocationHistoryList(List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList) {
+        this.componentInstanceLocationHistoryList = componentInstanceLocationHistoryList;
+    }
+    
     public LocationType getLocationType() {
         return locationType;
     }
