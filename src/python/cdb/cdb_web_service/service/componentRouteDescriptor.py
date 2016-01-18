@@ -128,6 +128,24 @@ class ComponentRouteDescriptor:
                 'action' : 'addComponentInstanceProperty', 
                 'method' : ['POST']
             },
+
+            # Update component instance location
+            {
+                'name' : 'updateComponentInstanceLocation',
+                'path' : '%s/componentInstances/:(componentInstanceId)/location/:(locationId)' % contextRoot,
+                'controller' : componentSessionController,
+                'action' : 'updateComponentInstanceLocation',
+                'method' : ['PUT']
+            },
+
+            # Get component instance location history
+            {
+                'name' : 'getComponentInstanceLocationHistory',
+                'path' : '%s/componentInstances/:(componentInstanceId)/locationHistory' % contextRoot,
+                'controller' : componentController,
+                'action' : 'getComponentInstancelocationHistoryByComponentInstanceId',
+                'method' : ['GET']
+            },
         ]
        
         return routes
