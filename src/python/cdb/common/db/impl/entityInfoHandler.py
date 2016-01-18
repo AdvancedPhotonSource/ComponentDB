@@ -66,3 +66,9 @@ class EntityInfoHandler(CdbDbEntityHandler):
         dbEntityInfo = EntityInfo(created_by_user_id=createdByUserId, owner_user_id=ownerUserId, owner_user_group_id=ownerGroupId, created_on_date_time=createdOnDateTime, last_modified_by_user_id=lastModifiedByUserId, last_modified_on_date_time=lastModifiedOnDateTime, is_group_writeable=self.toIntegerFromBoolean(isGroupWriteable))
         return dbEntityInfo
 
+    def updateEntityInfo(self, session, dbEntityInfo, lastModifiedUserId):
+        dbLastModifiedByUserId = self.userInfoHandler.findUserInfoById(session, lastModifiedUserId)
+        lastModifiedOnDateTime = datetime.datetime.now()
+        dbEntityInfo.lastModifiedByUserInfo = dbLastModifiedByUserId
+        dbEntityInfo.last_modified_on_date_time = lastModifiedOnDateTime
+        return dbEntityInfo
