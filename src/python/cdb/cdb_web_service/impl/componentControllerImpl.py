@@ -36,7 +36,10 @@ class ComponentControllerImpl(CdbObjectManager):
         return self.componentDbApi.getComponentByModelNumber(modelNumber)
 
     def getComponentInstanceById(self, id):
-        return self.componentDbApi.getComponentInstanceById(id) 
+        return self.componentDbApi.getComponentInstanceById(id)
+
+    def getComponentInstanceLocatonHistoryByComponentInstanceId(self, componentInstanceId):
+        return self.componentDbApi.getComponentInstanceLocationHistoryByComponentInstanceId(componentInstanceId)
 
     def addComponent(self, name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description):
         return self.componentDbApi.addComponent(name, modelNumber, componentTypeId, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, description)
@@ -46,3 +49,6 @@ class ComponentControllerImpl(CdbObjectManager):
 
     def addComponentInstanceProperty(self, componentInstanceId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable):
         return self.componentDbApi.addComponentInstancePropertyByTypeId(componentInstanceId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
+
+    def updateComponentInstanceLocation(self, componentInstanceId, locationId, locationDetails, enteredByUserId):
+        return self.componentDbApi.updateComponentInstanceLocationByLocationId(componentInstanceId, locationId, locationDetails, enteredByUserId)
