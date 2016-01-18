@@ -7,6 +7,7 @@ from cdb.common.db.entities.component import Component
 from cdb.common.db.entities.componentProperty import ComponentProperty
 from cdb.common.db.entities.componentInstance import ComponentInstance
 from cdb.common.db.entities.componentInstanceProperty import ComponentInstanceProperty
+from cdb.common.db.entities.componentInstanceLocationHistory import ComponentInstanceLocationHistory
 from cdb.common.db.entities.design import Design
 from cdb.common.db.entities.designProperty import DesignProperty
 from cdb.common.db.entities.designElement import DesignElement
@@ -44,6 +45,11 @@ CDB_DB_ENTITY_MAP = {
     'component_instance_property' : (ComponentInstanceProperty, {
         'componentInstance' : { 'parentEntity' : ComponentInstance, 'lazy' : True}, 
         'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
+    }),
+    'component_instance_location_history' : (ComponentInstanceLocationHistory, {
+        'componentInstance' : {'parentEntity' : ComponentInstance, 'lazy' : True},
+        'userInfo' : {'parentEntity' : UserInfo, 'lazy' : False},
+        'location' : {'parentEntity' : Location, 'lazy' : False}
     }),
     'component_property' : (ComponentProperty, {
         'component' : { 'parentEntity' : Component, 'lazy' : True }, 
