@@ -49,6 +49,13 @@ class ComponentController(CdbController):
     @cherrypy.expose
     @CdbController.execute
     def getComponentInstanceById(self, id, **kwargs):
-        if  not id:
+        if not id:
             raise InvalidRequest('Invalid id provided.')
         return self.componentControllerImpl.getComponentInstanceById(id).getFullJsonRep()
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getComponentInstancelocationHistoryByComponentInstanceId(self, componentInstanceId):
+        if not componentInstanceId:
+            raise InvalidRequest('Invalid component instance id provided')
+        return self.listToJson(self.componentControllerImpl.getComponentInstanceLocatonHistoryByComponentInstanceId(componentInstanceId))
