@@ -12,6 +12,7 @@ from cdb.common.objects.componentProperty import ComponentProperty
 from cdb.common.objects.componentInstanceProperty import ComponentInstanceProperty
 from cdb.common.objects.componentType import ComponentType
 from cdb.common.objects.componentTypeCategory import ComponentTypeCategory
+from cdb.common.objects.componentInstanceLocationHistory import ComponentInstanceLocationHistory
 
 class ComponentRestApi(CdbRestApi):
     
@@ -73,6 +74,14 @@ class ComponentRestApi(CdbRestApi):
         url = '%s/componentInstanceById/%s' % (self.getContextRoot(), id)
         responseData = self.sendRequest(url=url, method='GET')
         return ComponentInstance(responseData)
+
+    @CdbRestApi.execute
+    def getComponentInstanceLocationHistoryByComponentInstnaceId(self, componentInstanceId):
+        if componentInstanceId is None:
+            raise InvalidRequest('Component Instance id must be provided')
+        url= '%s/componentInstances/%s/locationHistory' % (self.getContextRoot(), componentInstanceId)
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, ComponentInstanceLocationHistory)
 
     @CdbRestApi.execute
     def addComponent(self, name, modelNumber, componentTypeId, ownerUserId, ownerGroupId, isGroupWriteable, description):
@@ -152,6 +161,20 @@ class ComponentRestApi(CdbRestApi):
 
         responseData = self.sendSessionRequest(url=url, method='POST', contentType='application/x-www-form-urlencoded')
         return ComponentInstanceProperty(responseData)
+
+    def updateComponentInstanceLocation(self, componentInstanceId, locationId, locationDetails):
+        if componentInstanceId is None:
+            raise InvalidRequest('Component instance id must be provided.')
+        if locationId is None:
+            raise InvalidRequest('Location id must be provided.')
+
+        url = '%s/componentInstances/%s/location/%s' % (self.getContextRoot(), componentInstanceId, locationId)
+
+        if locationDetails:
+            url += '?locationDetails=%s' % Encoder.encode(locationDetails)
+
+        responseData = self.sendSessionRequest(url=url, method='PUT', contentType='application/x-www-form-urlencoded')
+        return ComponentInstance(responseData)
 
 #######################################################################
 # Testing.
