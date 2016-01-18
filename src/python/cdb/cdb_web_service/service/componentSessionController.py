@@ -75,3 +75,14 @@ class ComponentSessionController(CdbSessionController):
 
         return self.componentControllerImpl.addComponentInstanceProperty(componentInstanceId, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable).getFullJsonRep()
 
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def updateComponentInstanceLocation(self, componentInstanceId, locationId, **kwargs):
+        locationDetails = Encoder.decode(kwargs.get('locationDetails'))
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        return self.componentControllerImpl.updateComponentInstanceLocation(componentInstanceId, locationId, locationDetails, enteredByUserId).getFullJsonRep()
