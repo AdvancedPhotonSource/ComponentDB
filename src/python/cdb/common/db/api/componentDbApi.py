@@ -6,6 +6,7 @@ from cdb.common.db.impl.componentHandler import ComponentHandler
 from cdb.common.db.impl.componentInstanceHandler import ComponentInstanceHandler
 from cdb.common.db.impl.componentPropertyHandler import ComponentPropertyHandler
 from cdb.common.db.impl.componentInstancePropertyHandler import ComponentInstancePropertyHandler
+from cdb.common.db.impl.componentInstanceLocationHistoryHandler import ComponentInstanceLocationHistoryHandler
 from cdb.common.db.impl.componentTypeHandler import ComponentTypeHandler
 from cdb.common.db.impl.componentTypeCategoryHandler import ComponentTypeCategoryHandler
 from cdb.common.db.impl.propertyTypeHandler import PropertyTypeHandler
@@ -20,6 +21,7 @@ class ComponentDbApi(CdbDbApi):
         self.componentTypeCategoryHandler = ComponentTypeCategoryHandler()
         self.componentTypeHandler = ComponentTypeHandler()
         self.componentInstanceHandler = ComponentInstanceHandler()
+        self.componentInstanceLocationHistoryHandler = ComponentInstanceLocationHistoryHandler()
         self.propertyTypeHandler = PropertyTypeHandler()
         self.propertyValueHandler = PropertyValueHandler()
         self.componentHandler = ComponentHandler()
@@ -143,6 +145,24 @@ class ComponentDbApi(CdbDbApi):
         dbPropertyValue = self.propertyValueHandler.updatePropertyValueById(session, propertyValueId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable)
         return dbPropertyValue.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def updateComponentInstanceLocationByLocationId(self, componentInstanceId, locationId, locationDetails, enteredByUserId, **kwargs):
+        session = kwargs['session']
+        dbComponentInstance = self.componentInstanceHandler.findComponentInstanceById(session, componentInstanceId)
+
+        # Make sure user can update component instance
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
+        self.entityInfoHandler.checkEntityIsWriteable(dbComponentInstance.entityInfo, dbUserInfo, self.adminGroupName)
+
+        dbComponentInstance = self.componentInstanceHandler.updateComponentInstanceLocation(session, componentInstanceId, locationId, locationDetails, enteredByUserId)
+        return dbComponentInstance.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getComponentInstanceLocationHistoryByComponentInstanceId(self, componentInstanaceId, **kwargs):
+        session = kwargs['session']
+        dbComponentInstanceLocationHistoryList = self.componentInstanceLocationHistoryHandler.getComponentInstanceLocationHistoryByComponentInstanceId(session, componentInstanaceId)
+        return self.toCdbObjectList(dbComponentInstanceLocationHistoryList)
+
 #######################################################################
 # Testing.
 if __name__ == '__main__':
@@ -191,3 +211,5 @@ if __name__ == '__main__':
     #print 'UPDATE COMPONENT INSTANCE PROPERTY'
     #print api.updateComponentInstancePropertyByValueId(componentInstanceId=50, propertyValueId=344, tag='mytag', value='B', units=None, description=None, enteredByUserId=4, isDynamic=False, isUserWriteable=False)
 
+    #print 'UPDATE COMPONENT INSTANCE LOCATION'
+    #print api.updateComponentInstanceLocationByLocationId(137, 41, 'API created this location', 26)
