@@ -8,7 +8,10 @@
 
 #
 # Backup DB (1st argument) and web app into specific backup directory (2nd argument)
-./sbin/cdb_backup_all.sh cdb backup/prd/cdb.all.20140507
+make backup
+# Alternatively run 
+#./sbin/cdb_backup_all.sh cdb backup/prd/cdb.all.20140507
+
 #
 
 #
@@ -17,13 +20,21 @@
 # ./sbin/cdb_backup_db.sh cdb backup/prd/cdb.db.20140507
 #
 
+
 #
-# Edit or remove populate files in the db backup directory. For example,
-# if setting_type table changed, copy new populate_setting_type.sql file from db/sql/cdb into
-# the db backup directory, and remove populate_user_setting.sql file from the
-# db backup directory. Note that this will result in user settings not being
-# preserved.
-#
+# Using the make backup command will create a backup directory outside of distribution
+# 
+cd ../backup/cdb/20160120/
+# Compare the files to the distribution by running the loop below 
+# NOTE: the user setting and setting_type will stay as intended by developer 
+# user settings will be wiped using the comparison below. 
+for f in `ls -c1 *.sql | grep -v setting_type | grep -v user_setting | grep -v backup `; do echo $f; diff $f ../../../dist/db/sql/cdb_dev/$f; done | more
+
+# Merge the desired files back into the distribution db/sql/cdb directory. 
+
+# Once merge is complete 
+make db 
+
 
 #
 # Create new database (1st argument) as the clone of the original, using
@@ -31,10 +42,12 @@
 ./sbin/cdb_create_db.sh cdb backup/prd/cdb.db.20140507
 #
 
+
 #
 # Configure webapp (this needs to be done only the first time particular db is
 # instantiated).
 #
+make configure-web-portal
 ./sbin/cdb_configure_webapp.sh cdb
 
 # 
@@ -48,5 +61,6 @@ make dist
 # 
 # Deploy webapp
 #
-./sbin/cdb_deploy_webapp.sh cdb
+make deploy-web-portal
+#./sbin/cdb_deploy_webapp.sh cdb
 
