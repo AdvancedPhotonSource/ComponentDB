@@ -1,6 +1,9 @@
 LOCK TABLES `design_property` WRITE;
 /*!40000 ALTER TABLE `design_property` DISABLE KEYS */;
 INSERT INTO `design_property` VALUES
+(2,1224),
+(7,1203),
+(7,1204),
 (13,136),
 (13,142),
 (13,445),
@@ -31,6 +34,21 @@ INSERT INTO `design_property` VALUES
 (66,1023),
 (67,1025),
 (68,1057),
-(69,1082);
+(69,1082),
+(72,1257),
+(72,1258),
+(73,1262),
+(73,1263),
+(73,1264),
+(73,1265),
+(74,1266),
+(74,1267),
+(74,1268),
+(74,1269),
+(75,1337),
+(76,1344),
+(77,1360),
+(78,1363),
+(79,1365);
 /*!40000 ALTER TABLE `design_property` ENABLE KEYS */;
 UNLOCK TABLES;

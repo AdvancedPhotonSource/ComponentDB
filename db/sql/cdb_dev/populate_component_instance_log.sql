@@ -24,6 +24,8 @@ INSERT INTO `component_instance_log` VALUES
 (57,34),
 (58,35),
 (59,36),
-(60,37);
+(60,37),
+(122,64),
+(122,65);
 /*!40000 ALTER TABLE `component_instance_log` ENABLE KEYS */;
 UNLOCK TABLES;

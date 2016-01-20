@@ -3,7 +3,6 @@ LOCK TABLES `design_element_log` WRITE;
 INSERT INTO `design_element_log` VALUES
 (441,61),
 (441,62),
-(442,63),
-(445,60);
+(442,63);
 /*!40000 ALTER TABLE `design_element_log` ENABLE KEYS */;
 UNLOCK TABLES;

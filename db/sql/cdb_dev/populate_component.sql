@@ -48,7 +48,7 @@ INSERT INTO `component` VALUES
 (55,'Generic: Rack',NULL,'',5,55),
 (56,'Generic: Cabinet',NULL,NULL,6,56),
 (57,'Generic: Enclosure',NULL,NULL,7,57),
-(58,'Generic: Card Cage',NULL,NULL,8,58),
+(58,'Generic: Card Cage',NULL,'',8,58),
 (60,'Generic: Controller - Generic',NULL,NULL,10,60),
 (61,'Generic: Controller - Ion Pump',NULL,NULL,11,61),
 (62,'Generic: Controller - Gate Valve',NULL,NULL,12,62),
@@ -199,7 +199,7 @@ INSERT INTO `component` VALUES
 (212,'Turbo Pump Cart, R&D Vacuum Sector Mockup',NULL,'TStation 75',66,520),
 (213,'M1 dipole pre-prototype',NULL,'First prototype magnet (from Fermilab)',80,536),
 (214,'Samsung Galaxy Tab 10.5',NULL,'',121,537),
-(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
+(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
 (216,'PRL-424LV',NULL,'1:4 LVDS Fanout Buffer',108,540),
 (217,'Generic: Data Logging System',NULL,'',129,554),
 (218,'Generic: Measurement System',NULL,'',128,555),
@@ -296,6 +296,13 @@ INSERT INTO `component` VALUES
 (331,'Bellows Assembly 0497A-147-A','0497A-147-A','',71,897),
 (332,'Bellows 14305-110200','14305-110200-00','',71,902),
 (333,'P10 Shutter','4105090910 - 150000','',135,904),
-(334,'White Beam Stop D14308-110000','D14308-110000','',139,913);
+(334,'White Beam Stop D14308-110000','D14308-110000','',139,913),
+(335,'DCS Mask #4',NULL,'',112,925),
+(337,'Sticklebrick - 10x10 Hollow',NULL,'',37,927),
+(340,'Sticklebrick - Converter box Type 57A3',NULL,'In-house version of Joe\'s Mfg part',37,930),
+(341,'Sticklebrick - Converter box Type 57A',NULL,'',37,931),
+(342,'Sticklebrick - 10x10 Solid Purple',NULL,'',37,932),
+(343,'Sticklebrick - 22x10 Solid',NULL,'',37,933),
+(344,'QSQQQ SEXTUPOLE MOLD CAVITY ASM','U221020202-105210','CONCEPTUAL DESIGN & DEVELOPMENT (R&D); ACCELERATOR CONCEPTUAL DESIGN & R&D; ACCELERATOR R&D/MAGNETS R&D; MULTIPLET R&D; QSQQQ SEXTUPOLE MOLD CAVITY ASM',84,941);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

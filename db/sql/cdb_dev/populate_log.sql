@@ -53,9 +53,22 @@ INSERT INTO `log` VALUES
 (56,'Cloned from Mockup_VacChamberAssy5','2015-08-10 09:39:02',2,NULL),
 (58,'Initial entries','2015-10-29 14:58:31',42,NULL),
 (59,'Enter comments or important info herer\r\n','2015-11-04 09:26:28',42,NULL),
-(60,'enter comments here','2015-11-04 09:53:16',42,NULL),
 (61,'','2015-11-04 10:09:54',42,NULL),
 (62,'','2015-11-04 10:09:58',42,NULL),
-(63,'','2015-11-04 10:13:22',42,NULL);
+(63,'','2015-11-04 10:13:22',42,NULL),
+(64,'collar added','2015-12-10 08:52:16',42,NULL),
+(65,'fffffffffffffffffffffffffffffffffffffffffffffffffffffffff\r\nffffffffffffffffffffffffffffffffffffffffffffffffffffff\r\nffffffffffffffffffffffffffffffffffffffffffffccccc\r\nccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff','2015-12-10 08:53:34',42,NULL),
+(66,'Cloned from Sticklebrick - 10x10 Purple','2016-01-12 14:07:49',8,NULL),
+(69,'Equivalent to Converter box Type 57A','2016-01-12 14:14:37',8,NULL),
+(70,'No longer available - use Type 57A3 instead','2016-01-12 14:21:52',8,NULL),
+(71,'Cloned from Sticklebrick - 10x10 Hollow Orange','2016-01-12 14:42:57',8,NULL),
+(72,'Cloned from Sticklebrick - 10x10 Solid Purple','2016-01-12 14:46:33',8,NULL),
+(73,'Cloned from 35-ID','2016-01-19 16:02:38',42,NULL),
+(74,'Cloned from 35-ID','2016-01-19 16:09:08',42,NULL),
+(75,'Cloned from 35-ID-A','2016-01-19 16:15:02',42,NULL),
+(76,'Cloned from 35-ID-B','2016-01-19 16:15:38',42,NULL),
+(77,'Cloned from 35-ID-C','2016-01-19 16:16:03',42,NULL),
+(78,'Cloned from 35-ID-D','2016-01-19 16:16:24',42,NULL),
+(79,'Cloned from 35-ID-E','2016-01-19 16:16:44',42,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -53,6 +53,15 @@ INSERT INTO `design` VALUES
 (68,'White Beam Stop D14309-110000','D14309-110000',843),
 (69,'Pink Beam Stop D14306-110000','D14306-110000-00',848),
 (70,'Bremsstrahlung Stop for 35-ID','Movable lead stop and bremsstrahlung stop',851),
-(71,'Mask 35-ID-A-M-02','Mask 3 rigidly mounted to Mask 2',860);
+(71,'Mask 35-ID-A-M-02','Mask 3 rigidly mounted to Mask 2',860),
+(72,'Sticklebrick Wheel','',940),
+(73,'Cloned from: 35-ID','Dynamic Compression Sector (DCS)',942),
+(74,'35-ID-RSS','Dynamic Compression Sector (DCS)',944),
+(75,'35-ID-A-RSS','',945),
+(76,'35-ID-B-RSS','',946),
+(77,'35-ID-C-RSS','',947),
+(78,'35-ID-D-RSS','',948),
+(79,'35-ID-E-RSS','',949),
+(80,'35-ID-rrr','',950);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;
