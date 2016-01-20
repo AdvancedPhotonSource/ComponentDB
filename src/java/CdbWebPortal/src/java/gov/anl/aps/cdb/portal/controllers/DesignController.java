@@ -12,6 +12,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.constants.DesignElementType;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignElementDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.beans.DesignDbFacade;
@@ -73,8 +74,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Design.List.FilterBy.CreatedOnDateTime";
     private static final String FilterByLastModifiedByUserSettingTypeKey = "Design.List.FilterBy.LastModifiedByUser";
     private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Design.List.FilterBy.LastModifiedOnDateTime";
-    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Design.Help.ListPage.Display.Fragment"; 
-    
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Design.Help.ListPage.Display.Fragment";
+
     private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
     private DataTable designPropertyValueListDataTable = null;
@@ -87,9 +88,9 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
 
     @EJB
     private DesignElementDbFacade designElementFacade;
-    
-    private List<Design> selectDesignCandidateList = null; 
-    
+
+    private List<Design> selectDesignCandidateList = null;
+
     public DesignController() {
         super();
     }
@@ -104,8 +105,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         Design design = new Design();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         design.setEntityInfo(entityInfo);
-        
-        selectDesignCandidateList =null; 
+
+        selectDesignCandidateList = null;
         return design;
     }
 
@@ -140,9 +141,9 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             designElementListTreeTableRootNode = DesignElementUtility.createDesignElementRoot(design);
         } catch (CdbException ex) {
             logger.warn("Could not create design element list for tree view: " + ex.toString());
-        }        
+        }
     }
-    
+
     @Override
     public void prepareEntityView(Design design) {
         prepareDesignElementListTreeTable(design);
@@ -189,6 +190,11 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             String designElementName = designElement.getName();
             if (designElementName == null || designElementName.isEmpty()) {
                 throw new InvalidObjectState("Design element name cannot be empty.");
+            }
+            if (designElement.getEditDesignElementType().equals(DesignElementType.DESIGN.toString())) {
+                designElement.setComponent(null);
+            } else if (designElement.getEditDesignElementType().equals(DesignElementType.COMPONENT.toString())) {
+                designElement.setChildDesign(null);
             }
             if (designElement.getComponent() != null && designElement.getChildDesign() != null) {
                 throw new InvalidObjectState("Design element cannot have both component and child design.");
@@ -367,8 +373,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
         filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
         filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
-        
-        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
+
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -395,8 +401,8 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-        
-        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
+
+        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
     }
 
@@ -424,7 +430,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-        
+
         sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
     }
 
@@ -501,21 +507,21 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     }
 
     public List<Design> getSelectDesignCandidateList() {
-        if(selectDesignCandidateList == null){
-            selectDesignCandidateList = getAvailableItems(); 
+        if (selectDesignCandidateList == null) {
+            selectDesignCandidateList = getAvailableItems();
         }
         return selectDesignCandidateList;
     }
-    
+
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         return DisplayListPageHelpFragmentSettingTypeKey;
     }
-    
-    public List<Design> completeDesign(String query){
-        return DesignUtility.filterDesign(query, getSelectDesignCandidateList()); 
+
+    public List<Design> completeDesign(String query) {
+        return DesignUtility.filterDesign(query, getSelectDesignCandidateList());
     }
-   
+
     public DataTable getDesignPropertyValueListDataTable() {
         return designPropertyValueListDataTable;
     }
