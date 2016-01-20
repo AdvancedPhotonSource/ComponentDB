@@ -813,18 +813,18 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
 
     public Boolean getDisplayChildDesignSelection(DesignElement designElement) {
         if (designElement == null) {
-            return true;
+            return false;
         }
-        DesignElementType designElementType = designElement.getContainedObjectType();
-        return (designElementType == null || designElementType.equals(DesignElementType.DESIGN));
+        String editDesignElementType = designElement.getEditDesignElementType();
+        return editDesignElementType != null && editDesignElementType.equals(DesignElementType.DESIGN.toString());
     }
 
     public Boolean getDisplayComponentSelection(DesignElement designElement) {
         if (designElement == null) {
-            return true;
+            return false;
         }
-        DesignElementType designElementType = designElement.getContainedObjectType();
-        return (designElementType == null || designElementType.equals(DesignElementType.COMPONENT));
+        String editDesignElementType = designElement.getEditDesignElementType();
+        return editDesignElementType != null && editDesignElementType.equals(DesignElementType.COMPONENT.toString());
     }
 
     public Boolean getDisplayDesignElementImages() {
