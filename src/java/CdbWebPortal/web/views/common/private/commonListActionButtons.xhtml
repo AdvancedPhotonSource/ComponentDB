@@ -13,11 +13,23 @@
     <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
     <ui:param name="displayShowEntityListPageHelpFragmentButton" value="#{entityController.displayListPageHelpFragmentSettingTypeKey != null}" />
+    <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />
     
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
             <p:tooltip for="#{entityTypeName}AddButton" value="Add new #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
+        
+        <p:commandButton id="#{entityTypeName}LoadPropertyValuesButton" 
+                         rendered="#{displayLoadPropertiesFilterValuesButton}" 
+                         value="Load Property Filters" alt="Load property value filters"
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"
+                         action="#{componentController.preparePropertyTypeFilter()}"
+                         update="#{entityTypeName}ListDataTable @parent">
+            <p:tooltip for="#{entityTypeName}LoadPropertyValuesButton" value="Load property value filters."/>
+        </p:commandButton>
+        
         <p:commandButton id="#{entityTypeName}ExportXlsButton" action="#{entityController.exportListDataTableAsXls(entityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:tooltip for="#{entityTypeName}ExportXlsButton" value="Export list to excel file."/>
         </p:commandButton>  
