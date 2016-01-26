@@ -47,7 +47,10 @@
 
                 <p:selectBooleanCheckbox id="displayCategory" value="#{componentController.displayCategory}"/>  
                 <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
-
+                
+                <p:selectBooleanCheckbox id="autoLoadProperty" value="#{componentController.filterByPropertiesAutoLoad}"/>  
+                <h:outputLabel for="autoLoadProperty" value="Automatically Load Property Filter Values" styleClass="dialogDataLabel"/>
+                
                 <p:selectOneMenu id="displayPropertyType1" value="#{componentController.displayPropertyTypeId1}" 
                                  styleClass="entityDataSelectOne">
                     <f:selectItem itemLabel="None" noSelectionOption="true"/>
@@ -93,14 +96,14 @@
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentController.customizeListDisplay()}"
-                                 update="componentListDataTable"
+                                 update="@form"
                                  oncomplete="PF('componentListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
                                  actionListener="#{componentController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('componentListCustomizeDisplayDialogWidget').hide()" 
-                                 update="componentListDataTable"
+                                 update="@form"
                                  rendered="#{loginController.loggedIn}"
                                  icon="ui-icon-check"/>
             </f:facet>
