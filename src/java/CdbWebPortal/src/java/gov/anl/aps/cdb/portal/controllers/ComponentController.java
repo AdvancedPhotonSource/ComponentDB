@@ -41,6 +41,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -51,8 +52,11 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.model.DataModel;
 import org.apache.log4j.Logger;
+import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.model.TreeNode;
@@ -100,9 +104,10 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private static final String FilterByPropertyValue4SettingTypeKey = "Component.List.FilterBy.PropertyValue4";
     private static final String FilterByPropertyValue5SettingTypeKey = "Component.List.FilterBy.PropertyValue5";
     private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
-    
-    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Component.Help.ListPage.Display.Fragment"; 
-    
+    private static final String FilterByPropertiesAutoLoadTypeKey = "Component.List.AutoLoad.FilterBy.Properties";
+
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Component.Help.ListPage.Display.Fragment";
+
     private static final Logger logger = Logger.getLogger(ComponentController.class.getName());
 
     @EJB
@@ -149,7 +154,11 @@ public class ComponentController extends CdbEntityController<Component, Componen
     private String filterByPropertyValue3 = null;
     private String filterByPropertyValue4 = null;
     private String filterByPropertyValue5 = null;
-    
+    private Boolean filterByPropertiesAutoLoad = null;
+
+    private Integer loadedDataTableHashCode = null;
+    private List<Integer> loadedDisplayPropertyTypes = null;
+
     // There seems to be a problem with primefaces framework, as select one menu does not
     // recognize value change in some case, so we bind this variable to control the menu. 
     private SelectOneMenu componentTypeSelectOneMenu;
@@ -236,9 +245,8 @@ public class ComponentController extends CdbEntityController<Component, Componen
         }
         if (modelNumber == null) {
             existingComponent = componentFacade.findByNameWithNullModelNumber(name);
-        }
-        else {
-            existingComponent = componentFacade.findByNameAndModelNumber(name, modelNumber);            
+        } else {
+            existingComponent = componentFacade.findByNameAndModelNumber(name, modelNumber);
         }
 
         if (existingComponent != null && !existingComponent.getId().equals(component.getId())) {
@@ -247,9 +255,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
         if (component.getComponentType() == null) {
             throw new InvalidObjectState("Component type for " + component.toString() + " must be selected.");
         }
-         
+
     }
-    
+
     @Override
     public void prepareEntityInsert(Component component) throws CdbException {
         checkComponent(component);
@@ -339,21 +347,21 @@ public class ComponentController extends CdbEntityController<Component, Componen
             preparePropertyTypeValueAdd(propertyType);
         }
     }
-    
-    public void preparePropertyTypeValueAdd(PropertyType propertyType){
-        preparePropertyTypeValueAdd(propertyType, propertyType.getDefaultValue()); 
+
+    public void preparePropertyTypeValueAdd(PropertyType propertyType) {
+        preparePropertyTypeValueAdd(propertyType, propertyType.getDefaultValue());
     }
-    
-    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString){
+
+    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString) {
         preparePropertyTypeValueAdd(propertyType, propertyValueString, null);
     }
-    
-    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString, String tag){
+
+    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString, String tag) {
         Component component = getCurrent();
         List<PropertyValue> propertyValueList = component.getPropertyValueList();
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
-        
+
         PropertyValue propertyValue = new PropertyValue();
         propertyValue.setPropertyType(propertyType);
         propertyValue.setValue(propertyValueString);
@@ -361,7 +369,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         propertyValueList.add(propertyValue);
         propertyValue.setEnteredByUser(lastModifiedByUser);
         propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        if(tag != null){
+        if (tag != null) {
             propertyValue.setTag(tag);
         }
     }
@@ -505,6 +513,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
     @Override
     public String customizeListDisplay() {
         resetComponentPropertyTypeIdIndexMappings();
+        if (filterByPropertiesAutoLoad) {
+            preparePropertyTypeFilter();
+        }
         return super.customizeListDisplay();
     }
 
@@ -560,8 +571,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
         filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
         filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
-        
-        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
+        filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
+
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
 
         resetComponentPropertyTypeIdIndexMappings();
     }
@@ -610,8 +622,9 @@ public class ComponentController extends CdbEntityController<Component, Componen
         filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
-        
-        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
+        filterByPropertiesAutoLoad = sessionUser.getUserSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
+
+        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
         resetComponentPropertyTypeIdIndexMappings();
     }
@@ -656,7 +669,6 @@ public class ComponentController extends CdbEntityController<Component, Componen
         sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
 
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
-
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
@@ -680,7 +692,8 @@ public class ComponentController extends CdbEntityController<Component, Componen
         sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
-        
+        sessionUser.setUserSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
+
         sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
     }
@@ -763,6 +776,125 @@ public class ComponentController extends CdbEntityController<Component, Componen
 
     }
 
+    @Override
+    public DataModel getListDataModel() {
+        DataModel componentsDataModel = super.getListDataModel();
+
+        if (filterByPropertiesAutoLoad) {
+            if (loadedDataTableHashCode == null || componentsDataModel.hashCode() != loadedDataTableHashCode) {
+                loadedDisplayPropertyTypes = null;
+                preparePropertyTypeFilter();
+            }
+        }
+
+        return componentsDataModel;
+    }
+
+    @Override
+    public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+        super.saveListSettingsForSessionUserActionListener(actionEvent);
+
+        if (filterByPropertiesAutoLoad) {
+            loadedDisplayPropertyTypes = null;
+            preparePropertyTypeFilter();
+        }
+    }
+
+    public void preparePropertyTypeFilter() {
+
+        if (loadedDisplayPropertyTypes == null) {
+            loadedDisplayPropertyTypes = new ArrayList<>();
+        }
+
+        preparePropertyTypeFilter(displayPropertyTypeId1);
+        preparePropertyTypeFilter(displayPropertyTypeId2);
+        preparePropertyTypeFilter(displayPropertyTypeId3);
+        preparePropertyTypeFilter(displayPropertyTypeId4);
+        preparePropertyTypeFilter(displayPropertyTypeId5);
+
+        loadedDataTableHashCode = super.getListDataModel().hashCode();
+
+    }
+
+    public Boolean preparePropertyTypeFilter(Integer propertyTypeId) {
+        if (propertyTypeId != null) {
+            DataModel<Component> components = super.getListDataModel();
+            Iterator<Component> componentIterator = components.iterator();
+            while (componentIterator.hasNext()) {
+                Component component = componentIterator.next();
+                component.getPropertyValueInformation(propertyTypeId);
+            }
+            loadedDisplayPropertyTypes.add(propertyTypeId);
+            return true;
+        }
+        return false;
+    }
+
+    private Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
+        if (loadedDisplayPropertyTypes != null) {
+            if (loadedDataTableHashCode != null && super.getListDataModel().hashCode() != loadedDataTableHashCode) {
+                loadedDisplayPropertyTypes = null;
+                return false;
+            }
+            for (Integer loadedPropertyTypeId : loadedDisplayPropertyTypes) {
+                if (propertyTypeId == loadedPropertyTypeId) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public Boolean getFilterablePropertyValue1() {
+        return fetchFilterablePropertyValue(displayPropertyTypeId1);
+    }
+
+    public Boolean getFilterablePropertyValue2() {
+        return fetchFilterablePropertyValue(displayPropertyTypeId2);
+    }
+
+    public Boolean getFilterablePropertyValue3() {
+        return fetchFilterablePropertyValue(displayPropertyTypeId3);
+    }
+
+    public Boolean getFilterablePropertyValue4() {
+        return fetchFilterablePropertyValue(displayPropertyTypeId4);
+    }
+
+    public Boolean getFilterablePropertyValue5() {
+        return fetchFilterablePropertyValue(displayPropertyTypeId5);
+    }
+
+    public Boolean getFilterByPropertiesAutoLoad() {
+        return filterByPropertiesAutoLoad;
+    }
+
+    public void setFilterByPropertiesAutoLoad(Boolean filterByPropertiesAutoLoad) {
+        this.filterByPropertiesAutoLoad = filterByPropertiesAutoLoad;
+    }
+
+    private Boolean checkDisplayLoadPropertyValueButtonByProperty(Integer propertyTypeId) {
+        if (propertyTypeId == null) {
+            return false;
+        } else {
+            return !fetchFilterablePropertyValue(propertyTypeId);
+        }
+    }
+
+    @Override
+    public Boolean getDisplayLoadPropertyValuesButton() {
+        if (filterByPropertiesAutoLoad) {
+            return false;
+        }
+
+        return (checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId1)
+                || checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId2)
+                || checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId3)
+                || checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId4)
+                || checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId5));
+    }
+
     public List<String> completeLocationName(String query) {
         Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 
@@ -821,7 +953,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
         if (oldValue != null) {
             oldEventComponentType = (ComponentType) oldValue;
         }
-
+    
         if (ObjectUtility.equals(existingComponentType, oldEventComponentType)) {
             // change via menu
             component.setComponentType(newEventComponentType);
@@ -830,7 +962,7 @@ public class ComponentController extends CdbEntityController<Component, Componen
             component.setComponentType(oldEventComponentType);
         }
     }
-
+    
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         if (propertyTypeId != null) {
 
@@ -1031,12 +1163,12 @@ public class ComponentController extends CdbEntityController<Component, Componen
     public void setFilterByPropertyValue5(String filterByPropertyValue5) {
         this.filterByPropertyValue5 = filterByPropertyValue5;
     }
-        
+
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         return DisplayListPageHelpFragmentSettingTypeKey;
     }
-    
+
     public Boolean getDisplayComponentImages() {
         List<PropertyValue> componentImageList = getComponentImageList();
         return (componentImageList != null && !componentImageList.isEmpty());
