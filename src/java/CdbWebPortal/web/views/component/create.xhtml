@@ -17,20 +17,20 @@
             <div class="pageTitle">
                 <h1>Add Component</h1>
             </div>
-
+            
             <ui:include src="private/componentCreatePanelGrid.xhtml"/>
 
             <p/>
             <ui:param name="entityController" value="#{componentController}"/>
             <ui:include src="../common/private/commonCreateActionButtons.xhtml"/>
-
+             
         </h:form>
-
+        
         <h:form id="componentTypeSelectDialogForm">
             <ui:include src="../componentType/private/componentTypeSelectDialog.xhtml">
-                <ui:param name="updateTarget" value=":addComponentForm:componentCreatePanelGrid"/>
+                <ui:param name="updateTarget" value=":addComponentForm:componentTypeDropdown :addComponentForm:componentTypeCategory"/>
             </ui:include>
-
+            
             <ui:include src="../componentType/private/componentTypeSelectCustomizeDisplayDialog.xhtml"/>
         </h:form>
 

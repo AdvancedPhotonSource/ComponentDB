@@ -38,31 +38,28 @@
                             scrollHeight="200"
                             dropdown="true" 
                             styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
-                <p:ajax update="componentTypeCategory"/>       
+                <p:ajax event="itemSelect" update="componentTypeCategory"/>
             </p:autoComplete>
 
             <p:commandButton id="componentTypeSelectButton"
                              action="#{componentTypeController.clearSelectFiltersAndResetSelectDataModel()}" 
                              oncomplete="PF('componentTypeSelectDialogWidget').show()"
-                             update="@form"
                              immediate="true"
                              alt="Select Component" 
                              styleClass="selectButtonForAutocomplete"
                              icon="ui-icon-search">
                 <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{componentObject.componentType}"/>
-                <p:ajax process="@form" update="@form" /> 
                 <p:tooltip for="componentTypeSelectButton" value="Search for component type."/>
             </p:commandButton>
         </p:column>
         <p:message for="componentType"/>
         <p:tooltip for="componentTypeDropdown" value="Select component type."/> 
-
+        
         <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
-        <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
+            <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
         <p:message for="componentTypeCategory"/>
         <p:tooltip for="componentTypeCategory" value="Component type category is inherited from component type."/>
-
+        
         <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">
             <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
         </ui:include>
