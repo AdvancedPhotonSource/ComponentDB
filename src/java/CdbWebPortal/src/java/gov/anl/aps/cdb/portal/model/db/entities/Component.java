@@ -509,9 +509,11 @@ public class Component extends CdbEntity {
     
     public PropertyValueInformation attemptSetTargetValue(PropertyValueInformation propertyValueInfo, PropertyValue propertyValue, PropertyTypeHandlerInterface propertyHandler){
         DisplayType displayType = propertyHandler.getValueDisplayType(); 
-        if(displayType.equals(DisplayType.HTTP_LINK) || displayType.equals(DisplayType.TABLE_RECORD_REFERENCE)){
-            propertyHandler.setTargetValue(propertyValue);
-            propertyValueInfo.setTargetValue(propertyValue.getTargetValue());
+        if(displayType != null){
+            if(displayType.equals(DisplayType.HTTP_LINK) || displayType.equals(DisplayType.TABLE_RECORD_REFERENCE)){
+                propertyHandler.setTargetValue(propertyValue);
+                propertyValueInfo.setTargetValue(propertyValue.getTargetValue());
+            }   
         }
         return propertyValueInfo; 
     }
