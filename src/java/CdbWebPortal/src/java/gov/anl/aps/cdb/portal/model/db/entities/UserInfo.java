@@ -278,6 +278,8 @@ public class UserInfo extends CdbEntity {
         UserSetting userSetting = getUserSetting(name);
         if (userSetting != null && value != null) {
             userSetting.setValue(value.toString());
+        } else if (userSetting != null) {
+            userSetting.setValue("");
         }
     }
 
