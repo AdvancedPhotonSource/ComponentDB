@@ -1715,6 +1715,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             logger.error(error);
         }
     }
+    
+    public Boolean getDisplayLoadPropertyValuesButton(){
+        return false; 
+    }
 
     /**
      * If list data model needs to be reset this method will return true, and
