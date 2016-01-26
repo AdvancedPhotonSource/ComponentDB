@@ -6,9 +6,10 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
     
     <p:column headerText="Property: #{propertyTypeName}" 
-                filterBy="#{propertyValueFilterBy}" filterMatchMode="contains"
-                filterValue="#{prpoertyValueFilterValue}"
-                rendered="#{propertyValueRendered}">
+              filterBy="#{propertyValueFilterBy}" filterMatchMode="contains"
+              filterValue="#{prpoertyValueFilterValue}"
+              rendered="#{propertyValueRendered}"
+              filterable="#{propertyValueFilterable}">
             <p:outputPanel rendered="#{propertyValueInformation.targetValue == null}">
                 <h:outputText value="#{propertyValueInformation.value}"/>
             </p:outputPanel>
@@ -19,5 +20,5 @@
                 </h:outputLink>
             </p:outputPanel>
     </p:column>
-    
+        
 </ui:composition>

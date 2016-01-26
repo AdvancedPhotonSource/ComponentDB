@@ -113,7 +113,8 @@
             <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId1)}"/>
             <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue1}" />
             <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue1}" />
-            <ui:param name="propertyValueRendered" value="#{propertyTypeId1 != null}" />   
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId1 != null}" /> 
+            <ui:param name="propertyValueFilterable" value="#{componentController.filterablePropertyValue1}" />
         </ui:include>
         
         <ui:include src="#{propertyValueColumn}">
@@ -122,6 +123,7 @@
             <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue2}" />
             <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue2}" />
             <ui:param name="propertyValueRendered" value="#{propertyTypeId2 != null}" />   
+            <ui:param name="propertyValueFilterable" value="#{componentController.filterablePropertyValue2}" />
         </ui:include>
         
         <ui:include src="#{propertyValueColumn}">
@@ -129,7 +131,8 @@
             <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId3)}"/>
             <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue3}" />
             <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue3}" />
-            <ui:param name="propertyValueRendered" value="#{propertyTypeId3 != null}" />   
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId3 != null}" /> 
+            <ui:param name="propertyValueFilterable" value="#{componentController.filterablePropertyValue3}" />
         </ui:include>
         
         <ui:include src="#{propertyValueColumn}">
@@ -137,7 +140,8 @@
             <ui:param name="propertyValueInformation" value="#{componentObject.getPropertyValueInformation(propertyTypeId4)}"/>
             <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue4}" />
             <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue4}" />
-            <ui:param name="propertyValueRendered" value="#{propertyTypeId4 != null}" />   
+            <ui:param name="propertyValueRendered" value="#{propertyTypeId4 != null}" />  
+            <ui:param name="propertyValueFilterable" value="#{componentController.filterablePropertyValue4}" />
         </ui:include>
         
         <ui:include src="#{propertyValueColumn}">
@@ -146,6 +150,7 @@
             <ui:param name="propertyValueFilterBy" value="#{componentObject.propertyValue5}" />
             <ui:param name="prpoertyValueFilterValue" value="#{componentController.filterByPropertyValue5}" />
             <ui:param name="propertyValueRendered" value="#{propertyTypeId5 != null}" />   
+            <ui:param name="propertyValueFilterable" value="#{componentController.filterablePropertyValue5}" />
         </ui:include>
         
         <p:column sortBy="#{componentObject.entityInfo.ownerUser.username}" headerText="Owner"
