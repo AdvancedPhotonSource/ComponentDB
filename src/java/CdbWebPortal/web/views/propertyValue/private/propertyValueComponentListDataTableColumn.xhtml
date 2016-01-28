@@ -9,7 +9,9 @@
               filterBy="#{propertyValueFilterBy}" filterMatchMode="contains"
               filterValue="#{prpoertyValueFilterValue}"
               rendered="#{propertyValueRendered}"
-              filterable="#{propertyValueFilterable}">
+              filterable="#{propertyValueFilterable}"
+              sortable="#{propertyValueFilterable}"
+              sortBy="#{propertyValueInformation.value}">
             <p:outputPanel rendered="#{propertyValueInformation.targetValue == null}">
                 <h:outputText value="#{propertyValueInformation.value}"/>
             </p:outputPanel>
