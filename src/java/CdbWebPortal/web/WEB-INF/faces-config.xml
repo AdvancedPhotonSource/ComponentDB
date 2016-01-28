@@ -13,7 +13,6 @@
     <!--  
     Solution for file upload issue with servlet exception being thrown; still applies for 5.x
     See: http://stackoverflow.com/questions/19262356/file-upload-doesnt-work-with-ajax-in-primefaces-4-0-jsf-2-2-x-javax-servlet-s/19752138#19752138
-    -->
     <render-kit>
         <renderer>
             <component-family>org.primefaces.component</component-family>
@@ -21,5 +20,6 @@
             <renderer-class>gov.anl.aps.cdb.portal.view.jsf.components.CdbFileUploadRenderer</renderer-class>
         </renderer>
     </render-kit>
-    
+    -->
+
 </faces-config>
