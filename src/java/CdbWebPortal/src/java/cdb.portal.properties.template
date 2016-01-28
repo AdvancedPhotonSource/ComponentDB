@@ -8,7 +8,7 @@ cdb.portal.ldapUrl=ldaps://phoebusldap.aps.anl.gov:636
 cdb.portal.ldapDnString=uid=USERNAME,ou=people,o=aps.anl.gov,dc=aps,dc=anl,dc=gov
 
 # Storage areas
-cdb.portal.storageDirectory=/cdb
+cdb.portal.storageDirectory=CDB_DATA_DIR
 cdb.portal.scaledImageSize=200
 cdb.portal.thumbnailImageSize=32
 
