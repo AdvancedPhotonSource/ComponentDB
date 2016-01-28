@@ -199,7 +199,7 @@ INSERT INTO `component` VALUES
 (212,'Turbo Pump Cart, R&D Vacuum Sector Mockup',NULL,'TStation 75',66,520),
 (213,'M1 dipole pre-prototype',NULL,'First prototype magnet (from Fermilab)',80,536),
 (214,'Samsung Galaxy Tab 10.5',NULL,'',121,537),
-(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
+(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1',49,539),
 (216,'PRL-424LV',NULL,'1:4 LVDS Fanout Buffer',108,540),
 (217,'Generic: Data Logging System',NULL,'',129,554),
 (218,'Generic: Measurement System',NULL,'',128,555),
@@ -281,7 +281,7 @@ INSERT INTO `component` VALUES
 (316,'Tungsten K1 Collimator',' D 14302-110000-00','',141,826),
 (317,'Mask','D14301-160000-00','Mask and Support Assembly',112,830),
 (318,'Mask','D14301-130000-00','DCS M3 Mask Assembly',112,832),
-(319,'Survey Port',NULL,'',134,836),
+(319,'Survey Port','Generic Beamline Port','See specific beamline drawings for more details',134,836),
 (320,'Movable Lead Stop','D14310-110000-00','',139,852),
 (321,'Lead Assembly 4\" Thick','D14310-110240-00','For movable stop',139,853),
 (322,'Lead Assembly 8\" Thick','D14310-110250-00','',139,854),
@@ -303,6 +303,8 @@ INSERT INTO `component` VALUES
 (341,'Sticklebrick - Converter box Type 57A',NULL,'',37,931),
 (342,'Sticklebrick - 10x10 Solid Purple',NULL,'',37,932),
 (343,'Sticklebrick - 22x10 Solid',NULL,'',37,933),
-(344,'QSQQQ SEXTUPOLE MOLD CAVITY ASM','U221020202-105210','CONCEPTUAL DESIGN & DEVELOPMENT (R&D); ACCELERATOR CONCEPTUAL DESIGN & R&D; ACCELERATOR R&D/MAGNETS R&D; MULTIPLET R&D; QSQQQ SEXTUPOLE MOLD CAVITY ASM',84,941);
+(344,'QSQQQ SEXTUPOLE MOLD CAVITY ASM','U221020202-105210','CONCEPTUAL DESIGN & DEVELOPMENT (R&D); ACCELERATOR CONCEPTUAL DESIGN & R&D; ACCELERATOR R&D/MAGNETS R&D; MULTIPLET R&D; QSQQQ SEXTUPOLE MOLD CAVITY ASM',84,941),
+(345,'Bellows V2-69','4105090702-690000','',71,952),
+(346,'Bearing Kit','BNCP-30-100','',104,955);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -8,6 +8,7 @@ INSERT INTO `design_log` VALUES
 (76,76),
 (77,77),
 (78,78),
-(79,79);
+(79,79),
+(83,81);
 /*!40000 ALTER TABLE `design_log` ENABLE KEYS */;
 UNLOCK TABLES;

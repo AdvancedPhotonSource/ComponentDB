@@ -38,10 +38,12 @@ INSERT INTO `source` VALUES
 (36,'BiRa Systems','','Pawel Kowalski [pawel@bira.com]','http://www.bira.com'),
 (37,'Krohn-Hite','','','http://www.krohn-hite.com/'),
 (38,'Vishay','','','http://vpgsensors.com/'),
-(39,'Blackhawk','BlackhawkÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¾ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
+(39,'Blackhawk','BlackhawkÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¾ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ is a business unit of EWA/EWA Technologies, Inc.','','http://www.blackhawk-dsp.com/'),
 (40,'Kooltronic, Inc.','','Bruce Kreeley','http://www.kooltronic.com/'),
 (41,'Bellows Tech LLC','Metal Bellows Mfg.','386-615-7530','http://www.bellowstech.com/'),
 (42,'Stickle','','',''),
-(43,'Joe\'s Mfg','','','');
+(43,'Joe\'s Mfg','','',''),
+(44,'BArber-Nichols','','',''),
+(45,'Tecknit Shielding Systems inc.','','201-778-6200','');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

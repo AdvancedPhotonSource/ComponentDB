@@ -375,7 +375,7 @@ INSERT INTO `property_value` VALUES
 (518,17,'','U221020101-111210.drw','','','2015-08-10 09:40:18',2,0,0,NULL,NULL),
 (519,17,'Model Ref','2101-160600','','','2015-09-10 10:20:35',26,0,0,'2101-160600','2101-160600'),
 (520,72,'','39','','','2015-09-10 10:20:35',26,0,0,'S1 Magnet Yoke','../design/view.xhtml?id=39'),
-(521,72,'','40','','','2015-09-10 11:27:00',3,0,0,NULL,NULL),
+(521,72,'','40','','','2015-09-10 11:27:00',3,0,0,'DCCT Burden Resister Chassis','../design/view.xhtml?id=40'),
 (522,72,'','41','','','2015-09-10 11:36:39',3,0,0,NULL,NULL),
 (523,78,'','','','','2015-09-14 11:14:07',3,0,1,'',''),
 (524,80,'','true','','','2015-09-14 11:14:07',3,0,1,'true','true'),
@@ -902,7 +902,7 @@ INSERT INTO `property_value` VALUES
 (1089,80,'','false','','','2015-10-29 17:20:01',42,0,0,'false','false'),
 (1090,7,'CAD Drawing','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14308-110400.drw.pdf','','','2015-10-30 08:46:35',42,0,0,'https://icmsdoc...-110400.drw.pdf','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14308-110400.drw.pdf'),
 (1091,7,'CAD Drawing','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14305-110200.drw.pdf','','','2015-10-30 10:57:08',42,0,0,'https://icmsdoc...-110200.drw.pdf','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14305-110200.drw.pdf'),
-(1092,7,'Ray Trace','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@bdl/documents/folio/aps_1413734.xcsr','','','2016-01-07 10:37:22',42,0,0,NULL,NULL),
+(1092,7,'Ray Trace','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@bdl/documents/folio/aps_1413734.xcsr','','','2016-01-07 10:37:22',42,0,0,'https://icmsdoc...ps_1413734.xcsr','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@bdl/documents/folio/aps_1413734.xcsr'),
 (1093,7,'Beamline Component Reference Table','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1437753.pdf','','','2015-10-30 11:05:09',42,0,0,'https://icmsdoc...aps_1437753.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1437753.pdf'),
 (1094,7,'S&A Report','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445498.pdf','','','2015-10-30 11:09:18',42,0,0,'https://icmsdoc...aps_1445498.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445498.pdf'),
 (1095,7,'S&A Report','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445496.pdf','','','2015-10-30 11:11:26',42,0,0,'https://icmsdoc...aps_1445496.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445496.pdf'),
@@ -943,9 +943,9 @@ INSERT INTO `property_value` VALUES
 (1145,77,'','27','meters','','2015-11-04 10:21:04',42,0,0,'27','27'),
 (1147,76,'','false','','','2015-11-04 10:28:43',42,0,0,'false','false'),
 (1148,79,'','Thu Oct 01 00:00:00 CDT 2015','','','2015-11-04 10:28:26',42,0,0,'10/01/15','Thu Oct 01 00:00:00 CDT 2015'),
-(1149,80,'','false','','','2015-11-06 15:50:28',42,0,0,NULL,NULL),
-(1150,75,'','false','','','2015-11-06 15:50:28',42,0,0,NULL,NULL),
-(1151,78,'','','','','2015-11-04 10:28:34',42,0,0,'',''),
+(1149,80,'','false','','','2015-11-06 15:50:28',42,0,0,'false','false'),
+(1150,75,'','false','','','2015-11-06 15:50:28',42,0,0,'false','false'),
+(1151,78,'','','','','2016-01-27 11:13:34',42,0,0,NULL,NULL),
 (1152,77,'','27.5','meters','','2015-11-04 10:29:59',42,0,0,'27.5','27.5'),
 (1153,80,'','false','','','2015-11-04 10:32:47',42,0,0,'false','false'),
 (1154,79,'','Thu Oct 01 00:00:00 CDT 2015','','','2015-11-04 10:32:47',42,0,0,'10/01/15','Thu Oct 01 00:00:00 CDT 2015'),
@@ -1018,7 +1018,7 @@ INSERT INTO `property_value` VALUES
 (1256,78,'Color','','','','2016-01-12 15:14:48',8,0,1,'',''),
 (1257,78,'Diameter','15','','','2016-01-12 17:00:05',8,0,0,'15','15'),
 (1258,78,'Color','','','','2016-01-12 17:00:28',8,0,1,'',''),
-(1259,81,'','564cdd24c25019a377cbc0e1','','','2016-01-15 09:12:56',26,0,0,'',NULL),
+(1259,81,'','564cdd24c25019a377cbc0e1','','','2016-01-15 09:12:56',26,0,0,'Configuration Control Beamline Components List For 35-ID','https://ctlappsdev.aps.anl.gov:3021/forms/564cdd24c25019a377cbc0e1/'),
 (1260,82,'','56990ccda6d450f008c96de0','','','2016-01-15 09:14:21',26,0,0,NULL,NULL),
 (1261,17,'Model Ref','U221020202-105210.drw','','','2016-01-15 11:36:27',44,0,0,NULL,NULL),
 (1262,7,'Beamline Component Reference Table','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1437753.pdf','','','2016-01-19 16:02:25',42,0,0,'https://icmsdoc...aps_1437753.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1437753.pdf'),
@@ -1124,6 +1124,7 @@ INSERT INTO `property_value` VALUES
 (1362,7,'S&A Report','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445496.pdf','','','2016-01-19 16:16:14',42,0,0,'https://icmsdoc...aps_1445496.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445496.pdf'),
 (1363,7,'Layout Image','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@mechanicalengineering/documents/form/aps_1690162.pdf','','','2016-01-19 16:16:14',42,0,0,'https://icmsdoc...aps_1690162.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@mechanicalengineering/documents/form/aps_1690162.pdf'),
 (1364,7,'S&A Report','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445498.pdf','','','2016-01-19 16:16:35',42,0,0,'https://icmsdoc...aps_1445498.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/documents/report/aps_1445498.pdf'),
-(1365,7,'Layout Image','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@mechanicalengineering/documents/form/aps_1690163.pdf','','','2016-01-19 16:16:35',42,0,0,'https://icmsdoc...aps_1690163.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@mechanicalengineering/documents/form/aps_1690163.pdf');
+(1365,7,'Layout Image','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@mechanicalengineering/documents/form/aps_1690163.pdf','','','2016-01-19 16:16:35',42,0,0,'https://icmsdoc...aps_1690163.pdf','https://icmsdocs.aps.anl.gov/docs/groups/aps/@apsshare/@mechanicalengineering/documents/form/aps_1690163.pdf'),
+(1366,7,'','https://www.aps.anl.gov/APS_Engineering_Support_Division/Mechanical_Operations_and_Maintenance/Inventory/pdf/Bearing_Kit.pdf','','','2016-01-21 08:01:49',42,0,0,'https://www.aps...Bearing_Kit.pdf','https://www.aps.anl.gov/APS_Engineering_Support_Division/Mechanical_Operations_and_Maintenance/Inventory/pdf/Bearing_Kit.pdf');
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;
