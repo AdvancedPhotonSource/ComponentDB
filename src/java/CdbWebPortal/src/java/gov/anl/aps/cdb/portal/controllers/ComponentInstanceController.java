@@ -313,15 +313,47 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         Location originalLocation = originalComponentInstance.getLocation(); 
         Location newLocation = componentInstance.getLocation(); 
         
-        if (originalLocation != null) {
-            logger.debug("Location has been changed from: " + originalLocation.getName()
-                + "to: " + newLocation.getName());
+        if (originalLocation != null){    
+            Boolean addLocationToHistoryHistory = true; 
+            
+            // The location has not changed. No need to update. 
+            if (ObjectUtility.equals(originalLocation, newLocation) &&
+                ObjectUtility.equals(originalComponentInstance.getLocationDetails(), componentInstance.getLocationDetails())) { 
+                addLocationToHistoryHistory = false; 
+            }
+            
+            // To keep the user who set the original location we must now add the location history.
+            if (addLocationToHistoryHistory == false) {
+                EntityInfo originalEntityInfo = originalComponentInstance.getEntityInfo(); 
+                EntityInfo newEntityInfo = componentInstance.getEntityInfo(); 
+                if (ObjectUtility.equals(originalEntityInfo.getLastModifiedByUser(), newEntityInfo.getLastModifiedByUser()) == false) {
+                    addLocationToHistoryHistory = true; 
+                }
+            }
+            
+            // Since the location history may have been already added for the current location, we must check Location hisory table
+            if (addLocationToHistoryHistory) {
+                List<ComponentInstanceLocationHistory> locationHistoryList = componentInstance.getComponentInstanceLocationHistoryList(); 
+                if (locationHistoryList != null && locationHistoryList.size() > 0) {
+                    int lastLocationHistoryIndex = locationHistoryList.size() -1; 
+                    ComponentInstanceLocationHistory lastLocationHistory = locationHistoryList.get(lastLocationHistoryIndex); 
+                    if(ObjectUtility.equals(lastLocationHistory.getLocation(), originalLocation) &&
+                            ObjectUtility.equals(lastLocationHistory.getLocationDetails(), originalComponentInstance.getLocationDetails())) { 
+                        // The location is already in the location history table. 
+                        addLocationToHistoryHistory = false; 
+                    }
+                }
+            }
+            
 
-            ComponentInstanceLocationHistory newLocationHistory = new ComponentInstanceLocationHistory(); 
-            newLocationHistory.updateFromComponentInstance(originalComponentInstance);
-            componentInstance.getComponentInstanceLocationHistoryList().add(newLocationHistory);
-         }
-
+            if (addLocationToHistoryHistory) {
+                ComponentInstanceLocationHistory newLocationHistory = new ComponentInstanceLocationHistory(); 
+                logger.debug("Adding new Location history entry: " + originalLocation.getName());
+                newLocationHistory.updateFromComponentInstance(originalComponentInstance);
+                componentInstance.getComponentInstanceLocationHistoryList().add(newLocationHistory);
+            }
+        }
+        
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = componentInstanceFacade.findById(componentInstance.getId()).getPropertyValueList();
         List<PropertyValue> newPropertyValueList = componentInstance.getPropertyValueList();
