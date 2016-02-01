@@ -1,3 +1,18 @@
+Release 2.3 (Tag 20160201) (02/01/2016)
+=========================================
+- Add Support for Component Instance Location History
+- Improved management of filtering property values on component list page.
+- Upgrade to Primefaces 5.3
+- UI Enhancements
+  - Added Help Fragments on each entity list page.
+  - Added image buttons for each entity on home page.
+  - Design edit page improvements for managing design elements.
+  - Separated main menu bar.
+- Bug Fixes
+  - Saving user settings and saving blank settings.
+  - Property value column loads all values for filtering.
+  - Other bug fixes.
+
 Release 2.2.1 (Tag 20151231) (12/31/2015)
 =========================================
 
