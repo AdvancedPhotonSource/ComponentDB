@@ -26,7 +26,7 @@ db:
 	$(TOP)/sbin/cdb_create_db.sh
 
 backup:
-	$(TOP)/sbin/cdb_backup_all.sh 
+	$(TOP)/sbin/cdb_backup_all.sh
 
 configure-web-portal: dist
 	$(TOP)/sbin/cdb_configure_web_portal.sh
@@ -34,16 +34,16 @@ configure-web-portal: dist
 deploy-web-portal: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh
 
-deploy-web-service: 
+deploy-web-service:
 	$(TOP)/sbin/cdb_deploy_web_service.sh
 
-unconfigure-web-portal: 
+unconfigure-web-portal:
 	$(TOP)/sbin/cdb_unconfigure_web_portal.sh
 
-undeploy-web-portal: 
+undeploy-web-portal:
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh
 
-undeploy-web-service: 
+undeploy-web-service:
 	$(TOP)/sbin/cdb_undeploy_web_service.sh
 
 db-dev:
@@ -58,16 +58,16 @@ deploy-web-portal-dev: dist
 configure-web-portal-dev: dist
 	$(TOP)/sbin/cdb_configure_web_portal.sh cdb_dev
 
-deploy-web-service-dev: 
+deploy-web-service-dev:
 	$(TOP)/sbin/cdb_deploy_web_service.sh cdb_dev
 
-unconfigure-web-portal-dev: 
+unconfigure-web-portal-dev:
 	$(TOP)/sbin/cdb_unconfigure_web_portal.sh cdb_dev
 
-undeploy-web-portal-dev: 
+undeploy-web-portal-dev:
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_dev
 
-undeploy-web-service-dev: 
+undeploy-web-service-dev:
 	$(TOP)/sbin/cdb_undeploy_web_service.sh cdb_dev
 
 db-lcls2:
@@ -82,17 +82,40 @@ deploy-web-portal-lcls2: dist
 configure-web-portal-lcls2: dist
 	$(TOP)/sbin/cdb_configure_web_portal.sh cdb_lcls2
 
-deploy-web-service-lcls2: 
+deploy-web-service-lcls2:
 	$(TOP)/sbin/cdb_deploy_web_service.sh cdb_lcls2
 
-unconfigure-web-portal-lcls2: 
+unconfigure-web-portal-lcls2:
 	$(TOP)/sbin/cdb_unconfigure_web_portal.sh cdb_lcls2
 
-undeploy-web-portal-lcls2: 
+undeploy-web-portal-lcls2:
 	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_lcls2
 
-undeploy-web-service-lcls2: 
+undeploy-web-service-lcls2:
 	$(TOP)/sbin/cdb_undeploy_web_service.sh cdb_lcls2
 
-include $(TOP)/tools/make/RULES_CDB
+db-ops:
+	$(TOP)/sbin/cdb_create_db.sh cdb_ops
 
+backup-ops:
+	$(TOP)/sbin/cdb_backup_all.sh cdb_ops
+
+deploy-web-portal-ops: dist
+	$(TOP)/sbin/cdb_deploy_web_portal.sh cdb_ops
+
+configure-web-portal-ops: dist
+	$(TOP)/sbin/cdb_configure_web_portal.sh cdb_ops
+
+deploy-web-service-ops:
+	$(TOP)/sbin/cdb_deploy_web_service.sh cdb_ops
+
+unconfigure-web-portal-ops:
+	$(TOP)/sbin/cdb_unconfigure_web_portal.sh cdb_ops
+
+undeploy-web-portal-ops:
+	$(TOP)/sbin/cdb_undeploy_web_portal.sh cdb_ops
+
+undeploy-web-service-ops:
+	$(TOP)/sbin/cdb_undeploy_web_service.sh cdb_ops
+
+include $(TOP)/tools/make/RULES_CDB
