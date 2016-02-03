@@ -33,8 +33,12 @@ import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.io.IOException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +54,8 @@ import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.autocomplete.AutoComplete;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.SelectEvent;
 
 /**
@@ -129,6 +135,9 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     private DataTable componentPropertyValueListDataTable = null;
     private DataTable childDesignPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
+
+    private List<DesignElement> pendingChangesDesignElementList = null;
+    private List<DesignElement> sortableDesignElementList = null;
 
     public DesignElementController() {
     }
@@ -825,6 +834,173 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         }
         String editDesignElementType = designElement.getEditDesignElementType();
         return editDesignElementType != null && editDesignElementType.equals(DesignElementType.COMPONENT.toString());
+    }
+
+    /**
+     * Function handles the sorting of dropped designElement based on where it was dropped. 
+     * 
+     * @param ddEvent 
+     */
+    public void onDesignElementDrop(DragDropEvent ddEvent) {
+        String[] draggedId = ddEvent.getDragId().split(":");
+        String[] droppedId = ddEvent.getDropId().split(":");
+        int dragIndex = Integer.parseInt(draggedId[draggedId.length - 2]);
+        int dropIndex = Integer.parseInt(droppedId[droppedId.length - 2]);
+
+        String dropDescription = droppedId[droppedId.length - 1];
+
+        if (dragIndex > dropIndex) { //Dragged from bottom to top
+            if (dropDescription.equals("designElementRearrangeDataGridBottomPanel")) {
+                dropIndex++;
+            }
+        } else if (dragIndex < dropIndex) { //Dragged from top to bottom
+            if (dropDescription.equals("designElementRearrangeDataGridTopPanel")) {
+                dropIndex--;
+            }
+        }
+
+        if (dragIndex == dropIndex) {
+            return;
+        }
+        DesignElement designElementDroppped = (DesignElement) ddEvent.getData();
+
+        List<DesignElement> designElementList = sortableDesignElementList;
+
+        List<DesignElement> newDesignElementList = new ArrayList<>();
+
+        float sortOrder = 1;
+        for (int i = 0; i < designElementList.size(); i++) {
+            if (dragIndex > dropIndex) {
+                if (dragIndex == i) {
+                    continue;
+                }
+                if (dropIndex == i) {
+                    newDesignElementList.add(designElementDroppped);
+                    updateDesignElementSortOrder(designElementDroppped, sortOrder++);
+                }
+                newDesignElementList.add(designElementList.get(i));
+                updateDesignElementSortOrder(designElementList.get(i), sortOrder++);
+            } else if (dragIndex < dropIndex) {
+                if (dragIndex == i) {
+                    continue;
+                }
+                newDesignElementList.add(designElementList.get(i));
+                updateDesignElementSortOrder(designElementList.get(i), sortOrder++);
+                if (dropIndex == i) {
+                    newDesignElementList.add(designElementDroppped);
+                    updateDesignElementSortOrder(designElementDroppped, sortOrder++);
+                }
+            }
+        }
+
+        sortableDesignElementList = newDesignElementList;
+    }
+
+    public List<DesignElement> getSortableDesignElementList() {
+        return sortableDesignElementList;
+    }
+
+    /**
+     * Creates a sorted list in preparation for sorting. 
+     * 
+     * @param parentDesign 
+     * @param onSuccessCommand
+     */
+    public void configureSortableDesignElementList(Design parentDesign, String onSuccessCommand) {
+        if (pendingChangesDesignElementList != null) {
+            pendingChangesDesignElementList.clear();
+        }
+
+        List<DesignElement> parentDesignElementList = parentDesign.getDesignElementList();
+
+        if (parentDesignElementList != null && parentDesignElementList.size() > 0) {
+            sortableDesignElementList = new ArrayList<>();
+
+            for (DesignElement designElement : parentDesignElementList) {
+                if(designElement.getId() == null) {
+                    SessionUtility.addWarningMessage("Unsaved Design Element", "Please save design element list and try again.");
+                    return; 
+                }
+                sortableDesignElementList.add(designElement);
+            }
+            // Apply a sort in case the user applied filters to the data table
+            Collections.sort(sortableDesignElementList, new Comparator<DesignElement>() {
+                @Override
+                public int compare(DesignElement e1, DesignElement e2) {
+                    if (e1.getSortOrder() != null && e2.getSortOrder() != null) {
+                        return e1.getSortOrder().compareTo(e2.getSortOrder());
+                    }
+                    return 1; 
+                }
+            });
+            
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        } else {
+            SessionUtility.addInfoMessage("Info", "No design elements to sort.");
+        }
+
+    }
+
+    /**
+     * Updates the design element with new sort order number if needed
+     * adds to list that will be saved once sorting is complete. 
+     * 
+     * @param designElement object to have the sort order updated
+     * @param sortOrder sort order to set on the designElement object
+     */
+    private void updateDesignElementSortOrder(DesignElement designElement, float sortOrder) {
+        if (designElement.getSortOrder() != null && designElement.getSortOrder() == sortOrder) {
+            return;
+        }
+        designElement.setSortOrder(sortOrder);
+
+        if (pendingChangesDesignElementList == null) {
+            pendingChangesDesignElementList = new ArrayList<>();
+        }
+        if (pendingChangesDesignElementList.contains(designElement) == false) {
+            pendingChangesDesignElementList.add(designElement);
+        }
+    }
+
+    @Override
+    public Boolean getDisplayUpdateSortOrderButton() {
+        return true;
+    }
+
+    /**
+     * Determines if pending changes need to be saved by checking the list.
+     * 
+     * @return boolean
+     */
+    public Boolean getDesignElementPendingChanges() {
+        return pendingChangesDesignElementList != null && pendingChangesDesignElementList.size() > 0;
+    }
+
+    /**
+     * Updates each design element object that had the sort order modified. 
+     */
+    public void saveDesignElementPendingChanges() {
+        if (getDesignElementPendingChanges()) {
+            for (int i = 0; i < pendingChangesDesignElementList.size(); i++) {
+                this.setCurrent(pendingChangesDesignElementList.get(i));
+                this.update();
+            }
+
+            // Need the server to refresh database information for the particular entity.
+            int parentDesignId = pendingChangesDesignElementList.get(0).getParentDesign().getId();
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("?id=" + parentDesignId);
+            } catch (IOException ex) {
+                logger.debug(ex);
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+            }
+
+            // Clear the pending changes list since everythign was saved
+            pendingChangesDesignElementList.clear();
+            // Clear the sortable list pointer since sorting is complete. 
+            sortableDesignElementList = null;
+
+        }
     }
 
     public Boolean getDisplayDesignElementImages() {
