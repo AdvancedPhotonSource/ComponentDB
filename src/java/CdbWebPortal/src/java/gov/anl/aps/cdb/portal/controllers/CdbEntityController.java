@@ -1719,6 +1719,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public Boolean getDisplayLoadPropertyValuesButton(){
         return false; 
     }
+    
+    public Boolean getDisplayUpdateSortOrderButton(){
+        return false; 
+    }
 
     /**
      * If list data model needs to be reset this method will return true, and
