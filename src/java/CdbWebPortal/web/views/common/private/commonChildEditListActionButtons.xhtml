@@ -14,7 +14,13 @@
                          ajax="false" value="Save" alt="Save List" icon="ui-icon-check">
             <p:tooltip for="#{childEntityTypeName}EditListSaveButton" value="Save list."/>
         </p:commandButton>
-
+        
+        <p:commandButton id="#{childEntityTypeName}SortOrderButton" rendered="#{childEntityController.displayUpdateSortOrderButton}"
+                         value="Rearrange" icon="ui-icon-triangle-2-n-s"
+                         oncomplete="setSortableEntityList();">
+            <p:tooltip for="#{childEntityTypeName}SortOrderButton" value="Sort list or change order of items in the list"/>
+        </p:commandButton>
+        
         <p:commandButton id="#{childEntityTypeName}EditListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:dataExporter type="xls" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
             <p:tooltip for="#{childEntityTypeName}EditListExportXlsButton" value="Export list to excel file."/>
