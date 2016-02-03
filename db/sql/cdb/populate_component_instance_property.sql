@@ -77,6 +77,7 @@ INSERT INTO `component_instance_property` VALUES
 (73,333),
 (74,330),
 (74,332),
+(78,669),
 (80,355),
 (80,357),
 (80,358),
@@ -84,6 +85,7 @@ INSERT INTO `component_instance_property` VALUES
 (81,453),
 (81,454),
 (81,468),
+(81,678),
 (86,356),
 (88,360),
 (88,375),
@@ -103,6 +105,7 @@ INSERT INTO `component_instance_property` VALUES
 (110,521),
 (120,614),
 (120,615),
+(121,683),
 (125,626),
 (125,642),
 (126,625),
@@ -115,6 +118,7 @@ INSERT INTO `component_instance_property` VALUES
 (129,628),
 (129,629),
 (129,630),
-(129,631);
+(129,631),
+(136,680);
 /*!40000 ALTER TABLE `component_instance_property` ENABLE KEYS */;
 UNLOCK TABLES;

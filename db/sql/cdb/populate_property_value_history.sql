@@ -97,7 +97,7 @@ INSERT INTO `property_value_history` VALUES
 (127,344,'','62','','','2015-05-11 15:42:57',23,NULL,NULL),
 (128,344,'','','','','2015-05-11 15:44:34',23,NULL,NULL),
 (129,343,'','','','','2015-04-22 15:17:54',23,NULL,NULL),
-(130,362,'Ãƒâ€šÃ‚ÂµTCA Block DIagram','document.9175321647616355960.pdf','','','2015-05-12 15:55:48',3,NULL,NULL),
+(130,362,'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµTCA Block DIagram','document.9175321647616355960.pdf','','','2015-05-12 15:55:48',3,NULL,NULL),
 (131,362,'microTCA Block DIagram','document.9175321647616355960.pdf','','','2015-05-12 15:57:37',3,NULL,NULL),
 (132,362,'DSC Block DIagram','document.9175321647616355960.pdf','','','2015-05-12 15:59:44',3,NULL,NULL),
 (133,346,'','','','','2015-04-22 15:19:10',23,NULL,NULL),
@@ -115,7 +115,7 @@ INSERT INTO `property_value_history` VALUES
 (178,136,'','image.6894598563273125059.png','','','2015-01-26 14:22:07',3,NULL,NULL),
 (179,450,'Configuration Utility','document.4830449450351133424.','','','2015-06-24 08:12:38',3,NULL,NULL),
 (180,449,'User Guide','document.4803889213704389625.pdf','','','2015-06-23 15:45:31',3,'document.4803889213704389625.pdf','/cdb/propertyValue/documents/document.4803889213704389625.pdf'),
-(181,465,'Ãƒâ€šÃ‚ÂµTCA Port/Console Connections','document.6980526397939443919.pdf','','','2015-07-01 15:17:45',3,NULL,NULL),
+(181,465,'ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚ÂµTCA Port/Console Connections','document.6980526397939443919.pdf','','','2015-07-01 15:17:45',3,NULL,NULL),
 (182,452,'Field Measurement','document.6676537046692446946.png','','','2015-06-30 13:57:10',3,'document.6676537046692446946.png','/cdb/propertyValue/documents/document.6676537046692446946.png'),
 (183,453,'Field Integral','document.1117681884749677379.png','','','2015-06-30 13:57:48',3,NULL,NULL),
 (184,454,'Field Integral vs X','document.7846871296794283525.png','','','2015-06-30 13:58:21',3,NULL,NULL),
@@ -173,6 +173,11 @@ INSERT INTO `property_value_history` VALUES
 (251,599,'','','','','2015-09-18 14:33:59',21,NULL,NULL),
 (252,629,'','','','','2015-11-02 10:21:03',39,NULL,NULL),
 (253,631,'','document.6037961230320883069.pdf','','','2015-11-02 10:21:40',39,NULL,NULL),
-(254,643,'','document.2899884869621596444.pdf','','','2015-11-05 08:05:54',39,NULL,NULL);
+(254,643,'','document.2899884869621596444.pdf','','','2015-11-05 08:05:54',39,NULL,NULL),
+(255,446,'DMM Top Level Vacuum','mba_vac_dmm_system.drw','','','2015-08-26 10:00:28',2,NULL,NULL),
+(256,446,'DMM Top Level Vacuum','U221020901-001000.drw','','','2015-12-15 13:05:32',2,NULL,NULL),
+(263,662,'','EAA Partial Sector','','','2016-01-05 16:04:49',7,NULL,NULL),
+(264,662,'','EAA Partial Sector concrete mock-up','','','2016-01-05 16:06:13',7,NULL,NULL),
+(265,671,'','document.2878993904781179903.pdf','','','2016-01-22 11:08:40',36,NULL,NULL);
 /*!40000 ALTER TABLE `property_value_history` ENABLE KEYS */;
 UNLOCK TABLES;

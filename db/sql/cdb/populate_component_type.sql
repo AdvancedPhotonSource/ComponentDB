@@ -46,7 +46,7 @@ INSERT INTO `component_type` VALUES
 (46,'Function Generator',NULL,3),
 (47,'Frequency Synthesizer',NULL,3),
 (48,'Voltmeter',NULL,3),
-(49,'Power Supply',NULL,3),
+(49,'Power Supply','',7),
 (50,'Amplifier',NULL,3),
 (51,'Multiplexor',NULL,3),
 (52,'Interlock',NULL,3),

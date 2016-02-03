@@ -98,7 +98,7 @@ INSERT INTO `component_instance` VALUES
 (118,166,NULL,'DMM-QUADRUPOLE-A002',NULL,109,NULL,'The 2nd Quadrupole of DMM; With cut for vacuum chamber;',707),
 (119,167,NULL,'S1A001',NULL,108,NULL,'Sectupole magnet for DMM instance 105',708),
 (120,168,NULL,'DMM-SUPPORT-PLATE-A001',NULL,106,'','',710),
-(121,292,NULL,'DMM-QUADRUPOLE-A001',NULL,107,NULL,'',713),
+(121,292,NULL,'DMM-QUADRUPOLE-A001',NULL,107,'','',713),
 (122,293,NULL,'DMM-QUADRUPOLE-A003',NULL,110,NULL,'',716),
 (123,294,NULL,'DMM-QUADRUPOLE-A004',NULL,111,NULL,'',717),
 (124,299,214,NULL,'CN-OXTXXX-72872-57K-A3ML',121,'','Monitor for Kicker Development PC',745),
@@ -112,6 +112,7 @@ INSERT INTO `component_instance` VALUES
 (132,305,NULL,'M4 Potting Mold Assembly',NULL,137,NULL,'',759),
 (133,255,398,NULL,NULL,NULL,'','',760),
 (134,159,NULL,NULL,'9246524',NULL,'','Procurred for SPX RTFB DAQ',761),
-(135,159,NULL,NULL,NULL,NULL,NULL,'Procurred because the other one is broke',762);
+(135,159,NULL,NULL,NULL,NULL,NULL,'Procurred because the other one is broke',762),
+(136,306,NULL,'Spare',NULL,NULL,'','',792);
 /*!40000 ALTER TABLE `component_instance` ENABLE KEYS */;
 UNLOCK TABLES;

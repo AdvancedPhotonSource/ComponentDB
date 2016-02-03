@@ -60,6 +60,17 @@ INSERT INTO `log` VALUES
 (65,'Originally procured in Jan 2013','2015-11-19 11:17:55',3,NULL),
 (66,'Returned for repair August 2015','2015-11-19 11:18:41',3,NULL),
 (67,'Received from repair ... damaged during shipment','2015-11-19 11:18:57',3,NULL),
-(68,'Returned again for repair','2015-12-10 13:20:16',3,NULL);
+(68,'Returned again for repair','2015-12-10 13:20:16',3,NULL),
+(71,'FNAL magnet moved out of crate in 437 LOM to facilitate photos.','2016-01-21 11:06:59',7,NULL),
+(72,'01-13-2015:  Concrete Multiplet plinth QR ID #100 moved from EAA to bldg. 314 for Chuck Doose','2016-01-22 11:18:04',36,NULL),
+(73,'01-13-2016:  Concrete Quad Doublet Plinth QR ID #101 moved to new location in EAA','2016-01-22 11:22:03',36,NULL),
+(74,'01-13-2016 Granite plinth QR ID #143 moved to new location in the EAA','2016-01-22 11:23:29',36,NULL),
+(75,'FNAL magnet moved in 437 LOM to facilitate photos. Jan 15 2016','2016-01-26 16:37:55',7,NULL),
+(76,'FNAL magnet returned to crate in 437 LOM Jan 21 2016','2016-01-26 16:38:44',7,NULL),
+(77,'Move from 314 to EAA for picture on 01/14/2016','2016-01-27 08:47:02',21,NULL),
+(78,'Move from 314 to MOM/401 for picture on 01/14/2016','2016-01-27 08:48:35',21,NULL),
+(79,'Move from EAA/401 to MOM/401 for picture after assembly is done on 01/13/2016','2016-01-27 08:49:44',21,NULL),
+(80,'Move from MOM/401 to 314 for magnet measurement on 01/20/2016','2016-01-27 08:50:45',21,NULL),
+(81,'Move from MOM/401 to 314 for magnet measurement after switching the bottom two pole tips on 01/25/2016','2016-01-27 09:07:36',21,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

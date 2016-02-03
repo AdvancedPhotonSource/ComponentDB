@@ -199,7 +199,7 @@ INSERT INTO `component` VALUES
 (212,'TurboPumpCart_R&D',NULL,'TStation 75',66,520),
 (213,'M1 dipole pre-prototype',NULL,'First prototype magnet (from Fermilab)',80,536),
 (214,'Samsung Galaxy Tab 10.5',NULL,'',121,537),
-(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
+(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
 (216,'PRL-424LV',NULL,'1:4 LVDS Fanout Buffer',108,540),
 (217,'Generic: Data Logging System',NULL,'',129,554),
 (218,'Generic: Measurement System',NULL,'',128,555),
@@ -266,6 +266,7 @@ INSERT INTO `component` VALUES
 (301,'Granite Plinth','u2210203-100400','',119,750),
 (303,'M4 Winding Fixture Assembly','u221020205-112100','',80,754),
 (304,'M4 Trim Coil Winding Fixture Assembly','u221020205-112200','',80,756),
-(305,'M4 Potting Mold Assembly','u221020205-112300','',80,758);
+(305,'M4 Potting Mold Assembly','u221020205-112300','',80,758),
+(306,'Interleaving Power Supply',NULL,'',49,791);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

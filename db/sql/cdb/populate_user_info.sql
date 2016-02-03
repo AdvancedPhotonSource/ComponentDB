@@ -7,7 +7,7 @@ INSERT INTO `user_info` VALUES
 (4,'sveseli','Sinisa','Veseli','','sveseli@aps.anl.gov',NULL,NULL),
 (5,'benes','Scott','Benes','','benes@aps.anl.gov',NULL,NULL),
 (6,'nschwarz','Nicholas','Schwarz','','nschwarz@aps.anl.gov',NULL,NULL),
-(7,'cease','Herman','Cease','','cease@aps.anl.gov',NULL,NULL),
+(7,'cease','Herman','Cease','','cease@aps.anl.gov',NULL,''),
 (8,'carwar','John','Carwardine','','carwar@aps.anl.gov',NULL,''),
 (9,'decker','Glenn','Decker','','decker@aps.anl.gov',NULL,NULL),
 (10,'ngrossman','Nancy','Grossman','','ngrossman@aps.anl.gov',NULL,NULL),
@@ -41,6 +41,13 @@ INSERT INTO `user_info` VALUES
 (38,'jzxu','Joe','Xu','','jzxu@aps.anl.gov',NULL,NULL),
 (39,'jnudell','Jeremy','Nudell','','jnudell@aps.anl.gov',NULL,NULL),
 (40,'borland','Michael','Borland','','borland@aps.anl.gov',NULL,NULL),
-(41,'soprondek','Samuel','Oprondek','','soprondek@aps.anl.gov','ziZy$VHwn+tdgAX6uwMZf1mA2c0By8DdnuCbp',NULL);
+(41,'soprondek','Samuel','Oprondek','','soprondek@aps.anl.gov','ziZy$VHwn+tdgAX6uwMZf1mA2c0By8DdnuCbp',NULL),
+(42,'hanuska','Steve','Hanuska','','hanuska@aps.anl.gov',NULL,''),
+(43,'nda1','Ned','Arnold','Local','nda@aps.anl.gov','moYf$DWPXYvgut/WHE/xrfqseq86gGYEf4SvT',''),
+(44,'jabraham','Josh','Abraham','','jabraham@anl.gov',NULL,''),
+(45,'puttkamm','Anthony','Puttkammer','','puttkamm@aps.anl.gov',NULL,''),
+(46,'wiemer','Greg','Wiemerslage','','wiemer@aps.anl.gov',NULL,''),
+(47,'knoerzer','Kevin','Knoerzer','','knoerzer@aps.anl.gov',NULL,''),
+(48,'jacarter','Jason','Carter','','jacarter',NULL,'');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
