@@ -6,7 +6,10 @@
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
-
+    <ui:param name="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
+    <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
+    <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
+    
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}ListTreeTableAddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
             <p:tooltip for="#{entityTypeName}ListTreeTableAddButton" value="Add new #{entityController.displayEntityTypeName}."/>
@@ -15,6 +18,18 @@
             <p:tooltip for="#{entityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
 
+        <p:button id="#{entityTypeName}ListTreeTableViewTypesButton" href="../#{entityTypeTypeName}/list.xhtml" rendered="#{entityController.entityHasTypes()}" alt="View Types" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ListTreeTableViewTypesButton" value="View types."/>
+        </p:button>
+
+        <p:button id="#{entityTypeName}ListTreeTableViewCategoriesButton" href="../#{entityTypeCategoryName}/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ListTreeTableViewCategoriesButton" value="View categories."/>
+        </p:button>
+
+        <p:button id="#{entityTypeName}ListTreeTableViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ListTreeTableViewGroupsButton" value="View groups."/>
+        </p:button>
+        
         <p:commandButton id="#{entityTypeName}ListTreeTableNoOp" style="visibility:hidden" value="NoOp"/>
         <p:defaultCommand target="#{entityTypeName}ListTreeTableNoOp"/>
     </div>
