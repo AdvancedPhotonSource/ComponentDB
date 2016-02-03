@@ -337,6 +337,18 @@ tr:hover .actionLink {
     margin-right: auto;
 }
 
+.sortDroppable {
+    height: 0px; 
+    border: none;
+    padding: 0px;
+}
+.sortDroppableHover {
+    background: gray; 
+    height: 20px;
+    border: none; 
+    padding: 0px;
+}
+
 .pdmLinkdialog {
     background: #EFF1F5;
     box-shadow: 0px 3px 5px #d5d5d5;    
