@@ -64,27 +64,27 @@ fi
 backupFile=${CDB_DB_NAME}.backup.$timestamp.sql
 fullBackupFilePath=$CDB_BACKUP_DIR/$backupFile
 
-# Read password
-sttyOrig=`stty -g`
-stty -echo
-read -p "Enter MySQL root password: " CDB_DB_ADMIN_PASSWORD
-stty $sttyOrig
-
-mysqlCmd="mysqldump --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
-if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
-    mysqlCmd="$mysqlCmd -p$CDB_DB_ADMIN_PASSWORD"
+# Check for database passwd file
+databasePasswdFile=$CDB_INSTALL_DIR/etc/$CDB_DB_NAME.db.passwd
+if [ -f $databasePasswdFile ]; then 
+    CDB_DB_USER_PASSWORD=`cat $databasePasswdFile`
+else 
+    if [ -t 0 ]; then 
+	read -s -p "Enter MySQL $CDB_DB_NAME password: " CDB_DB_USER_PASSWORD
+    else 
+	# Script is not runnig in an interactive shell
+	# User cannot be prompted for password
+	>&2 echo "ERROR: $databasePasswdFile does not exist"
+	exit 1
+    fi
 fi
 
-execute() {
-    msg="$@"
-    if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
-        sedCmd="s?$CDB_DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g"
-        echo "Executing: $@" | sed -e $sedCmd
-    else
-        echo "Executing: $@"
-    fi
-    eval "$@"
-}
+if [ -z $CDB_DB_USER_PASSWORD ]; then
+    >&2 echo "ERROR: password provided is blank"
+    exit 1
+fi
+
+mysqlCmd="mysqldump --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_NAME -p$CDB_DB_USER_PASSWORD"
 
 mysqlCmd="$mysqlCmd $CDB_DB_NAME"
 
@@ -93,7 +93,7 @@ echo
 echo "Using DB backup directory: $CDB_BACKUP_DIR"
 
 mkdir -p $CDB_BACKUP_DIR
-$mysqlCmd > $fullBackupFilePath
+$mysqlCmd > $fullBackupFilePath || exit 1
 
 nTableLocks=`grep -n LOCK $fullBackupFilePath | grep WRITE | wc -l`
 echo "Processing $nTableLocks table locks"

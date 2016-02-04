@@ -10,22 +10,16 @@
 #
 
 CDB_DB_NAME=cdb
-CDB_DB_OWNER=cdb
-CDB_DB_OWNER_PASSWORD=cdb
-CDB_DB_HOST=127.0.0.1
-CDB_DB_PORT=3306
-CDB_DB_ADMIN_USER=root
-CDB_DB_ADMIN_HOSTS="127.0.0.1 bluegill1.aps.anl.gov gaeaimac.aps.anl.gov visa%.aps.anl.gov"
-CDB_DB_ADMIN_PASSWORD=
-CDB_DB_CHARACTER_SET=utf8
 
 CURRENT_DIR=`pwd`
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
+
+$MY_DIR/cdb_backup_db.sh $1 $2 || exit 1
+
 cd $CURRENT_DIR
 if [ -z "${CDB_ROOT_DIR}" ]; then
     CDB_ROOT_DIR=$MY_DIR/..
 fi
-CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/cdb
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
     echo "Environment file ${CDB_ENV_FILE} does not exist." 
@@ -37,91 +31,107 @@ fi
 if [ ! -z "$1" ]; then
     CDB_DB_NAME=$1
 fi
-echo "Backing up $CDB_DB_NAME"
 
-# Look for deployment file in etc directory, and use it to override
-# default entries
-deployConfigFile=$CDB_ROOT_DIR/etc/${CDB_DB_NAME}.deploy.conf
-if [ -f $deployConfigFile ]; then
-    echo "Using deployment config file: $deployConfigFile"
-    . $deployConfigFile
-else
-    echo "Deployment config file $deployConfigFile not found, using defaults"
-fi
-
-# Determine run directory
-if [ -z "${CDB_INSTALL_DIR}" ]; then
-    CDB_INSTALL_DIR=$CDB_ROOT_DIR/..
-fi
-
-# Second argument overrides directory with db population scripts
-#timestamp=`date +%Y%m%d.%H%M%S`
 timestamp=`date +%Y%m%d`
 CDB_BACKUP_DIR=$2
 if [ -z $CDB_BACKUP_DIR ]; then
     CDB_BACKUP_DIR=$CDB_INSTALL_DIR/backup/$CDB_DB_NAME/$timestamp
 fi
-backupFile=${CDB_DB_NAME}.backup.$timestamp.sql
-fullBackupFilePath=$CDB_BACKUP_DIR/$backupFile
-
-# Read password
-sttyOrig=`stty -g`
-stty -echo
-read -p "Enter MySQL root password: " CDB_DB_ADMIN_PASSWORD
-stty $sttyOrig
-
-mysqlCmd="mysqldump --port=$CDB_DB_PORT --host=$CDB_DB_HOST -u $CDB_DB_ADMIN_USER"
-if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
-    mysqlCmd="$mysqlCmd -p$CDB_DB_ADMIN_PASSWORD"
-fi
-
-execute() {
-    msg="$@"
-    if [ ! -z "$CDB_DB_ADMIN_PASSWORD" ]; then
-        sedCmd="s?$CDB_DB_ADMIN_PASSWORD?\\*\\*\\*\\*\\*\\*?g"
-        echo "Executing: $@" | sed -e $sedCmd
-    else
-        echo "Executing: $@"
-    fi
-    eval "$@"
-}
-
-mysqlCmd="$mysqlCmd $CDB_DB_NAME"
-
-echo
-echo
-echo "Using DB backup directory: $CDB_BACKUP_DIR"
-
-mkdir -p $CDB_BACKUP_DIR
-$mysqlCmd > $fullBackupFilePath
-
-nTableLocks=`grep -n LOCK $fullBackupFilePath | grep WRITE | wc -l`
-echo "Processing $nTableLocks table locks"
-
-lockCnt=0
-processingFile=$CDB_BACKUP_DIR/process.txt
-while [ $lockCnt -lt $nTableLocks ]; do
-    lockCnt=`expr $lockCnt + 1`
-    headLine=`expr $lockCnt \* 2`
-    tailLine=2
-    echo "Working on table lock #: $lockCnt" 
-    grep -n "LOCK TABLES" $fullBackupFilePath | head -$headLine | tail -$tailLine > $processingFile
-    dbTable=`cat $processingFile | head -1 | awk '{print $3}' | sed 's?\`??g'`
-    firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
-    lastLine=`cat $processingFile | tail -1 | cut -f1 -d':'`
-    echo "Creating sql script for $dbTable"
-    targetFile=$CDB_BACKUP_DIR/populate_$dbTable.sql
-    cat $fullBackupFilePath | sed -n ${firstLine},${lastLine}p > $targetFile
-    cat $targetFile | sed 's?VALUES ?VALUES\n?g' | sed 's?),(?),\n(?g' > $targetFile.2 && mv $targetFile.2 $targetFile
-done
-rm -f $processingFile
 
 # Backup web app
 echo "Backing up $CDB_DB_NAME web app"
-rsync -arlvP $CDB_SUPPORT_DIR/glassfish/linux-x86_64/glassfish/domains/domain1/autodeploy/$CDB_DB_NAME.war $CDB_BACKUP_DIR
+# Find the last version already backed up. 
+CDB_WAR_BACKUP_DIR=$CDB_INSTALL_DIR/backup/$CDB_DB_NAME/deployments
+if [ ! -d $CDB_WAR_BACKUP_DIR ]; then
+    mkdir -p $CDB_WAR_BACKUP_DIR
+fi
+
+CDB_GLASSFISH_WAR_FILE_PATH="$CDB_SUPPORT_DIR/glassfish/linux-x86_64/glassfish/domains/domain1/autodeploy/$CDB_DB_NAME.war"
+if [ ! -f $CDB_GLASSFISH_WAR_FILE_PATH ]; then
+    >&2 echo "Error: file $CDB_GLASSFISH_WAR_FILE_PATH was not found"
+    exit 1
+fi
+
+createNewDeploymentBackupFile=false
+lastAddedWarFileName=`ls -t $CDB_WAR_BACKUP_DIR | head -1`
+lastAddedWarFilePath=$CDB_WAR_BACKUP_DIR/$lastAddedWarFileName
+
+if [ -z "$lastAddedWarFileName" ]; then
+    createNewDeploymentBackupFile=true 
+else
+    # Compare hash of latest saved war deployment file
+    currentWarHash=`md5sum $CDB_GLASSFISH_WAR_FILE_PATH | awk '{print $1}'` 
+    lastAddedWarFile=`ls -t $CDB_WAR_BACKUP_DIR | head -1`
+    
+    lastAddedWarHash=`md5sum $lastAddedWarFilePath | awk '{print $1}'`
+
+    if [ "$currentWarHash" != "$lastAddedWarHash" ]; then
+	createNewDeploymentBackupFile=true
+    fi
+fi
+
+getNextBackupCounter() {
+    pathUpToCounter=$1
+
+    fileBaseName=`basename $pathUpToCounter`
+    lastPath=`ls -t $pathUpToCounter* | head -1 | grep $fileBaseName-`
+    
+    if [ -z $lastPath ]; then
+	return 1
+    else
+	lastFileName=`basename $lastPath`
+	lastFileBaseName=`echo "$lastFileName" | awk 'BEGIN { FS = "." } ; { print $1 }'`
+	lastBackupCount=`echo $lastFileBaseName  | awk 'BEGIN { FS = "-" } ; { print $3 }'`
+	return $(($lastBackupCount + 1))
+    fi
+
+}
+
+if $createNewDeploymentBackupFile ; then
+    deploymentBackupFileName="$CDB_DB_NAME-$timestamp.war"
+    
+    # Check if the file with standard name was already created. 
+    if [ -f "$CDB_WAR_BACKUP_DIR/$deploymentBackupFileName" ]; then
+	deploymentBackupFileBaseName=`echo "$deploymentBackupFileName" | awk 'BEGIN { FS = "." } ; { print $1 }'`
+
+	getNextBackupCounter "$CDB_WAR_BACKUP_DIR/$deploymentBackupFileBaseName"
+	
+	backupCounter=$?
+	deploymentBackupFileName="$deploymentBackupFileBaseName-$backupCounter.war"
+    fi
+
+    deploymentBackupFilePath="$CDB_WAR_BACKUP_DIR/$deploymentBackupFileName"
+    echo "Creating new war backup: $deploymentBackupFilePath"
+    rsync -arlvP $CDB_GLASSFISH_WAR_FILE_PATH $deploymentBackupFilePath
+fi
+
+# Create Symbolic link to the backup with a relative path this way the backup directory is portable. 
+lastAddedWarFilePath=$CDB_WAR_BACKUP_DIR/`ls -t "$CDB_WAR_BACKUP_DIR" | head -1`
+backupLinkFileName="deployment-$CDB_DB_NAME.war"
+backupLinkFilePath="$CDB_BACKUP_DIR/deployment-$CDB_DB_NAME.war"
+
+if [ -f "$CDB_BACKUP_DIR/$backupLinkFileName" ]; then
+    backupLinkFileBaseName=`echo "$backupLinkFileName" | awk 'BEGIN { FS = "." } ; { print $1 }'`
+    lastBackupLinkFilePath=`ls -t $CDB_BACKUP_DIR/$backupLinkFileBaseName* | head -1`
+   
+    linkHash=`md5sum $lastBackupLinkFilePath | awk '{print $1}'`
+    lastAddedWarHash=`md5sum $lastAddedWarFilePath | awk '{print $1}'`
+
+    if [ "$linkHash" == "$lastAddedWarHash" ]; then
+	backupLinkFilePath=$lastBackupLinkFilePath
+    else	
+	getNextBackupCounter "$CDB_BACKUP_DIR/$backupLinkFileBaseName"
+	backupCounter=$?
+	backupLinkFileName="$backupLinkFileBaseName-$backupCounter.war"
+    fi
+fi
+
+backupLinkFilePath=$CDB_BACKUP_DIR/$backupLinkFileName
+
+if [ ! -f $backupLinkFilePath ]; then
+    lastAddedWarFileName=`basename $lastAddedWarFilePath`
+    echo "Creating new deployment backup link: $backupLinkFilePath -> $lastAddedWarFileName" 
+    ln -s ../deployments/$lastAddedWarFileName $backupLinkFilePath
+fi
 
 echo "Backup of $CDB_DB_NAME is done."
-
-
-
-
