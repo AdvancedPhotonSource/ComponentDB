@@ -76,11 +76,16 @@ fi
 # Read user db password if needed 
 CDB_DB_PASSWORD=$CDB_DB_USER_PASSWORD
 if [ -z "$CDB_DB_USER_PASSWORD" ]; then
-    sttyOrig=`stty -g`
-    stty -echo
-    read -p "Enter DB password for the $CDB_DB_USER user: " CDB_DB_PASSWORD
-    stty $sttyOrig
-    echo
+    CDB_DB_PASSWD_FILE="$CDB_INSTALL_DIR/etc/$CDB_DB_NAME.db.passwd"
+    if [ -f $CDB_DB_PASSWD_FILE ]; then
+	CDB_DB_PASSWORD=`cat $CDB_DB_PASSWD_FILE`
+    else
+	sttyOrig=`stty -g`
+	stty -echo
+	read -p "Enter DB password for the $CDB_DB_USER user: " CDB_DB_PASSWORD
+	stty $sttyOrig
+	echo
+    fi
 fi
 if [ -z "$CDB_DB_PASSWORD" ]; then
     echo "$CDB_DB_USER user password cannot be empty."
