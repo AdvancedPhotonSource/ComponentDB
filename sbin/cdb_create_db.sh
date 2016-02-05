@@ -144,6 +144,9 @@ mysqlCmd="$mysqlCmd -D $CDB_DB_NAME <"
 execute $mysqlCmd create_cdb_tables.sql
 
 # create db password file
+if [ ! -d $CDB_ETC_DIR ]; then 
+    mkdir -p $CDB_ETC_DIR
+fi
 passwordFile=$CDB_ETC_DIR/$CDB_DB_NAME.db.passwd
 echo $CDB_DB_PASSWORD > $passwordFile
 chmod 600 $passwordFile
