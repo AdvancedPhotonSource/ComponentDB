@@ -54,7 +54,7 @@ import org.primefaces.component.selectonemenu.SelectOneMenu;
  */
 @Named("componentInstanceController")
 @SessionScoped
-public class ComponentInstanceController extends CdbEntityController<ComponentInstance, ComponentInstanceDbFacade> implements Serializable {
+public class ComponentInstanceController extends CdbDomainEntityController<ComponentInstance, ComponentInstanceDbFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -284,7 +284,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
             return;
         }
         componentInstance.clearPropertyValueCache();
-        prepareComponentInstanceImageList(componentInstance);
+        prepareImageList(componentInstance);
         prepareComponentInstancePropertyValueDisplay(componentInstance);
     }
 
@@ -360,7 +360,7 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         logger.debug("Verifying properties for component instance id " + componentInstance.getId());
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
         componentInstance.clearPropertyValueCache();
-        prepareComponentInstanceImageList(componentInstance);
+        prepareImageList(componentInstance);
         logger.debug("Updating component instance id " + componentInstance.getId()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
     }
@@ -426,22 +426,6 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
 
     public void savePropertyList() {
         update();
-    }
-
-    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
-        ComponentInstance componentInstance = getCurrent();
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        List<PropertyValue> propertyValueList = componentInstance.getPropertyValueList();
-        for (PropertyType propertyType : propertyTypeList) {
-            PropertyValue propertyValue = new PropertyValue();
-            propertyValue.setPropertyType(propertyType);
-            propertyValue.setValue(propertyType.getDefaultValue());
-            propertyValue.setUnits(propertyType.getDefaultUnits());
-            propertyValueList.add(propertyValue);
-            propertyValue.setEnteredByUser(lastModifiedByUser);
-            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        }
     }
 
     public void deleteProperty(PropertyValue componentInstanceProperty) {
@@ -843,11 +827,6 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         this.filterByTag = filterByTag;
     }
 
-    public Boolean getDisplayComponentInstanceImages() {
-        List<PropertyValue> componentInstanceImageList = getComponentInstanceImageList();
-        return (componentInstanceImageList != null && !componentInstanceImageList.isEmpty());
-    }
-
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         if (propertyTypeId != null) {
 
@@ -954,7 +933,8 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         this.qrIdViewParam = qrIdViewParam;
     }
 
-    public List<PropertyValue> prepareComponentInstanceImageList(ComponentInstance componentInstance) {
+    @Override
+    public List<PropertyValue> prepareImageList(ComponentInstance componentInstance) {
         if (componentInstance == null) {
             return null;
         }
@@ -976,18 +956,6 @@ public class ComponentInstanceController extends CdbEntityController<ComponentIn
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyValueUtility.configurePropertyValueDisplay(propertyValue);
         }
-    }
-
-    public List<PropertyValue> getComponentInstanceImageList() {
-        ComponentInstance componentInstance = getCurrent();
-        if (componentInstance == null) {
-            return null;
-        }
-        List<PropertyValue> componentInstanceImageList = componentInstance.getImagePropertyList();
-        if (componentInstanceImageList == null) {
-            componentInstanceImageList = prepareComponentInstanceImageList(componentInstance);
-        }
-        return componentInstanceImageList;
     }
 
     public SelectOneMenu getComponentSelectOneMenu() {

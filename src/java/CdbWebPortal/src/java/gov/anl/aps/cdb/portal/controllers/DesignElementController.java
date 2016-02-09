@@ -63,7 +63,7 @@ import org.primefaces.event.SelectEvent;
  */
 @Named("designElementController")
 @SessionScoped
-public class DesignElementController extends CdbEntityController<DesignElement, DesignElementDbFacade> implements Serializable {
+public class DesignElementController extends CdbDomainEntityController<DesignElement, DesignElementDbFacade> implements Serializable {
 
     /**
      * Controller specific settings
@@ -214,7 +214,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         List<PropertyValue> newPropertyValueList = designElement.getPropertyValueList();
         logger.debug("Verifying properties for design element " + designElement);
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
-        prepareDesignElementImageList(designElement);
+        prepareImageList(designElement);
         resetSelectObjectLists();
     }
 
@@ -222,7 +222,7 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
     public void prepareEntityUpdateOnRemoval(DesignElement designElement) {
         EntityInfo entityInfo = designElement.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
-        prepareDesignElementImageList(designElement);
+        prepareImageList(designElement);
         resetSelectObjectLists();
     }
 
@@ -285,22 +285,6 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
 
     public void savePropertyList() {
         update();
-    }
-
-    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
-        DesignElement designElement = getCurrent();
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        List<PropertyValue> propertyValueList = designElement.getPropertyValueList();
-        for (PropertyType propertyType : propertyTypeList) {
-            PropertyValue propertyValue = new PropertyValue();
-            propertyValue.setPropertyType(propertyType);
-            propertyValue.setValue(propertyType.getDefaultValue());
-            propertyValue.setUnits(propertyType.getDefaultUnits());
-            propertyValue.setEnteredByUser(lastModifiedByUser);
-            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-            propertyValueList.add(propertyValue);
-        }
     }
 
     public void deleteProperty(PropertyValue designElementProperty) {
@@ -1003,33 +987,13 @@ public class DesignElementController extends CdbEntityController<DesignElement, 
         }
     }
 
-    public Boolean getDisplayDesignElementImages() {
-        List<PropertyValue> designElementImageList = getDesignElementImageList();
-        return (designElementImageList != null && !designElementImageList.isEmpty());
-    }
-
-    public List<PropertyValue> prepareDesignElementImageList(DesignElement designElement) {
-        List<PropertyValue> componentInstanceImageList = PropertyValueUtility.prepareImagePropertyValueList(designElement.getPropertyValueList());
-        designElement.setImagePropertyList(componentInstanceImageList);
-        return componentInstanceImageList;
-    }
-
     public void prepareComponentInstancePropertyValueDisplay(DesignElement designElement) {
         List<PropertyValue> propertyValueList = designElement.getPropertyValueList();
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyValueUtility.configurePropertyValueDisplay(propertyValue);
         }
     }
-
-    public List<PropertyValue> getDesignElementImageList() {
-        DesignElement designElement = getCurrent();
-        List<PropertyValue> designElementImageList = designElement.getImagePropertyList();
-        if (designElementImageList == null) {
-            designElementImageList = prepareDesignElementImageList(designElement);
-        }
-        return designElementImageList;
-    }
-
+    
     public Boolean getDisplayChildDesignProperties(DesignElement designElement) {
         if (designElement == null) {
             return false;

@@ -20,7 +20,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -52,7 +51,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named("designController")
 @SessionScoped
-public class DesignController extends CdbEntityController<Design, DesignDbFacade> implements Serializable {
+public class DesignController extends CdbDomainEntityController<Design, DesignDbFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -222,7 +221,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
         List<PropertyValue> newPropertyValueList = design.getPropertyValueList();
         logger.debug("Verifying properties for design " + design);
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
-        prepareDesignImageList(design);
+        prepareImageList(design);
         logger.debug("Updating design " + design.getName()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
     }
@@ -231,7 +230,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     public void prepareEntityUpdateOnRemoval(Design design) {
         EntityInfo entityInfo = design.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
-        prepareDesignImageList(design);
+        prepareImageList(design);
     }
 
     @Override
@@ -257,23 +256,7 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
     public void savePropertyList() {
         update();
     }
-
-    public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
-        Design design = getCurrent();
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        List<PropertyValue> propertyValueList = design.getPropertyValueList();
-        for (PropertyType propertyType : propertyTypeList) {
-            PropertyValue propertyValue = new PropertyValue();
-            propertyValue.setPropertyType(propertyType);
-            propertyValue.setValue(propertyType.getDefaultValue());
-            propertyValue.setUnits(propertyType.getDefaultUnits());
-            propertyValueList.add(propertyValue);
-            propertyValue.setEnteredByUser(lastModifiedByUser);
-            propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        }
-    }
-
+    
     public void deleteProperty(PropertyValue designProperty) {
         Design design = getCurrent();
         List<PropertyValue> designPropertyList = design.getPropertyValueList();
@@ -484,26 +467,6 @@ public class DesignController extends CdbEntityController<Design, DesignDbFacade
             }
         }
 
-    }
-
-    public Boolean getDisplayDesignImages() {
-        List<PropertyValue> designImageList = getDesignImageList();
-        return (designImageList != null && !designImageList.isEmpty());
-    }
-
-    public List<PropertyValue> prepareDesignImageList(Design design) {
-        List<PropertyValue> designImageList = PropertyValueUtility.prepareImagePropertyValueList(design.getPropertyValueList());
-        design.setImagePropertyList(designImageList);
-        return designImageList;
-    }
-
-    public List<PropertyValue> getDesignImageList() {
-        Design design = getCurrent();
-        List<PropertyValue> designImageList = design.getImagePropertyList();
-        if (designImageList == null) {
-            designImageList = prepareDesignImageList(design);
-        }
-        return designImageList;
     }
 
     public List<Design> getSelectDesignCandidateList() {
