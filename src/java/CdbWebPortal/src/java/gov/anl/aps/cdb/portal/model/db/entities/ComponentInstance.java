@@ -54,7 +54,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ComponentInstance.findByTag", query = "SELECT c FROM ComponentInstance c WHERE c.tag = :tag"),
     @NamedQuery(name = "ComponentInstance.findByLocationDetails", query = "SELECT c FROM ComponentInstance c WHERE c.locationDetails = :locationDetails"),
     @NamedQuery(name = "ComponentInstance.findByDescription", query = "SELECT c FROM ComponentInstance c WHERE c.description = :description")})
-public class ComponentInstance extends CdbEntity {
+public class ComponentInstance extends CdbDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -96,8 +96,6 @@ public class ComponentInstance extends CdbEntity {
     @JoinColumn(name = "component_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Component component;
-
-    private transient List<PropertyValue> imagePropertyList = null;
 
     private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
 
@@ -165,6 +163,7 @@ public class ComponentInstance extends CdbEntity {
     }
 
     @XmlTransient
+    @Override
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -231,18 +230,6 @@ public class ComponentInstance extends CdbEntity {
     public void setQrId(Integer qrId) {
         this.qrId = qrId;
         qrIdDisplay = null;
-    }
-
-    public List<PropertyValue> getImagePropertyList() {
-        return imagePropertyList;
-    }
-
-    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
-        this.imagePropertyList = imagePropertyList;
-    }
-
-    public void resetImagePropertyList() {
-        this.imagePropertyList = null;
     }
 
     public String getPropertyValueByIndex(Integer index) {
@@ -429,7 +416,7 @@ public class ComponentInstance extends CdbEntity {
         cloned.designElementList = null;
         cloned.logList = null;
         cloned.componentInstanceLocationHistoryList = null;
-        cloned.imagePropertyList = null;
+        cloned.setImagePropertyList(null);
         cloned.propertyValueList = null;
         cloned.entityInfo = null;
         cloned.isCloned = true;

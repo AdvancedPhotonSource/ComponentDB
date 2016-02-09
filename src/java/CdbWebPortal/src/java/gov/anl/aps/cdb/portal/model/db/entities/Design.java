@@ -49,7 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Design.findById", query = "SELECT d FROM Design d WHERE d.id = :id"),
     @NamedQuery(name = "Design.findByName", query = "SELECT d FROM Design d WHERE d.name = :name"),
     @NamedQuery(name = "Design.findByDescription", query = "SELECT d FROM Design d WHERE d.description = :description")})
-public class Design extends CdbEntity {
+public class Design extends CdbDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,7 +80,6 @@ public class Design extends CdbEntity {
     private EntityInfo entityInfo;
 
     private transient boolean isCloned = false;
-    private transient List<PropertyValue> imagePropertyList = null;
 
     public Design() {
     }
@@ -120,6 +119,7 @@ public class Design extends CdbEntity {
     }
 
     @XmlTransient
+    @Override
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -208,18 +208,6 @@ public class Design extends CdbEntity {
             return false;
         }
         return this.id.equals(other.id);
-    }
-
-    public List<PropertyValue> getImagePropertyList() {
-        return imagePropertyList;
-    }
-
-    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
-        this.imagePropertyList = imagePropertyList;
-    }
-
-    public void resetImagePropertyList() {
-        this.imagePropertyList = null;
     }
 
     @Override

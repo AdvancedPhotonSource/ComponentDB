@@ -58,7 +58,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findByNameWithNullModelNumber", query = "SELECT c FROM Component c WHERE c.name = :name AND c.modelNumber IS NULL"),
     @NamedQuery(name = "Component.findByModelNumber", query = "SELECT c FROM Component c WHERE c.modelNumber = :modelNumber"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
-public class Component extends CdbEntity {
+public class Component extends CdbDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -110,7 +110,6 @@ public class Component extends CdbEntity {
     private List<ComponentResource> componentResourceList;
 
     private transient boolean isCloned = false;
-    private transient List<PropertyValue> imagePropertyList = null;
 
     private transient final HashMap<Integer, PropertyValueInformation> propertyValueCacheMap = new HashMap<>();
 
@@ -178,6 +177,7 @@ public class Component extends CdbEntity {
     }
 
     @XmlTransient
+    @Override
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -273,18 +273,6 @@ public class Component extends CdbEntity {
 
     public void setComponentResourceList(List<ComponentResource> componentResourceList) {
         this.componentResourceList = componentResourceList;
-    }
-
-    public List<PropertyValue> getImagePropertyList() {
-        return imagePropertyList;
-    }
-
-    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
-        this.imagePropertyList = imagePropertyList;
-    }
-
-    public void resetImagePropertyList() {
-        this.imagePropertyList = null;
     }
 
     public String getPropertyValueByIndex(Integer index) {

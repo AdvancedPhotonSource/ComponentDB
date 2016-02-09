@@ -54,7 +54,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DesignElement.findByNameAndParentDesign", query = "SELECT d FROM DesignElement d WHERE d.name = :name and d.parentDesign = :parentDesign"),
     @NamedQuery(name = "DesignElement.findByDescription", query = "SELECT d FROM DesignElement d WHERE d.description = :description"),
     @NamedQuery(name = "DesignElement.findBySortOrder", query = "SELECT d FROM DesignElement d WHERE d.sortOrder = :sortOrder")})
-public class DesignElement extends CdbEntity {
+public class DesignElement extends CdbDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,7 +107,6 @@ public class DesignElement extends CdbEntity {
     private Design parentDesign;
 
     private transient boolean isCloned = false;
-    private transient List<PropertyValue> imagePropertyList = null;
     private transient String editDesignElementType;
     private transient String viewUUID;
 
@@ -175,6 +174,7 @@ public class DesignElement extends CdbEntity {
     }
 
     @XmlTransient
+    @Override
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -199,18 +199,6 @@ public class DesignElement extends CdbEntity {
 
     public void setDesignElementConnectionList1(List<DesignElementConnection> designElementConnectionList1) {
         this.designElementConnectionList1 = designElementConnectionList1;
-    }
-
-    public List<PropertyValue> getImagePropertyList() {
-        return imagePropertyList;
-    }
-
-    public void setImagePropertyList(List<PropertyValue> imagePropertyList) {
-        this.imagePropertyList = imagePropertyList;
-    }
-
-    public void resetImagePropertyList() {
-        this.imagePropertyList = null;
     }
 
     @Override
@@ -290,7 +278,7 @@ public class DesignElement extends CdbEntity {
 
     public String getViewUUID() {
         if (viewUUID == null) {
-            viewUUID = UUID.randomUUID().randomUUID().toString().replaceAll("[-]", "");
+            viewUUID = UUID.randomUUID().toString().replaceAll("[-]", "");
         }
         return viewUUID;
     }
@@ -385,7 +373,7 @@ public class DesignElement extends CdbEntity {
         cloned.name = "Cloned from: " + name;
         cloned.description = description;
         cloned.logList = null;
-        cloned.imagePropertyList = null;
+        cloned.setImagePropertyList(null);
         cloned.propertyValueList = null;
         cloned.componentInstanceList = null;
         cloned.designElementConnectionList = null;
