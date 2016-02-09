@@ -44,6 +44,15 @@ public class ImageUtility {
     public static byte[] resizeImage(byte[] imageData, int maxDim) throws ImageProcessingFailed {
         return resizeImage(imageData, maxDim, DEFAULT_IMAGE_FORMAT);
     }
+    
+    public static Boolean verifyImageSizeBigger(byte[] imageData, int maxDim) {
+        ImageIcon imageIcon = new ImageIcon(imageData);
+        Image inImage = imageIcon.getImage();
+        int origWidth = inImage.getWidth(null);
+        int origHeight = inImage.getHeight(null);
+            
+        return ( (origWidth > maxDim) && (origHeight > maxDim)); 
+    }
 
     /**
      * Resize image using provided format.
