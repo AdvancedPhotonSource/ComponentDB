@@ -14,6 +14,19 @@
               closable="false">
         <div class="dialog">
 
+            <p:panelGrid columns="2" rendered="#{propertyValueImageUploadBean.showPropertyTypeSelectOneMenu()}">
+                <h:outputLabel value="Image Property Type: " />
+                <p:column>
+                    <p:selectOneMenu id="propertyValueImageUploadSelectOne"
+                                     value="#{propertyValueImageUploadBean.selectedPropertyType}" onchange="updatePropertyValueImageUploadSelectOne();">
+                        <f:selectItems value="#{propertyValueImageUploadBean.imageHandlerPropertyTypes}" var="propertyTypeObject"
+                                       itemValue="#{propertyTypeObject}" />
+                    </p:selectOneMenu>
+                    <p:remoteCommand name="updatePropertyValueImageUploadSelectOne"
+                                     update="propertyValueImageUploadSelectOne" />
+                </p:column>
+            </p:panelGrid>
+
             <p:fileUpload fileUploadListener="#{propertyValueImageUploadBean.handleFileUpload}"
                           multiple="true"
                           allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
@@ -21,12 +34,12 @@
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton id="#{entityTypeName}PropertyValueImageUploadSubmitButton" value="Done" alt="Done" 
-                                     action="#{entityController.update()}"
-                                     oncomplete="PF('propertyValueImageUploadDialogWidget').hide()" 
-                                     update="@form"
-                                     ajax="false"
-                                     icon="ui-icon-check">
-                        <p:tooltip for="#{entityTypeName}PropertyValueImageUploadSubmitButton" value="Save uploaded images."/>
+                                 action="#{entityController.update()}"
+                                 oncomplete="PF('propertyValueImageUploadDialogWidget').hide()" 
+                                 update="@form"
+                                 ajax="false"
+                                 icon="ui-icon-check">
+                    <p:tooltip for="#{entityTypeName}PropertyValueImageUploadSubmitButton" value="Save uploaded images."/>
                 </p:commandButton>
             </f:facet>
         </div>

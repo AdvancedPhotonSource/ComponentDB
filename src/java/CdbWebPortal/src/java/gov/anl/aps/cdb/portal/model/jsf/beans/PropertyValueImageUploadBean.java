@@ -52,6 +52,7 @@ public class PropertyValueImageUploadBean implements Serializable {
     private UploadedFile uploadedFile;
     private CdbEntityController cdbEntityController;
     private List<PropertyType> imageHandlerPropertyTypes;
+    private PropertyType selectedPropertyType;
     private final String IMAGE_PROPERTY_TYPE_NAME = "Image";
 
     public UploadedFile getUploadedFile() {
@@ -96,10 +97,10 @@ public class PropertyValueImageUploadBean implements Serializable {
                 Path thumbPath = Paths.get(thumbFileName);
                 Files.write(thumbPath, thumbData);
                 byte[] scaledData;
-                if (ImageUtility.verifyImageSizeBigger(originalData, StorageUtility.SCALED_IMAGE_SIZE)){
+                if (ImageUtility.verifyImageSizeBigger(originalData, StorageUtility.SCALED_IMAGE_SIZE)) {
                     scaledData = ImageUtility.resizeImage(originalData, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
                 } else {
-                    scaledData = originalData; 
+                    scaledData = originalData;
                 }
                 String scaledFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, CdbPropertyValue.SCALED_IMAGE_EXTENSION);
                 Path scaledPath = Paths.get(scaledFileName);
@@ -137,6 +138,9 @@ public class PropertyValueImageUploadBean implements Serializable {
             } catch (NamingException ex) {
                 logger.debug(ex);
             }
+            if (imageHandlerPropertyTypes.size() > 0) {
+                selectedPropertyType = imageHandlerPropertyTypes.get(0);
+            }
         }
         return imageHandlerPropertyTypes;
     }
@@ -145,15 +149,27 @@ public class PropertyValueImageUploadBean implements Serializable {
         this.imageHandlerPropertyTypes = imageHandlerPropertyTypes;
     }
 
+    public boolean showPropertyTypeSelectOneMenu() {
+        return getImageHandlerPropertyTypes().size() > 1;
+    }
+
+    public PropertyType getSelectedPropertyType() {
+        return selectedPropertyType;
+    }
+
+    public void setSelectedPropertyType(PropertyType selectedPropertyType) {
+        this.selectedPropertyType = selectedPropertyType;
+    }
+
     public void handleFileUpload(FileUploadEvent event) {
         UploadedFile localUploadedFile = event.getFile();
-        
+
         if (cdbEntityController != null) {
             if (cdbEntityController instanceof CdbDomainEntityController) {
                 CdbDomainEntityController cdbDomainEntityController = (CdbDomainEntityController) cdbEntityController;
-                PropertyValue propertyValue = cdbDomainEntityController.preparePropertyTypeValueAdd(getImageHandlerPropertyTypes().get(0), null, null);
+                PropertyValue propertyValue = cdbDomainEntityController.preparePropertyTypeValueAdd(selectedPropertyType, null, null);
                 this.upload(propertyValue, localUploadedFile);
-            } 
+            }
         }
 
     }
