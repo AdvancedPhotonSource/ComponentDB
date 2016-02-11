@@ -45,7 +45,10 @@
             <div class="middleCenterRightContent">
                 <p:accordionPanel multiple="true" activeIndex="0,1">                
                     <p:tab title="Component Instance Properties">
-                        <ui:include src="../componentInstanceProperty/private/componentInstancePropertyList.xhtml"/>
+                        <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
+                            <ui:param name="entityObject" value="#{componentInstanceObject}" />
+                            <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.componentInstanceSelectDataTable}" />
+                        </ui:include>
                     </p:tab>
 
                     <p:tab title="Component Properties">
