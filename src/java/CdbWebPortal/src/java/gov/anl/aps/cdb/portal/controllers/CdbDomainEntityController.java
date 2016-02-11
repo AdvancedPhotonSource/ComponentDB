@@ -16,6 +16,8 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -25,6 +27,9 @@ import java.util.List;
  */
 public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityDbFacade<EntityType>> extends CdbEntityController<EntityType, FacadeType> implements Serializable {
 
+    private PropertyValue currentEditPropertyValue; 
+    private DataTable entityPropertyValueListDataTable = null;
+    
     public CdbDomainEntityController() {
         super();
     }
@@ -34,13 +39,24 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
             preparePropertyTypeValueAdd(propertyType);
         }
     }
-
-    public void preparePropertyTypeValueAdd(PropertyType propertyType) {
-        preparePropertyTypeValueAdd(propertyType, propertyType.getDefaultValue());
+    
+    public void selectPropertyType(PropertyType propertyType, String onSuccessCommand) {
+        if (propertyType != null) {
+            PropertyValue propertyValue = preparePropertyTypeValueAdd(propertyType); 
+            setCurrentEditPropertyValue(propertyValue);
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        } else {
+            SessionUtility.addWarningMessage("No property type selected", "Please select a property type.");
+            currentEditPropertyValue = null; 
+        }
     }
 
-    public void preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString) {
-        preparePropertyTypeValueAdd(propertyType, propertyValueString, null);
+    public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType) {
+        return preparePropertyTypeValueAdd(propertyType, propertyType.getDefaultValue());
+    }
+
+    public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString) {
+        return preparePropertyTypeValueAdd(propertyType, propertyValueString, null);
     }
     
     public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString, String tag) {
@@ -87,5 +103,58 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public Boolean getDisplayImages() {
         List<PropertyValue> domainEntityImageList = getImageList();
         return (domainEntityImageList != null && !domainEntityImageList.isEmpty());
+    }
+
+    public PropertyValue getCurrentEditPropertyValue() {
+        return currentEditPropertyValue;
+    }
+
+    public void setCurrentEditPropertyValue(PropertyValue currentEditPropertyValue) {
+        this.currentEditPropertyValue = currentEditPropertyValue;
+    }
+    
+    public void removeCurrentEditPropertyValue(){
+        if(currentEditPropertyValue != null) {
+            EntityType domainEntity = getCurrent();
+            if(currentEditPropertyValue.getId() == null) {
+                // Never saved so it should be removed from the property value list
+                domainEntity.getPropertyValueList().remove(currentEditPropertyValue);
+            } else {
+                // Will cause refetching of display value.
+                currentEditPropertyValue.setDisplayValue("");
+            }
+            currentEditPropertyValue = null; 
+        }
+        
+    }
+    
+    public void updateEditProperty(){
+        // Will cause refetching of display value.
+        currentEditPropertyValue.setDisplayValue("");
+        this.update(); 
+    }
+    
+    public void deleteCurrentEditPropertyValue(){
+        this.deleteProperty(currentEditPropertyValue);
+        currentEditPropertyValue = null; 
+    }
+    
+    public void deleteProperty(PropertyValue componentProperty) {
+        EntityType entity = getCurrent();
+        List<PropertyValue> componentPropertyList = entity.getPropertyValueList();
+        componentPropertyList.remove(componentProperty);
+        updateOnRemoval();
+    }
+    
+    
+    public DataTable getEntityPropertyValueListDataTable() {
+        if (userSettingsChanged() || shouldResetListDataModel()) {
+            entityPropertyValueListDataTable = new DataTable();
+        }
+        return entityPropertyValueListDataTable;
+    }
+
+    public void setEntityPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
+        this.entityPropertyValueListDataTable = componentPropertyValueListDataTable;
     }
 }
