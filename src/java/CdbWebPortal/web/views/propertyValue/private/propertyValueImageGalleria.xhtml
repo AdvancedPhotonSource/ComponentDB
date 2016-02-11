@@ -12,7 +12,7 @@
                          value="Add"
                          icon="ui-icon-plus"
                          oncomplete="PF('propertyValueMultipleImageUploadDialogWidget').show()"
-                         rendered="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}">
+                         rendered="#{isEntityWriteable}">
             <f:setPropertyActionListener target="#{propertyValueImageUploadBean.cdbEntityController}"
                                          value="#{entityController}" />
              <p:tooltip for="#{entityTypeName}PropertyAddImagesCommandButton" value="Add Images to #{entityTypeName}."/>
