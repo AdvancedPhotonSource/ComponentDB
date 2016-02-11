@@ -1353,6 +1353,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void setFilteredItems(List<EntityType> filteredItems) {
         this.filteredObjectList = filteredItems;
     }
+    
+    public EntityType getSelectedObjectAndResetDataModel(){
+        EntityType entity = getSelectedObject(); 
+        selectedObject = null;
+        resetSelectDataModel();
+        return entity;
+        
+    }
 
     public EntityType getSelectedObject() {
         return selectedObject;
