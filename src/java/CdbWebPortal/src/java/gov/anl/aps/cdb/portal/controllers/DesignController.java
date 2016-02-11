@@ -77,7 +77,6 @@ public class DesignController extends CdbDomainEntityController<Design, DesignDb
 
     private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
-    private DataTable designPropertyValueListDataTable = null;
     private TreeNode designElementListTreeTableRootNode = null;
 
     private List<PropertyValue> filteredPropertyValueList;
@@ -255,13 +254,6 @@ public class DesignController extends CdbDomainEntityController<Design, DesignDb
 
     public void savePropertyList() {
         update();
-    }
-    
-    public void deleteProperty(PropertyValue designProperty) {
-        Design design = getCurrent();
-        List<PropertyValue> designPropertyList = design.getPropertyValueList();
-        designPropertyList.remove(designProperty);
-        updateOnRemoval();
     }
 
     public void prepareAddDesignElement(Design design) {
@@ -483,14 +475,6 @@ public class DesignController extends CdbDomainEntityController<Design, DesignDb
 
     public List<Design> completeDesign(String query) {
         return DesignUtility.filterDesign(query, getSelectDesignCandidateList());
-    }
-
-    public DataTable getDesignPropertyValueListDataTable() {
-        return designPropertyValueListDataTable;
-    }
-
-    public void setDesignPropertyValueListDataTable(DataTable designPropertyValueListDataTable) {
-        this.designPropertyValueListDataTable = designPropertyValueListDataTable;
     }
 
     public List<PropertyValue> getFilteredPropertyValueList() {

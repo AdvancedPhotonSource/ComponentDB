@@ -135,7 +135,7 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     private Integer qrIdViewParam = null;
 
     private SelectOneMenu componentSelectOneMenu;
-    private DataTable componentInstancePropertyValueListDataTable = null;
+
     private DataTable componentPropertyValueListDataTable = null;
 
     private List<PropertyValue> filteredPropertyValueList = null;
@@ -426,13 +426,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
 
     public void savePropertyList() {
         update();
-    }
-
-    public void deleteProperty(PropertyValue componentInstanceProperty) {
-        ComponentInstance componentInstance = getCurrent();
-        List<PropertyValue> componentInstancePropertyList = componentInstance.getPropertyValueList();
-        componentInstancePropertyList.remove(componentInstanceProperty);
-        updateOnRemoval();
     }
 
     public String destroyAndReturnComponentView(ComponentInstance componentInstance) {
@@ -964,17 +957,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
 
     public void setComponentSelectOneMenu(SelectOneMenu componentTypeSelectOneMenu) {
         this.componentSelectOneMenu = componentTypeSelectOneMenu;
-    }
-
-    public DataTable getComponentInstancePropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentInstancePropertyValueListDataTable = new DataTable();
-        }
-        return componentInstancePropertyValueListDataTable;
-    }
-
-    public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
-        this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
     }
 
     public DataTable getComponentPropertyValueListDataTable() {

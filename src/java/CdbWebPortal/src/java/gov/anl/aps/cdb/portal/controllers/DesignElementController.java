@@ -21,7 +21,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -131,7 +130,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
     private Design selectedParentDesign = null;
 
     private SelectOneMenu componentSelectOneMenu;
-    private DataTable designElementPropertyValueListDataTable = null;
     private DataTable componentPropertyValueListDataTable = null;
     private DataTable childDesignPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
@@ -285,13 +283,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
 
     public void savePropertyList() {
         update();
-    }
-
-    public void deleteProperty(PropertyValue designElementProperty) {
-        DesignElement designElement = getCurrent();
-        List<PropertyValue> designElementPropertyList = designElement.getPropertyValueList();
-        designElementPropertyList.remove(designElementProperty);
-        updateOnRemoval();
     }
 
     public String destroyAndReturnDesignView(DesignElement designElement) {
@@ -783,17 +774,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
             designElement.setChildDesign(childDesign);
             designElement.setComponent(null);
         }
-    }
-
-    public DataTable getDesignElementPropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            designElementPropertyValueListDataTable = new DataTable();
-        }
-        return designElementPropertyValueListDataTable;
-    }
-
-    public void setDesignElementPropertyValueListDataTable(DataTable designElementPropertyValueListDataTable) {
-        this.designElementPropertyValueListDataTable = designElementPropertyValueListDataTable;
     }
 
     public List<PropertyValue> getFilteredPropertyValueList() {

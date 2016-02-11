@@ -162,8 +162,6 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
     // recognize value change in some case, so we bind this variable to control the menu. 
     private SelectOneMenu componentTypeSelectOneMenu;
 
-    private DataTable componentPropertyValueListDataTable = null;
-
     private Component selectedComponent = null;
 
     private List<Location> locationList = null;
@@ -339,13 +337,6 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
 
     public void savePropertyList() {
         update();
-    }
-
-    public void deleteProperty(PropertyValue componentProperty) {
-        Component component = getCurrent();
-        List<PropertyValue> componentPropertyList = component.getPropertyValueList();
-        componentPropertyList.remove(componentProperty);
-        updateOnRemoval();
     }
 
     public void prepareAddSource(Component component) {
@@ -1150,17 +1141,6 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
 
     public void setSelectedComponent(Component selectedComponent) {
         this.selectedComponent = selectedComponent;
-    }
-
-    public DataTable getComponentPropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentPropertyValueListDataTable = new DataTable();
-        }
-        return componentPropertyValueListDataTable;
-    }
-
-    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
-        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
     }
 
     public List<PropertyValue> getFilteredPropertyValueList() {
