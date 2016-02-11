@@ -7,8 +7,16 @@
     <ui:param name="parentObject" value="#{parentEntityController.selected}"/>
     <ui:param name="childEntityTypeNames" value="#{childEntityTypeName}s"/>
     <ui:param name="childEntityListDataTable" value="#{childEntityTypeName}ListDataTable"/>
+    
     <div class="actionButton">
 
+        <p:commandButton id="#{childEntityTypeName}AddButton"
+                         value="Add" icon="ui-icon-plus" 
+                         rendered="#{isEntityWriteable and (onCompleteAddButtonCommand != null)}"
+                         oncomplete="#{onCompleteAddButtonCommand}">
+            <p:tooltip for="#{childEntityTypeName}AddButton" value="Add #{childEntityTypeName}" />
+        </p:commandButton>
+        
         <p:commandButton id="#{childEntityTypeName}ListExportXlsButton" action="#{childEntityController.exportDataTableAsXls(childEntityListDataTable, childEntityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
             <p:tooltip for="#{childEntityTypeName}ListExportXlsButton" value="Export list to excel file."/>
         </p:commandButton>  
