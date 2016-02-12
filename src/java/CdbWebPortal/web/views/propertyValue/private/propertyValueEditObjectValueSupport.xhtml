@@ -3,7 +3,22 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-
+    
+    <p:outputPanel rendered="#{propertyValueObject != null}">
+        <p:outputPanel rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
+            <ui:include src="propertyValueImageUploadDialog.xhtml">
+                <ui:param name="parentEntityController" value="#{entityController}"/>
+                <ui:param name="saveAction" value="savePropertyList"/>
+            </ui:include>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
+            <ui:include src="propertyValueDocumentUploadDialog.xhtml">
+                <ui:param name="parentEntityController" value="#{entityController}"/>
+                <ui:param name="saveAction" value="savePropertyList"/>
+            </ui:include>
+        </p:outputPanel>
+    </p:outputPanel>
+    
     <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}">
         <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
                                    == "travelerTemplatePropertyValueEditPanel"}' styleClass="longCellInput">

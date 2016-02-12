@@ -18,10 +18,20 @@
         </p:selectOneMenu>
         <p:tooltip for="selectedTextValue" value="Select property value."/>
 
-        <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
-                        alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
-                        rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
-        <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
+        <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
+            <p:column>
+                <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
+                                alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"/>
+                <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
+            </p:column>
+            <p:commandButton value="Upload Image"
+                             oncomplete="PF('propertyValueImageUploadDialogWidget').show()"
+                             icon="ui-icon-circle-arrow-n"
+                             update="@this">
+                <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                             value="#{propertyValueObject}" />
+            </p:commandButton>
+        </p:panelGrid>
 
         <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
@@ -31,9 +41,18 @@
                      rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
         <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
 
-        <h:inputText id="documentValue" value="#{propertyValueObject.value}"
-                     rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"/>
-        <p:tooltip for="documentValue" value="Upload new document using upload action button."/>    
+        <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
+            <p:commandButton value="Upload Document" 
+                             icon="ui-icon-circle-arrow-n" 
+                             oncomplete="PF('propertyValueDocumentUploadDialogWidget').show()"
+                             update="@this">
+                <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                             value="#{propertyValueObject}" />
+            </p:commandButton>
+            <h:inputText id="documentValue" value="#{propertyValueObject.value}"/>
+            <p:tooltip for="documentValue" value="Upload new document using upload action button."/>  
+            
+        </p:outputPanel>
 
         <p:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
                                  styleClass="dataTableCheckbox"
@@ -59,7 +78,7 @@
             <ui:include src="../../travelerProperty/private/travelerInstancePropertyValueEditPanel.xhtml"/>
         </p:outputPanel>
     </p:outputPanel>
-    
+
 </ui:composition>
 
 
