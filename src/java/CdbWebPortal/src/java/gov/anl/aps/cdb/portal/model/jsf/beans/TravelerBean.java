@@ -8,7 +8,9 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
+import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
@@ -116,7 +118,7 @@ public class TravelerBean implements Serializable {
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
      */
-    public void createTravelerTemplate(CdbEntityController entityController, String onSuccessCommand) {
+    public void createTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
 
             if (!travelerTemplateTitle.equals("") && travelerTemplateTitle != null) {
@@ -126,7 +128,7 @@ public class TravelerBean implements Serializable {
                     form = travelerApi.createForm(travelerTemplateTitle, SessionUtility.getUser().toString(), "");
                     SessionUtility.addInfoMessage("Template Created", "Traveler Template '" + form.getId() + "' has been created");
                     propertyValue.setValue(form.getId());
-                    entityController.update();
+                    entityController.savePropertyList();
                     RequestContext.getCurrentInstance().execute(onSuccessCommand);
                 } catch (CdbException ex) {
                     SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -145,11 +147,11 @@ public class TravelerBean implements Serializable {
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
      */
-    public void linkTravelerTemplate(CdbEntityController entityController, String onSuccessCommand) {
+    public void linkTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
                 propertyValue.setValue(selectedTemplate.getId());
-                entityController.update();
+                entityController.savePropertyList();
                 RequestContext.getCurrentInstance().execute(onSuccessCommand);
             }
         }
@@ -361,7 +363,7 @@ public class TravelerBean implements Serializable {
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion
      */
-    public void createTravelerInstance(CdbEntityController entityController, String onSuccessCommand) {
+    public void createTravelerInstance(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
                 if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {
@@ -378,7 +380,7 @@ public class TravelerBean implements Serializable {
                                 "Traveler Instance '" + currentTravelerInstance.getId() + "' has been created");
 
                         propertyValue.setValue(currentTravelerInstance.getId());
-                        entityController.update();
+                        entityController.savePropertyList();
                         RequestContext.getCurrentInstance().execute(onSuccessCommand);
 
                     } catch (CdbException ex) {
