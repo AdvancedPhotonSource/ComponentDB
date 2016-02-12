@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import org.apache.log4j.Logger;
 
 /**
  * EDP link property type handler.
@@ -21,6 +22,8 @@ import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 public class EdpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     public static final String HANDLER_NAME = "EDP Link";
+    
+    private static final Logger logger = Logger.getLogger(EdpLinkPropertyTypeHandler.class.getName());
 
     private static final String EdpUrl = ConfigurationUtility.getPortalProperty(
             CdbProperty.EDP_URL_STRING_PROPERTY_NAME);
@@ -34,9 +37,15 @@ public class EdpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
             return null;
         }
         String formattedId = collectionId.replace("EDP", "");
-        formattedId = formattedId.replace("_", "");
-        formattedId = String.format("%06d", Integer.parseInt(formattedId));
-        formattedId = "EDP_" + formattedId;
+        if (formattedId.equals("") == false) {
+            try {
+                formattedId = formattedId.replace("_", "");
+                formattedId = String.format("%06d", Integer.parseInt(formattedId));
+                formattedId = "EDP_" + formattedId;
+            } catch (NumberFormatException ex) {
+                logger.debug(ex);
+            }
+        }
         return formattedId;
     }
 
