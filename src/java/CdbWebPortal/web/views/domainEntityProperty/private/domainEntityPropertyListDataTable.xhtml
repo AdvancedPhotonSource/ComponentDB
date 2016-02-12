@@ -54,7 +54,10 @@
                                action="#{entityController.setCurrentEditPropertyValue(propertyValueObject)}"
                                rendered="#{isEntityWriteable}"
                                update="@form"
-                               oncomplete="PF('#{entityTypeName}SinglePropertyEditDialogWidget').show()">
+                               onstart="PF('loadingDialog').show();"
+                               onerror="PF('loadingDialog').hide();"
+                               oncomplete="PF('loadingDialog').hide();
+                                           PF('#{entityTypeName}SinglePropertyEditDialogWidget').show()">
                     <p:tooltip for="#{entityTypeName}PropertEditActionButton" value="Edit property."/>
                 </p:commandLink>   
             </div>
