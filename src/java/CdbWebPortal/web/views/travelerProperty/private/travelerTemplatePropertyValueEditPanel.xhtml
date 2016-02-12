@@ -17,13 +17,20 @@
             </p:commandButton>
 
             <p:remoteCommand rendered="#{propertyValueObject.id != null}"
-                             name="updateTemplateProperyValueField#{propertyValueObject.id}"
+                             name="updateTemplateProperyValueFieldUnlink#{propertyValueObject.id}"
                              update="@parent" 
                              oncomplete="showTravelerTemplatePropertyValueEditDialog();"/>
             <p:remoteCommand rendered="#{propertyValueObject.id == null}"
-                             name="updateTemplateProperyValueField"
+                             name="updateTemplateProperyValueFieldUnlink"
                              update="@form" 
                              oncomplete="showTravelerTemplatePropertyValueEditDialog();"/>
+            
+            <p:remoteCommand rendered="#{propertyValueObject.id != null}"
+                             name="updateTemplateProperyValueField#{propertyValueObject.id}"
+                             update="@parent" />
+            <p:remoteCommand rendered="#{propertyValueObject.id == null}"
+                             name="updateTemplateProperyValueField"
+                             update="@form"/>
             
             <p:remoteCommand name="showTravelerTemplatePropertyValueEditDialog"
                              action="#{travelerBean.loadTravelerTemplateInformation()}"

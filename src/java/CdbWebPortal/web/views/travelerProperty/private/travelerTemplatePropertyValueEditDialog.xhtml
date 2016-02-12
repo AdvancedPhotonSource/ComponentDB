@@ -57,7 +57,7 @@
                 <p:row rendered='#{travelerBean.propertyValue.value != ""}'>
                     <p:column colspan="2">
                         <p:commandButton action="#{travelerBean.unlinkTravelerTemplate(
-                                                   'successTravelerTemplatePropertyValueEditDialog();')}" 
+                                                   'successUnlinkTravelerTemplatePropertyValueEditDialog();')}" 
                                          value="Unlink Traveler Template" 
                                          onstart="PF('loadingDialog').show();"
                                          oncomplete="PF('loadingDialog').hide();" />
@@ -69,6 +69,9 @@
         <p:remoteCommand name="successTravelerTemplatePropertyValueEditDialog"
                      oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').hide();
                                  updateTemplateProperyValueField#{travelerBean.propertyValue.id}();" />
+        <p:remoteCommand name="successUnlinkTravelerTemplatePropertyValueEditDialog"
+                     oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').hide();
+                                 updateTemplateProperyValueFieldUnlink#{travelerBean.propertyValue.id}();" />
         <p:remoteCommand name="updateTravelerTemplatePropertyValueEditDialog" 
                          update="travelerTemplatePropertyValueEditDialog" 
                          oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').initPosition();
