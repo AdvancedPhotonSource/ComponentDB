@@ -334,11 +334,7 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
         PropertyValue property = new PropertyValue();
         propertyList.add(property);
     }
-
-    public void savePropertyList() {
-        update();
-    }
-
+    
     public void prepareAddSource(Component component) {
         List<ComponentSource> sourceList = component.getComponentSourceList();
         ComponentSource source = new ComponentSource();

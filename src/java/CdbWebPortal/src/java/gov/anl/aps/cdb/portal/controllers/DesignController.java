@@ -43,7 +43,6 @@ import javax.faces.convert.Converter;
 import javax.faces.component.UIComponent;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -250,10 +249,6 @@ public class DesignController extends CdbDomainEntityController<Design, DesignDb
         List<PropertyValue> propertyList = design.getPropertyValueList();
         PropertyValue property = new PropertyValue();
         propertyList.add(property);
-    }
-
-    public void savePropertyList() {
-        update();
     }
 
     public void prepareAddDesignElement(Design design) {

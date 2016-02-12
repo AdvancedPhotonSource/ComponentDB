@@ -423,11 +423,7 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         propertyList.add(property);
         componentInstance.resetImagePropertyList();
     }
-
-    public void savePropertyList() {
-        update();
-    }
-
+    
     public String destroyAndReturnComponentView(ComponentInstance componentInstance) {
         Component component = componentInstance.getComponent();
         setCurrent(componentInstance);

@@ -281,10 +281,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         propertyList.add(property);
     }
 
-    public void savePropertyList() {
-        update();
-    }
-
     public String destroyAndReturnDesignView(DesignElement designElement) {
         Design parentDesign = designElement.getParentDesign();
         setCurrent(designElement);
