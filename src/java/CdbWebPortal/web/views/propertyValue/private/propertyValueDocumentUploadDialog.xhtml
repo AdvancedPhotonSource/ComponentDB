@@ -12,19 +12,14 @@
               styleClass="dialog">
         <div class="dialog">
 
-            <p:fileUpload value="#{propertyValueDocumentUploadBean.uploadedFile}" mode="simple"/>
-
-            <f:facet name="footer" class="dialog">
-                <p:commandButton id="propertyValueDocumentUploadSubmitButton" value="Submit" alt="Submit" 
-                                 actionListener="#{propertyValueDocumentUploadBean.upload(propertyValueController.current)}"
-                                 action="#{parentEntityController[saveAction]}"
-                                 ajax="false"
-                                 update="@form"
-                                 oncomplete="PF('propertyValueDocumentUploadDialogWidget').hide()" 
-                                 icon="ui-icon-check">
-                    <p:tooltip for="propertyValueDocumentUploadSubmitButton" value="Submit document for upload."/>
-                </p:commandButton>
-            </f:facet>
+            <p:fileUpload fileUploadListener="${propertyValueDocumentUploadBean.handleSingleFileUpload}"
+                          fileLimit="1" oncomplete="propertyValueDocumentUploadDialogFileUploadOnComplete()"/>
+            
+            <p:remoteCommand name="propertyValueDocumentUploadDialogFileUploadOnComplete"
+                             onstart="PF('loadingDialog').show();"
+                             actionListener="#{propertyValueDocumentUploadBean.upload(propertyValueController.current)}"
+                             action="#{parentEntityController[saveAction]}"
+                             update="@form"/> 
         </div>
 
     </p:dialog>
