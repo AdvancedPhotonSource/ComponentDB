@@ -61,8 +61,8 @@
                 <p:accordionPanel multiple="true" activeIndex="0,1">                
                     <p:tab title="Properties">
                         <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
-                            <ui:param name="entityObject" value="#{designObject}" />
-                            <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designSelectDataTable}" />
+                            <ui:param name="entityObject" value="#{designElementObject}" />
+                            <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designElementSelectDataTable}" />
                         </ui:include>
                     </p:tab>
 
