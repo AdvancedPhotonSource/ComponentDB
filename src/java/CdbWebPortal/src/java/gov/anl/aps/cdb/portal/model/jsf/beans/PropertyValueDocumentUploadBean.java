@@ -16,13 +16,15 @@ import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
+import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
 
@@ -30,8 +32,8 @@ import org.primefaces.model.UploadedFile;
  * JSF bean for property value document upload.
  */
 @Named("propertyValueDocumentUploadBean")
-@RequestScoped
-public class PropertyValueDocumentUploadBean {
+@SessionScoped
+public class PropertyValueDocumentUploadBean implements Serializable{
 
     private static final Logger logger = Logger.getLogger(PropertyValueDocumentUploadBean.class.getName());
 
@@ -80,5 +82,9 @@ public class PropertyValueDocumentUploadBean {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.toString());
         }
+    }
+    
+    public void handleSingleFileUpload(FileUploadEvent event) {
+        this.uploadedFile = event.getFile();
     }
 }

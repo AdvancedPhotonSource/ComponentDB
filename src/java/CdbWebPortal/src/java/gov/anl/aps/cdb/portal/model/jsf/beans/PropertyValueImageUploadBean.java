@@ -54,7 +54,7 @@ public class PropertyValueImageUploadBean implements Serializable {
     private List<PropertyType> imageHandlerPropertyTypes;
     private PropertyType selectedPropertyType;
     private final String IMAGE_PROPERTY_TYPE_NAME = "Image";
-
+    
     public UploadedFile getUploadedFile() {
         return uploadedFile;
     }
@@ -171,6 +171,9 @@ public class PropertyValueImageUploadBean implements Serializable {
                 this.upload(propertyValue, localUploadedFile);
             }
         }
-
+    }
+    
+    public void handleSingleFileUpload(FileUploadEvent event) {
+        this.uploadedFile = event.getFile();
     }
 }
