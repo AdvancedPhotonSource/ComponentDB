@@ -7,6 +7,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -16,6 +17,9 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 
@@ -29,6 +33,9 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     private PropertyValue currentEditPropertyValue; 
     private DataTable entityPropertyValueListDataTable = null;
+    private PropertyValueDbFacade propertyValueDbFacade = null; 
+    
+    private static final Logger logger = Logger.getLogger(CdbDomainEntityController.class.getName());
     
     public CdbDomainEntityController() {
         super();
@@ -41,6 +48,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
     
     public void selectPropertyType(PropertyType propertyType, String onSuccessCommand) {
+        removeCurrentEditPropertyValue();
         if (propertyType != null) {
             PropertyValue propertyValue = preparePropertyTypeValueAdd(propertyType); 
             setCurrentEditPropertyValue(propertyValue);
@@ -120,8 +128,16 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
                 // Never saved so it should be removed from the property value list
                 domainEntity.getPropertyValueList().remove(currentEditPropertyValue);
             } else {
-                // Will cause refetching of display value.
+                // Update the current Edit value pointer to db info.
+                PropertyValue originalValue = getPropertyValueDbFacade().find(currentEditPropertyValue.getId());
+                currentEditPropertyValue.setValue(originalValue.getValue());
+                currentEditPropertyValue.setTargetValue("");
                 currentEditPropertyValue.setDisplayValue("");
+                currentEditPropertyValue.setTag(originalValue.getTag());
+                currentEditPropertyValue.setDescription(originalValue.getDescription());
+                currentEditPropertyValue.setUnits(originalValue.getUnits());
+                currentEditPropertyValue.setIsDynamic(originalValue.getIsDynamic());
+                currentEditPropertyValue.setIsUserWriteable(originalValue.getIsUserWriteable());
             }
             currentEditPropertyValue = null; 
         }
@@ -156,5 +172,21 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void setEntityPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
         this.entityPropertyValueListDataTable = componentPropertyValueListDataTable;
+    }
+    
+    private PropertyValueDbFacade getPropertyValueDbFacade(){
+        if(propertyValueDbFacade == null) {
+            try {
+                propertyValueDbFacade = (PropertyValueDbFacade) new InitialContext().lookup("java:module/PropertyValueDbFacade");
+            } catch (NamingException ex) {
+                logger.debug(ex);
+            }
+        }
+        
+        return propertyValueDbFacade; 
+    }
+    
+    public void savePropertyList() {
+        update();
     }
 }
