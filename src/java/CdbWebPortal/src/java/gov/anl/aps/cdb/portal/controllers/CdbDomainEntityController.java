@@ -48,7 +48,6 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
     
     public void selectPropertyType(PropertyType propertyType, String onSuccessCommand) {
-        removeCurrentEditPropertyValue();
         if (propertyType != null) {
             PropertyValue propertyValue = preparePropertyTypeValueAdd(propertyType); 
             setCurrentEditPropertyValue(propertyValue);
