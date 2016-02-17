@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:panel header="Assembly Components" 
+             rendered="#{searchController.displayAssemblyComponents 
+                         and (resources.AssemblyComponentsUIFeatureDisabled == 0)}"
+             collapsed="#{!assemblyComponentController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../assemblyComponent/private/assemblyComponentSearchDataTable.xhtml"/>
+    </p:panel> 
+
+    <p:panel header="Components" 
+             rendered="#{searchController.displayComponents}"
+             collapsed="#{!componentController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../component/private/componentSearchDataTable.xhtml"/>
+    </p:panel>   
+
+    <p:panel header="Component Instances" 
+             rendered="#{searchController.displayComponentInstances}"
+             collapsed="#{!componentInstanceController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../componentInstance/private/componentInstanceSearchDataTable.xhtml"/>
+    </p:panel>
+
+    <p:panel header="Component Types" 
+             rendered="#{searchController.displayComponentTypes}"
+             collapsed="#{!componentTypeController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../componentType/private/componentTypeSearchDataTable.xhtml"/>
+    </p:panel>
+
+    <p:panel header="Component Type Categories" 
+             rendered="#{searchController.displayComponentTypeCategories}"
+             collapsed="#{!componentTypeCategoryController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../componentTypeCategory/private/componentTypeCategorySearchDataTable.xhtml"/>
+    </p:panel> 
+
+    <p:panel header="Designs" 
+             rendered="#{searchController.displayDesigns}"
+             collapsed="#{!designController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../design/private/designSearchDataTable.xhtml"/>
+    </p:panel> 
+
+    <p:panel header="Design Elements" 
+             rendered="#{searchController.displayDesigns}"
+             collapsed="#{!designElementController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../designElement/private/designElementSearchDataTable.xhtml"/>
+    </p:panel>
+
+    <p:panel header="Locations" 
+             rendered="#{searchController.displayLocations}"
+             collapsed="#{!locationController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../location/private/locationSearchDataTable.xhtml"/>
+    </p:panel>   
+
+    <p:panel header="Location Types" 
+             rendered="#{searchController.displayLocationTypes}"
+             collapsed="#{!locationTypeController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../locationType/private/locationTypeSearchDataTable.xhtml"/>
+    </p:panel> 
+
+    <p:panel header="Property Types" 
+             rendered="#{searchController.displayPropertyTypes}"
+             collapsed="#{!propertyTypeController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../propertyType/private/propertyTypeSearchDataTable.xhtml"/>
+    </p:panel>   
+
+    <p:panel header="Property Type Categories" 
+             rendered="#{searchController.displayPropertyTypeCategories}"
+             collapsed="#{!propertyTypeCategoryController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../propertyTypeCategory/private/propertyTypeCategorySearchDataTable.xhtml"/>
+    </p:panel>  
+
+    <p:panel header="Sources" 
+             rendered="#{searchController.displaySources}"
+             collapsed="#{!sourceController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../source/private/sourceSearchDataTable.xhtml"/>
+    </p:panel>                              
+
+    <p:panel header="Users" 
+             rendered="#{searchController.displayUsers}"
+             collapsed="#{!userInfoController.displaySearchResultList}"
+             toggleable="true"                                         
+             >
+        <ui:include src="../../userInfo/private/userInfoSearchDataTable.xhtml"/>
+    </p:panel>
+
+    <p:panel header="User Groups" 
+             rendered="#{searchController.displayUserGroups}"
+             collapsed="#{!userGroupController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../userGroup/private/userGroupSearchDataTable.xhtml"/>
+    </p:panel> 
+
+</ui:composition>
