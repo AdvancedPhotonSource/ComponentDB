@@ -15,7 +15,7 @@
     <ui:define name="middleCenter">
         <h:form id="viewComponentInstanceForm">
 
-            <div class="middleCenterLeftContent">
+            <div class="domainEntityLeftContent middleCenterLeftContent">
                 <div class="pageTitle">
                     <h1>Design Element Details</h1>
                 </div>
@@ -46,39 +46,35 @@
 
 
                 <p/>
-                <p:accordionPanel multiple="true" activeIndex="0,1">  
-                    <p:tab title="Images">
-                        <ui:include src="../propertyValue/private/propertyValueImageGalleria.xhtml"/>
-                    </p:tab> 
-                    <p:tab title="Log Entries">
-                        <ui:include src="../designElementLog/private/designElementLogList.xhtml"/>
-                    </p:tab>
-                </p:accordionPanel>   
+                <p:panel header="Gallery" toggleable="true" collapsed="#{!entityController.displayImages}">
+                    <ui:include src="../propertyValue/private/propertyValueImageGalleria.xhtml"/>        
+                </p:panel>
+                <p:panel header="Log Entries" toggleable="true" collapsed="#{!entityController.displayLogList}">
+                    <ui:include src="../designElementLog/private/designElementLogList.xhtml"/>
+                </p:panel>   
 
             </div>
 
-            <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1">                
-                    <p:tab title="Properties">
-                        <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
-                            <ui:param name="entityObject" value="#{designElementObject}" />
-                            <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designElementSelectDataTable}" />
-                        </ui:include>
-                    </p:tab>
+            <div class="domainEntityRightContent middleCenterRightContent">
+                <p:panel header="Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
+                    <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
+                        <ui:param name="entityObject" value="#{designElementObject}" />
+                        <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designElementSelectDataTable}" />
+                    </ui:include>
+                </p:panel>
 
-                    <p:tab title="Component Properties" rendered="#{designElementController.getDisplayComponentProperties(designElementObject)}">
-                        <ui:include src="../designElementProperty/private/designElementComponentPropertyList.xhtml"/>
-                    </p:tab>    
+                <p:panel header="Component Properties" 
+                         toggleable="true"
+                         rendered="#{designElementController.getDisplayComponentProperties(designElementObject)}">
+                    <ui:include src="../designElementProperty/private/designElementComponentPropertyList.xhtml"/>
+                </p:panel>
 
-                    <p:tab title="Child Design Properties" rendered="#{designElementController.getDisplayChildDesignProperties(designElementObject)}">
-                        <ui:include src="../designElementProperty/private/designElementChildDesignPropertyList.xhtml"/>
-                    </p:tab>                       
-                </p:accordionPanel>
+                <p:panel header="Child Design Properties" 
+                         toggleable="true" 
+                         rendered="#{designElementController.getDisplayChildDesignProperties(designElementObject)}">
+                    <ui:include src="../designElementProperty/private/designElementChildDesignPropertyList.xhtml"/>
+                </p:panel>
             </div>
-
-            <ui:include src="../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
-
-            <ui:include src="../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 
         </h:form>
 

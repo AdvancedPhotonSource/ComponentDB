@@ -15,7 +15,7 @@
     <ui:define name="middleCenter">
         <h:form id="viewDesignForm">
 
-            <div class="middleCenterLeftContent">
+            <div class="domainEntityLeftContent middleCenterLeftContent">
                 <div class="pageTitle">
                     <h1>Design Details</h1>
                 </div>
@@ -32,29 +32,26 @@
                 <ui:include src="private/designDestroyDialog.xhtml"/>
 
                 <p/>
-                <p:accordionPanel multiple="true" activeIndex="0,1">
-                    <p:tab title="Images">
-                        <ui:include src="../propertyValue/private/propertyValueImageGalleria.xhtml"/>
-                    </p:tab>   
-                    <p:tab title="Log Entries">
-                        <ui:include src="../designLog/private/designLogList.xhtml"/>
-                    </p:tab>
-                </p:accordionPanel>     
+                <p:panel header="Gallery" toggleable="true" collapsed="#{!entityController.displayImages}">
+                    <ui:include src="../propertyValue/private/propertyValueImageGalleria.xhtml"/>        
+                </p:panel>
+                <p:panel header="Log Entries" toggleable="true" collapsed="#{!entityController.displayLogList}">
+                    <ui:include src="../designLog/private/designLogList.xhtml"/>
+                </p:panel>
+
 
             </div>
-            <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1">
-                    <p:tab title="Properties">
-                        <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
-                            <ui:param name="entityObject" value="#{designObject}" />
-                            <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designSelectDataTable}" />
-                        </ui:include>
-                    </p:tab>
+            <div class="domainEntityRightContent middleCenterRightContent">
+                <p:panel header="Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
+                    <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
+                        <ui:param name="entityObject" value="#{designObject}" />
+                        <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designSelectDataTable}" />
+                    </ui:include>
+                </p:panel>
 
-                    <p:tab title="Elements">
-                        <ui:include src="../designElement/private/designElementList.xhtml"/>
-                    </p:tab>
-                </p:accordionPanel>
+                <p:panel header="Elements" toggleable="true" collapsed="#{!designController.displayDesignElementList}">
+                    <ui:include src="../designElement/private/designElementList.xhtml"/>
+                </p:panel>
 
             </div>
         </h:form>

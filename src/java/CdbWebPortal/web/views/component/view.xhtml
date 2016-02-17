@@ -15,55 +15,47 @@
     <ui:define name="middleCenter">
         <h:form id="viewComponentForm">
 
-            <div class="middleCenterLeftContent">
-                <div class="pageTitle">
-                    <h1>Component Details</h1>
-                </div>
-                <ui:include src="private/componentViewPanelGrid.xhtml"/>
+                <div class="domainEntityLeftContent middleCenterLeftContent">
+                    <div class="pageTitle">
+                        <h1>Component Details</h1>
+                    </div>
+                    <ui:include src="private/componentViewPanelGrid.xhtml"/>
 
-                <p/>
-                <ui:param name="componentObject" value="#{componentController.selected}"/>
-                <ui:param name="entityController" value="#{componentController}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
-                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
-                <ui:include src="private/componentDestroyDialog.xhtml"/>
+                    <p/>
+                    <ui:param name="componentObject" value="#{componentController.selected}"/>
+                    <ui:param name="entityController" value="#{componentController}"/>
+                    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
+                    <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                    <ui:include src="private/componentDestroyDialog.xhtml"/>
 
 
-                <p/>
-                <p:accordionPanel multiple="true" activeIndex="0,1">
-                    <p:tab title="Images">
+                    <p/>
+                    <p:panel header="Gallery" toggleable="true" collapsed="#{!entityController.displayImages}">
                         <ui:include src="../propertyValue/private/propertyValueImageGalleria.xhtml"/>        
-                    </p:tab>   
-                    <p:tab title="Log Entries">
+                    </p:panel>
+                    <p:panel header="Log Entries" toggleable="true" collapsed="#{!entityController.displayLogList}">
                         <ui:include src="../componentLog/private/componentLogList.xhtml"/>
-                    </p:tab>
-                </p:accordionPanel>   
+                    </p:panel>
 
-            </div>
+                </div>
 
-            <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" activeIndex="0,1,2,3" rendered="#{componentObject != null}">                
-                    <p:tab title="Properties">
+                <div class="domainEntityRightContent middleCenterRightContent">
+                    <p:panel header="Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
                         <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
                             <ui:param name="entityObject" value="#{componentObject}" />
                             <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.componentSelectDataTable}" />
                         </ui:include>
-                    </p:tab>
-
-                    <p:tab title="Sources">
+                    </p:panel>
+                    <p:panel header="Sources" toggleable="true" collapsed="#{!componentController.displayComponentSourceList}">
                         <ui:include src="../componentSource/private/componentSourceList.xhtml"/>
-                    </p:tab>
-
-                    <p:tab title="Assembly Components" rendered="#{resources.AssemblyComponentsUIFeatureDisabled == 0}">
+                    </p:panel>
+                    <p:panel header="Assembly Components" toggleable="true" rendered="#{resources.AssemblyComponentsUIFeatureDisabled == 0}">
                         <ui:include src="private/componentAssemblyComponentList.xhtml"/>
-                    </p:tab>  
-    
-                    <p:tab title="Instances">
+                    </p:panel>
+                    <p:panel header="Instances" toggleable="true" collapsed="#{!componentController.displayComponentInstanceList}">
                         <ui:include src="private/componentComponentInstanceList.xhtml"/>
-                    </p:tab>       
-
-                </p:accordionPanel>
-            </div>
+                    </p:panel>
+                </div>
         </h:form>
 
     </ui:define>
