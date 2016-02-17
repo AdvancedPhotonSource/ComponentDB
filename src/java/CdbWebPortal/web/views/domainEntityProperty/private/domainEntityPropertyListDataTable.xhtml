@@ -9,6 +9,7 @@
     <p:dataTable id="#{entityTypeName}PropertyListDataTable" 
                  widgetVar="#{entityTypeName}PropertyListDataTableWidget"
                  var="propertyValueObject" 
+                 reflow="true"
                  value="#{entityObject.propertyValueList}" 
                  filteredValue="#{entityController.filteredPropertyValueList}"
                  binding="#{entityController.entityPropertyValueListDataTable}"
