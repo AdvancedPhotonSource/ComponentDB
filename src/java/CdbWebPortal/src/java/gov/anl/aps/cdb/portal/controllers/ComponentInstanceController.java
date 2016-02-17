@@ -167,6 +167,12 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
 
         return componentInstance;
     }
+    
+    public boolean getDisplayComponentPropertyList(){
+        Component currentComponent = getCurrent().getComponent(); 
+        List<PropertyValue> componentPropertyValue = currentComponent.getPropertyValueList(); 
+        return componentPropertyValue != null && !componentPropertyValue.isEmpty(); 
+    }
 
     @Override
     public ComponentInstance cloneEntityInstance(ComponentInstance componentInstance) {
