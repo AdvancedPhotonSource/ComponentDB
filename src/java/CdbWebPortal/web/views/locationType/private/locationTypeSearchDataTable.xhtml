@@ -6,7 +6,7 @@
 
     <p:dataTable id="locationTypeSearchDataTable" 
                  var="searchResultObject" 
-                 value="#{locationTypeController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{locationTypeController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 

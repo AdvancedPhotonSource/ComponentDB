@@ -6,7 +6,7 @@
 
     <p:dataTable id="componentInstanceSearchDataTable" 
                  var="searchResultObject" 
-                 value="#{componentInstanceController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{componentInstanceController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 

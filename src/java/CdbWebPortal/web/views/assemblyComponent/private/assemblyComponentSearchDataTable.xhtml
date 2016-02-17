@@ -9,7 +9,7 @@
     <ui:param name="caseInsensitive" value="#{searchController.caseInsensitive}"/>
     <p:dataTable id="assemblyComponentSearchDataTable" 
                  var="assemblyComponentSearchResultObject" 
-                 value="#{assemblyComponentController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{assemblyComponentController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 

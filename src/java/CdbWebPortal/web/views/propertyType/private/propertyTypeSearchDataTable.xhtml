@@ -6,7 +6,7 @@
 
     <p:dataTable id="propertyTypeSearchDataTable" 
                  var="searchResultObject" 
-                 value="#{propertyTypeController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{propertyTypeController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 

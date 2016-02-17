@@ -6,7 +6,7 @@
 
     <p:dataTable id="sourceSearchDataTable" 
                  var="searchResultObject" 
-                 value="#{sourceController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{sourceController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 

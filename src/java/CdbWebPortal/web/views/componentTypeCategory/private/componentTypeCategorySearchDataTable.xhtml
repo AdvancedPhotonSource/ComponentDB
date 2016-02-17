@@ -6,7 +6,7 @@
 
     <p:dataTable id="componentTypeCategorySearchDataTable" 
                  var="searchResultObject" 
-                 value="#{componentTypeCategoryController.getSearchResultList(searchString, caseInsensitive)}" 
+                 value="#{componentTypeCategoryController.searchResultList}" 
                  rows="#{searchController.displayNumberOfItemsPerPage}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
