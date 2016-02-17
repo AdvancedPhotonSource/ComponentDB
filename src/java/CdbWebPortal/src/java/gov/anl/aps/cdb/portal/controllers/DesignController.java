@@ -287,6 +287,12 @@ public class DesignController extends CdbDomainEntityController<Design, DesignDb
         List<Log> componentLogList = design.getLogList();
         componentLogList.add(0, logEntry);
     }
+    
+    public boolean getDisplayDesignElementList(){
+        Design currentDesign = getCurrent(); 
+        List<DesignElement> designElementList = currentDesign.getDesignElementList(); 
+        return designElementList != null && !designElementList.isEmpty(); 
+    }
 
     public void deleteLog(Log designLog) {
         Design design = getCurrent();
