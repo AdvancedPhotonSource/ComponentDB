@@ -53,7 +53,7 @@
                                styleClass="ui-icon ui-icon-pencil" 
                                title="Edit property"
                                action="#{entityController.setCurrentEditPropertyValue(propertyValueObject)}"
-                               rendered="#{isEntityWriteable}"
+                               rendered="#{isEntityWriteable or (propertyValueObject.isUserWriteable and loginController.loggedIn)}"
                                update="@form"
                                onstart="PF('loadingDialog').show();"
                                onerror="PF('loadingDialog').hide();"

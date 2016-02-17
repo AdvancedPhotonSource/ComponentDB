@@ -60,7 +60,7 @@
                                  actionListener="#{propertyValueController.destroy(propertyValueObject)}"
                                  update="@form"
                                  ajax="false"
-                                 rendered="#{propertyValueObject.id != null}"
+                                 rendered="#{propertyValueObject.id != null and isEntityWriteable}"
                                  oncomplete="PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
                                  icon="ui-icon-trash"/>
 
