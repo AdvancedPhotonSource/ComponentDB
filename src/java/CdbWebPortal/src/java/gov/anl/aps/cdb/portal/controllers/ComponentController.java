@@ -682,6 +682,18 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
     public boolean entityCanBeCreatedByUsers() {
         return true;
     }
+    
+    public boolean getDisplayComponentSourceList(){
+        Component currentComponent = getCurrent(); 
+        List<ComponentSource> sourceList = currentComponent.getComponentSourceList(); 
+        return sourceList != null && !sourceList.isEmpty(); 
+    }
+    
+    public boolean getDisplayComponentInstanceList(){
+        Component currentComponent = getCurrent(); 
+        List<ComponentInstance> componentInstanceList = currentComponent.getComponentInstanceList(); 
+        return componentInstanceList != null && !componentInstanceList.isEmpty(); 
+    }
 
     /**
      * Converter class for component objects.
