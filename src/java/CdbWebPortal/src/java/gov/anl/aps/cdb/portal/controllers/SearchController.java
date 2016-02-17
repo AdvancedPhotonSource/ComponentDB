@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
@@ -75,6 +77,8 @@ public class SearchController implements Serializable {
     protected Boolean displaySources = null;
     protected Boolean displayUsers = null;
     protected Boolean displayUserGroups = null;
+    
+    private Boolean performSearch = false; 
 
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
@@ -92,17 +96,36 @@ public class SearchController implements Serializable {
         updateSettings();
     }
 
-    public String search() {
+    public void search() {
         if (searchString != null && !searchString.isEmpty()) {
+            performSearch = true; 
             updateSettings();
-        } else {
+        } 
+    }
+    
+    public void completeSearch(){
+        if (searchString == null || searchString.isEmpty()) {
             SessionUtility.addWarningMessage("Warning", "Search string is empty.");
+        } else {
+            performSearch = false;
+            try {
+                FacesContext.getCurrentInstance().getExternalContext().redirect("search");
+            } catch (IOException ex) {
+                logger.debug(ex);
+            } 
         }
-        return null;
     }
 
     public boolean isDisplayResults() {
-        return (searchString != null && !searchString.isEmpty());
+        return (searchString != null && !searchString.isEmpty()) && !performSearch;
+    }
+    
+    public boolean isDisplayLoadingScreen() {
+        return performSearch; 
+    }
+
+    public boolean isPerformSearch() {
+        return performSearch;
     }
 
     public String getCurrentViewId() {

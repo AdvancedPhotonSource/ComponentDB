@@ -1477,16 +1477,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      *
      * @param searchString search string
      * @param caseInsensitive use case insensitive search
-     * @return list of search results
      */
-    public List<SearchResult> getSearchResultList(String searchString, boolean caseInsensitive) {
+    public void performEntitySearch(String searchString, boolean caseInsensitive) {
         if (searchString == null || searchString.isEmpty()) {
             searchResultList = new LinkedList<>();
-            return searchResultList;
+            return;
         }
         if (searchString.equals(this.searchString) && caseInsensitive == this.caseInsensitive) {
             // Return old results
-            return searchResultList;
+            return;
         }
 
         // Start new search
@@ -1514,7 +1513,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             }
 
         }
+    }
+
+    public LinkedList<SearchResult> getSearchResultList() {
         return searchResultList;
+    }
+    
+    public boolean getDisplaySearchResultList(){
+        return searchResultList != null && !searchResultList.isEmpty(); 
     }
 
     public boolean searchHasResults() {
