@@ -168,6 +168,7 @@ public class Component extends CdbDomainEntity {
     }
 
     @XmlTransient
+    @Override
     public List<Log> getLogList() {
         return logList;
     }

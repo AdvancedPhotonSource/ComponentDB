@@ -129,6 +129,7 @@ public class Design extends CdbDomainEntity {
     }
 
     @XmlTransient
+    @Override
     public List<Log> getLogList() {
         return logList;
     }

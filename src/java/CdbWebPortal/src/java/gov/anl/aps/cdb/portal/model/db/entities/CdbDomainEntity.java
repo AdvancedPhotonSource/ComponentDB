@@ -20,6 +20,10 @@ public abstract class CdbDomainEntity extends CdbEntity {
         return null; 
     }
     
+    public List<Log> getLogList() {
+        return null;
+    }
+    
     public List<PropertyValue> getImagePropertyList() {
         return imagePropertyList;
     }
