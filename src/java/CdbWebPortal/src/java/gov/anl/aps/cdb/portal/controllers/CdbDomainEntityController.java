@@ -9,6 +9,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -110,6 +111,18 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public Boolean getDisplayImages() {
         List<PropertyValue> domainEntityImageList = getImageList();
         return (domainEntityImageList != null && !domainEntityImageList.isEmpty());
+    }
+    
+    public Boolean getDisplayLogList() {
+        EntityType domainEntity = getCurrent(); 
+        List<Log> logList = domainEntity.getLogList(); 
+        return logList != null && !logList.isEmpty(); 
+    }
+    
+    public Boolean getDisplayPropertyList() { 
+        EntityType domainEntity = getCurrent(); 
+        List<PropertyValue> propertyValueList = domainEntity.getPropertyValueList();
+        return propertyValueList != null && !propertyValueList.isEmpty(); 
     }
 
     public PropertyValue getCurrentEditPropertyValue() {
