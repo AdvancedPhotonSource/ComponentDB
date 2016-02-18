@@ -83,11 +83,6 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     private String selectFilterByDefaultValue = null;
     private String selectFilterByHandler = null;
 
-    private DataTable componentSelectDataTable = null;
-    private DataTable componentInstanceSelectDataTable = null;
-    private DataTable designSelectDataTable = null;
-    private DataTable designElementSelectDataTable = null;
-
     public PropertyTypeController() {
     }
 
@@ -366,38 +361,6 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             }
         }
 
-    }
-
-    public DataTable getComponentSelectDataTable() {
-        return componentSelectDataTable;
-    }
-
-    public void setComponentSelectDataTable(DataTable componentSelectDataTable) {
-        this.componentSelectDataTable = componentSelectDataTable;
-    }
-
-    public DataTable getComponentInstanceSelectDataTable() {
-        return componentInstanceSelectDataTable;
-    }
-
-    public void setComponentInstanceSelectDataTable(DataTable componentInstanceSelectDataTable) {
-        this.componentInstanceSelectDataTable = componentInstanceSelectDataTable;
-    }
-
-    public DataTable getDesignSelectDataTable() {
-        return designSelectDataTable;
-    }
-
-    public void setDesignSelectDataTable(DataTable designSelectDataTable) {
-        this.designSelectDataTable = designSelectDataTable;
-    }
-
-    public DataTable getDesignElementSelectDataTable() {
-        return designElementSelectDataTable;
-    }
-
-    public void setDesignElementSelectDataTable(DataTable designElementSelectDataTable) {
-        this.designElementSelectDataTable = designElementSelectDataTable;
     }
 
     public Boolean getDisplayCategory() {

@@ -33,7 +33,6 @@ import org.primefaces.context.RequestContext;
 public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityDbFacade<EntityType>> extends CdbEntityController<EntityType, FacadeType> implements Serializable {
 
     private PropertyValue currentEditPropertyValue; 
-    private DataTable entityPropertyValueListDataTable = null;
     private PropertyValueDbFacade propertyValueDbFacade = null; 
     
     private static final Logger logger = Logger.getLogger(CdbDomainEntityController.class.getName());
@@ -172,18 +171,6 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         List<PropertyValue> componentPropertyList = entity.getPropertyValueList();
         componentPropertyList.remove(componentProperty);
         updateOnRemoval();
-    }
-    
-    
-    public DataTable getEntityPropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            entityPropertyValueListDataTable = new DataTable();
-        }
-        return entityPropertyValueListDataTable;
-    }
-
-    public void setEntityPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
-        this.entityPropertyValueListDataTable = componentPropertyValueListDataTable;
     }
     
     private PropertyValueDbFacade getPropertyValueDbFacade(){

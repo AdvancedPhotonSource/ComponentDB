@@ -134,10 +134,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
 
     private Integer qrIdViewParam = null;
 
-    private SelectOneMenu componentSelectOneMenu;
-
-    private DataTable componentPropertyValueListDataTable = null;
-
     private List<PropertyValue> filteredPropertyValueList = null;
 
     public ComponentInstanceController() {
@@ -718,7 +714,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     public void selectComponent(Component component) {
         ComponentInstance componentInstance = getCurrent();
         componentInstance.setComponent(component);
-        componentSelectOneMenu.setSubmittedValue(component);
     }
 
     // This listener is accessed either after selection made in dialog,
@@ -951,25 +946,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         for (PropertyValue propertyValue : propertyValueList) {
             PropertyValueUtility.configurePropertyValueDisplay(propertyValue);
         }
-    }
-
-    public SelectOneMenu getComponentSelectOneMenu() {
-        return componentSelectOneMenu;
-    }
-
-    public void setComponentSelectOneMenu(SelectOneMenu componentTypeSelectOneMenu) {
-        this.componentSelectOneMenu = componentTypeSelectOneMenu;
-    }
-
-    public DataTable getComponentPropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentPropertyValueListDataTable = new DataTable();
-        }
-        return componentPropertyValueListDataTable;
-    }
-
-    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
-        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
     }
 
     public List<PropertyValue> getFilteredPropertyValueList() {

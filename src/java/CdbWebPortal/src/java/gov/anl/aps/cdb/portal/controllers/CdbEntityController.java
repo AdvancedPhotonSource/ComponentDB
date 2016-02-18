@@ -800,32 +800,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * Get entity list data table.
-     *
-     * @return list data table
-     */
-    public DataTable getListDataTable() {
-        if (userSettingsChanged()) {
-            resetListDataModel();
-        }
-        if (listDataTable == null) {
-            logger.debug("Recreating list data table for " + getDisplayEntityTypeName());
-            listDataTable = new DataTable();
-        }
-        return listDataTable;
-    }
-
-    /**
-     * Set entity list data table.
-     *
-     * @param listDataTable list data table
-     */
-    public void setListDataTable(DataTable listDataTable) {
-        this.listDataTable = listDataTable;
-        updateListSettingsFromListDataTable(listDataTable);
-    }
-
-    /**
      * Get entity selection list data table.
      *
      * @return selection list data table

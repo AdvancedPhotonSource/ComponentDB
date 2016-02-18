@@ -63,11 +63,6 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     @EJB
     private LogDbFacade logFacade;
 
-    private DataTable designLogListDataTable = null;
-    private DataTable componentLogListDataTable = null;
-    private DataTable componentInstanceLogListDataTable = null;
-    private DataTable designElementLogListDataTable = null;
-
     public LogController() {
         super();
     }
@@ -289,48 +284,5 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     public void setFilterByTopic(String filterByTopic) {
         this.filterByTopic = filterByTopic;
     }
-
-    public DataTable getDesignLogListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            designLogListDataTable = new DataTable();
-        }
-        return designLogListDataTable;
-    }
-
-    public void setDesignLogListDataTable(DataTable designLogListDataTable) {
-        this.designLogListDataTable = designLogListDataTable;
-    }
-
-    public DataTable getComponentLogListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentLogListDataTable = new DataTable();
-        }
-        return componentLogListDataTable;
-    }
-
-    public void setComponentLogListDataTable(DataTable componentLogListDataTable) {
-        this.componentLogListDataTable = componentLogListDataTable;
-    }
-
-    public DataTable getComponentInstanceLogListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentInstanceLogListDataTable = new DataTable();
-        }
-        return componentInstanceLogListDataTable;
-    }
-
-    public void setComponentInstanceLogListDataTable(DataTable componentInstanceLogListDataTable) {
-        this.componentInstanceLogListDataTable = componentInstanceLogListDataTable;
-    }
-
-    public DataTable getDesignElementLogListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            designElementLogListDataTable = new DataTable();
-        }
-        return designElementLogListDataTable;
-    }
-
-    public void setDesignElementLogListDataTable(DataTable designElementLogListDataTable) {
-        this.designElementLogListDataTable = designElementLogListDataTable;
-    }
+    
 }

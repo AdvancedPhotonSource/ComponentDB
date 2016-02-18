@@ -129,9 +129,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
 
     private Design selectedParentDesign = null;
 
-    private SelectOneMenu componentSelectOneMenu;
-    private DataTable componentPropertyValueListDataTable = null;
-    private DataTable childDesignPropertyValueListDataTable = null;
     private List<PropertyValue> filteredPropertyValueList = null;
 
     private List<DesignElement> pendingChangesDesignElementList = null;
@@ -567,14 +564,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         this.filterBySortOrder = filterBySortOrder;
     }
 
-    public SelectOneMenu getComponentSelectOneMenu() {
-        return componentSelectOneMenu;
-    }
-
-    public void setComponentSelectOneMenu(SelectOneMenu componentSelectOneMenu) {
-        this.componentSelectOneMenu = componentSelectOneMenu;
-    }
-
     public Design getSelectedParentDesign() {
         return selectedParentDesign;
     }
@@ -984,22 +973,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         }
         DesignElementType designElementType = designElement.getContainedObjectType();
         return (designElementType != null && designElementType.equals(DesignElementType.COMPONENT));
-    }
-
-    public DataTable getComponentPropertyValueListDataTable() {
-        return componentPropertyValueListDataTable;
-    }
-
-    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
-        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
-    }
-
-    public DataTable getChildDesignPropertyValueListDataTable() {
-        return childDesignPropertyValueListDataTable;
-    }
-
-    public void setChildDesignPropertyValueListDataTable(DataTable childDesignPropertyValueListDataTable) {
-        this.childDesignPropertyValueListDataTable = childDesignPropertyValueListDataTable;
     }
 
 }
