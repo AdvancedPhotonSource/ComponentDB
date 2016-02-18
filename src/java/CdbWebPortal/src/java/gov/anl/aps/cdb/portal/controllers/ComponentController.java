@@ -44,6 +44,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -803,7 +804,7 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
                 return false;
             }
             for (Integer loadedPropertyTypeId : loadedDisplayPropertyTypes) {
-                if (propertyTypeId == loadedPropertyTypeId) {
+                if (Objects.equals(propertyTypeId, loadedPropertyTypeId)) {
                     return true;
                 }
             }
