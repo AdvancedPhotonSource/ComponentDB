@@ -25,7 +25,8 @@
             <ui:include src="../../component/private/componentSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{componentInstanceController.selectComponent(componentController.selectedComponent)}"
+                                 action="#{facesUtility.setSelectOneMenuValue(componentController.selectedComponent)}"
+                                 actionListener="#{componentInstanceController.selectComponent(componentController.selectedComponent)}"
                                  onclick="PF('componentSelectDataTableWidget').filter()" 
                                  oncomplete="PF('componentInstanceComponentSelectDialogWidget').hide()" 
                                  update="@form"

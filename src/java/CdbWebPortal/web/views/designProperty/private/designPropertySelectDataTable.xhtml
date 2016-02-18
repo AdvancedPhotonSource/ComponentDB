@@ -4,11 +4,10 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dataTable id="componentPropertySelectDataTable" 
+    <p:dataTable id="designPropertySelectDataTable" 
                  var="propertyTypeObject" 
                  value="#{propertyTypeController.selectDataModel}" 
                  selection="#{propertyTypeController.selectedObjectList}"
-                 binding="#{propertyTypeController.componentSelectDataTable}"
                  filteredValue="#{propertyTypeController.filteredObjectList}"
                  rowKey="#{propertyTypeObject.id}"
                  selectionMode="multiple"

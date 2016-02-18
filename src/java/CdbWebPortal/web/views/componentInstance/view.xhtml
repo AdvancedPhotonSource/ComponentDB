@@ -44,7 +44,6 @@
                 <p:panel header="Component Instance Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
                     <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
                         <ui:param name="entityObject" value="#{componentInstanceObject}" />
-                        <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.componentInstanceSelectDataTable}" />
                     </ui:include>
                 </p:panel>
 

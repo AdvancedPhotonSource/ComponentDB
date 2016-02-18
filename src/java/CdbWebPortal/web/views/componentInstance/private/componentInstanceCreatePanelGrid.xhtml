@@ -21,7 +21,7 @@
                              value="#{componentInstanceObject.component}" 
                              styleClass="entityDataText"
                              converter="componentConverter"
-                             binding="#{componentInstanceController.componentSelectOneMenu}">
+                             binding="#{facesUtility.selectOneMenu}">
                 <f:selectItem itemLabel="Select" noSelectionOption="true"/>
                 <f:selectItems var="componentObject" value="#{componentController.availableItems}" itemLabel="#{componentObject.name}" 
                                itemValue="#{componentObject}"/>

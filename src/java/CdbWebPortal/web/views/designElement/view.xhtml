@@ -59,7 +59,6 @@
                 <p:panel header="Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
                     <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
                         <ui:param name="entityObject" value="#{designElementObject}" />
-                        <ui:param name="entityPropertySelectDataTableBinding" value="#{propertyTypeController.designElementSelectDataTable}" />
                     </ui:include>
                 </p:panel>
 
