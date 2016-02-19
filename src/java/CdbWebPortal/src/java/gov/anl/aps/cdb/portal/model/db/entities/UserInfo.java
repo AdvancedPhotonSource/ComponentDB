@@ -332,6 +332,9 @@ public class UserInfo extends CdbEntity {
     }
 
     public Date getUserSettingsModificationDate() {
+        if (userSettingsModificationDate == null) {
+            updateSettingsModificationDate();
+        }
         return userSettingsModificationDate;
     }
 
