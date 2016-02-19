@@ -335,7 +335,7 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
         PropertyValue property = new PropertyValue();
         propertyList.add(property);
     }
-    
+
     public void prepareAddSource(Component component) {
         List<ComponentSource> sourceList = component.getComponentSourceList();
         ComponentSource source = new ComponentSource();
@@ -683,17 +683,17 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
     public boolean entityCanBeCreatedByUsers() {
         return true;
     }
-    
-    public boolean getDisplayComponentSourceList(){
-        Component currentComponent = getCurrent(); 
-        List<ComponentSource> sourceList = currentComponent.getComponentSourceList(); 
-        return sourceList != null && !sourceList.isEmpty(); 
+
+    public boolean getDisplayComponentSourceList() {
+        Component currentComponent = getCurrent();
+        List<ComponentSource> sourceList = currentComponent.getComponentSourceList();
+        return sourceList != null && !sourceList.isEmpty();
     }
-    
-    public boolean getDisplayComponentInstanceList(){
-        Component currentComponent = getCurrent(); 
-        List<ComponentInstance> componentInstanceList = currentComponent.getComponentInstanceList(); 
-        return componentInstanceList != null && !componentInstanceList.isEmpty(); 
+
+    public boolean getDisplayComponentInstanceList() {
+        Component currentComponent = getCurrent();
+        List<ComponentInstance> componentInstanceList = currentComponent.getComponentInstanceList();
+        return componentInstanceList != null && !componentInstanceList.isEmpty();
     }
 
     /**
@@ -741,6 +741,16 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
             }
         }
 
+    }
+
+    @Override
+    public void processPreRenderList() {
+        super.processPreRenderList();
+        
+        if (filterByPropertiesAutoLoad) {
+            // Performs property value load if needed.
+            getListDataModel(); 
+        }
     }
 
     @Override
@@ -920,7 +930,7 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
         if (oldValue != null) {
             oldEventComponentType = (ComponentType) oldValue;
         }
-    
+
         if (ObjectUtility.equals(existingComponentType, oldEventComponentType)) {
             // change via menu
             component.setComponentType(newEventComponentType);
@@ -929,7 +939,7 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
             component.setComponentType(oldEventComponentType);
         }
     }
-    
+
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         if (propertyTypeId != null) {
 
