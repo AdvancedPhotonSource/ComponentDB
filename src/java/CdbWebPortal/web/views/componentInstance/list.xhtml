@@ -3,10 +3,15 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../templates/componentInstancesViewTemplate.xhtml">
+                template="../../templates/componentInstancesViewTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="pageTitle">: Component Instance Inventory</ui:define>
     <ui:define name="middleCenter">
+        
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{componentInstanceController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewComponentInstanceListForm">  
             <div class="pageTitle">

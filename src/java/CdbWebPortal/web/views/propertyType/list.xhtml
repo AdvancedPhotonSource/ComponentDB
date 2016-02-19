@@ -10,6 +10,10 @@
     <ui:define name="pageTitle">: Property Types</ui:define>    
 
     <ui:define name="middleCenter">
+        
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{propertyTypeController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewPropertyTypeListForm"> 
             <div class="pageTitle">

@@ -10,6 +10,9 @@
     <ui:define name="pageTitle">: Component Types</ui:define>    
     <ui:define name="middleCenter">
 
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{componentTypeController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewComponentTypeListForm">     
             <div class="pageTitle">

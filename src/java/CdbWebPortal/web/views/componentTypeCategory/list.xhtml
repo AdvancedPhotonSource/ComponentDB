@@ -4,13 +4,18 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="../../templates/componentsViewTemplate.xhtml">
+                template="../../templates/componentsViewTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="pageTitle">: Component Type Categories</ui:define>        
     <ui:define name="middleCenter">
         <div class="pageTitle">
             <h1>Component Type Categories</h1>
         </div>
+        
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{componentTypeCategoryController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewComponentTypeCategoryListForm">            
             <ui:param name="entityController" value="#{componentTypeCategoryController}"/>

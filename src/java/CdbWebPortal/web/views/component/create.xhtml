@@ -8,6 +8,7 @@
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{componentController.processCreateRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: Create Component</ui:define>        

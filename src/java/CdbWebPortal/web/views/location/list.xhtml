@@ -9,6 +9,10 @@
 
     <ui:define name="pageTitle">: Locations</ui:define>    
     <ui:define name="middleCenter">
+        
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{locationController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewLocationListForm"> 
             <div class="pageTitle">

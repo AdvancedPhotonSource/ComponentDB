@@ -9,6 +9,8 @@
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{componentInstanceController.processEditRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: Edit Component Instance #{componentInstanceController.current.qrId}</ui:define>            

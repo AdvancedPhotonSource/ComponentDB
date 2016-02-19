@@ -9,6 +9,9 @@
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{designController.processEditRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{designElementController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: Edit Design #{designController.selected.name}</ui:define>     

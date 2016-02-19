@@ -9,11 +9,12 @@
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{propertyTypeController.processViewRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{allowedPropertyValueController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: View Property Type #{propertyTypeController.selected.name}</ui:define>
     <ui:define name="middleCenter">
-
+       
         <h:form id="viewPropertyTypeForm">
             <div class="middleCenterLeftContent">
                 <div class="pageTitle">

@@ -4,10 +4,15 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="../../templates/contentViewTemplate.xhtml">
+                template="../../templates/contentViewTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="pageTitle">: User Groups</ui:define>            
     <ui:define name="middleCenter">
+        
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{userGroupController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewUserGroupListForm">    
             <div class="pageTitle">

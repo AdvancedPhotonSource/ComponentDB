@@ -9,6 +9,10 @@
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{componentController.processViewRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{componentSourceController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{componentInstanceController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: View Component #{componentController.selected.name}</ui:define>    

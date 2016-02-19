@@ -3,17 +3,22 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../templates/componentsViewTemplate.xhtml">
+                template="../../templates/componentsViewTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="pageTitle">: Component Catalog</ui:define>
     <ui:define name="middleCenter">
+
+        <f:metadata>
+            <f:event type="preRenderComponent" listener="#{componentController.processPreRenderList()}"/>
+        </f:metadata>
 
         <h:form id="viewComponentListForm">  
             <div class="pageTitle">
                 <h1>Component Catalog</h1>
             </div>
             <ui:param name="entityController" value="#{componentController}"/>
-                        
+
             <ui:include src="private/componentListPageHelpFragment.xhtml" />
 
             <ui:include src="../common/private/commonListActionButtons.xhtml"/>
@@ -27,7 +32,7 @@
             <ui:include src="private/componentDestroyDialog.xhtml"/>
 
             <ui:include src="private/componentListCustomizeDisplayDialog.xhtml"/>
-            
+
             <ui:include src="../common/private/commonLoadingDialog.xhtml"/>
         </h:form>
         <h:outputScript library="javascript" name="componentListFilter.js"/>
