@@ -361,6 +361,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         } catch (CdbException ex) {
             handleInvalidSessionRequest(ex.getErrorMessage());
         }
+        processPreRender();
     }
 
     /**
@@ -417,6 +418,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         } catch (CdbException ex) {
             handleInvalidSessionRequest(ex.getErrorMessage());
         }
+        processPreRender();
     }
 
     /**
@@ -778,6 +780,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         breadcrumbObjectIdViewParam = null;
         return loadView;
     }
+    
+    public void processPreRender() {
+        userSettingsChanged();  
+    }
+    
+    public void processPreRenderList() {
+        if(userSettingsChanged()) {
+            resetListDataModel();
+        }
+    }
 
     /**
      * Check if user settings changed or not.
@@ -791,7 +803,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
 
         if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-            logger.debug("Updating settings from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
+            logger.debug("Updating settings for " + getEntityTypeName() +" from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
             updateSettingsFromSessionUser(sessionUser);
             settingsTimestamp = new Date();
             return true;
