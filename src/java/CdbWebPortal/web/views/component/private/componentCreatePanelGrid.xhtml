@@ -69,15 +69,13 @@
         <p:message for="logEntry"/> 
         <p:tooltip for="logEntry" value="Log entry is optional."/>
 
-        <ui:fragment rendered="#{logController.displayTopic}">
-            <h:outputLabel for="logTopic" value="Log Topic" styleClass="entityDataLabel"/>
-            <p:selectOneMenu id="logTopic" value="#{componentController.logTopicId}" styleClass="entityDataText">
-                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                <f:selectItems var="logTopic" value="#{logTopicController.availableItems}" itemLabel="#{logTopic.name}" itemValue="#{logTopic.id}"/>
-            </p:selectOneMenu>
-            <p:message for="logTopic"/> 
-            <p:tooltip for="logTopic" value="Log topic is optional."/>
-        </ui:fragment>
+        <h:outputLabel for="logTopic" value="Log Topic" styleClass="entityDataLabel" rendered="#{logController.displayTopic}"/>
+        <p:selectOneMenu id="logTopic" value="#{componentController.logTopicId}" styleClass="entityDataText" rendered="#{logController.displayTopic}">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+            <f:selectItems var="logTopic" value="#{logTopicController.availableItems}" itemLabel="#{logTopic.name}" itemValue="#{logTopic.id}"/>
+        </p:selectOneMenu>
+        <p:message for="logTopic" rendered="#{logController.displayTopic}"/> 
+        <p:tooltip for="logTopic" value="Log topic is optional." rendered="#{logController.displayTopic}"/>
     </p:panelGrid>
  
 </ui:composition>
