@@ -71,6 +71,7 @@ INSERT INTO `log` VALUES
 (78,'Move from 314 to MOM/401 for picture on 01/14/2016','2016-01-27 08:48:35',21,NULL),
 (79,'Move from EAA/401 to MOM/401 for picture after assembly is done on 01/13/2016','2016-01-27 08:49:44',21,NULL),
 (80,'Move from MOM/401 to 314 for magnet measurement on 01/20/2016','2016-01-27 08:50:45',21,NULL),
-(81,'Move from MOM/401 to 314 for magnet measurement after switching the bottom two pole tips on 01/25/2016','2016-01-27 09:07:36',21,NULL);
+(81,'Move from MOM/401 to 314 for magnet measurement after switching the bottom two pole tips on 01/25/2016','2016-01-27 09:07:36',21,NULL),
+(82,'','2016-02-04 15:33:52',42,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

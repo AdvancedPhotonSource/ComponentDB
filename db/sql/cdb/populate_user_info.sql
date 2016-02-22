@@ -2,7 +2,7 @@ LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
 INSERT INTO `user_info` VALUES
 (1,'cdb','CDB','System Account',NULL,'cdb@aps.anl.gov',NULL,NULL),
-(2,'bstill','Ben','Stillwell','','bstill@aps.anl.gov',NULL,NULL),
+(2,'bstill','Ben','Stillwell','','bstill@aps.anl.gov',NULL,''),
 (3,'nda','Ned','Arnold','','nda@aps.anl.gov',NULL,NULL),
 (4,'sveseli','Sinisa','Veseli','','sveseli@aps.anl.gov',NULL,NULL),
 (5,'benes','Scott','Benes','','benes@aps.anl.gov',NULL,NULL),
@@ -24,8 +24,8 @@ INSERT INTO `user_info` VALUES
 (21,'jieliu','Jie','Liu','','jieliu@aps.anl.gov',NULL,NULL),
 (22,'doose','Charles','Doose','','doose@aps.anl.gov',NULL,NULL),
 (23,'tfors','Tom','Fors','','tfors@aps.anl.gov',NULL,''),
-(24,'bran','Bran','Brajuskovic','','bran@aps.anl.gov',NULL,NULL),
-(25,'jzientek','John','Zientek','','jzientek@aps.anl.gov',NULL,NULL),
+(24,'bran','Bran','Brajuskovic','','bran@aps.anl.gov',NULL,''),
+(25,'jzientek','John','Zientek','','jzientek@aps.anl.gov',NULL,''),
 (26,'djarosz','Dariusz','Jarosz','Piotr','djarosz@aps.anl.gov',NULL,NULL),
 (27,'mwhite','Marion','White','','mwhite@aps.anl.gov',NULL,NULL),
 (28,'brianr','Brian','Rusthoven','','brianr@aps.anl.gov',NULL,NULL),
@@ -48,6 +48,10 @@ INSERT INTO `user_info` VALUES
 (45,'puttkamm','Anthony','Puttkammer','','puttkamm@aps.anl.gov',NULL,''),
 (46,'wiemer','Greg','Wiemerslage','','wiemer@aps.anl.gov',NULL,''),
 (47,'knoerzer','Kevin','Knoerzer','','knoerzer@aps.anl.gov',NULL,''),
-(48,'jacarter','Jason','Carter','','jacarter',NULL,'');
+(48,'jacarter','Jason','Carter','','jacarter',NULL,''),
+(49,'adonnelly','Aric','Donnelly','','adonnelly@aps.anl.gov',NULL,''),
+(50,'hoytman','John','Hoyt','','hoytman@aps.anl.gov',NULL,''),
+(51,'suthar','Kamlesh','Suthar','','suthar@aps.anl.gov',NULL,''),
+(52,'dwalters','Dean','Walters','','dwalters@aps.anl.gov',NULL,'');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;

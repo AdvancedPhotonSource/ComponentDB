@@ -7,7 +7,7 @@ INSERT INTO `property_type` VALUES
 (4,'QA Inspection Report','Inspection Result Document',2,NULL,NULL,NULL),
 (5,'Electrical Equipment Status','NRTL Approved or APS Inspection Required or Not Required',2,NULL,NULL,NULL),
 (6,'Electrical Inspection #','Inspection # from DEEI (use desc of Status?)',2,NULL,NULL,NULL),
-(7,'Documentation URI','Provides a link to any web address (URL)',4,3,'',''),
+(7,'Documentation (WEB)','Provides a link to any web address (URL)',4,3,'',''),
 (8,'Form Factor','',3,NULL,'',''),
 (9,'Slot Length','',3,NULL,NULL,NULL),
 (10,'Required Water Flow',NULL,3,NULL,NULL,NULL),
@@ -15,8 +15,8 @@ INSERT INTO `property_type` VALUES
 (12,'Traveler Template (ICMS)','',2,5,'',''),
 (13,'Traveler Instance (ICMS)','',2,5,'',''),
 (14,'Image',NULL,4,2,NULL,NULL),
-(15,'Document/Drawing (Upload)','',4,1,'',''),
-(16,'Document/Drawing (ICMS)','',4,5,'',''),
+(15,'Document (Upload)','',4,1,'',''),
+(16,'Document (ICMS)','',4,5,'',''),
 (17,'PDMLink Drawing','Provides a link to PDMLink, enter the drawing number including the extension e.g. U221020202-110001.asm',4,6,'',''),
 (18,'AMOS Order','Provides a link to AMOS, enter the Master Order number, e.g. MO_nnnnnn ',4,7,'',''),
 (19,'Purchase Requisition','Provides a link to PARIS. Enter the PR number, e.g. Fy-xxxxxx , in the Value field',4,8,'',''),
@@ -81,6 +81,7 @@ INSERT INTO `property_type` VALUES
 (79,'Verified','',10,11,'',''),
 (80,'Critical Component','',10,10,'',''),
 (81,'Traveler Template (Electronic)','Allows integration of traveler templates from traveler application.',2,13,'',''),
-(82,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'','');
+(82,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'',''),
+(83,'CSI #','Record Argonne\'s CSI # of a component instance',4,NULL,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

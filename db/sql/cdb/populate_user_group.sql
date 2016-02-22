@@ -12,8 +12,9 @@ INSERT INTO `user_group` VALUES
 (9,'PSC-PA','APS Upgrade'),
 (10,'DIAG','Diagnostics'),
 (11,'MD','Magnetic Devices'),
-(12,'APSU_VAC','Those working on vacuum for APSU'),
+(12,'APSU_VAC_ENG','Those working on vacuum designs for APSU'),
 (13,'LCLS-II',''),
-(14,'DD','Design & Drafting');
+(14,'DD','Design & Drafting'),
+(15,'APSU_VAC_TECH','Group that owns component instances');
 /*!40000 ALTER TABLE `user_group` ENABLE KEYS */;
 UNLOCK TABLES;
