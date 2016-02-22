@@ -132,7 +132,7 @@ public class PropertyValueUtility {
 
     public static void searchPropertyValueList(List<PropertyValue> propertyValueList, Pattern searchPattern, SearchResult searchResult) {
         for (PropertyValue propertyValue : propertyValueList) {
-            String baseKey = "propertyValue/id:" + propertyValue.getId();
+            String baseKey = "propertyValue";
             String propertyValueKey = baseKey + "/value";
             searchResult.doesValueContainPattern(propertyValueKey, propertyValue.getValue(), searchPattern);
             propertyValueKey = baseKey + "/description";

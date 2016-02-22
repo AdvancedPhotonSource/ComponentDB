@@ -50,7 +50,7 @@ public class LogUtility {
 
     public static void searchLogList(List<Log> logList, Pattern searchPattern, SearchResult searchResult) {
         for (Log logEntry : logList) {
-            String baseKey = "log/id:" + logEntry.getId();
+            String baseKey = "log";
             String logEntryKey = baseKey + "/text";
             searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
         }
