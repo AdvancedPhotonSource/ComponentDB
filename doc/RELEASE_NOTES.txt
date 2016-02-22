@@ -1,3 +1,19 @@
+Release 2.4 (Tag 20160218) (02/22/2016)
+=========================================
+- Improved DB backup scripts (new easily runnable as a cron job)
+- Drag & Drop for sorting design elements
+- Inline editing
+  - Ability to add multiple images
+  - Ability to add a new property
+  - Editing existing properties
+  - Editing any "user writable" property for any authenticated user
+- Collapsed panels when no information is to be shown in the entity
+- Improved Search
+  - Search results only shown once results for all requested entities are loaded
+  - Collapsed panels when no results are present
+  - Removed Ids from child entities in match
+  - Moved to important entities section on menubar
+
 Release 2.3 (Tag 20160201) (02/01/2016)
 =========================================
 - Add Support for Component Instance Location History
