@@ -103,9 +103,11 @@ INSERT INTO `component_instance_property` VALUES
 (103,443),
 (104,444),
 (110,521),
+(119,708),
 (120,614),
 (120,615),
 (121,683),
+(121,711),
 (125,626),
 (125,642),
 (126,625),
@@ -119,6 +121,9 @@ INSERT INTO `component_instance_property` VALUES
 (129,629),
 (129,630),
 (129,631),
-(136,680);
+(136,680),
+(136,684),
+(136,685),
+(140,710);
 /*!40000 ALTER TABLE `component_instance_property` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -43,6 +43,7 @@ INSERT INTO `source` VALUES
 (41,'CAEN Technologies, Inc.','','erik@caentechnologies.com','http://www.caenels.com/'),
 (42,'DIAL MACHINE, INC','PRECISION MACHINING, BIG PARTS','(815) 397-6660','http://www.dialmachine.com/'),
 (43,'Emerson','','',''),
-(44,'Arrow','','Jim McTeague; Cell 630-935-2048','');
+(44,'Arrow','','Jim McTeague; Cell 630-935-2048',''),
+(45,'Tecknit Shielding Systems inc.','','201-778-6200','');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

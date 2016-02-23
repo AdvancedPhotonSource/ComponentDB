@@ -95,10 +95,10 @@ INSERT INTO `component_instance` VALUES
 (115,287,210,NULL,NULL,118,NULL,'',702),
 (116,287,210,NULL,NULL,119,NULL,'',703),
 (117,289,NULL,'DMM Magnet Assembly',NULL,105,NULL,'First DMM Unit',706),
-(118,166,NULL,'DMM-QUADRUPOLE-A002',NULL,109,NULL,'The 2nd Quadrupole of DMM; With cut for vacuum chamber;',707),
-(119,167,NULL,'S1A001',NULL,108,NULL,'Sectupole magnet for DMM instance 105',708),
+(118,166,400,'DMM-QUADRUPOLE-A002',NULL,109,NULL,'The 2nd Quadrupole of DMM; With cut for vacuum chamber;',707),
+(119,167,210,'S1A001',NULL,108,'','Sectupole magnet for DMM instance 105',708),
 (120,168,NULL,'DMM-SUPPORT-PLATE-A001',NULL,106,'','',710),
-(121,292,NULL,'DMM-QUADRUPOLE-A001',NULL,107,'','',713),
+(121,292,400,'DMM-QUADRUPOLE-A001',NULL,107,'','',713),
 (122,293,NULL,'DMM-QUADRUPOLE-A003',NULL,110,NULL,'',716),
 (123,294,NULL,'DMM-QUADRUPOLE-A004',NULL,111,NULL,'',717),
 (124,299,214,NULL,'CN-OXTXXX-72872-57K-A3ML',121,'','Monitor for Kicker Development PC',745),
@@ -113,6 +113,10 @@ INSERT INTO `component_instance` VALUES
 (133,255,398,NULL,NULL,NULL,'','',760),
 (134,159,NULL,NULL,'9246524',NULL,'','Procurred for SPX RTFB DAQ',761),
 (135,159,NULL,NULL,NULL,NULL,NULL,'Procurred because the other one is broke',762),
-(136,306,NULL,'Spare',NULL,NULL,'','',792);
+(136,306,7,'Spare',NULL,172,'Power Systems Group injector test area','Interleaving magnet power supply',792),
+(137,252,398,NULL,NULL,NULL,'','',795),
+(138,232,214,NULL,'BO50717',85,'','',803),
+(139,221,214,NULL,'MY45051645',86,'','',804),
+(140,322,NULL,NULL,NULL,173,'','FMS Rigging Tablet',814);
 /*!40000 ALTER TABLE `component_instance` ENABLE KEYS */;
 UNLOCK TABLES;
