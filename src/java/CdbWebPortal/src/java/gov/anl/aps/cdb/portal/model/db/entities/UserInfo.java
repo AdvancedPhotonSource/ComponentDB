@@ -109,6 +109,7 @@ public class UserInfo extends CdbEntity {
     private transient HashMap<String, UserSetting> userSettingMap = null;
     private transient Date userSettingsModificationDate = null;
     private transient String fullNameForSelection = null;
+    private transient String userGroupListString = null; 
 
     public UserInfo() {
     }
@@ -192,6 +193,14 @@ public class UserInfo extends CdbEntity {
     @XmlTransient
     public List<UserGroup> getUserGroupList() {
         return userGroupList;
+    }
+
+    public String getUserGroupListString() {
+        return userGroupListString;
+    }
+
+    public void setUserGroupListString(String userGroupListString) {
+        this.userGroupListString = userGroupListString;
     }
 
     public void setUserGroupList(List<UserGroup> userGroupList) {

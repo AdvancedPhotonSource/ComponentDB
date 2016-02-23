@@ -35,7 +35,7 @@
                   filterBy="#{userInfoObject.userGroupList}" filterMatchMode="contains"
                   filterValue="#{userInfoController.filterByGroups}"
                   rendered="#{userInfoController.displayGroups}">
-            <h:outputText value="#{userInfoController.displayEntityList(userInfoObject.userGroupList)}"/>
+            <h:outputText value="#{userInfoObject.userGroupListString}"/>
         </p:column>
 
         <p:column sortBy="#{userInfoObject.lastName}" headerText="Last Name" 

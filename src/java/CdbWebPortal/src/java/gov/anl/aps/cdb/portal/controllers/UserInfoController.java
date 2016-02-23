@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.common.utilities.CryptUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -29,6 +30,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.model.DataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
@@ -78,6 +80,8 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
     private String filterByMiddleName = null;
     private String filterByUsername = null;
 
+    private Integer loadedDataModelHashCode = null;
+
     public UserInfoController() {
     }
 
@@ -119,7 +123,6 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
         return userInfoFacade.findById(id);
     }
 
-    
     @Override
     public List<UserInfo> getAvailableItems() {
         return super.getAvailableItems();
@@ -167,7 +170,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
         if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
         }
-       
+
         logger.debug("Updating user " + userInfo.getUsername());
         List<UserSetting> userSettingList = userInfo.getUserSettingList();
         for (UserSetting userSetting : userSettingList) {
@@ -201,15 +204,15 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
             UserInfo user = getEntity(sessionUser.getId());
             user.setUserSettingList(sessionUser.getUserSettingList());
             setCurrent(user);
-            update();    
+            update();
         }
     }
-    
+
     @Override
-    public String update(){
+    public String update() {
         String result = super.update();
-        SessionUtility.setUser(current); 
-        return result; 
+        SessionUtility.setUser(current);
+        return result;
     }
 
     public String prepareSessionUserEdit(String viewPath) {
@@ -320,6 +323,23 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
         filterByUsername = null;
     }
 
+    @Override
+    public DataModel getListDataModel() {
+        DataModel userInfoDataModel = super.getListDataModel();
+
+        if (loadedDataModelHashCode == null || loadedDataModelHashCode != userInfoDataModel.hashCode()) {
+            Iterator<UserInfo> userInfoIterator = userInfoDataModel.iterator();
+            while (userInfoIterator.hasNext()) {
+                UserInfo userInfo = userInfoIterator.next();
+                String userGroupString = CdbEntityController.displayEntityList(userInfo.getUserGroupList());
+                userInfo.setUserGroupListString(userGroupString);
+            }
+            loadedDataModelHashCode = userInfoDataModel.hashCode();
+        }
+
+        return userInfoDataModel;
+    }
+
     public Boolean getDisplayEmail() {
         return displayEmail;
     }
@@ -423,7 +443,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoDb
 
     /**
      * Converter class for user info objects.
-     */    
+     */
     @FacesConverter(forClass = UserInfo.class)
     public static class UserInfoControllerConverter implements Converter {
 
