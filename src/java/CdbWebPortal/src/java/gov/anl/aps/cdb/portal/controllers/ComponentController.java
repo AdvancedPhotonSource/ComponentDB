@@ -388,27 +388,6 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
         update();
     }
 
-    public String addComponentInstance(ComponentInstance componentInstance) throws InvalidObjectState {
-        Component component = componentInstance.getComponent();
-        if (component == null) {
-            SessionUtility.addWarningMessage("Warning", "Component must be selected.");
-            return null;
-        }
-
-        UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
-        Date createdOnDateTime = new Date();
-
-        // Reset some attributes to null.
-        componentInstance.resetAttributesToNullIfEmpty();
-        componentInstance.updateDynamicProperties(createdByUser, createdOnDateTime);
-
-        List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();
-        componentInstanceList.add(componentInstance);
-        setCurrent(component);
-        update();
-        return view();
-    }
-
     public void deleteComponentInstance(ComponentInstance componentInstance) {
         Component component = componentInstance.getComponent();
         List<ComponentInstance> componentInstanceList = component.getComponentInstanceList();

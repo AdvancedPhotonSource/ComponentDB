@@ -30,20 +30,10 @@
             <ui:include src="private/componentInstanceCreatePanelGrid.xhtml"/>
 
             <p/>
-            <div class="actionButton">
-                <p:commandButton id="componentInstanceCreateSaveButton"
-                                 actionListener="#{componentInstanceController.resetListDataModelAndSetCurrent(componentInstanceObject)}"
-                                 action="#{componentController.addComponentInstance(componentInstanceObject)}" 
-                                 value="Save" alt="Save" icon="ui-icon-check" update="@form">
-                    <p:tooltip for="componentInstanceCreateSaveButton" value="Save new component instance."/>
-                </p:commandButton>
-                <p:commandButton id="componentInstanceCreateCancelButton" action="#{componentInstanceController.prepareListFromViewPath('/views/componentInstance')}" immediate="true" 
-                                 value="Cancel" alt="Cancel" icon="ui-icon-cancel">
-                    <p:tooltip for="componentInstanceCreateCancelButton" value="Cancel and display component instance list page."/>
-                </p:commandButton>
-            </div>
-
-
+            
+            <ui:param name="entityController" value="#{componentInstanceController}"/>
+            <ui:include src="../common/private/commonCreateActionButtons.xhtml"/>
+            <ui:include src="../common/private/commonLoadingDialog.xhtml"/>
         </h:form>
 
     </ui:define>

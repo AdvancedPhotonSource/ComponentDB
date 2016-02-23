@@ -829,6 +829,17 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         }
         return null;
     }
+    
+    @Override
+    public String create() {
+        Component component = current.getComponent();
+        if (component == null) {
+            SessionUtility.addWarningMessage("Warning", "Component must be selected.");
+            return null;
+        }
+        
+        return super.create(); 
+    }
 
     public Integer getDisplayPropertyTypeId1() {
         return displayPropertyTypeId1;
