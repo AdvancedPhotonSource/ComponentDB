@@ -54,7 +54,7 @@ public class EntityInfoUtility {
     }
 
     public static void searchEntityInfo(EntityInfo entityInfo, Pattern searchPattern, SearchResult searchResult) {
-        String baseKey = "entityInfo/id:" + entityInfo.getId();
+        String baseKey = "entityInfo";
         String entityInfoKey = baseKey + "/ownerUsername";
         searchResult.doesValueContainPattern(entityInfoKey, entityInfo.getOwnerUser().getUsername(), searchPattern);
         entityInfoKey = baseKey + "/ownerLastName";

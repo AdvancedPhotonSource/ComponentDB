@@ -257,7 +257,7 @@ public class Design extends CdbDomainEntity {
         EntityInfoUtility.searchEntityInfo(entityInfo, searchPattern, searchResult);
         String baseKey;
         for (DesignElement designElement : designElementList) {
-            baseKey = "designElement/id:" + designElement.getId();
+            baseKey = "designElement";
             String designElementKey = baseKey + "/name";
             searchResult.doesValueContainPattern(designElementKey, designElement.getName(), searchPattern);
             designElementKey = baseKey + "/description";
