@@ -9,14 +9,14 @@
         <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home" styleClass="mainMenuBarItemImportant"/>
         <p:menuitem value="Component Catalog" url="/views/component/list" styleClass="mainMenuBarItemImportant"/>
         <p:menuitem value="Component Inventory" url="/views/componentInstance/list" styleClass="mainMenuBarItemImportant"/>
-        <p:menuitem value="Design Library" url="/views/design/list" styleClass="mainMenuBarItemImportant"/>       
+        <p:menuitem value="Design Library" url="/views/design/list" styleClass="mainMenuBarItemImportant"/>
+        <p:menuitem value="Search" url="/views/search/search" icon="ui-icon-search" styleClass="mainMenuBarItemImportant"/>
         <f:facet name="options">
             <p:menubar styleClass="menuBarSupportingItems">
                 <p:menuitem value="Locations" url="/views/location/list"/>
                 <p:menuitem value="Property Types" url="/views/propertyType/list"/>
                 <p:menuitem value="Sources" url="/views/source/list"/>
                 <p:menuitem value="Users" url="/views/userInfo/list"/>  
-                <p:menuitem value="Search" url="/views/search/search" icon="ui-icon-search"/>
                 <p:menuitem value="Settings"
                             action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
                             rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
