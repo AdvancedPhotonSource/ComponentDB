@@ -134,9 +134,8 @@ public class PdmLinkDrawingBean implements Serializable {
     }
 
     private PropertyType getWbsPropertyType(PropertyTypeController propertyTypeController) {
-        if (wbsPropertyType == null) {
-            wbsPropertyType = propertyTypeController.findByName(WBS_PROPERTY_NAME);
-        }
+        // The wbs property may have new allowed values added so updating the property type is essencial.
+        wbsPropertyType = propertyTypeController.findByName(WBS_PROPERTY_NAME);
         return wbsPropertyType;
     }
 
@@ -250,25 +249,27 @@ public class PdmLinkDrawingBean implements Serializable {
                     showErrorMessage("Couldn't find " + PDMLINK_PROPERTY_NAME + " property type");
                 }
                 //Attempt to add WBS property
-                getWbsPropertyType(propertyTypeController);
-                if (wbsPropertyType != null) {
-                    List<AllowedPropertyValue> wbsPropertyAllowedValueList = wbsPropertyType.getAllowedPropertyValueList();
-                    String wbsNumber = pdmLinkComponent.getWbsDescription();
-                    boolean foundAllowedValue = false;
-                    for (AllowedPropertyValue wbsAllowedPropertyValue : wbsPropertyAllowedValueList) {
-                        if (wbsAllowedPropertyValue.getValue().equalsIgnoreCase(wbsNumber)) {
-                            wbsNumber = wbsAllowedPropertyValue.getValue();
-                            foundAllowedValue = true;
-                            break;
+                if (pdmLinkComponent.getWbsDescription() != null && !pdmLinkComponent.getWbsDescription().equals("")) {
+                    getWbsPropertyType(propertyTypeController);
+                    if (wbsPropertyType != null) {
+                        List<AllowedPropertyValue> wbsPropertyAllowedValueList = wbsPropertyType.getAllowedPropertyValueList();
+                        String wbsNumber = pdmLinkComponent.getWbsDescription();
+                        boolean foundAllowedValue = false;
+                        for (AllowedPropertyValue wbsAllowedPropertyValue : wbsPropertyAllowedValueList) {
+                            if (wbsAllowedPropertyValue.getValue().equalsIgnoreCase(wbsNumber)) {
+                                wbsNumber = wbsAllowedPropertyValue.getValue();
+                                foundAllowedValue = true;
+                                break;
+                            }
                         }
-                    }
-                    if (foundAllowedValue) {
-                        componentController.preparePropertyTypeValueAdd(wbsPropertyType, wbsNumber);
+                        if (foundAllowedValue) {
+                            componentController.preparePropertyTypeValueAdd(wbsPropertyType, wbsNumber);
+                        } else {
+                            showWarningMessage("WBS number is not in the allowed value list for WBS property.");
+                        }
                     } else {
-                        showWarningMessage("WBS number is not in the allowed value list for WBS property.");
+                        showErrorMessage("Couldn't find " + WBS_PROPERTY_NAME + " property type");
                     }
-                } else {
-                    showErrorMessage("Couldn't find " + WBS_PROPERTY_NAME + " property type");
                 }
 
                 //Attempt to update the component with the new properties 
