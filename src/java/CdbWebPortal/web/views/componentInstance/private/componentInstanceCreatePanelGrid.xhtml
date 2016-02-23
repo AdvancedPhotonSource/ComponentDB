@@ -30,8 +30,11 @@
             </p:selectOneMenu>
 
             <p:commandButton id="selectComponentButton"
+                             onstart="PF('loadingDialog').show()"
                              action="#{componentController.clearSelectFiltersAndResetSelectDataModel()}" 
-                             oncomplete="PF('componentInstanceComponentSelectDialogWidget').show();"
+                             oncomplete="PF('loadingDialog').hide();
+                             PF('componentInstanceComponentSelectDialogWidget').show();"
+                             onerror="PF('loadingDialog').hide()"
                              update="@form"
                              immediate="true"
                              alt="Select Component" 

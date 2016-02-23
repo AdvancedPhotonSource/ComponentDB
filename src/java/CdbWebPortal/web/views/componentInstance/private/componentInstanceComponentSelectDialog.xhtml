@@ -25,10 +25,13 @@
             <ui:include src="../../component/private/componentSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
+                                 onstart="PF('loadingDialog').show();"
                                  action="#{facesUtility.setSelectOneMenuValue(componentController.selectedComponent)}"
                                  actionListener="#{componentInstanceController.selectComponent(componentController.selectedComponent)}"
                                  onclick="PF('componentSelectDataTableWidget').filter()" 
-                                 oncomplete="PF('componentInstanceComponentSelectDialogWidget').hide()" 
+                                 oncomplete="PF('loadingDialog').hide();
+                                             PF('componentInstanceComponentSelectDialogWidget').hide()" 
+                                 onerror="PF('loadingDialog').hide();"
                                  update="@form"
                                  immediate="true"
                                  icon="ui-icon-arrowreturnthick-1-w">
