@@ -66,7 +66,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named("componentController")
 @SessionScoped
-public class ComponentController extends CdbDomainEntityController<Component, ComponentDbFacade> implements Serializable {
+public class ComponentController extends CdbAbstractDomainEntityController<Component, ComponentDbFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -837,7 +837,7 @@ public class ComponentController extends CdbDomainEntityController<Component, Co
             return !fetchFilterablePropertyValue(propertyTypeId);
         }
     }
-
+    
     @Override
     public Boolean getDisplayLoadPropertyValuesButton() {
         if (filterByPropertiesAutoLoad) {
