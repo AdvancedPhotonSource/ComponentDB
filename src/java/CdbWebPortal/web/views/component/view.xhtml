@@ -13,6 +13,7 @@
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{componentSourceController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{componentInstanceController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{designMemberViewController.processPreRender()}" />
     </f:metadata>
 
     <ui:define name="pageTitle">: View Component #{componentController.selected.name}</ui:define>    
@@ -57,6 +58,10 @@
                     </p:panel>
                     <p:panel header="Instances" toggleable="true" collapsed="#{!componentController.displayComponentInstanceList}">
                         <ui:include src="private/componentComponentInstanceList.xhtml"/>
+                    </p:panel>
+                    
+                    <p:panel header="Design Membership" toggleable="true" collapsed="#{!entityController.displayParentDesignList}">
+                        <ui:include src="../designMember/private/designMemberList.xhtml" />
                     </p:panel>
                 </div>
         </h:form>
