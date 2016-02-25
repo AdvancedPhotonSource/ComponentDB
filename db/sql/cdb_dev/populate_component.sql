@@ -199,7 +199,7 @@ INSERT INTO `component` VALUES
 (212,'Turbo Pump Cart, R&D Vacuum Sector Mockup',NULL,'TStation 75',66,520),
 (213,'M1 dipole pre-prototype',NULL,'First prototype magnet (from Fermilab)',80,536),
 (214,'Samsung Galaxy Tab 10.5',NULL,'',121,537),
-(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1',49,539),
+(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices',49,539),
 (216,'PRL-424LV',NULL,'1:4 LVDS Fanout Buffer',108,540),
 (217,'Generic: Data Logging System',NULL,'',129,554),
 (218,'Generic: Measurement System',NULL,'',128,555),

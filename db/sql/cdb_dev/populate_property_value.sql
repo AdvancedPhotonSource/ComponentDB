@@ -230,7 +230,7 @@ INSERT INTO `property_value` VALUES
 (310,19,'','F5-047068','','','2015-04-10 11:43:29',3,0,0,'F5-047068','https://apps.inside.anl.gov/paris/req.jsp?reqNbr=F5-047068'),
 (311,15,'Datasheet','document.8380067854699696668.pdf','','','2015-04-10 11:46:54',3,0,0,'document.8380067854699696668.pdf','/cdb/propertyValue/documents/document.8380067854699696668.pdf'),
 (312,14,'','image.2743826688688764588.png','','','2015-04-10 11:46:32',3,0,0,'image.2743826688688764588.png','image.2743826688688764588.png'),
-(313,15,'Mechanical Dwg','document.8614657360170845006.pdf','','','2015-04-10 11:50:36',3,0,0,'document.8614657360170845006.pdf','/cdb/propertyValue/documents/document.8614657360170845006.pdf'),
+(313,15,'Mechanical Dwg','document.8614657360170845006.pdf','','','2015-04-10 11:50:36',3,0,0,'document.8614657360170845006.pdf','/cdb_dev/propertyValue/documents/document.8614657360170845006.pdf'),
 (314,14,'','image.7174245070073020364.jpg','','','2015-04-17 12:06:06',3,0,0,'image.7174245070073020364.jpg','image.7174245070073020364.jpg'),
 (315,7,'Logbook','https://logbook.aps.anl.gov/elogs/aps-u/MicroTCA+DSC/','','','2015-04-20 15:53:19',3,0,0,'https://logbook...u/MicroTCA+DSC/','https://logbook.aps.anl.gov/elogs/aps-u/MicroTCA+DSC/'),
 (316,64,'','000 000 040','','','2015-04-20 12:58:21',3,0,0,'000 000 040','000 000 040'),

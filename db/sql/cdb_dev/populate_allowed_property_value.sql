@@ -4525,6 +4525,14 @@ INSERT INTO `allowed_property_value` VALUES
 (4522,74,'D.1.5.2',NULL,'',4156.00),
 (4523,74,'D.1.5.2.1',NULL,'',4157.00),
 (4524,74,'D.1.5.2.2',NULL,'',4158.00),
-(4525,74,'D.1.5.3',NULL,'',4159.00);
+(4525,74,'D.1.5.3',NULL,'',4159.00),
+(4526,83,'orange','','',NULL),
+(4527,83,'purple','','',NULL),
+(4528,83,'yellow','','',NULL),
+(4529,83,'red','','',NULL),
+(4530,83,'violet','','',NULL),
+(4531,83,'blue','','',NULL),
+(4532,83,'green','','',NULL),
+(4533,83,'pink','','',NULL);
 /*!40000 ALTER TABLE `allowed_property_value` ENABLE KEYS */;
 UNLOCK TABLES;
