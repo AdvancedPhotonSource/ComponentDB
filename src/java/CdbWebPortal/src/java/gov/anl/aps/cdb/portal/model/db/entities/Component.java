@@ -58,7 +58,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Component.findByNameWithNullModelNumber", query = "SELECT c FROM Component c WHERE c.name = :name AND c.modelNumber IS NULL"),
     @NamedQuery(name = "Component.findByModelNumber", query = "SELECT c FROM Component c WHERE c.modelNumber = :modelNumber"),
     @NamedQuery(name = "Component.findByDescription", query = "SELECT c FROM Component c WHERE c.description = :description")})
-public class Component extends CdbDomainEntity {
+public class Component extends CdbAbstractDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,7 +70,7 @@ public class Component extends CdbDomainEntity {
     private String name;
     @Size(max = 64)
     @Column(name = "model_number")
-    private String modelNumber;    
+    private String modelNumber;
     @Size(max = 256)
     private String description;
     @JoinTable(name = "component_log", joinColumns = {
@@ -103,7 +103,7 @@ public class Component extends CdbDomainEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "assembly")
     private List<AssemblyComponent> assemblyComponentList;
     @OneToMany(mappedBy = "component")
-    private List<DesignElement> designElementList;
+    private List<DesignElement> designElementMemberList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "component")
     private List<ComponentSource> componentSourceList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componentId")
@@ -249,13 +249,14 @@ public class Component extends CdbDomainEntity {
         this.assemblyComponentList = assemblyComponentList;
     }
 
+    @Override
     @XmlTransient
-    public List<DesignElement> getDesignElementList() {
-        return designElementList;
+    public List<DesignElement> getDesignElementMemberList() {
+        return designElementMemberList;
     }
 
-    public void setDesignElementList(List<DesignElement> designElementList) {
-        this.designElementList = designElementList;
+    public void setDesignElementMemberList(List<DesignElement> designElementMemberList) {
+        this.designElementMemberList = designElementMemberList;
     }
 
     @XmlTransient
@@ -280,8 +281,8 @@ public class Component extends CdbDomainEntity {
         Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
         if (propertyTypeId != null) {
             PropertyValueInformation propertyInfo = propertyValueCacheMap.get(propertyTypeId);
-            if(propertyInfo != null){
-                return propertyInfo.getValue(); 
+            if (propertyInfo != null) {
+                return propertyInfo.getValue();
             }
         }
         return null;
@@ -373,7 +374,7 @@ public class Component extends CdbDomainEntity {
         }
         return name;
     }
-    
+
     @Override
     public String toString() {
         return getNameAndModelNumber();
@@ -409,7 +410,7 @@ public class Component extends CdbDomainEntity {
         cloned.componentInstanceList = null;
         cloned.assemblyList = null;
         cloned.assemblyComponentList = null;
-        cloned.designElementList = null;
+        cloned.designElementMemberList = null;
         cloned.componentResourceList = null;
         cloned.logList = null;
         cloned.propertyValueList = null;
@@ -469,46 +470,46 @@ public class Component extends CdbDomainEntity {
         if (propertyValueInfo == null) {
             String delimiter = "";
             String cachedValue = "";
-            PropertyTypeHandlerInterface propertyHandler = null; 
-            boolean setTargetValue = false;  
-            PropertyValue lastValue = null; 
+            PropertyTypeHandlerInterface propertyHandler = null;
+            boolean setTargetValue = false;
+            PropertyValue lastValue = null;
             for (PropertyValue propertyValue : propertyValueList) {
                 if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
-                    if(propertyHandler == null){
+                    if (propertyHandler == null) {
                         propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-                    }                    
+                    }
                     propertyHandler.setDisplayValue(propertyValue);
-                    String value = propertyValue.getDisplayValue(); 
+                    String value = propertyValue.getDisplayValue();
                     if (value != null && !value.isEmpty()) {
                         cachedValue += delimiter + value;
                         delimiter = "|";
                     }
                     setTargetValue = lastValue == null;
-                    lastValue = propertyValue; 
+                    lastValue = propertyValue;
                 }
             }
             propertyValueInfo = new PropertyValueInformation(cachedValue, null);
-            if(setTargetValue){
-                propertyValueInfo = attemptSetTargetValue(propertyValueInfo, lastValue, propertyHandler); 
+            if (setTargetValue) {
+                propertyValueInfo = attemptSetTargetValue(propertyValueInfo, lastValue, propertyHandler);
             }
             propertyValueCacheMap.put(propertyTypeId, propertyValueInfo);
         }
         return propertyValueInfo;
     }
-    
-    public PropertyValueInformation attemptSetTargetValue(PropertyValueInformation propertyValueInfo, PropertyValue propertyValue, PropertyTypeHandlerInterface propertyHandler){
-        DisplayType displayType = propertyHandler.getValueDisplayType(); 
-        if(displayType != null){
-            if(displayType.equals(DisplayType.HTTP_LINK) || displayType.equals(DisplayType.TABLE_RECORD_REFERENCE)){
+
+    public PropertyValueInformation attemptSetTargetValue(PropertyValueInformation propertyValueInfo, PropertyValue propertyValue, PropertyTypeHandlerInterface propertyHandler) {
+        DisplayType displayType = propertyHandler.getValueDisplayType();
+        if (displayType != null) {
+            if (displayType.equals(DisplayType.HTTP_LINK) || displayType.equals(DisplayType.TABLE_RECORD_REFERENCE)) {
                 propertyHandler.setTargetValue(propertyValue);
                 propertyValueInfo.setTargetValue(propertyValue.getTargetValue());
-            }   
+            }
         }
-        return propertyValueInfo; 
+        return propertyValueInfo;
     }
-    
-    public String getPropertyValue(Integer propertyTypeId){
-        return getPropertyValueInformation(propertyTypeId).getValue(); 
+
+    public String getPropertyValue(Integer propertyTypeId) {
+        return getPropertyValueInformation(propertyTypeId).getValue();
     }
 
     public String getDisplayNameWithTypeAndCategory() {
@@ -526,15 +527,16 @@ public class Component extends CdbDomainEntity {
     public Boolean getIsAssembly() {
         return (assemblyComponentList != null && !assemblyComponentList.isEmpty());
     }
-    
+
     public void resetAttributesToNullIfEmpty() {
         if (modelNumber != null && modelNumber.isEmpty()) {
             modelNumber = null;
         }
     }
-    
-    public class PropertyValueInformation{
-        private String value; 
+
+    public class PropertyValueInformation {
+
+        private String value;
         private String targetValue;
 
         public PropertyValueInformation(String value, String targetValue) {
