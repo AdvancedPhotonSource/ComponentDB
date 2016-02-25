@@ -35,3 +35,44 @@ h1 {
     background: #f1efe2; 
 }
 
+.redRow {
+    background: #ff8080; 
+}
+
+.blueRow {
+    background: #b3d9ff; 
+}
+
+.greenRow {
+    background: #99e699;
+}
+
+.yellowRow {
+    background: #ffff99;
+}
+
+.orangeRow {
+    background: #ffcc80; 
+}
+
+.pinkRow {
+    background: #ffcce6; 
+}
+
+.purpleRow {
+    background: #e6ccff; 
+}
+
+.violetRow {
+    background: #9966ff;
+    color: white; 
+}
+
+.violetRow a {
+    color: white; 
+}
+
+.violetRow a:hover {
+    color: wheat; 
+}
+
