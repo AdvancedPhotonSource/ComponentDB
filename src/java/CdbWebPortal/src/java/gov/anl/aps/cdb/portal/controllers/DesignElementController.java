@@ -82,6 +82,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
     private static final String DisplayOwnerUserSettingTypeKey = "DesignElement.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "DesignElement.List.Display.OwnerGroup";
     private static final String DisplaySortOrderSettingTypeKey = "DesignElement.List.Display.SortOrder";
+    private static final String DisplayParentDesignRowColor="DesignElement.List.Display.RowColor"; 
     private static final String FilterByChildDesignSettingTypeKey = "DesignElement.List.FilterBy.ChildDesign";
     private static final String FilterByComponentSettingTypeKey = "DesignElement.List.FilterBy.Component";
     private static final String FilterByComponentTypeSettingTypeKey = "DesignElement.List.FilterBy.ComponentType";
@@ -97,6 +98,8 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
     private static final String FilterBySortOrderSettingTypeKey = "DesignElement.List.FilterBy.SortOrder";
 
     private static final Logger logger = Logger.getLogger(DesignElementController.class.getName());
+    
+    private static final String DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME="Design Element Row Color";
 
     @EJB
     private DesignElementDbFacade designElementFacade;
@@ -116,6 +119,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
     private Boolean displayFlatTableView = null;
     private Boolean displayLocation = null;
     private Boolean displaySortOrder = null;
+    private Boolean displayParentDesignRowColor = null; 
 
     private String filterByChildDesign = null;
     private String filterByComponent = null;
@@ -310,6 +314,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         displayComponentType = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
         displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
+        displayParentDesignRowColor = Boolean.parseBoolean(settingTypeMap.get(DisplayParentDesignRowColor).getDefaultValue()); 
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
@@ -346,7 +351,8 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         displayComponentType = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypeSettingTypeKey, displayComponentType);
         displayLocation = sessionUser.getUserSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
-
+        displayParentDesignRowColor = sessionUser.getUserSettingValueAsBoolean(DisplayParentDesignRowColor, displayParentDesignRowColor);
+        
         filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
@@ -401,6 +407,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         sessionUser.setUserSettingValue(DisplayComponentTypeSettingTypeKey, displayComponentType);
         sessionUser.setUserSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        sessionUser.setUserSettingValue(DisplayParentDesignRowColor, displayParentDesignRowColor);
 
         sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
         sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
@@ -474,6 +481,29 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
             }
         }
 
+    }
+    
+    public String getDisplayRowColor(DesignElement designElement) {
+        if(displayParentDesignRowColor != null && displayParentDesignRowColor) {
+            List<PropertyValue> propertyValueList = designElement.getPropertyValueList(); 
+            if(propertyValueList != null && propertyValueList.size() > 0) {
+                for (PropertyValue propertyValue : propertyValueList) {
+                    if (propertyValue.getPropertyType().getName().equals(DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME)) {
+                        String value = propertyValueList.get(0).getValue(); 
+                        return value+"Row";
+                    }
+                }
+            }
+        }
+        return null; 
+    }
+
+    public Boolean getDisplayParentDesignRowColor() {
+        return displayParentDesignRowColor;
+    }
+
+    public void setDisplayParentDesignRowColor(Boolean displayParentDesignRowColor) {
+        this.displayParentDesignRowColor = displayParentDesignRowColor;
     }
 
     public Boolean getDisplayChildDesign() {
