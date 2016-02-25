@@ -489,7 +489,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
             if(propertyValueList != null && propertyValueList.size() > 0) {
                 for (PropertyValue propertyValue : propertyValueList) {
                     if (propertyValue.getPropertyType().getName().equals(DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME)) {
-                        String value = propertyValueList.get(0).getValue(); 
+                        String value = propertyValue.getValue(); 
                         return value+"Row";
                     }
                 }
