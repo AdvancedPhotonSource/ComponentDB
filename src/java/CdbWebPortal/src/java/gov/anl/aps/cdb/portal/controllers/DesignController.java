@@ -50,7 +50,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named("designController")
 @SessionScoped
-public class DesignController extends CdbDomainEntityController<Design, DesignDbFacade> implements Serializable {
+public class DesignController extends CdbAbstractDomainEntityController<Design, DesignDbFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -73,7 +73,7 @@ public class DesignController extends CdbDomainEntityController<Design, DesignDb
     private static final String FilterByLastModifiedByUserSettingTypeKey = "Design.List.FilterBy.LastModifiedByUser";
     private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Design.List.FilterBy.LastModifiedOnDateTime";
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "Design.Help.ListPage.Display.Fragment";
-
+    
     private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
     private TreeNode designElementListTreeTableRootNode = null;
