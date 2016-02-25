@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="designMemberListCustomizeDisplayDialog" header="Customize Display" widgetVar="designMemberListCustomizeDisplayDialogWidget" styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="designMemberDisplayNumberOfItemsPerPage" value="#{designMemberViewController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="designMemberDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayCreatedByUser" value="#{designMemberViewController.displayCreatedByUser}"/>  
+                <h:outputLabel for="designMemberDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayCreatedOnDateTime" value="#{designMemberViewController.displayCreatedOnDateTime}"/>  
+                <h:outputLabel for="designMemberDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayDescription" value="#{designMemberViewController.displayDescription}"/>  
+                <h:outputLabel for="designMemberDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayId" value="#{designMemberViewController.displayId}"/>  
+                <h:outputLabel for="designMemberDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayLastModifiedByUser" value="#{designMemberViewController.displayLastModifiedByUser}"/>  
+                <h:outputLabel for="designMemberDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayLastModifiedOnDateTime" value="#{designMemberViewController.displayLastModifiedOnDateTime}"/>  
+                <h:outputLabel for="designMemberDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayOwnerUser" value="#{designMemberViewController.displayOwnerUser}"/>  
+                <h:outputLabel for="designMemberDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="designMemberDisplayOwnerGroup" value="#{designMemberViewController.displayOwnerGroup}"/>  
+                <h:outputLabel for="designMemberDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{designMemberViewController.customizeListDisplay()}"
+                                 update="designMemberListDataTable"
+                                 oncomplete="PF('designMemberListCustomizeDisplayDialogWidget').hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userInfoController.saveSettingListForSessionUser()}"
+                                 actionListener="#{designMemberViewController.saveListSettingsForSessionUserActionListener}"
+                                 oncomplete="PF('designMemberListCustomizeDisplayDialogWidget').hide()" 
+                                 update="designMemberListDataTable"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>
