@@ -49,7 +49,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Design.findById", query = "SELECT d FROM Design d WHERE d.id = :id"),
     @NamedQuery(name = "Design.findByName", query = "SELECT d FROM Design d WHERE d.name = :name"),
     @NamedQuery(name = "Design.findByDescription", query = "SELECT d FROM Design d WHERE d.description = :description")})
-public class Design extends CdbDomainEntity {
+public class Design extends CdbAbstractDomainEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,6 +75,8 @@ public class Design extends CdbDomainEntity {
     @OrderBy("sortOrder ASC")
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "parentDesign")
     private List<DesignElement> designElementList;
+    @OneToMany(mappedBy = "childDesign")
+    private List<DesignElement> designElementMemberList; 
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
@@ -144,6 +146,15 @@ public class Design extends CdbDomainEntity {
             designElementList = new ArrayList<>();
         }
         return designElementList;
+    }
+
+    @Override
+    public List<DesignElement> getDesignElementMemberList() {
+        return designElementMemberList;
+    }
+
+    public void setDesignElementMemberList(List<DesignElement> designElementMemberList) {
+        this.designElementMemberList = designElementMemberList;
     }
 
     public void setDesignElementList(List<DesignElement> designElementList) {
