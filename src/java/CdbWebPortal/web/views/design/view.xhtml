@@ -12,6 +12,7 @@
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{designElementController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{designMemberViewController.processPreRender()}" />
     </f:metadata>
 
     <ui:define name="pageTitle">: View Design #{designController.selected.name}</ui:define> 
@@ -53,6 +54,10 @@
 
                 <p:panel header="Elements" toggleable="true" collapsed="#{!designController.displayDesignElementList}">
                     <ui:include src="../designElement/private/designElementList.xhtml"/>
+                </p:panel>
+
+                <p:panel header="Design Membership" toggleable="true" collapsed="#{!entityController.displayParentDesignList}">
+                    <ui:include src="../designMember/private/designMemberList.xhtml" />
                 </p:panel>
 
             </div>
