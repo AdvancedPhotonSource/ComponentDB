@@ -22,7 +22,9 @@
 
         <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
                   rendered="#{componentInstanceController.displayQrId}">
-            <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}"/>
+            <p:commandLink action="#{componentInstanceController.prepareViewFromComponent(componentInstanceObject)}"  title="View component details">
+                <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}"/>
+            </p:commandLink>
         </p:column>
 
         <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag">
