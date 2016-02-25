@@ -13,7 +13,8 @@
                  var="designElementObject"
                  emptyMessage="No design elements found."
                  resizableColumns="true"
-                 liveResize="true">
+                 liveResize="true"
+                 rowStyleClass="#{designElementController.getDisplayRowColor(designElementObject)}">
 
         <p:column sortBy="#{designElementObject.name}" headerText="Element Name">
             <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Design Element: #{designElementObject.name}">
