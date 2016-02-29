@@ -82,6 +82,11 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
     private static final String DisplayOwnerUserSettingTypeKey = "DesignElement.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "DesignElement.List.Display.OwnerGroup";
     private static final String DisplaySortOrderSettingTypeKey = "DesignElement.List.Display.SortOrder";
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "DesignElement.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "DesignElement.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "DesignElement.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "DesignElement.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "DesignElement.List.Display.PropertyTypeId5";
     private static final String DisplayParentDesignRowColor="DesignElement.List.Display.RowColor"; 
     private static final String FilterByChildDesignSettingTypeKey = "DesignElement.List.FilterBy.ChildDesign";
     private static final String FilterByComponentSettingTypeKey = "DesignElement.List.FilterBy.Component";
@@ -308,6 +313,12 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
+        
+        displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
 
         displayChildDesign = Boolean.parseBoolean(settingTypeMap.get(DisplayChildDesignSettingTypeKey).getDefaultValue());
         displayComponent = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentSettingTypeKey).getDefaultValue());
@@ -330,7 +341,8 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         filterByComponentType = settingTypeMap.get(FilterByComponentTypeSettingTypeKey).getDefaultValue();
         filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
         filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
-
+        
+        resetDomainEntityPropertyTypeIdIndexMappings(); 
     }
 
     @Override
@@ -345,6 +357,12 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        
+        displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        displayPropertyTypeId4 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        displayPropertyTypeId5 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
 
         displayChildDesign = sessionUser.getUserSettingValueAsBoolean(DisplayChildDesignSettingTypeKey, displayChildDesign);
         displayComponent = sessionUser.getUserSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
@@ -367,7 +385,8 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         filterByComponentType = sessionUser.getUserSettingValueAsString(FilterByComponentTypeSettingTypeKey, filterByComponentType);
         filterByLocation = sessionUser.getUserSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
         filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-
+        
+        resetDomainEntityPropertyTypeIdIndexMappings();
     }
 
     @Override
@@ -401,6 +420,12 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        sessionUser.setUserSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
 
         sessionUser.setUserSettingValue(DisplayChildDesignSettingTypeKey, displayChildDesign);
         sessionUser.setUserSettingValue(DisplayComponentSettingTypeKey, displayComponent);
