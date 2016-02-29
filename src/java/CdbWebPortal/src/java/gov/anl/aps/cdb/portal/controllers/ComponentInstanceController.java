@@ -47,7 +47,6 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.selectonemenu.SelectOneMenu;
 
 /**
  * Controller class for component instances.
@@ -95,6 +94,7 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     private static final String FilterByQrIdSettingTypeKey = "ComponentInstance.List.FilterBy.QrId";
     private static final String FilterBySerialNumberSettingTypeKey = "ComponentInstance.List.FilterBy.SerialNumber";
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ComponentInstance.Help.ListPage.Display.Fragment"; 
+    private static final String FilterByPropertiesAutoLoadTypeKey = "ComponentInstance.List.AutoLoad.FilterBy.Properties";
 
     private static final Logger logger = Logger.getLogger(ComponentInstanceController.class.getName());
 
@@ -117,18 +117,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     private String filterByQrId = null;
     private String filterBySerialNumber = null;
     private String filterByTag = null;
-
-    private Integer displayPropertyTypeId1 = null;
-    private Integer displayPropertyTypeId2 = null;
-    private Integer displayPropertyTypeId3 = null;
-    private Integer displayPropertyTypeId4 = null;
-    private Integer displayPropertyTypeId5 = null;
-
-    private String filterByPropertyValue1 = null;
-    private String filterByPropertyValue2 = null;
-    private String filterByPropertyValue3 = null;
-    private String filterByPropertyValue4 = null;
-    private String filterByPropertyValue5 = null;
 
     private List<Location> locationList = null;
 
@@ -440,14 +428,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         }
     }
 
-    private void resetComponentInstancePropertyTypeIdIndexMappings() {
-        ComponentInstance.setPropertyTypeIdIndex(1, displayPropertyTypeId1);
-        ComponentInstance.setPropertyTypeIdIndex(2, displayPropertyTypeId2);
-        ComponentInstance.setPropertyTypeIdIndex(3, displayPropertyTypeId3);
-        ComponentInstance.setPropertyTypeIdIndex(4, displayPropertyTypeId4);
-        ComponentInstance.setPropertyTypeIdIndex(5, displayPropertyTypeId5);
-    }
-
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
@@ -496,9 +476,11 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
         filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
+        filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
         
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
-
+       
+        resetDomainEntityPropertyTypeIdIndexMappings(); 
     }
 
     @Override
@@ -548,10 +530,11 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+        filterByPropertiesAutoLoad = sessionUser.getUserSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
         
         displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
 
-        resetComponentInstancePropertyTypeIdIndexMappings();
+        resetDomainEntityPropertyTypeIdIndexMappings();
 
     }
 
@@ -622,9 +605,10 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
+        sessionUser.setUserSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
         
         sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-
+        
     }
 
     @Override
@@ -816,19 +800,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     public void setFilterByTag(String filterByTag) {
         this.filterByTag = filterByTag;
     }
-
-    public String getDisplayPropertyTypeName(Integer propertyTypeId) {
-        if (propertyTypeId != null) {
-
-            try {
-                PropertyType propertyType = propertyTypeFacade.find(propertyTypeId);
-                return propertyType.getName();
-            } catch (Exception ex) {
-                return "Unknown Property";
-            }
-        }
-        return null;
-    }
     
     @Override
     public String create() {
@@ -839,86 +810,6 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         }
         
         return super.create(); 
-    }
-
-    public Integer getDisplayPropertyTypeId1() {
-        return displayPropertyTypeId1;
-    }
-
-    public void setDisplayPropertyTypeId1(Integer displayPropertyTypeId1) {
-        this.displayPropertyTypeId1 = displayPropertyTypeId1;
-    }
-
-    public Integer getDisplayPropertyTypeId2() {
-        return displayPropertyTypeId2;
-    }
-
-    public void setDisplayPropertyTypeId2(Integer displayPropertyTypeId2) {
-        this.displayPropertyTypeId2 = displayPropertyTypeId2;
-    }
-
-    public Integer getDisplayPropertyTypeId3() {
-        return displayPropertyTypeId3;
-    }
-
-    public void setDisplayPropertyTypeId3(Integer displayPropertyTypeId3) {
-        this.displayPropertyTypeId3 = displayPropertyTypeId3;
-    }
-
-    public Integer getDisplayPropertyTypeId4() {
-        return displayPropertyTypeId4;
-    }
-
-    public void setDisplayPropertyTypeId4(Integer displayPropertyTypeId4) {
-        this.displayPropertyTypeId4 = displayPropertyTypeId4;
-    }
-
-    public Integer getDisplayPropertyTypeId5() {
-        return displayPropertyTypeId5;
-    }
-
-    public void setDisplayPropertyTypeId5(Integer displayPropertyTypeId5) {
-        this.displayPropertyTypeId5 = displayPropertyTypeId5;
-    }
-    
-    public String getFilterByPropertyValue1() {
-        return filterByPropertyValue1;
-    }
-
-    public void setFilterByPropertyValue1(String filterByPropertyValue1) {
-        this.filterByPropertyValue1 = filterByPropertyValue1;
-    }
-
-    public String getFilterByPropertyValue2() {
-        return filterByPropertyValue2;
-    }
-
-    public void setFilterByPropertyValue2(String filterByPropertyValue2) {
-        this.filterByPropertyValue2 = filterByPropertyValue2;
-    }
-
-    public String getFilterByPropertyValue3() {
-        return filterByPropertyValue3;
-    }
-
-    public void setFilterByPropertyValue3(String filterByPropertyValue3) {
-        this.filterByPropertyValue3 = filterByPropertyValue3;
-    }
-
-    public String getFilterByPropertyValue4() {
-        return filterByPropertyValue4;
-    }
-
-    public void setFilterByPropertyValue4(String filterByPropertyValue4) {
-        this.filterByPropertyValue4 = filterByPropertyValue4;
-    }
-
-    public String getFilterByPropertyValue5() {
-        return filterByPropertyValue5;
-    }
-
-    public void setFilterByPropertyValue5(String filterByPropertyValue5) {
-        this.filterByPropertyValue5 = filterByPropertyValue5;
     }
     
     @Override
