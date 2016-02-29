@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:insert name="domainEntityListDataTableParameters">
+    </ui:insert>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+
+    <p:dataTable id="#{entityTypeName}ListDataTable" 
+                 widgetVar="#{entityTypeName}ListDataTableWidget"
+                 var="cdbDomainEntityObject" 
+                 value="#{entityController.listDataModel}" 
+                 filteredValue="#{entityController.filteredObjectList}"
+                 rows="#{entityController.displayNumberOfItemsPerPage}" 
+                 paginator="true" 
+                 reflow="true"
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No #{displayEntityTypeName}s found.">
+        <ui:param name="#{entityTypeName}Object" value="#{cdbDomainEntityObject}" />
+
+        <ui:insert name="domainEntityListObject">
+            <h:outputText value="column info goes here"/>
+        </ui:insert>
+
+        <ui:include src="../views/propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml" />
+
+        <ui:include src="../views/entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{cdbDomainEntityObject.entityInfo}"/>
+            <ui:param name="entityInfoObjectFilterable" value="true" />
+        </ui:include>
+
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../views/common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{entityController}"/>
+                <ui:param name="entityObject" value="#{cdbDomainEntityObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(cdbDomainEntityObject.entityInfo)}"/>
+                <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
+            </ui:include>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
