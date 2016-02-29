@@ -25,7 +25,7 @@
                          value="Load Property Filters" alt="Load property value filters"
                          onstart="PF('loadingDialog').show()"
                          oncomplete="PF('loadingDialog').hide()"
-                         action="#{componentController.preparePropertyTypeFilter()}"
+                         action="#{entityController.preparePropertyTypeFilter()}"
                          update="#{entityTypeName}ListDataTable @parent">
             <p:tooltip for="#{entityTypeName}LoadPropertyValuesButton" value="Load property value filters."/>
         </p:commandButton>
