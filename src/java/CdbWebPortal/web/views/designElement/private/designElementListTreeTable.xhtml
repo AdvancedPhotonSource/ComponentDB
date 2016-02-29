@@ -58,6 +58,11 @@
                   rendered="#{designElementController.displaySortOrder}">
             <h:outputText value="#{designElementObject.sortOrder}"/>
         </p:column>
+        
+        <ui:include src="../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
+            <ui:param name="entityController" value="#{designElementController}" />
+            <ui:param name="cdbDomainEntityObject" value="#{designElementObject}" />
+        </ui:include>
 
         <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
             <ui:param name="entityController" value="#{designElementController}"/>
