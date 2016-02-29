@@ -16,7 +16,6 @@ import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -97,19 +96,8 @@ public class ComponentInstance extends CdbDomainEntity {
     @ManyToOne(optional = false)
     private Component component;
 
-    private transient final HashMap<Integer, String> propertyValueCacheMap = new HashMap<>();
-
-    // Used to map property type id to property value number
-    private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
-
     private transient String qrIdDisplay;
     private transient boolean isCloned = false;
-
-    public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
-        if (propertyTypeId != null) {
-            propertyTypeIdIndexMap.put(index, propertyTypeId);
-        }
-    }
 
     private transient String selectedLocationName = null;
 
@@ -233,64 +221,6 @@ public class ComponentInstance extends CdbDomainEntity {
         qrIdDisplay = null;
     }
 
-    public String getPropertyValueByIndex(Integer index) {
-        Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
-        if (propertyTypeId != null) {
-            return propertyValueCacheMap.get(propertyTypeId);
-        }
-        return null;
-    }
-
-    public void setPropertyValueByIndex(Integer index, String propertyValue) {
-        if (index == null) {
-            return;
-        }
-        Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
-        if (propertyTypeId != null) {
-            propertyValueCacheMap.put(propertyTypeId, propertyValue);
-        }
-    }
-
-    public String getPropertyValue1() {
-        return getPropertyValueByIndex(1);
-    }
-
-    public void setPropertyValue1(String propertyValue1) {
-        setPropertyValueByIndex(1, propertyValue1);
-    }
-
-    public String getPropertyValue2() {
-        return getPropertyValueByIndex(2);
-    }
-
-    public void setPropertyValue2(String propertyValue2) {
-        setPropertyValueByIndex(2, propertyValue2);
-    }
-
-    public String getPropertyValue3() {
-        return getPropertyValueByIndex(3);
-    }
-
-    public void setPropertyValue3(String propertyValue3) {
-        setPropertyValueByIndex(3, propertyValue3);
-    }
-
-    public String getPropertyValue4() {
-        return getPropertyValueByIndex(4);
-    }
-
-    public void setPropertyValue4(String propertyValue4) {
-        setPropertyValueByIndex(4, propertyValue4);
-    }
-
-    public String getPropertyValue5() {
-        return getPropertyValueByIndex(5);
-    }
-
-    public void setPropertyValue5(String propertyValue5) {
-        setPropertyValueByIndex(5, propertyValue5);
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
@@ -326,32 +256,6 @@ public class ComponentInstance extends CdbDomainEntity {
     @Override
     public String toString() {
         return "ComponentInstance[ id=" + id + " ]";
-    }
-
-    public void clearPropertyValueCache() {
-        propertyValueCacheMap.clear();
-    }
-
-    public String getPropertyValue(Integer propertyTypeId) {
-        if (propertyTypeId == null) {
-            return null;
-        }
-        String cachedValue = propertyValueCacheMap.get(propertyTypeId);
-        if (cachedValue == null) {
-            String delimiter = "";
-            cachedValue = "";
-            for (PropertyValue propertyValue : propertyValueList) {
-                if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
-                    String value = propertyValue.getValue();
-                    if (value != null && !value.isEmpty()) {
-                        cachedValue += delimiter + value;
-                        delimiter = "|";
-                    }
-                }
-            }
-            propertyValueCacheMap.put(propertyTypeId, cachedValue);
-        }
-        return cachedValue;
     }
 
     public String getSelectedLocationName() {
