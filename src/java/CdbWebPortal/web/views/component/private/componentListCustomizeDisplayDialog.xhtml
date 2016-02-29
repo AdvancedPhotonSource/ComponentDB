@@ -48,48 +48,9 @@
                 <p:selectBooleanCheckbox id="displayCategory" value="#{componentController.displayCategory}"/>  
                 <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
                 
-                <p:selectBooleanCheckbox id="autoLoadProperty" value="#{componentController.filterByPropertiesAutoLoad}"/>  
-                <h:outputLabel for="autoLoadProperty" value="Automatically Load Property Filter Values" styleClass="dialogDataLabel"/>
-                
-                <p:selectOneMenu id="displayPropertyType1" value="#{componentController.displayPropertyTypeId1}" 
-                                 styleClass="entityDataSelectOne">
-                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
-                    <f:selectItems var="propertyType1" value="#{propertyTypeController.availableItems}" 
-                                   itemLabel="#{propertyType1.name}" itemValue="#{propertyType1.id}"/>
-                </p:selectOneMenu>
-                <h:outputLabel for="displayPropertyType1" value="Display Property Type #1" styleClass="entityDataLabel"/>
-
-                <p:selectOneMenu id="displayPropertyType2" value="#{componentController.displayPropertyTypeId2}" 
-                                 styleClass="entityDataSelectOne">
-                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
-                    <f:selectItems var="propertyType2" value="#{propertyTypeController.availableItems}" 
-                                   itemLabel="#{propertyType2.name}" itemValue="#{propertyType2.id}"/>
-                </p:selectOneMenu>
-                <h:outputLabel for="displayPropertyType2" value="Display Property Type #2" styleClass="entityDataLabel"/>                
-
-                <p:selectOneMenu id="displayPropertyType3" value="#{componentController.displayPropertyTypeId3}" 
-                                 styleClass="entityDataSelectOne">
-                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
-                    <f:selectItems var="propertyType3" value="#{propertyTypeController.availableItems}" 
-                                   itemLabel="#{propertyType3.name}" itemValue="#{propertyType3.id}"/>
-                </p:selectOneMenu>
-                <h:outputLabel for="displayPropertyType3" value="Display Property Type #3" styleClass="entityDataLabel"/>   
-
-                <p:selectOneMenu id="displayPropertyType4" value="#{componentController.displayPropertyTypeId4}" 
-                                 styleClass="entityDataSelectOne">
-                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
-                    <f:selectItems var="propertyType4" value="#{propertyTypeController.availableItems}" 
-                                   itemLabel="#{propertyType4.name}" itemValue="#{propertyType4.id}"/>
-                </p:selectOneMenu>
-                <p:outputLabel for="displayPropertyType4" value="Display Property Type #4" styleClass="entityDataLabel"/>   
-
-                <p:selectOneMenu id="displayPropertyType5" value="#{componentController.displayPropertyTypeId5}" 
-                                 styleClass="entityDataSelectOne">
-                    <f:selectItem itemLabel="None" noSelectionOption="true"/>
-                    <f:selectItems var="propertyType5" value="#{propertyTypeController.availableItems}" 
-                                   itemLabel="#{propertyType5.name}" itemValue="#{propertyType5.id}"/>
-                </p:selectOneMenu>
-                <h:outputLabel for="displayPropertyType5" value="Display Property Type #5" styleClass="entityDataLabel"/>   
+                <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml" >
+                    <ui:param name="filterable" value="#{true}" />
+                </ui:include>
 
             </p:panelGrid>
 

@@ -35,19 +35,24 @@
 
                 <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{designController.displayOwnerGroup}"/>  
                 <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+                
+                <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml">
+                    <ui:param name="filterable" value="#{true}" />
+                </ui:include>
+                
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{designController.customizeListDisplay()}"
-                                 update="designListDataTable"
+                                 update="@form"
                                  oncomplete="PF('designListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
                                  actionListener="#{designController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('designListCustomizeDisplayDialogWidget').hide()" 
-                                 update="designListDataTable"
+                                 update="@form"
                                  rendered="#{loginController.loggedIn}"
                                  icon="ui-icon-check"/>
             </f:facet>

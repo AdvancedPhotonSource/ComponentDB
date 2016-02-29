@@ -44,20 +44,24 @@
 
                 <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{componentInstanceController.displaySerialNumber}"/>  
                 <h:outputLabel for="componentInstanceDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
+                
+                <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml">
+                    <ui:param name="filterable" value="#{true}" />
+                </ui:include>
 
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
                                  action="#{componentInstanceController.customizeListDisplay()}"
-                                 update="componentInstanceListDataTable"
+                                 update="@form"
                                  oncomplete="PF('componentInstanceListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
                                  actionListener="#{componentInstanceController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('componentInstanceListCustomizeDisplayDialogWidget').hide()" 
-                                 update="componentInstanceListDataTable"
+                                 update="@form"
                                  rendered="#{loginController.loggedIn}"
                                  icon="ui-icon-check"/>
             </f:facet>
