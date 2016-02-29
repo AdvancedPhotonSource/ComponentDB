@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
+              filterBy="#{componentInstanceObject.id}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterById}"
+              filterStyleClass="shortFilterBox"
+              rendered="#{componentInstanceController.displayId}">
+        <h:outputText value="#{componentInstanceObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.qrId}" headerText="QR Id"
+              filterBy="#{componentInstanceObject.qrId}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterByQrId}"
+              rendered="#{componentInstanceController.displayQrId}">
+        <h:outputLink value="view.xhtml?id=#{componentInstanceObject.id}" title="View component details">
+            <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}"/>
+        </h:outputLink>  
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.tag}" headerText="Tag"
+              filterBy="#{componentInstanceObject.tag}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterByTag}">
+        <h:outputText id="tag" value="#{componentInstanceObject.tag}"/>
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.serialNumber}" headerText="Serial Number"
+              filterBy="#{componentInstanceObject.serialNumber}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterBySerialNumber}"                  
+              rendered="#{componentInstanceController.displaySerialNumber}">
+        <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}"/>
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.component.name}" headerText="Component"
+              filterBy="#{componentInstanceObject.component.name}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterByComponent}">
+        <h:outputText value="#{componentInstanceObject.component.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.location.name}" headerText="Location"
+              filterBy="#{componentInstanceObject.location.name}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterByLocation}">
+        <h:outputText value="#{componentInstanceObject.location.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.locationDetails}" headerText="Location Details"
+              filterBy="#{componentInstanceObject.locationDetails}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterByLocationDetails}"
+              rendered="#{componentInstanceController.displayLocationDetails}">
+        <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}"/>
+    </p:column>
+
+    <p:column sortBy="#{componentInstanceObject.description}" headerText="Description"
+              filterBy="#{componentInstanceObject.description}" filterMatchMode="contains"
+              filterValue="#{componentInstanceController.filterByDescription}"
+              rendered="#{componentInstanceController.displayDescription}">
+        <h:outputText id="description" value="#{componentInstanceObject.description}"/>
+    </p:column>
+
+
+</ui:composition>
+
