@@ -307,7 +307,7 @@ public class UserInfo extends CdbEntity {
         }
         String settingValue = userSetting.getValue();
         if (settingValue == null || settingValue.isEmpty()) {
-            return defaultValue;
+            return false;
         }
         return Boolean.parseBoolean(settingValue);
     }
@@ -319,7 +319,7 @@ public class UserInfo extends CdbEntity {
         }
         String settingValue = userSetting.getValue();
         if (settingValue == null || settingValue.isEmpty()) {
-            return defaultValue;
+            return null;
         }
         return Integer.parseInt(settingValue);
     }
@@ -331,7 +331,7 @@ public class UserInfo extends CdbEntity {
         }
         String settingValue = userSetting.getValue();
         if (settingValue == null || settingValue.isEmpty()) {
-            return defaultValue;
+            return null;
         }
         return Float.parseFloat(settingValue);
     }
