@@ -56,6 +56,11 @@
 
                 <p:selectBooleanCheckbox id="designElementDisplayRowColor" value="#{designElementController.displayParentDesignRowColor}"/>  
                 <h:outputLabel for="designElementDisplayRowColor" value="Display Row Color" styleClass="dialogDataLabel"/>
+                
+                <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml">
+                    <ui:param name="entityController" value="#{designElementController}" />
+                    <ui:param name="filterable" value="#{false}" />
+                </ui:include>
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">
