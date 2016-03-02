@@ -40,6 +40,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.primefaces.model.TreeNode;
 
 /**
  * Design element entity class.
@@ -109,6 +110,7 @@ public class DesignElement extends CdbDomainEntity {
     private transient boolean isCloned = false;
     private transient String editDesignElementType;
     private transient String viewUUID;
+    private transient TreeNode childDesignElementListTreeTableRootNode = null;
 
     public DesignElement() {
     }
@@ -420,5 +422,13 @@ public class DesignElement extends CdbDomainEntity {
 
         }
         return searchResult;
+    }
+
+    public TreeNode getChildDesignElementListTreeTableRootNode() {
+        return childDesignElementListTreeTableRootNode;
+    }
+
+    public void setChildDesignElementListTreeTableRootNode(TreeNode childDesignElementListTreeTableRootNode) {
+        this.childDesignElementListTreeTableRootNode = childDesignElementListTreeTableRootNode;
     }
 }
