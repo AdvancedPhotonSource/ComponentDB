@@ -209,6 +209,12 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
     public void prepareEntityView(Component component) {
         prepareImageList(component);
     }
+    
+    public String prepareComponentView(Component component) {
+        logger.debug("Preparing component view page.");
+        prepareView(component);
+        return "/views/component/view.xhtml?faces-redirect=true";
+    }
 
     private void checkComponent(Component component) throws CdbException {
         Component existingComponent;
