@@ -84,9 +84,9 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
     private static final String FilterByPropertyValue5SettingTypeKey = "Design.List.FilterBy.PropertyValue5";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ComponentInstance.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "Design.Help.ListPage.Display.Fragment";
-    
-    private static final Logger logger = Logger.getLogger(DesignController.class.getName());
 
+    private static final Logger logger = Logger.getLogger(DesignController.class.getName());
+   
     private TreeNode designElementListTreeTableRootNode = null;
 
     private List<PropertyValue> filteredPropertyValueList;
@@ -298,11 +298,11 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         List<Log> componentLogList = design.getLogList();
         componentLogList.add(0, logEntry);
     }
-    
-    public boolean getDisplayDesignElementList(){
-        Design currentDesign = getCurrent(); 
-        List<DesignElement> designElementList = currentDesign.getDesignElementList(); 
-        return designElementList != null && !designElementList.isEmpty(); 
+
+    public boolean getDisplayDesignElementList() {
+        Design currentDesign = getCurrent();
+        List<DesignElement> designElementList = currentDesign.getDesignElementList();
+        return designElementList != null && !designElementList.isEmpty();
     }
 
     public void deleteLog(Log designLog) {
@@ -351,13 +351,13 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
-        
+
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
-        
+
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
@@ -366,7 +366,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
         filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
         filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
-        
+
         filterByPropertyValue1 = settingTypeMap.get(FilterByPropertyValue1SettingTypeKey).getDefaultValue();
         filterByPropertyValue2 = settingTypeMap.get(FilterByPropertyValue2SettingTypeKey).getDefaultValue();
         filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
@@ -375,7 +375,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
 
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
-        
+
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
 
@@ -394,7 +394,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
-        
+
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
@@ -409,7 +409,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-        
+
         filterByPropertyValue1 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         filterByPropertyValue2 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
         filterByPropertyValue3 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
@@ -418,7 +418,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         filterByPropertiesAutoLoad = sessionUser.getUserSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-        
+
         resetDomainEntityPropertyTypeIdIndexMappings();
 
     }
@@ -438,7 +438,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
-        
+
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
@@ -453,7 +453,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-        
+
         sessionUser.setUserSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         sessionUser.setUserSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
         sessionUser.setUserSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
@@ -542,6 +542,21 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
 
     public TreeNode getDesignElementListTreeTableRootNode() {
         return designElementListTreeTableRootNode;
+    }
+
+    public TreeNode getDesignElementListTreeTableRootNode(DesignElement parent) {
+
+        if (parent.getChildDesignElementListTreeTableRootNode()== null) {
+            try{
+                if(parent.getChildDesign() != null){
+                    parent.setChildDesignElementListTreeTableRootNode(DesignElementUtility.createDesignElementRoot(parent.getChildDesign()));
+                }
+            } catch (CdbException ex) {
+                logger.debug(ex);
+            }
+        }
+        
+        return parent.getChildDesignElementListTreeTableRootNode(); 
     }
 
     public void setDesignElementListTreeTableRootNode(TreeNode designElementListTreeTableRootNode) {
