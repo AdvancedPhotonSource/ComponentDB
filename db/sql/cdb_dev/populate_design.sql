@@ -63,7 +63,6 @@ INSERT INTO `design` VALUES
 (78,'35-ID-D-RSS','',948),
 (79,'35-ID-E-RSS','',949),
 (80,'35-ID-rrr','',950),
-(81,'test2','',957),
 (83,'2-ID','',963);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

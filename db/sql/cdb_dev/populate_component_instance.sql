@@ -106,7 +106,6 @@ INSERT INTO `component_instance` VALUES
 (127,302,402,NULL,NULL,NULL,NULL,'Shielded beam transport',920),
 (128,298,402,NULL,NULL,NULL,NULL,'Guillotine - Type 1',921),
 (129,298,362,NULL,NULL,NULL,NULL,'Guillotine - Type 1',922),
-(130,286,271,NULL,NULL,NULL,'','',924),
 (131,337,NULL,NULL,NULL,123,NULL,'This is a green one',934),
 (132,343,NULL,NULL,NULL,412,NULL,'This one is pink',935),
 (133,343,NULL,NULL,NULL,511,NULL,'This one is cyan',936),
