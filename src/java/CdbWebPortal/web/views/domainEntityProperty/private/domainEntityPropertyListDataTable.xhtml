@@ -5,14 +5,16 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-    
+
+    <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion'}" />
+
     <p:dataTable id="#{entityTypeName}PropertyListDataTable" 
                  widgetVar="#{entityTypeName}PropertyListDataTableWidget"
                  var="propertyValueObject" 
                  reflow="true"
                  value="#{entityObject.propertyValueList}" 
                  filteredValue="#{entityController.filteredPropertyValueList}"
-                 
+
                  rows="#{propertyValueController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
@@ -22,18 +24,12 @@
             <ui:param name="entityPropertyTypeName" value="#{entityTypeName}Property"/>
         </ui:include>
 
-        <p:column headerText="Actions" exportable="false">
+        <p:column headerText="Actions" exportable="false" rendered="#{renderActionColumn}">
             <div class="actionLink">
-                <p:remoteCommand name="#{entityTypeName}PropertyInfoAction#{propertyValueObject.id}"
-                                 rendered="#{propertyValueObject.infoActionCommand != null}"
-                                 oncomplete="loadInfoActionDialog();">
-                    <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
-                                                 value="#{propertyValueObject}"/>
-                </p:remoteCommand>
-                   
                 <p:commandLink id="#{entityTypeName}PropertyValueHistoryListViewButton" 
                                onstart="PF('loadingDialog').show();"
-                               oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
+                               oncomplete="PF('loadingDialog').hide();
+                                           PF('propertyValueHistoryListDialogWidget').show()" 
                                styleClass="ui-icon ui-icon-history" 
                                title="View property value history."
                                update="@form">
@@ -48,7 +44,7 @@
                                onclick="#{entityTypeName}PropertyInfoAction#{propertyValueObject.id}()">
                     <p:tooltip for="#{entityTypeName}PropertyInfoActionButton" value="View property info."/>
                 </p:commandLink>
-                
+
                 <p:commandLink id="#{entityTypeName}PropertEditActionButton" 
                                styleClass="ui-icon ui-icon-pencil" 
                                title="Edit property"
@@ -58,27 +54,21 @@
                                onstart="PF('loadingDialog').show();"
                                onerror="PF('loadingDialog').hide();"
                                oncomplete="PF('loadingDialog').hide();
-                                           PF('#{entityTypeName}SinglePropertyEditDialogWidget').show()">
+                               PF('#{entityTypeName}SinglePropertyEditDialogWidget').show()">
                     <p:tooltip for="#{entityTypeName}PropertEditActionButton" value="Edit property."/>
                 </p:commandLink>   
             </div>
         </p:column>       
+        <p:column visible="false">
+            <p:remoteCommand name="#{entityTypeName}PropertyInfoAction#{propertyValueObject.id}"
+                             rendered="#{propertyValueObject.infoActionCommand != null}"
+                             oncomplete="loadInfoActionDialog();">
+                <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
+                                             value="#{propertyValueObject}"/>
+            </p:remoteCommand>
+        </p:column>
 
     </p:dataTable>
-    
-    <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/> 
-    <ui:include src="../../travelerProperty/private/travelerInstancePropertyValueInfoDialog.xhtml" />
-    <p:remoteCommand name="loadInfoActionDialog"
-                     onstart="PF('loadingDialog').show();"
-                     onerror="PF('loadingDialog').hide();"
-                     oncomplete="PF('loadingDialog').hide();"
-                     action="#{propertyValueInfoActionBean.loadInfoActionForLoadedPropertyValue()}" />
-    
-    <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
-        
-    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
-   
-    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 
