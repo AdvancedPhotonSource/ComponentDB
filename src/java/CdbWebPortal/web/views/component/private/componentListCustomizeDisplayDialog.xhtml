@@ -12,45 +12,49 @@
               styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
-                <p:inputText id="displayNumberOfItemsPerPage" value="#{componentController.displayNumberOfItemsPerPage}" style="width:20px"/>
-                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+                <p:panelGrid columns="2">
+                    <p:inputText id="displayNumberOfItemsPerPage" value="#{componentController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                    <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{componentController.displayCreatedByUser}"/>  
-                <h:outputLabel for="displayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{componentController.displayCreatedByUser}"/>  
+                    <h:outputLabel for="displayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{componentController.displayCreatedOnDateTime}"/>  
-                <h:outputLabel for="displayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{componentController.displayCreatedOnDateTime}"/>  
+                    <h:outputLabel for="displayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayDescription" value="#{componentController.displayDescription}"/>  
-                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayDescription" value="#{componentController.displayDescription}"/>  
+                    <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayId" value="#{componentController.displayId}"/>  
-                <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayId" value="#{componentController.displayId}"/>  
+                    <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayModelNumber" value="#{componentController.displayModelNumber}"/>  
-                <h:outputLabel for="displayModelNumber" value="Display Model Number" styleClass="dialogDataLabel"/>
-                                
-                <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{componentController.displayLastModifiedByUser}"/>  
-                <h:outputLabel for="displayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayModelNumber" value="#{componentController.displayModelNumber}"/>  
+                    <h:outputLabel for="displayModelNumber" value="Display Model Number" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{componentController.displayLastModifiedOnDateTime}"/>  
-                <h:outputLabel for="displayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{componentController.displayLastModifiedByUser}"/>  
+                    <h:outputLabel for="displayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayOwnerUser" value="#{componentController.displayOwnerUser}"/>  
-                <h:outputLabel for="displayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{componentController.displayLastModifiedOnDateTime}"/>  
+                    <h:outputLabel for="displayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{componentController.displayOwnerGroup}"/>  
-                <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayOwnerUser" value="#{componentController.displayOwnerUser}"/>  
+                    <h:outputLabel for="displayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayType" value="#{componentController.displayType}"/>  
-                <h:outputLabel for="displayType" value="Display Type" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{componentController.displayOwnerGroup}"/>  
+                    <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayCategory" value="#{componentController.displayCategory}"/>  
-                <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
-                
-                <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml" >
-                    <ui:param name="filterable" value="#{true}" />
-                </ui:include>
+                </p:panelGrid>
+                <p:panelGrid columns="2" >
+                    <p:selectBooleanCheckbox id="displayType" value="#{componentController.displayType}"/>  
+                    <h:outputLabel for="displayType" value="Display Type" styleClass="dialogDataLabel"/>
+
+                    <p:selectBooleanCheckbox id="displayCategory" value="#{componentController.displayCategory}"/>  
+                    <h:outputLabel for="displayCategory" value="Display Category" styleClass="dialogDataLabel"/>
+
+                    <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml" >
+                        <ui:param name="filterable" value="#{true}" />
+                    </ui:include>
+                </p:panelGrid>
 
             </p:panelGrid>
 

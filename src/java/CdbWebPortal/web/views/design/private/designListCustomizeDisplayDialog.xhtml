@@ -9,37 +9,40 @@
     <p:dialog id="designListCustomizeDisplayDialog" header="Customize Display" widgetVar="designListCustomizeDisplayDialogWidget" styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
-                <p:inputText id="displayNumberOfItemsPerPage" value="#{designController.displayNumberOfItemsPerPage}" style="width:20px"/>
-                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+                <p:panelGrid columns="2">
+                    <p:inputText id="displayNumberOfItemsPerPage" value="#{designController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                    <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{designController.displayCreatedByUser}"/>  
-                <h:outputLabel for="displayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{designController.displayCreatedByUser}"/>  
+                    <h:outputLabel for="displayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{designController.displayCreatedOnDateTime}"/>  
-                <h:outputLabel for="displayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{designController.displayCreatedOnDateTime}"/>  
+                    <h:outputLabel for="displayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayDescription" value="#{designController.displayDescription}"/>  
-                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayDescription" value="#{designController.displayDescription}"/>  
+                    <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayId" value="#{designController.displayId}"/>  
-                <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayId" value="#{designController.displayId}"/>  
+                    <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{designController.displayLastModifiedByUser}"/>  
-                <h:outputLabel for="displayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{designController.displayLastModifiedByUser}"/>  
+                    <h:outputLabel for="displayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{designController.displayLastModifiedOnDateTime}"/>  
-                <h:outputLabel for="displayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{designController.displayLastModifiedOnDateTime}"/>  
+                    <h:outputLabel for="displayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayOwnerUser" value="#{designController.displayOwnerUser}"/>  
-                <h:outputLabel for="displayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+                    <p:selectBooleanCheckbox id="displayOwnerUser" value="#{designController.displayOwnerUser}"/>  
+                    <h:outputLabel for="displayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+                </p:panelGrid>
+                <p:panelGrid columns="2">
+                    <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{designController.displayOwnerGroup}"/>  
+                    <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{designController.displayOwnerGroup}"/>  
-                <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
-                
-                <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml">
-                    <ui:param name="filterable" value="#{true}" />
-                </ui:include>
-                
+                    <ui:include src="../../propertyValue/private/propertyValueDomainEntityCustomizeColumn.xhtml">
+                        <ui:param name="filterable" value="#{true}" />
+                    </ui:include>
+                </p:panelGrid>
+
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">
