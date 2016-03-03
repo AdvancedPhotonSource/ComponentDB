@@ -20,7 +20,7 @@
                     <h1>Location Details</h1>
                 </div>
                 <ui:include src="private/locationViewPanelGrid.xhtml"/>
-
+            
                 <p/>
                 <ui:param name="entityController" value="#{locationController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
@@ -32,7 +32,6 @@
 
                 <p:accordionPanel multiple="true" activeIndex="0">                
                     <p:tab title="Child Locations">
-
                         <ui:include src="private/locationChildLocationList.xhtml"/>
                     </p:tab>
 

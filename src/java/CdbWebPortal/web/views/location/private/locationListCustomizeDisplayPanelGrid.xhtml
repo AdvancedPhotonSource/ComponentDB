@@ -4,6 +4,8 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="displayFlatTableViewSetting" value="#{locationList != 'childLocationList'}" />
 
     <p:panelGrid columns="2">
         <p:inputText id="displayNumberOfItemsPerPage" value="#{locationController.displayNumberOfItemsPerPage}" style="width:20px"/>
@@ -12,8 +14,8 @@
         <p:selectBooleanCheckbox id="displayDescription" value="#{locationController.displayDescription}"/>  
         <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="displayFlatTableView" value="#{locationController.displayFlatTableView}"/>  
-        <h:outputLabel for="displayFlatTableView" value="Display Flat Table View" styleClass="dialogDataLabel"/>
+        <p:selectBooleanCheckbox id="displayFlatTableView" value="#{locationController.displayFlatTableView}" rendered="#{displayFlatTableViewSetting}"/>  
+        <h:outputLabel for="displayFlatTableView" value="Display Flat Table View" styleClass="dialogDataLabel" rendered="#{displayFlatTableViewSetting}"/>
 
         <p:selectBooleanCheckbox id="displayId" value="#{locationController.displayId}"/>  
         <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>

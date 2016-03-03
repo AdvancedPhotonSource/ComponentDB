@@ -11,7 +11,9 @@
               header="Customize Display" 
               styleClass="dialog">
         <div class="dialog">
-            <ui:include src="locationListCustomizeDisplayPanelGrid.xhtml"/>
+            <ui:include src="locationListCustomizeDisplayPanelGrid.xhtml">
+                <ui:param name="locationList" value="childLocationList" />
+            </ui:include>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
@@ -21,7 +23,7 @@
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
-                                 actionListener="#{locationController.saveListSettingsForSessionUserActionListener}"
+                                 actionListener="#{locationController.saveListSettingsForSessionUserSetCurrentActionListener}"
                                  oncomplete="PF('locationViewChildLocationListCustomizeDisplayDialogWidget').hide()" 
                                  update="locationViewChildLocationListDataTable"
                                  rendered="#{loginController.loggedIn}"
