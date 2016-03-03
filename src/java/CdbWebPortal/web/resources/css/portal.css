@@ -715,19 +715,19 @@ h2 {
 }
 
 .ui-icon-component {
-    background-image: url(../../resources/images/component.png) !important;
+    background-image: url(../../resources/images/component.ico) !important;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .ui-icon-design {
-    background-image: url(../../resources/images/design.png) !important;
+    background-image: url(../../resources/images/design.ico) !important;
     background-repeat: no-repeat;
     background-position: center;
 }
 
 .ui-icon-designElement {
-    background-image: url(../../resources/images/design-element.png) !important;
+    background-image: url(../../resources/images/design-element.ico) !important;
     background-repeat: no-repeat;
     background-position: center;
 }
