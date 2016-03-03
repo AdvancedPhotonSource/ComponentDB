@@ -28,8 +28,7 @@
             <p:tooltip for="designElementObjectName" value="Enter name."/>
         </p:column>
 
-        <p:column sortBy="#{designElementObject.component.name}" headerText="Element entity type"
-                  rendered="#{designElementController.displayComponent}">
+        <p:column sortBy="#{designElementObject.component.name}" headerText="Element entity type">
             <p:fragment id="designElementSelectOneFragment#{designElementObject.viewUUID}">
                 <p:selectOneRadio id="designElementSelectOne#{designElementObject.viewUUID}"
                                   value="#{designElementObject.editDesignElementType}" 
@@ -44,8 +43,7 @@
             </p:fragment>
         </p:column>
 
-        <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Entity value"
-                  rendered="#{designElementController.displayChildDesign}">
+        <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Entity value">
             <p:fragment id="childDesignElementTypeValueFragment#{designElementObject.viewUUID}" >
                 <ui:fragment rendered="#{designElementController.getDisplayComponentSelection(designElementObject)}">
                     <p:autoComplete id="componentDropdown#{designElementObject.viewUUID}" 
