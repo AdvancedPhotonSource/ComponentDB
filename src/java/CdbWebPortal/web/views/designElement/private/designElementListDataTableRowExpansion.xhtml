@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:param name="viewMode" value="rowExpansion" />
+    <p:outputPanel styleClass="designElementRowExpansionDetails">
+        <p:accordionPanel activeIndex="" multiple="true" >
+            <p:tab title="Bill of Materials (a.k.a List of design elements)"  
+                   rendered="#{parentDesignElementObject.childDesign != null}" >
+                <p:treeTable id="designElementListTreeTable"
+                             value="#{designController.getDesignElementListTreeTableRootNode(parentDesignElementObject)}"
+                             var="designElementTreeObject"
+                             emptyMessage="No design elements found."
+                             resizableColumns="true"
+                             liveResize="true"
+                             rowStyleClass="#{designElementController.getDisplayRowColor(designElementTreeObject)}">
+
+                    <p:column sortBy="#{designElementTreeObject.name}" headerText="Element Name">
+                        <h:outputText value="#{designElementTreeObject.name}"/>
+                    </p:column>
+
+                    <ui:include src="designElementListObjectExtras.xhtml">
+                        <ui:param name="designElementObject" value="#{designElementTreeObject}" />
+                    </ui:include>
+
+                </p:treeTable>
+            </p:tab>
+            
+            <p:tab title="Element Properties">
+                <ui:include src="../../domainEntityProperty/private/domainEntityPropertyListDataTable.xhtml">
+                    <ui:param name="entityObject" value="#{parentDesignElementObject}" />
+                    <ui:param name="entityController" value="#{designElementController}" />
+                </ui:include>
+            </p:tab>
+        </p:accordionPanel>
+
+    </p:outputPanel>
+
+</ui:composition>
+
