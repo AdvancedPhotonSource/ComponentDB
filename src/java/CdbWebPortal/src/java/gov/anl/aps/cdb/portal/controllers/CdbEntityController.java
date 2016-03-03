@@ -635,6 +635,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             settingsTimestamp = new Date();
         }
     }
+    
+    public void saveListSettingsForSessionUserSetCurrentActionListener(ActionEvent actionEvent) {
+        EntityType currentEntity = this.current; 
+        saveListSettingsForSessionUserActionListener(actionEvent);
+        if (current == null) {
+            this.current = currentEntity; 
+        }
+    }
 
     /**
      * Update entity list display settings using current data table values.
