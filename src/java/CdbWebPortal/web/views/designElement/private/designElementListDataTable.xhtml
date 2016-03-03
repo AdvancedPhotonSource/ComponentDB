@@ -10,81 +10,34 @@
     <ui:param name="breadcrumbObjectId" value="#{designObject.id}"/>  
     <p:dataTable id="designElementListDataTable" 
                  widgetVar="designElementListDataTableWidget"
-                 var="designElementObject" 
+                 var="parentDesignElementObject" 
                  value="#{designObject.designElementList}" 
                  filteredValue="#{designElementController.filteredObjectList}"
                  rows="#{designElementController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No design elements found."
-                 rowStyleClass="#{designElementController.getDisplayRowColor(designElementObject)}">
-        <p:column sortBy="#{designElementObject.id}" headerText="Id"
-                  rendered="#{designElementController.displayId}">
-            <h:outputText value="#{designElementObject.id}"/>
-        </p:column>
+                 rowStyleClass="#{designElementController.getDisplayRowColor(parentDesignElementObject)}">
 
-        <p:column sortBy="#{designElementObject.name}" headerText="Element Name">
-            <h:outputLink value="../designElement/view.xhtml?id=#{designElementObject.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Design Element: #{designElementObject.name}">
-                <h:outputText value="#{designElementObject.name}"/>
-            </h:outputLink>
+        <p:column sortBy="#{parentDesignElementObject.name}" headerText="Element Name">
+            <p:rowToggler/>
+            <h:outputText value="#{parentDesignElementObject.name}" />
         </p:column>
-
-        <p:column sortBy="#{designElementObject.component.componentType.name}" headerText="Component Type"
-                  rendered="#{designElementController.displayComponentType}">
-            <h:outputLink value="../componentType/view.xhtml?id=#{designElementObject.component.componentType.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Component Type: #{designElementObject.component.componentType.name}">
-                <h:outputText value="#{designElementObject.component.componentType.name}"/>
-            </h:outputLink>
-        </p:column>
-
-        <p:column sortBy="#{designElementObject.component.nameAndModelNumber}" headerText="Component"
-                  rendered="#{designElementController.displayComponent}">
-            <h:outputLink value="../component/view.xhtml?id=#{designElementObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Component: #{designElementObject.component.name}">
-                <h:outputText value="#{designElementObject.component.nameAndModelNumber}"/>
-            </h:outputLink>
-        </p:column>
-
-        <p:column sortBy="#{designElementObject.childDesign.name}" headerText="Child Design"
-                  rendered="#{designElementController.displayChildDesign}">
-            <h:outputLink value="../design/view.xhtml?id=#{designElementObject.childDesign.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" title="Child Design: #{designElementObject.childDesign.name}">
-                <h:outputText value="#{designElementObject.childDesign.name}"/>
-            </h:outputLink>
-        </p:column>
-
-        <p:column sortBy="#{designElementObject.location.name}" headerText="Location"
-                  rendered="#{designElementController.displayLocation}">
-            <h:outputText value="#{designElementObject.location.name}"/>
-        </p:column>
-
-        <p:column sortBy="#{designElementObject.description}" headerText="Description"
-                  rendered="#{designElementController.displayDescription}">
-            <h:outputText value="#{designElementObject.description}"/>
-        </p:column>
-
-        <p:column sortBy="#{designElementObject.sortOrder}" headerText="Sort Order"
-                  rendered="#{designElementController.displaySortOrder}">
-            <h:outputText value="#{designElementObject.sortOrder}"/>
-        </p:column>
-
-        <ui:include src="../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
-            <ui:param name="entityController" value="#{designElementController}" />
-            <ui:param name="cdbDomainEntityObject" value="#{designElementObject}" />
+        
+        <ui:include src="designElementListObjectExtras.xhtml">
+            <ui:param name="designElementObject" value="#{parentDesignElementObject}" />
         </ui:include>
-
-        <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
-            <ui:param name="entityController" value="#{designElementController}"/>
-            <ui:param name="entityInfoObject" value="#{designElementObject.entityInfo}"/>
+        
+        <ui:include src="designElementListObjectActions.xhtml">
+            <ui:param name="designElementObject" value="#{parentDesignElementObject}" />
         </ui:include>
-
-        <p:column headerText="Actions" exportable="false">
-            <div class="actionLink">
-                <p:commandLink id="designElementListViewLink" 
-                               action="#{designElementController.prepareViewFromDesign(designElementObject)}" 
-                               styleClass="ui-icon ui-icon-info" 
-                               title="View">
-                    <p:tooltip for="designElementListViewLink" value="View #{designElementController.displayEntityTypeName} details."/>
-                </p:commandLink>
-            </div>
-        </p:column>
+           
+        <p:rowExpansion styleClass="designElementRowExpansion">
+            <ui:include src="designElementListDataTableRowExpansion.xhtml">
+                <ui:param name="parentDesignElementObject" value="#{parentDesignElementObject}" />
+            </ui:include>
+        </p:rowExpansion>
+       
     </p:dataTable>
 
 </ui:composition>
