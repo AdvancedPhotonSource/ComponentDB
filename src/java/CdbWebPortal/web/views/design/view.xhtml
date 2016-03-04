@@ -40,16 +40,14 @@
                     <ui:include src="../propertyValue/private/propertyValueImageGalleria.xhtml"/>        
                 </p:panel>
                 <p:panel header="Log Entries" toggleable="true" collapsed="#{!entityController.displayLogList}">
-                    <ui:include src="../designLog/private/designLogList.xhtml"/>
+                    <ui:include src="../domainEntityLog/private/domainEntityLogList.xhtml"/>
                 </p:panel>
 
 
             </div>
             <div class="domainEntityRightContent">
                 <p:panel header="Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
-                    <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
-                        <ui:param name="entityObject" value="#{designObject}" />
-                    </ui:include>
+                    <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml"/>
                 </p:panel>
 
                 <p:panel header="Elements" toggleable="true" collapsed="#{!designController.displayDesignElementList}">
