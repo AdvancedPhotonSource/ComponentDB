@@ -28,7 +28,6 @@ import gov.anl.aps.cdb.portal.model.db.utilities.DesignUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -199,10 +198,12 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
             if (designElementName == null || designElementName.isEmpty()) {
                 throw new InvalidObjectState("Design element name cannot be empty.");
             }
-            if (designElement.getEditDesignElementType().equals(DesignElementType.DESIGN.toString())) {
-                designElement.setComponent(null);
-            } else if (designElement.getEditDesignElementType().equals(DesignElementType.COMPONENT.toString())) {
-                designElement.setChildDesign(null);
+            if (designElement.getEditDesignElementType() != null) {
+                if (designElement.getEditDesignElementType().equals(DesignElementType.DESIGN.toString())) {
+                    designElement.setComponent(null);
+                } else if (designElement.getEditDesignElementType().equals(DesignElementType.COMPONENT.toString())) {
+                    designElement.setChildDesign(null);
+                }
             }
             if (designElement.getComponent() != null && designElement.getChildDesign() != null) {
                 throw new InvalidObjectState("Design element cannot have both component and child design.");
@@ -293,39 +294,10 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         }
     }
 
-    public void prepareAddLog(Design design) {
-        Log logEntry = LogUtility.createLogEntry();
-        List<Log> componentLogList = design.getLogList();
-        componentLogList.add(0, logEntry);
-    }
-
     public boolean getDisplayDesignElementList() {
         Design currentDesign = getCurrent();
         List<DesignElement> designElementList = currentDesign.getDesignElementList();
         return designElementList != null && !designElementList.isEmpty();
-    }
-
-    public void deleteLog(Log designLog) {
-        Design design = getCurrent();
-        List<Log> designLogList = design.getLogList();
-        designLogList.remove(designLog);
-    }
-
-    public List<Log> getLogList() {
-        Design design = getCurrent();
-        List<Log> designLogList = design.getLogList();
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
-            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateSettingsFromSessionUser(sessionUser);
-                settingsTimestamp = new Date();
-            }
-        }
-        return designLogList;
-    }
-
-    public void saveLogList() {
-        update();
     }
 
     @Override
