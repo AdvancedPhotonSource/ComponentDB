@@ -17,15 +17,17 @@ import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
+import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
 
@@ -33,21 +35,12 @@ import org.primefaces.model.UploadedFile;
  * JSF bean for log attachment uploads.
  */
 @Named("logAttachmentUploadBean")
-@RequestScoped
-public class LogAttachmentUploadBean {
+@SessionScoped
+public class LogAttachmentUploadBean implements Serializable {
 
     private static final Logger logger = Logger.getLogger(LogAttachmentUploadBean.class.getName());
 
-    private UploadedFile uploadedFile;
     private Log logEntry;
-
-    public UploadedFile getUploadedFile() {
-        return uploadedFile;
-    }
-
-    public void setUploadedFile(UploadedFile uploadedFile) {
-        this.uploadedFile = uploadedFile;
-    }
 
     public Log getLogEntry() {
         return logEntry;
@@ -57,8 +50,7 @@ public class LogAttachmentUploadBean {
         this.logEntry = logEntry;
     }
 
-    public void upload(Log logEntry) {
-        this.logEntry = logEntry;
+    public void upload(UploadedFile uploadedFile) {
         Path uploadDirPath;
         try {
             if (uploadedFile != null && !uploadedFile.getFileName().isEmpty()) {
@@ -90,5 +82,9 @@ public class LogAttachmentUploadBean {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.toString());
         }
+    }
+    
+    public void handleFileUpload(FileUploadEvent event) {
+        upload(event.getFile());
     }
 }
