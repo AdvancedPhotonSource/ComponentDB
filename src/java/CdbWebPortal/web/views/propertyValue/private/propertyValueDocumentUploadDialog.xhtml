@@ -17,6 +17,7 @@
             
             <p:remoteCommand name="propertyValueDocumentUploadDialogFileUploadOnComplete"
                              onstart="PF('loadingDialog').show();"
+                             oncomplete="PF('loadingDialog').hide();"
                              actionListener="#{propertyValueDocumentUploadBean.upload(propertyValueController.current)}"
                              action="#{parentEntityController[saveAction]}"
                              update="@form"/> 
