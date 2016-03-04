@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="#{entityTypeName}LogListDataTable"
+                 widgetVar="#{entityTypeName}LogListDataTableWidget" 
+                 var="logObject"
+                 value="#{entityObject.logList}" 
+                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 reflow="true"
+                 emptyMessage="No log entries found."
+                 editable="true">
+        
+        <p:ajax event="rowEdit" listener="#{entityController.logObjectEditRowEvent(event)}" />
+
+        <ui:include src="../../log/private/logListObject.xhtml"/>
+
+    </p:dataTable>
+
+    <ui:include src="../../log/private/logAttachmentUploadDialog.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="saveAction" value="saveLogList"/>
+        <ui:param name="updateTarget" value="#{entityTypeName}LogListDataTable" />
+    </ui:include>
+</ui:composition>
+
+
