@@ -18,7 +18,6 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -109,7 +108,6 @@ public class DesignElement extends CdbDomainEntity {
 
     private transient boolean isCloned = false;
     private transient String editDesignElementType;
-    private transient String viewUUID;
     private transient TreeNode childDesignElementListTreeTableRootNode = null;
 
     public DesignElement() {
@@ -277,13 +275,6 @@ public class DesignElement extends CdbDomainEntity {
 
     public void setEditDesignElementType(String editDesignElementType) {
         this.editDesignElementType = editDesignElementType;
-    }
-
-    public String getViewUUID() {
-        if (viewUUID == null) {
-            viewUUID = UUID.randomUUID().toString().replaceAll("[-]", "");
-        }
-        return viewUUID;
     }
 
     public Integer getContainedObjectId() {
