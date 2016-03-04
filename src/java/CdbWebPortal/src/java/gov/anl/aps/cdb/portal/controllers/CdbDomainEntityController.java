@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.RowEditEvent;
 
 /**
  *
@@ -57,6 +59,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     protected Integer loadedDataTableHashCode = null;
     protected List<Integer> loadedDisplayPropertyTypes = null;
+    
+    protected Log newLogEdit; 
 
     private static final Logger logger = Logger.getLogger(CdbDomainEntityController.class.getName());
 
@@ -444,4 +448,55 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         this.filterByPropertyValue5 = filterByPropertyValue5;
     }
     
+    public void logObjectEditRowEvent(RowEditEvent event) {
+        this.saveLogList();
+    }
+
+    public Log getNewLogEdit() {
+        return newLogEdit;
+    }
+
+    public void setNewLogEdit(Log newLogEdit) {
+        this.newLogEdit = newLogEdit;
+    }
+    
+    public void removeNewLog() {
+        if (newLogEdit != null) {
+            EntityType domainEntity = this.current; 
+            domainEntity.getLogList().remove(newLogEdit);
+            newLogEdit = null;
+        }
+    }
+    
+    public void saveLogList() {
+        newLogEdit = null; 
+        update();
+    }
+    
+    public void prepareAddLog(EntityType domainEntity) {
+        Log logEntry = LogUtility.createLogEntry();
+        setNewLogEdit(logEntry);
+        List<Log> domainEntityLogList = domainEntity.getLogList();
+        domainEntityLogList.add(0, logEntry);
+    }
+
+    public List<Log> getLogList() {
+        EntityType domainEntity = getCurrent();
+        List<Log> componentInstanceLogList = domainEntity.getLogList();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser != null) {
+            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
+                updateSettingsFromSessionUser(sessionUser);
+                settingsTimestamp = new Date();
+            }
+        }
+        return componentInstanceLogList;
+    }
+
+    public void deleteLog(Log domainEntityLog) {
+        EntityType domainEntity = getCurrent();
+        List<Log> domainEntityLogList = domainEntity.getLogList();
+        domainEntityLogList.remove(domainEntityLog);
+        updateOnRemoval();
+    }
 }
