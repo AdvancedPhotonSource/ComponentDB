@@ -6,6 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entityObject" value="#{entityController.selected}" />
     
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
