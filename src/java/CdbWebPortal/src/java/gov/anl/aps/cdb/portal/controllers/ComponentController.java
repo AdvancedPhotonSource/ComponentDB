@@ -31,7 +31,6 @@ import gov.anl.aps.cdb.portal.model.db.utilities.AssemblyComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ComponentTypeUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
-import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -39,10 +38,8 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -377,36 +374,6 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
         componentInstanceList.remove(componentInstance);
         setCurrent(component);
         updateOnRemoval();
-    }
-
-    public void prepareAddLog(Component component) {
-        Log logEntry = LogUtility.createLogEntry();
-        List<Log> componentLogList = component.getLogList();
-        componentLogList.add(0, logEntry);
-    }
-
-    public void deleteLog(Log componentLog) {
-        Component component = getCurrent();
-        List<Log> componentLogList = component.getLogList();
-        componentLogList.remove(componentLog);
-        updateOnRemoval();
-    }
-
-    public List<Log> getLogList() {
-        Component component = getCurrent();
-        List<Log> componentLogList = component.getLogList();
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
-            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateSettingsFromSessionUser(sessionUser);
-                settingsTimestamp = new Date();
-            }
-        }
-        return componentLogList;
-    }
-
-    public void saveLogList() {
-        update();
     }
 
     public void prepareAddAssemblyComponent(Component component) {

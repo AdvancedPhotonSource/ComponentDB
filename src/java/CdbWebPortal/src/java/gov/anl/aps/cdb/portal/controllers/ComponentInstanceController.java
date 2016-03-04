@@ -19,8 +19,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
-import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -32,7 +30,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstanceLocationHistory
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -371,41 +368,7 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     public String prepareViewToComponent(ComponentInstance componentInstance) {
         return "/views/component/view.xhtml?id=" + componentInstance.getComponent().getId() + "&faces-redirect=true";
     }
-
-    public void prepareAddLog(ComponentInstance componentInstance) {
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        Log logEntry = new Log();
-        logEntry.setEnteredByUser(lastModifiedByUser);
-        logEntry.setEnteredOnDateTime(lastModifiedOnDateTime);
-        List<Log> componentInstanceLogList = componentInstance.getLogList();
-        componentInstanceLogList.add(0, logEntry);
-    }
-
-    public List<Log> getLogList() {
-        ComponentInstance componentInstance = getCurrent();
-        List<Log> componentInstanceLogList = componentInstance.getLogList();
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
-            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateSettingsFromSessionUser(sessionUser);
-                settingsTimestamp = new Date();
-            }
-        }
-        return componentInstanceLogList;
-    }
-
-    public void saveLogList() {
-        update();
-    }
-
-    public void deleteLog(Log componentInstanceLog) {
-        ComponentInstance componentInstance = getCurrent();
-        List<Log> componentInstanceLogList = componentInstance.getLogList();
-        componentInstanceLogList.remove(componentInstanceLog);
-        updateOnRemoval();
-    }
-
+    
     public void prepareAddProperty() {
         ComponentInstance componentInstance = getCurrent();
         List<PropertyValue> propertyList = componentInstance.getPropertyValueList();

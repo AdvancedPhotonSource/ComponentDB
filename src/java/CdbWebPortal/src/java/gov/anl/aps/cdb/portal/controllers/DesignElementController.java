@@ -20,7 +20,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Location;
-import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -28,7 +27,6 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ComponentUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.DesignUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.LocationUtility;
-import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -38,7 +36,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -51,7 +48,6 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.autocomplete.AutoComplete;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.DragDropEvent;
@@ -248,36 +244,6 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         breadcrumbViewParam = null;
         breadcrumbObjectIdViewParam = null;
         return loadView + "?faces-redirect=true";
-    }
-
-    public void prepareAddLog(DesignElement designElement) {
-        Log logEntry = LogUtility.createLogEntry();
-        List<Log> designElementLogList = designElement.getLogList();
-        designElementLogList.add(0, logEntry);
-    }
-
-    public List<Log> getLogList() {
-        DesignElement designElement = getCurrent();
-        List<Log> designElementLogList = designElement.getLogList();
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
-            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateSettingsFromSessionUser(sessionUser);
-                settingsTimestamp = new Date();
-            }
-        }
-        return designElementLogList;
-    }
-
-    public void saveLogList() {
-        update();
-    }
-
-    public void deleteLog(Log designElementLog) {
-        DesignElement designElement = getCurrent();
-        List<Log> designElementLogList = designElement.getLogList();
-        designElementLogList.remove(designElementLog);
-        updateOnRemoval();
     }
 
     public void prepareAddProperty() {
