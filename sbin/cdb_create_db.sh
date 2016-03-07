@@ -218,8 +218,8 @@ echo "select username from user_info inner join user_user_group on user_info.id 
 adminWithLocalPassword=`eval $mysqlCmd temporaryAdminCommand.sql`
 
 if [ -z "$adminWithLocalPassword" ]; then
-    echo "No Admin with local password exists"
-    read -sp "Enter password for local admin username: cdb, password: [leave blank for no local password] " CDB_LOCAL_SYSTEM_ADMIN_PASSWORD
+    echo "No portal admin user with a local password exists"
+    read -sp "Enter password for local portal admin (username: cdb): [leave blank for no local password] " CDB_LOCAL_SYSTEM_ADMIN_PASSWORD
     echo ""
     if [ ! -z "$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD" ]; then
 	adminCryptPassword=`python -c "from cdb.common.utility.cryptUtility import CryptUtility; print CryptUtility.cryptPasswordWithPbkdf2('$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD')"`
