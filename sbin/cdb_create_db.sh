@@ -213,5 +213,22 @@ for dbTable in $CDB_DB_TABLES; do
     fi
 done
 
+echo "select username from user_info inner join user_user_group on user_info.id = user_user_group.user_id inner join user_group on user_group.id = user_user_group.user_group_id where user_group.name = 'CDB_ADMIN' and user_info.password is not null;" > temporaryAdminCommand.sql
+
+adminWithLocalPassword=`eval $mysqlCmd temporaryAdminCommand.sql`
+
+if [ -z "$adminWithLocalPassword" ]; then
+    echo "No Admin with local password exists"
+    read -sp "Enter password for local admin username: cdb, password: [leave blank for no local password] " CDB_LOCAL_SYSTEM_ADMIN_PASSWORD
+    echo ""
+    if [ ! -z "$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD" ]; then
+	adminCryptPassword=`python -c "from cdb.common.utility.cryptUtility import CryptUtility; print CryptUtility.cryptPasswordWithPbkdf2('$CDB_LOCAL_SYSTEM_ADMIN_PASSWORD')"`
+	echo "update user_info set password = '$adminCryptPassword' where username='cdb'" > temporaryAdminCommand.sql
+        execute $mysqlCmd temporaryAdminCommand.sql
+    fi
+fi
+
+execute rm temporaryAdminCommand.sql
+
 # cleanup
 execute rm -f $sqlFile
