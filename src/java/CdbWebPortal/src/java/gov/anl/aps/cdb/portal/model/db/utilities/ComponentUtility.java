@@ -28,10 +28,10 @@ public class ComponentUtility {
         Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 
         List<Component> filteredComponentList = new ArrayList<>();
-        for (Component location : candidateComponentList) {
-            boolean nameContainsQuery = searchPattern.matcher(location.getName()).find();
+        for (Component component : candidateComponentList) {
+            boolean nameContainsQuery = searchPattern.matcher(component.getName()).find();
             if (nameContainsQuery) {
-                filteredComponentList.add(location);
+                filteredComponentList.add(component);
             }
         }
         return filteredComponentList;

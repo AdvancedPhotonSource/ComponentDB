@@ -23,10 +23,10 @@ public class DesignUtility {
         Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
 
         List<Design> filteredDesignList = new ArrayList<>();
-        for (Design location : candidateDesignList) {
-            boolean nameContainsQuery = searchPattern.matcher(location.getName()).find();
+        for (Design design : candidateDesignList) {
+            boolean nameContainsQuery = searchPattern.matcher(design.getName()).find();
             if (nameContainsQuery) {
-                filteredDesignList.add(location);
+                filteredDesignList.add(design);
             }
         }
         return filteredDesignList;
