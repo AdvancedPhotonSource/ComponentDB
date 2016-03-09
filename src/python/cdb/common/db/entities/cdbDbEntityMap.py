@@ -23,9 +23,18 @@ from cdb.common.db.entities.propertyValueHistory import PropertyValueHistory
 from cdb.common.db.entities.userGroup import UserGroup
 from cdb.common.db.entities.userInfo import UserInfo
 from cdb.common.db.entities.userUserGroup import UserUserGroup
+from cdb.common.db.entities.attachment import Attachment
+from cdb.common.db.entities.logAttachment import LogAttachment
+from cdb.common.db.entities.log import Log
 
 # Map db table/db entity class
 CDB_DB_ENTITY_MAP = {
+    'log_attachment' : (LogAttachment, {
+        'attachment' : {'parentEntity' : Attachment, 'lazy' : False },
+        'log' : {'parentEntity': Log, 'lazy' : False },
+    }),
+    'attachment' : (Attachment, {} ),
+    'log' : (Log, {} ),
     'allowed_property_value' : (AllowedPropertyValue, {
         'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : True }, 
     }),
@@ -91,7 +100,8 @@ CDB_DB_ENTITY_MAP = {
     }),
     'property_value' : (PropertyValue, {
         'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : False }, 
-        'enteredByUserInfo' : { 'parentEntity' : UserInfo, 'lazy' : False }, 
+        'enteredByUserInfo' : { 'parentEntity' : UserInfo, 'lazy' : False },
+        'propertyValueHistory' : { 'parentEntity' : PropertyValueHistory, 'lazy' : False },
     }),
     'property_value_history' : (PropertyValueHistory, {
         'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
