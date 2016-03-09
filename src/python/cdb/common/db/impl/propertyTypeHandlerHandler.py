@@ -18,3 +18,10 @@ class PropertyTypeHandlerHandler(CdbDbEntityHandler):
         dbPropertyTypeCategories = session.query(PropertyTypeHandler).all()
         return dbPropertyTypeCategories
 
+    def getPropertyTypeHandlerByName(self, session, name):
+        try:
+            dbPropertyTypeHandler = session.query(PropertyTypeHandler).filter(PropertyTypeHandler.name==name).one()
+            return dbPropertyTypeHandler
+        except ObjectNotFound, ex:
+            raise ObjectNotFound("Property type handler with the name %s could not be found" % (name))
+
