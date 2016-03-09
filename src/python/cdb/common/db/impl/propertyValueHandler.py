@@ -24,6 +24,13 @@ class PropertyValueHandler(CdbDbEntityHandler):
         dbPropertyValues = session.query(PropertyValue).all()
         return dbPropertyValues
 
+    def findPropertyValuesByPropertyTypeId(self, session, propertyTypeId):
+        try:
+            dbPropertyValueList = session.query(PropertyValue).filter(PropertyValue.property_type_id==propertyTypeId).all()
+            return dbPropertyValueList
+        except NoResultFound, ex:
+            raise ObjectNotFound('Property value(s) with property type id %s do(es) not exists' % (propertyTypeId))
+
     def findPropertyValueById(self, session, id):
         try:
             dbPropertyValue = session.query(PropertyValue).filter(PropertyValue.id==id).one()
