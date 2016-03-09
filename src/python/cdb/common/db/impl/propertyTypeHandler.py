@@ -26,6 +26,13 @@ class PropertyTypeHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('Property type id %s does not exist.' % (id))
 
+    def getPropertyTypesByHandlerId(self, session, propertyTypeHandlerId):
+        try:
+            dbPropertyTypes = session.query(PropertyType).filter(PropertyType.property_type_handler_id==propertyTypeHandlerId).all()
+            return dbPropertyTypes
+        except NoResultFound, ex:
+            raise ObjectNotFound("Property types for handler id %s could not be found" % (propertyTypeHandlerId))
+
     def getPropertyTypeById(self, session, id):
         try:
             dbPropertyType = session.query(PropertyType).filter(PropertyType.id==id).one()
