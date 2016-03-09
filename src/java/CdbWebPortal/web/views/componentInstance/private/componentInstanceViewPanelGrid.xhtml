@@ -29,7 +29,8 @@
             <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
             <p:commandLink id="componentInstanceComponentPropertyValueHistoryListViewButton" 
                            onstart="PF('loadingDialog').show();"
-                           oncomplete="PF('componentInstanceLocationHistoryListDialogWidget').show()" 
+                           oncomplete="PF('loadingDialog').hide();
+                                       PF('componentInstanceLocationHistoryListDialogWidget').show()" 
                            styleClass="ui-icon ui-icon-history" 
                            title="View history."
                            update="@form">
