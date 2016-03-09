@@ -12,8 +12,6 @@
 import os
 import sys
 
-from cdb.common.utility.configurationManager import ConfigurationManager
-
 cdbRootDir = os.environ.get('CDB_ROOT_DIR')
 
 if (cdbRootDir is None):
@@ -54,6 +52,7 @@ else:
 dataDirectory = os.environ['CDB_DATA_DIR']
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.db.api.logDbApi import LogDbApi
+from cdb.common.utility.configurationManager import ConfigurationManager
 import re
 
 TOTAL_HEADER_SIZE = 80
