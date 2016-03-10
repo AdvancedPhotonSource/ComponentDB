@@ -1,3 +1,26 @@
+Release 2.5 (Tag 20160310) (03/10/2016)
+=========================================
+- Upgrade to Java 8
+- Scripts that generate a report of attachments that are in db and filesystem.
+- Create database script now allows assigning a local admin password.
+- Ability to view the designs that a component or a design is part of.
+- Ability to color design element rows with a property within the design element.
+- Property values as columns from within the list page now works for every domain entity.
+- Improvements to Design Element list.
+  - Ability to quickly view design element properties.
+  - Ability to view "bill of materials" of elements that are linked to other designs.
+- Logs.
+  - Multiple files could now be easily uploaded.
+  - Inline editing: create, upload, edit.
+- Bug Fixes
+  - User group in user list is now fully filterable.
+  - Newly created Component Instances are editable without need to reload.
+  - WBS number checking now works in PDMLink search tool for newly added numbers.
+  - Settings are now properly loaded for null values.
+  - Long Dialogs Fit better on more screen sizes.
+  - Customizing child locations list from a location view page now works properly.
+  - Log attachments are now deleted from the database when the log is deleted.
+
 Release 2.4 (Tag 20160218) (02/22/2016)
 =========================================
 - Improved DB backup scripts (new easily runnable as a cron job)
