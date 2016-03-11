@@ -157,7 +157,7 @@ INSERT INTO `setting_type` VALUES
 (157,'DesignElement.List.Display.CreatedByUser','Display created by username.','false'),
 (158,'DesignElement.List.Display.CreatedOnDateTime','Display created on date/time.','false'),
 (159,'DesignElement.List.Display.Description','Display design element description.','false'),
-(160,'DesignElement.List.Display.FlatTableView','Display flat table view for design element list.','false'),
+(160,'DesignElement.List.Display.FlatTableView','Display flat table view for design element list.','true'),
 (161,'DesignElement.List.Display.Id','Display design element id.','false'),
 (162,'DesignElement.List.Display.LastModifiedByUser','Display last modified by username.','false'),
 (163,'DesignElement.List.Display.LastModifiedOnDateTime','Display last modified on date/time.','false'),
