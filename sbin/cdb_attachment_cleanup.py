@@ -11,6 +11,7 @@
 
 import os
 import sys
+from __builtin__ import set
 
 cdbRootDir = os.environ.get('CDB_ROOT_DIR')
 
@@ -48,6 +49,10 @@ else:
             deploymentConfigurationDictionary[configSplit[0]] = configSplit[1]
     dataDirectory = deploymentConfigurationDictionary['CDB_DATA_DIR']
 
+if os.path.exists(dataDirectory) == False:
+    print >> sys.stderr, "Data directory '%s' does not exist." %(dataDirectory)
+    exit(1)
+
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.db.api.logDbApi import LogDbApi
 from cdb.common.utility.configurationManager import ConfigurationManager
@@ -61,7 +66,8 @@ logApi = LogDbApi()
 cm = ConfigurationManager.getInstance()
 print "DB Name: " + cm.getDbSchema()
 print "DB User: " + cm.getDbUser()
-
+print "Data Directory: " + dataDirectory
+print ''
 
 def appendNonEmptyValue(array, value):
     if value is None or value == "":
@@ -85,8 +91,8 @@ def getPropertyValueListByPropertyTypeHandler(handlerName):
         appendNonEmptyValue(attachements,propertyValue.data['value'])
         for propertyValueHistory in propertyValue.data['propertyValueHistory']:
             appendNonEmptyValue(attachements, propertyValueHistory.value)
-
-    return attachements
+    # Remove duplicates and return list
+    return list(set(attachements))
 
 # Load property value Attachments
 imageDBAttachments = getPropertyValueListByPropertyTypeHandler('Image')
@@ -111,9 +117,16 @@ documentPropertyValueDataDirectory = dataDirectory + "/propertyValue/documents"
 imagePropertyValueDataDirectory = dataDirectory + "/propertyValue/images"
 logAttachmentsDataDirectory = dataDirectory + "/log/attachments"
 
-documentDirectoryAttachments = os.listdir(documentPropertyValueDataDirectory)
-rawImageDirectoryAttachments = os.listdir(imagePropertyValueDataDirectory)
-logDirectoryAttachments = os.listdir(logAttachmentsDataDirectory)
+def listDirectory(directory):
+    if os.path.exists(directory):
+        return os.listdir(directory)
+    else:
+        print "Directory '%s' could not be found. " % directory
+        return []
+
+documentDirectoryAttachments = listDirectory(documentPropertyValueDataDirectory)
+rawImageDirectoryAttachments = listDirectory(imagePropertyValueDataDirectory)
+logDirectoryAttachments = listDirectory(logAttachmentsDataDirectory)
 
 # Clean up the image directory attachments list since it includes various versions of the attachment.
 imageDirectoryAttachments = []

@@ -58,6 +58,4 @@ echo "CDB install directory: $CDB_INSTALL_DIR"
 echo "Stopping web service for $CDB_DB_NAME"
 $CDB_WEB_SERVICE_INIT_CMD stop $CDB_DB_NAME
 
-rm -f $CDB_WEB_SERVICE_CONFIG_FILE
-rm -f $CDB_DB_PASSWORD_FILE
 echo "Done undeploying web service for $CDB_DB_NAME"
