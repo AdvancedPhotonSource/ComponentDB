@@ -104,6 +104,7 @@ INSERT INTO `component_instance_property` VALUES
 (104,444),
 (110,521),
 (119,708),
+(119,732),
 (120,614),
 (120,615),
 (121,683),

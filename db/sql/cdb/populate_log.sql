@@ -72,6 +72,12 @@ INSERT INTO `log` VALUES
 (79,'Move from EAA/401 to MOM/401 for picture after assembly is done on 01/13/2016','2016-01-27 08:49:44',21,NULL),
 (80,'Move from MOM/401 to 314 for magnet measurement on 01/20/2016','2016-01-27 08:50:45',21,NULL),
 (81,'Move from MOM/401 to 314 for magnet measurement after switching the bottom two pole tips on 01/25/2016','2016-01-27 09:07:36',21,NULL),
-(82,'','2016-02-04 15:33:52',42,NULL);
+(82,'','2016-02-04 15:33:52',42,NULL),
+(83,'','2016-02-25 07:18:25',42,NULL),
+(84,'Inspected and cleaned 2-25-16','2016-02-26 13:32:35',25,NULL),
+(85,'Inspected and cleaned 2-25-16','2016-02-26 13:38:32',25,NULL),
+(86,'Inspected and cleaned 2-25-16','2016-02-26 13:41:55',25,NULL),
+(87,'inspected and cleaned 2-25-16','2016-02-26 13:54:11',25,NULL),
+(88,'Inspected, cleaned on Feb 26. Leak checked OK on Feb 29. By Kevin.','2016-02-29 11:02:36',25,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;
