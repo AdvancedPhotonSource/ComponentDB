@@ -48,8 +48,6 @@ else:
             deploymentConfigurationDictionary[configSplit[0]] = configSplit[1]
     dataDirectory = deploymentConfigurationDictionary['CDB_DATA_DIR']
 
-
-dataDirectory = os.environ['CDB_DATA_DIR']
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.db.api.logDbApi import LogDbApi
 from cdb.common.utility.configurationManager import ConfigurationManager
