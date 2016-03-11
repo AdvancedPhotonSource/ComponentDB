@@ -78,9 +78,10 @@ INSERT INTO `property_type` VALUES
 (76,'Supplemental Shielding','',10,NULL,'',''),
 (77,'Distance From Source Point','',10,NULL,'','meters'),
 (78,'Dimension','',3,NULL,'',''),
-(79,'Verified','',10,11,'',''),
+(79,'RSS Verified','',10,11,'',''),
 (80,'Critical Component','',10,NULL,'',''),
 (81,'Traveler Template (Electronic)','Allows integration of traveler templates from traveler application.',2,13,'',''),
-(82,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'','');
+(82,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'',''),
+(83,'RSS Sequence Number','',10,NULL,'','');
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;
