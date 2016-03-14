@@ -28,22 +28,12 @@
                 <ui:param name="designElementObject" value="#{designElementController.selected}"/>
                 <ui:param name="entityController" value="#{designElementController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designElementObject.entityInfo)}"/>
-                <div class="actionButton">
-                    <p:commandButton id="designElementViewEditButton" action="#{designElementController.prepareEdit(designElementObject)}" 
-                                     rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil">
-                        <p:tooltip for="designElementViewEditButton" value="Edit design element."/>
-                    </p:commandButton>
-                    <p:commandButton id="designElementViewDeleteButton" onclick="PF('designElementDestroyDialogWidget').show();" 
-                                     rendered="#{(isEntityWriteable and loginController.isEntityWriteable(designObject.entityInfo))}" value="Delete" alt="Delete" icon="ui-icon-trash">
-                        <p:tooltip for="designElementViewDeleteButton" value="Delete design element."/>
-                    </p:commandButton>  
-                    <p:commandButton id="designElementViewDoneButton" action="#{designElementController.followBreadcrumbOrPrepareViewToDesign(designElementObject)}" 
-                                     value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
-                        <p:tooltip for="designElementViewDoneButton" value="Return to previous page."/>
-                    </p:commandButton>
-                    <p:commandButton id="designElementViewNoOp" style="visibility:hidden" value="NoOp"/>
-                    <p:defaultCommand target="designElementViewNoOp"/>
-                </div>
+                <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
+                <ui:include src="../common/private/commonViewActionButtons.xhtml">
+                    <ui:param name="renderReturn" value="#{false}" />
+                    <ui:param name="renderMoreInfo" value="#{true}" />
+                </ui:include>
+
                 <ui:include src="private/designElementDestroyDialog.xhtml"/>
 
 

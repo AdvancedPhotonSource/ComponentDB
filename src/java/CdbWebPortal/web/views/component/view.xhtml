@@ -30,7 +30,10 @@
                     <ui:param name="componentObject" value="#{componentController.selected}"/>
                     <ui:param name="entityController" value="#{componentController}"/>
                     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(componentObject.entityInfo)}"/>
-                    <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                    <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
+                    <ui:include src="../common/private/commonViewActionButtons.xhtml">
+                        <ui:param name="renderMoreInfo" value="#{true}" />
+                    </ui:include>
                     <ui:include src="private/componentDestroyDialog.xhtml"/>
 
 

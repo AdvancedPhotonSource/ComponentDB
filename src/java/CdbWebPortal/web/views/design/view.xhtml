@@ -32,7 +32,10 @@
                 <ui:param name="designObject" value="#{designController.selected}"/>
                 <ui:param name="entityController" value="#{designController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
-                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
+                <ui:include src="../common/private/commonViewActionButtons.xhtml">
+                    <ui:param name="renderMoreInfo" value="#{true}" />
+                </ui:include>
                 <ui:include src="private/designDestroyDialog.xhtml"/>
 
                 <p/>
@@ -60,7 +63,7 @@
 
             </div>
         </h:form>
-        
+
     </ui:define>
 
 </ui:composition>
