@@ -13,6 +13,7 @@
                              value="#{designController.getDesignElementListTreeTableRootNode(parentDesignElementObject)}"
                              var="designElementTreeObject"
                              emptyMessage="No design elements found."
+                             sortBy="#{designElementTreeObject.customizableSortOrder}"
                              resizableColumns="true"
                              liveResize="true"
                              rowStyleClass="#{designElementController.getDisplayRowColor(designElementTreeObject)}">
@@ -23,6 +24,11 @@
 
                     <ui:include src="designElementListObjectExtras.xhtml">
                         <ui:param name="designElementObject" value="#{designElementTreeObject}" />
+                    </ui:include>
+                    
+                    <ui:include src="designElementListObjectActions.xhtml" >
+                        <ui:param name="designElementObject" value="#{designElementTreeObject}" />
+                        <ui:param name="rendered" value="#{designElementController.displayBillOfMaterialsActionColumn}" />
                     </ui:include>
 
                 </p:treeTable>

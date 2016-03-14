@@ -4,7 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column headerText="Actions" exportable="false">
+    <p:column headerText="Actions" exportable="false" rendered="#{rendered == null or rendered}">
         <div>
             <p:commandLink id="designElementListViewLink" 
                            action="#{designElementController.prepareViewFromDesign(designElementObject)}" 
