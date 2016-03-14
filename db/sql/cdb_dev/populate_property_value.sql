@@ -856,10 +856,10 @@ INSERT INTO `property_value` VALUES
 (1025,7,'CAD Drawing','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14308-110000.drw.pdf','','','2015-10-29 10:36:58',42,0,0,'https://icmsdoc...-110000.drw.pdf','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14308-110000.drw.pdf'),
 (1026,7,'Mask 3','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14301-130000.drw.pdf','','','2015-10-29 10:43:01',42,0,0,'https://icmsdoc...-130000.drw.pdf','https://icmsdocs.aps.anl.gov/docs/groups/apscnm/documents/model_drawing/d14301-130000.drw.pdf'),
 (1027,78,'','','','','2015-10-29 10:57:42',42,0,1,'',''),
-(1031,75,'','true','','','2015-11-04 10:06:39',42,0,1,NULL,NULL),
-(1033,77,'','23.1','meters','','2015-11-04 10:06:39',42,0,1,'23.1',NULL),
+(1031,75,'','true','','','2015-11-04 10:06:39',42,0,1,'true','true'),
+(1033,77,'','23.1','meters','','2015-11-04 10:06:39',42,0,1,'23.1','23.1'),
 (1035,80,'','false','','','2015-10-29 10:57:42',42,0,1,'false','false'),
-(1036,79,'','Thu Oct 01 00:00:00 CDT 2015','','','2015-11-04 10:06:39',42,0,1,'10/01/15',NULL),
+(1036,79,'','Thu Oct 01 00:00:00 CDT 2015','','','2015-11-04 10:06:39',42,0,1,'10/01/15','Thu Oct 01 00:00:00 CDT 2015'),
 (1038,76,'','false','','','2015-10-29 10:57:42',42,0,1,'false','false'),
 (1039,76,'','false','','','2015-10-29 11:33:48',42,0,1,'false','false'),
 (1040,75,'','true','','','2015-11-04 10:37:36',42,0,1,NULL,NULL),
@@ -1150,6 +1150,10 @@ INSERT INTO `property_value` VALUES
 (1405,83,'','orange','','','2016-02-26 16:06:37',3,0,0,'','orange'),
 (1406,83,'','yellow','','','2016-03-01 08:23:19',26,0,0,'','yellow'),
 (1407,83,'','green','','','2016-03-01 08:24:41',26,0,0,'','green'),
-(1408,83,'','green','','','2016-03-02 09:34:44',26,0,0,'','green');
+(1408,83,'','green','','','2016-03-02 09:34:44',26,0,0,'','green'),
+(1409,83,'','blue','','','2016-03-08 14:52:54',42,0,0,'','blue'),
+(1410,83,'','blue','','','2016-03-08 14:55:40',42,0,0,'','blue'),
+(1411,74,NULL,'X.1.4.1.5.9.9.10',NULL,NULL,'2016-03-08 17:07:21',42,0,0,NULL,NULL),
+(1412,17,'Model Ref','4105090910-150000','',NULL,'2016-03-08 17:07:21',42,0,0,NULL,NULL);
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;

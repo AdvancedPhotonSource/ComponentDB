@@ -418,6 +418,7 @@ INSERT INTO `design_element_property` VALUES
 (439,1035),
 (439,1036),
 (439,1038),
+(439,1410),
 (441,1123),
 (441,1124),
 (441,1125),
@@ -570,6 +571,7 @@ INSERT INTO `design_element_property` VALUES
 (519,1354),
 (519,1361),
 (523,1362),
-(528,1364);
+(528,1364),
+(542,1409);
 /*!40000 ALTER TABLE `design_element_property` ENABLE KEYS */;
 UNLOCK TABLES;
