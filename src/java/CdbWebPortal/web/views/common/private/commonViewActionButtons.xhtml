@@ -18,10 +18,14 @@
             <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
             <p:tooltip for="#{entityTypeName}ViewDeleteButton" value="Delete #{entityController.displayEntityTypeName}."/>
         </p:commandButton>  
-        <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{entityController.followBreadcrumbOrPrepareList()}" 
-                         value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
-            <p:tooltip for="#{entityTypeName}ViewDoneButton" value="Return to previous page."/>
+        <p:commandButton id="#{entityTypeName}ViewInfoButton" oncomplete="PF('#{entityTypeName}EntityInfoViewDialogWidget').show()" 
+                         value="More Info" alt="Info" icon="ui-icon-info" rendered="#{renderMoreInfo != null or renderMoreInfo}">
+            <p:tooltip for="#{entityTypeName}ViewInfoButton" value="View Entity Information."/>
         </p:commandButton>
+        <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{entityController.followBreadcrumbOrPrepareList()}" 
+                         rendered="#{renderReturn == null or renderReturn}" value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
+            <p:tooltip for="#{entityTypeName}ViewDoneButton" value="Return to previous page."/>
+        </p:commandButton>`
         <p:commandButton id="#{entityTypeName}ViewNoOp" style="visibility:hidden" value="NoOp"/>
         <p:defaultCommand target="#{entityTypeName}ViewNoOp"/>
     </div>
