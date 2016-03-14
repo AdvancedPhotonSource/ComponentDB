@@ -109,6 +109,7 @@ public class DesignElement extends CdbDomainEntity {
     private transient boolean isCloned = false;
     private transient String editDesignElementType;
     private transient TreeNode childDesignElementListTreeTableRootNode = null;
+    private static transient Integer sortByPropertyTypeId = null; 
 
     public DesignElement() {
     }
@@ -145,6 +146,18 @@ public class DesignElement extends CdbDomainEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+    
+    public Object getCustomizableSortOrder() {
+        if (sortByPropertyTypeId == null) {
+            return getSortOrder(); 
+        } else { 
+            return getPropertyValue(sortByPropertyTypeId);
+        }
+    }
+
+    public static void setSortByPropertyTypeId(Integer sortByPropertyTypeId) {
+        DesignElement.sortByPropertyTypeId = sortByPropertyTypeId;
     }
 
     public Float getSortOrder() {
