@@ -17,18 +17,11 @@
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:outputText id="description" value="#{componentObject.description}" title="Description" styleClass="entityDataText"/>
 
-        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-        <h:outputText id="id" value="#{componentObject.id}" title="Id" styleClass="entityDataText"/>
-
         <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
         <h:outputText id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText"/>
 
         <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
         <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
-
-        <ui:include src="../../entityInfo/private/entityInfoViewObject.xhtml">
-            <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
-        </ui:include>
 
     </p:panelGrid>
 

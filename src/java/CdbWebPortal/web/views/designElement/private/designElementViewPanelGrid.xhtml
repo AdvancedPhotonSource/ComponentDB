@@ -40,13 +40,6 @@
         <h:outputLabel for="sortOrder" value="Sort Order" styleClass="entityDataLabel"/>
         <h:outputText id="sortOrder" value="#{designElementObject.sortOrder}" title="Sort Order" styleClass="entityDataText"/>
 
-        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
-        <h:outputText id="id" value="#{designElementObject.id}" title="Id" styleClass="entityDataText"/>
-
-        <ui:include src="../../entityInfo/private/entityInfoViewObject.xhtml">
-            <ui:param name="entityInfoObject" value="#{designElementObject.entityInfo}"/>
-        </ui:include>
-
     </p:panelGrid>
 
 </ui:composition>
