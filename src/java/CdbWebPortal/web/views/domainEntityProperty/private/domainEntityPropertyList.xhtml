@@ -32,13 +32,7 @@
     <ui:include src="domainEntitySinglePropertySelectCustomizeDisplayDialog.xhtml" />
     <ui:include src="domainEntitySinglePropertyEditDialog.xhtml" />
     
-    <ui:include src="../../pdmLink/private/pdmLinkDrawingPropertyInfoDialog.xhtml"/> 
-    <ui:include src="../../travelerProperty/private/travelerInstancePropertyValueInfoDialog.xhtml" />
-    <p:remoteCommand name="loadInfoActionDialog"
-                     onstart="PF('loadingDialog').show();"
-                     onerror="PF('loadingDialog').hide();"
-                     oncomplete="PF('loadingDialog').hide();"
-                     action="#{propertyValueInfoActionBean.loadInfoActionForLoadedPropertyValue()}" />
+    <ui:include src="domainEntityPropertyInfoActionDialogs.xhtml" />
         
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
    
