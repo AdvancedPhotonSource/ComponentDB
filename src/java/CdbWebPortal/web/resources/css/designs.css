@@ -9,12 +9,8 @@ html, body {
     background-color: #f1efe2;
 }
 
-.designElementRowExpansion {
+.domainEntityRowExpansion {
     background-color: #f1efe2;
-}
-
-.designElementRowExpansionDetails {
-    padding-left: 20px;
 }
 
 .activeMenuItem, .activeMenuItem .ui-menuitem-text  {

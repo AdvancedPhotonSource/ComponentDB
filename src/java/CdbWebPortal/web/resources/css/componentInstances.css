@@ -9,6 +9,10 @@ html, body {
     background-color: #d5ebf5;
 }
 
+.domainEntityRowExpansion {
+    background-color: #d5ebf5;
+}
+
 .activeMenuItem, .activeMenuItem .ui-menuitem-text  {
     background-color: #d5ebf5;
 }

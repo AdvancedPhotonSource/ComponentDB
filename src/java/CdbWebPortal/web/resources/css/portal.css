@@ -778,3 +778,7 @@ h2 {
 .ui-datatable .ui-sortable-column {
     box-shadow: none;
 }
+
+.domainEntityRowExpansionDetails {
+    padding-left: 25px;
+}
