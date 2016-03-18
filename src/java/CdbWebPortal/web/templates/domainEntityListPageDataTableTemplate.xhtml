@@ -22,6 +22,10 @@
                  emptyMessage="No #{displayEntityTypeName}s found.">
         <ui:param name="#{entityTypeName}Object" value="#{cdbDomainEntityObject}" />
 
+        <p:column rendered="#{entityController.displayRowExpansion}">
+            <p:rowToggler/>
+        </p:column>
+
         <ui:insert name="domainEntityListObject">
             <h:outputText value="column info goes here"/>
         </ui:insert>
@@ -41,6 +45,14 @@
                 <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
             </ui:include>
         </p:column>
+
+        <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
+            <ui:include src="../views/domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
+                <ui:param name="entityObject" value="#{cdbDomainEntityObject}" />
+                <ui:param name="entityController" value="#{entityController}" />
+            </ui:include>
+            <ui:insert name="domainEntityRowExpansionExtras" />
+        </p:rowExpansion>
 
     </p:dataTable>
 
