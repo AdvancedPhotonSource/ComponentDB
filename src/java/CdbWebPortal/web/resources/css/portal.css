@@ -241,7 +241,7 @@ footer {
 }
 
 .actionLink {
-    display: none;
+    display: inline-block;
 }
 
 .entityDataLabel {
