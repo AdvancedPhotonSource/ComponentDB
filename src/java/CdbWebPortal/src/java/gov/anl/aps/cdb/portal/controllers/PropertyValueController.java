@@ -252,7 +252,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
         propertyTypeHandler.setInfoActionCommand(propertyValue);
         propertyTypeHandler.setDisplayValue(propertyValue);
-        String targetValue = propertyValue.getTargetValue();
         propertyTypeHandler.setTargetValue(propertyValue);
         PropertyType propertyType = propertyValue.getPropertyType();
         DisplayType displayType = propertyTypeHandler.getValueDisplayType();
