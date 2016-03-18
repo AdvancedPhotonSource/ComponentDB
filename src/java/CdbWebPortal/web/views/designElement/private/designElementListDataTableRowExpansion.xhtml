@@ -4,9 +4,10 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-    <ui:param name="viewMode" value="rowExpansion" />
-    <p:outputPanel styleClass="designElementRowExpansionDetails">
-        <p:accordionPanel activeIndex="" multiple="true" >
+    <ui:param name="viewMode" value="inViewRowExpansion" />
+
+    <p:outputPanel styleClass="domainEntityRowExpansionDetails">
+        <p:accordionPanel activeIndex="" multiple="true"  dynamic="true">
             <p:tab title="Bill of Materials (a.k.a List of design elements)"  
                    rendered="#{parentDesignElementObject.childDesign != null}" >
                 <p:treeTable id="designElementListTreeTable"
@@ -25,7 +26,7 @@
                     <ui:include src="designElementListObjectExtras.xhtml">
                         <ui:param name="designElementObject" value="#{designElementTreeObject}" />
                     </ui:include>
-                    
+
                     <ui:include src="designElementListObjectActions.xhtml" >
                         <ui:param name="designElementObject" value="#{designElementTreeObject}" />
                         <ui:param name="rendered" value="#{designElementController.displayBillOfMaterialsActionColumn}" />
@@ -33,16 +34,13 @@
 
                 </p:treeTable>
             </p:tab>
-            
-            <p:tab title="Element Properties">
-                <ui:include src="../../domainEntityProperty/private/domainEntityPropertyListDataTable.xhtml">
-                    <ui:param name="entityObject" value="#{parentDesignElementObject}" />
-                    <ui:param name="entityController" value="#{designElementController}" />
-                </ui:include>
-            </p:tab>
         </p:accordionPanel>
-
     </p:outputPanel>
 
+    <ui:include src="../../domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
+        <ui:param name="entityObject" value="#{parentDesignElementObject}" />
+        <ui:param name="entityController" value="#{designElementController}" />
+        <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : designElementController.loadRowExpansionPropertyValues}" />
+    </ui:include>
 </ui:composition>
 
