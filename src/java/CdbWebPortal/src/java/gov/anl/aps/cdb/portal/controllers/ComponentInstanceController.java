@@ -72,6 +72,8 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ComponentInstance.List.Display.PropertyTypeId5";
     private static final String DisplayQrIdSettingTypeKey = "ComponentInstance.List.Display.QrId";
     private static final String DisplaySerialNumberSettingTypeKey = "ComponentInstance.List.Display.SerialNumber";
+    private static final String DisplayRowExpansionSettingTypeKey = "ComponentInstance.List.Display.RowExpansion";
+    private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ComponentInstance.List.Load.RowExpansionPropertyValue";
     private static final String FilterByComponentSettingTypeKey = "ComponentInstance.List.FilterBy.Component";
     private static final String FilterByCreatedByUserSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ComponentInstance.List.FilterBy.CreatedOnDateTime";
@@ -172,7 +174,7 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "component instance";
+        return "Component Instance";
     }
 
     @Override
@@ -411,6 +413,9 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
 
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
+        
+        displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
+        loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
 
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
@@ -466,6 +471,9 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         displayQrId = sessionUser.getUserSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displaySerialNumber = sessionUser.getUserSettingValueAsBoolean(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
 
+        displayRowExpansion = sessionUser.getUserSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        loadRowExpansionPropertyValues = sessionUser.getUserSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
@@ -541,6 +549,9 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         sessionUser.setUserSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         sessionUser.setUserSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         sessionUser.setUserSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
+        
+        sessionUser.setUserSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        sessionUser.setUserSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
 
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);

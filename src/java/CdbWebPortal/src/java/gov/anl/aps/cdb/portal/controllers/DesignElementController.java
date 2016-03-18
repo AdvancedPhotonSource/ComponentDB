@@ -85,6 +85,8 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
     private static final String DisplayPropertyTypeId5SettingTypeKey = "DesignElement.List.Display.PropertyTypeId5";
     private static final String DisplayParentDesignRowColorTypeKey="DesignElement.List.Display.RowColor"; 
     private static final String DisplayBillOfMaterialsActionColumnTypeKey = "DesignElement.List.Display.BillOfMaterialsActionColumn";
+    private static final String DisplayRowExpansionSettingTypeKey = "DesignElement.List.Display.RowExpansion";
+    private static final String LoadRowExpansionPropertyValueSettingTypeKey = "DesignElement.List.Load.RowExpansionPropertyValue";
     private static final String SortByPropertyTypeIdSettingTypeKey = "DesignElement.List.SortBy.PropertyTypeId"; 
     private static final String FilterByChildDesignSettingTypeKey = "DesignElement.List.FilterBy.ChildDesign";
     private static final String FilterByComponentSettingTypeKey = "DesignElement.List.FilterBy.Component";
@@ -189,7 +191,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "design element";
+        return "Design Element";
     }
 
     @Override
@@ -285,6 +287,9 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         
+        displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue()); 
+        loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
+        
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
@@ -331,6 +336,9 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        
+        displayRowExpansion = sessionUser.getUserSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        loadRowExpansionPropertyValues = sessionUser.getUserSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
         
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -403,6 +411,9 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
         sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        
+        sessionUser.setUserSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        sessionUser.setUserSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
         
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);

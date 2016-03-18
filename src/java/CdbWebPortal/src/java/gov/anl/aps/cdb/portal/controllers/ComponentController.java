@@ -81,6 +81,10 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
     private static final String DisplayPropertyTypeId4SettingTypeKey = "Component.List.Display.PropertyTypeId4";
     private static final String DisplayPropertyTypeId5SettingTypeKey = "Component.List.Display.PropertyTypeId5";
     private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
+    private static final String DisplayRowExpansionSettingTypeKey = "Component.List.Display.RowExpansion";
+    private static final String DisplayComponentInstanceRowExpansionSettingTypeKey = "Component.List.Display.ComponentInstance.RowExpansion";
+    private static final String LoadRowExpansionPropertyValueSettingTypeKey = "Component.List.Load.RowExpansionPropertyValue";
+    private static final String LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey = "Component.List.Load.ComponentInstance.RowExpansionPropertyValue";
     private static final String FilterByCategorySettingTypeKey = "Component.List.FilterBy.Category";
     private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
@@ -132,6 +136,9 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
     private String selectFilterByType = null;
     private String selectFilterByCategory = null;
     private String selectFilterByModelNumber = null;
+    
+    private Boolean loadComponentInstanceRowExpansionPropertyValues = null;
+    private Boolean displayComponentInstanceRowExpansion = null;
 
     // There seems to be a problem with primefaces framework, as select one menu does not
     // recognize value change in some case, so we bind this variable to control the menu. 
@@ -414,7 +421,12 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         displayModelNumber = Boolean.parseBoolean(settingTypeMap.get(DisplayModelNumberSettingTypeKey).getDefaultValue());
-
+        
+        displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
+        displayComponentInstanceRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstanceRowExpansionSettingTypeKey).getDefaultValue());
+        loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
+        loadComponentInstanceRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
+        
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
@@ -466,6 +478,11 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
         displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         displayModelNumber = sessionUser.getUserSettingValueAsBoolean(DisplayModelNumberSettingTypeKey, displayModelNumber);
 
+        displayRowExpansion = sessionUser.getUserSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        displayComponentInstanceRowExpansion = sessionUser.getUserSettingValueAsBoolean(DisplayComponentInstanceRowExpansionSettingTypeKey, displayComponentInstanceRowExpansion);
+        loadRowExpansionPropertyValues = sessionUser.getUserSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        loadComponentInstanceRowExpansionPropertyValues = sessionUser.getUserSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadComponentInstanceRowExpansionPropertyValues);
+        
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
@@ -534,6 +551,11 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
 
         sessionUser.setUserSettingValue(DisplayTypeSettingTypeKey, displayType);
         sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
+        
+        sessionUser.setUserSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        sessionUser.setUserSettingValue(DisplayComponentInstanceRowExpansionSettingTypeKey, displayComponentInstanceRowExpansion);
+        sessionUser.setUserSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        sessionUser.setUserSettingValue(LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey, loadComponentInstanceRowExpansionPropertyValues);
 
         sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
@@ -654,12 +676,11 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
         }
 
     }
-
     
-
-    
-
-    
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "Component";
+    }
 
     public List<String> completeLocationName(String query) {
         Pattern searchPattern = Pattern.compile(Pattern.quote(query), Pattern.CASE_INSENSITIVE);
@@ -864,6 +885,22 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
 
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
+    } 
+
+    public Boolean getLoadComponentInstanceRowExpansionPropertyValues() {
+        return loadComponentInstanceRowExpansionPropertyValues;
+    }
+
+    public void setLoadComponentInstanceRowExpansionPropertyValues(Boolean loadComponentInstanceRowExpansionPropertyValues) {
+        this.loadComponentInstanceRowExpansionPropertyValues = loadComponentInstanceRowExpansionPropertyValues;
+    }
+
+    public Boolean getDisplayComponentInstanceRowExpansion() {
+        return displayComponentInstanceRowExpansion;
+    }
+
+    public void setDisplayComponentInstanceRowExpansion(Boolean displayComponentInstanceRowExpansion) {
+        this.displayComponentInstanceRowExpansion = displayComponentInstanceRowExpansion;
     }
 
     public TreeNode createAssemblyRoot(Component assembly) throws CdbException {
