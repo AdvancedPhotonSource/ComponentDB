@@ -12,8 +12,11 @@
                  rows="#{componentInstanceController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
-                 reflow="true"
                  emptyMessage="No component instances found.">
+
+        <p:column>
+            <p:rowToggler/>
+        </p:column>
 
         <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
                   rendered="#{componentInstanceController.displayId}">
@@ -66,7 +69,13 @@
             </div>
         </p:column>
 
-
+        <p:rowExpansion styleClass="domainEntityRowExpansion">
+            <ui:include src="../../domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
+                <ui:param name="entityObject" value="#{componentInstanceObject}" />
+                <ui:param name="entityController" value="#{componentInstanceController}" />
+                <ui:param name="viewMode" value="#{viewMode != null ? viewMode : 'inViewRowExpansion'}" />
+            </ui:include>
+        </p:rowExpansion>
 
     </p:dataTable>
 
