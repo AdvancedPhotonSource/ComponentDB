@@ -6,11 +6,11 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
     
-    <ui:param name="filterableBoolean" value="#{entityInfoObjectFilterable == 'true'}" />
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
 
     <p:selectBooleanCheckbox rendered="#{filterable}" id="#{entityTypeName}AutoLoadProperty" value="#{entityController.filterByPropertiesAutoLoad}"/>  
-    <h:outputLabel rendered="#{filterable}" for="#{entityTypeName}AutoLoadProperty" value="Automatically Load Property Filter Values" styleClass="dialogDataLabel"/>
+    <h:outputLabel rendered="#{filterable}" for="#{entityTypeName}AutoLoadProperty" value="Automatically Load Property Filter Values*" styleClass="dialogDataLabel"/>
 
     <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType1" value="#{entityController.displayPropertyTypeId1}" 
                      styleClass="entityDataSelectOne">
