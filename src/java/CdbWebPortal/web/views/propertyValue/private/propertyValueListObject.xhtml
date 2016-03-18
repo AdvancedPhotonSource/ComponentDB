@@ -5,7 +5,9 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
-
+    
+    <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : true}" />
+    
     <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
               rendered="#{propertyValueController.displayId}">
         <h:outputText value="#{propertyValueObject.id}"/>
@@ -26,52 +28,59 @@
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value">
-
-        <h:outputText value="#{propertyValueObject.displayValue}"
-                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
-
-        <h:outputText value="#{propertyValueObject.value}"
-                      rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
-
-        <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
-                      rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
-            <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
-                            alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
-                            rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
-        </h:outputLink>
-
-        <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
-                      rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
-            <h:outputText value="#{propertyValueObject.displayValue}"/>
-        </h:outputLink>
-
-        <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
-                      rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
-            <h:outputText value="#{propertyValueObject.displayValue}"/>
-        </h:outputLink>
-
-        <h:outputText value="#{propertyValueObject.displayValue}"
-                      rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
-        
-        <p:outputPanel rendered="#{propertyValueController.displayTableRecordReference(propertyValueObject)}">
+        <p:outputPanel rendered="#{loadPropertyValues}">
             <h:outputText value="#{propertyValueObject.displayValue}"
-                      rendered="#{propertyValueObject.targetValue == null}"/>
-            <h:outputLink rendered="#{propertyValueObject.targetValue != null}" 
-                          value="#{propertyValueObject.targetValue}"
-                          target="_page_#{propertyValueObject.targetValue}">
-                <h:outputText value="#{propertyValueObject.displayValue}"/> 
-            </h:outputLink>
-        </p:outputPanel>
-        
-        <p:commandLink rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"
-                       onclick="#{entityPropertyTypeName}InfoAction#{propertyValueObject.id}()">
-            <h:outputText value="#{propertyValueObject.displayValue}"  />
-        </p:commandLink>
+                          rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
 
-        <ui:fragment rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}">         
-            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
-                          rendered="#{propertyValueObject.value}"/>
-        </ui:fragment>
+            <h:outputText value="#{propertyValueObject.value}"
+                          rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
+
+            <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
+                          rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
+                <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
+                                alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
+                                rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
+            </h:outputLink>
+
+            <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
+                          rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
+                <h:outputText value="#{propertyValueObject.displayValue}"/>
+            </h:outputLink>
+
+            <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
+                          rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
+                <h:outputText value="#{propertyValueObject.displayValue}"/>
+            </h:outputLink>
+
+            <h:outputText value="#{propertyValueObject.displayValue}"
+                          rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
+
+            <p:outputPanel rendered="#{propertyValueController.displayTableRecordReference(propertyValueObject)}">
+                <h:outputText value="#{propertyValueObject.displayValue}"
+                              rendered="#{propertyValueObject.targetValue == null}"/>
+                <h:outputLink rendered="#{propertyValueObject.targetValue != null}" 
+                              value="#{propertyValueObject.targetValue}"
+                              target="_page_#{propertyValueObject.targetValue}">
+                    <h:outputText value="#{propertyValueObject.displayValue}"/> 
+                </h:outputLink>
+            </p:outputPanel>
+
+            <p:commandLink rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"
+                           onclick="#{entityPropertyTypeName}InfoAction#{propertyValueObject.id}()">
+                <h:outputText value="#{propertyValueObject.displayValue}"  />
+            </p:commandLink>
+
+            <ui:fragment rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}">         
+                <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                              rendered="#{propertyValueObject.value}"/>
+            </ui:fragment>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{!loadPropertyValues}">
+            <h:outputText value="#{propertyValueObject.displayValue}*" rendered="#{propertyValueObject.displayValue != null and propertyValueObject.displayValue != ''}"  />
+            <h:outputText value="#{propertyValueObject.value}*" 
+                          rendered="#{(propertyValueObject.value != null or propertyValueObject.value != '') 
+                                    and (propertyValueObject.displayValue == null or propertyValueObject.displayValue == '')}"  />
+        </p:outputPanel>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
