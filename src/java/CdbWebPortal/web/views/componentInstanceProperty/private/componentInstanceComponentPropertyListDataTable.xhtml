@@ -22,7 +22,7 @@
         </ui:include>
 
         <p:column headerText="Actions" exportable="false">
-            <div class="actionLink">
+            <div>
                 <p:remoteCommand name="componentInstanceComponentPropertyInfoAction#{propertyValueObject.id}"
                                  rendered="#{propertyValueObject.infoActionCommand != null}"
                                  oncomplete="loadInfoActionDialog();">
@@ -32,7 +32,8 @@
                 
                 <p:commandLink id="componentInstanceComponentPropertyValueHistoryListViewButton" 
                                onstart="PF('loadingDialog').show();"
-                               oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
+                               oncomplete="PF('loadingDialog').hide();
+                                           PF('propertyValueHistoryListDialogWidget').show()" 
                                styleClass="ui-icon ui-icon-history" 
                                title="View history."
                                update="@form">
