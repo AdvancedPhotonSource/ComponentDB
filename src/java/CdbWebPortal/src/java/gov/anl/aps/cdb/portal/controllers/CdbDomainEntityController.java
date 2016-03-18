@@ -49,6 +49,9 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     protected Integer displayPropertyTypeId3 = null;
     protected Integer displayPropertyTypeId4 = null;
     protected Integer displayPropertyTypeId5 = null;
+    
+    protected Boolean displayRowExpansion = null; 
+    protected Boolean loadRowExpansionPropertyValues = null; 
 
     protected String filterByPropertyValue1 = null;
     protected String filterByPropertyValue2 = null;
@@ -259,7 +262,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
         forceLoadPropertyTypeFilter(); 
     }
-
+    
     public void preparePropertyTypeFilter() {
 
         if (loadedDisplayPropertyTypes == null) {
@@ -406,6 +409,22 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void setDisplayPropertyTypeId5(Integer displayPropertyTypeId5) {
         this.displayPropertyTypeId5 = displayPropertyTypeId5;
+    }
+
+    public Boolean getDisplayRowExpansion() {
+        return displayRowExpansion;
+    }
+
+    public void setDisplayRowExpansion(Boolean displayRowExpansion) {
+        this.displayRowExpansion = displayRowExpansion;
+    }
+
+    public Boolean getLoadRowExpansionPropertyValues() {
+        return loadRowExpansionPropertyValues;
+    }
+
+    public void setLoadRowExpansionPropertyValues(Boolean loadRowExpansionPropertyValues) {
+        this.loadRowExpansionPropertyValues = loadRowExpansionPropertyValues;
     }
 
     public String getFilterByPropertyValue1() {
