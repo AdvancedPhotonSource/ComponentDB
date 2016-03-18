@@ -8,7 +8,7 @@
 
     <ui:define name="pageTitle">: Component Instance Inventory</ui:define>
     <ui:define name="middleCenter">
-        
+
         <f:metadata>
             <f:event type="preRenderComponent" listener="#{componentInstanceController.processPreRenderList()}"/>
         </f:metadata>
@@ -18,9 +18,9 @@
                 <h1>Component Instance Inventory</h1>
             </div>
             <ui:param name="entityController" value="#{componentInstanceController}"/>
-                                    
+
             <ui:include src="private/componentInstanceListPageHelpFragment.xhtml" />
-          
+
             <ui:include src="../common/private/commonListActionButtons.xhtml"/>
 
             <h:panelGroup>
@@ -32,8 +32,11 @@
             <ui:include src="private/componentInstanceDestroyDialog.xhtml"/>
 
             <ui:include src="private/componentInstanceListCustomizeDisplayDialog.xhtml"/>
-            
+
             <ui:include src="../common/private/commonLoadingDialog.xhtml"/>
+
+            <ui:include src="../domainEntityProperty/private/domainEntityPropertyInfoActionDialogs.xhtml" />
+            
         </h:form>
         <h:outputScript library="javascript" name="componentInstanceListFilter.js"/>
 
