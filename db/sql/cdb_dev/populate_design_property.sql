@@ -56,6 +56,7 @@ INSERT INTO `design_property` VALUES
 (76,1344),
 (77,1360),
 (78,1363),
-(79,1365);
+(79,1365),
+(84,1413);
 /*!40000 ALTER TABLE `design_property` ENABLE KEYS */;
 UNLOCK TABLES;
