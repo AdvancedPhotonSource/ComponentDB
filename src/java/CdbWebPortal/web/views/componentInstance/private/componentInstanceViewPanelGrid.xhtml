@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:param name="componentInstanceObject" value="#{componentInstanceController.selected}"/>
+    <ui:param name="componentInstanceObject" value="#{componentInstanceObject != null ? componentInstanceObject : componentInstanceController.selected}"/>
     <ui:param name="breadcrumb" value="#{componentInstanceController.currentViewId}"/>    
     <ui:param name="breadcrumbObjectId" value="#{componentInstanceObject.id}"/>  
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
