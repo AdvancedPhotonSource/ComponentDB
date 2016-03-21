@@ -22,6 +22,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,12 +32,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
+import javax.imageio.ImageIO;
 import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.apache.log4j.Logger;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
@@ -54,7 +60,8 @@ public class PropertyValueImageUploadBean implements Serializable {
     private List<PropertyType> imageHandlerPropertyTypes;
     private PropertyType selectedPropertyType;
     private final String IMAGE_PROPERTY_TYPE_NAME = "Image";
-    
+    private final List<Integer> uploadHashList = new ArrayList<>();
+
     public UploadedFile getUploadedFile() {
         return uploadedFile;
     }
@@ -91,7 +98,28 @@ public class PropertyValueImageUploadBean implements Serializable {
                 InputStream input = localUploadedFile.getInputstream();
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
-                byte[] originalData = Files.readAllBytes(originalFile.toPath());
+
+                byte[] originalData;
+
+                // Generate Preview to scale for pdf images.
+                if (imageFormat.equalsIgnoreCase("pdf")) {
+                    BufferedImage image;
+                    try (PDDocument pdfDocument = PDDocument.load(originalFile)) {
+                        PDFRenderer renderer = new PDFRenderer(pdfDocument);
+                        image = renderer.renderImage(0);
+                    }
+
+                    try (ByteArrayOutputStream imageBaos = new ByteArrayOutputStream()) {
+                        ImageIO.write(image, "PNG", imageBaos);
+                        imageBaos.flush();
+                        originalData = imageBaos.toByteArray();
+                        imageFormat = "png";
+                    }
+                    
+                } else {
+                    originalData = Files.readAllBytes(originalFile.toPath());
+                }
+
                 byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
                 String thumbFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);
                 Path thumbPath = Paths.get(thumbFileName);
@@ -163,6 +191,7 @@ public class PropertyValueImageUploadBean implements Serializable {
 
     public void handleFileUpload(FileUploadEvent event) {
         UploadedFile localUploadedFile = event.getFile();
+        uploadHashList.add(localUploadedFile.hashCode());
 
         if (cdbEntityController != null) {
             if (cdbEntityController instanceof CdbDomainEntityController) {
@@ -171,9 +200,35 @@ public class PropertyValueImageUploadBean implements Serializable {
                 this.upload(propertyValue, localUploadedFile);
             }
         }
+
+        int removeIndex = uploadHashList.indexOf(localUploadedFile.hashCode());
+        uploadHashList.remove(removeIndex);
     }
-    
+
     public void handleSingleFileUpload(FileUploadEvent event) {
         this.uploadedFile = event.getFile();
+    }
+    
+    /**
+     * Called when user is done uploading multiple images. 
+     * Checks to make sure all downloads have completed before saving. 
+     * 
+     * @throws InterruptedException 
+     */
+    public void done() throws InterruptedException {
+        while (true) {
+            if (uploadHashList.isEmpty()) {
+                if (cdbEntityController != null) {
+                    if (cdbEntityController instanceof CdbDomainEntityController) {
+                        cdbEntityController.update();
+                        return;
+                    }
+                }
+            }
+            
+            // List is not empty, wait and check again... 
+            Thread.sleep(500);
+
+        }
     }
 }
