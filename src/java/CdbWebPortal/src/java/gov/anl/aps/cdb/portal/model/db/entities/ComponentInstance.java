@@ -191,6 +191,13 @@ public class ComponentInstance extends CdbDomainEntity {
     public Location getLocation() {
         return location;
     }
+    
+    public String getLocationDisplayName(){
+        if (location == null) {
+            return "-";
+        }
+        return location.getName(); 
+    }
 
     public void setLocation(Location location) {
         this.location = location;
@@ -306,6 +313,9 @@ public class ComponentInstance extends CdbDomainEntity {
     public String getQrIdDisplay() {
         if (qrId != null && qrIdDisplay == null) {
             qrIdDisplay = formatQrIdDisplay(qrId);
+        }
+        if(qrIdDisplay == null){
+            qrIdDisplay = "-";
         }
         return qrIdDisplay;
     }
