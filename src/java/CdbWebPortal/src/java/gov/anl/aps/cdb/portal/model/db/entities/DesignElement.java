@@ -227,6 +227,13 @@ public class DesignElement extends CdbDomainEntity {
     public Location getLocation() {
         return location;
     }
+    
+    public String getLocationDisplayName(){
+        if (location == null) {
+            return "-";
+        }
+        return location.getName(); 
+    }
 
     public void setLocation(Location location) {
         this.location = location;
