@@ -21,13 +21,16 @@
                 <div class="pageTitle">
                     <h1>Design Element Details</h1>
                 </div>
-                <ui:include src="private/designElementViewPanelGrid.xhtml"/>
-
-                <p/>
+                
                 <ui:param name="designObject" value="#{designController.selected}"/>
                 <ui:param name="designElementObject" value="#{designElementController.selected}"/>
                 <ui:param name="entityController" value="#{designElementController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designElementObject.entityInfo)}"/>
+                
+                <ui:include src="private/designElementViewPanelGrid.xhtml"/>
+
+                <p/>
+                
                 <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
                 <ui:include src="../common/private/commonViewActionButtons.xhtml">
                     <ui:param name="renderReturn" value="#{false}" />

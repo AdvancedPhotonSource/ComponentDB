@@ -24,14 +24,15 @@
                     <h1>Design Details</h1>
                 </div>
 
+                <ui:param name="designObject" value="#{designController.selected}"/>
+                <ui:param name="entityController" value="#{designController}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
 
                 <ui:include src="private/designViewPanelGrid.xhtml"/>
 
                 <p/>
                 <p/>
-                <ui:param name="designObject" value="#{designController.selected}"/>
-                <ui:param name="entityController" value="#{designController}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(designObject.entityInfo)}"/>
+                
                 <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
                 <ui:include src="../common/private/commonViewActionButtons.xhtml">
                     <ui:param name="renderMoreInfo" value="#{true}" />
