@@ -1096,12 +1096,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
     
+    public void reloadCurrent() {
+        current = getEntityDbFacade().find(current.getId()); 
+    }
+    
     public String inlineUpdate(){
         String updateResult = update();
         
         // An error occured, reload the page with correct information. 
         if (updateResult == null) {
-            current = getEntityDbFacade().find(current.getId()); 
+            reloadCurrent();
             return view(); 
         }
         
