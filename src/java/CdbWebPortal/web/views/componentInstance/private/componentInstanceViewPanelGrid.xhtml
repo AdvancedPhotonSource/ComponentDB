@@ -12,7 +12,14 @@
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="qrId" value="QR Id" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="qrId" value="#{componentInstanceObject.qrIdDisplay}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+        <p:inplace label="#{componentInstanceObject.qrIdDisplay}" 
+                   id="qrId" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputText value="#{componentInstanceObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
 
         <h:outputLabel for="component" value="Component" styleClass="entityDataEmphasizedLabel"/>
         <h:outputLink id="component" value="../component/view.xhtml?id=#{componentInstanceObject.component.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
@@ -21,16 +28,31 @@
         </h:outputLink>
 
         <h:outputLabel for="tag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="tag" value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>
+        <p:inplace id="tag" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   emptyLabel="-"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputText value="#{componentInstanceObject.tag}" title="Tag" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
 
-        <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="serialNumber" value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
+        <h:outputLabel for="serialNumber" value="Serial Number" styleClass="entityDataEmphasizedLabel"/>   
+        <p:inplace id="serialNumber" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   emptyLabel="-"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{componentInstanceObject.serialNumber}" title="Serial Number" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+        
         <p:column>
             <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
             <p:commandLink id="componentInstanceComponentPropertyValueHistoryListViewButton" 
                            onstart="PF('loadingDialog').show();"
                            oncomplete="PF('loadingDialog').hide();
-                                       PF('componentInstanceLocationHistoryListDialogWidget').show()" 
+                           PF('componentInstanceLocationHistoryListDialogWidget').show()" 
                            styleClass="ui-icon ui-icon-history" 
                            title="View history."
                            update="@form">
@@ -40,17 +62,62 @@
                 <p:tooltip for="componentInstanceComponentPropertyValueHistoryListViewButton" value="View location value history."/>
             </p:commandLink>
         </p:column>
-        <h:outputText id="location" value="#{componentInstanceObject.location.name}" title="Location" styleClass="entityDataEmphasizedText"/>
-
-
+        <p:inplace id="location" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   label="#{componentInstanceObject.locationDisplayName}"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:autoComplete id="locationDropdown" 
+                            value="#{componentInstanceObject.location}" 
+                            var="location"
+                            converter="locationConverter" 
+                            completeMethod="#{componentInstanceController.completeLocation}" 
+                            itemLabel="#{location.name}"
+                            itemValue="#{location}"
+                            valueChangeListener="#{componentInstanceController.selectLocationValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete"/>
+            <p:commandButton id="locationSelectButton" onclick="PF('componentInstanceLocationSelectDialogWidget').show();" 
+                             alt="Select" icon="ui-icon-search"
+                             styleClass="selectButtonForAutocomplete"
+                             immediate="true">
+                <f:setPropertyActionListener value="#{componentInstanceObject}" target="#{componentInstanceController.current}"/>
+            </p:commandButton>
+        </p:inplace>
+        
         <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
-        <h:outputText id="locationDetails" value="#{componentInstanceObject.locationDetails}" title="Location Details" styleClass="entityDataText"/>
+        <p:inplace id="locationDetails" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   emptyLabel="-"
+                   styleClass="entityDataText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputText value="#{componentInstanceObject.locationDetails}" title="Location Details" styleClass="entityDataText"/>
+        </p:inplace>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:outputText id="description" value="#{componentInstanceObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:inplace id="description" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   emptyLabel="-"
+                   styleClass="entityDataText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputTextarea value="#{componentInstanceObject.description}" title="Description" styleClass="entityDataText"/>
+        </p:inplace>
 
     </p:panelGrid>
     
+    <ui:include src="componentInstanceLocationSelectDialog.xhtml">
+        <ui:param name="updateTarget" value="locationDropdown" />
+    </ui:include>
+
+    <p:remoteCommand name="inlineSaveEntity"
+                     action="#{entityController.inlineUpdate()}"
+                     />
+
 </ui:composition>
 
 

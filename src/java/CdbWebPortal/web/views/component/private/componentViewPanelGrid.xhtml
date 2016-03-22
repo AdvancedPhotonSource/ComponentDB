@@ -3,27 +3,76 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:param name="componentObject" value="#{componentController.selected}"/>
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="name" value="#{componentObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        <p:inplace id="name" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{componentObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+
 
         <h:outputLabel for="modelNumber" value="Model Number" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="modelNumber" value="#{componentObject.modelNumber}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+        <p:inplace id="modelNumber" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{componentObject.modelNumber}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+
         
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:outputText id="description" value="#{componentObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:inplace id="description" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputTextarea value="#{componentObject.description}" title="Description" styleClass="entityDataText"/>
+        </p:inplace>
 
+        
         <h:outputLabel for="componentType" value="Type" styleClass="entityDataLabel"/>
-        <h:outputText id="componentType" value="#{componentObject.componentType}" title="Type" styleClass="entityDataText"/>
+        <p:inplace id="componentType" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataText" label="#{componentObject.componentType}"> 
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:autoComplete id="componentTypeDropdown" 
+                            value="#{componentObject.componentType}" 
+                            var="componentTypeObject"
+                            converter="componentTypeConverter" 
+                            completeMethod="#{componentController.completeComponentType}" 
+                            itemLabel="#{componentTypeObject.name}"
+                            itemValue="#{componentTypeObject}"
+                            valueChangeListener="#{componentController.selectComponentTypeValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete">
+                <p:ajax event="itemSelect" update="componentTypeCategory"/>
+            </p:autoComplete>
 
+            <p:commandButton id="componentTypeSelectButton"
+                             onclick="PF('componentTypeSelectDialogWidget').show()"
+                             immediate="true"
+                             alt="Select Component" 
+                             styleClass="selectButtonForAutocomplete"
+                             icon="ui-icon-search">
+                <f:setPropertyActionListener target="#{componentTypeController.selectedComponentType}" value="#{componentObject.componentType}"/>
+                <p:tooltip for="componentTypeSelectButton" value="Search for component type."/>
+            </p:commandButton>
+        </p:inplace>
+
+        
         <h:outputLabel for="componentTypeCategory" value="Category" styleClass="entityDataLabel"/>
         <h:outputText id="componentTypeCategory" value="#{componentObject.componentType.componentTypeCategory.name}" title="Category" styleClass="entityDataText"/>
 
     </p:panelGrid>
+    
+    <ui:include src="../../componentType/private/componentTypeSelectDialog.xhtml">
+        <ui:param name="updateTarget" value="componentTypeDropdown componentTypeCategory"/>
+    </ui:include>    
+
+    <p:remoteCommand name="inlineSaveEntity"
+                     action="#{entityController.inlineUpdate()}"
+                     />
 
 </ui:composition>
 

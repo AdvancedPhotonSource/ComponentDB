@@ -9,12 +9,27 @@
     <p:panelGrid columns="2" styleClass="viewEntityDetails">
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText id="name" value="#{designObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        <p:inplace id="name" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{designObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
-        <h:outputText id="description" value="#{designObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:inplace id="description" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   emptyLabel="-"
+                   styleClass="entityDataText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputTextarea value="#{designObject.description}" title="Description" styleClass="entityDataText"/>
+        </p:inplace>
 
     </p:panelGrid>
+    
+    <p:remoteCommand name="inlineSaveEntity"
+                     action="#{entityController.inlineUpdate()}"
+                     />
+
 
 
 </ui:composition>
