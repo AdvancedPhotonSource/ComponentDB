@@ -115,7 +115,9 @@
 
     <ui:include src="componentInstanceComponentSelectCustomizeDisplayDialog.xhtml"/>
 
-    <ui:include src="componentInstanceLocationSelectDialog.xhtml"/>
+    <ui:include src="componentInstanceLocationSelectDialog.xhtml">
+        <ui:param name="updateTarget" value="locationDropdown" />
+    </ui:include>
 
 </ui:composition>
 
