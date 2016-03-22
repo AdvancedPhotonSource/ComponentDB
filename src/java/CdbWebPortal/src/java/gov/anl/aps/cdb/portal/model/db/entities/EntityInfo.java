@@ -174,6 +174,13 @@ public class EntityInfo implements Serializable {
     public void setOwnerUserGroup(UserGroup ownerUserGroup) {
         this.ownerUserGroup = ownerUserGroup;
     }
+    
+    public String getUserInfoDisplayName(UserInfo userInfo) {
+        if (userInfo != null) {
+            return "(" + userInfo.getUsername() + ") " + userInfo.getFullNameForSelection();
+        }
+        return ""; 
+    }
 
     public UserInfo getOwnerUser() {
         return ownerUser;
@@ -181,6 +188,32 @@ public class EntityInfo implements Serializable {
 
     public void setOwnerUser(UserInfo ownerUser) {
         this.ownerUser = ownerUser;
+    }
+    
+    public String getOwnerUserDisplayName() {
+        if (ownerUser == null) {
+            return "-";
+        }
+        return getUserInfoDisplayName(ownerUser); 
+    }
+    
+    public String getCreatedByDisplayName() {
+        return getUserInfoDisplayName(createdByUser); 
+    }
+
+    public String getLastModifiedByDisplayName() {
+        return getUserInfoDisplayName(lastModifiedByUser); 
+    }
+    
+    public String getObsoletedByDisplayName() {
+        return getUserInfoDisplayName(obsoletedByUser); 
+    }
+    
+    public String getOwnerGroupDisplayName() {
+        if (ownerUserGroup == null) {
+            return "-";
+        }
+        return ownerUserGroup.getName(); 
     }
 
     @XmlTransient
