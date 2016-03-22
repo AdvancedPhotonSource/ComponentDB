@@ -18,7 +18,8 @@
             <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
             <p:tooltip for="#{entityTypeName}ViewDeleteButton" value="Delete #{entityController.displayEntityTypeName}."/>
         </p:commandButton>  
-        <p:commandButton id="#{entityTypeName}ViewInfoButton" oncomplete="PF('#{entityTypeName}EntityInfoViewDialogWidget').show()" 
+        <p:commandButton id="#{entityTypeName}ViewInfoButton" update="#{entityTypeName}EntityInfoViewDialog"
+                         oncomplete="PF('#{entityTypeName}EntityInfoViewDialogWidget').show()" 
                          value="More Info" alt="Info" icon="ui-icon-info" rendered="#{renderMoreInfo != null or renderMoreInfo}">
             <p:tooltip for="#{entityTypeName}ViewInfoButton" value="View Entity Information."/>
         </p:commandButton>
