@@ -659,6 +659,9 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     }
 
     public List<Location> completeLocation(String query) {
+        if (locationList == null) {
+            locationList = locationFacade.findAll();
+        }
         return LocationUtility.filterLocation(query, locationList);
     }
 
