@@ -34,6 +34,11 @@
         <p:inplace id="componentType" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" 
                    styleClass="entityDataText" label="#{componentObject.componentType}"> 
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="cancel" oncomplete="reloadComponentType()"/>
+            <p:remoteCommand name="reloadComponentType"
+                     action="#{entityController.reloadCurrent()}"
+                     update="componentType componentTypeCategory"
+                     />
             <p:autoComplete id="componentTypeDropdown" 
                             value="#{componentObject.componentType}" 
                             var="componentTypeObject"
@@ -73,7 +78,7 @@
     <p:remoteCommand name="inlineSaveEntity"
                      action="#{entityController.inlineUpdate()}"
                      />
-
+  
 </ui:composition>
 
 

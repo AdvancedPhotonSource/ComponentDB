@@ -41,6 +41,11 @@
                    toggleable="#{isEntityWriteable}" 
                    label="#{designElementObject.locationDisplayName}" styleClass="entityDataEmphasizedText">
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="cancel" oncomplete="reloadLocation()"/>
+            <p:remoteCommand name="reloadLocation"
+                     action="#{entityController.reloadCurrent()}"
+                     update="location"
+                     />
             <p:autoComplete id="designElementLocationDropdown" 
                             value="#{designElementObject.location}" 
                             var="location"

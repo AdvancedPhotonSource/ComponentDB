@@ -13,6 +13,11 @@
                label="#{entityInfoObject.ownerUserDisplayName}"
                styleClass="entityDataText">
         <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerUser()"/>
+        <p:remoteCommand name="reloadEntityInfoOwnerUser"
+                         action="#{entityController.reloadCurrent()}"
+                         update="ownerUser"
+                         />
         <p:selectOneMenu value="#{entityInfoObject.ownerUser}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
@@ -28,6 +33,11 @@
                label="#{entityInfoObject.ownerGroupDisplayName}"
                styleClass="entityDataText">
         <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerGroup()"/>
+        <p:remoteCommand name="reloadEntityInfoOwnerGroup"
+                         action="#{entityController.reloadCurrent()}"
+                         update="ownerGroup"
+                         />
         <p:selectOneMenu  value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
@@ -63,7 +73,7 @@
         <p:selectBooleanCheckbox value="#{entityInfoObject.isGroupWriteable}" styleClass="entityDataText"/>
         <p:message for="groupWriteable"/> 
         <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
-        
+
     </p:inplace>
 
 </ui:composition>
