@@ -393,7 +393,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
 
     public String getThumbnailImagePath(PropertyValueHistory propertyValueHistory) {
-        return StorageUtility.getPropertyValueImagePath(propertyValueHistory.getValue() + CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);   
+        return StorageUtility.getPropertyValueImagePath(propertyValueHistory.getValue(), CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);   
     }
  
 }
