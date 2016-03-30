@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
@@ -49,9 +51,10 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     protected Integer displayPropertyTypeId3 = null;
     protected Integer displayPropertyTypeId4 = null;
     protected Integer displayPropertyTypeId5 = null;
-    
+        
     protected Boolean displayRowExpansion = null; 
     protected Boolean loadRowExpansionPropertyValues = null; 
+    protected Boolean displayGalleryViewableDocuments = null;
 
     protected String filterByPropertyValue1 = null;
     protected String filterByPropertyValue2 = null;
@@ -66,9 +69,44 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     protected Log newLogEdit; 
 
     private static final Logger logger = Logger.getLogger(CdbDomainEntityController.class.getName());
+    
+    private static final String DisplayGalleryViewableDocumentsSettingTypeKey = "DomainEntity.Detail.Display.GalleryViewableDocuments";
 
     public CdbDomainEntityController() {
         super();
+    }
+    
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+        
+        logger.debug("Updating list settings from setting type defaults");
+        
+        displayGalleryViewableDocuments = Boolean.parseBoolean(settingTypeMap.get(DisplayGalleryViewableDocumentsSettingTypeKey).getDefaultValue());
+    }
+    
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+        
+        logger.debug("Updating list settings from session user");
+        
+        displayGalleryViewableDocuments = sessionUser.getUserSettingValueAsBoolean(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
+        
+        prepareImageList(getCurrent()); 
+    }
+    
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
     }
 
     public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
@@ -120,7 +158,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         if (domainEntity == null) {
             return null;
         }
-        List<PropertyValue> imageList = PropertyValueUtility.prepareImagePropertyValueList(domainEntity.getPropertyValueList());
+        List<PropertyValue> imageList = PropertyValueUtility.prepareImagePropertyValueList(domainEntity.getPropertyValueList(), displayGalleryViewableDocuments);
         domainEntity.setImagePropertyList(imageList);
         return imageList;
     }
@@ -263,6 +301,13 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         forceLoadPropertyTypeFilter(); 
     }
     
+    @Override
+    public void saveListSettingsForSessionUserSetCurrentActionListener(ActionEvent actionEvent) {
+        super.saveListSettingsForSessionUserSetCurrentActionListener(actionEvent);
+
+        forceLoadPropertyTypeFilter(); 
+    }
+    
     public void preparePropertyTypeFilter() {
 
         if (loadedDisplayPropertyTypes == null) {
@@ -307,6 +352,14 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         }
 
         return false;
+    }
+
+    public Boolean getDisplayGalleryViewableDocuments() {
+        return displayGalleryViewableDocuments;
+    }
+
+    public void setDisplayGalleryViewableDocuments(Boolean displayGalleryViewableDocuments) {
+        this.displayGalleryViewableDocuments = displayGalleryViewableDocuments;
     }
 
     public Boolean getFilterablePropertyValue1() {
