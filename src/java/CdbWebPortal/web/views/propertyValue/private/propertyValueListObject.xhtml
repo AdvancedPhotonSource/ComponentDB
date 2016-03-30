@@ -34,24 +34,20 @@
 
             <h:outputText value="#{propertyValueObject.value}"
                           rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
-
-            <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
-                          rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
-                <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
-                                alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"
-                                rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"/>
-            </h:outputLink>
+            
+            <p:outputPanel rendered="#{propertyValueController.displayImageValue(propertyValueObject) or propertyValueController.displayDocumentValue(propertyValueObject)}">
+                <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" 
+                              target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}">
+                    <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
+                                    alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}" />
+                </h:outputLink>
+            </p:outputPanel>
 
             <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                           rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
                 <h:outputText value="#{propertyValueObject.displayValue}"/>
             </h:outputLink>
-
-            <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
-                          rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
-                <h:outputText value="#{propertyValueObject.displayValue}"/>
-            </h:outputLink>
-
+                
             <h:outputText value="#{propertyValueObject.displayValue}"
                           rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
 
