@@ -17,6 +17,16 @@
                                          value="#{entityController}" />
              <p:tooltip for="#{entityTypeName}PropertyAddImagesCommandButton" value="Add Images to #{entityTypeName}."/>
         </p:commandButton>
+        
+        <p:commandButton id="#{entityTypeName}ImageGalleriaCustomizeDisplayButton"
+                         oncomplete="PF('propertyValueGalleriaListCustomizeDisplayDialogWidget').show()" 
+                         alt="Customize Edit List" styleClass="actionButtonRight" 
+                         update="propertyValueGalleriaListCustomizeDisplayDialog" icon="ui-icon-wrench">
+            <p:tooltip for="#{entityTypeName}ImageGalleriaCustomizeDisplayButton" value="Customize view."/>
+        </p:commandButton>
+        
+        <p:commandButton id="#{childEntityTypeName}EditListNoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{childEntityTypeName}EditListNoOp"/>
     </div>
 
     <p:galleria id="#{entityTypeName}PropertyImageGalleria"
@@ -27,7 +37,7 @@
                 rendered="#{entityController.displayImages}"
                 styleClass="propertyValueImageGalleria">
         
-        <p:graphicImage value="/propertyValue/images/#{propertyValueObject.value}.scaled" 
+        <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
                         alt="#{propertyValueObject.description}" 
                         title="#{propertyValueObject.value}"
                         height="300"
@@ -36,6 +46,7 @@
     </p:galleria>
     
     <ui:include src="propertyValueMultipleImageUploadDialog.xhtml" />
+    <ui:include src="propertyValueImageGalleriaCustomizeDisplayDialog.xhtml" />
     
 </ui:composition>
 
