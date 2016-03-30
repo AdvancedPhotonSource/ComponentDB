@@ -11,6 +11,7 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
+import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.File;
@@ -75,6 +76,9 @@ public class PropertyValueDocumentUploadBean implements Serializable{
                 InputStream input = uploadedFile.getInputstream();
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
+                
+                GalleryUtility.storeImagePreviews(originalFile, uploadedExtension);
+                
                 propertyValue.setValue(originalFile.getName());
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + uploadedFile.getFileName() + ".");
             }
