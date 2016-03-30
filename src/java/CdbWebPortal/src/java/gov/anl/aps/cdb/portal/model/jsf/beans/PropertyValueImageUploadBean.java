@@ -10,7 +10,6 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
-import gov.anl.aps.cdb.common.exceptions.ImageProcessingFailed;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.common.utilities.ImageUtility;
@@ -20,10 +19,9 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,13 +33,10 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
-import javax.imageio.ImageIO;
 import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import org.apache.log4j.Logger;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
@@ -99,51 +94,20 @@ public class PropertyValueImageUploadBean implements Serializable {
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
 
-                byte[] originalData;
+                GalleryUtility.storeImagePreviews(originalFile);
 
-                // Generate Preview to scale for pdf images.
-                if (imageFormat.equalsIgnoreCase("pdf")) {
-                    BufferedImage image;
-                    try (PDDocument pdfDocument = PDDocument.load(originalFile)) {
-                        PDFRenderer renderer = new PDFRenderer(pdfDocument);
-                        image = renderer.renderImage(0);
-                    }
-
-                    try (ByteArrayOutputStream imageBaos = new ByteArrayOutputStream()) {
-                        ImageIO.write(image, "PNG", imageBaos);
-                        imageBaos.flush();
-                        originalData = imageBaos.toByteArray();
-                        imageFormat = "png";
-                    }
-                    
-                } else {
-                    originalData = Files.readAllBytes(originalFile.toPath());
-                }
-
-                byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
-                String thumbFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);
-                Path thumbPath = Paths.get(thumbFileName);
-                Files.write(thumbPath, thumbData);
-                byte[] scaledData;
-                if (ImageUtility.verifyImageSizeBigger(originalData, StorageUtility.SCALED_IMAGE_SIZE)) {
-                    scaledData = ImageUtility.resizeImage(originalData, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
-                } else {
-                    scaledData = originalData;
-                }
-                String scaledFileName = originalFile.getAbsolutePath().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, CdbPropertyValue.SCALED_IMAGE_EXTENSION);
-                Path scaledPath = Paths.get(scaledFileName);
-                Files.write(scaledPath, scaledData);
                 propertyValue.setValue(baseName);
                 logger.debug("Uploaded file name: " + localUploadedFile.getFileName());
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + localUploadedFile.getFileName() + ".");
+
             }
-        } catch (IOException | ImageProcessingFailed ex) {
+        } catch (IOException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.toString());
         }
     }
-
-    public void upload(PropertyValue propertyValue) {
+    
+     public void upload(PropertyValue propertyValue) {
         upload(propertyValue, null);
     }
 
@@ -208,12 +172,12 @@ public class PropertyValueImageUploadBean implements Serializable {
     public void handleSingleFileUpload(FileUploadEvent event) {
         this.uploadedFile = event.getFile();
     }
-    
+
     /**
      * Called when user is done uploading multiple images. 
-     * Checks to make sure all downloads have completed before saving. 
-     * 
-     * @throws InterruptedException 
+     * Checks to make sure all downloads have completed before saving.
+     *
+     * @throws InterruptedException
      */
     public void done() throws InterruptedException {
         while (true) {
@@ -225,7 +189,7 @@ public class PropertyValueImageUploadBean implements Serializable {
                     }
                 }
             }
-            
+
             // List is not empty, wait and check again... 
             Thread.sleep(500);
 
