@@ -124,17 +124,23 @@ def listDirectory(directory):
         print "Directory '%s' could not be found. " % directory
         return []
 
-documentDirectoryAttachments = listDirectory(documentPropertyValueDataDirectory)
+def cleanAdditionalFileVersions(directoryListing):
+    cleanDirectoryListing = []
+    for listing in directoryListing:
+        listingNameParts = listing.split('.')
+        listingName = "%s.%s.%s" % (listingNameParts[0],listingNameParts[1],listingNameParts[2])
+        if listingName not in cleanDirectoryListing:
+            cleanDirectoryListing.append(listingName)
+    return cleanDirectoryListing
+        
+
+rawDocumentDirectoryAttachments = listDirectory(documentPropertyValueDataDirectory)
 rawImageDirectoryAttachments = listDirectory(imagePropertyValueDataDirectory)
 logDirectoryAttachments = listDirectory(logAttachmentsDataDirectory)
 
-# Clean up the image directory attachments list since it includes various versions of the attachment.
-imageDirectoryAttachments = []
-for imageAttachment in rawImageDirectoryAttachments:
-    imageNameParts = imageAttachment.split('.')
-    imageAttachmentName = "%s.%s.%s" % (imageNameParts[0],imageNameParts[1],imageNameParts[2])
-    if imageAttachmentName not in imageDirectoryAttachments:
-        imageDirectoryAttachments.append(imageAttachmentName)
+# Clean up the image/document directory attachments list since it includes various versions of the attachment.
+imageDirectoryAttachments = cleanAdditionalFileVersions(rawImageDirectoryAttachments)
+documentDirectoryAttachments = cleanAdditionalFileVersions(rawDocumentDirectoryAttachments)
 
 def findAttachmentsOnlyPresentInFirstList(firstAttachmentList, secondAttachmentList):
     attachmentsFound = firstAttachmentList[:]
@@ -202,7 +208,7 @@ resultPrint("Unused Image Attachments Present in the directory (Not present in t
 imageFilesRemoved = promptRemovalOfDirectoryFilesIfAny(unusedDirectoryImageAttachments, imagePropertyValueDataDirectory, "unused image attachment(s)", matchSearch=True)
 resultPrint("Missing Image Attachments (Not present in the directory)", missingDirectoryImageAttachments, True)
 resultPrint("Unused Document Attachments Present in the directory (Not present in the DB)", unusedDirectoryDocumentAttachments, True)
-documentFilesRemoved = promptRemovalOfDirectoryFilesIfAny(unusedDirectoryDocumentAttachments, documentPropertyValueDataDirectory, "unused document attachment(s)")
+documentFilesRemoved = promptRemovalOfDirectoryFilesIfAny(unusedDirectoryDocumentAttachments, documentPropertyValueDataDirectory, "unused document attachment(s)", matchSearch=True)
 resultPrint("Missing Document Attachments (Not present in the directory)", missingDirectoryDocumentAttachments, True)
 resultPrint("Unused Log Attachments Present in the directory (Not present in the DB)", unusedDirectoryLogAttachments, True)
 logAttachmentsRemoved = promptRemovalOfDirectoryFilesIfAny(unusedDirectoryLogAttachments, logAttachmentsDataDirectory, 'unused log attachment(s)')
