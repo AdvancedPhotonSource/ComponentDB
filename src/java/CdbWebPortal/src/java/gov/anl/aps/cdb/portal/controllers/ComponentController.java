@@ -403,6 +403,7 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
         if (settingTypeMap == null) {
             return;
         }
@@ -459,6 +460,7 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
 
     @Override
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        super.updateSettingsFromSessionUser(sessionUser);
         if (sessionUser == null) {
             return;
         }
@@ -534,6 +536,7 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
 
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        super.saveSettingsForSessionUser(sessionUser);
         if (sessionUser == null) {
             return;
         }

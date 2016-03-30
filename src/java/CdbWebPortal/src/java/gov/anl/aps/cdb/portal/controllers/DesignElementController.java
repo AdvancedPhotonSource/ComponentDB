@@ -276,6 +276,11 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
+        if (settingTypeMap == null) {
+            return;
+        }
+        
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
@@ -326,6 +331,11 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
 
     @Override
     public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        super.updateSettingsFromSessionUser(sessionUser);
+        if (settingTypeMap == null) {
+            return;
+        }
+        
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
@@ -397,6 +407,7 @@ public class DesignElementController extends CdbDomainEntityController<DesignEle
 
     @Override
     public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        super.saveSettingsForSessionUser(sessionUser);
         if (sessionUser == null) {
             return;
         }
