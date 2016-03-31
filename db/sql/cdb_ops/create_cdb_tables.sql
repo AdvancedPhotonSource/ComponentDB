@@ -707,7 +707,7 @@ CREATE TABLE `component_instance` (
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `component_instance_u1` (`component_id`, `location_id`, `tag`),
-  UNIQUE KEY `component_instance_u2` (`serial_number`,`component_id`),
+  UNIQUE KEY `component_instance_u2` (`serial_number`),
   UNIQUE KEY `component_instance_u3` (`qr_id`),
   KEY `component_instance_k1` (`component_id`),
   CONSTRAINT `component_instance_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
