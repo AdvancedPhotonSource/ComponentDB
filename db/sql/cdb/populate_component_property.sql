@@ -92,6 +92,7 @@ INSERT INTO `component_property` VALUES
 (167,558),
 (167,694),
 (168,613),
+(168,751),
 (169,190),
 (176,148),
 (180,64),
@@ -263,6 +264,7 @@ INSERT INTO `component_property` VALUES
 (290,570),
 (292,567),
 (292,682),
+(292,744),
 (293,599),
 (294,605),
 (295,559),
@@ -333,6 +335,11 @@ INSERT INTO `component_property` VALUES
 (320,718),
 (321,707),
 (321,721),
-(322,709);
+(322,709),
+(323,737),
+(323,738),
+(323,739),
+(323,740),
+(323,741);
 /*!40000 ALTER TABLE `component_property` ENABLE KEYS */;
 UNLOCK TABLES;

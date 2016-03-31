@@ -199,7 +199,7 @@ INSERT INTO `component` VALUES
 (212,'TurboPumpCart_R&D',NULL,'TStation 75',66,520),
 (213,'M1 dipole pre-prototype',NULL,'First prototype magnet (from Fermilab)',80,536),
 (214,'Samsung Galaxy Tab 10.5',NULL,'',121,537),
-(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
+(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
 (216,'PRL-424LV',NULL,'1:4 LVDS Fanout Buffer',108,540),
 (217,'Generic: Data Logging System',NULL,'',129,554),
 (218,'Generic: Measurement System',NULL,'',128,555),
@@ -282,6 +282,7 @@ INSERT INTO `component` VALUES
 (319,'L-BEND CHAMBER (A-M2), MACHINED','U221020101-111212-00','VACUUM CHAMBER MACHINED',64,810),
 (320,'L-BEND CHAMBER BI-METAL ENDPLATE, LONG','U221020101-111231-00','VACUUM CHAMBER ENDPLATE',64,811),
 (321,'L-BEND CHAMBER BI-METAL ENDPLATE, SHORT','U221020101-111269-00','VACUUM CHAMBER ENDPLATE',64,812),
-(322,'Tablet Galaxy Tab4','SM-T530NN','Tablet ',121,813);
+(322,'Tablet Galaxy Tab4','SM-T530NN','Tablet ',121,813),
+(323,'Moxa 6650-32','NPort 6650-32','32 port terminal server (serial device server) RS-232/422/485',109,823);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

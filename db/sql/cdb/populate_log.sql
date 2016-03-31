@@ -78,6 +78,7 @@ INSERT INTO `log` VALUES
 (85,'Inspected and cleaned 2-25-16','2016-02-26 13:38:32',25,NULL),
 (86,'Inspected and cleaned 2-25-16','2016-02-26 13:41:55',25,NULL),
 (87,'inspected and cleaned 2-25-16','2016-02-26 13:54:11',25,NULL),
-(88,'Inspected, cleaned on Feb 26. Leak checked OK on Feb 29. By Kevin.','2016-02-29 11:02:36',25,NULL);
+(88,'Inspected, cleaned on Feb 26. Leak checked OK on Feb 29. By Kevin.','2016-02-29 11:02:36',25,NULL),
+(89,'vacum leak check on 3/18/16 by Kevin K.','2016-03-25 14:53:07',25,1);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

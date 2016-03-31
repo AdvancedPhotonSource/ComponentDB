@@ -540,6 +540,22 @@ INSERT INTO `property_value` VALUES
 (727,28,'','U221020101-111190.DRW','','','2016-03-09 15:50:08',42,0,0,NULL,NULL),
 (729,16,'','U221020101-111258.DRW','','','2016-03-09 15:45:22',42,0,0,NULL,NULL),
 (730,16,'','U221020101-111259.DRW','','','2016-03-09 15:44:39',42,0,0,NULL,NULL),
-(732,82,'','56e2d60a89cd7e800fb74e91','','','2016-03-11 08:28:26',49,0,0,NULL,NULL);
+(732,82,'','56e2d60a89cd7e800fb74e91','','','2016-03-11 08:28:26',49,0,0,'S1A001 EAA to 314','https://cdbsrv.aps.anl.gov:3021/travelers/56e2d60a89cd7e800fb74e91/'),
+(736,13,'','APSU_1694686','','SEXTUPOLE MAGNET TRAVELER','2016-03-14 15:23:11',49,0,0,'APSU_1694686','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APSU_1694686'),
+(737,15,'Data Sheet','document.1108263447718830126.pdf','','','2016-03-15 10:09:01',5,0,0,'document.1108263447718830126.pdf','/cdb/propertyValue/documents/document.1108263447718830126.pdf'),
+(738,15,'User Manual','document.7776562400119071549.pdf','','','2016-03-15 10:09:32',5,0,0,'document.7776562400119071549.pdf','/cdb/propertyValue/documents/document.7776562400119071549.pdf'),
+(739,14,'','image.4464971318310546604.jpg','','','2016-03-15 10:19:19',5,0,0,NULL,NULL),
+(740,14,'','image.1254399447544954925.png','','','2016-03-15 10:19:19',5,0,0,NULL,NULL),
+(741,14,'','image.5408468255270736621.png','','','2016-03-15 10:19:19',5,0,0,NULL,NULL),
+(742,82,'','56f008ed89cd7e800fb74ea8','','','2016-03-21 09:45:01',49,0,0,'','https://cdbsrv.aps.anl.gov:3021/travelers/56f008ed89cd7e800fb74ea8/'),
+(744,82,'','56f0200289cd7e800fb74eb5','','','2016-03-21 11:23:30',49,0,0,'','https://cdbsrv.aps.anl.gov:3021/travelers/56f0200289cd7e800fb74eb5/'),
+(745,81,'','5696a584f7b28d9744ac8d0e','','','2016-03-21 12:18:39',49,0,0,'APS-U Rigging Daily Lift Checklist','https://cdbsrv.aps.anl.gov:3021/forms/5696a584f7b28d9744ac8d0e/'),
+(746,82,'','56f02d1f89cd7e800fb74ec0','','','2016-03-21 12:19:27',49,0,0,'',''),
+(747,81,'','5696a584f7b28d9744ac8d0e','','','2016-03-21 12:24:36',49,0,0,'APS-U Rigging Daily Lift Checklist','https://cdbsrv.aps.anl.gov:3021/forms/5696a584f7b28d9744ac8d0e/'),
+(748,82,'','56f02e7689cd7e800fb74ecb','','','2016-03-21 12:25:10',49,0,0,'',''),
+(749,81,'','5696a584f7b28d9744ac8d0e','','','2016-03-21 12:27:56',49,0,0,'APS-U Rigging Daily Lift Checklist','https://cdbsrv.aps.anl.gov:3021/forms/5696a584f7b28d9744ac8d0e/'),
+(750,82,'','56f02f3589cd7e800fb74ed6','','','2016-03-21 12:28:21',49,0,0,'',''),
+(751,81,'','5696a584f7b28d9744ac8d0e','','','2016-03-28 10:52:11',36,0,0,'',''),
+(752,82,'','56f9538989cd7e800fb74f10','','','2016-03-28 10:53:45',36,0,0,'','');
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;
