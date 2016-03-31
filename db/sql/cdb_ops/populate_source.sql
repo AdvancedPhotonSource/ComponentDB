@@ -44,6 +44,9 @@ INSERT INTO `source` VALUES
 (42,'DIAL MACHINE, INC','PRECISION MACHINING, BIG PARTS','(815) 397-6660','http://www.dialmachine.com/'),
 (43,'Emerson','','',''),
 (44,'Arrow','','Jim McTeague; Cell 630-935-2048',''),
-(45,'Tecknit Shielding Systems inc.','','201-778-6200','');
+(45,'Tecknit Shielding Systems inc.','','201-778-6200',''),
+(46,'Barber-Nichols','','',''),
+(47,'Johnson Controls','','630-960-3800',''),
+(48,'Oxford','','','');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

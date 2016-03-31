@@ -8,6 +8,11 @@ INSERT INTO `design` VALUES
 (5,'35-ID-D','',10),
 (6,'35-ID-E','',11),
 (7,'White Beam Stop D14308-110000','D14308-110000-02',25),
-(10,'Mask Assembly','Mask 3 rigidly mounted to Mask 2',112);
+(10,'Mask Assembly','Mask 3 rigidly mounted to Mask 2',112),
+(11,'6-ID FRONT END','6-ID FRONT END',120),
+(12,'P4-30 Integral Shutter','',132),
+(13,'23-ID','23-ID straight section, front end and beamline',137),
+(14,'Canted Undulator Front End (Windowless)','1 mrad separation',141),
+(15,'Pat\'s Placeholder','Used while creating top down tree',143);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

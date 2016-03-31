@@ -42,6 +42,11 @@ INSERT INTO `design_element` VALUES
 (44,'White Beam Stop',6,NULL,NULL,14,NULL,'Water cooled white beam stop on stand',3.00,79),
 (45,'Labyrinths',6,NULL,NULL,2,NULL,'(12) {plus (1) utility access labyrinth} on roof, (1) on upstream wall of 35-ID-E',2.00,83),
 (67,'Mask 3',10,NULL,NULL,38,NULL,NULL,NULL,114),
-(68,'Mask 2',10,NULL,NULL,37,NULL,NULL,NULL,113);
+(68,'Mask 2',10,NULL,NULL,37,NULL,NULL,NULL,113),
+(69,'Top Level Assembly',11,NULL,NULL,NULL,NULL,NULL,NULL,121),
+(70,'A4 Guide Assembly',12,NULL,NULL,42,NULL,NULL,NULL,133),
+(72,'X-Ray Source',13,NULL,NULL,NULL,NULL,'',NULL,138),
+(74,'Front End',13,NULL,14,NULL,NULL,NULL,NULL,140),
+(75,'Beamline',13,NULL,NULL,NULL,NULL,NULL,NULL,142);
 /*!40000 ALTER TABLE `design_element` ENABLE KEYS */;
 UNLOCK TABLES;

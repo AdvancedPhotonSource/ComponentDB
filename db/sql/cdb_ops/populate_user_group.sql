@@ -15,6 +15,7 @@ INSERT INTO `user_group` VALUES
 (12,'APSU_VAC','Those working on vacuum for APSU'),
 (13,'LCLS-II',''),
 (14,'DD','Design & Drafting'),
-(15,'APS_BL','');
+(15,'APS_BL',''),
+(16,'MOM','Mechanical Operations and Maintenance');
 /*!40000 ALTER TABLE `user_group` ENABLE KEYS */;
 UNLOCK TABLES;
