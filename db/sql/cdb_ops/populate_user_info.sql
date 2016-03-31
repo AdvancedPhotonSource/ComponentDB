@@ -20,12 +20,12 @@ INSERT INTO `user_info` VALUES
 (17,'rif','Richard','Farnsworth','','rif@aps.anl.gov',NULL,NULL),
 (18,'frl','Frank','Lenkszus','','frl@aps.anl.gov',NULL,NULL),
 (19,'preissner','Curt','Preissner','','preissner@aps.anl.gov',NULL,NULL),
-(20,'lhm','Leonard','Morrison','','lhm@aps.anl.gov',NULL,NULL),
+(20,'lhm','Leonard','Morrison','','lhm@aps.anl.gov',NULL,''),
 (21,'jieliu','Jie','Liu','','jieliu@aps.anl.gov',NULL,NULL),
 (22,'doose','Charles','Doose','','doose@aps.anl.gov',NULL,NULL),
 (23,'tfors','Tom','Fors','','tfors@aps.anl.gov',NULL,''),
 (24,'bran','Bran','Brajuskovic','','bran@aps.anl.gov',NULL,NULL),
-(25,'jzientek','John','Zientek','','jzientek@aps.anl.gov',NULL,NULL),
+(25,'jzientek','John','Zientek','','jzientek@aps.anl.gov',NULL,''),
 (26,'djarosz','Dariusz','Jarosz','Piotr','djarosz@aps.anl.gov',NULL,NULL),
 (27,'mwhite','Marion','White','','mwhite@aps.anl.gov',NULL,NULL),
 (28,'brianr','Brian','Rusthoven','','brianr@aps.anl.gov',NULL,NULL),
@@ -48,6 +48,11 @@ INSERT INTO `user_info` VALUES
 (45,'jabraham','Josh','Abraham','','jabraham@anl.gov',NULL,''),
 (46,'denharto','Pat','Den Hartog','','denharto@aps.anl.gov',NULL,''),
 (47,'erdmann','Mark','Erdmann','','erdmann@aps.anl.gov',NULL,''),
-(48,'hanuska','Steven','Hanuska','','hanuska@aps.anl.gov',NULL,'');
+(48,'hanuska','Steven','Hanuska','','hanuska@aps.anl.gov',NULL,''),
+(53,'bechtold','Ralph','Bechtold','R','bechtold@aps.anl.gov',NULL,''),
+(54,'gagliano','Joseph','Gagliano','','gagliano@aps.anl.gov',NULL,''),
+(55,'hoytman','John','Hoyt','','hoytman@aps.anl.gov',NULL,''),
+(56,'clute','Timothy','Clute','','clute@aps.anl.gov',NULL,''),
+(57,'martens','Mark','Martens','','martens@aps.anl.gov',NULL,'');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;

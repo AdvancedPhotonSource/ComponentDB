@@ -50,6 +50,7 @@ INSERT INTO `design` VALUES
 (58,'R&D EAA Cu water cooling PID','R&D EAA Cu water cooling PID documentation',787),
 (59,'Full Length FODO R&D - Vacuum System','',789),
 (60,'M1 Dipole Prototype (FNAL) Vacuum Assembly','',790),
-(61,'R&D EAA Magnet Power PID','R&D EAA Magnet Power PID documentation',793);
+(61,'R&D EAA Magnet Power PID','R&D EAA Magnet Power PID documentation',793),
+(62,'L-BEND Vacuum Assembly','L-BEND Vacuum Assembly',831);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;

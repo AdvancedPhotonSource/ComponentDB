@@ -47,7 +47,7 @@ INSERT INTO `user_info` VALUES
 (44,'jabraham','Josh','Abraham','','jabraham@anl.gov',NULL,''),
 (45,'puttkamm','Anthony','Puttkammer','','puttkamm@aps.anl.gov',NULL,''),
 (46,'wiemer','Greg','Wiemerslage','','wiemer@aps.anl.gov',NULL,''),
-(47,'knoerzer','Kevin','Knoerzer','','knoerzer@aps.anl.gov',NULL,''),
+(47,'kknoerzer','Kevin','Knoerzer','','kknoerzer@aps.anl.gov',NULL,''),
 (48,'jacarter','Jason','Carter','','jacarter',NULL,''),
 (49,'adonnelly','Aric','Donnelly','','adonnelly@aps.anl.gov',NULL,''),
 (50,'hoytman','John','Hoyt','','hoytman@aps.anl.gov',NULL,''),

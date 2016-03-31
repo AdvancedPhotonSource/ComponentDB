@@ -126,6 +126,9 @@ INSERT INTO `component_type` VALUES
 (128,'Measurement System','',3),
 (129,'Data Logging System','',3),
 (130,'Gateway/Protocol Converter','',3),
-(131,'Current Transformer','',7);
+(131,'Current Transformer','',7),
+(132,'Overhaul Kit','',10),
+(133,'Frontend Component','',10),
+(134,'Actuator','',10);
 /*!40000 ALTER TABLE `component_type` ENABLE KEYS */;
 UNLOCK TABLES;

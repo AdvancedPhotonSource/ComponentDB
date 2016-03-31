@@ -7,6 +7,7 @@ INSERT INTO `location_link` VALUES
 (2,26),
 (2,27),
 (2,210),
+(3,404),
 (4,30),
 (4,31),
 (4,32),
@@ -349,6 +350,7 @@ INSERT INTO `location_link` VALUES
 (210,212),
 (210,213),
 (210,214),
+(225,403),
 (366,367),
 (366,368),
 (366,369),
@@ -377,6 +379,7 @@ INSERT INTO `location_link` VALUES
 (367,392),
 (367,393),
 (367,394),
-(367,395);
+(367,395),
+(404,405);
 /*!40000 ALTER TABLE `location_link` ENABLE KEYS */;
 UNLOCK TABLES;

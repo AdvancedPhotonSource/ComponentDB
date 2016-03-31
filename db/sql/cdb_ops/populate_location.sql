@@ -401,6 +401,10 @@ INSERT INTO `location` VALUES
 (399,'C2257','Shifu\'s Office',3,0,NULL),
 (400,'314','',1,0,NULL),
 (401,'C2259','Dariusz and Ke Office',3,0,NULL),
-(402,'35-ID-A','',2,0,NULL);
+(402,'35-ID-A','',2,0,NULL),
+(403,'Cabinet #92','Cryo Spare Parts Cabinet',5,0,NULL),
+(404,'400A-3','',3,0,NULL),
+(405,'Cabinet #36','',5,0,NULL),
+(406,'378','',1,0,NULL);
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;
