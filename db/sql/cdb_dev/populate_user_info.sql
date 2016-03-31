@@ -49,6 +49,9 @@ INSERT INTO `user_info` VALUES
 (46,'denharto','Pat','Den Hartog','','denharto@aps.anl.gov',NULL,''),
 (47,'erdmann','Mark','Erdmann','','erdmann@aps.anl.gov',NULL,''),
 (48,'hanuska','Steven','Hanuska','','hanuska@aps.anl.gov',NULL,''),
-(49,'xuliwu','Xuli','Wu','','xuliwu@aps.anl.gov',NULL,'');
+(49,'xuliwu','Xuli','Wu','','xuliwu@aps.anl.gov',NULL,''),
+(50,'capatina','Daniela','Capatina','','capatina@aps.anl.gov',NULL,''),
+(51,'bechtold','Ralph','Bechtold','','bechtold@aps.anl.gov',NULL,''),
+(52,'kknoerzer','Kevin','Knoerzer','','kknoerzer@aps.anl.gov',NULL,'');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
