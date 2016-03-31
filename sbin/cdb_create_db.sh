@@ -190,6 +190,7 @@ CDB_DB_TABLES="\
     component_instance \
     component_instance_property \
     component_instance_log \
+    component_instance_location_history \
     component_connector \
     assembly_component \
     assembly_component_connection \
