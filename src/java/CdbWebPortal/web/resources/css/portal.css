@@ -73,7 +73,7 @@ footer {
 }
 
 .title {
-    color: #f2f4f7;   // set via CDB_CSS_PORTAL_TITLE_COLOR env variable
+    color: #f2f4f7;   /* set via CDB_CSS_PORTAL_TITLE_COLOR env variable */
 }
 
 .topLeftContent {
@@ -499,7 +499,7 @@ h1 {
 }
 
 .homePage {
-    //background-image: url(../../resources/images/ApsStorageRing.png);
+    /*background-image: url(../../resources/images/ApsStorageRing.png);*/
     background-repeat: no-repeat;
     background-position: center;
     background-size: auto 100%;
@@ -592,15 +592,15 @@ h1 {
     display: flex; 
     border-radius:  10px;
 
-    // Entity Gradients 
+    /* Entity Gradients */
     /* Old browsers */
-    //background: #f2f4f7; 
+    /*background: #f2f4f7; */
     /* FF3.6-15 */
-    //background: -moz-linear-gradient(left, #ebf4fa 0%, #ebf4fa 20%, #d5ebf5 26%, #d5ebf5 46%, #f1efe2 53%, #f1efe2 73%, #efeab9 80%, #efeab9 100%); 
+    /*ackground: -moz-linear-gradient(left, #ebf4fa 0%, #ebf4fa 20%, #d5ebf5 26%, #d5ebf5 46%, #f1efe2 53%, #f1efe2 73%, #efeab9 80%, #efeab9 100%); */
     /* Chrome10-25,Safari5.1-6 */
-    //background: -webkit-linear-gradient(left, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%);
+    /*background: -webkit-linear-gradient(left, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%);*/
     /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    //background: linear-gradient(right, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%); 
+    /*background: linear-gradient(right, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%); */
 }
 .entityHelpButtonCommandLink {
     text-decoration: none; 

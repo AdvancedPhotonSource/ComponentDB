@@ -44,7 +44,7 @@ a:link:hover, a:visited:hover  {
     background-color: #f2f4f7;
     padding: 5px;
     margin: 0px 0px 0px 0px;
-    //height: 100%
+    /*height: 100%*/
 }
 
 footer {
@@ -89,7 +89,7 @@ footer {
 }
 
 .title {
-    color: #f2f4f7;     // set via CDB_CSS_PORTAL_TITLE_COLOR env variable
+    color: #f2f4f7;     /* set via CDB_CSS_PORTAL_TITLE_COLOR env variable */
 }
 
 input {
