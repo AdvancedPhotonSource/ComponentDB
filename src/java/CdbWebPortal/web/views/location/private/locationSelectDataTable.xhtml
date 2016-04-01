@@ -17,6 +17,8 @@
                  paginatorAlwaysVisible="false"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  emptyMessage="No available locations found.">
+        
+        <p:ajax event="rowDblselect" oncomplete="LocationSelectionMade()" />
 
         <p:column sortBy="#{locationObject.id}" headerText="Id"
                   rendered="#{locationController.selectDisplayId}">

@@ -16,6 +16,8 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No designs found.">
+        
+        <p:ajax event="rowDblselect" oncomplete="DesignSelectionMade()" />
 
         <ui:include src="../../design/private/designSelectObject.xhtml"/>
 

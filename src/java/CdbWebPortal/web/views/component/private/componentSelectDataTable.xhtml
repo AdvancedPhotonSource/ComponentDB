@@ -17,6 +17,8 @@
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  emptyMessage="No available component types found.">
+        
+        <p:ajax event="rowDblselect" oncomplete="ComponentSelectionMade()" />
 
         <p:column sortBy="#{selectComponentObject.id}" headerText="Id"
                   rendered="#{componentController.selectDisplayId}">
