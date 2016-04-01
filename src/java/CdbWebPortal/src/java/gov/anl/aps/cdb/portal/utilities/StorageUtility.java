@@ -126,6 +126,9 @@ public class StorageUtility {
     }
 
     public static String getApplicationPropertyValueImagePath(String imageName) {
+        if (imageName == null) {
+            return ""; 
+        }
         if (imageName.startsWith(CdbPropertyValue.IMAGE_PREFIX)) {
             return SessionUtility.getContextRoot() + getPropertyValueImagePath(imageName, CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, false);
         } else {

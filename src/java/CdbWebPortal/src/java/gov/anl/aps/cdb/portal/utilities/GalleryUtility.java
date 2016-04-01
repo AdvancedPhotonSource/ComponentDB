@@ -38,6 +38,9 @@ public class GalleryUtility {
     }
 
     public static Boolean viewableFileName(String fileName) {
+        if (fileName == null) {
+            return false; 
+        }
         String imageFormat = getImageFormat(fileName);
         return viewableFormat(imageFormat);
     }
