@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
@@ -124,9 +125,9 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     public PropertyType findById(Integer id) {
         return propertyTypeFacade.findById(id);
     }
-    
+
     public PropertyType findByName(String name) {
-        return propertyTypeFacade.findByName(name); 
+        return propertyTypeFacade.findByName(name);
     }
 
     @Override
@@ -288,28 +289,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         createSelectDataModel(selectPropertyTypeList);
     }
 
-    public void prepareSelectPropertyTypesForComponent(Component component) {
-        clearSelectFilters();
-        resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
-        createSelectDataModel(selectPropertyTypeList);
-    }
-
-    public void prepareSelectPropertyTypesForComponentInstance(ComponentInstance componentInstance) {
-        clearSelectFilters();
-        resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
-        createSelectDataModel(selectPropertyTypeList);
-    }
-
-    public void prepareSelectPropertyTypesForDesign(Design design) {
-        clearSelectFilters();
-        resetSelectDataModel();
-        List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
-        createSelectDataModel(selectPropertyTypeList);
-    }
-
-    public void prepareSelectPropertyTypesForDesignElement(DesignElement designElement) {
+    public void prepareSelectPropertyTypesForDomainEntity(CdbDomainEntity domainEntity) {
         clearSelectFilters();
         resetSelectDataModel();
         List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
