@@ -5,9 +5,9 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : true}" />
-    
+
     <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
               rendered="#{propertyValueController.displayId}">
         <h:outputText value="#{propertyValueObject.id}"/>
@@ -34,12 +34,19 @@
 
             <h:outputText value="#{propertyValueObject.value}"
                           rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
-            
+
             <p:outputPanel rendered="#{propertyValueController.displayImageValue(propertyValueObject) or propertyValueController.displayDocumentValue(propertyValueObject)}">
                 <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" 
                               target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}">
-                    <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
-                                    alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}" />
+                    <ui:param name="viewableValue" value="#{propertyValueController.isPropertyValueViewable(propertyValueObject)}" />
+
+                    <p:outputPanel rendered="#{viewableValue}">
+                        <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
+                                        alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}" />               
+                    </p:outputPanel>
+                    <p:outputPanel rendered="#{!viewableValue}">
+                        <h:outputText value="#{propertyValueObject.value}" />
+                    </p:outputPanel>
                 </h:outputLink>
             </p:outputPanel>
 
@@ -47,7 +54,7 @@
                           rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
                 <h:outputText value="#{propertyValueObject.displayValue}"/>
             </h:outputLink>
-                
+
             <h:outputText value="#{propertyValueObject.displayValue}"
                           rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
 
@@ -75,7 +82,7 @@
             <h:outputText value="#{propertyValueObject.displayValue}*" rendered="#{propertyValueObject.displayValue != null and propertyValueObject.displayValue != ''}"  />
             <h:outputText value="#{propertyValueObject.value}*" 
                           rendered="#{(propertyValueObject.value != null or propertyValueObject.value != '') 
-                                    and (propertyValueObject.displayValue == null or propertyValueObject.displayValue == '')}"  />
+                                      and (propertyValueObject.displayValue == null or propertyValueObject.displayValue == '')}"  />
         </p:outputPanel>
     </p:column>
 
