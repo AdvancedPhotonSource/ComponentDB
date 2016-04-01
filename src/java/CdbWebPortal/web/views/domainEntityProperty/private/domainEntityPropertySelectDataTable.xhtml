@@ -7,17 +7,16 @@
     <p:dataTable id="#{entityTypeName}PropertySelectDataTable" 
                  var="propertyTypeObject" 
                  value="#{propertyTypeController.selectDataModel}" 
-                 selection="#{propertyTypeController.selectedObject}"             
+                 selection="#{propertyTypeController.selectedObjectList}"
                  filteredValue="#{propertyTypeController.filteredObjectList}"
                  rowKey="#{propertyTypeObject.id}"
-                 selectionMode="single"
+                 selectionMode="multiple"
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  emptyMessage="No available property types found.">
         
-        <p:ajax event="rowDblselect" oncomplete="#{entityTypeName}propertySelectionMade()" />
-        
+        <p:ajax event="rowDblselect" oncomplete="#{entityTypeName}PropertySelectionMade()" />
         <ui:include src="../../propertyType/private/propertyTypeSelectObject.xhtml"/>
     </p:dataTable>
 

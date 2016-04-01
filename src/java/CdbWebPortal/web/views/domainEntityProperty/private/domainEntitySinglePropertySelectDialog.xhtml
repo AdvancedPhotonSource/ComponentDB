@@ -28,8 +28,13 @@
             <f:facet name="footer" class="dialog">
                 <ui:param name="onSuccessShowEntityEditDialog"
                           value="show#{entityTypeName}EntitySinglePropertyController()" />
+                
+                <p:remoteCommand name="#{entityTypeName}propertySelectionMade"
+                                 action="#{entityController.selectPropertyType(propertyTypeController.getSelectedObjectAndResetDataModel(),onSuccessShowEntityEditDialog)}"
+                                 />
+                
                 <p:commandButton value="Done" alt="Done" 
-                                 action='#{entityController.selectPropertyType(propertyTypeController.getSelectedObjectAndResetDataModel(),onSuccessShowEntityEditDialog)}'
+                                 oncomplete='#{entityTypeName}propertySelectionMade()'
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>
