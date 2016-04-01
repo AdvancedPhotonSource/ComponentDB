@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
@@ -538,6 +539,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
         this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
+    }
+    
+    public boolean isPropertyValueViewable(PropertyValue propertyValue) {
+        return GalleryUtility.viewableFileName(propertyValue.getValue()); 
     }
 
 }
