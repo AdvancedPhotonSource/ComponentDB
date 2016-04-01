@@ -782,3 +782,10 @@ h2 {
 .domainEntityRowExpansionDetails {
     padding-left: 25px;
 }
+
+.domainEntityPropertyValueThumbnail {
+    border: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: black; 
+}

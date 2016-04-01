@@ -41,7 +41,7 @@
                     <ui:param name="viewableValue" value="#{propertyValueController.isPropertyValueViewable(propertyValueObject)}" />
 
                     <p:outputPanel rendered="#{viewableValue}">
-                        <p:graphicImage value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
+                        <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{propertyValueController.getThumbnailImagePath(propertyValueObject)}" 
                                         alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}" />               
                     </p:outputPanel>
                     <p:outputPanel rendered="#{!viewableValue}">
