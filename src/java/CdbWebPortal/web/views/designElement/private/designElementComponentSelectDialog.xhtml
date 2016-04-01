@@ -24,11 +24,14 @@
             </div>
             <ui:include src="../../component/private/componentSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
+                <p:remoteCommand name="ComponentSelectionMade"
                                  action="#{designElementController.selectComponent(componentController.selectedComponent)}"
-                                 onclick="PF('componentSelectDataTableWidget').filter()" 
+                                 onstart="PF('componentSelectDataTableWidget').filter()" 
                                  oncomplete="PF('designElementComponentSelectDialogWidget').hide()" 
-                                 update="#{updateTarget}"
+                                 update="#{updateTarget}" />
+                
+                <p:commandButton value="Done" alt="Done" 
+                                 oncomplete="ComponentSelectionMade()"
                                  icon="ui-icon-arrowreturnthick-1-w">
                 </p:commandButton>
             </f:facet>

@@ -23,12 +23,16 @@
                 </p:commandButton>
             </div>
             <ui:include src="componentTypeSelectDataTable.xhtml"/>   
+            
+            <p:remoteCommand name="ComponentTypeSelectionMade"
+                             action="#{componentController.selectComponentType(componentTypeController.selectedComponentType)}"
+                             onstart="PF('componentTypeSelectDataTableWidget').filter()"
+                             oncomplete="PF('componentTypeSelectDialogWidget').hide()" 
+                             update="#{updateTarget}" />
+            
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{componentController.selectComponentType(componentTypeController.selectedComponentType)}"
-                                 onclick="PF('componentTypeSelectDataTableWidget').filter()" 
-                                 oncomplete="PF('componentTypeSelectDialogWidget').hide()" 
-                                 update="#{updateTarget}"
+                                 oncomplete="ComponentTypeSelectionMade()"
                                  icon="ui-icon-arrowreturnthick-1-w">
                 </p:commandButton>
             </f:facet>

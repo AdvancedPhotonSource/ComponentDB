@@ -29,18 +29,21 @@
             </ui:fragment>
 
             <f:facet name="footer" class="locationSelectDialog">
-                <p:commandButton value="Done" alt="Done"
-                                 action="#{designElementController.selectLocation(locationController.selectedObject)}"
+                <ui:param name="selectedObject" 
+                          value="#{locationController.selectDisplayFlatTableView ? 
+                                   locationController.selectedObject :
+                                   locationSelectTreeViewBean.selectedLocation}" />
+
+                <p:remoteCommand name="LocationSelectionMade"
+                                 action="#{designElementController.selectLocation(selectedObject)}"
                                  update="#{updateTarget}"
                                  oncomplete="PF('designElementLocationSelectDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"
-                                 rendered="#{locationController.selectDisplayFlatTableView}"/>
+                                 />
+                
                 <p:commandButton value="Done" alt="Done"
-                                 action="#{designElementController.selectLocation(locationSelectTreeViewBean.selectedLocation)}"
-                                 update="#{updateTarget}"
-                                 oncomplete="PF('designElementLocationSelectDialogWidget').hide()" 
+                                 oncomplete="LocationSelectionMade()"
                                  icon="ui-icon-arrowreturnthick-1-w"
-                                 rendered="#{!locationController.selectDisplayFlatTableView}"/>
+                                 />
             </f:facet>            
         </div>
     </p:dialog>

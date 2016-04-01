@@ -24,11 +24,15 @@
             </div>
             <ui:include src="designElementChildDesignSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
+                <p:remoteCommand name="DesignSelectionMade"
                                  action="#{designElementController.selectChildDesign(designController.selectedObject)}"
-                                 onclick="PF('designElementChildDesignSelectDataTableWidget').filter()" 
+                                 onstart="PF('designElementChildDesignSelectDataTableWidget').filter()" 
                                  oncomplete="PF('designElementChildDesignSelectDialogWidget').hide()" 
                                  update="#{updateTarget}"
+                                 />
+                
+                <p:commandButton value="Done" alt="Done" 
+                                 oncomplete="DesignSelectionMade()"
                                  icon="ui-icon-arrowreturnthick-1-w">
                 </p:commandButton>
             </f:facet>

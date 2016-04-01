@@ -16,9 +16,12 @@
             
             <ui:include src="locationSelectDataTable.xhtml"/>   
             <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
+                <p:remoteCommand name="LocationSelectionMade"
                                  update="@form"
                                  oncomplete="PF('locationSelectDialogWidget').hide()" 
+                                 
+                
+                <p:commandButton value="Done" alt="Done" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

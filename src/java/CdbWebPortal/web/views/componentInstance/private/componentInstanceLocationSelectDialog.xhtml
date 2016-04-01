@@ -28,24 +28,24 @@
             </ui:fragment>
 
             <f:facet name="footer" class="locationSelectDialog">
-                <p:commandButton value="Done" alt="Done"
+                <ui:param name="selectedObject" 
+                          value="#{locationController.selectDisplayFlatTableView ? 
+                                   locationController.selectedObject :
+                                   locationSelectTreeViewBean.selectedLocation}" />
+
+                <p:remoteCommand name="LocationSelectionMade"
                                  onstart="PF('loadingDialog').show()"
                                  onerror="PF('loadingDialog').hide()"
-                                 action="#{componentInstanceController.selectLocation(locationController.selectedObject)}"
+                                 action="#{componentInstanceController.selectLocation(selectedObject)}"
                                  update="#{updateTarget}"
                                  oncomplete="PF('loadingDialog').hide();
-                                             PF('componentInstanceLocationSelectDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"
-                                 rendered="#{locationController.selectDisplayFlatTableView}"/>
+                                 PF('componentInstanceLocationSelectDialogWidget').hide()" 
+                                 />
+
                 <p:commandButton value="Done" alt="Done"
-                                 onstart="PF('loadingDialog').show()"
-                                 onerror="PF('loadingDialog').hide()"
-                                 action="#{componentInstanceController.selectLocation(locationSelectTreeViewBean.selectedLocation)}"
-                                 update="#{updateTarget}"
-                                 oncomplete="PF('loadingDialog').hide();
-                                             PF('componentInstanceLocationSelectDialogWidget').hide()" 
+                                 oncomplete="LocationSelectionMade()"
                                  icon="ui-icon-arrowreturnthick-1-w"
-                                 rendered="#{!locationController.selectDisplayFlatTableView}"/>
+                                 />
             </f:facet>            
         </div>
     </p:dialog>
