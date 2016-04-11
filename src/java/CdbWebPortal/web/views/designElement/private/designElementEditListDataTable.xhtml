@@ -16,7 +16,8 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  editable="true"
-                 emptyMessage="No design elements found.">
+                 emptyMessage="No design elements found."
+                 rowStyleClass="#{designElementObject.id != null ? '' : 'newItemInRow'}">
 
         <p:column sortBy="#{designElementObject.id}" headerText="Id"
                   rendered="#{designElementController.displayId}">

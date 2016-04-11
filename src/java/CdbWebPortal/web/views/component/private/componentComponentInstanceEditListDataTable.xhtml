@@ -16,7 +16,8 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  editable="true"
-                 emptyMessage="No component instances found.">
+                 emptyMessage="No component instances found."
+                 rowStyleClass="#{componentInstanceObject.id != null ? '' : 'newItemInRow'}">
 
         <p:column sortBy="#{componentInstanceObject.id}" headerText="Id"
                   rendered="#{componentInstanceController.displayId}">

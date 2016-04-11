@@ -16,7 +16,8 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  editable="true"
-                 emptyMessage="No component sources found.">
+                 emptyMessage="No component sources found."
+                 rowStyleClass="#{componentSourceObject.id != null ? '' : 'newItemInRow'}">
 
         <p:column sortBy="#{componentSourceObject.id}" headerText="Id"
                   rendered="#{componentSourceController.displayId}">

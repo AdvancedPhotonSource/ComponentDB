@@ -16,7 +16,8 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  editable="true"
-                 emptyMessage="No #{entityTypeDisplayName} properties found.">
+                 emptyMessage="No #{entityTypeDisplayName} properties found."
+                 rowStyleClass="#{propertyValueObject.id != null ? '' : 'newItemInRow'}">
 
         <ui:include src="../../propertyValue/private/propertyValueEditObject.xhtml"/>
 

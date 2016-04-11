@@ -15,7 +15,8 @@
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  editable="true"
-                 emptyMessage="No #{entityTypeName} log entries found.">
+                 emptyMessage="No #{entityTypeName} log entries found."
+                 rowStyleClass="#{logObject.id != null ? '' : 'newItemInRow'}">
 
         <ui:include src="../../log/private/logEditObject.xhtml"/>
 
