@@ -281,7 +281,7 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         designElement.setEntityInfo(entityInfo);
         designElement.setParentDesign(design);
-        designElementList.add(designElement);
+        designElementList.add(0, designElement);
     }
 
     public void deleteDesignElement(DesignElement designElement) {

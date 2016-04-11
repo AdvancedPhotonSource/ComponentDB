@@ -267,7 +267,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         AllowedPropertyValue allowedPropertyValue = new AllowedPropertyValue();
         allowedPropertyValue.setValue(value);
         allowedPropertyValue.setPropertyType(propertyType);
-        allowedPropertyValueList.add(allowedPropertyValue);
+        allowedPropertyValueList.add(0, allowedPropertyValue);
     }
 
     public void saveAllowedPropertyValueList() {

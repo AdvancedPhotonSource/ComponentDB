@@ -327,7 +327,7 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
         List<ComponentSource> sourceList = component.getComponentSourceList();
         ComponentSource source = new ComponentSource();
         source.setComponent(component);
-        sourceList.add(source);
+        sourceList.add(0, source);
     }
 
     public void saveSourceList() {
@@ -347,7 +347,7 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         componentInstance.setEntityInfo(entityInfo);
         componentInstance.setComponent(component);
-        componentInstanceList.add(componentInstance);
+        componentInstanceList.add(0, componentInstance);
     }
 
     public void prepareAddClonedComponentInstance(ComponentInstance componentInstance) {

@@ -144,7 +144,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         propertyValue.setPropertyType(propertyType);
         propertyValue.setValue(propertyValueString);
         propertyValue.setUnits(propertyType.getDefaultUnits());
-        propertyValueList.add(propertyValue);
+        propertyValueList.add(0, propertyValue);
         propertyValue.setEnteredByUser(lastModifiedByUser);
         propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
         if (tag != null) {
