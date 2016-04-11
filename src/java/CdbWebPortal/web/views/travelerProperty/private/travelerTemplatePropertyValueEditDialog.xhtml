@@ -68,7 +68,8 @@
         
         <p:remoteCommand name="successTravelerTemplatePropertyValueEditDialog"
                      oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').hide();
-                                 updateTemplateProperyValueField#{travelerBean.propertyValue.id}();" />
+                                 updateTemplateProperyValueField#{travelerBean.propertyValue.id}();
+                                 updateTravelerTemplatePropertyValueEditDialog()" />
         <p:remoteCommand name="successUnlinkTravelerTemplatePropertyValueEditDialog"
                      oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').hide();
                                  updateTemplateProperyValueFieldUnlink#{travelerBean.propertyValue.id}();" />
