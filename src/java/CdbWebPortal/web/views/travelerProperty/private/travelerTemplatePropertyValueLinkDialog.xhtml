@@ -15,15 +15,20 @@
                 <ui:param name="travelerTemplateList" value="#{travelerBean.travelerTemplates}" />
                 <ui:param name="travelerSelectedValue" value="#{travelerBean.selectedTemplate}" />
                 <ui:param name="dataTableId" value="travelerTemplatesDataTable" />
+                <ui:param name="travelerTemplateDoubleClickSelectionEvent" value="linkSelectedTravelerTemplate()" />
             </ui:include> 
-
-            <p:commandButton value='Link to selected template' 
+            
+            <p:remoteCommand name="linkSelectedTravelerTemplate"
                              action="#{travelerBean.linkTravelerTemplate(
                                        entityController, 
                                        'successTravelerTemplatePropertyValueLinkDialog();')}"
                              onstart="PF('loadingDialog').show();"
                              onerror="PF('loadingDialog').hide();"
                              oncomplete="PF('loadingDialog').hide();"
+                             />
+
+            <p:commandButton value='Link to selected template' 
+                             onstart="linkSelectedTravelerTemplate()"
                              />  
         </div>
         <p:remoteCommand name="showTravelerTemplatePropertyValueLinkDialog" 
