@@ -59,7 +59,7 @@ public class TravelerRestApi {
 
     private static final boolean httpsInitialized = initializeHttpsConnection();    
 
-    private static final Logger logger = Logger.getLogger(CdbRestApi.class.getName());
+    private static final Logger logger = Logger.getLogger(TravelerRestApi.class.getName());
 
     private static boolean initializeHttpsConnection() {
         HttpsURLConnection.setDefaultSSLSocketFactory(new NoServerVerificationSSLSocketFactory());
