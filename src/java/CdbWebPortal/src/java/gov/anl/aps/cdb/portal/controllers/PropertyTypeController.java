@@ -16,11 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Component;
-import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentType;
-import gov.anl.aps.cdb.portal.model.db.entities.Design;
-import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
 
 import java.io.Serializable;
 import java.util.List;
