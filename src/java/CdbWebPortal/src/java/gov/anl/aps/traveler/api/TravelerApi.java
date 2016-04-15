@@ -21,6 +21,7 @@ import gov.anl.aps.traveler.common.objects.Forms;
 import gov.anl.aps.traveler.common.objects.TravelerData;
 import gov.anl.aps.traveler.common.objects.TravelerDatum;
 import gov.anl.aps.traveler.common.objects.TravelerNotes;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -128,9 +129,37 @@ public class TravelerApi extends TravelerRestApi  {
         
     }
     
-    
-    
-    
+    public Traveler updateTraveler(String travelerId, String userName, String title, String description, Date deadline, Double status) throws InvalidArgument, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Traveler Id", travelerId);
+        ArgumentUtility.verifyNonEmptyString("Traveler Title", title);
+        ArgumentUtility.verifyNonEmptyString("User Name", userName);
+        if (status == null || status < 0) {
+            throw new InvalidArgument("Status cannot be less than 0.");
+        }
+        
+        
+        String deadlineString; 
+        if (deadline != null) {
+            deadlineString = deadline.toString();
+        } else {
+            deadlineString = ""; 
+        }
+        
+        String requestUrl = "/apis/update/traveler/" + travelerId + "/"; 
+        
+        Map data = new HashMap(); 
+        
+        data.put("userName", userName); 
+        data.put("title", title);
+        data.put("description", description);
+        data.put("deadline", deadlineString); 
+        data.put("status", status.toString()); 
+        
+        String jsonString = invokePostRequest(requestUrl, data);
+        
+        Traveler traveler = (Traveler) TravelerObjectFactory.createObject(jsonString, Traveler.class); 
+        return traveler; 
+    }
     
     /*
      * Main method, used for simple testing.
@@ -165,11 +194,15 @@ public class TravelerApi extends TravelerRestApi  {
             Form form = apiClient.createForm("CDB FORM", "djarosz", ""); 
             System.out.println(form.getTitle()); 
             
+            traveler = apiClient.updateTraveler(travelerId, "someUser", "cdb", "World", null, 1.5);
+            System.out.println(traveler);
+            
             Forms forms = apiClient.getForms(); 
             
             form = apiClient.getForm("564a40b843a124d167cddc18"); 
             System.out.println(form.getTitle()); 
             Traveler travelerCreated = apiClient.createTraveler(form.getId(), "djarosz", form.getTitle(), "APSU 123"); 
+            System.out.println(travelerCreated);
             
         } catch (Exception ex){
             System.out.println(ex.getMessage());
