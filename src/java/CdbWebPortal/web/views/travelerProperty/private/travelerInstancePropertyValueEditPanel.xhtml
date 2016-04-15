@@ -27,12 +27,12 @@
             <p:remoteCommand rendered="#{propertyValueObject.id != null}"
                              name="updateTravelerInstanceProperyValueField#{propertyValueObject.id}"
                              update="@parent"
-                             oncomplete="loadCurrentTravelerInstance();"/>
+                             oncomplete="loadCurrentTravelerInstanceConfiguration();"/>
             
             <p:remoteCommand rendered="#{propertyValueObject.id == null}"
                              name="updateTravelerInstanceProperyValueField"
                              update="@form"
-                             oncomplete="loadCurrentTravelerInstance();"/>
+                             oncomplete="loadCurrentTravelerInstanceConfiguration();"/>
 
             <p:remoteCommand name="loadEntityAvailableTemplateList"
                              action="#{travelerBean.loadEntityAvailableTemplateList(entityController)}"
@@ -43,6 +43,13 @@
             
             <p:remoteCommand name="loadCurrentTravelerInstance"
                              action="#{travelerBean.loadCurrentTravelerInstance('updateTravelerInstancePropertyValueInfoDialog();')}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"                             
+                             oncomplete="PF('loadingDialog').hide();"
+                             />
+            
+            <p:remoteCommand name="loadCurrentTravelerInstanceConfiguration"
+                             action="#{travelerBean.loadCurrentTravelerInstance('updateTravelerInstancePropertyValueConfigureDialog();')}"
                              onstart="PF('loadingDialog').show();"
                              onerror="PF('loadingDialog').hide();"                             
                              oncomplete="PF('loadingDialog').hide();"
