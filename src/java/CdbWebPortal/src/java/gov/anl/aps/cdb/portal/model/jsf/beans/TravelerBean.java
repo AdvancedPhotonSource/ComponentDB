@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Component;
 import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
 import gov.anl.aps.cdb.portal.model.db.entities.Design;
@@ -25,8 +24,16 @@ import gov.anl.aps.traveler.common.objects.Form;
 import gov.anl.aps.traveler.common.objects.Forms;
 import gov.anl.aps.traveler.common.objects.Traveler;
 import java.io.Serializable;
+import javax.faces.model.SelectItem;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.component.html.HtmlInputText;
@@ -39,12 +46,20 @@ import org.primefaces.context.RequestContext;
 public class TravelerBean implements Serializable {
 
     private final String TRAVELER_TEMPLATE_HANDLER_NAME = "Traveler Template";
-
+    
     private TravelerApi travelerApi;
     private static final Logger logger = Logger.getLogger(TravelerBean.class.getName());
 
     private PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
+    private DateFormat dateFormat;
+    private Date currentTravelerDeadline; 
+    private final Map statusOptions = new HashMap(); 
+    private final Map statusNames = new HashMap(); 
+    private String currentTravelerSelectedStatus; 
+    private String currentTravelerEditTitle; 
+    private String currentTravelerEditDescription; 
+    
     private Integer travelerInstanceProgress; 
 
     private Form selectedTemplate;
@@ -76,6 +91,55 @@ public class TravelerBean implements Serializable {
             SessionUtility.addErrorMessage("Error", error);
             logger.error(error);
         }
+        
+        dateFormat = new SimpleDateFormat("y-M-d");
+        
+        String initalized = "Initialized";
+        String active = "Active";
+        String submitted = "Submitted";
+        String completed = "Complted"; 
+        String frozen = "Frozen"; 
+        
+        statusNames.put(0.0, initalized);
+        statusNames.put(1.0, active);
+        statusNames.put(1.5, submitted); 
+        statusNames.put(2.0, completed); 
+        statusNames.put(3.0, frozen);
+         
+        List<SelectItem> initalizedStatusList = new ArrayList<>(); 
+        initalizedStatusList.add(getNewSelectItem(initalized, false)); 
+        initalizedStatusList.add(getNewSelectItem(active, false)); 
+        initalizedStatusList.add(getNewSelectItem(frozen, true)); 
+        initalizedStatusList.add(getNewSelectItem(submitted, true)); 
+        initalizedStatusList.add(getNewSelectItem(completed, true)); 
+        List<SelectItem> activeStatusList = new ArrayList<>(); 
+        activeStatusList.add(getNewSelectItem(initalized, true)); 
+        activeStatusList.add(getNewSelectItem(active, false)); 
+        activeStatusList.add(getNewSelectItem(frozen, false)); 
+        activeStatusList.add(getNewSelectItem(submitted, true)); 
+        activeStatusList.add(getNewSelectItem(completed, true)); 
+        List<SelectItem> submittedStatusList = new ArrayList<>(); 
+        submittedStatusList.add(getNewSelectItem(initalized, true)); 
+        submittedStatusList.add(getNewSelectItem(active, false)); 
+        submittedStatusList.add(getNewSelectItem(frozen, true)); 
+        submittedStatusList.add(getNewSelectItem(submitted, false)); 
+        submittedStatusList.add(getNewSelectItem(completed, false)); 
+        List<SelectItem> completedStatusList = new ArrayList<>(); 
+        completedStatusList.add(getNewSelectItem(initalized, true)); 
+        completedStatusList.add(getNewSelectItem(active, true)); 
+        completedStatusList.add(getNewSelectItem(frozen, true)); 
+        completedStatusList.add(getNewSelectItem(submitted, true)); 
+        completedStatusList.add(getNewSelectItem(completed, false)); 
+
+        statusOptions.put(0.0, initalizedStatusList);
+        statusOptions.put(1.0, activeStatusList); 
+        statusOptions.put(1.5, submittedStatusList); 
+        statusOptions.put(2.0, completedStatusList); 
+        statusOptions.put(3.0, activeStatusList); 
+    }
+    
+    private SelectItem getNewSelectItem(String label, Boolean disabled) {
+        return new SelectItem(label, label, label, disabled);
     }
     
     /**
@@ -218,23 +282,29 @@ public class TravelerBean implements Serializable {
      */
     public String getCurrentTravelerStatus() {
         if (currentTravelerInstance != null) {
-            String status = currentTravelerInstance.getStatus() + "";
-            switch (status) {
-                case "0.0":
-                    return "initalized";
-                case "1.0":
-                    return "active";
-                case "1.5":
-                    return "submitted";
-                case "2.0":
-                    return "completed";
-                case "3.0":
-                    return "frozen";
-                default:
-                    return "";
-            }
+            return (String)statusNames.get(currentTravelerInstance.getStatus()); 
         }
         return "";
+    }
+    
+    public List<String> getCurrentTravelerStatusOptions() {
+        if(currentTravelerInstance != null) {
+            return (List<String>)statusOptions.get(currentTravelerInstance.getStatus()); 
+        }
+        return null; 
+    }
+    
+    public Double getStatusKey(String statusName) {
+        Iterator statusNamesIterator = statusNames.entrySet().iterator(); 
+        
+        while(statusNamesIterator.hasNext()) {
+            Map.Entry entry = (Map.Entry)statusNamesIterator.next(); 
+            if (entry.getValue().equals(statusName)) {
+                return (Double)entry.getKey(); 
+            }
+        }
+        
+        return -1.0; 
     }
 
     /**
@@ -370,16 +440,18 @@ public class TravelerBean implements Serializable {
                     try {
                         String device = entityController.getEntityTypeName();
                         device += ":" + entityController.getSelected().getId();
-                        currentTravelerInstance = travelerApi.createTraveler(
+                        Traveler travelerInstance = travelerApi.createTraveler(
                                 selectedTravelerInstanceTemplate.getId(),
                                 SessionUtility.getUser().toString(),
                                 travelerInstanceTitle,
                                 device);
+                        setCurrentTravelerInstance(travelerInstance);
+                        
                         SessionUtility.addInfoMessage(
                                 "Traveler Instance Created",
-                                "Traveler Instance '" + currentTravelerInstance.getId() + "' has been created");
+                                "Traveler Instance '" + travelerInstance.getId() + "' has been created");
 
-                        propertyValue.setValue(currentTravelerInstance.getId());
+                        propertyValue.setValue(travelerInstance.getId());
                         entityController.savePropertyList();
                         RequestContext.getCurrentInstance().execute(onSuccessCommand);
 
@@ -405,10 +477,11 @@ public class TravelerBean implements Serializable {
     public void loadCurrentTravelerInstance(String onSuccessCommand) {
         if (checkPropertyValue()) {
             try {
-                currentTravelerInstance = travelerApi.getTraveler(propertyValue.getValue());
+                Traveler travelerInstance = travelerApi.getTraveler(propertyValue.getValue());
+                setCurrentTravelerInstance(travelerInstance);
                 //Load completion pie chart model
-                int totalInput = currentTravelerInstance.getTotalInput();
-                int finishedInput = currentTravelerInstance.getFinishedInput();
+                int totalInput = travelerInstance.getTotalInput();
+                int finishedInput = travelerInstance.getFinishedInput();
                 double progress = (finishedInput * 1.0) / (totalInput * 1.0) * 100; 
                 this.travelerInstanceProgress = (int) progress; 
                 //Show the GUI since all execution was successful. 
@@ -464,6 +537,41 @@ public class TravelerBean implements Serializable {
                 travelerInstanceTitleInputText.setValue(selectedTravelerInstanceTemplate.getTitle());
             }
         }
+    }
+    
+    public void updateTravelerInstanceConfiguration(String onSuccessCommand) {
+        String travelerId = currentTravelerInstance.getId();
+        String travelerTitle;
+        if (currentTravelerEditTitle == null) {
+            travelerTitle = getCurrentTravelerInstanceTitle();
+        } else {
+            travelerTitle = currentTravelerEditTitle;
+        }
+        String travelerDescription;
+        if(currentTravelerEditDescription == null) {
+            travelerDescription = getCurrentTravelerInstanceDescription();
+        } else {
+            travelerDescription = currentTravelerEditDescription; 
+        }
+        
+        Double status = getStatusKey(currentTravelerSelectedStatus); 
+        
+        String userName = SessionUtility.getUser().toString();
+        try { 
+            Traveler travelerInstance = travelerApi.updateTraveler(travelerId, userName, travelerTitle, travelerDescription, currentTravelerDeadline, status);
+            setCurrentTravelerInstance(travelerInstance);
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        } catch (CdbException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+        }
+    }
+    
+    public void resetUpdateTravelerInstanceConfiguration() {
+        currentTravelerSelectedStatus = null;
+        currentTravelerDeadline = null; 
+        currentTravelerEditTitle = null;
+        currentTravelerEditDescription = null; 
     }
     
     public void setPropertyValue(PropertyValue propertyValue) {
@@ -532,8 +640,75 @@ public class TravelerBean implements Serializable {
     public Traveler getCurrentTravelerInstance() {
         return currentTravelerInstance;
     }
+    
+    public String getCurrentTravelerInstanceTitle() {
+        if (currentTravelerInstance != null && currentTravelerInstance.getTitle() != null) {
+            return currentTravelerInstance.getTitle();
+        }
+       
+        return "";
+    }
+    
+    public String getCurrentTravelerInstanceDescription() {
+        if (currentTravelerInstance != null && currentTravelerInstance.getDescription() != null) {
+            return currentTravelerInstance.getDescription(); 
+        }
+        
+        return "";
+    }
+
+    public void setCurrentTravelerInstance(Traveler currentTravelerInstance) {
+        this.currentTravelerInstance = currentTravelerInstance;
+        resetUpdateTravelerInstanceConfiguration();
+    }
 
     public String getTRAVELER_WEB_APP_URL() {
         return TRAVELER_WEB_APP_URL;
+    }
+
+    public Date getCurrentTravelerDeadline() {
+        if (currentTravelerInstance.getDeadline() != null) {
+            String deadline = currentTravelerInstance.getDeadline(); 
+            String dateString = deadline.split("T")[0]; 
+            try { 
+                return dateFormat.parse(dateString);
+            } catch (ParseException ex) {
+                logger.error(ex);
+            }
+        }
+        
+        return null; 
+    }
+
+    public void setCurrentTravelerDeadline(Date currentTravelerDeadline) {
+        this.currentTravelerDeadline = currentTravelerDeadline;
+    }
+
+    /**
+     * Makes the default selection in the select one button widget.
+     * @return status of current traveler. 
+     */
+    public String getCurrentTravelerSelectedStatus() {
+        return getCurrentTravelerStatus();
+    }
+
+    public void setCurrentTravelerSelectedStatus(String currentTravelerSelectedStatus) {
+        this.currentTravelerSelectedStatus = currentTravelerSelectedStatus;
+    }
+
+    public String getCurrentTravelerEditTitle() {
+        return getCurrentTravelerInstanceTitle(); 
+    }
+
+    public void setCurrentTravelerEditTitle(String currentTravelerEditTitle) {
+        this.currentTravelerEditTitle = currentTravelerEditTitle;
+    }
+
+    public String getCurrentTravelerEditDescription() {
+        return getCurrentTravelerInstanceDescription();
+    }
+
+    public void setCurrentTravelerEditDescription(String currentTravelerEditDescription) {
+        this.currentTravelerEditDescription = currentTravelerEditDescription;
     }
 }
