@@ -19,7 +19,7 @@
                     <p:column>
                         <h:outputLink target="_blank" 
                                       value="#{travelerBean.currentTravelerInstanceUrl}">
-                            <h:outputText value="#{travelerBean.currentTravelerInstance.title}"
+                            <h:outputText value="#{travelerBean.currentTravelerInstanceTitle}"
                                           styleClass="entityDataEmphasizedText"/>
                         </h:outputLink>
                     </p:column>
@@ -30,7 +30,7 @@
                         <p:outputLabel value="Description" styleClass="entityDataLabel"/>
                     </p:column>
                     <p:column>
-                        <p:outputLabel value="#{travelerBean.currentTravelerInstance.description}" styleClass="entityDataEmphasizedText" /> 
+                        <p:outputLabel value="#{travelerBean.currentTravelerInstanceDescription}" styleClass="entityDataEmphasizedText" /> 
                     </p:column>
                 </p:row>
 
@@ -87,7 +87,7 @@
                         <p:outputLabel value="#{travelerBean.currentTravelerInstance.deadline}" styleClass="entityDataEmphasizedText" /> 
                     </p:column>
                 </p:row>
-                
+
                 <p:row>
                     <p:column colspan="2">
                         <p:outputLabel value="Estimated Traveler Progress" styleClass="entityDataLabel"/>
@@ -105,7 +105,7 @@
                     </p:column>
                 </p:row>
 
-                <p:row rendered="#{travelerBean.currentTravelerStatus == 'initalized' }">
+                <p:row rendered="#{travelerBean.currentTravelerInstance.status == 0}">
                     <p:column colspan="2">
                         <h:outputText escape="false"
                                       value="This traveler is in the initial state, it still needs to be configured before it could be filled out."
@@ -113,7 +113,7 @@
                     </p:column>
                 </p:row>
 
-                <p:row rendered="#{travelerBean.currentTravelerStatus == 'initalized' }">
+                <p:row rendered="#{travelerBean.currentTravelerInstance.status == 0}">
                     <p:column colspan="2">
                         <h:outputText rendered="#{!travelerBean.currentTravelerConfigPermission}"
                                       escape="false"
@@ -122,90 +122,33 @@
                     </p:column>
                 </p:row>
 
-                <p:row rendered="#{travelerBean.currentTravelerConfigPermission}">
-                    <p:column colspan="2">
-                        <h:outputLink target="_blank" 
-                                      value="#{travelerBean.currentTravelerInstanceConfigUrl}">
-                            <h:outputText value="Configure Traveler"
-                                          styleClass="entityDataEmphasizedText"/>
-                        </h:outputLink>
-                    </p:column>
-                </p:row>
-
             </p:panelGrid>
 
             <p:tooltip id="travelerInstanceStatusPanelGridRowToolTip"
                        for="travelerInstanceStatusPanelGridRow">
-                <p:panelGrid>
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="Initialized" styleClass="entityDataLabel"/>
-                        </p:column>
-                        <p:column>
-                            <p:outputLabel 
-                                value="Traveler instance has not yet been configured. It cannot be filled out." 
-                                styleClass="entityDataEmphasizedText" /> 
-                        </p:column>
-                    </p:row>
-                    
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="Active" styleClass="entityDataLabel"/>
-                        </p:column>
-                        <p:column>
-                            <p:outputLabel 
-                                value="Traveler instance has been configured. It can be filled out." 
-                                styleClass="entityDataEmphasizedText" /> 
-                        </p:column>
-                    </p:row>
-                    
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="Submitted" styleClass="entityDataLabel"/>
-                        </p:column>
-                        <p:column>
-                            <p:outputLabel 
-                                value="Traveler instance has been submitted. Completion needs approval." 
-                                styleClass="entityDataEmphasizedText" /> 
-                        </p:column>
-                    </p:row> 
-                    
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="Completed" styleClass="entityDataLabel"/>
-                        </p:column>
-                        <p:column>
-                            <p:outputLabel 
-                                value="Traveler instance submission has been approved and it is now completed." 
-                                styleClass="entityDataEmphasizedText" /> 
-                        </p:column>
-                    </p:row> 
-                    
-                    <p:row>
-                        <p:column>
-                            <p:outputLabel value="Frozen" styleClass="entityDataLabel"/>
-                        </p:column>
-                        <p:column>
-                            <p:outputLabel 
-                                value="Work on traveler instance has been stopped temporarly." 
-                                styleClass="entityDataEmphasizedText" /> 
-                        </p:column>
-                    </p:row> 
-                    
-                </p:panelGrid>
-
+                <ui:include src="travelerInstanceStatusDescriptionPanelGrid.xhtml" />
             </p:tooltip>
 
 
         </div>
+        
+        <f:facet name="footer" class="dialog">
+            <p:commandButton value="Configure Traveler"
+                             action="#{travelerBean.loadCurrentTravelerInstance('updateTravelerInstancePropertyValueConfigureDialog()')}"
+                             rendered="#{travelerBean.currentTravelerConfigPermission}"/>
+            <p:commandButton value="Close" alt="Close" 
+                             oncomplete="PF('travelerInstancePropertyValueInfoDialogWidget').hide()" 
+                             icon="ui-icon-arrowreturnthick-1-w"/>
+        </f:facet>
 
-        <p:remoteCommand name="updateTravelerInstancePropertyValueInfoDialog" 
+    </p:dialog>
+    
+    <p:remoteCommand name="updateTravelerInstancePropertyValueInfoDialog" 
                          update="travelerInstancePropertyValueInfoDialog" 
                          oncomplete="PF('travelerInstancePropertyValueInfoDialogWidget').initPosition();
                          PF('travelerInstancePropertyValueInfoDialogWidget').show();"/>
-    </p:dialog>
 
-
+    <ui:include src="travelerInstancePropertyValueConfigureDialog.xhtml" />
 
 </ui:composition>
 
