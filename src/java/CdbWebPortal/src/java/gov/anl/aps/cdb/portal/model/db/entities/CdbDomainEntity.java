@@ -5,9 +5,9 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -58,43 +58,25 @@ public abstract class CdbDomainEntity extends CdbEntity {
         }
         PropertyValueInformation propertyValueInfo = propertyValueCacheMap.get(propertyTypeId);
         if (propertyValueInfo == null) {
-            String delimiter = "";
-            String cachedValue = "";
+            propertyValueInfo = new PropertyValueInformation(); 
             PropertyTypeHandlerInterface propertyHandler = null;
-            boolean setTargetValue = false;
-            PropertyValue lastValue = null;
             List<PropertyValue> propertyValueList = getPropertyValueList();
             for (PropertyValue propertyValue : propertyValueList) {
                 if (propertyValue.getPropertyType().getId().equals(propertyTypeId)) {
-                    if (propertyHandler == null) {
-                        propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-                    }
+                    propertyHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+
                     propertyHandler.setDisplayValue(propertyValue);
+                    propertyHandler.setTargetValue(propertyValue);
+                    propertyHandler.setInfoActionCommand(propertyValue);
+               
                     String value = propertyValue.getDisplayValue();
                     if (value != null && !value.isEmpty()) {
-                        cachedValue += delimiter + value;
-                        delimiter = "|";
+                        propertyValueInfo.appendFilterValue(value);
                     }
-                    setTargetValue = lastValue == null;
-                    lastValue = propertyValue;
+                    propertyValueInfo.addPropertyValueObject(propertyValue);
                 }
             }
-            propertyValueInfo = new PropertyValueInformation(cachedValue, null);
-            if (setTargetValue) {
-                propertyValueInfo = attemptSetTargetValue(propertyValueInfo, lastValue, propertyHandler);
-            }
             propertyValueCacheMap.put(propertyTypeId, propertyValueInfo);
-        }
-        return propertyValueInfo;
-    }
-
-    public PropertyValueInformation attemptSetTargetValue(PropertyValueInformation propertyValueInfo, PropertyValue propertyValue, PropertyTypeHandlerInterface propertyHandler) {
-        DisplayType displayType = propertyHandler.getValueDisplayType();
-        if (displayType != null) {
-            if (displayType.equals(DisplayType.HTTP_LINK) || displayType.equals(DisplayType.TABLE_RECORD_REFERENCE)) {
-                propertyHandler.setTargetValue(propertyValue);
-                propertyValueInfo.setTargetValue(propertyValue.getTargetValue());
-            }
         }
         return propertyValueInfo;
     }
@@ -104,14 +86,14 @@ public abstract class CdbDomainEntity extends CdbEntity {
         if (propertyTypeId != null) {
             PropertyValueInformation propertyInfo = propertyValueCacheMap.get(propertyTypeId);
             if (propertyInfo != null) {
-                return propertyInfo.getValue();
+                return propertyInfo.getFilterValue();
             }
         }
         return null;
     }
 
     public String getPropertyValue(Integer propertyTypeId) {
-        return getPropertyValueInformation(propertyTypeId).getValue();
+        return getPropertyValueInformation(propertyTypeId).getFilterValue();
     }
 
     public void setPropertyValueByIndex(Integer index, String propertyValue) {
@@ -120,7 +102,9 @@ public abstract class CdbDomainEntity extends CdbEntity {
         }
         Integer propertyTypeId = propertyTypeIdIndexMap.get(index);
         if (propertyTypeId != null) {
-            propertyValueCacheMap.put(propertyTypeId, new PropertyValueInformation(propertyValue, null));
+            PropertyValueInformation propertyValueInformation = new PropertyValueInformation();
+            propertyValueInformation.setFilterValue(propertyValue);
+            propertyValueCacheMap.put(propertyTypeId, propertyValueInformation);
         }
     }
 
@@ -166,24 +150,33 @@ public abstract class CdbDomainEntity extends CdbEntity {
 
     public class PropertyValueInformation {
 
-        private String value;
-        private String targetValue;
+        private String filterValue;
+        private List<PropertyValue> propertyValueList; 
+        private final String DELIMITER = " "; 
 
-        public PropertyValueInformation(String value, String targetValue) {
-            this.value = value;
-            this.targetValue = targetValue;
+        public PropertyValueInformation() {
+            this.propertyValueList = new ArrayList<>(); 
+            this.filterValue = ""; 
+        }
+         
+        public List<PropertyValue> getPropertyValueList() {
+            return propertyValueList;
+        }
+        
+        public void addPropertyValueObject(PropertyValue propertyValue) {
+            propertyValueList.add(propertyValue); 
+        }
+        
+        public void appendFilterValue(String value) {
+            filterValue += value + DELIMITER;    
         }
 
-        public String getValue() {
-            return value;
+        public String getFilterValue() {
+            return filterValue;
         }
 
-        public String getTargetValue() {
-            return targetValue;
-        }
-
-        public void setTargetValue(String targetValue) {
-            this.targetValue = targetValue;
+        public void setFilterValue(String filterValue) {
+            this.filterValue = filterValue;
         }
     }
 }
