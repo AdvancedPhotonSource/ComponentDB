@@ -21,9 +21,7 @@
                  paginatorAlwaysVisible="false"
                  emptyMessage="No #{entityTypeDisplayName} properties found.">
 
-        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml">
-            <ui:param name="entityPropertyTypeName" value="#{entityTypeName}Property"/>
-        </ui:include>
+        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml"/>
 
         <p:column headerText="Actions" exportable="false" rendered="#{renderActionColumn}">
             <div>
@@ -60,15 +58,6 @@
                 </p:commandLink>   
             </div>
         </p:column>       
-        <p:column visible="false">
-            <p:remoteCommand name="#{entityTypeName}PropertyInfoAction#{propertyValueObject.id}"
-                             rendered="#{propertyValueObject.infoActionCommand != null}"
-                             oncomplete="loadInfoActionDialog();">
-                <f:setPropertyActionListener target="#{propertyValueInfoActionBean.propertyValue}" 
-                                             value="#{propertyValueObject}"/>
-            </p:remoteCommand>
-        </p:column>
-
     </p:dataTable>
 
 </ui:composition>
