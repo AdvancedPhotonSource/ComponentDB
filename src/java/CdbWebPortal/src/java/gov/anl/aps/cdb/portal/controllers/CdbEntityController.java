@@ -811,12 +811,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
 
         if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-            logger.debug("Updating settings for " + getEntityTypeName() +" from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
-            updateSettingsFromSessionUser(sessionUser);
-            settingsTimestamp = new Date();
+            loadUserSettings(sessionUser);
             return true;
         }
         return false;
+    }
+     
+    public void loadUserSettings(UserInfo sessionUser){ 
+        logger.debug("Updating settings for " + getEntityTypeName() +" from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
+        updateSettingsFromSessionUser(sessionUser);
+        settingsTimestamp = new Date();
     }
 
     /**
@@ -877,9 +881,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         boolean settingsUpdated = false;
         if (sessionUser != null) {
             List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-            if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateSettingsFromSessionUser(sessionUser);
-                settingsUpdated = true;
+            if (sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
+                if (userSettingList != null && !userSettingList.isEmpty()) {
+                    loadUserSettings(sessionUser); 
+                    settingsUpdated = true;
+                }
+            } else { 
+                // Settings have been previously loaded, no need to override with defaults. 
+                return; 
             }
         }
 
