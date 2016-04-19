@@ -82,7 +82,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
             return;
         }
         
-        logger.debug("Updating list settings from setting type defaults");
+        logger.debug("Updating list settings from setting type defaults for: " + this.getEntityTypeName());
         
         displayGalleryViewableDocuments = Boolean.parseBoolean(settingTypeMap.get(DisplayGalleryViewableDocumentsSettingTypeKey).getDefaultValue());
     }
@@ -93,7 +93,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
             return;
         }
         
-        logger.debug("Updating list settings from session user");
+        logger.debug("Updating list settings from session user for: " + this.getEntityTypeName());
         
         displayGalleryViewableDocuments = sessionUser.getUserSettingValueAsBoolean(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
         

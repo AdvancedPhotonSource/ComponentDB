@@ -399,6 +399,8 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         if (settingTypeMap == null) {
             return;
         }
+        
+        logger.debug("Updating list settings from setting type defaults");
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
@@ -458,6 +460,8 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
         if (sessionUser == null) {
             return;
         }
+        
+        logger.debug("Updating list settings from session user");
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
