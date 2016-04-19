@@ -3,24 +3,25 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
-    
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
     <p:column headerText="Property: #{propertyTypeName}" 
               filterBy="#{propertyValueFilterBy}" filterMatchMode="contains"
               filterValue="#{prpoertyValueFilterValue}"
               rendered="#{propertyValueRendered}"
               filterable="#{propertyValueFilterable}"
               sortable="#{propertyValueFilterable}"
-              sortBy="#{propertyValueInformation.value}">
-            <p:outputPanel rendered="#{propertyValueInformation.targetValue == null}">
-                <h:outputText value="#{propertyValueInformation.value}"/>
-            </p:outputPanel>
-            <p:outputPanel rendered="#{propertyValueInformation.targetValue != null}">
-                <h:outputLink value="#{propertyValueInformation.targetValue}"
-                              target="_page_#{propertyValueInformation.targetValue}">
-                    <h:outputText value="#{propertyValueInformation.value}"/>
-                </h:outputLink>
-            </p:outputPanel>
+              sortBy="#{propertyValueInformation.filterValue}">
+        <p:outputPanel>
+            <ul>
+            <ui:repeat value="#{propertyValueInformation.propertyValueList}" var="propertyValueObject">
+                <li>
+                    <ui:include src="propertyValueListObjectValue.xhtml"/>
+                </li>
+            </ui:repeat>
+            </ul>
+        </p:outputPanel>
     </p:column>
-        
+
 </ui:composition>
