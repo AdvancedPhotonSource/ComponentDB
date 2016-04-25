@@ -199,7 +199,7 @@ INSERT INTO `component` VALUES
 (212,'TurboPumpCart_R&D',NULL,'TStation 75',66,520),
 (213,'M1 dipole pre-prototype',NULL,'First prototype magnet (from Fermilab)',80,536),
 (214,'Samsung Galaxy Tab 10.5',NULL,'',121,537),
-(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â±8.5 V/1.8 A, +17 V/200 mA, 120 VAC adapter w/4 modular plugs',49,539),
+(215,'PRL-760C4',NULL,'AC Adapter for PRL-* devices\r\nÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¬Ã',49,539),
 (216,'PRL-424LV',NULL,'1:4 LVDS Fanout Buffer',108,540),
 (217,'Generic: Data Logging System',NULL,'',129,554),
 (218,'Generic: Measurement System',NULL,'',128,555),
@@ -262,7 +262,7 @@ INSERT INTO `component` VALUES
 (297,'YOKE: DMM QUADRUPOLE Q6A003','U221020202-114000',' QUADRUPOLE ASSEMBLY, EDM, VP POLE TIP',83,728),
 (298,'YOKE: DMM QUADRUPOLE U221020202-115100','U221020202-115000','QUADRUPOLE ASSEMBLY, STEEL POLE TIP, EDM, MUSHROOM POLE TIP',83,729),
 (299,'Computer Monitor 24\" LED LCD','U2413','Dell Ultrasharp 24\" Monitor: LED LCD',58,744),
-(300,'Impedance Test Stand','u221020102-100110','',64,746),
+(300,'Impedance Test Stand - Copper Chambers','u221020102-100110','',64,746),
 (301,'Granite Plinth','u2210203-100400','',119,750),
 (303,'M4 Winding Fixture Assembly','u221020205-112100','',80,754),
 (304,'M4 Trim Coil Winding Fixture Assembly','u221020205-112200','',80,756),
@@ -283,6 +283,8 @@ INSERT INTO `component` VALUES
 (320,'L-BEND CHAMBER BI-METAL ENDPLATE, LONG','U221020101-111231-00','VACUUM CHAMBER ENDPLATE',64,811),
 (321,'L-BEND CHAMBER BI-METAL ENDPLATE, SHORT','U221020101-111269-00','VACUUM CHAMBER ENDPLATE',64,812),
 (322,'Tablet Galaxy Tab4','SM-T530NN','Tablet ',121,813),
-(323,'Moxa 6650-32','NPort 6650-32','32 port terminal server (serial device server) RS-232/422/485',109,823);
+(323,'Moxa 6650-32','NPort 6650-32','32 port terminal server (serial device server) RS-232/422/485',109,823),
+(324,'8 ch 18-bit DAC ','16PC062','',40,849),
+(325,'VC-14 CHAMBER WLDMT MOCKUP','U221020101-111120-00','MOCKUP FODO VACUUM CHAMBER',64,873);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -47,6 +47,7 @@ INSERT INTO `source` VALUES
 (45,'FMB-BERLIN','ACCELERATOR COMPONENT VENDOR','u.schneck@fmb-berlin ','http://fmb-berlin.de/en'),
 (46,'ROBINSON METAL INC','Precision Machining, Assembly and UHV Welding','Sam Busse, 920-615-3633','www.robinsonmetal.com'),
 (47,'HiTech Mfg.','','',''),
-(48,'Atlas','','','');
+(48,'Atlas','','',''),
+(49,'saes-group','ACCELERATOR COMPONENT VENDOR','Paolo Manini [Paolo_Manini@saes-group.com]','https://www.saesgetters.com/');
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -79,6 +79,9 @@ INSERT INTO `log` VALUES
 (86,'Inspected and cleaned 2-25-16','2016-02-26 13:41:55',25,NULL),
 (87,'inspected and cleaned 2-25-16','2016-02-26 13:54:11',25,NULL),
 (88,'Inspected, cleaned on Feb 26. Leak checked OK on Feb 29. By Kevin.','2016-02-29 11:02:36',25,NULL),
-(89,'vacum leak check on 3/18/16 by Kevin K.','2016-03-25 14:53:07',25,1);
+(89,'vacum leak check on 3/18/16 by Kevin K.','2016-03-25 14:53:07',25,1),
+(90,'B.Deriy changed 5% tol VREFN resistors to hand-picked resistors to improve gain error.  0.01% resistors are on order.','2016-03-31 12:12:55',23,1),
+(91,'U20 is not installed','2016-03-31 12:15:37',23,NULL),
+(92,'Received from NAT on 3/31/2016:\r\nToday N.A.T. notifies you that version 2.17.9 of the NAT-MCH firmware has been deleted from the archive and been replaced by version 2.17.10.\r\nYesterday Engineering discovered an issue in version 2.17.9 of the MCH firmware which affects the control of the Cooling Units in a MicroTCA system and is related to an AMC board issuing a temperature event to the MCH. It may happen that the Cooling Units are not correctly regulated to a higher fan speed which could result in critical temperature situations where AMCs are not sufficiently cooled.\r\n\r\nTherefore, Engineering has deleted firmware version 2.17.9 from the archive and strongly recommends not to use any copies in any of your systems. You can either switch back to an older version 2.17.8 or to the new version 2.17.10 which is released today. MCH firmware version 2.17.10 fixed said problem.\r\n','2016-04-18 08:46:31',3,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

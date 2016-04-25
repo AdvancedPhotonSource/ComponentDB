@@ -10,6 +10,7 @@ INSERT INTO `log_attachment` VALUES
 (78,8),
 (79,9),
 (80,10),
-(81,11);
+(81,11),
+(92,12);
 /*!40000 ALTER TABLE `log_attachment` ENABLE KEYS */;
 UNLOCK TABLES;
