@@ -182,14 +182,20 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public Boolean getDisplayLogList() {
         EntityType domainEntity = getCurrent();
-        List<Log> logList = domainEntity.getLogList();
-        return logList != null && !logList.isEmpty();
+        if (domainEntity != null) {
+            List<Log> logList = domainEntity.getLogList();
+            return logList != null && !logList.isEmpty();
+        }
+        return false; 
     }
 
     public Boolean getDisplayPropertyList() {
         EntityType domainEntity = getCurrent();
-        List<PropertyValue> propertyValueList = domainEntity.getPropertyValueList();
-        return propertyValueList != null && !propertyValueList.isEmpty();
+        if (domainEntity != null) {
+            List<PropertyValue> propertyValueList = domainEntity.getPropertyValueList();
+            return propertyValueList != null && !propertyValueList.isEmpty();
+        }
+        return false;
     }
 
     public PropertyValue getCurrentEditPropertyValue() {

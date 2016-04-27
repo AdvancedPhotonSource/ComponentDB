@@ -308,8 +308,11 @@ public class DesignController extends CdbAbstractDomainEntityController<Design, 
 
     public boolean getDisplayDesignElementList() {
         Design currentDesign = getCurrent();
-        List<DesignElement> designElementList = currentDesign.getDesignElementList();
-        return designElementList != null && !designElementList.isEmpty();
+        if (currentDesign != null) {
+            List<DesignElement> designElementList = currentDesign.getDesignElementList();
+            return designElementList != null && !designElementList.isEmpty();
+        }
+        return false;
     }
 
     @Override

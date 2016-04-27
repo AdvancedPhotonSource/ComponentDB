@@ -152,9 +152,14 @@ public class ComponentInstanceController extends CdbDomainEntityController<Compo
     }
     
     public boolean getDisplayComponentPropertyList(){
-        Component currentComponent = getCurrent().getComponent(); 
-        List<PropertyValue> componentPropertyValue = currentComponent.getPropertyValueList(); 
-        return componentPropertyValue != null && !componentPropertyValue.isEmpty(); 
+        if (getCurrent() != null) {
+            Component currentComponent = getCurrent().getComponent(); 
+            if (currentComponent != null) {
+                List<PropertyValue> componentPropertyValue = currentComponent.getPropertyValueList(); 
+                return componentPropertyValue != null && !componentPropertyValue.isEmpty(); 
+            }
+        }
+        return false; 
     }
 
     @Override

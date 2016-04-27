@@ -623,14 +623,21 @@ public class ComponentController extends CdbAbstractDomainEntityController<Compo
 
     public boolean getDisplayComponentSourceList() {
         Component currentComponent = getCurrent();
-        List<ComponentSource> sourceList = currentComponent.getComponentSourceList();
-        return sourceList != null && !sourceList.isEmpty();
+        if (currentComponent != null) {
+            List<ComponentSource> sourceList = currentComponent.getComponentSourceList();
+            return sourceList != null && !sourceList.isEmpty();
+        }
+        return false; 
+        
     }
 
     public boolean getDisplayComponentInstanceList() {
         Component currentComponent = getCurrent();
-        List<ComponentInstance> componentInstanceList = currentComponent.getComponentInstanceList();
-        return componentInstanceList != null && !componentInstanceList.isEmpty();
+        if (currentComponent != null) {
+            List<ComponentInstance> componentInstanceList = currentComponent.getComponentInstanceList();
+            return componentInstanceList != null && !componentInstanceList.isEmpty();
+        }
+        return false; 
     }
 
     /**
