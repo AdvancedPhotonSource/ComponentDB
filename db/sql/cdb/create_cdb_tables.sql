@@ -40,8 +40,8 @@ CREATE TABLE `user_user_group` (
   `user_group_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`user_id`, `user_group_id`),
   KEY `user_user_group_k1` (`user_id`),
-  CONSTRAINT `user_user_group_fk1` FOREIGN KEY (`user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `user_user_group_k2` (`user_group_id`),
+  CONSTRAINT `user_user_group_fk1` FOREIGN KEY (`user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `user_user_group_fk2` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -70,11 +70,29 @@ CREATE TABLE `user_setting` (
   `setting_type_id` int(11) unsigned NOT NULL,
   `value` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_setting_u1` (`user_id`, `setting_type_id`),
+  UNIQUE KEY `user_setting_u1` (`user_id`, `setting_type_id`, `value`),
   KEY `user_setting_k1` (`user_id`),
-  CONSTRAINT `user_setting_fk1` FOREIGN KEY (`user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `user_setting_k2` (`setting_type_id`),
+  CONSTRAINT `user_setting_fk1` FOREIGN KEY (`user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `user_setting_fk2` FOREIGN KEY (`setting_type_id`) REFERENCES `setting_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `user_group_setting`
+--
+
+DROP TABLE IF EXISTS `user_group_setting`;
+CREATE TABLE `user_group_setting` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `user_group_id` int(11) unsigned NOT NULL,
+  `setting_type_id` int(11) unsigned NOT NULL,
+  `value` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_group_setting_u1` (`user_group_id`, `setting_type_id`, `value`),
+  KEY `user_group_setting_k1` (`user_group_id`),
+  KEY `user_group_setting_k2` (`setting_type_id`),
+  CONSTRAINT `user_group_setting_fk1` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `user_group_setting_fk2` FOREIGN KEY (`setting_type_id`) REFERENCES `setting_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -86,7 +104,7 @@ CREATE TABLE `entity_info` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `owner_user_id` int(11) unsigned DEFAULT NULL,
   `owner_user_group_id` int(11) unsigned DEFAULT NULL,
-  `is_group_writeable` bool DEFAULT NULL,
+  `is_group_writeable` bool NULL DEFAULT 0,
   `created_on_date_time` datetime NOT NULL,
   `created_by_user_id` int(11) unsigned NOT NULL,
   `last_modified_on_date_time` datetime NOT NULL,
@@ -95,15 +113,93 @@ CREATE TABLE `entity_info` (
   `obsoleted_by_user_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `entity_info_k1` (`owner_user_id`),
-  CONSTRAINT `entity_info_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
   KEY `entity_info_k2` (`owner_user_group_id`),
-  CONSTRAINT `entity_info_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
   KEY `entity_info_k3` (`created_by_user_id`),
-  CONSTRAINT `entity_info_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
   KEY `entity_info_k4` (`last_modified_by_user_id`),
-  CONSTRAINT `entity_info_fk4` FOREIGN KEY (`last_modified_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
   KEY `entity_info_k5` (`obsoleted_by_user_id`),
+  CONSTRAINT `entity_info_fk1` FOREIGN KEY (`owner_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `entity_info_fk2` FOREIGN KEY (`owner_user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `entity_info_fk3` FOREIGN KEY (`created_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `entity_info_fk4` FOREIGN KEY (`last_modified_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `entity_info_fk5` FOREIGN KEY (`obsoleted_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `role_type`
+--
+
+DROP TABLE IF EXISTS `role_type`
+CREATE TABLE `user_role` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `role_type_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `user_role`
+--
+
+DROP TABLE IF EXISTS `user_role`
+CREATE TABLE `user_role` (
+  `user_id` int(11) unsigned NOT NULL,
+  `role_type_id` int(11) unsigned NOT NULL,
+  `user_group_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`user_id`,`role_type_id`,`user_group_id`),
+  KEY `user_role_k1` (`user_id`),
+  KEY `user_role_k2` (`role_type_id`),
+  KEY `user_role_k3` (`user_group_id`),
+  CONSTRAINT `user_role_fk1` FOREIGN KEY (`user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `user_role_fk2` FOREIGN KEY (`role_type_id`) REFERENCES `role_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `user_role_fk3` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `list`
+--
+
+DROP TABLE IF EXISTS `list`
+CREATE TABLE `list` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `list_u1` (`entity_info_id`),
+  KEY `list_k1`,
+  CONSTRAINT `list_fk1` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `user_list`
+--
+
+DROP TABLE IF EXISTS `user_list`
+CREATE TABLE `user_list` (
+  `user_id` int(11) unsigned NOT NULL,
+  `list_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`user_id`, `list_id`)
+  KEY `user_list_k1`
+  KEY `user_list_k2`
+  CONSTRAINT `user_list_fk1` FOREIGN KEY (`user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `user_list_fk2` FOREIGN KEY (`list_id`) REFERENCES `list` (`id`) ON UPDATE CASCADE,
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+
+--
+-- Table `group_list`
+--
+
+DROP TABLE IF EXISTS `group_list`
+CREATE TABLE `group_list` (
+  `user_group_id` int(11) unsigned NOT NULL,
+  `list_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`group_id`, `list_id`)
+  KEY `group_list_k1`
+  KEY `group_list_k2`
+  CONSTRAINT `group_list_fk1` FOREIGN KEY (`user_group_id`) REFERENCES `user_group` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `group_list_fk2` FOREIGN KEY (`list_id`) REFERENCES `list` (`id`) ON UPDATE CASCADE,
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -143,12 +239,14 @@ CREATE TABLE `log` (
   `text` text NOT NULL,
   `entered_on_date_time` datetime NOT NULL,
   `entered_by_user_id` int(11) unsigned NOT NULL,
+  `effective_from_date_time` datetime NULL,
+  `effective_to_date_time` datetime NULL,
   `log_topic_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `log_k1` (`entered_by_user_id`),
-  CONSTRAINT `log_fk1` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE, 
   KEY `log_k2` (`log_topic_id`),
-  CONSTRAINT `log_fk2` FOREIGN KEY (`log_topic_id`) REFERENCES `log_topic` (`id`) ON UPDATE CASCADE 
+  CONSTRAINT `log_fk1` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `log_fk2` FOREIGN KEY (`log_topic_id`) REFERENCES `log_topic` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -161,9 +259,521 @@ CREATE TABLE `log_attachment` (
   `attachment_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`log_id`, `attachment_id`),
   KEY `log_attachment_k1` (`log_id`),
-  CONSTRAINT `log_attachment_fk1` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `log_attachment_k2` (`attachment_id`),
+  CONSTRAINT `log_attachment_fk1` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `log_attachment_fk2` FOREIGN KEY (`attachment_id`) REFERENCES `attachment` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `log_level`
+--
+
+DROP TABLE IF EXISTS `log_level`;
+CREATE TABLE `log_level` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `system_log`
+--
+
+DROP TABLE IF EXISTS `system_log`;
+CREATE TABLE `system_log` (
+  `log_id` int(11) unsigned NOT NULL,
+  `log_level_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`log_id`, `log_level_id`),
+  KEY `system_log_k1` (`log_id`),
+  KEY `system_log_k2` (`attachment_id`),
+  CONSTRAINT `system_log_fk1` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `system_log_fk2` FOREIGN KEY (`log_level_id`) REFERENCES `log_level` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `domain_handler`
+--
+
+DROP TABLE IF EXISTS `domain_handler`;
+CREATE TABLE `domain_handler` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `domain_handler_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `domain`
+--
+
+DROP TABLE IF EXISTS `domain`;
+CREATE TABLE `domain` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `domain_handler_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `domain_u1` (`name`),
+  KEY `domain_k1` (`domain_handler_id`),
+  CONSTRAINT `domain_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item`
+--
+DROP TABLE IF EXISTS `item`;
+CREATE TABLE `item` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `domain_id` int(11) unsigned NOT NULL,
+  `self_element_id` int(11) unsigned NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `derived_from_item_id` int(11) unsigned DEFAULT NULL,
+  `item_identifier1` varchar(32) DEFAULT NULL,
+  `item_identifier2` varchar(32) DEFAULT NULL,
+  `qr_id` int(11) unsigned DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_u1` (`domain_id`, `name`, `item_identifier1`, `item_identifier2`),
+  UNIQUE KEY `item_u2` (`qr_d`),
+  UNIQUE KEY `item_u3` (`entity_info_id`),
+  KEY `item_k1` (`domain_id`),
+  KEY `item_k2` (`derived_from_item_id`),
+  KEY `item_k3` (`entity_info_id`
+  KEY `item_k4` (`self_element_id`),
+  CONSTRAINT `item_fk1` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_fk2` FOREIGN KEY (`derived_from_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `item_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_element`
+--
+
+DROP TABLE IF EXISTS `item_element`;
+CREATE TABLE `item_element` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `parent_item_id` int(11) unsigned NOT NULL,
+  `contained_item_id` int(11) unsigned DEFAULT NULL,
+  `is_self` bool NOT NULL DEFAULT 0,
+  `is_required` bool NULL DEFAULT 0,
+  `description` varchar(256) DEFAULT NULL,
+  `sort_order` int(11) unsigned DEFAULT NULL,
+  `entity_info_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_element_u1` (`parent_item_id`, `name`),
+  UNIQUE KEY `item_element_u2` (`entity_info_id`),
+  KEY `item_element_k1` (`parent_item_id`),
+  KEY `item_element_k2` (`contained_item_id`),
+  KEY `item_element_k3` (`entity_info_id`),
+  CONSTRAINT `item_element_fk1` FOREIGN KEY (`parent_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_fk2` FOREIGN KEY (`contained_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Update constraint on `item` table.
+--
+
+ALTER TABLE `item`
+  ADD CONSTRAINT `item_fk4` FOREIGN KEY (`self_element_id`) REFERENCES (`item_element`) (`id`) ON UPDATE CASCADE;
+
+--
+-- Table `item_log`
+--
+
+DROP TABLE IF EXISTS `item_log`;
+CREATE TABLE `item_log` (
+  `item_id` int(11) unsigned NOT NULL,
+  `log_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_id`, `log_id`),
+  KEY `item_log_k1` (`item_id`),
+  KEY `item_log_k2` (`log_id`),
+  CONSTRAINT `item_log_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_element_log
+--
+
+DROP TABLE IF EXISTS `item_element_log`;
+CREATE TABLE `item_element_log` (
+  `item_element_id` int(11) unsigned NOT NULL,
+  `log_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_element_id`, `log_id`),
+  KEY `item_element_log_k1` (`item_element_id`),
+  KEY `item_element_log_k2` (`log_id`),
+  CONSTRAINT `item_element_log_fk1` FOREIGN KEY (`item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_element_list
+--
+
+DROP TABLE IF EXISTS `item_element_list`;
+CREATE TABLE `item_element_list` (
+  `item_element_id` int(11) unsigned NOT NULL,
+  `list_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_element_id`, `list_id`),
+  KEY `item_element_list_k1` (`item_element_id`),
+  KEY `item_element_list_k2` (`list_id`),
+  CONSTRAINT `item_element_list_fk1` FOREIGN KEY (`item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_list_fk2` FOREIGN KEY (`list_id`) REFERENCES `list` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_category`
+--
+
+DROP TABLE IF EXISTS `item_category`;
+CREATE TABLE `item_category` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_category_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_item_category`
+--
+
+DROP TABLE IF EXISTS `item_item_category`;
+CREATE TABLE `item_item_category` (
+  `item_id` int(11) unsigned NOT NULL,
+  `item_category_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_id`, `item_category_id`),
+  KEY `item_item_category_k1` (`item_id`),
+  KEY `item_item_category_k2` (`item_category_id`),
+  CONSTRAINT `item_item_category_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_item_category_fk2` FOREIGN KEY (`item_category_id`) REFERENCES `item_category` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_type`
+--
+
+DROP TABLE IF EXISTS `item_type`;
+CREATE TABLE `item_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_type_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_item_type`
+--
+
+DROP TABLE IF EXISTS `item_item_type`;
+CREATE TABLE `item_item_type` (
+  `item_id` int(11) unsigned NOT NULL,
+  `item_type_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_id`, `item_type_id`),
+  KEY `item_item_type_k1` (`item_id`),
+  KEY `item_item_type_k2` (`item_type_id`),
+  CONSTRAINT `item_item_type_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_item_type_fk2` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `entity_type`
+--
+
+DROP TABLE IF EXISTS `entity_type`;
+CREATE TABLE `entity_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `entity_type_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_entity_type`
+--
+
+DROP TABLE IF EXISTS `item_entity_type`;
+CREATE TABLE `item_entity_type` (
+  `item_id` int(11) unsigned NOT NULL,
+  `entity_type_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_id`, `entity_type_id`),
+  KEY `item_entity_type_k1` (`item_id`),
+  KEY `item_entity_type_k2` (`entity_type_id`),
+  CONSTRAINT `item_entity_type_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_entity_type_fk2` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `allowed_child_entity_type`
+--
+
+DROP TABLE IF EXISTS `allowed_child_entity_type`;
+CREATE TABLE `allowed_child_entity_type` (
+  `parent_entity_type_id` int(11) unsigned NOT NULL,
+  `child_entity_type_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`parent_entity_type_id`, `child_entity_type_id`),
+  KEY `allowed_child_entity_type_k1` (`parent_entity_type_id`),
+  KEY `allowed_child_entity_type_k2` (`child_entity_type_id`),
+  CONSTRAINT `allowed_child_entity_type_fk1` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_child_entity_type_fk2` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `source`
+--
+
+DROP TABLE IF EXISTS `source`;
+CREATE TABLE `source` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `contact_info` varchar(64) DEFAULT NULL,
+  `url` varchar(256) DEFAULT NULL
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `source_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_source`
+--
+
+DROP TABLE IF EXISTS `item_source`;
+CREATE TABLE `item_source` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `item_id` int(11) unsigned NOT NULL,
+  `source_id` int(11) unsigned NOT NULL,
+  `part_number` varchar(64) DEFAULT NULL,
+  `cost` float(10,2) unsigned DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `is_vendor` bool NOT NULL DEFAULT 0,
+  `is_manufacturer` bool NOT NULL DEFAULT 0,
+  `contact_info` varchar(64) DEFAULT NULL,
+  `url` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`item_id`, `source_id`),
+  KEY `item_source_k1` (`item_id`),
+  KEY `item_source_k2` (`source_id`),
+  CONSTRAINT `item_source_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `connector`
+--
+
+DROP TABLE IF EXISTS `connector`;
+CREATE TABLE `connector` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `connector_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `resource_type`
+--
+
+DROP TABLE IF EXISTS `resource_type`;
+CREATE TABLE `resource_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `connector_id` int(11) unsigned DEFAULT NULL,
+  `handler_name` varchar(64) DEFAULT NULL,
+  `default_value` varchar(64) DEFAULT NULL,
+  `default_units` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`name`),
+  KEY `resource_type_k1` (`connector_id`),
+  CONSTRAINT `resource_type_fk1` FOREIGN KEY (`connector_id`) REFERENCES `connector` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `connector_type`
+--
+
+DROP TABLE IF EXISTS `connector_type`;
+CREATE TABLE `connector_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `connector_type_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `connector`
+--
+
+DROP TABLE IF EXISTS `connector`;
+CREATE TABLE `connector` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `connector_type_id` int(11) unsigned DEFAULT NULL,
+  `resource_type_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `connector_u1` (`name`),
+  KEY `connector_k1` (`connector_type_id`),
+  KEY `connector_k2` (`resource_type_id`),
+  CONSTRAINT `connector_fk1` FOREIGN KEY (`connector_type_id`) REFERENCES `connector_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `connector_fk2` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_connector`
+--
+
+DROP TABLE IF EXISTS `item_connector`;
+CREATE TABLE `item_connector` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `item_id` int(11) unsigned NOT NULL,
+  `connector_id` int(11) unsigned NOT NULL,
+  `label` varchar(64) DEFAULT NULL,
+  `quantity` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_connector_u1` (`item_id`, `connector_id`, `label`)
+  KEY `item_connector_k1` (`item_id`),
+  KEY `item_connector_k2` (`connector_id`),
+  CONSTRAINT `item_connector_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_connector_fk2` FOREIGN KEY (`connector_id`) REFERENCES `connector` (`id`) ON UPDATE CASCADE,
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_resource`
+--
+
+DROP TABLE IF EXISTS `item_resource`;
+CREATE TABLE `item_resource` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `item_id` int(11) unsigned NOT NULL,
+  `resource_type_id` int(11) unsigned NOT NULL,
+  `value` varchar(64) DEFAULT NULL,
+  `units` varchar(64) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `item_connector_id` int(11) unsigned DEFAULT NULL,
+  `is_provided` bool NULL DEFAULT 0,
+  `is_used_required` bool NULL DEFAULT 0,
+  `is_used_optional` bool NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_resource_u1` (`item_id`, `resource_type_id`, `value`),
+  KEY `item_resource_k1` (`item_id`),
+  KEY `item_resource_k2` (`resource_type_id`),
+  KEY `item_resource_k3` (`item_connector_id`),
+  CONSTRAINT `item_resource_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_resource_fk2` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id)` ON UPDATE CASCADE,
+  CONSTRAINT `item_resource_fk3` FOREIGN KEY (`item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `relationship_type_handler`
+--
+
+DROP TABLE IF EXISTS `relationship_type_handler`;
+CREATE TABLE `relationship_type_handler` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `relationship_type_handler_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `relationship_type`
+--
+
+DROP TABLE IF EXISTS `relationship_type`;
+CREATE TABLE `relationship_type` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `relationship_type_handler_id` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `relationship_type_u1` (`name`),
+  KEY `relationship_type_k1` (`relationship_type_handler_id`),
+  CONSTRAINT `relationship_type_fk1` FOREIGN KEY (`relationship_type_handler_id`) REFERENCES `relationship_type_handler` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_element_relationship`
+--
+
+DROP TABLE IF EXISTS `item_element_relationship`;
+CREATE TABLE `item_element_relationship` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `first_item_element_id` int(11) unsigned NOT NULL,
+  `first_item_connector_id` int(11) unsigned DEFAULT NULL,
+  `second_item_element_id` int(11) unsigned NOT NULL,
+  `second_item_connector_id` int(11) unsigned DEFAULT NULL,
+  `relationship_type_id` int(11) unsigned NOT NULL,
+  `link_item_element_id` int(11) unsigned DEFAULT NULL,
+  `relationship_details` varchar(64) DEFAULT NULL,
+  `resource_type_id` int(11) unsigned DEFAULT NULL,
+  `label` varchar(64) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_element_relationship_u1` (`first_item_element_id`, `second_item_element_id`, `link_item_id`)
+  KEY `item_element_relationship_k1` (`first_item_element_id`),
+  KEY `item_element_relationship_k2` (`first_item_connector_id`),
+  KEY `item_element_relationship_k3` (`second_item_element_id`),
+  KEY `item_element_relationship_k4` (`second_item_connector_id`),
+  KEY `item_element_relationship_k5` (`relationship_type_id`),
+  KEY `item_element_relationship_k6` (`link_item_element_id`),
+  KEY `item_element_relationship_k7` (`resource_type_id`),
+  CONSTRAINT `item_element_relationship_fk1` FOREIGN KEY (`first_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_fk2` FOREIGN KEY (`first_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_fk3` FOREIGN KEY (`second_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_fk4` FOREIGN KEY (`second_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_fk5` FOREIGN KEY (`relationship_type_id`) REFERENCES `relationship_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_fk6` FOREIGN KEY (`link_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_element_relationship_history`
+--
+
+DROP TABLE IF EXISTS `item_element_relationship_history`;
+CREATE TABLE `item_element_relationship_history` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `item_element_relationship_id` int(11) unsigned NOT NULL,
+  `first_item_element_id` int(11) unsigned NOT NULL,
+  `first_item_connector_id` int(11) unsigned DEFAULT NULL,
+  `second_item_element_id` int(11) unsigned NOT NULL,
+  `second_item_connector_id` int(11) unsigned DEFAULT NULL,
+  `link_item_element_id` int(11) unsigned DEFAULT NULL,
+  `relationship_details` varchar(64) DEFAULT NULL,
+  `resource_type_id` int(11) unsigned DEFAULT NULL,
+  `label` varchar(64) DEFAULT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  `entered_on_date_time` datetime NOT NULL,
+  `entered_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_element_relationship_history_u1` (`first_item_element_id`, `second_item_element_id`, `link_item_id`)
+  KEY `item_element_relationship_history_k1` (`item_element_relationship_id`),
+  KEY `item_element_relationship_history_k2` (`first_item_element_id`),
+  KEY `item_element_relationship_history_k3` (`first_item_connector_id`),
+  KEY `item_element_relationship_history_k4` (`second_item_element_id`),
+  KEY `item_element_relationship_history_k5` (`second_item_connector_id`),
+  KEY `item_element_relationship_history_k6` (`link_item_element_id`),
+  KEY `item_element_relationship_history_k7` (`resource_type_id`),
+  KEY `item_element_relationship_history_k8` (`entered_by_user_id`),
+  CONSTRAINT `item_element_relationship_history_fk1` FOREIGN KEY (`item_element_relationship_id`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk2` FOREIGN KEY (`first_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk3` FOREIGN KEY (`first_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk4` FOREIGN KEY (`second_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk5` FOREIGN KEY (`second_item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk6` FOREIGN KEY (`link_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk7` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_history_fk8` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -204,11 +814,15 @@ CREATE TABLE `property_type` (
   `property_type_handler_id` int(11) unsigned DEFAULT NULL,
   `default_value` varchar(64) DEFAULT NULL,
   `default_units` varchar(16) DEFAULT NULL,
+  `is_user_writeable` bool NULL DEFAULT 0,
+  `is_dynamic` bool NULL DEFAULT 0,
+  `is_internal` bool NULL DEFAULT 0,
+  `is_active` bool NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `property_type_u1` (`name`),
   KEY `property_type_k1` (`property_type_category_id`),
-  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_type_category_id`) REFERENCES `property_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
   KEY `property_type_k2` (`property_type_handler_id`),
+  CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_type_category_id`) REFERENCES `property_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT `property_type_fk2` FOREIGN KEY (`property_type_handler_id`) REFERENCES `property_type_handler` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -222,11 +836,41 @@ CREATE TABLE `allowed_property_value` (
   `value` varchar(64) DEFAULT NULL,
   `units` varchar(16) DEFAULT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `sort_order` float(10,2) unsigned DEFAULT NULL,
+  `sort_order` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `allowed_property_value_u1` (`property_type_id`, `value`),
   KEY `allowed_property_value_k1` (`property_type_id`),
   CONSTRAINT `allowed_property_value_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `allowed_entity_type`
+--
+
+DROP TABLE IF EXISTS `allowed_entity_type`;
+CREATE TABLE `allowed_entity_type` (
+  `property_type_id` int(11) unsigned NOT NULL,
+  `entity_type_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`property_type_id`, `entity_type_id`),
+  KEY `allowed_entity_type_k1` (`property_type_id`),
+  KEY `allowed_entity_type_k2` (`entity_type_id`),
+  CONSTRAINT `allowed_entity_type_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_entity_type_fk2` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id)` ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `allowed_domain`
+--
+
+DROP TABLE IF EXISTS `allowed_domain`;
+CREATE TABLE `allowed_domain` (
+  `property_type_id` int(11) unsigned NOT NULL,
+  `domain_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`property_type_id`, `domain_id`),
+  KEY `allowed_domain_k1` (`property_type_id`),
+  KEY `allowed_domain_k2` (`domain_id`),
+  CONSTRAINT `allowed_domain_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_domain_fk2` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id)` ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -249,9 +893,25 @@ CREATE TABLE `property_value` (
   `target_value` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `property_value_k1` (`property_type_id`),
-  CONSTRAINT `property_value_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `property_value_k2` (`entered_by_user_id`),
-  CONSTRAINT `property_value_fk2` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
+  CONSTRAINT `property_value_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `property_value_fk2` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `property_metadata`
+--
+
+DROP TABLE IF EXISTS `property_metadata`;
+CREATE TABLE `property_metadata` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `property_value_id` int(11) unsigned NOT NULL,
+  `metadata_key` varchar(32) NOT NULL,
+  `metadata_value` varchar(64) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`property_value_id`, `metadata_key`, `metadata_value`),
+  KEY `property_metadata_k1` (`property_value_id`),
+  CONSTRAINT `property_metadata_fk1` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -272,687 +932,93 @@ CREATE TABLE `property_value_history` (
   `target_value` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `property_value_history_k1` (`property_value_id`),
-  CONSTRAINT `property_value_history_fk1` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   KEY `property_value_history_k2` (`entered_by_user_id`),
-  CONSTRAINT `property_value_history_fk2` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
+  CONSTRAINT `property_value_history_fk1` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT `property_value_history_fk2` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `resource_type_category`
+-- Table `item_connector_property`
 --
 
-DROP TABLE IF EXISTS `resource_type_category`;
-CREATE TABLE `resource_type_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `resource_type_category_u1` (`name`)
+DROP TABLE IF EXISTS `item_connector_property`;
+CREATE TABLE `item_connector_property` (
+  `item_connector_id` int(11) unsigned NOT NULL,
+  `property_value_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_connector_id`, `property_value_id`),
+  KEY `item_connector_property_k1` (`item_connector_id`),
+  KEY `item_connector_property_k2` (`property_value_id`),
+  CONSTRAINT `item_connector_property_fk1` FOREIGN KEY (`item_connector_id`) REFERENCES `item_connector` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_connector_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id)` ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `resource_type`
+-- Table `item_element_relationship_property`
 --
 
-CREATE TABLE `resource_type` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `resource_type_category_id` int(11) unsigned DEFAULT NULL,
-  `handler_name` varchar(64) DEFAULT NULL,
-  `default_value` varchar(64) DEFAULT NULL,
-  `default_units` varchar(16) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `resource_type_u1` (`name`),
-  KEY `resource_type_k1` (`resource_type_category_id`),
-  CONSTRAINT `resource_type_fk1` FOREIGN KEY (`resource_type_category_id`) REFERENCES `resource_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+DROP TABLE IF EXISTS `item_element_relationship_property`;
+CREATE TABLE `item_element_relationship_property` (
+  `item_element_relationship_id` int(11) unsigned NOT NULL,
+  `property_value_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_element_relationship_id`, `property_value_id`),
+  KEY `item_element_relationship_property_k1` (`item_element_relationship_id`),
+  KEY `item_element_relationship_property_k2` (`property_value_id`),
+  CONSTRAINT `item_element_relationship_property_fk1` FOREIGN KEY (`item_element_relationship_id`) REFERENCES `item_element_relationship` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_relationship_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id)` ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `component_type_category`
+-- Table `item_element_property`
 --
 
-DROP TABLE IF EXISTS `component_type_category`;
-CREATE TABLE `component_type_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_type_category_u1` (`name`)
+DROP TABLE IF EXISTS `item_element_property`;
+CREATE TABLE `item_element_property` (
+  `item_element_id` int(11) unsigned NOT NULL,
+  `property_value_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`item_element_id`, `property_value_id`),
+  KEY `item_element_property_k1` (`item_element_id`),
+  KEY `item_element_property_k2` (`property_value_id`),
+  CONSTRAINT `item_element_property_fk1` FOREIGN KEY (`item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id)` ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `component_type`
+-- Table `connector_property`
 --
 
-CREATE TABLE `component_type` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `component_type_category_id` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_type_u1` (`name`),
-  KEY `component_type_k1` (`component_type_category_id`),
-  CONSTRAINT `component_type_fk1` FOREIGN KEY (`component_type_category_id`) REFERENCES `component_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+DROP TABLE IF EXISTS `connector_property`;
+CREATE TABLE `connector_property` (
+  `connector_id` int(11) unsigned NOT NULL,
+  `property_value_id` int(11) unsigned NOT NULL
+  PRIMARY KEY (`connector_id`, `property_value_id`),
+  KEY `connector_property_k1` (`connector_id`),
+  KEY `connector_property_k2` (`property_value_id`),
+  CONSTRAINT `connector_property_fk1` FOREIGN KEY (`connector_id`) REFERENCES `connector` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `connector_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id)` ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
---
--- Table `component_type_property_type`
---
-
-DROP TABLE IF EXISTS `component_type_property_type`;
-CREATE TABLE `component_type_property_type` (
-  `component_type_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_type_id`, `property_type_id`),
-  KEY `component_type_property_type_k1` (`component_type_id`),
-  CONSTRAINT `component_type_property_type_k1` FOREIGN KEY (`component_type_id`) REFERENCES `component_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_type_property_type_k2` (`property_type_id`),
-  CONSTRAINT `component_type_property_type_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_type_resource_type`
---
-
-DROP TABLE IF EXISTS `component_type_resource_type`;
-CREATE TABLE `component_type_resource_type` (
-  `component_type_id` int(11) unsigned NOT NULL,
-  `resource_type_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_type_id`, `resource_type_id`),
-  KEY `component_type_resource_type_k1` (`component_type_id`),
-  CONSTRAINT `component_type_resource_type_k1` FOREIGN KEY (`component_type_id`) REFERENCES `component_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_type_resource_type_k2` (`resource_type_id`),
-  CONSTRAINT `component_type_resource_type_fk2` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `connector_type_category`
---
-
-DROP TABLE IF EXISTS `connector_type_category`;
-CREATE TABLE `connector_type_category` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `connector_type_category_u1` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `connector_type`
---
-
-CREATE TABLE `connector_type` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `connector_type_category_id` int(11) unsigned DEFAULT NULL,
-  `resource_type_id` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `connector_type_u1` (`name`),
-  KEY `connector_type_k1` (`connector_type_category_id`),
-  CONSTRAINT `connector_type_fk1` FOREIGN KEY (`connector_type_category_id`) REFERENCES `connector_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
-  KEY `connector_type_k2` (`resource_type_id`),
-  CONSTRAINT `connector_type_fk2` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `connector_type_property_type`
---
-
-DROP TABLE IF EXISTS `connector_type_property_type`;
-CREATE TABLE `connector_type_property_type` (
-  `connector_type_id` int(11) unsigned NOT NULL,
-  `property_type_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`connector_type_id`, `property_type_id`),
-  KEY `connector_type_property_type_k1` (`connector_type_id`),
-  CONSTRAINT `connector_type_property_type_k1` FOREIGN KEY (`connector_type_id`) REFERENCES `connector_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `connector_type_property_type_k2` (`property_type_id`),
-  CONSTRAINT `connector_type_property_type_fk2` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `location_type`
---
-
-CREATE TABLE `location_type` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `location_type_u1` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `location`
---
-
-CREATE TABLE `location` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `location_type_id` int(11) unsigned NOT NULL,
-  `is_user_writeable` bool NOT NULL DEFAULT 0,
-  `sort_order` float(10,2) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `location_u1` (`name`),
-  KEY `location_k1` (`location_type_id`),
-  CONSTRAINT `location_fk1` FOREIGN KEY (`location_type_id`) REFERENCES `location_type` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `location_link`
---
-
-DROP TABLE IF EXISTS `location_link`;
-CREATE TABLE `location_link` (
-  `parent_location_id` int(11) unsigned NOT NULL,
-  `child_location_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`parent_location_id`, `child_location_id`),
-  KEY `location_link_k1` (`parent_location_id`),
-  CONSTRAINT `location_link_fk1` FOREIGN KEY (`parent_location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `location_link_k2` (`child_location_id`),
-  CONSTRAINT `location_link_fk2` FOREIGN KEY (`child_location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
---
--- Table `source`
---
-
-DROP TABLE IF EXISTS `source`;
-CREATE TABLE `source` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `contact_info` varchar(64) DEFAULT NULL,
-  `url` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `source_u1` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component`
---
-
-DROP TABLE IF EXISTS `component`;
-CREATE TABLE `component` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `model_number` varchar(64) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `component_type_id` int(11) unsigned NOT NULL,
-  `entity_info_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_u1` (`name`, `model_number`),
-  UNIQUE KEY `component_u2` (`model_number`),
-  KEY `component_k1` (`component_type_id`),
-  CONSTRAINT `component_fk1` FOREIGN KEY (`component_type_id`) REFERENCES `component_type` (`id`) ON UPDATE CASCADE,
-  KEY `component_k2` (`entity_info_id`),
-  CONSTRAINT `component_fk2` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Note: Need trigger to prevent changing entity_info_id
---
-
---
--- Table `assembly_component`
---
-
-DROP TABLE IF EXISTS `assembly_component`;
-CREATE TABLE `assembly_component` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `assembly_id` int(11) unsigned NOT NULL,
-  `component_id` int(11) unsigned NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `sort_order` float(10,2) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `assembly_component_k1` (`assembly_id`),
-  CONSTRAINT `assembly_component_fk1` FOREIGN KEY (`assembly_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `assembly_component_k2` (`component_id`),
-  CONSTRAINT `assembly_component_fk2` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_source`
---
-
-DROP TABLE IF EXISTS `component_source`;
-CREATE TABLE `component_source` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `component_id` int(11) unsigned NOT NULL,
-  `source_id` int(11) unsigned NOT NULL,
-  `part_number` varchar(64) DEFAULT NULL,
-  `cost` float(10,2) unsigned DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `is_vendor` bool NOT NULL DEFAULT 0,
-  `is_manufacturer` bool NOT NULL DEFAULT 0,
-  `contact_info` varchar(64) DEFAULT NULL,
-  `url` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_source_u1` (`component_id`, `source_id`),
-  KEY `component_source_k1` (`component_id`),
-  CONSTRAINT `component_source_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_source_k2` (`source_id`),
-  CONSTRAINT `component_source_fk2` FOREIGN KEY (`source_id`) REFERENCES `source` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_property`
---
-
-DROP TABLE IF EXISTS `component_property`;
-CREATE TABLE `component_property` (
-  `component_id` int(11) unsigned NOT NULL,
-  `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_id`, `property_value_id`),
-  KEY `component_property_k1` (`component_id`),
-  CONSTRAINT `component_property_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_property_k2` (`property_value_id`),
-  CONSTRAINT `component_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_log`
---
-
-DROP TABLE IF EXISTS `component_log`;
-CREATE TABLE `component_log` (
-  `component_id` int(11) unsigned NOT NULL,
-  `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_id`, `log_id`),
-  KEY `component_log_k1` (`component_id`),
-  CONSTRAINT `component_log_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_log_k2` (`log_id`),
-  CONSTRAINT `component_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_connector`
---
-
-DROP TABLE IF EXISTS `component_connector`;
-CREATE TABLE `component_connector` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `component_id` int(11) unsigned NOT NULL,
-  `connector_type_id` int(11) unsigned NOT NULL,
-  `label` varchar(64) DEFAULT NULL,
-  `quantity` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_connector_u1` (`component_id`, `connector_type_id`, `label`),
-  KEY `component_connector_k1` (`component_id`),
-  CONSTRAINT `component_connector_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_connector_k2` (`connector_type_id`),
-  CONSTRAINT `component_connector_fk2` FOREIGN KEY (`connector_type_id`) REFERENCES `connector_type` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_connector_property`
---
-
-DROP TABLE IF EXISTS `component_connector_property`;
-CREATE TABLE `component_connector_property` (
-  `component_connector_id` int(11) unsigned NOT NULL,
-  `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_connector_id`, `property_value_id`),
-  KEY `component_connector_property_k1` (`component_connector_id`),
-  CONSTRAINT `component_connector_property_fk1` FOREIGN KEY (`component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_connector_property_k2` (`property_value_id`),
-  CONSTRAINT `component_connector_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_resource`
---
-
-DROP TABLE IF EXISTS `component_resource`;
-CREATE TABLE `component_resource` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `component_id` int(11) unsigned NOT NULL,
-  `resource_type_id` int(11) unsigned NOT NULL,
-  `value` varchar(64) DEFAULT NULL,
-  `units` varchar(16) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `component_connector_id` int(11) unsigned DEFAULT NULL,
-  `is_provided` bool NOT NULL DEFAULT 0,
-  `is_used_required` bool NOT NULL DEFAULT 0,
-  `is_used_optional` bool NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_resource_u1` (`component_id`, `resource_type_id`, `value`),
-  KEY `component_resource_k1` (`component_id`),
-  CONSTRAINT `component_resource_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_resource_k2` (`resource_type_id`),
-  CONSTRAINT `component_resource_fk2` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE,
-  KEY `component_resource_k3` (`component_connector_id`),
-  CONSTRAINT `component_resource_fk3` FOREIGN KEY (`component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
 -- Note: CHECK constraint is not supported in MySQL.
--- Hence, we need triggers to verify that at least one of 
+-- Hence, we need triggers to verify that at least one of
 -- is_used_required/optional is NULL
 --
 -- Older versions of MySQL do not support SIGNAL statement, so we simply
 -- issue erroneous command
 --
-DELIMITER $$
-DROP TRIGGER IF EXISTS `check_is_used_constraint1` $$
-CREATE TRIGGER `check_is_used_constraint1` BEFORE INSERT ON `component_resource` FOR EACH ROW 
-  BEGIN
-    IF (NEW.is_used_required <> 0 AND NEW.is_used_optional <> 0) THEN
-      call raise_error('Constraint component_resource.is_used violated: both fields is_used_required and is_used_optional cannot be set at the same time.');
-    END IF; 
-  END
-$$
-DROP TRIGGER IF EXISTS `check_is_used_constraint2` $$
-CREATE TRIGGER `check_is_used_constraint2` BEFORE UPDATE ON `component_resource` FOR EACH ROW 
-  BEGIN
-    IF (NEW.is_used_required <> 0 AND NEW.is_used_optional <> 0) THEN
-      call raise_error('Constraint component_resource.is_used violated: both fields is_used_required and is_used_optional cannot be set at the same time.');
-    END IF; 
-  END
-$$
-DELIMITER ;
-
---
--- Table `assembly_component_connection`
---
-
-DROP TABLE IF EXISTS `assembly_component_connection`;
-CREATE TABLE `assembly_component_connection` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `first_assembly_component_id` int(11) unsigned NOT NULL,
-  `first_component_connector_id` int(11) unsigned NOT NULL,
-  `second_assembly_component_id` int(11) unsigned NOT NULL,
-  `second_component_connector_id` int(11) unsigned NOT NULL,
-  `link_assembly_component_id` int(11) unsigned DEFAULT NULL,
-  `link_assembly_component_quantity` int(11) unsigned DEFAULT NULL,
-  `label` varchar(64) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `assembly_component_connection_k1` (`first_assembly_component_id`),
-  CONSTRAINT `assembly_component_connection_fk1` FOREIGN KEY (`first_assembly_component_id`) REFERENCES `assembly_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `assembly_component_connection_k2` (`first_component_connector_id`),
-  CONSTRAINT `assembly_component_connection_fk2` FOREIGN KEY (`first_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `assembly_component_connection_k3` (`second_assembly_component_id`),
-  CONSTRAINT `assembly_component_connection_fk3` FOREIGN KEY (`second_assembly_component_id`) REFERENCES `assembly_component` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `assembly_component_connection_k4` (`second_component_connector_id`),
-  CONSTRAINT `assembly_component_connection_fk4` FOREIGN KEY (`second_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `assembly_component_connection_k5` (`link_assembly_component_id`),
-  CONSTRAINT `assembly_component_connection_fk5` FOREIGN KEY (`link_assembly_component_id`) REFERENCES `assembly_component` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Note: We need triggers to verify that all assembly components belong to the
--- same assembly, and that connectors/assembly components belong to the
--- same component 
---
-
---
--- Table `component_instance`
---
-
-DROP TABLE IF EXISTS `component_instance`;
-CREATE TABLE `component_instance` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `component_id` int(11) unsigned NOT NULL,
-  `location_id` int(11) unsigned DEFAULT NULL,
-  `tag` varchar(64) DEFAULT NULL,
-  `serial_number` varchar(32) DEFAULT NULL,
-  `qr_id` int(11) unsigned DEFAULT NULL,
-  `location_details` varchar(256) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `entity_info_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `component_instance_u1` (`component_id`, `location_id`, `tag`),
-  UNIQUE KEY `component_instance_u2` (`serial_number`,`component_id`),
-  UNIQUE KEY `component_instance_u3` (`qr_id`),
-  KEY `component_instance_k1` (`component_id`),
-  CONSTRAINT `component_instance_fk1` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
-  KEY `component_instance_k2` (`location_id`),
-  CONSTRAINT `component_instance_fk2` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
-  KEY `component_instance_k3` (`entity_info_id`),
-  CONSTRAINT `component_instance_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Note: Need trigger to prevent changing entity_info_id; use
--- stored procedure for common code
---
-
---
--- Table `component_instance_property`
---
-
-DROP TABLE IF EXISTS `component_instance_property`;
-CREATE TABLE `component_instance_property` (
-  `component_instance_id` int(11) unsigned NOT NULL,
-  `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_instance_id`, `property_value_id`),
-  KEY `component_instance_property_k1` (`component_instance_id`),
-  CONSTRAINT `component_instance_property_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_instance_property_k2` (`property_value_id`),
-  CONSTRAINT `component_instance_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_instance_location_history`
---
-
-DROP TABLE IF EXISTS `component_instance_location_history`;
-CREATE TABLE `component_instance_location_history` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `component_instance_id` int(11) unsigned NOT NULL,
-  `location_id` int(11) unsigned DEFAULT NULL,
-  `location_details` varchar(256) DEFAULT NULL,
-  `entered_on_date_time` datetime NOT NULL,
-  `entered_by_user_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `component_instance_location_k1` (`component_instance_id`),
-  CONSTRAINT `component_instance_location_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_instance_location_k2` (`location_id`),
-  CONSTRAINT `component_instance_location_fk2` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
-  KEY `component_instance_location_k3` (`entered_by_user_id`),
-  CONSTRAINT `component_instance_location_fk3` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE 
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `component_instance_log`
---
-
-DROP TABLE IF EXISTS `component_instance_log`;
-CREATE TABLE `component_instance_log` (
-  `component_instance_id` int(11) unsigned NOT NULL,
-  `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`component_instance_id`, `log_id`),
-  KEY `component_instance_log_k1` (`component_instance_id`),
-  CONSTRAINT `component_instance_log_fk1` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `component_instance_log_k2` (`log_id`),
-  CONSTRAINT `component_instance_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design`
---
-
-DROP TABLE IF EXISTS `design`;
-CREATE TABLE `design` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `entity_info_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_u1` (`name`),
-  KEY `design_k1` (`entity_info_id`),
-  CONSTRAINT `design_fk1` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Note: Need trigger to prevent changing entity_info_id
---
-
---
--- Table `design_link`
---
-
-DROP TABLE IF EXISTS `design_link`;
-CREATE TABLE `design_link` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_design_id` int(11) unsigned NOT NULL,
-  `child_design_id` int(11) unsigned NOT NULL,
-  `label` varchar(64) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_link_u1` (`parent_design_id`, `child_design_id`, `label`),
-  KEY `design_link_k1` (`parent_design_id`),
-  CONSTRAINT `design_link_fk1` FOREIGN KEY (`parent_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE,
-  KEY `design_link_k2` (`child_design_id`),
-  CONSTRAINT `design_link_fk2` FOREIGN KEY (`child_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design_property`
---
-
-DROP TABLE IF EXISTS `design_property`;
-CREATE TABLE `design_property` (
-  `design_id` int(11) unsigned NOT NULL,
-  `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`design_id`, `property_value_id`),
-  UNIQUE KEY `design_property_u1` (`design_id`, `property_value_id`),
-  KEY `design_property_k1` (`design_id`),
-  CONSTRAINT `design_property_fk1` FOREIGN KEY (`design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_property_k2` (`property_value_id`),
-  CONSTRAINT `design_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design_log`
---
-
-DROP TABLE IF EXISTS `design_log`;
-CREATE TABLE `design_log` (
-  `design_id` int(11) unsigned NOT NULL,
-  `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`design_id`, `log_id`),
-  KEY `design_log_k1` (`design_id`),
-  CONSTRAINT `design_log_fk1` FOREIGN KEY (`design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_log_k2` (`log_id`),
-  CONSTRAINT `design_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design_element`
---
-
-DROP TABLE IF EXISTS `design_element`;
-CREATE TABLE `design_element` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `parent_design_id` int(11) unsigned NOT NULL,
-  `parent_design_element_id` int(11) unsigned DEFAULT NULL,
-  `child_design_id` int(11) unsigned DEFAULT NULL,
-  `component_id` int(11) unsigned DEFAULT NULL,
-  `location_id` int(11) unsigned DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `sort_order` float(10,2) unsigned DEFAULT NULL,
-  `entity_info_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `design_element_u1` (`name`, `parent_design_id`),
-  KEY `design_element_k1` (`parent_design_id`),
-  CONSTRAINT `design_element_fk1` FOREIGN KEY (`parent_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_k2` (`parent_design_element_id`),
-  CONSTRAINT `design_element_fk2` FOREIGN KEY (`parent_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k3` (`child_design_id`),
-  CONSTRAINT `design_element_fk3` FOREIGN KEY (`child_design_id`) REFERENCES `design` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k4` (`component_id`),
-  CONSTRAINT `design_element_fk4` FOREIGN KEY (`component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k5` (`location_id`),
-  CONSTRAINT `design_element_fk5` FOREIGN KEY (`location_id`) REFERENCES `location` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_k6` (`entity_info_id`),
-  CONSTRAINT `design_element_fk6` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Note: Need trigger to prevent changing entity_info_id
---
-
---
--- Table `design_element_property`
---
-
-DROP TABLE IF EXISTS `design_element_property`;
-CREATE TABLE `design_element_property` (
-  `design_element_id` int(11) unsigned NOT NULL,
-  `property_value_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`design_element_id`, `property_value_id`),
-  UNIQUE KEY `design_element_property_u1` (`design_element_id`, `property_value_id`),
-  KEY `design_element_property_k1` (`design_element_id`),
-  CONSTRAINT `design_element_property_fk1` FOREIGN KEY (`design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_property_k2` (`property_value_id`),
-  CONSTRAINT `design_element_property_fk2` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design_element_component_instance`
---
-
-DROP TABLE IF EXISTS `design_element_component_instance`;
-CREATE TABLE `design_element_component_instance` (
-  `design_element_id` int(11) unsigned NOT NULL,
-  `component_instance_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`design_element_id`, `component_instance_id`),
-  KEY `design_element_component_instance_k1` (`design_element_id`),
-  CONSTRAINT `design_element_component_instance_fk1` FOREIGN KEY (`design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_component_instance_k2` (`component_instance_id`),
-  CONSTRAINT `design_element_component_instance_fk2` FOREIGN KEY (`component_instance_id`) REFERENCES `component_instance` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design_element_log`
---
-
-DROP TABLE IF EXISTS `design_element_log`;
-CREATE TABLE `design_element_log` (
-  `design_element_id` int(11) unsigned NOT NULL,
-  `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`design_element_id`, `log_id`),
-  KEY `design_element_log_k1` (`design_element_id`),
-  CONSTRAINT `design_element_log_fk1` FOREIGN KEY (`design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_log_k2` (`log_id`),
-  CONSTRAINT `design_element_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `design_element_connection`
---
-
-DROP TABLE IF EXISTS `design_element_connection`;
-CREATE TABLE `design_element_connection` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `first_design_element_id` int(11) unsigned NOT NULL,
-  `first_component_connector_id` int(11) unsigned DEFAULT NULL,
-  `second_design_element_id` int(11) unsigned NOT NULL,
-  `second_component_connector_id` int(11) unsigned DEFAULT NULL,
-  `link_component_id` int(11) unsigned DEFAULT NULL,
-  `link_component_quantity` int(11) unsigned DEFAULT NULL,
-  `label` varchar(64) DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `resource_type_id` int(11) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `design_element_connection_k1` (`first_design_element_id`),
-  CONSTRAINT `design_element_connection_fk1` FOREIGN KEY (`first_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_connection_k2` (`first_component_connector_id`),
-  CONSTRAINT `design_element_connection_fk2` FOREIGN KEY (`first_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_connection_k3` (`second_design_element_id`),
-  CONSTRAINT `design_element_connection_fk3` FOREIGN KEY (`second_design_element_id`) REFERENCES `design_element` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_connection_k4` (`second_component_connector_id`),
-  CONSTRAINT `design_element_connection_fk4` FOREIGN KEY (`second_component_connector_id`) REFERENCES `component_connector` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
-  KEY `design_element_connection_k5` (`link_component_id`),
-  CONSTRAINT `design_element_connection_fk5` FOREIGN KEY (`link_component_id`) REFERENCES `component` (`id`) ON UPDATE CASCADE,
-  KEY `design_element_connection_k6` (`resource_type_id`),
-  CONSTRAINT `design_element_connection_fk6` FOREIGN KEY (`resource_type_id`) REFERENCES `resource_type` (`id`) ON UPDATE CASCADE 
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
+-- DELIMITER $$
+-- DROP TRIGGER IF EXISTS `check_is_used_constraint1` $$
+-- CREATE TRIGGER `check_is_used_constraint1` BEFORE INSERT ON `component_resource` FOR EACH ROW
+--   BEGIN
+--     IF (NEW.is_used_required <> 0 AND NEW.is_used_optional <> 0) THEN
+--       call raise_error('Constraint component_resource.is_used violated: both fields is_used_required and is_used_optional cannot be set at the same time.');
+--     END IF;
+--   END
+-- $$
+-- DROP TRIGGER IF EXISTS `check_is_used_constraint2` $$
+-- CREATE TRIGGER `check_is_used_constraint2` BEFORE UPDATE ON `component_resource` FOR EACH ROW
+--   BEGIN
+--     IF (NEW.is_used_required <> 0 AND NEW.is_used_optional <> 0) THEN
+--       call raise_error('Constraint component_resource.is_used violated: both fields is_used_required and is_used_optional cannot be set at the same time.');
+--     END IF;
+--   END
+-- $$
+-- DELIMITER ;
