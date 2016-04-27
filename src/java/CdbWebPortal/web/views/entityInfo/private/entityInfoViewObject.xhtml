@@ -18,7 +18,7 @@
                          action="#{entityController.reloadCurrent()}"
                          update="ownerUser"
                          />
-        <p:selectOneMenu value="#{entityInfoObject.ownerUser}" styleClass="entityDataText">
+        <p:selectOneMenu rendered="#{entityInfoObject != null}" value="#{entityInfoObject.ownerUser}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
         </p:selectOneMenu>
