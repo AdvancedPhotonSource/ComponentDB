@@ -4,6 +4,7 @@ from dbLegacy.api.cdbDbApi import CdbDbApi
 from dbLegacy.impl.propertyTypeHandler import PropertyTypeHandler
 from dbLegacy.impl.propertyValueHandler import PropertyValueHandler
 from dbLegacy.impl.propertyTypeHandlerHandler import PropertyTypeHandlerHandler
+from dbLegacy.impl.propertyTypeCategoryHandler import PropertyTypeCategoryHandler
 
 
 class PropertyDbApi(CdbDbApi):
@@ -13,6 +14,7 @@ class PropertyDbApi(CdbDbApi):
         self.propertyTypeHandler = PropertyTypeHandler()
         self.propertyValueHandler = PropertyValueHandler()
         self.propertyTypeHandlerHandler = PropertyTypeHandlerHandler()
+        self.propertyTypeCategoryHandler = PropertyTypeCategoryHandler()
 
     @CdbDbApi.executeQuery
     def getPropertyValuesByPropertyTypeId(self, propertyTypeId, **kwargs):
@@ -30,6 +32,24 @@ class PropertyDbApi(CdbDbApi):
     def getPropertyTypesByHandlerId(self, propertyHandlerid, **kwargs):
         session = kwargs['session']
         dbPropertyTypes = self.propertyTypeHandler.getPropertyTypesByHandlerId(session, propertyHandlerid)
+        return self.toCdbObjectList(dbPropertyTypes)
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypeHandlers(self, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypeHandlers = self.propertyTypeHandlerHandler.getPropertyTypeHandlers(session)
+        return self.toCdbObjectList(dbPropertyTypeHandlers)
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypeCategories(self, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypeCategories = self.propertyTypeCategoryHandler.getPropertyTypeCategories(session)
+        return self.toCdbObjectList(dbPropertyTypeCategories)
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypes(self, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypes = self.propertyTypeHandler.getPropertyTypes(session)
         return self.toCdbObjectList(dbPropertyTypes)
 
 

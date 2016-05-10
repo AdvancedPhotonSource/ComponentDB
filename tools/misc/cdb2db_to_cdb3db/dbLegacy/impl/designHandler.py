@@ -39,6 +39,10 @@ class DesignHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('Design %s does not exist.' % (name))
 
+    def getDesignElementsByParentId(self, session, parentId):
+        dbDesignElements = session.query(DesignElement).filter(DesignElement.parent_design_id==parentId).all()
+        return dbDesignElements
+
     # This method will not throw exception if both id and name are none
     def findDesignByIdOrName(self, session, id, name):
         if id is None and name is None:

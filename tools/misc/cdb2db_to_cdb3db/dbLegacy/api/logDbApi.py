@@ -28,6 +28,11 @@ class LogDbApi(CdbDbApi):
         dbLogs = self.logHandler.getLogs(session)
         return self.toCdbObjectList(dbLogs)
 
+    @CdbDbApi.executeQuery
+    def getLogTopics(self, **kwargs):
+        session = kwargs['session']
+        dbLogTopics = self.logHandler.getLogTopics(session)
+        return self.toCdbObjectList(dbLogTopics)
 
 #######################################################################
 # Testing.

@@ -13,6 +13,7 @@ from dbLegacy.impl.propertyTypeHandler import PropertyTypeHandler
 from dbLegacy.impl.propertyValueHandler import PropertyValueHandler
 from dbLegacy.impl.userInfoHandler import UserInfoHandler
 from dbLegacy.impl.entityInfoHandler import EntityInfoHandler
+from dbLegacy.impl.sourceHandler import SourceHandler
 
 class ComponentDbApi(CdbDbApi):
 
@@ -29,6 +30,13 @@ class ComponentDbApi(CdbDbApi):
         self.componentInstancePropertyHandler = ComponentInstancePropertyHandler()
         self.userInfoHandler = UserInfoHandler()
         self.entityInfoHandler = EntityInfoHandler()
+        self.sourceHandler = SourceHandler()
+
+    @CdbDbApi.executeQuery
+    def getSources(self, **kwargs):
+        session = kwargs['session']
+        dbSources = self.sourceHandler.getSources(session)
+        return self.toCdbObjectList(dbSources)
 
     @CdbDbApi.executeQuery
     def getComponentTypeCategories(self, **kwargs):

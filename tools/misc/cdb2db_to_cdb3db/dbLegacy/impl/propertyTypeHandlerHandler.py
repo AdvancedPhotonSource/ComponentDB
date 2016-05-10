@@ -13,7 +13,7 @@ class PropertyTypeHandlerHandler(CdbDbEntityHandler):
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
 
-    def getPropertyTypeCategories(self, session):
+    def getPropertyTypeHandlers(self, session):
         self.logger.debug('Retrieving property type category list')
         dbPropertyTypeCategories = session.query(PropertyTypeHandler).all()
         return dbPropertyTypeCategories

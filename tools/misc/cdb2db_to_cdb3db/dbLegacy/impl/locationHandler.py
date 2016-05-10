@@ -8,6 +8,7 @@ from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from dbLegacy.entities.locationType import LocationType
 from dbLegacy.entities.location import Location
+from dbLegacy.entities.locationLink import LocationLink
 from dbLegacy.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from locationTypeHandler import LocationTypeHandler
 
@@ -50,6 +51,16 @@ class LocationHandler(CdbDbEntityHandler):
         self.logger.debug('Retrieving location list')
         dbLocations = session.query(Location).all()
         return dbLocations
+
+    def getLocationLinks(self, session):
+        self.logger.debug('Retrieving location link list')
+        dbLocationlinks = session.query(LocationLink).all()
+        return dbLocationlinks
+
+    def getLocationLinksForParentId(self, session, parentId):
+        self.logger.debug('Retrieving location link list for parent id %s' % parentId)
+        dbLocationlinks = session.query(LocationLink).filter(LocationLink.parent_location_id==parentId).all()
+        return dbLocationlinks
 
     def getLocationById(self, session, id):
         self.logger.debug('Retrieving location id %s' % id)

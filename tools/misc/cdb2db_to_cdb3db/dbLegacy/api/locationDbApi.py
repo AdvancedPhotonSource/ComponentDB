@@ -25,6 +25,18 @@ class LocationDbApi(CdbDbApi):
         return self.toCdbObjectList(dbLocations)
 
     @CdbDbApi.executeQuery
+    def getLocationLinks(self, **kwargs):
+        session = kwargs['session']
+        dbLocations = self.locationHandler.getLocationLinks(session)
+        return self.toCdbObjectList(dbLocations)
+
+    @CdbDbApi.executeQuery
+    def getChildLocations(self, parentLocationId, **kwargs):
+        session = kwargs['session']
+        dbLocations = self.locationHandler.getLocationLinksForParentId(session, parentLocationId)
+        return self.toCdbObjectList(dbLocations)
+
+    @CdbDbApi.executeQuery
     def getLocationById(self, id, **kwargs):
         session = kwargs['session']
         dbLocation = self.locationHandler.getLocationById(session, id)

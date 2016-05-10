@@ -41,6 +41,13 @@ class DesignDbApi(CdbDbApi):
         return dbDesign.getCdbObject()
 
     @CdbDbApi.executeQuery
+    def getDesignElementsByParentId(self, parentId, **kwargs):
+        session = kwargs['session']
+        dbDesignElements = self.designHandler.getDesignElementsByParentId(session, parentId)
+        return self.toCdbObjectList(dbDesignElements)
+
+
+    @CdbDbApi.executeQuery
     def getDesignByName(self, name, **kwargs):
         session = kwargs['session']
         dbDesign = self.designHandler.getDesignByName(session, name)

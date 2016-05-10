@@ -9,6 +9,7 @@ from cdb.common.exceptions.invalidArgument import InvalidArgument
 from dbLegacy.entities.attachment import Attachment
 from dbLegacy.entities.logAttachment import LogAttachment
 from dbLegacy.entities.log import Log
+from dbLegacy.entities.logTopic import LogTopic
 from dbLegacy.impl.cdbDbEntityHandler import CdbDbEntityHandler
 
 
@@ -25,8 +26,10 @@ class LogHandler(CdbDbEntityHandler):
         dbAttachments = session.query(Attachment).all()
         return dbAttachments
 
-
     def getLogAttachments(self, session):
         dbLogAttachments = session.query(LogAttachment).all()
         return dbLogAttachments
 
+    def getLogTopics(self, session):
+        dbLogTopics = session.query(LogTopic).all()
+        return dbLogTopics
