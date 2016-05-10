@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 
 from cdb.common.db.entities.cdbDbEntity import CdbDbEntity
-from cdb.common.objects import componentType
+from cdb.common.objects import source
 
-class ComponentType(CdbDbEntity):
+class Source(CdbDbEntity):
 
-    cdbObjectClass = componentType.ComponentType
+    cdbObjectClass = source.Source
 
     mappedColumnDict = {
-        'component_type_category_id' : 'componentTypeCategoryId',
+        'contact_info' : 'contactInfo'
     }
 
     def __init__(self, **kwargs):

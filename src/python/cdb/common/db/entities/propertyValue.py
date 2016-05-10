@@ -5,6 +5,8 @@ from cdb.common.objects import propertyValue
 
 class PropertyValue(CdbDbEntity):
 
+    entityDisplayName = 'property value'
+
     mappedColumnDict = { 
         'property_type_id' : 'propertyTypeId',
         'entered_on_date_time' : 'enteredOnDateTime',

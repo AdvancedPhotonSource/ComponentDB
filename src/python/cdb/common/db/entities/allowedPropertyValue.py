@@ -5,6 +5,8 @@ from cdb.common.objects import allowedPropertyValue
 
 class AllowedPropertyValue(CdbDbEntity):
 
+    entityDisplayName = 'allowed property value'
+
     mappedColumnDict = { 
         'property_type_id' : '',
         'sort_order' : 'sortOrder',

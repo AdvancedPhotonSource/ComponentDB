@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
 from cdb.common.db.entities.cdbDbEntity import CdbDbEntity
-from cdb.common.objects import userGroup
+from cdb.common.objects import resourceType
 
-class UserGroup(CdbDbEntity):
+class ResourceType(CdbDbEntity):
 
-    entityDisplayName = 'user group'
+    entityDisplayName = 'resource type'
 
-    cdbObjectClass = userGroup.UserGroup
+    cdbObjectClass = resourceType.ResourceType
 
     def __init__(self, **kwargs):
         CdbDbEntity.__init__(self, **kwargs)
-
 

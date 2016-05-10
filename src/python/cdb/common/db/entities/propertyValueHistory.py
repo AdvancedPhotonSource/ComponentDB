@@ -5,6 +5,8 @@ from cdb.common.objects import propertyValueHistory
 
 class PropertyValueHistory(CdbDbEntity):
 
+    entityDisplayName = 'property value history'
+
     mappedColumnDict = { 
         'property_value_id' : 'propertyValue',
         'entered_on_date_time' : 'enteredOnDateTime',

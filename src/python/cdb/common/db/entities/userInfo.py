@@ -5,6 +5,8 @@ from cdb.common.objects import userInfo
 
 class UserInfo(CdbDbEntity):
 
+    entityDisplayName = 'user info'
+
     mappedColumnDict = { 
         'first_name' : 'firstName',
         'middle_name' : 'middleName',

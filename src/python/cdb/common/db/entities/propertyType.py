@@ -5,6 +5,8 @@ from cdb.common.objects import propertyType
 
 class PropertyType(CdbDbEntity):
 
+    entityDisplayName = 'property type'
+
     mappedColumnDict = {
         'property_type_category_id' : 'propertyTypeCategoryId',
         'property_type_handler_id' : 'propertyTypeHandlerId',

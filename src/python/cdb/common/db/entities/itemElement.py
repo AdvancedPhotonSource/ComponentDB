@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 
 from cdb.common.db.entities.cdbDbEntity import CdbDbEntity
-from cdb.common.objects import userGroup
+from cdb.common.objects import itemElement
 
-class UserGroup(CdbDbEntity):
+class ItemElement(CdbDbEntity):
 
-    entityDisplayName = 'user group'
+    entityDisplayName = 'item element'
 
-    cdbObjectClass = userGroup.UserGroup
+    cdbObjectClass = itemElement.ItemElement
 
     def __init__(self, **kwargs):
         CdbDbEntity.__init__(self, **kwargs)

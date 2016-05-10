@@ -5,6 +5,8 @@ from cdb.common.objects import propertyTypeCategory
 
 class PropertyTypeCategory(CdbDbEntity):
 
+    entityDisplayName = 'property type category'
+
     cdbObjectClass = propertyTypeCategory.PropertyTypeCategory
 
     def __init__(self, **kwargs):

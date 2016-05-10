@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 
 from cdb.common.db.entities.cdbDbEntity import CdbDbEntity
-from cdb.common.objects import locationType
+from cdb.common.objects import itemType
 
-class LocationType(CdbDbEntity):
+class ItemType(CdbDbEntity):
 
-    cdbObjectClass = locationType.LocationType
+    entityDisplayName = 'item type'
+
+    cdbObjectClass = itemType.ItemType
 
     def __init__(self, **kwargs):
         CdbDbEntity.__init__(self, **kwargs)
-
 

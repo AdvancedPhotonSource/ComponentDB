@@ -5,6 +5,8 @@ from cdb.common.objects import propertyTypeHandler
 
 class PropertyTypeHandler(CdbDbEntity):
 
+    entityDisplayName = 'property type handler'
+
     cdbObjectClass = propertyTypeHandler.PropertyTypeHandler
 
     def __init__(self, **kwargs):
