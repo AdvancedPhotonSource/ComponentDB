@@ -109,6 +109,7 @@ class UserInfoHandler(CdbDbEntityHandler):
         dbUserUserGroup = UserUserGroup(user_id=dbUserInfo.id, user_group_id=dbUserGroup.id)
         session.add(dbUserUserGroup)
         session.flush()
+        self.logger.debug('Added user %s to group %s' % (username, groupName))
         return dbUserUserGroup
 
 

@@ -41,20 +41,29 @@ class EntityInfoHandler(CdbDbEntityHandler):
         raise AuthorizationError('User %s is not authorized to modify this entity.' % (dbUserInfo.username));
 
 
-    def createEntityInfo(self, session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable):
+    def createEntityInfo(self, session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDateTime=None, lastModifiedOnDateTime=None):
         createdByDbUserInfo = self.userInfoHandler.getUserInfoById(session, createdByUserId)
-        ownerDbUserInfo = self.userInfoHandler.getUserInfoById(session, ownerUserId)
+
+        ownerDbUserInfo = None
+        ownerDbUserGroup = None
+
+        if ownerUserId is not None:
+            ownerDbUserInfo = self.userInfoHandler.getUserInfoById(session, ownerUserId)
         if ownerGroupId is not None:
             ownerDbUserGroup = self.userGroupHandler.getUserGroupById(session, ownerGroupId)
-        createdOnDateTime = datetime.datetime.now()
-        lastModifiedOnDateTime = createdOnDateTime 
+
+        # Allows for more advanced database merging & transfers.
+        if not createdOnDateTime:
+            createdOnDateTime = datetime.datetime.now()
+        if not lastModifiedOnDateTime:
+            lastModifiedOnDateTime = createdOnDateTime
+
         lastModifiedByUserId = createdByUserId
         lastModifiedByDbUserInfo = createdByDbUserInfo 
         
         dbEntityInfo = EntityInfo(created_on_date_time=createdOnDateTime, last_modified_on_date_time=lastModifiedOnDateTime, is_group_writeable=self.toIntegerFromBoolean(isGroupWriteable))
-        dbEntityInfo.ownerUserInfo = ownerDbUserInfo 
-        if ownerGroupId is not None:
-            dbEntityInfo.ownerUserGroup = ownerDbUserGroup
+        dbEntityInfo.ownerUserInfo = ownerDbUserInfo
+        dbEntityInfo.ownerUserGroup = ownerDbUserGroup
         dbEntityInfo.createdByUserInfo = createdByDbUserInfo 
         dbEntityInfo.lastModifiedByUserInfo = lastModifiedByDbUserInfo 
         return dbEntityInfo
