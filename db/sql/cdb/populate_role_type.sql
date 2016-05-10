@@ -1,0 +1,4 @@
+LOCK TABLES `role_type` WRITE;
+/*!40000 ALTER TABLE `role_type` DISABLE KEYS */;
+/*!40000 ALTER TABLE `role_type` ENABLE KEYS */;
+UNLOCK TABLES;

@@ -328,7 +328,6 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) unsigned NOT NULL,
-  `self_element_id` int(11) unsigned NOT NULL,
   `name` varchar(64) NOT NULL,
   `derived_from_item_id` int(11) unsigned DEFAULT NULL,
   `item_identifier1` varchar(32) DEFAULT NULL,
@@ -343,7 +342,6 @@ CREATE TABLE `item` (
   KEY `item_k1` (`domain_id`),
   KEY `item_k2` (`derived_from_item_id`),
   KEY `item_k3` (`entity_info_id`),
-  KEY `item_k4` (`self_element_id`),
   CONSTRAINT `item_fk1` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_fk2` FOREIGN KEY (`derived_from_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT `item_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
@@ -356,10 +354,9 @@ CREATE TABLE `item` (
 DROP TABLE IF EXISTS `item_element`;
 CREATE TABLE `item_element` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
+  `name` varchar(64) NULL,
   `parent_item_id` int(11) unsigned NOT NULL,
   `contained_item_id` int(11) unsigned DEFAULT NULL,
-  `is_self` bool NOT NULL DEFAULT 0,
   `is_required` bool NULL DEFAULT 0,
   `description` varchar(256) DEFAULT NULL,
   `sort_order` float(10,2) unsigned DEFAULT NULL,
@@ -374,13 +371,6 @@ CREATE TABLE `item_element` (
   CONSTRAINT `item_element_fk2` FOREIGN KEY (`contained_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Update constraint on `item` table.
---
-
-ALTER TABLE `item`
-  ADD CONSTRAINT `item_fk4` FOREIGN KEY (`self_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE;
 
 --
 -- Table `item_log`
@@ -712,7 +702,7 @@ CREATE TABLE `item_element_relationship` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `first_item_element_id` int(11) unsigned NOT NULL,
   `first_item_connector_id` int(11) unsigned DEFAULT NULL,
-  `second_item_element_id` int(11) unsigned NOT NULL,
+  `second_item_element_id` int(11) unsigned NULL,
   `second_item_connector_id` int(11) unsigned DEFAULT NULL,
   `relationship_type_id` int(11) unsigned NOT NULL,
   `link_item_element_id` int(11) unsigned DEFAULT NULL,
