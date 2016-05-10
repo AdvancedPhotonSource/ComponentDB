@@ -2,7 +2,7 @@
 
 from cdbObject import CdbObject
 
-class ComponentTypeCategory(CdbObject):
+class RelationshipType(CdbObject):
 
     DEFAULT_KEY_LIST = [ 'id', 'name', 'description' ]
 

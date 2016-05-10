@@ -2,9 +2,9 @@
 
 from cdbObject import CdbObject
 
-class ComponentType(CdbObject):
+class ItemElement(CdbObject):
 
-    DEFAULT_KEY_LIST = [ 'id', 'name', 'description', 'componentTypeCategory' ]
+    DEFAULT_KEY_LIST = [ 'id', 'name', 'description' ]
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)

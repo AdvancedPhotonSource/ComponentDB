@@ -2,9 +2,9 @@
 
 from cdbObject import CdbObject
 
-class ComponentProperty(CdbObject):
+class ConnectorType(CdbObject):
 
-    DEFAULT_KEY_LIST = [ 'component', 'propertyValue' ]
+    DEFAULT_KEY_LIST = [ 'id', 'name', 'description' ]
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)

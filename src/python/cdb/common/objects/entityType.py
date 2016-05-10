@@ -2,9 +2,9 @@
 
 from cdbObject import CdbObject
 
-class Design(CdbObject):
+class EntityType(CdbObject):
 
-    DEFAULT_KEY_LIST = [ 'id', 'name', 'description', 'entityInfo' ]
+    DEFAULT_KEY_LIST = [ 'id', 'name', 'description' ]
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)

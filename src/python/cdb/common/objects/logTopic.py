@@ -2,9 +2,9 @@
 
 from cdbObject import CdbObject
 
-class DesignElementProperty(CdbObject):
+class LogTopic(CdbObject):
 
-    DEFAULT_KEY_LIST = [ 'designElement', 'propertyValue' ]
+    DEFAULT_KEY_LIST = [ 'id', 'name', 'description' ]
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)

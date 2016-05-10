@@ -2,10 +2,10 @@
 
 from cdbObject import CdbObject
 
+class ResourceType(CdbObject):
 
-class ComponentInstanceLocationHistory(CdbObject):
-
-    DEFAULT_KEY_LIST = [ 'id', 'locationDetails' ]
+    DEFAULT_KEY_LIST = [ 'id', 'name', 'description' ]
 
     def __init__(self, dict):
         CdbObject.__init__(self, dict)
+
