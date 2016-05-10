@@ -4,6 +4,7 @@ from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.propertyTypeHandler import PropertyTypeHandler
 from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
 from cdb.common.db.impl.propertyTypeHandlerHandler import PropertyTypeHandlerHandler
+from cdb.common.db.impl.propertyTypeCategoryHandler import PropertyTypeCategoryHandler
 
 
 class PropertyDbApi(CdbDbApi):
@@ -13,6 +14,7 @@ class PropertyDbApi(CdbDbApi):
         self.propertyTypeHandler = PropertyTypeHandler()
         self.propertyValueHandler = PropertyValueHandler()
         self.propertyTypeHandlerHandler = PropertyTypeHandlerHandler()
+        self.propertyTypeCategoryHandler = PropertyTypeCategoryHandler()
 
     @CdbDbApi.executeQuery
     def getPropertyValuesByPropertyTypeId(self, propertyTypeId, **kwargs):
@@ -32,6 +34,33 @@ class PropertyDbApi(CdbDbApi):
         dbPropertyTypes = self.propertyTypeHandler.getPropertyTypesByHandlerId(session, propertyHandlerid)
         return self.toCdbObjectList(dbPropertyTypes)
 
+    @CdbDbApi.executeTransaction
+    def addPropertyTypeHandler(self, propertyTypeHandlerName, description, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypeHandlers = self.propertyTypeHandlerHandler.addPropertyTypeHandler(session, propertyTypeHandlerName, description)
+        return dbPropertyTypeHandlers.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addPropertyTypeCategory(self, propertyTypeCategoryName, description, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypeCategories = self.propertyTypeCategoryHandler.addPropertyTypeCategory(session, propertyTypeCategoryName, description)
+        return dbPropertyTypeCategories.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addPropertyType(self, propertyTypeName, description, propertyTypeCategoryName, propertyTypeHandlerName,
+                        defaultValue, defaultUnits, isUserWriteable, isDynamic, isInternal, isActive, **kwargs):
+        session = kwargs['session']
+        dbPropertyType = self.propertyTypeHandler.addPropertyType(session, propertyTypeName, description,
+                                                                  propertyTypeCategoryName, propertyTypeHandlerName,
+                                                                  defaultValue, defaultUnits, isUserWriteable,
+                                                                  isDynamic, isInternal, isActive)
+        return dbPropertyType.toCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addAllowedPropertyValue(self, propertyTypeName, value, units, description, sortOrder, **kwargs):
+        session = kwargs['session']
+        dbAllowedPropertyValue = self.propertyTypeHandler.addAllowedPropertyValue(session, propertyTypeName, value, units, description, sortOrder)
+        return dbAllowedPropertyValue.toCdbObject()
 
 #######################################################################
 # Testing.
