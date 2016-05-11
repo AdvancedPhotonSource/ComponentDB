@@ -42,7 +42,9 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
         // Drawing
         String docId = contentId;
-        if (!contentId.endsWith("DRW") && !contentId.endsWith("drw") && !contentId.startsWith("APSU")) {
+        if (!contentId.endsWith("DRW") && !contentId.endsWith("drw") &&
+                !contentId.endsWith("DWG") && !contentId.endsWith("dwg")
+                && !contentId.startsWith("APSU")) {
             docId = contentId.replace("APS_", "");
             docId = "APS_" + docId;
         }
