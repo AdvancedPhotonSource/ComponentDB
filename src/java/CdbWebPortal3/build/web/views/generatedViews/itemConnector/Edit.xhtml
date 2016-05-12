@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditItemConnectorTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditItemConnectorLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{itemConnectorController.selected.id}" title="#{resources.EditItemConnectorTitle_id}" required="true" requiredMessage="#{resources.EditItemConnectorRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditItemConnectorLabel_label}" for="label" />
+                    <h:inputText id="label" value="#{itemConnectorController.selected.label}" title="#{resources.EditItemConnectorTitle_label}" />
+                    <h:outputLabel value="#{resources.EditItemConnectorLabel_quantity}" for="quantity" />
+                    <h:inputText id="quantity" value="#{itemConnectorController.selected.quantity}" title="#{resources.EditItemConnectorTitle_quantity}" />
+                    <h:outputLabel value="#{resources.EditItemConnectorLabel_itemId}" for="itemId" />
+                    <h:selectOneMenu id="itemId" value="#{itemConnectorController.selected.itemId}" title="#{resources.EditItemConnectorTitle_itemId}" required="true" requiredMessage="#{resources.EditItemConnectorRequiredMessage_itemId}">
+                        <f:selectItems value="#{itemController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditItemConnectorLabel_connectorId}" for="connectorId" />
+                    <h:selectOneMenu id="connectorId" value="#{itemConnectorController.selected.connectorId}" title="#{resources.EditItemConnectorTitle_connectorId}" required="true" requiredMessage="#{resources.EditItemConnectorRequiredMessage_connectorId}">
+                        <f:selectItems value="#{connectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{itemConnectorController.update}" value="#{resources.EditItemConnectorSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditItemConnectorViewLink}"/>
+                <br />
+                <h:commandLink action="#{itemConnectorController.prepareList}" value="#{resources.EditItemConnectorShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditItemConnectorIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

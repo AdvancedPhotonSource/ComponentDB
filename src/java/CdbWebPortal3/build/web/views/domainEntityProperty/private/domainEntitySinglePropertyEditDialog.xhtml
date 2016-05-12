@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="propertyValueObject" value="#{entityController.currentEditPropertyValue}" /> 
+
+    <p:dialog id="#{entityTypeName}SinglePropertyEditDialog"
+              widgetVar="#{entityTypeName}SinglePropertyEditDialogWidget" 
+              header="Edit property value" 
+              styleClass="dialog"
+              closable="false"
+              modal="true">
+        <p:outputPanel rendered="#{propertyValueObject != null}">
+            <div class="dialog">
+
+                <p:panelGrid columns="2" styleClass="createEntityDetails">
+                    <h:outputLabel for="propertyTypeName" value="Property Type" styleClass="entityDataEmphasizedLabel"/>
+                    <h:outputText id="propertyTypeName" value="#{propertyValueObject.propertyType.name}" title="Property Type"/>
+
+                    <h:outputLabel for="propertyValueValue" value="Value" styleClass="entityDataEmphasizedLabel"/>
+                    <p:column id="propertyValueValue" styleClass="entityDataEmphasizedText">
+                        <ui:include src="../../propertyValue/private/propertyValueEditObjectValue.xhtml" />
+                    </p:column>
+
+                    <h:outputLabel for="propertyValueTag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
+                    <h:inputText id="propertyValueTag" value="#{propertyValueObject.tag}" />
+
+                    <h:outputLabel for="propertyValueDescription" value="Description" styleClass="entityDataEmphasizedLabel"/>
+                    <h:inputText id="propertyValueDescription" value="#{propertyValueObject.description}" />
+
+                    <h:outputLabel for="propertyValueUnits" value="Units" styleClass="entityDataEmphasizedLabel"/>
+                    <h:inputText id="propertyValueUnits" value="#{propertyValueObject.units}" />
+
+
+                    <h:outputLabel for="propertyValueDynamic" value="Dynamic" styleClass="entityDataEmphasizedLabel"/>
+                    <p:selectBooleanCheckbox id="propertyValueDynamic" value="#{propertyValueObject.isDynamic}"/>
+
+                    <h:outputLabel for="propertyValueUserWritable" value="User Writable" styleClass="entityDataEmphasizedLabel"/>
+                    <p:selectBooleanCheckbox id="propertyValueUserWritable" value="#{propertyValueObject.isUserWriteable}"/>
+
+                </p:panelGrid>
+            </div>
+        </p:outputPanel>
+        <f:facet name="footer" class="dialog">
+            <p:outputPanel rendered="#{propertyValueObject != null}">
+                <p:commandButton value="Save" alt="Save" 
+                                 action="#{entityController.updateEditProperty()}"
+                                 ajax="false"
+                                 update="@form"
+                                 oncomplete="PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 icon="ui-icon-disk"/>
+
+                <p:commandButton value="Delete" alt="Delete" 
+                                 action="#{entityController.deleteCurrentEditPropertyValue()}"
+                                 actionListener="#{propertyValueController.destroy(propertyValueObject)}"
+                                 update="@form"
+                                 ajax="false"
+                                 rendered="#{propertyValueObject.id != null and isEntityWriteable}"
+                                 oncomplete="PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 icon="ui-icon-trash"/>
+
+                <p:commandButton value="Close" 
+                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 ajax="false"
+                                 action="#{entityController.removeCurrentEditPropertyValue()}"
+                                 update="@form"
+                                 />
+            </p:outputPanel>
+        </f:facet>
+
+    </p:dialog>
+
+    <ui:include src="../../propertyValue/private/propertyValueEditObjectValueSupport.xhtml" />
+
+    <p:remoteCommand name="show#{entityTypeName}EntitySinglePropertyController"
+                     update="@form"
+                     oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').hide();
+                     PF('#{entityTypeName}SinglePropertyEditDialogWidget').show()" /> 
+
+</ui:composition>
+
+

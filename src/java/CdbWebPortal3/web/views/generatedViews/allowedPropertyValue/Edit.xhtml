@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditAllowedPropertyValueTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditAllowedPropertyValueLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{allowedPropertyValueController.selected.id}" title="#{resources.EditAllowedPropertyValueTitle_id}" required="true" requiredMessage="#{resources.EditAllowedPropertyValueRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditAllowedPropertyValueLabel_value}" for="value" />
+                    <h:inputText id="value" value="#{allowedPropertyValueController.selected.value}" title="#{resources.EditAllowedPropertyValueTitle_value}" />
+                    <h:outputLabel value="#{resources.EditAllowedPropertyValueLabel_units}" for="units" />
+                    <h:inputText id="units" value="#{allowedPropertyValueController.selected.units}" title="#{resources.EditAllowedPropertyValueTitle_units}" />
+                    <h:outputLabel value="#{resources.EditAllowedPropertyValueLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{allowedPropertyValueController.selected.description}" title="#{resources.EditAllowedPropertyValueTitle_description}" />
+                    <h:outputLabel value="#{resources.EditAllowedPropertyValueLabel_sortOrder}" for="sortOrder" />
+                    <h:inputText id="sortOrder" value="#{allowedPropertyValueController.selected.sortOrder}" title="#{resources.EditAllowedPropertyValueTitle_sortOrder}" />
+                    <h:outputLabel value="#{resources.EditAllowedPropertyValueLabel_propertyTypeId}" for="propertyTypeId" />
+                    <h:selectOneMenu id="propertyTypeId" value="#{allowedPropertyValueController.selected.propertyTypeId}" title="#{resources.EditAllowedPropertyValueTitle_propertyTypeId}" required="true" requiredMessage="#{resources.EditAllowedPropertyValueRequiredMessage_propertyTypeId}">
+                        <f:selectItems value="#{propertyTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{allowedPropertyValueController.update}" value="#{resources.EditAllowedPropertyValueSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditAllowedPropertyValueViewLink}"/>
+                <br />
+                <h:commandLink action="#{allowedPropertyValueController.prepareList}" value="#{resources.EditAllowedPropertyValueShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditAllowedPropertyValueIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

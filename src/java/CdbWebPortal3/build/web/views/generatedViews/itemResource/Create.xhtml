@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateItemResourceTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{itemResourceController.selected.id}" title="#{resources.CreateItemResourceTitle_id}" required="true" requiredMessage="#{resources.CreateItemResourceRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_value}" for="value" />
+                    <h:inputText id="value" value="#{itemResourceController.selected.value}" title="#{resources.CreateItemResourceTitle_value}" />
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_units}" for="units" />
+                    <h:inputText id="units" value="#{itemResourceController.selected.units}" title="#{resources.CreateItemResourceTitle_units}" />
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{itemResourceController.selected.description}" title="#{resources.CreateItemResourceTitle_description}" />
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_isProvided}" for="isProvided" />
+                    <h:inputText id="isProvided" value="#{itemResourceController.selected.isProvided}" title="#{resources.CreateItemResourceTitle_isProvided}" />
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_isUsedRequired}" for="isUsedRequired" />
+                    <h:inputText id="isUsedRequired" value="#{itemResourceController.selected.isUsedRequired}" title="#{resources.CreateItemResourceTitle_isUsedRequired}" />
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_isUsedOptional}" for="isUsedOptional" />
+                    <h:inputText id="isUsedOptional" value="#{itemResourceController.selected.isUsedOptional}" title="#{resources.CreateItemResourceTitle_isUsedOptional}" />
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_itemId}" for="itemId" />
+                    <h:selectOneMenu id="itemId" value="#{itemResourceController.selected.itemId}" title="#{resources.CreateItemResourceTitle_itemId}" required="true" requiredMessage="#{resources.CreateItemResourceRequiredMessage_itemId}">
+                        <f:selectItems value="#{itemController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_resourceTypeId}" for="resourceTypeId" />
+                    <h:selectOneMenu id="resourceTypeId" value="#{itemResourceController.selected.resourceTypeId}" title="#{resources.CreateItemResourceTitle_resourceTypeId}" required="true" requiredMessage="#{resources.CreateItemResourceRequiredMessage_resourceTypeId}">
+                        <f:selectItems value="#{resourceTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemResourceLabel_itemConnectorId}" for="itemConnectorId" />
+                    <h:selectOneMenu id="itemConnectorId" value="#{itemResourceController.selected.itemConnectorId}" title="#{resources.CreateItemResourceTitle_itemConnectorId}" >
+                        <f:selectItems value="#{itemConnectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{itemResourceController.create}" value="#{resources.CreateItemResourceSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{itemResourceController.prepareList}" value="#{resources.CreateItemResourceShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateItemResourceIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

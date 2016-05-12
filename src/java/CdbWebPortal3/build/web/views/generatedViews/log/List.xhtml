@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListLogTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListLogEmpty}" rendered="#{logController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{logController.items.rowCount > 0}">
+                    <h:outputText value="#{logController.pagination.pageFirstItem + 1}..#{logController.pagination.pageLastItem + 1}/#{logController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{logController.previous}" value="#{resources.Previous} #{logController.pagination.pageSize}" rendered="#{logController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{logController.next}" value="#{resources.Next} #{logController.pagination.pageSize}" rendered="#{logController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{logController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_text}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.text}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_enteredOnDateTime}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.enteredOnDateTime}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_effectiveFromDateTime}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.effectiveFromDateTime}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_effectiveToDateTime}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.effectiveToDateTime}">
+                                <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                            </h:outputText>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_enteredByUserId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.enteredByUserId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListLogTitle_logTopicId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.logTopicId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{logController.prepareView}" value="#{resources.ListLogViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{logController.prepareEdit}" value="#{resources.ListLogEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{logController.destroy}" value="#{resources.ListLogDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{logController.prepareCreate}" value="#{resources.ListLogCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListLogIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

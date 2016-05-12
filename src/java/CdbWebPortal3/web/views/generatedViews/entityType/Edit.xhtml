@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditEntityTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditEntityTypeLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{entityTypeController.selected.id}" title="#{resources.EditEntityTypeTitle_id}" required="true" requiredMessage="#{resources.EditEntityTypeRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditEntityTypeLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{entityTypeController.selected.name}" title="#{resources.EditEntityTypeTitle_name}" required="true" requiredMessage="#{resources.EditEntityTypeRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.EditEntityTypeLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{entityTypeController.selected.description}" title="#{resources.EditEntityTypeTitle_description}" />
+                </h:panelGrid>
+                <h:commandLink action="#{entityTypeController.update}" value="#{resources.EditEntityTypeSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditEntityTypeViewLink}"/>
+                <br />
+                <h:commandLink action="#{entityTypeController.prepareList}" value="#{resources.EditEntityTypeShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditEntityTypeIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

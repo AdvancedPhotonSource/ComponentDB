@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateAttachmentTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateAttachmentLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{attachmentController.selected.id}" title="#{resources.CreateAttachmentTitle_id}" required="true" requiredMessage="#{resources.CreateAttachmentRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateAttachmentLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{attachmentController.selected.name}" title="#{resources.CreateAttachmentTitle_name}" required="true" requiredMessage="#{resources.CreateAttachmentRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.CreateAttachmentLabel_tag}" for="tag" />
+                    <h:inputText id="tag" value="#{attachmentController.selected.tag}" title="#{resources.CreateAttachmentTitle_tag}" />
+                    <h:outputLabel value="#{resources.CreateAttachmentLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{attachmentController.selected.description}" title="#{resources.CreateAttachmentTitle_description}" />
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{attachmentController.create}" value="#{resources.CreateAttachmentSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{attachmentController.prepareList}" value="#{resources.CreateAttachmentShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateAttachmentIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

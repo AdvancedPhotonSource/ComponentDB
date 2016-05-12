@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
+    <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion' and viewMode != 'inViewRowExpansion'}" />
+
+    <p:dataTable id="#{entityTypeName}LogListDataTable"
+                 widgetVar="#{entityTypeName}LogListDataTableWidget" 
+                 var="logObject"
+                 value="#{entityObject.logList}" 
+                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 reflow="true"
+                 emptyMessage="No #{entityTypeDisplayName} log entries found."
+                 editable="true">
+
+        <p:ajax event="rowEdit" listener="#{entityController.logObjectEditRowEvent(event)}" />
+
+        <ui:include src="../../log/private/logListObject.xhtml"/>
+
+        <p:column headerText="Actions" rendered="#{renderActionColumn and isEntityWriteable}">
+            <p:rowEditor />
+            <p:commandLink id="#{entityTypeName}LogUploadAttachmentButton" 
+                           oncomplete="PF('logAttachmentUploadDialogWidget').show()" 
+                           styleClass="ui-icon ui-icon-circle-arrow-n"
+                           update="@this">
+                <f:setPropertyActionListener value="#{logObject}" target="#{logAttachmentUploadBean.logEntry}"/>
+                <p:tooltip for="#{entityTypeName}LogUploadAttachmentButton" value="Upload #{entityTypeName} log attachment."/>
+            </p:commandLink>
+
+            <p:commandLink id="#{entityTypeName}LogDestroyButton"
+                           styleClass="ui-icon ui-icon-trash" title="Delete"
+                           onstart="PF('confirmDeleteLog#{logObject.viewUUID}Widget').show();">
+                <p:tooltip for="#{entityTypeName}LogDestroyButton" value="Delete #{entityTypeName} log entry."/>
+            </p:commandLink>
+
+            <p:confirmDialog message="Would you like to remove the log?"
+                             header="Confirm Log Delete" 
+                             severity="alert"
+                             styleClass="dialog"
+                             widgetVar="confirmDeleteLog#{logObject.viewUUID}Widget">
+                <p:commandButton value="Yes" 
+                                 action="#{entityController.deleteLog(logObject)}" 
+                                 actionListener="#{logController.destroy(logObject)}"
+                                 onstart="PF('confirmDeleteLog#{logObject.viewUUID}Widget').hide()"
+                                 update="#{entityTypeName}LogListDataTable"/>
+                <p:commandButton value="No" onclick="PF('confirmDeleteLog#{logObject.viewUUID}Widget').hide();" type="button" />
+            </p:confirmDialog>
+
+        </p:column>
+
+    </p:dataTable>
+
+    <ui:include src="../../log/private/logAttachmentUploadDialog.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="saveAction" value="saveLogList"/>
+        <ui:param name="updateTarget" value="#{entityTypeName}LogListDataTable" />
+    </ui:include>
+</ui:composition>
+
+

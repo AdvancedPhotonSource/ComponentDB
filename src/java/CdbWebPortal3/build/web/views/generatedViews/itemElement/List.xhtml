@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListItemElementTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListItemElementEmpty}" rendered="#{itemElementController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{itemElementController.items.rowCount > 0}">
+                    <h:outputText value="#{itemElementController.pagination.pageFirstItem + 1}..#{itemElementController.pagination.pageLastItem + 1}/#{itemElementController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{itemElementController.previous}" value="#{resources.Previous} #{itemElementController.pagination.pageSize}" rendered="#{itemElementController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{itemElementController.next}" value="#{resources.Next} #{itemElementController.pagination.pageSize}" rendered="#{itemElementController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{itemElementController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_name}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_isRequired}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.isRequired}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_sortOrder}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.sortOrder}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_parentItemId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.parentItemId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_containedItemId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.containedItemId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemElementTitle_entityInfoId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.entityInfoId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{itemElementController.prepareView}" value="#{resources.ListItemElementViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{itemElementController.prepareEdit}" value="#{resources.ListItemElementEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{itemElementController.destroy}" value="#{resources.ListItemElementDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{itemElementController.prepareCreate}" value="#{resources.ListItemElementCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListItemElementIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

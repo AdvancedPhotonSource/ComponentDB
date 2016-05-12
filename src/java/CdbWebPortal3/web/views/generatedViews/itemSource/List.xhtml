@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListItemSourceTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListItemSourceEmpty}" rendered="#{itemSourceController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{itemSourceController.items.rowCount > 0}">
+                    <h:outputText value="#{itemSourceController.pagination.pageFirstItem + 1}..#{itemSourceController.pagination.pageLastItem + 1}/#{itemSourceController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{itemSourceController.previous}" value="#{resources.Previous} #{itemSourceController.pagination.pageSize}" rendered="#{itemSourceController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{itemSourceController.next}" value="#{resources.Next} #{itemSourceController.pagination.pageSize}" rendered="#{itemSourceController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{itemSourceController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_partNumber}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.partNumber}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_cost}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.cost}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_isVendor}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.isVendor}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_isManufacturer}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.isManufacturer}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_contactInfo}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.contactInfo}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_url}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.url}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_itemId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.itemId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListItemSourceTitle_sourceId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.sourceId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{itemSourceController.prepareView}" value="#{resources.ListItemSourceViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{itemSourceController.prepareEdit}" value="#{resources.ListItemSourceEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{itemSourceController.destroy}" value="#{resources.ListItemSourceDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{itemSourceController.prepareCreate}" value="#{resources.ListItemSourceCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListItemSourceIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

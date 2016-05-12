@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="propertyValue" value="#{propertyValueInfoActionBean.value}" />
+    <ui:param name="propertyType" value="#{propertyValueInfoActionBean.propertyValue.propertyType.name}" />
+
+    <p:dialog id="pdmLinkDrawingPropertyInfoDialog"
+              widgetVar="pdmLinkDrawingPropertyInfoDialogWidget" 
+              header="Information for #{propertyType} Property: #{propertyValue} " 
+              styleClass="pdmLinkdialog"
+              resizable="false">
+
+        <ui:param name="searchResultUpdate" value="@([id$=pdmLinkInfoActionPanel])" />
+        <ui:param name="parentDialogWidgetVar" value="pdmLinkDrawingPropertyInfoDialogWidget" />
+
+        <p:outputPanel id="pdmLinkInfoActionPanel"
+                       rendered="#{pdmLinkDrawingBean.searchResults != null}">
+
+            <p:accordionPanel id="relatedDrawingsAccordion">
+                <p:tab title="Related Drawings">
+                    <ui:include src="pdmLinkSearchResultListDataTable.xhtml"/>
+                </p:tab>
+            </p:accordionPanel>
+
+            <ui:include src="pdmLinkDrawingInfo.xhtml" />
+        </p:outputPanel>
+
+        <p:panel rendered="#{pdmLinkDrawingBean.searchResults == null}"
+                 styleClass="errorPanel">
+            <h:outputText value="An error occured while getting information for #{propertyValue}"/>
+            <br/>
+            <h:outputText value="#{pdmLinkDrawingBean.dialogErrorMessage}" />
+        </p:panel>
+        
+        <p:remoteCommand name="updatePdmLinkDrawingPropertyInfoDialog" 
+                     update="pdmLinkDrawingPropertyInfoDialog" 
+                     oncomplete="PF('pdmLinkDrawingPropertyInfoDialogWidget').initPosition();
+                     PF('pdmLinkDrawingPropertyInfoDialogWidget').show();"/>
+    </p:dialog>
+    
+</ui:composition>

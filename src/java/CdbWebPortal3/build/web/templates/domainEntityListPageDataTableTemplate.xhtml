@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:insert name="domainEntityListDataTableParameters">
+    </ui:insert>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+
+    <p:dataTable id="#{entityTypeName}ListDataTable" 
+                 widgetVar="#{entityTypeName}ListDataTableWidget"
+                 var="cdbDomainEntityObject" 
+                 value="#{entityController.listDataModel}" 
+                 filteredValue="#{entityController.filteredObjectList}"
+                 rows="#{entityController.displayNumberOfItemsPerPage}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No #{displayEntityTypeName}s found.">
+        <ui:param name="#{entityTypeName}Object" value="#{cdbDomainEntityObject}" />
+
+        <p:column rendered="#{entityController.displayRowExpansion}">
+            <p:rowToggler/>
+        </p:column>
+
+        <p:column sortBy="#{cdbDomainEntityObject.name}" headerText="Name"
+                  filterBy="#{cdbDomainEntityObject.name}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterByName}"
+                  rendered="true" >
+            <f:attribute name="exportValue" value="#{cdbDomainEntityObject.name}"/>
+            <h:outputText value="#{cdbDomainEntityObject.name}" />
+        </p:column>
+        
+        <p:column sortBy="#{cdbDomainEntityObject.itemIdentifier1}" 
+                  headerText="#{entityController.itemIdentifier1ColumnHeader}"
+                  filterBy="#{cdbDomainEntityObject.itemIdentifier1}"
+                  filterValue="#{entityController.filterByItemIdentifier1}"
+                  rendered="#{entityController.displayItemIdentifier1}">
+            <h:outputText value="#{cdbDomainEntityObject.itemIdentifier1}" />
+        </p:column>
+        
+        <p:column sortBy="#{cdbDomainEntityObject.itemIdentifier2}" 
+                  headerText="#{entityController.itemIdentifier2ColumnHeader}"
+                  filterBy="#{cdbDomainEntityObject.itemIdentifier2}"
+                  filterValue="#{entityController.filterByItemIdentifier2}"
+                  rendered="#{entityController.displayItemIdentifier2}">
+            <h:outputText value="#{cdbDomainEntityObject.itemIdentifier2}" />
+        </p:column>
+        
+        <p:column sortBy="#{cdbDomainEntityObject.itemTypeString}"
+                  headerText="Type"
+                  filterBy="#{cdbDomainEntityObject.itemTypeString}"
+                  >
+            <ul>
+                <ui:repeat value="#{cdbDomainEntityObject.itemTypeList}" var="itemTypeObject">
+                    <li>
+                        <h:outputText value="#{itemTypeObject.name}" />
+                    </li>
+                </ui:repeat>
+            </ul>
+        </p:column>
+        
+        <p:column sortBy="#{cdbDomainEntityObject.itemCategoryString}"
+                  headerText="Category"
+                  filterBy="#{cdbDomainEntityObject.itemCategoryString}"
+                  filterOptions="#{itemCategoryController.availableItemsForSelectOne}"
+                  >
+            <ul>
+                <ui:repeat value="#{cdbDomainEntityObject.itemCategoryList}" var="itemCategoryObject">
+                    <li>
+                        <h:outputText value="#{itemCategoryObject.name}" />
+                    </li>
+                </ui:repeat>
+            </ul>
+        </p:column>
+        
+        <p:column sortBy="#{cdbDomainEntityObject.description}" headerText="Description" 
+                  filterBy="#{cdbDomainEntityObject.description}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterByDescription}"
+                  rendered="#{entityController.displayDescription}">
+            <h:outputText value="#{cdbDomainEntityObject.description}"/>
+        </p:column>
+        
+        <ui:include src="../views/propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml" />
+
+        <ui:include src="../views/entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{cdbDomainEntityObject.entityInfo}"/>
+            <ui:param name="entityInfoObjectFilterable" value="true" />
+        </ui:include>
+        
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../views/common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{entityController}"/>
+                <ui:param name="entityObject" value="#{cdbDomainEntityObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(cdbDomainEntityObject.entityInfo)}"/>
+                <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
+            </ui:include>
+        </p:column>
+        
+        <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
+            <ui:include src="../views/domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
+                <ui:param name="entityObject" value="#{cdbDomainEntityObject}" />
+                <ui:param name="entityController" value="#{entityController}" />
+            </ui:include>
+            <ui:insert name="domainEntityRowExpansionExtras" />
+        </p:rowExpansion>
+
+
+    </p:dataTable>
+
+</ui:composition>

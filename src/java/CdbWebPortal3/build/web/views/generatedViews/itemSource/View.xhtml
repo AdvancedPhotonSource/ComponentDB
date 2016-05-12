@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewItemSourceTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewItemSourceLabel_id}"/>
+                    <h:outputText value="#{itemSourceController.selected.id}" title="#{resources.ViewItemSourceTitle_id}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_partNumber}"/>
+                    <h:outputText value="#{itemSourceController.selected.partNumber}" title="#{resources.ViewItemSourceTitle_partNumber}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_cost}"/>
+                    <h:outputText value="#{itemSourceController.selected.cost}" title="#{resources.ViewItemSourceTitle_cost}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_description}"/>
+                    <h:outputText value="#{itemSourceController.selected.description}" title="#{resources.ViewItemSourceTitle_description}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_isVendor}"/>
+                    <h:outputText value="#{itemSourceController.selected.isVendor}" title="#{resources.ViewItemSourceTitle_isVendor}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_isManufacturer}"/>
+                    <h:outputText value="#{itemSourceController.selected.isManufacturer}" title="#{resources.ViewItemSourceTitle_isManufacturer}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_contactInfo}"/>
+                    <h:outputText value="#{itemSourceController.selected.contactInfo}" title="#{resources.ViewItemSourceTitle_contactInfo}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_url}"/>
+                    <h:outputText value="#{itemSourceController.selected.url}" title="#{resources.ViewItemSourceTitle_url}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_itemId}"/>
+                    <h:outputText value="#{itemSourceController.selected.itemId}" title="#{resources.ViewItemSourceTitle_itemId}"/>
+                    <h:outputText value="#{resources.ViewItemSourceLabel_sourceId}"/>
+                    <h:outputText value="#{itemSourceController.selected.sourceId}" title="#{resources.ViewItemSourceTitle_sourceId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{itemSourceController.destroyAndView}" value="#{resources.ViewItemSourceDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewItemSourceEditLink}"/>
+                <br />
+                <h:commandLink action="#{itemSourceController.prepareCreate}" value="#{resources.ViewItemSourceCreateLink}" />
+                <br />
+                <h:commandLink action="#{itemSourceController.prepareList}" value="#{resources.ViewItemSourceShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewItemSourceIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

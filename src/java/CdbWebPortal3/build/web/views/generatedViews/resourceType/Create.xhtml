@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateResourceTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{resourceTypeController.selected.id}" title="#{resources.CreateResourceTypeTitle_id}" required="true" requiredMessage="#{resources.CreateResourceTypeRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{resourceTypeController.selected.name}" title="#{resources.CreateResourceTypeTitle_name}" required="true" requiredMessage="#{resources.CreateResourceTypeRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{resourceTypeController.selected.description}" title="#{resources.CreateResourceTypeTitle_description}" />
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_handlerName}" for="handlerName" />
+                    <h:inputText id="handlerName" value="#{resourceTypeController.selected.handlerName}" title="#{resources.CreateResourceTypeTitle_handlerName}" />
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_defaultValue}" for="defaultValue" />
+                    <h:inputText id="defaultValue" value="#{resourceTypeController.selected.defaultValue}" title="#{resources.CreateResourceTypeTitle_defaultValue}" />
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_defaultUnits}" for="defaultUnits" />
+                    <h:inputText id="defaultUnits" value="#{resourceTypeController.selected.defaultUnits}" title="#{resources.CreateResourceTypeTitle_defaultUnits}" />
+                    <h:outputLabel value="#{resources.CreateResourceTypeLabel_resourceTypeCategory}" for="resourceTypeCategory" />
+                    <h:selectOneMenu id="resourceTypeCategory" value="#{resourceTypeController.selected.resourceTypeCategory}" title="#{resources.CreateResourceTypeTitle_resourceTypeCategory}" >
+                        <f:selectItems value="#{resourceTypeCategoryController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{resourceTypeController.create}" value="#{resources.CreateResourceTypeSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{resourceTypeController.prepareList}" value="#{resources.CreateResourceTypeShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateResourceTypeIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

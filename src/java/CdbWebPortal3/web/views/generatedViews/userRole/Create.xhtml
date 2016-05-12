@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateUserRoleTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateUserRoleLabel_userRolePK_userGroupId}" for="userRolePK_userGroupId" />
+                    <h:inputText id="userRolePK_userGroupId" value="#{userRoleController.selected.userRolePK.userGroupId}" title="#{resources.CreateUserRoleTitle_userRolePK_userGroupId}" required="true" requiredMessage="#{resources.CreateUserRoleRequiredMessage_userRolePK_userGroupId}"/>
+                    <h:outputLabel value="#{resources.CreateUserRoleLabel_userRolePK_userId}" for="userRolePK_userId" />
+                    <h:inputText id="userRolePK_userId" value="#{userRoleController.selected.userRolePK.userId}" title="#{resources.CreateUserRoleTitle_userRolePK_userId}" required="true" requiredMessage="#{resources.CreateUserRoleRequiredMessage_userRolePK_userId}"/>
+                    <h:outputLabel value="#{resources.CreateUserRoleLabel_userRolePK_roleTypeId}" for="userRolePK_roleTypeId" />
+                    <h:inputText id="userRolePK_roleTypeId" value="#{userRoleController.selected.userRolePK.roleTypeId}" title="#{resources.CreateUserRoleTitle_userRolePK_roleTypeId}" required="true" requiredMessage="#{resources.CreateUserRoleRequiredMessage_userRolePK_roleTypeId}"/>
+                    <h:outputLabel value="#{resources.CreateUserRoleLabel_userInfo}" for="userInfo" />
+                    <h:selectOneMenu id="userInfo" value="#{userRoleController.selected.userInfo}" title="#{resources.CreateUserRoleTitle_userInfo}" required="true" requiredMessage="#{resources.CreateUserRoleRequiredMessage_userInfo}">
+                        <f:selectItems value="#{userInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateUserRoleLabel_roleType}" for="roleType" />
+                    <h:selectOneMenu id="roleType" value="#{userRoleController.selected.roleType}" title="#{resources.CreateUserRoleTitle_roleType}" required="true" requiredMessage="#{resources.CreateUserRoleRequiredMessage_roleType}">
+                        <f:selectItems value="#{roleTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateUserRoleLabel_userGroup}" for="userGroup" />
+                    <h:selectOneMenu id="userGroup" value="#{userRoleController.selected.userGroup}" title="#{resources.CreateUserRoleTitle_userGroup}" required="true" requiredMessage="#{resources.CreateUserRoleRequiredMessage_userGroup}">
+                        <f:selectItems value="#{userGroupController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{userRoleController.create}" value="#{resources.CreateUserRoleSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{userRoleController.prepareList}" value="#{resources.CreateUserRoleShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateUserRoleIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

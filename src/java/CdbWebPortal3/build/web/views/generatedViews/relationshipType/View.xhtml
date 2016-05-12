@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ViewRelationshipTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputText value="#{resources.ViewRelationshipTypeLabel_id}"/>
+                    <h:outputText value="#{relationshipTypeController.selected.id}" title="#{resources.ViewRelationshipTypeTitle_id}"/>
+                    <h:outputText value="#{resources.ViewRelationshipTypeLabel_name}"/>
+                    <h:outputText value="#{relationshipTypeController.selected.name}" title="#{resources.ViewRelationshipTypeTitle_name}"/>
+                    <h:outputText value="#{resources.ViewRelationshipTypeLabel_description}"/>
+                    <h:outputText value="#{relationshipTypeController.selected.description}" title="#{resources.ViewRelationshipTypeTitle_description}"/>
+                    <h:outputText value="#{resources.ViewRelationshipTypeLabel_relationshipTypeHandlerId}"/>
+                    <h:outputText value="#{relationshipTypeController.selected.relationshipTypeHandlerId}" title="#{resources.ViewRelationshipTypeTitle_relationshipTypeHandlerId}"/>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{relationshipTypeController.destroyAndView}" value="#{resources.ViewRelationshipTypeDestroyLink}"/>
+                <br />
+                <br />
+                <h:link outcome="Edit" value="#{resources.ViewRelationshipTypeEditLink}"/>
+                <br />
+                <h:commandLink action="#{relationshipTypeController.prepareCreate}" value="#{resources.ViewRelationshipTypeCreateLink}" />
+                <br />
+                <h:commandLink action="#{relationshipTypeController.prepareList}" value="#{resources.ViewRelationshipTypeShowAllLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ViewRelationshipTypeIndexLink}"/>
+
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

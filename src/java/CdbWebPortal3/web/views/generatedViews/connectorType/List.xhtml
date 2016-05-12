@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListConnectorTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListConnectorTypeEmpty}" rendered="#{connectorTypeController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{connectorTypeController.items.rowCount > 0}">
+                    <h:outputText value="#{connectorTypeController.pagination.pageFirstItem + 1}..#{connectorTypeController.pagination.pageLastItem + 1}/#{connectorTypeController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{connectorTypeController.previous}" value="#{resources.Previous} #{connectorTypeController.pagination.pageSize}" rendered="#{connectorTypeController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{connectorTypeController.next}" value="#{resources.Next} #{connectorTypeController.pagination.pageSize}" rendered="#{connectorTypeController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{connectorTypeController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListConnectorTypeTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListConnectorTypeTitle_name}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListConnectorTypeTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{connectorTypeController.prepareView}" value="#{resources.ListConnectorTypeViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{connectorTypeController.prepareEdit}" value="#{resources.ListConnectorTypeEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{connectorTypeController.destroy}" value="#{resources.ListConnectorTypeDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{connectorTypeController.prepareCreate}" value="#{resources.ListConnectorTypeCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListConnectorTypeIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

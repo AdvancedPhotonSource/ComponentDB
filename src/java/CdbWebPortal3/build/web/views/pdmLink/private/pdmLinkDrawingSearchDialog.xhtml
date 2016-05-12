@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="pdmLinkDrawingSearchDialog" 
+              widgetVar="pdmLinkDrawingSearchDialogWidget" 
+              header="Search for PDMLink Drawing" 
+              styleClass="pdmLinkdialog"
+              onShow="#{pdmLinkDrawingBean.reloadPdmLinkImageStreamedContent()}">
+        <h:form id="drawingSearchForm">
+            <p:panelGrid columns="1" styleClass="viewEntityDetails">
+                <p:column>
+                    <h:inputText id="searchKeywords" value="#{pdmLinkDrawingBean.searchKeywords}" 
+                                 title="Use ? to replace one character and * to replace many. Example: 2101-1601*.???" 
+                                 styleClass="entityDataText"/>
+                    <p:message for="searchKeywords"/> 
+                </p:column>
+                <p:column>
+                    <p:commandButton action="#{pdmLinkDrawingBean.searchDrawings()}" 
+                                     value="Search" alt="Search" 
+                                     onstart="PF('loadingDialog').show();"
+                                     icon="ui-icon-search" 
+                                     oncomplete="PF('pdmLinkDrawingSearchDialogWidget').initPosition(); PF('loadingDialog').hide();"
+                                     update="@form"/>
+                    <p:commandButton onclick="PF('PDMLinkHelp').show();"
+                                   title="Help"
+                                   value="Help"/>
+                </p:column>
+            </p:panelGrid>
+
+
+            <p/>
+            
+            
+            <ui:include src="pdmLinkDrawingSearchResult.xhtml">
+                <ui:param name="searchResultUpdate" value="@form" />
+                <ui:param name="parentDialogWidgetVar" value="pdmLinkDrawingSearchDialogWidget" />
+            </ui:include>
+
+        </h:form>
+    </p:dialog>
+
+
+    <ui:include src="../../common/private/commonLoadingDialog.xhtml"/>
+    <ui:include src="pdmLinkHelpDialog.xhtml"/>
+
+    <ui:include src="pdmLinkAddComponentDialog.xhtml" />
+
+</ui:composition>

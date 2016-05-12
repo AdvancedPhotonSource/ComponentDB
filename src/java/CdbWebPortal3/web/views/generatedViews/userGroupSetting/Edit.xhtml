@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.EditUserGroupSettingTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.EditUserGroupSettingLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{userGroupSettingController.selected.id}" title="#{resources.EditUserGroupSettingTitle_id}" required="true" requiredMessage="#{resources.EditUserGroupSettingRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.EditUserGroupSettingLabel_value}" for="value" />
+                    <h:inputText id="value" value="#{userGroupSettingController.selected.value}" title="#{resources.EditUserGroupSettingTitle_value}" />
+                    <h:outputLabel value="#{resources.EditUserGroupSettingLabel_userGroupId}" for="userGroupId" />
+                    <h:selectOneMenu id="userGroupId" value="#{userGroupSettingController.selected.userGroupId}" title="#{resources.EditUserGroupSettingTitle_userGroupId}" required="true" requiredMessage="#{resources.EditUserGroupSettingRequiredMessage_userGroupId}">
+                        <f:selectItems value="#{userGroupController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.EditUserGroupSettingLabel_settingTypeId}" for="settingTypeId" />
+                    <h:selectOneMenu id="settingTypeId" value="#{userGroupSettingController.selected.settingTypeId}" title="#{resources.EditUserGroupSettingTitle_settingTypeId}" required="true" requiredMessage="#{resources.EditUserGroupSettingRequiredMessage_settingTypeId}">
+                        <f:selectItems value="#{settingTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <h:commandLink action="#{userGroupSettingController.update}" value="#{resources.EditUserGroupSettingSaveLink}"/>
+                <br />
+                <br />
+                <h:link outcome="View" value="#{resources.EditUserGroupSettingViewLink}"/>
+                <br />
+                <h:commandLink action="#{userGroupSettingController.prepareList}" value="#{resources.EditUserGroupSettingShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.EditUserGroupSettingIndexLink}" />
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

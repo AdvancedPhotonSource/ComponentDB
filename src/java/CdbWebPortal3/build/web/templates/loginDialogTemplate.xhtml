@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="loginForm">
+        <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialogWidget">
+            <h:panelGrid styleClass="loginInput">
+                <div class="dialog">
+                    <div>
+                        <p:inputText id="username" value="#{loginController.username}" title="Username"/>
+                        <p:watermark for="username" value="Username"/>
+                        <p:password id="password" value="#{loginController.password}" title="Password"/>
+                        <p:watermark for="password" value="Password"/>
+                    </div>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
+                    </f:facet>
+                </div>
+            </h:panelGrid>
+        </p:dialog>
+    </h:form>
+</ui:composition>

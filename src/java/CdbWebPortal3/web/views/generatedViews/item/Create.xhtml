@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateItemTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateItemLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{itemController.selected.id}" title="#{resources.CreateItemTitle_id}" required="true" requiredMessage="#{resources.CreateItemRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateItemLabel_name}" for="name" />
+                    <h:inputText id="name" value="#{itemController.selected.name}" title="#{resources.CreateItemTitle_name}" required="true" requiredMessage="#{resources.CreateItemRequiredMessage_name}"/>
+                    <h:outputLabel value="#{resources.CreateItemLabel_itemIdentifier1}" for="itemIdentifier1" />
+                    <h:inputText id="itemIdentifier1" value="#{itemController.selected.itemIdentifier1}" title="#{resources.CreateItemTitle_itemIdentifier1}" />
+                    <h:outputLabel value="#{resources.CreateItemLabel_itemIdentifier2}" for="itemIdentifier2" />
+                    <h:inputText id="itemIdentifier2" value="#{itemController.selected.itemIdentifier2}" title="#{resources.CreateItemTitle_itemIdentifier2}" />
+                    <h:outputLabel value="#{resources.CreateItemLabel_qrId}" for="qrId" />
+                    <h:inputText id="qrId" value="#{itemController.selected.qrId}" title="#{resources.CreateItemTitle_qrId}" />
+                    <h:outputLabel value="#{resources.CreateItemLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{itemController.selected.description}" title="#{resources.CreateItemTitle_description}" />
+                    <h:outputLabel value="#{resources.CreateItemLabel_domainId}" for="domainId" />
+                    <h:selectOneMenu id="domainId" value="#{itemController.selected.domainId}" title="#{resources.CreateItemTitle_domainId}" required="true" requiredMessage="#{resources.CreateItemRequiredMessage_domainId}">
+                        <f:selectItems value="#{domainController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemLabel_derivedFromItemId}" for="derivedFromItemId" />
+                    <h:selectOneMenu id="derivedFromItemId" value="#{itemController.selected.derivedFromItemId}" title="#{resources.CreateItemTitle_derivedFromItemId}" >
+                        <f:selectItems value="#{itemController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemLabel_entityInfoId}" for="entityInfoId" />
+                    <h:selectOneMenu id="entityInfoId" value="#{itemController.selected.entityInfoId}" title="#{resources.CreateItemTitle_entityInfoId}" required="true" requiredMessage="#{resources.CreateItemRequiredMessage_entityInfoId}">
+                        <f:selectItems value="#{entityInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{itemController.create}" value="#{resources.CreateItemSaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{itemController.prepareList}" value="#{resources.CreateItemShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateItemIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.ListRelationshipTypeTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:form styleClass="jsfcrud_list_form">
+                <h:panelGroup id="messagePanel" layout="block">
+                    <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+                </h:panelGroup>
+                <h:outputText escape="false" value="#{resources.ListRelationshipTypeEmpty}" rendered="#{relationshipTypeController.items.rowCount == 0}"/>
+                <h:panelGroup rendered="#{relationshipTypeController.items.rowCount > 0}">
+                    <h:outputText value="#{relationshipTypeController.pagination.pageFirstItem + 1}..#{relationshipTypeController.pagination.pageLastItem + 1}/#{relationshipTypeController.pagination.itemsCount}"/>&nbsp;
+                    <h:commandLink action="#{relationshipTypeController.previous}" value="#{resources.Previous} #{relationshipTypeController.pagination.pageSize}" rendered="#{relationshipTypeController.pagination.hasPreviousPage}"/>&nbsp;
+                    <h:commandLink action="#{relationshipTypeController.next}" value="#{resources.Next} #{relationshipTypeController.pagination.pageSize}" rendered="#{relationshipTypeController.pagination.hasNextPage}"/>&nbsp;
+                    <h:dataTable value="#{relationshipTypeController.items}" var="item" border="0" cellpadding="2" cellspacing="0" rowClasses="jsfcrud_odd_row,jsfcrud_even_row" rules="all" style="border:solid 1px">
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListRelationshipTypeTitle_id}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.id}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListRelationshipTypeTitle_name}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.name}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListRelationshipTypeTitle_description}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.description}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="#{resources.ListRelationshipTypeTitle_relationshipTypeHandlerId}"/>
+                            </f:facet>
+                            <h:outputText value="#{item.relationshipTypeHandlerId}"/>
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">
+                                <h:outputText value="&nbsp;"/>
+                            </f:facet>
+                            <h:commandLink action="#{relationshipTypeController.prepareView}" value="#{resources.ListRelationshipTypeViewLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{relationshipTypeController.prepareEdit}" value="#{resources.ListRelationshipTypeEditLink}"/>
+                            <h:outputText value=" "/>
+                            <h:commandLink action="#{relationshipTypeController.destroy}" value="#{resources.ListRelationshipTypeDestroyLink}"/>
+                        </h:column>
+                    </h:dataTable>
+                </h:panelGroup>
+                <br />
+                <h:commandLink action="#{relationshipTypeController.prepareCreate}" value="#{resources.ListRelationshipTypeCreateLink}"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.ListRelationshipTypeIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>

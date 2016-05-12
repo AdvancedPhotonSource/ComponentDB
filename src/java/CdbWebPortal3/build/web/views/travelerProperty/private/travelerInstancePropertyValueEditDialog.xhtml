@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="travelerInstancePropertyValueEditDialog" 
+              widgetVar="travelerInstancePropertyValueEditDialogWidget" 
+              header="Create Traveler Instance From Template" 
+              styleClass="dialog">
+        <div class="dialog">    
+
+         
+
+            <ui:include src="travelerTemplateDataTable.xhtml">
+                <ui:param name="travelerTemplateList" value="#{travelerBean.availableTemplates}" />
+                <ui:param name="travelerSelectedValue" value="#{travelerBean.selectedTravelerInstanceTemplate}" /> 
+                <ui:param name="rowSelectEvent" value="updateTravelerInstanceInputText();" />
+                <ui:param name="dataTableId" value="travelerInstanceDataTable" />
+            </ui:include>
+            
+            <p:panelGrid>
+                <p:row>
+                    <p:column>
+                        <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
+                    </p:column>
+                    <p:column>
+                        <p:inputText styleClass="entityDataText" 
+                                     value="#{travelerBean.travelerInstanceTitle}"
+                                     id="travelerInstanceTitleInputText"
+                                     binding="#{travelerBean.travelerInstanceTitleInputText}"
+                                     />
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:commandButton value="Create Traveler Instance Using Selection"
+                                         onstart="PF('loadingDialog').show();"
+                                         onerror="PF('loadingDialog').hide();"
+                                         oncomplete="PF('loadingDialog').hide();"
+                                         action="#{travelerBean.createTravelerInstance(
+                                                   entityController,
+                                                   'successTravelerInstancePropertyValueEditDialog();')}" >
+                        </p:commandButton>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </div>
+
+        <p:remoteCommand name="updateTravelerInstanceInputText"
+                         onstart="PF('loadingDialog').show();"
+                         onerror="PF('loadingDialog').hide();"
+                         action="#{travelerBean.updateTravelerInstanceTitleInputText()}"
+                         update="travelerInstanceTitleInputText"
+                         oncomplete="PF('loadingDialog').hide();"/>
+
+        <p:remoteCommand name="successTravelerInstancePropertyValueEditDialog"
+                         oncomplete="PF('travelerInstancePropertyValueEditDialogWidget').hide();
+                         updateTravelerInstanceProperyValueField#{travelerBean.propertyValue.id}();" />
+        <p:remoteCommand name="updateTravelerInstancePropertyValueEditDialog" 
+                         update="travelerInstancePropertyValueEditDialog" 
+                         oncomplete="PF('travelerInstancePropertyValueEditDialogWidget').initPosition();
+                         PF('travelerInstancePropertyValueEditDialogWidget').show();"/>
+    </p:dialog>
+
+
+
+</ui:composition>
+

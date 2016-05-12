@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:menubar>
+        <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home" styleClass="mainMenuBarItemImportant"/>
+        <p:menuitem value="Component Catalog" url="/views/component/list" styleClass="mainMenuBarItemImportant"/>
+        <p:menuitem value="Component Inventory" url="/views/componentInstance/list" styleClass="mainMenuBarItemImportant"/>
+        <p:menuitem value="Design Library" url="/views/design/list" styleClass="mainMenuBarItemImportant"/>
+        <p:menuitem value="Search" url="/views/search/search" icon="ui-icon-search" styleClass="mainMenuBarItemImportant"/>
+        <f:facet name="options">
+            <p:menubar styleClass="menuBarSupportingItems">
+                <p:menuitem value="Locations" url="/views/location/list"/>
+                <p:menuitem value="Property Types" url="/views/propertyType/list"/>
+                <p:menuitem value="Sources" url="/views/source/list"/>
+                <p:menuitem value="Users" url="/views/userInfo/list"/>  
+                <p:menuitem value="Settings"
+                            action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
+                            rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
+                <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
+                <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
+            </p:menubar>
+        </f:facet>
+    </p:menubar>
+
+</ui:composition>

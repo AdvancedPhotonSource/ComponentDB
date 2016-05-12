@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:composition template="/template.xhtml">
+        <ui:define name="title">
+            <h:outputText value="#{resources.CreateItemElementRelationshipHistoryTitle}"></h:outputText>
+        </ui:define>
+        <ui:define name="body">
+            <h:panelGroup id="messagePanel" layout="block">
+                <h:messages errorStyle="color: red" infoStyle="color: green" layout="table"/>
+            </h:panelGroup>
+            <h:form>
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_id}" for="id" />
+                    <h:inputText id="id" value="#{itemElementRelationshipHistoryController.selected.id}" title="#{resources.CreateItemElementRelationshipHistoryTitle_id}" required="true" requiredMessage="#{resources.CreateItemElementRelationshipHistoryRequiredMessage_id}"/>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_relationshipDetails}" for="relationshipDetails" />
+                    <h:inputText id="relationshipDetails" value="#{itemElementRelationshipHistoryController.selected.relationshipDetails}" title="#{resources.CreateItemElementRelationshipHistoryTitle_relationshipDetails}" />
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_label}" for="label" />
+                    <h:inputText id="label" value="#{itemElementRelationshipHistoryController.selected.label}" title="#{resources.CreateItemElementRelationshipHistoryTitle_label}" />
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_description}" for="description" />
+                    <h:inputText id="description" value="#{itemElementRelationshipHistoryController.selected.description}" title="#{resources.CreateItemElementRelationshipHistoryTitle_description}" />
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_enteredOnDateTime}" for="enteredOnDateTime" />
+                    <h:inputText id="enteredOnDateTime" value="#{itemElementRelationshipHistoryController.selected.enteredOnDateTime}" title="#{resources.CreateItemElementRelationshipHistoryTitle_enteredOnDateTime}" required="true" requiredMessage="#{resources.CreateItemElementRelationshipHistoryRequiredMessage_enteredOnDateTime}">
+                        <f:convertDateTime pattern="MM/dd/yyyy HH:mm:ss" />
+                    </h:inputText>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_itemElementRelationshipId}" for="itemElementRelationshipId" />
+                    <h:selectOneMenu id="itemElementRelationshipId" value="#{itemElementRelationshipHistoryController.selected.itemElementRelationshipId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_itemElementRelationshipId}" required="true" requiredMessage="#{resources.CreateItemElementRelationshipHistoryRequiredMessage_itemElementRelationshipId}">
+                        <f:selectItems value="#{itemElementRelationshipController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_firstItemElementId}" for="firstItemElementId" />
+                    <h:selectOneMenu id="firstItemElementId" value="#{itemElementRelationshipHistoryController.selected.firstItemElementId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_firstItemElementId}" required="true" requiredMessage="#{resources.CreateItemElementRelationshipHistoryRequiredMessage_firstItemElementId}">
+                        <f:selectItems value="#{itemElementController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_firstItemConnectorId}" for="firstItemConnectorId" />
+                    <h:selectOneMenu id="firstItemConnectorId" value="#{itemElementRelationshipHistoryController.selected.firstItemConnectorId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_firstItemConnectorId}" >
+                        <f:selectItems value="#{itemConnectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_secondItemElementId}" for="secondItemElementId" />
+                    <h:selectOneMenu id="secondItemElementId" value="#{itemElementRelationshipHistoryController.selected.secondItemElementId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_secondItemElementId}" required="true" requiredMessage="#{resources.CreateItemElementRelationshipHistoryRequiredMessage_secondItemElementId}">
+                        <f:selectItems value="#{itemElementController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_secondItemConnectorId}" for="secondItemConnectorId" />
+                    <h:selectOneMenu id="secondItemConnectorId" value="#{itemElementRelationshipHistoryController.selected.secondItemConnectorId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_secondItemConnectorId}" >
+                        <f:selectItems value="#{itemConnectorController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_linkItemElementId}" for="linkItemElementId" />
+                    <h:selectOneMenu id="linkItemElementId" value="#{itemElementRelationshipHistoryController.selected.linkItemElementId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_linkItemElementId}" >
+                        <f:selectItems value="#{itemElementController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_resourceTypeId}" for="resourceTypeId" />
+                    <h:selectOneMenu id="resourceTypeId" value="#{itemElementRelationshipHistoryController.selected.resourceTypeId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_resourceTypeId}" >
+                        <f:selectItems value="#{resourceTypeController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                    <h:outputLabel value="#{resources.CreateItemElementRelationshipHistoryLabel_enteredByUserId}" for="enteredByUserId" />
+                    <h:selectOneMenu id="enteredByUserId" value="#{itemElementRelationshipHistoryController.selected.enteredByUserId}" title="#{resources.CreateItemElementRelationshipHistoryTitle_enteredByUserId}" required="true" requiredMessage="#{resources.CreateItemElementRelationshipHistoryRequiredMessage_enteredByUserId}">
+                        <f:selectItems value="#{userInfoController.itemsAvailableSelectOne}"/>
+                    </h:selectOneMenu>
+                </h:panelGrid>
+                <br />
+                <h:commandLink action="#{itemElementRelationshipHistoryController.create}" value="#{resources.CreateItemElementRelationshipHistorySaveLink}" />
+                <br />
+                <br />
+                <h:commandLink action="#{itemElementRelationshipHistoryController.prepareList}" value="#{resources.CreateItemElementRelationshipHistoryShowAllLink}" immediate="true"/>
+                <br />
+                <br />
+                <h:link outcome="/index" value="#{resources.CreateItemElementRelationshipHistoryIndexLink}"/>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+
+</html>
