@@ -71,6 +71,7 @@ class MergeUtility():
         self.libraryDomainName = None
         self.libraryDomainId = None
         self.catalogDomainHandlerName = None
+        self.designDomainHandlerName = None
         self.instanceDomainName = None
         self.locationEntityTypeName = None
         self.locationDomainName = None
@@ -373,6 +374,11 @@ class MergeUtility():
             catalogDomainHandler = self.itemDbApi.addDomainHandler('Catalog', 'Handler responsible for items in a catalog type domain.')
             self.catalogDomainHandlerName = catalogDomainHandler.data['name']
 
+    def __createDesignDomainHandler(self):
+        if self.designDomainHandlerName is None:
+            designDomainHandler = self.itemDbApi.addDomainHandler('Design', 'Handler responsible for items in a design type domain.')
+            self.designDomainHandlerName = designDomainHandler.data['name']
+
     def __createCatalogDomain(self):
         if self.catalogDomainName is None:
             self.__createCatalogDomainHandler()
@@ -382,8 +388,8 @@ class MergeUtility():
 
     def __createLibraryDomain(self):
         if self.libraryDomainName is None:
-            self.__createCatalogDomainHandler()
-            libraryDomain = self.itemDbApi.addDomain('Library', 'Library Domain', self.catalogDomainHandlerName)
+            self.__createDesignDomainHandler()
+            libraryDomain = self.itemDbApi.addDomain('Design', 'Design Domain', self.designDomainHandlerName)
             self.libraryDomainName = libraryDomain.data['name']
             self.libraryDomainId = libraryDomain.data['id']
 
@@ -415,7 +421,7 @@ class MergeUtility():
             self.__populateDomainEntityProperties(selfItemElementId, designProperties)
 
             designLogs = designData['designLogs']
-            self.__populateDomainEntityLogsForItems(itemId, designLogs)
+            self.__populateDomainEntityLogsForItemElements(selfItemElementId, designLogs)
 
         self.__populateItemElementsWithDesignElements()
 
@@ -514,19 +520,19 @@ class MergeUtility():
             self.itemDbApi.addItemItemType(itemId, typeName)
         
             componentLogs = componentData['componentLogs']
-            self.__populateDomainEntityLogsForItems(itemId, componentLogs)
+            self.__populateDomainEntityLogsForItemElements(selfItemElementId, componentLogs)
         
             componentProperties = componentData['componentProperties']
             self.__populateDomainEntityProperties(selfItemElementId, componentProperties)
 
             componentInstances = componentData['componentInstance']
-            self.__addComponentInstances(itemId, name, componentInstances)
+            self.__addComponentInstances(itemId, componentInstances)
 
-    def __addComponentInstances(self, itemId, itemName, componentInstances):
+    def __addComponentInstances(self, itemId, componentInstances):
         if self.instanceDomainName is None:
-            instanceDomainHandler = self.itemDbApi.addDomainHandler('Instance', 'Handler responsible for handling phyisical instances of items.')
+            instanceDomainHandler = self.itemDbApi.addDomainHandler('Inventory', 'Handler responsible for handling phyisical inventory of items.')
             instanceDomainHandlerName = instanceDomainHandler.data['name']
-            instanceDomain = self.itemDbApi.addDomain('Instance', 'Instance Domain', instanceDomainHandlerName)
+            instanceDomain = self.itemDbApi.addDomain('Inventory', 'Inventory Domain', instanceDomainHandlerName)
 
             self.instanceDomainName = instanceDomain.data['name']
 
@@ -538,7 +544,7 @@ class MergeUtility():
             componentInstanceId = componentInstanceData['id']
             print 'Moving Component insatance id %s' % componentInstanceId
 
-            name = itemName
+            name = None
             itemIdentifier1 = componentInstanceData['serialNumber']
             itemIdentifier2 = componentInstanceData['tag']
             description = componentInstanceData['description']
@@ -564,7 +570,7 @@ class MergeUtility():
             selfItemElementId = selfItemElement.data['id']
 
             componentInstaceLogs = componentInstanceData['componentInstanceLogs']
-            self.__populateDomainEntityLogsForItems(instanceItemId, componentInstaceLogs)
+            self.__populateDomainEntityLogsForItemElements(selfItemElementId, componentInstaceLogs)
 
             componentInstanceProperties = componentInstanceData['componentInstanceProperties']
             self.__populateDomainEntityProperties(selfItemElementId, componentInstanceProperties)
@@ -615,14 +621,6 @@ class MergeUtility():
                 self.developerDbApi.addItemElementRelationshipHistory(itemElementRelationshipId, selfItemElementId, locationSelfItemElementId, None, None, None,locationDetails,
                                                                       None,None,None, enteredByUserId, enteredOnDateTime)
 
-
-
-    def __populateDomainEntityLogsForItems(self, itemId, domainEntityLogs):
-        for domainEntityLog in domainEntityLogs:
-            logArgs = self.argsGenerator.getLogArgs(domainEntityLog)
-            # Add New log
-            newLog = self.itemDbApi.addItemLog(itemId, *logArgs)
-            self.__populateLogAttachments(newLog, domainEntityLog)
 
     def __populateDomainEntityLogsForItemElements(self, itemElementId, domainEntityLogs):
         for domainEntityLog in domainEntityLogs:
