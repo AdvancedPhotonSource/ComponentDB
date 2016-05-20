@@ -3,6 +3,7 @@ LOCK TABLES `domain_handler` WRITE;
 INSERT INTO `domain_handler` VALUES
 (1,'Location','Handler responsible for locations.'),
 (2,'Catalog','Handler responsible for items in a catalog type domain.'),
-(3,'Instance','Handler responsible for handling phyisical instances of items.');
+(3,'Inventory','Handler responsible for handling phyisical inventory of items.'),
+(4,'Design','Handler responsible for items in a design type domain.');
 /*!40000 ALTER TABLE `domain_handler` ENABLE KEYS */;
 UNLOCK TABLES;

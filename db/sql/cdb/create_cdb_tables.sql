@@ -328,7 +328,7 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) unsigned NOT NULL,
-  `name` varchar(64) NOT NULL,
+  `name` varchar(64) NULL,
   `derived_from_item_id` int(11) unsigned DEFAULT NULL,
   `item_identifier1` varchar(32) DEFAULT NULL,
   `item_identifier2` varchar(32) DEFAULT NULL,
@@ -336,7 +336,7 @@ CREATE TABLE `item` (
   `description` varchar(256) DEFAULT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_u1` (`domain_id`, `name`, `item_identifier1`, `item_identifier2`),
+  UNIQUE KEY `item_u1` (`domain_id`, `name`, `item_identifier1`, `item_identifier2`, `derived_from_item_id`),
   UNIQUE KEY `item_u2` (`qr_id`),
   UNIQUE KEY `item_u3` (`entity_info_id`),
   KEY `item_k1` (`domain_id`),
@@ -370,21 +370,6 @@ CREATE TABLE `item_element` (
   CONSTRAINT `item_element_fk1` FOREIGN KEY (`parent_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_fk2` FOREIGN KEY (`contained_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
--- Table `item_log`
---
-
-DROP TABLE IF EXISTS `item_log`;
-CREATE TABLE `item_log` (
-  `item_id` int(11) unsigned NOT NULL,
-  `log_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`item_id`, `log_id`),
-  KEY `item_log_k1` (`item_id`),
-  KEY `item_log_k2` (`log_id`),
-  CONSTRAINT `item_log_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_log_fk2` FOREIGN KEY (`log_id`) REFERENCES `log` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
