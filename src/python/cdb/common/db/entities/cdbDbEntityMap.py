@@ -26,7 +26,6 @@ from cdb.common.db.entities.itemType import ItemType
 from cdb.common.db.entities.itemItemType import ItemItemType
 from cdb.common.db.entities.itemItemCategory import ItemItemCategory
 from cdb.common.db.entities.logTopic import LogTopic
-from cdb.common.db.entities.itemLog import ItemLog
 from cdb.common.db.entities.itemElementProperty import ItemElementProperty
 from cdb.common.db.entities.relationshipType import RelationshipType
 from cdb.common.db.entities.relationshipTypeHandler import RelationshipTypeHandler
@@ -93,10 +92,6 @@ CDB_DB_ENTITY_MAP = {
         'domain' : { 'parentEntity' : Domain, 'lazy' : False },
         'derivedFromItem' : { 'parentEntity' : Item, 'lazy' : False },
         'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False },
-    }),
-    'item_log' : ( ItemLog, {
-       'item' : { 'parentEntity' : Item, 'lazy' : True },
-       'log' : { 'parentEntity' : Log, 'lazy' : False },
     }),
     'item_source' : ( ItemSource, {
         'item' : { 'parentEntity' : Item, 'lazy' : True },

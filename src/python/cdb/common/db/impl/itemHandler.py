@@ -16,7 +16,6 @@ from cdb.common.db.entities.itemCategory import ItemCategory
 from cdb.common.db.entities.itemType import ItemType
 from cdb.common.db.entities.itemItemCategory import ItemItemCategory
 from cdb.common.db.entities.itemItemType import ItemItemType
-from cdb.common.db.entities.itemLog import ItemLog
 from cdb.common.db.entities.itemElementProperty import ItemElementProperty
 from cdb.common.db.entities.itemElementRelationship import ItemElementRelationship
 from cdb.common.db.entities.itemConnector import ItemConnector
@@ -92,7 +91,8 @@ class ItemHandler(CdbDbEntityHandler):
         for item in dbItems:
             if item.item_identifier1 == itemIdentifier1 \
                         and item.item_identifier2 == itemIdentifier2 \
-                        and item.domain.name == domainName:
+                        and item.domain.name == domainName \
+                        and item.derived_from_item_id == derivedFromItemId:
                 raise ObjectAlreadyExists('Item with name %s already exists.' % name)
 
 
@@ -226,20 +226,6 @@ class ItemHandler(CdbDbEntityHandler):
         session.flush()
         self.logger.debug('Added type %s for item id %s' % (itemTypeName, itemId))
         return dbItemItemType
-
-    def addItemLog(self, session, itemId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None):
-        dbItem = self.getItemById(session, itemId)
-        dbLog = self.logHandler.addLog(session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
-
-        dbItemLog = ItemLog()
-        dbItemLog.item = dbItem
-        dbItemLog.log = dbLog
-
-        session.add(dbItemLog)
-        session.flush()
-
-        self.logger.debug('Added log for item id %s' % (itemId))
-        return dbItemLog
 
     def addItemElementLog(self, session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None):
         dbItemElement = self.getItemElementById(session, itemElementId)

@@ -118,12 +118,6 @@ class ItemDbApi(CdbDbApi):
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItemLog(self, itemId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, **kwargs):
-        session = kwargs['session']
-        dbItemLog = self.itemHandler.addItemLog(session, itemId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
-        return dbItemLog.getCdbObject()
-    
-    @CdbDbApi.executeTransaction
     def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, **kwargs):
         session = kwargs['session']
         dbItemElementLog = self.itemHandler.addItemElementLog(session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
