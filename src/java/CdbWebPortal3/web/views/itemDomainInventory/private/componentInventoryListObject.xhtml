@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="../../item/private/templates/itemListObjectTemplate.xhtml">
+    
+    <ui:define name="qrIdColumn">
+        <p:column sortBy="#{cdbDomainEntityObject.qrId}" headerText="QrId"
+                  filterBy="#{cdbDomainEntityObject.qrIdDisplay}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterByQrId}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayQrId}" >
+            <h:outputLink value="../item/view.xhtml?id=#{cdbDomainEntityObject.id}" title="View #{entityTypeName} details"> 
+                <h:outputText value="#{cdbDomainEntityObject.qrIdDisplay}" />
+            </h:outputLink>
+        </p:column>
+    </ui:define>
+    
+</ui:composition>
+
+
