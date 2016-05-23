@@ -4,11 +4,10 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-    
-    <ui:param name="filterableBoolean" value="#{entityInfoObjectFilterable == 'true'}" />
 
     <p:column sortBy="#{entityInfoObject.ownerUser.username}" headerText="Owner"
-              filterable="#{filterableBoolean}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterBy="#{entityInfoObject.ownerUser.username}" filterMatchMode="contains"
               filterValue="#{entityController.filterByOwnerUser}"
               rendered="#{entityController.displayOwnerUser}">
@@ -16,7 +15,8 @@
     </p:column>
 
     <p:column sortBy="#{entityInfoObject.ownerUserGroup.name}" headerText="Group"
-              filterable="#{filterableBoolean}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterBy="#{entityInfoObject.ownerUserGroup.name}" filterMatchMode="exact"
               filterOptions="#{userGroupController.availableItemsForSelectOne}"
               filterValue="#{entityController.filterByOwnerGroup}"
@@ -25,7 +25,8 @@
     </p:column>
 
     <p:column sortBy="#{entityInfoObject.createdByUser.username}" headerText="Created By"
-              filterable="#{filterableBoolean}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterBy="#{entityInfoObject.createdByUser.username}" filterMatchMode="contains"
               filterValue="#{entityController.filterByCreatedByUser}"
               rendered="#{entityController.displayCreatedByUser}">
@@ -33,7 +34,8 @@
     </p:column>
 
     <p:column sortBy="#{entityInfoObject.createdOnDateTime}" headerText="Created On"
-              filterable="#{filterableBoolean}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterBy="#{entityInfoObject.createdOnDateTime}" filterMatchMode="contains"
               filterValue="#{entityController.filterByCreatedOnDateTime}"
               rendered="#{entityController.displayCreatedOnDateTime}">
@@ -41,7 +43,8 @@
     </p:column>
 
     <p:column sortBy="#{entityInfoObject.lastModifiedByUser.username}" headerText="Modified By"
-              filterable="#{filterableBoolean}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterBy="#{entityInfoObject.lastModifiedByUser.username}" filterMatchMode="contains"
               filterValue="#{entityController.filterByLastModifiedByUser}"
               rendered="#{entityController.displayLastModifiedByUser}">
@@ -49,7 +52,8 @@
     </p:column>
 
     <p:column sortBy="#{entityInfoObject.lastModifiedOnDateTime}" headerText="Modified On"
-              filterable="#{filterableBoolean}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterBy="#{entityInfoObject.lastModifiedOnDateTime}" filterMatchMode="contains"
               filterValue="#{entityController.filterByLastModifiedOnDateTime}"
               rendered="#{entityController.displayLastModifiedOnDateTime}">
