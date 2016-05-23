@@ -27,7 +27,7 @@
                 </p:selectOneMenu>
 
                 <h:outputLabel for="logAttachmentsValue" value="Attachments" styleClass="entityDataEmphasizedLabel"/>
-                <p:outputPanel>
+                <p:outputPanel id="logAttachmentsValue">
                     <ui:include src="../../log/private/logAttachmentFileUpload.xhtml">
                         <ui:param name="updateTarget" value="attachementsValueList" />
                     </ui:include>
