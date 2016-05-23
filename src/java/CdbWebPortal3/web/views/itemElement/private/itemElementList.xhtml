@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dataTable value="#{parentItem.itemElementDisplayList}"
+                 var="itemElementObject">
+
+        <p:column headerText="Name">
+            <p:rowToggler rendered="#{itemElementController.displayRowExpansion}"/>
+            <h:outputText value="#{itemElementObject.name}" />
+        </p:column>
+
+        <p:column headerText="Contained Item">
+            <h:outputText value="#{itemElementObject.containedItem.name}" />
+        </p:column>
+
+        <p:column headerText="Item Type">
+            <h:outputText value="#{itemElementObject.containedItem.itemType}" />
+        </p:column>
+
+        
+
+        <ui:include src="../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
+            <ui:param name="entityController" value="#{itemElementController}" />
+            <ui:param name="cdbDomainEntityObject" value="#{itemElementObject}" />
+        </ui:include>
+
+        <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityController" value="#{itemElementController}"/>
+            <ui:param name="entityInfoObject" value="#{itemElementObject.entityInfo}"/>
+        </ui:include>
+        
+        <p:column headerText="Actions" exportable="false" rendered="#{rendered == null or rendered}">
+            <div>
+                <p:commandLink id="designElementListViewLink" 
+                               action="#{designElementController.prepareViewFrom(designElementObject)}" 
+                               styleClass="ui-icon ui-icon-designElement" 
+                               title="View">
+                    <p:tooltip for="designElementListViewLink" value="View #{designElementController.displayEntityTypeName} details."/>
+                </p:commandLink>
+                <p:commandLink id="designElementListViewComponentLink" 
+                               action="#{itemGenericViewController.prepareView(itemElementObject.containedItem)}" 
+                               styleClass="ui-icon ui-icon-component" 
+                               title="View">
+                    <p:tooltip for="designElementListViewComponentLink" value="View child component details."/>
+                </p:commandLink>
+            </div>
+        </p:column>
+
+        <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{itemElementController.displayRowExpansion}">
+            <ui:include src="itemElementListDataTableRowExpansion.xhtml">
+                <ui:param name="parentDesignElementObject" value="#{itemElementObject}" />
+                <ui:param name="entityController" value="#{itemElementController}" />
+                <ui:param name="viewMode" value="#{viewMode != null ? viewMode : 'inViewRowExpansion'}" />
+            </ui:include>
+        </p:rowExpansion>
+    </p:dataTable>
+
+
+
+</ui:composition>
+
+
