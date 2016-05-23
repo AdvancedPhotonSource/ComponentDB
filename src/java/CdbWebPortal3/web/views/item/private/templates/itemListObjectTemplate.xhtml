@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="itemListObjectTemplateBase.xhtml">
+
+
+    <ui:define name="idColumn">
+        <p:column sortBy="#{cdbDomainEntityObject.id}" headerText="Id"
+                  filterBy="#{cdbDomainEntityObject.id}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterById}"
+                  rendered="#{entityController.displayId}" >
+            <h:outputText value="#{cdbDomainEntityObject.id}" />
+        </p:column>
+    </ui:define>
+
+    <ui:define name="nameColumn" >
+        <p:column sortBy="#{cdbDomainEntityObject.name}" headerText="Name"
+                  filterBy="#{cdbDomainEntityObject.name}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterByName}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayName}" >
+            <f:attribute name="exportValue" value="#{cdbDomainEntityObject.name}"/>
+            <h:outputLink value="../item/view.xhtml?id=#{cdbDomainEntityObject.id}" title="View #{entityTypeName} details"> 
+                <h:outputText value="#{cdbDomainEntityObject.name}" />
+            </h:outputLink>
+        </p:column>
+
+    </ui:define>
+
+    <ui:define name="qrIdColumn">
+        <p:column sortBy="#{cdbDomainEntityObject.qrId}" headerText="QrId"
+                  filterBy="#{cdbDomainEntityObject.qrIdDisplay}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterByQrId}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayQrId}" >
+            <h:outputText value="#{cdbDomainEntityObject.qrIdDisplay}" />
+        </p:column>
+    </ui:define>
+
+    <ui:define name="itemIdentifier1Column">
+        <p:column sortBy="#{cdbDomainEntityObject.itemIdentifier1}" 
+                  headerText="#{entityController.itemIdentifier1Title}"
+                  filterBy="#{cdbDomainEntityObject.itemIdentifier1}"
+                  filterValue="#{entityController.filterByItemIdentifier1}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayItemIdentifier1}">
+            <h:outputText value="#{cdbDomainEntityObject.itemIdentifier1}" />
+        </p:column>
+    </ui:define>
+
+    <ui:define name="itemIdentifier2Column">
+        <p:column sortBy="#{cdbDomainEntityObject.itemIdentifier2}" 
+                  headerText="#{entityController.itemIdentifier2Title}"
+                  filterBy="#{cdbDomainEntityObject.itemIdentifier2}"
+                  filterValue="#{entityController.filterByItemIdentifier2}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayItemIdentifier2}">
+            <h:outputText value="#{cdbDomainEntityObject.itemIdentifier2}" />
+        </p:column>
+    </ui:define>
+
+    <ui:define name="itemTypeColumn"> 
+        <p:column sortBy="#{cdbDomainEntityObject.itemTypeString}"
+                  headerText="Type"
+                  filterBy="#{cdbDomainEntityObject.itemTypeString}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayItemType}"
+                  >
+            <f:attribute name="exportValue" value="#{cdbDomainEntityObject.itemTypeString}"/>
+            <ul>
+                <ui:repeat value="#{cdbDomainEntityObject.itemTypeList}" var="itemTypeObject">
+                    <li>
+                        <h:outputText value="#{itemTypeObject.name}" />
+                    </li>
+                </ui:repeat>
+            </ul>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="itemCategoryColumn" > 
+        <p:column sortBy="#{cdbDomainEntityObject.itemCategoryString}"
+                  headerText="Category"
+                  filterBy="#{cdbDomainEntityObject.itemCategoryString}"
+                  filterOptions="#{itemCategoryController.availableItemsForSelectOne}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayItemCategory}"
+                  >
+
+            <f:attribute name="exportValue" value="#{cdbDomainEntityObject.itemCategoryString}"/>
+            <ul>
+                <ui:repeat value="#{cdbDomainEntityObject.itemCategoryList}" var="itemCategoryObject">
+                    <li>
+                        <h:outputText value="#{itemCategoryObject.name}" />
+                    </li>
+                </ui:repeat>
+            </ul>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="itemSourceColumn" > 
+        <p:column sortBy="#{cdbDomainEntityObject.itemSourceString}" 
+                  headerText="Sources"
+                  filterBy="#{cdbDomainEntityObject.itemSourceString}"
+                  filterValue="#{entityController.filterByItemSources}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayItemSources}">
+
+            <f:attribute name="exportValue" value="#{cdbDomainEntityObject.itemSourceString}"/>
+            <ul>
+                <ui:repeat value="#{cdbDomainEntityObject.itemSourceList}" var="itemSource">
+                    <li>
+                        <h:outputText value="#{itemSource.source.name}" />
+                    </li>
+                </ui:repeat>
+            </ul>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="derivedFromItemColumn" > 
+        <p:column headerText="#{entityController.derivedFromItemTitle}"
+                  rendered="#{entityController.displayDerivedFromItem}"
+                  filterBy="#{cdbDomainEntityObject.derivedFromItem.name}"
+                  sortBy="#{cdbDomainEntityObject.derivedFromItem.name}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  filterValue="#{componentInventoryEntityTypeViewController.filterByName}">
+            <h:outputText value="#{cdbDomainEntityObject.derivedFromItem.name}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="descriptionColumn" > 
+        <p:column sortBy="#{cdbDomainEntityObject.description}" headerText="Description" 
+                  filterBy="#{cdbDomainEntityObject.description}" filterMatchMode="contains"
+                  filterValue="#{entityController.filterByDescription}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{entityController.displayDescription}">
+            <h:outputText value="#{cdbDomainEntityObject.description}"/>
+        </p:column>
+    </ui:define>
+
+</ui:composition>

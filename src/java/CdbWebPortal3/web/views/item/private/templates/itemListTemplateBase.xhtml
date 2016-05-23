@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="../../../../templates/portalViewTemplate.xhtml">
+    
+    <!--
+        Use itemListTemplate instead. 
+    -->
+
+
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.styleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+    
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    
+    <ui:define name="pageTitle">: #{entityController.entityListPageTitle}</ui:define>
+
+    <ui:define name="middleCenter">
+        <h:form id="#{entityTypeName}ListForm">  
+            <div class="pageTitle">
+                <h1>#{entityController.entityListPageTitle}</h1>
+            </div>
+            
+            <ui:insert name="helpFragment"/>
+            
+            <ui:insert name="listActionButtons" />
+            
+            <h:panelGroup>
+                <ui:insert name="listDataTable" />
+            </h:panelGroup>
+            
+            <ui:insert name="itemDestroyDialog" />
+            
+            <ui:insert name="customizeDisplayDialog"/>
+            
+            <ui:insert name="infoActionDialogs" />
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

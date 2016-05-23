@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+
+    <p:panelGrid columns="2" styleClass="viewEntityDetails">
+
+        <h:outputLabel for="name" 
+                       value="Name" 
+                       rendered="#{entityController.entityDisplayItemName}"
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="name" 
+                   rendered="#{entityController.entityDisplayItemName}"
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{domainEntityObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+        
+        <h:outputLabel for="qrId" 
+                       value="QR Id" 
+                       rendered="#{entityController.entityDisplayQrId}"
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace label="#{domainEntityObject.qrIdDisplay}" 
+                   rendered="#{entityController.entityDisplayQrId}"
+                   id="qrId" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputText value="#{domainEntityObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+        
+        <p:outputLabel for="derivedFromItem"
+                       value="#{entityController.derivedFromItemTitle}"
+                       rendered="#{entityController.entityDisplayDerivedFromItem}"
+                       styleClass="entityDataLabel"/>
+        <h:outputText id="derivedFromItem"
+                      rendered="#{entityController.entityDisplayDerivedFromItem}"
+                      styleClass="entityDataText"
+                      value="#{domainEntityObject.derivedFromItem.name}"/>
+
+        <h:outputLabel for="itemIdentifier1"
+                       rendered="#{entityController.entityDisplayItemIdentifier1}"
+                       value="#{entityController.itemIdentifier1Title}"
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="itemIdentifier1" 
+                   rendered="#{entityController.entityDisplayItemIdentifier1}"
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{domainEntityObject.itemIdentifier1}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+
+        <h:outputLabel for="itemIdentifier2"
+                       rendered="#{entityController.entityDisplayItemIdentifier2}"
+                       value="#{entityController.itemIdentifier2Title}" styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="itemIdentifier2"
+                   rendered="#{entityController.entityDisplayItemIdentifier2}"
+                   editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:inputText value="#{domainEntityObject.itemIdentifier2}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+        </p:inplace>
+        
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <p:inplace id="description" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataText">
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <h:inputTextarea value="#{domainEntityObject.description}" title="Description" styleClass="entityDataText"/>
+        </p:inplace>
+
+        <h:outputLabel for="itemType" 
+                       value="Type" 
+                       rendered="#{entityController.displayItemType}"
+                       styleClass="entityDataLabel"/>
+        <p:inplace id="itemType" 
+                   rendered="#{entityController.displayItemType}"
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataText" 
+                   label="#{domainEntityObject.itemTypeString}"> 
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="cancel" oncomplete="reloadItemType()"/>
+            <p:remoteCommand name="reloadItemType"
+                             action="#{entityController.reloadCurrent()}"
+                             update="itemType itemTypeCategory"
+                             />
+            <!-- TODO add proper editing capabilities -->
+        </p:inplace>
+
+
+        <h:outputLabel for="itemTypeCategory"
+                       value="Category" 
+                       rendered="#{entityController.displayItemCategory}"
+                       styleClass="entityDataLabel"/>
+        <h:outputText id="itemTypeCategory"
+                      rendered="#{entityController.displayItemCategory}"
+                      value="#{domainEntityObject.itemCategoryString}"
+                      title="Category" styleClass="entityDataText"/>
+        
+        <ui:insert name="additionalItemInformation"/>
+
+    </p:panelGrid>
+
+    <ui:remove>
+        <ui:include src="../../componentType/private/componentTypeSelectDialog.xhtml">
+            <ui:param name="updateTarget" value="componentTypeDropdown componentTypeCategory"/>
+        </ui:include>
+    </ui:remove>
+
+    <p:remoteCommand name="inlineSaveEntity"
+                     action="#{entityController.inlineUpdate()}"
+                     />
+
+</ui:composition>

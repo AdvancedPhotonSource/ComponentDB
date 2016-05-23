@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <!--
+    use itemListDataTableTemplate instead.
+    -->
+
+    <ui:insert name="domainEntityListDataTableParameters">
+    </ui:insert>
+    
+    <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null ? itemListDataTableValue : entityController.listDataModel}" />
+    
+    <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
+    <ui:param name="sortable" value="#{sortable != null ? sortable : true}" />
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+
+    <p:dataTable id="#{entityTypeName}ListDataTable" 
+                 widgetVar="#{entityTypeName}ListDataTableWidget"
+                 var="cdbDomainEntityObject" 
+                 value="#{itemListDataTableValue}" 
+                 filteredValue="#{entityController.filteredObjectList}"
+                 rows="#{entityController.displayNumberOfItemsPerPage}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No #{displayEntityTypeName}s found.">
+        
+        <ui:param name="#{entityTypeName}Object" value="#{cdbDomainEntityObject}" />
+        
+        <ui:insert name="rowExpansion" />
+        
+        <ui:insert name="itemColumns" />
+        
+        <ui:insert name="domainEntityListExtraColumns"/>
+        
+        <ui:insert name="propertyValueColumns" />
+
+        <ui:insert name="entityInfoColumns" />
+        
+        <ui:insert name="actionsColumn" />
+
+    </p:dataTable>
+
+</ui:composition>
