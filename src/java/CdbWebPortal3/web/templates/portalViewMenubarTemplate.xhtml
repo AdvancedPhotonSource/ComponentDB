@@ -9,14 +9,14 @@
     <p:menubar>
         <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home" styleClass="mainMenuBarItemImportant"/>
         <p:menuitem value="Component Catalog" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/component/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    action="#{componentController.prepareListFromViewPath('/views/component')}"/>
+                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                    action="#{componentCatalogEntityTypeViewController.prepareListFromViewPath('/views/itemDomainCatalog')}"/>
         <p:menuitem value="Component Inventory" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/componentInstance/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    action="#{componentController.prepareListFromViewPath('/views/componentInstance')}"/>
+                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                    action="#{componentInventoryEntityTypeViewController.prepareListFromViewPath('/views/itemDomainInventory')}"/>
         <p:menuitem value="Design Library" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/design/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    action="#{designController.prepareListFromViewPath('/views/design')}"/>
+                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainDesign/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                    action="#{designLibraryEntityTypeViewController.prepareListFromViewPath('/views/itemDomainDesign')}"/>
         <p:menuitem value="Search"
                     styleClass="#{fn:startsWith(view.viewId, '/views/search/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
                     url="/views/search/search" icon="ui-icon-search"/>
