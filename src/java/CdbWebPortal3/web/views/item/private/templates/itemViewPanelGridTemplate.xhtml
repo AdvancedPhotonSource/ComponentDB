@@ -3,85 +3,66 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                template="itemPanelGridTemplate.xhtml">
 
+    <ui:param name="panelGridStyle" value="viewEntityDetails" />
 
-
-    <p:panelGrid columns="2" styleClass="viewEntityDetails">
-
-        <h:outputLabel for="name" 
-                       value="Name" 
-                       rendered="#{entityController.entityDisplayItemName}"
-                       styleClass="entityDataEmphasizedLabel"/>
+    <ui:define name="itemNameValue">
         <p:inplace id="name" 
                    rendered="#{entityController.entityDisplayItemName}"
                    editor="#{isEntityWriteable}" 
                    toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:inputText value="#{domainEntityObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
+            <p:inputText value="#{itemObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
-        
-        <h:outputLabel for="qrId" 
-                       value="QR Id" 
-                       rendered="#{entityController.entityDisplayQrId}"
-                       styleClass="entityDataEmphasizedLabel"/>
-        <p:inplace label="#{domainEntityObject.qrIdDisplay}" 
+    </ui:define>
+
+    <ui:define name="itemQrIdValue">
+        <p:inplace label="#{itemObject.qrIdDisplay}" 
                    rendered="#{entityController.entityDisplayQrId}"
                    id="qrId" 
                    editor="#{isEntityWriteable}" 
                    toggleable="#{isEntityWriteable}" 
                    styleClass="entityDataEmphasizedText">
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <h:inputText value="#{domainEntityObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
+            <h:inputText value="#{itemObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
-        
-        <p:outputLabel for="derivedFromItem"
-                       value="#{entityController.derivedFromItemTitle}"
-                       rendered="#{entityController.entityDisplayDerivedFromItem}"
-                       styleClass="entityDataLabel"/>
-        <h:outputText id="derivedFromItem"
-                      rendered="#{entityController.entityDisplayDerivedFromItem}"
-                      styleClass="entityDataText"
-                      value="#{domainEntityObject.derivedFromItem.name}"/>
+    </ui:define>
 
-        <h:outputLabel for="itemIdentifier1"
-                       rendered="#{entityController.entityDisplayItemIdentifier1}"
-                       value="#{entityController.itemIdentifier1Title}"
-                       styleClass="entityDataEmphasizedLabel"/>
+    <ui:define name="itemItemIdentifier1Value">
         <p:inplace id="itemIdentifier1" 
                    rendered="#{entityController.entityDisplayItemIdentifier1}"
                    editor="#{isEntityWriteable}" 
                    toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:inputText value="#{domainEntityObject.itemIdentifier1}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+            <p:inputText value="#{itemObject.itemIdentifier1}" title="Model Number" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
+    </ui:define>
 
-        <h:outputLabel for="itemIdentifier2"
-                       rendered="#{entityController.entityDisplayItemIdentifier2}"
-                       value="#{entityController.itemIdentifier2Title}" styleClass="entityDataEmphasizedLabel"/>
+    <ui:define name="itemItemIdentifier2Value">
         <p:inplace id="itemIdentifier2"
                    rendered="#{entityController.entityDisplayItemIdentifier2}"
                    editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:inputText value="#{domainEntityObject.itemIdentifier2}" title="Model Number" styleClass="entityDataEmphasizedText"/>
+            <p:inputText value="#{itemObject.itemIdentifier2}" title="Model Number" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
-        
-        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+    </ui:define>
+
+    <ui:define name="itemDescriptionValue" >
         <p:inplace id="description" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataText">
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <h:inputTextarea value="#{domainEntityObject.description}" title="Description" styleClass="entityDataText"/>
+            <h:inputTextarea value="#{itemObject.description}" title="Description" styleClass="entityDataText"/>
         </p:inplace>
+    </ui:define>        
 
-        <h:outputLabel for="itemType" 
-                       value="Type" 
-                       rendered="#{entityController.displayItemType}"
-                       styleClass="entityDataLabel"/>
+    <ui:define name="itemItemTypeValue">
         <p:inplace id="itemType" 
                    rendered="#{entityController.displayItemType}"
                    editor="#{isEntityWriteable}" 
                    toggleable="#{isEntityWriteable}" 
                    styleClass="entityDataText" 
-                   label="#{domainEntityObject.itemTypeString}"> 
+                   label="#{itemObject.itemTypeString}"> 
             <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
             <p:ajax event="cancel" oncomplete="reloadItemType()"/>
             <p:remoteCommand name="reloadItemType"
@@ -90,29 +71,19 @@
                              />
             <!-- TODO add proper editing capabilities -->
         </p:inplace>
+    </ui:define>
 
-
-        <h:outputLabel for="itemTypeCategory"
-                       value="Category" 
-                       rendered="#{entityController.displayItemCategory}"
-                       styleClass="entityDataLabel"/>
-        <h:outputText id="itemTypeCategory"
+    <ui:define name="itemItemCategoryValue" >
+        <h:outputText id="itemCategory"
                       rendered="#{entityController.displayItemCategory}"
-                      value="#{domainEntityObject.itemCategoryString}"
+                      value="#{itemObject.itemCategoryString}"
                       title="Category" styleClass="entityDataText"/>
-        
-        <ui:insert name="additionalItemInformation"/>
-
-    </p:panelGrid>
-
-    <ui:remove>
-        <ui:include src="../../componentType/private/componentTypeSelectDialog.xhtml">
-            <ui:param name="updateTarget" value="componentTypeDropdown componentTypeCategory"/>
-        </ui:include>
-    </ui:remove>
-
-    <p:remoteCommand name="inlineSaveEntity"
-                     action="#{entityController.inlineUpdate()}"
-                     />
+    </ui:define>
+    
+    <ui:define name="additionPanelGridContent">
+        <p:remoteCommand name="inlineSaveEntity"
+                         action="#{entityController.inlineUpdate()}"
+                         />
+    </ui:define>
 
 </ui:composition>
