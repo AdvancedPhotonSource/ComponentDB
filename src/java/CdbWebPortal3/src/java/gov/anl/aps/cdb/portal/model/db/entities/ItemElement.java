@@ -26,6 +26,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -35,12 +36,19 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "item_element")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ItemElement.findAll", query = "SELECT i FROM ItemElement i"),
-    @NamedQuery(name = "ItemElement.findById", query = "SELECT i FROM ItemElement i WHERE i.id = :id"),
-    @NamedQuery(name = "ItemElement.findByName", query = "SELECT i FROM ItemElement i WHERE i.name = :name"),
-    @NamedQuery(name = "ItemElement.findByIsRequired", query = "SELECT i FROM ItemElement i WHERE i.isRequired = :isRequired"),
-    @NamedQuery(name = "ItemElement.findByDescription", query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
-    @NamedQuery(name = "ItemElement.findBySortOrder", query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder")})
+    @NamedQuery(name = "ItemElement.findAll", 
+            query = "SELECT i FROM ItemElement i"),
+    @NamedQuery(name = "ItemElement.findById", 
+            query = "SELECT i FROM ItemElement i WHERE i.id = :id"),
+    @NamedQuery(name = "ItemElement.findByName", 
+            query = "SELECT i FROM ItemElement i WHERE i.name = :name"),
+    @NamedQuery(name = "ItemElement.findByIsRequired", 
+            query = "SELECT i FROM ItemElement i WHERE i.isRequired = :isRequired"),
+    @NamedQuery(name = "ItemElement.findByDescription", 
+            query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
+    @NamedQuery(name = "ItemElement.findBySortOrder", 
+            query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder"),
+})
 public class ItemElement extends CdbDomainEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -93,6 +101,9 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationship> itemElementRelationshipList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList2;
+    
+    private static transient Integer sortByPropertyTypeId = null; 
+    private transient TreeNode childItemElementListTreeTableRootNode = null;
 
     public ItemElement() {
     }
@@ -107,6 +118,18 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+    
+    public Object getCustomizableSortOrder() {
+        if (sortByPropertyTypeId == null) {
+            return getSortOrder(); 
+        } else { 
+            return getPropertyValue(sortByPropertyTypeId);
+        }
+    }
+
+    public static void setSortByPropertyTypeId(Integer sortByPropertyTypeId) {
+        ItemElement.sortByPropertyTypeId = sortByPropertyTypeId;
     }
 
     public String getName() {
@@ -244,6 +267,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setItemElementRelationshipList2(List<ItemElementRelationship> itemElementRelationshipList2) {
         this.itemElementRelationshipList2 = itemElementRelationshipList2;
+    }
+    
+    public TreeNode getChildItemElementListTreeTableRootNode() {
+        return childItemElementListTreeTableRootNode;
+    }
+
+    public void setChildItemElementListTreeTableRootNode(TreeNode childItemElementListTreeTableRootNode) {
+        this.childItemElementListTreeTableRootNode = childItemElementListTreeTableRootNode;
     }
 
     @Override

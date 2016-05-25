@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PropertyValueHistory.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValueHistory p WHERE p.enteredOnDateTime = :enteredOnDateTime"),
     @NamedQuery(name = "PropertyValueHistory.findByDisplayValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.displayValue = :displayValue"),
     @NamedQuery(name = "PropertyValueHistory.findByTargetValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.targetValue = :targetValue")})
-public class PropertyValueHistory implements Serializable {
+public class PropertyValueHistory extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

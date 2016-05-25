@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -51,6 +52,8 @@ public class Attachment implements Serializable {
     private String description;
     @ManyToMany(mappedBy = "attachmentList")
     private List<Log> logList;
+    
+    private transient String filePath = null;
 
     public Attachment() {
     }
@@ -128,6 +131,13 @@ public class Attachment implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.Attachment[ id=" + id + " ]";
+    }
+    
+     public String getFilePath() {
+        if (filePath == null) {
+            filePath = StorageUtility.getApplicationLogAttachmentPath(name);
+        }
+        return filePath;
     }
     
 }

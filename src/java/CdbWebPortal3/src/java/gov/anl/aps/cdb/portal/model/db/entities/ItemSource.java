@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ItemSource.findByIsManufacturer", query = "SELECT i FROM ItemSource i WHERE i.isManufacturer = :isManufacturer"),
     @NamedQuery(name = "ItemSource.findByContactInfo", query = "SELECT i FROM ItemSource i WHERE i.contactInfo = :contactInfo"),
     @NamedQuery(name = "ItemSource.findByUrl", query = "SELECT i FROM ItemSource i WHERE i.url = :url")})
-public class ItemSource implements Serializable {
+public class ItemSource extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

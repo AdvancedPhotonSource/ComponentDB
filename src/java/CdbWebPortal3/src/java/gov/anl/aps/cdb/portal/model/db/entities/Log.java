@@ -53,7 +53,7 @@ public class Log extends CdbEntity implements Serializable {
     @Basic(optional = false)
     @NotNull
     @Lob
-    @Size(min = 1, max = 65535)
+    @Size(max = 65535)
     private String text;
     @Basic(optional = false)
     @NotNull
@@ -66,8 +66,6 @@ public class Log extends CdbEntity implements Serializable {
     @Column(name = "effective_to_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date effectiveToDateTime;
-    @ManyToMany(mappedBy = "logList")
-    private List<Item> itemList;
     @JoinTable(name = "log_attachment", joinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "attachment_id", referencedColumnName = "id")})
@@ -156,15 +154,6 @@ public class Log extends CdbEntity implements Serializable {
 
     public void setEffectiveToDateTime(Date effectiveToDateTime) {
         this.effectiveToDateTime = effectiveToDateTime;
-    }
-
-    @XmlTransient
-    public List<Item> getItemList() {
-        return itemList;
-    }
-
-    public void setItemList(List<Item> itemList) {
-        this.itemList = itemList;
     }
 
     @XmlTransient

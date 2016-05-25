@@ -34,11 +34,21 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "item_element_relationship")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ItemElementRelationship.findAll", query = "SELECT i FROM ItemElementRelationship i"),
-    @NamedQuery(name = "ItemElementRelationship.findById", query = "SELECT i FROM ItemElementRelationship i WHERE i.id = :id"),
-    @NamedQuery(name = "ItemElementRelationship.findByRelationshipDetails", query = "SELECT i FROM ItemElementRelationship i WHERE i.relationshipDetails = :relationshipDetails"),
-    @NamedQuery(name = "ItemElementRelationship.findByLabel", query = "SELECT i FROM ItemElementRelationship i WHERE i.label = :label"),
-    @NamedQuery(name = "ItemElementRelationship.findByDescription", query = "SELECT i FROM ItemElementRelationship i WHERE i.description = :description")})
+    @NamedQuery(name = "ItemElementRelationship.findAll", 
+            query = "SELECT i FROM ItemElementRelationship i"),
+    @NamedQuery(name = "ItemElementRelationship.findById", 
+            query = "SELECT i FROM ItemElementRelationship i WHERE i.id = :id"),
+    @NamedQuery(name = "ItemElementRelationship.findByRelationshipDetails", 
+            query = "SELECT i FROM ItemElementRelationship i WHERE i.relationshipDetails = :relationshipDetails"),
+    @NamedQuery(name = "ItemElementRelationship.findByLabel", 
+            query = "SELECT i FROM ItemElementRelationship i WHERE i.label = :label"),
+    @NamedQuery(name = "ItemElementRelationship.findByDescription", 
+            query = "SELECT i FROM ItemElementRelationship i WHERE i.description = :description"),
+    @NamedQuery(name = "ItemElementRelationship.findByRelationshipTypeNameAndFirstElementId", 
+            query = "SELECT i FROM ItemElementRelationship i "
+                    + "WHERE (i.firstItemElement.id = :itemElementId OR i.secondItemElement.id = :itemElementId) "
+                    + "AND i.relationshipType.name = :relationshipTypeName")
+})
 public class ItemElementRelationship implements Serializable {
 
     private static final long serialVersionUID = 1L;

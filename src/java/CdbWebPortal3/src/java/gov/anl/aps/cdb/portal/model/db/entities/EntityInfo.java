@@ -159,6 +159,39 @@ public class EntityInfo implements Serializable {
     public void setOwnerUser(UserInfo ownerUser) {
         this.ownerUser = ownerUser;
     }
+    
+    public String getUserInfoDisplayName(UserInfo userInfo) {
+        if (userInfo != null) {
+            return "(" + userInfo.getUsername() + ") " + userInfo.getFullNameForSelection();
+        }
+        return ""; 
+    }
+    
+    public String getOwnerUserDisplayName() {
+        if (ownerUser == null) {
+            return "-";
+        }
+        return getUserInfoDisplayName(ownerUser); 
+    }
+    
+    public String getCreatedByDisplayName() {
+        return getUserInfoDisplayName(createdByUser); 
+    }
+
+    public String getLastModifiedByDisplayName() {
+        return getUserInfoDisplayName(lastModifiedByUser); 
+    }
+    
+    public String getObsoletedByDisplayName() {
+        return getUserInfoDisplayName(obsoletedByUser); 
+    }
+    
+    public String getOwnerGroupDisplayName() {
+        if (ownerUserGroup == null) {
+            return "-";
+        }
+        return ownerUserGroup.getName(); 
+    }
 
     public UserGroup getOwnerUserGroup() {
         return ownerUserGroup;

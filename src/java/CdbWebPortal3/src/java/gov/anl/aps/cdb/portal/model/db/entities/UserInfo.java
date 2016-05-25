@@ -190,6 +190,14 @@ public class UserInfo extends CdbEntity implements Serializable {
         this.description = description;
     }
 
+    public String getUserGroupListString() {
+        return userGroupListString;
+    }
+
+    public void setUserGroupListString(String userGroupListString) {
+        this.userGroupListString = userGroupListString;
+    }
+
     @XmlTransient
     public List<gov.anl.aps.cdb.portal.model.db.entities.List> getListList() {
         return listList;
@@ -396,6 +404,25 @@ public class UserInfo extends CdbEntity implements Serializable {
 
     public boolean hasUserSettings() {
         return userSettingList != null && !userSettingList.isEmpty();
+    }
+    
+    public String getFullNameForSelection() {
+        if (fullNameForSelection != null) {
+            return fullNameForSelection;
+        }
+
+        if (lastName == null || lastName.isEmpty()) {
+            return username;
+        }
+
+        fullNameForSelection = lastName;
+        if (firstName != null && !firstName.isEmpty()) {
+            fullNameForSelection += ", " + firstName;
+        }
+        if (middleName != null && !middleName.isEmpty()) {
+            fullNameForSelection += " " + middleName;
+        }
+        return fullNameForSelection;
     }
 
     @Override

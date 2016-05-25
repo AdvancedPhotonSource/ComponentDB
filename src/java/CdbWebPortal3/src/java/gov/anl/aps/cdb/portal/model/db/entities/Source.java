@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -17,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,6 +29,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author djarosz
  */
 @Entity
+@Table(name = "source")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Source.findAll", query = "SELECT s FROM Source s"),
@@ -35,7 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Source.findByDescription", query = "SELECT s FROM Source s WHERE s.description = :description"),
     @NamedQuery(name = "Source.findByContactInfo", query = "SELECT s FROM Source s WHERE s.contactInfo = :contactInfo"),
     @NamedQuery(name = "Source.findByUrl", query = "SELECT s FROM Source s WHERE s.url = :url")})
-public class Source implements Serializable {
+public class Source extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -55,6 +58,9 @@ public class Source implements Serializable {
     private String url;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
     private List<ItemSource> itemSourceList;
+
+    private transient String targetUrl;
+    private transient String displayUrl;
 
     public Source() {
     }
@@ -106,6 +112,8 @@ public class Source implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+        this.targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        this.displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
     }
 
     @XmlTransient
@@ -115,6 +123,20 @@ public class Source implements Serializable {
 
     public void setItemSourceList(List<ItemSource> itemSourceList) {
         this.itemSourceList = itemSourceList;
+    }
+
+    public String getTargetUrl() {
+        if (targetUrl == null && url != null) {
+            targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        }
+        return targetUrl;
+    }
+
+    public String getDisplayUrl() {
+        if (displayUrl == null && url != null) {
+            displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
+        }
+        return displayUrl;
     }
 
     @Override
@@ -141,5 +163,5 @@ public class Source implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
     }
-    
+
 }

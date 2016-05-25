@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemType.findById", query = "SELECT i FROM ItemType i WHERE i.id = :id"),
     @NamedQuery(name = "ItemType.findByName", query = "SELECT i FROM ItemType i WHERE i.name = :name"),
     @NamedQuery(name = "ItemType.findByDescription", query = "SELECT i FROM ItemType i WHERE i.description = :description")})
-public class ItemType implements Serializable {
+public class ItemType extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
