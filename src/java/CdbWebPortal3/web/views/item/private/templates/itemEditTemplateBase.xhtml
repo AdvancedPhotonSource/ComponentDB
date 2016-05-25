@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../../templates/portalViewTemplate.xhtml">
+
+    <!--
+        use itemEditTemplate instead. 
+    -->
+
+
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.styleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    
+    <ui:define name="pageTitle">: Edit #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}</ui:define> 
+
+    <ui:define name="middleCenter">
+        <h:form id="#{entityTypeName}EditForm"
+                enctype="multipart/form-data"
+                rendered="#{loginController.isEntityWriteable(entityController.current.entityInfo)}">
+                
+            <div class="middleCenterLeftContent">
+
+                <div class="pageTitle">
+                    <h1>Edit #{entityController.displayEntityTypeName} </h1>
+                </div>
+                
+
+                <ui:param name="itemObject" value="#{entityController.selected}"/>
+                <ui:param name="domainEntityObject" value="#{itemObject}" />
+
+                <ui:insert name="editPanelGrid"/>
+
+                <p/>
+                
+                <ui:insert name="commonViewActionButtons"/>
+                
+                <p/>
+                
+                <p:accordionPanel multiple="true" 
+                                  activeIndex="0,1,2,3,4,5,6,7,8,9,10" 
+                                  rendered="#{itemObject != null}">
+                    
+                    <p:tab title="Log Entries">
+                        <ui:insert name="itemLogs" />
+                    </p:tab>
+                    
+                    <p:tab title="Properties">
+                        <ui:insert name="itemProperties" />
+                    </p:tab>
+
+                    <p:tab title="Sources">
+                        <ui:insert name="itemSources" /> 
+                    </p:tab> 
+
+                    <p:tab title="Elements">
+                        <ui:insert name="itemDerivedFromItems" />
+                    </p:tab>  
+                    
+                    <ui:insert name="additionalEditItemAccordionTabs"/>
+                </p:accordionPanel>
+            </div>
+        </h:form>   
+    </ui:define>
+</ui:composition>
