@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:column headerText="Actions" exportable="false" rendered="#{rendered == null or rendered}">
+        <div>
+            <p:commandLink id="designElementListViewLink" 
+                           action="#{itemElementController.prepareView(itemElementObject)}" 
+                           styleClass="ui-icon ui-icon-designElement" 
+                           title="View">
+                <p:tooltip for="designElementListViewLink" value="View #{designElementController.displayEntityTypeName} details."/>
+            </p:commandLink>
+            <p:commandLink id="designElementListViewComponentLink" 
+                           action="#{itemGenericViewController.prepareView(itemElementObject.containedItem)}" 
+                           styleClass="ui-icon ui-icon-component" 
+                           title="View">
+                <p:tooltip for="designElementListViewComponentLink" value="View child component details."/>
+            </p:commandLink>
+        </div>
+    </p:column>
+
+</ui:composition>
+
+
