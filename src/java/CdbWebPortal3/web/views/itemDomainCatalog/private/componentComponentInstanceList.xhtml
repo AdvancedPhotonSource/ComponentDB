@@ -10,7 +10,7 @@
 
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(domainEntityObject.entityInfo)}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
     </ui:include>    
     
     <ui:include src="componentComponentInstanceListDataTable.xhtml"/>
