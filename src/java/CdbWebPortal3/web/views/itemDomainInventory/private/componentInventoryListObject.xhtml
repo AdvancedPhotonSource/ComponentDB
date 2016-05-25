@@ -7,14 +7,14 @@
                 template="../../item/private/templates/itemListObjectTemplate.xhtml">
     
     <ui:define name="qrIdColumn">
-        <p:column sortBy="#{cdbDomainEntityObject.qrId}" headerText="QrId"
-                  filterBy="#{cdbDomainEntityObject.qrIdDisplay}" filterMatchMode="contains"
+        <p:column sortBy="#{itemObject.qrId}" headerText="QrId"
+                  filterBy="#{itemObject.qrIdDisplay}" filterMatchMode="contains"
                   filterValue="#{entityController.filterByQrId}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayQrId}" >
-            <h:outputLink value="../item/view.xhtml?id=#{cdbDomainEntityObject.id}" title="View #{entityTypeName} details"> 
-                <h:outputText value="#{cdbDomainEntityObject.qrIdDisplay}" />
+            <h:outputLink value="../item/view.xhtml?id=#{itemObject.id}" title="View #{entityTypeName} details"> 
+                <h:outputText value="#{itemObject.qrIdDisplay}" />
             </h:outputLink>
         </p:column>
     </ui:define>
