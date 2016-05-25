@@ -9,10 +9,12 @@
         <ui:include src="componentInventoryLocationRelationshipTree.xhtml" />
     </p:column>
 
-    <ui:param name="locationDetails" value="#{componentInventoryEntityTypeViewController.getLocationRelationshipDetails(cdbDomainEntityObject)}" />
+    <ui:param name="locationDetails" value="#{componentInventoryEntityTypeViewController.getLocationRelationshipDetails(itemObject)}" />
 
     <p:column headerText="Location Details" sortBy="#{locationDetails}" 
               filterBy="#{locationDetails}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
               filterMatchMode="contains">
         <h:outputText value="#{locationDetails}" />
     </p:column>
