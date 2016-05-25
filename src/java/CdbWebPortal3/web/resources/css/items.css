@@ -1,0 +1,41 @@
+@import url("portal.css");
+
+html, body {
+    background-color: #ecffe6;
+}
+
+
+#bottom {
+    background-color: #ecffe6;
+}
+
+.domainEntityRowExpansion {
+    background-color: #ecffe6;
+}
+
+.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
+    background-color: #ecffe6;
+}
+
+
+input, textarea {
+    background: #ecffe6;
+}
+
+h1 {
+    color: #ecffe6;
+}
+
+.ui-accordion .ui-accordion-content {
+    background: #ecffe6;    
+}
+
+.ui-panelgrid tr, .ui-panelgrid td {
+    background: #ecffe6;
+}
+
+.ui-panel {
+    border: 0px; 
+    background: #ecffe6; 
+}
+

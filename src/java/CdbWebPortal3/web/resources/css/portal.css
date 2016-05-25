@@ -637,6 +637,11 @@ h2 {
     background: #f2f4f7;    
 }
 
+.ui-tree {
+    background: none;
+    border: none;
+}
+
 .ui-panel {
     border: 0px; 
     background: #f2f4f7; 
