@@ -15,7 +15,7 @@
         </p:column>
         <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
             <ui:include src="../../../domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
-                <ui:param name="entityObject" value="#{cdbDomainEntityObject}" />
+                <ui:param name="entityObject" value="#{itemObject}" />
                 <ui:param name="entityController" value="#{entityController}" />
             </ui:include>
             <ui:insert name="itemRowExpansionExtras" />
@@ -28,7 +28,7 @@
     
     <ui:define name="entityInfoColumns">
         <ui:include src="../../../entityInfo/private/entityInfoListObject.xhtml">
-            <ui:param name="entityInfoObject" value="#{cdbDomainEntityObject.entityInfo}"/>
+            <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
             <ui:param name="entityInfoObjectFilterable" value="true" />
         </ui:include>
     </ui:define>
@@ -37,8 +37,8 @@
         <p:column headerText="Actions" exportable="false">
             <ui:include src="../../../common/private/commonListActionLinks.xhtml">
                 <ui:param name="entityController" value="#{entityController}"/>
-                <ui:param name="entityObject" value="#{cdbDomainEntityObject}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(cdbDomainEntityObject.entityInfo)}"/>
+                <ui:param name="entityObject" value="#{itemObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
                 <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
             </ui:include>
         </p:column>

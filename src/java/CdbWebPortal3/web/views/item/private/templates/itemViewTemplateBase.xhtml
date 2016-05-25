@@ -27,8 +27,9 @@
                     <h1>#{entityController.displayEntityTypeName} Details</h1>
                 </div>
 
-                <ui:param name="domainEntityObject" value="#{entityController.selected}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(domainEntityObject.entityInfo)}"/>
+                <ui:param name="itemObject" value="#{entityController.selected}"/>
+                <ui:param name="domainEntityObject" value="#{itemObject}" />
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
 
                 <ui:insert name="viewPanelGrid"/>
 
