@@ -189,7 +189,6 @@ CDB_DB_TABLES="\
     domain \
     item \
     item_element \
-    item_log \
     item_element_log \
     item_element_list \
     item_category \
