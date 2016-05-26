@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -27,6 +28,16 @@ public class PropertyTypeHandlerFacade extends CdbEntityFacade<PropertyTypeHandl
 
     public PropertyTypeHandlerFacade() {
         super(PropertyTypeHandler.class);
+    }
+    
+     public PropertyTypeHandler findByName(String name) {
+        try {
+            return (PropertyTypeHandler) em.createNamedQuery("PropertyTypeHandler.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
     }
     
 }
