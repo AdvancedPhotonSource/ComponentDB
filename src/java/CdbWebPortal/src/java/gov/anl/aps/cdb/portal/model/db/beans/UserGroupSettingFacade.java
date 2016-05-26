@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class UserGroupSettingFacade extends CdbEntityFacade<UserGroupSetting> {
 
-    @PersistenceContext(unitName = "CdbWebPortal3PU")
+    @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
     @Override

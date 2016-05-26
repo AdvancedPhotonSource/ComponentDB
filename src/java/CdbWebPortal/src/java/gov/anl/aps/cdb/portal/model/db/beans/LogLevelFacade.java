@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class LogLevelFacade extends CdbEntityFacade<LogLevel> {
 
-    @PersistenceContext(unitName = "CdbWebPortal3PU")
+    @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
     @Override

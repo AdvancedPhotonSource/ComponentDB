@@ -17,7 +17,7 @@ import javax.persistence.PersistenceContext;
 @Stateless
 public class ItemConnectorFacade extends CdbEntityFacade<ItemConnector> {
 
-    @PersistenceContext(unitName = "CdbWebPortal3PU")
+    @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
     @Override
