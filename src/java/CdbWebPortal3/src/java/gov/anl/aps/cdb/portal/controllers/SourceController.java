@@ -1,12 +1,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.entities.Source;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
-
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.Source;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,184 +16,171 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("sourceController")
 @SessionScoped
-public class SourceController implements Serializable {
+public class SourceController extends CdbEntityController<Source, SourceFacade>implements Serializable {
 
-    private Source current;
-    private DataModel items = null;
+    /*
+     * Controller specific settings
+     */
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayContactInfoSettingTypeKey = "Source.List.Display.ContactInfo";
+    private static final String DisplayDescriptionSettingTypeKey = "Source.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
+    private static final String DisplayUrlSettingTypeKey = "Source.List.Display.Url";
+    private static final String FilterByNameSettingTypeKey = "Source.List.FilterBy.Name";
+    private static final String FilterByContactInfoSettingTypeKey = "Source.List.FilterBy.ContactInfo";
+    private static final String FilterByDescriptionSettingTypeKey = "Source.List.FilterBy.Description";
+    private static final String FilterByUrlSettingTypeKey = "Source.List.FilterBy.Url";
+
+    private static final Logger logger = Logger.getLogger(SourceController.class.getName());
+
+    private Boolean displayContactInfo = null;
+    private Boolean displayUrl = null;
+
+    private String filterByContactInfo = null;
+    private String filterByUrl = null;
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.SourceFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private SourceFacade sourceFacade;
 
     public SourceController() {
     }
 
-    public Source getSelected() {
-        if (current == null) {
-            current = new Source();
-            selectedItemIndex = -1;
+    @Override
+    protected SourceFacade getEntityDbFacade() {
+        return sourceFacade;
+    }
+
+    @Override
+    protected Source createEntityInstance() {
+        Source source = new Source();
+        return source;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "source";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getName();
         }
-        return current;
+        return "";
     }
 
-    private SourceFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public Source findById(Integer id) {
+        return sourceFacade.findById(id);
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
+    @Override
+    public List<Source> getAvailableItems() {
+        return super.getAvailableItems();
+    }
 
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
+    public List<Source> getAvailableSourcesSortedByName() {
+        return sourceFacade.findAllSortedByName();
+    }
 
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public void prepareEntityInsert(Source source) throws ObjectAlreadyExists {
+        Source existingSource = sourceFacade.findByName(source.getName());
+        if (existingSource != null) {
+            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
         }
-        return pagination;
+        logger.debug("Inserting new source " + source.getName());
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (Source) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new Source();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("SourceCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void prepareEntityUpdate(Source source) throws ObjectAlreadyExists {
+        Source existingSource = sourceFacade.findByName(source.getName());
+        if (existingSource != null && !existingSource.getId().equals(source.getId())) {
+            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
         }
+        logger.debug("Updating source " + source.getName());
     }
 
-    public String prepareEdit() {
-        current = (Source) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("SourceUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayContactInfo = Boolean.parseBoolean(settingTypeMap.get(DisplayContactInfoSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+        displayUrl = Boolean.parseBoolean(settingTypeMap.get(DisplayUrlSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByContactInfo = settingTypeMap.get(FilterByContactInfoSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterByUrl = settingTypeMap.get(FilterByUrlSettingTypeKey).getDefaultValue();
     }
 
-    public String destroy() {
-        current = (Source) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayContactInfo = sessionUser.getUserSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayUrl = sessionUser.getUserSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByContactInfo = sessionUser.getUserSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByUrl = sessionUser.getUserSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("SourceDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
+        Map<String, Object> filters = dataTable.getFilters();
+        filterByContactInfo = (String) filters.get("contactInfo");
+        filterByUrl = (String) filters.get("url");
     }
 
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplayUrlSettingTypeKey, displayUrl);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByContactInfo = null;
+        filterByUrl = null;
     }
 
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public Source getSource(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
-
+    /**
+     * Converter class for source objects.
+     */
     @FacesConverter(forClass = Source.class)
     public static class SourceControllerConverter implements Converter {
 
@@ -200,18 +189,22 @@ public class SourceController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            SourceController controller = (SourceController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "sourceController");
-            return controller.getSource(getKey(value));
+            try {
+                SourceController controller = (SourceController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "sourceController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to source object.");
+                return null;
+            }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -232,4 +225,43 @@ public class SourceController implements Serializable {
 
     }
 
+    public Boolean getDisplayContactInfo() {
+        return displayContactInfo;
+    }
+
+    public void setDisplayContactInfo(Boolean displayContactInfo) {
+        this.displayContactInfo = displayContactInfo;
+    }
+
+    public Boolean getDisplayUrl() {
+        return displayUrl;
+    }
+
+    public void setDisplayUrl(Boolean displayUrl) {
+        this.displayUrl = displayUrl;
+    }
+
+    public String getFilterByContactInfo() {
+        return filterByContactInfo;
+    }
+
+    public void setFilterByContactInfo(String filterByContactInfo) {
+        this.filterByContactInfo = filterByContactInfo;
+    }
+
+    public String getFilterByUrl() {
+        return filterByUrl;
+    }
+
+    public void setFilterByUrl(String filterByUrl) {
+        this.filterByUrl = filterByUrl;
+    }
+
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }    
+
+    
+    
 }

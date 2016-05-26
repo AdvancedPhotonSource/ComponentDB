@@ -1,14 +1,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -16,224 +15,131 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
 
 @Named("userGroupController")
 @SessionScoped
 public class UserGroupController extends CdbEntityController<UserGroup, UserGroupFacade>implements Serializable {
 
-    private UserGroup current;
-    private DataModel items = null;
+    /*
+     * Controller specific settings
+     */
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserGroup.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "UserGroup.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "UserGroup.List.Display.Description";
+    private static final String FilterByNameSettingTypeKey = "UserGroup.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "UserGroup.List.FilterBy.Description";
+
+    private static final Logger logger = Logger.getLogger(UserGroupController.class.getName());
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade userGroupFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private UserGroupFacade userGroupFacade;
 
     public UserGroupController() {
     }
 
-    public UserGroup getSelected() {
-        if (current == null) {
-            current = new UserGroup();
-            selectedItemIndex = -1;
-        }
-        return current;
-    }
-
-    private UserGroupFacade getFacade() {
-        return userGroupFacade;
-    }
-
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (UserGroup) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new UserGroup();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("UserGroupCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (UserGroup) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("UserGroupUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (UserGroup) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("UserGroupDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(userGroupFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(userGroupFacade.findAll(), true);
-    }
-
-    public UserGroup getUserGroup(java.lang.Integer id) {
-        return userGroupFacade.find(id);
-    }
-
     @Override
     protected UserGroupFacade getEntityDbFacade() {
-        return userGroupFacade; 
+        return userGroupFacade;
     }
 
     @Override
     protected UserGroup createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new UserGroup();
     }
 
     @Override
     public String getEntityTypeName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "userGroup";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "user group";
     }
 
     @Override
     public String getCurrentEntityInstanceName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (getCurrent() != null) {
+            return getCurrent().getName();
+        }
+        return "";
     }
 
-    @FacesConverter(forClass = UserGroup.class)
+    @Override
+    public List<UserGroup> getAvailableItems() {
+        return super.getAvailableItems();
+    }
+
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+    }
+
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+    }
+
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
+        }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+    }
+
+    /**
+     * Converter class for user group objects.
+     */
+    @FacesConverter(value = "userGroupConverter", forClass = UserGroup.class)
     public static class UserGroupControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
+            if (value == null || value.length() == 0 || value.equals("Select")) {
                 return null;
             }
-            UserGroupController controller = (UserGroupController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "userGroupController");
-            return controller.getUserGroup(getKey(value));
+            try {
+                UserGroupController controller = (UserGroupController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "userGroupController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to user group object.");
+                return null;
+            }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();

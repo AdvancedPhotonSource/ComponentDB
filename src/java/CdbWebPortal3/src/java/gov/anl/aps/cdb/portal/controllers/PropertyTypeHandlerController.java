@@ -1,12 +1,15 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,204 +17,145 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
-public class PropertyTypeHandlerController implements Serializable {
+public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade> implements Serializable {
 
-    private PropertyTypeHandler current;
-    private DataModel items = null;
+    /*
+     * Controller specific settings
+     */
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeHandler.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "PropertyTypeHandler.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "PropertyTypeHandler.List.Display.Description";
+    private static final String FilterByNameSettingTypeKey = "PropertyTypeHandler.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "PropertyTypeHandler.List.FilterBy.Description";
+
+    private static final Logger logger = Logger.getLogger(PropertyTypeHandlerController.class.getName());
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private PropertyTypeHandlerFacade propertyTypeHandlerFacade;
 
     public PropertyTypeHandlerController() {
     }
 
-    public PropertyTypeHandler getSelected() {
-        if (current == null) {
-            current = new PropertyTypeHandler();
-            selectedItemIndex = -1;
+    @Override
+    protected PropertyTypeHandlerFacade getEntityDbFacade() {
+        return propertyTypeHandlerFacade;
+    }
+
+    @Override
+    protected PropertyTypeHandler createEntityInstance() {
+        PropertyTypeHandler propertyHandler = new PropertyTypeHandler();
+        return propertyHandler;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "propertyTypeHandler";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "property type handler";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getName();
         }
-        return current;
+        return "";
     }
 
-    private PropertyTypeHandlerFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<PropertyTypeHandler> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
+    @Override
+    public void prepareEntityInsert(PropertyTypeHandler propertyTypeHandler) throws ObjectAlreadyExists {
+        PropertyTypeHandler existingPropertyTypeHandler = propertyTypeHandlerFacade.findByName(propertyTypeHandler.getName());
+        if (existingPropertyTypeHandler != null) {
+            throw new ObjectAlreadyExists("Property type handler " + propertyTypeHandler.getName() + " already exists.");
         }
-        return pagination;
+        logger.debug("Inserting new property type " + propertyTypeHandler.getName());
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
+    @Override
+    public void prepareEntityUpdate(PropertyTypeHandler propertyHandler) throws ObjectAlreadyExists {
     }
 
-    public String prepareView() {
-        current = (PropertyTypeHandler) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new PropertyTypeHandler();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyTypeHandlerCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
     }
 
-    public String prepareEdit() {
-        current = (PropertyTypeHandler) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyTypeHandlerUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
-    public String destroy() {
-        current = (PropertyTypeHandler) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("PropertyTypeHandlerDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public PropertyTypeHandler getPropertyTypeHandler(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
-
+    /**
+     * Converter class for property handler objects.
+     */    
     @FacesConverter(forClass = PropertyTypeHandler.class)
-    public static class PropertyTypeHandlerControllerConverter implements Converter {
+    public static class PropertyHandlerControllerConverter implements Converter {
 
         @Override
         public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            PropertyTypeHandlerController controller = (PropertyTypeHandlerController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "propertyTypeHandlerController");
-            return controller.getPropertyTypeHandler(getKey(value));
+            try {
+                PropertyTypeHandlerController controller = (PropertyTypeHandlerController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "propertyTypeHandlerController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to property type handler object.");
+                return null;
+            }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
