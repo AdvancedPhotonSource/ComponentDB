@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="itemElementEditListCustomizeDisplayDialog"
+              widgetVar="itemElementEditListCustomizeDisplayDialogWidget" 
+              header="Customize Display" 
+              styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="itemElementDisplayNumberOfItemsPerPage" value="#{itemElementController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="itemElementDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="itemElementDisplayDescription" value="#{itemElementController.displayDescription}"/>  
+                <h:outputLabel for="itemElementDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="itemElementDisplayId" value="#{itemElementController.displayId}"/>  
+                <h:outputLabel for="itemElementDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="itemElementDisplaySortOrder" value="#{itemElementController.displaySortOrder}"/>  
+                <h:outputLabel for="itemElementDisplaySortOrder" value="Display Sort Order" styleClass="dialogDataLabel"/>
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{itemElementController.customizeListDisplay()}"
+                                 update="@form"
+                                 oncomplete="PF('itemElementEditListCustomizeDisplayDialogWidget').hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userInfoController.saveSettingListForSessionUser()}"
+                                 actionListener="#{itemElementController.saveListSettingsForSessionUserActionListener}"
+                                 oncomplete="PF('itemElementEditListCustomizeDisplayDialogWidget').hide()" 
+                                 update="@form"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>
