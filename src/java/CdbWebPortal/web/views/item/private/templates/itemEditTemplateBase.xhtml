@@ -47,21 +47,30 @@
                                   activeIndex="0,1,2,3,4,5,6,7,8,9,10" 
                                   rendered="#{itemObject != null}">
                     
-                    <p:tab title="Log Entries">
+                    <p:tab title="Log Entries"
+                           rendered="#{entityController.entityDisplayItemLogs}">
                         <ui:insert name="itemLogs" />
                     </p:tab>
                     
-                    <p:tab title="Properties">
+                    <p:tab title="Properties"
+                           rendered="#{entityController.entityDisplayItemProperties}">
                         <ui:insert name="itemProperties" />
                     </p:tab>
 
-                    <p:tab title="Sources">
+                    <p:tab title="Sources"
+                           rendered="#{entityController.entityDisplayItemSources}">
                         <ui:insert name="itemSources" /> 
                     </p:tab> 
 
-                    <p:tab title="Elements">
-                        <ui:insert name="itemDerivedFromItems" />
+                    <p:tab title="Elements"
+                           rendered="#{entityController.entityDisplayItemElements}">
+                        <ui:insert name="itemElements" />
                     </p:tab>  
+                    
+                    <p:tab title="#{entityController.itemsDerivedFromItemTitle}" 
+                           rendered="#{entityController.entityDisplayItemsDerivedFromItem}">
+                        <ui:insert name="itemsDerivedFromItem" />
+                    </p:tab>
                     
                     <ui:insert name="additionalEditItemAccordionTabs"/>
                 </p:accordionPanel>
