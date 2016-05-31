@@ -28,10 +28,13 @@
     </ui:define>
     
     <ui:define name="itemDerivedFromItemValue">
-        <h:outputText id="derivedFromItem"
+        <h:outputLink id="derivedFromItem"
+                      value="../item/view.xhtml?id=#{itemObject.derivedFromItem.id}" 
                       rendered="#{entityController.entityDisplayDerivedFromItem}"
                       styleClass="entityDataText"
-                      value="#{itemObject.derivedFromItem.name}"/>
+                      title="View #{entityTypeName} details"> 
+            <h:outputText value="#{itemObject.derivedFromItem.name}"/>
+        </h:outputLink>
     </ui:define>
     
     <ui:define name="itemItemIdentifier1Label">
@@ -62,6 +65,12 @@
         <h:outputLabel for="itemCategory"
                        value="Category" 
                        rendered="#{entityController.displayItemCategory}"
+                       styleClass="entityDataLabel"/>
+    </ui:define>
+    
+    <ui:define name="itemDomainLabel">
+        <h:outputLabel for="itemDomain"
+                       value="Domain"                        
                        styleClass="entityDataLabel"/>
     </ui:define>
 
