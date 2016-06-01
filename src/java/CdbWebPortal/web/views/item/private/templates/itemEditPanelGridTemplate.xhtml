@@ -1,57 +1,80 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"                
-                xmlns:p="http://primefaces.org/ui"                
+                xmlns:ui="http://java.sun.com/jsf/facelets"        
                 template="itemPanelGridTemplate.xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
-    
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
     <ui:param name="panelGridStyle" value="editEntityDetails" />
 
     <ui:define name="itemNameValue">
-        <p:inputText id="name"
+        <h:inputText id="name"
                      value="#{itemObject.name}" 
                      rendered="#{entityController.entityDisplayItemName}"
                      title="Name" styleClass="entityDataEmphasizedText"/>
     </ui:define>
 
     <ui:define name="itemQrIdValue">
-        <p:inputText id="qrId"
+        <h:inputText id="qrId"
                      value="#{itemObject.qrId}" 
                      rendered="#{entityController.entityDisplayQrId}"
                      title="QR Id" styleClass="entityDataEmphasizedText"/>
     </ui:define>
 
     <ui:define name="itemItemIdentifier1Value">
-        <p:inputText id="itemIdentifier1"
+        <h:inputText id="itemIdentifier1"
                      value="#{itemObject.itemIdentifier1}" 
                      rendered="#{entityController.entityDisplayItemIdentifier1}"
                      styleClass="entityDataEmphasizedText"/>       
     </ui:define>
 
     <ui:define name="itemItemIdentifier2Value">        
-        <p:inputText id="itemIdentifier2"
+        <h:inputText id="itemIdentifier2"
                      value="#{itemObject.itemIdentifier2}" 
                      rendered="#{entityController.entityDisplayItemIdentifier2}"
                      styleClass="entityDataEmphasizedText"/>        
     </ui:define>
 
     <ui:define name="itemDescriptionValue" >        
-        <p:inputTextarea id="description"
+        <h:inputTextarea id="description"
                          value="#{itemObject.description}" 
                          title="Description" styleClass="entityDataText"/>
     </ui:define>        
 
     <ui:define name="itemItemTypeValue">
-        <h:outputText id="itemType"
-                      value="editing not yet supported"
-                      rendered="#{entityController.displayItemType}"/>
+        <p:selectCheckboxMenu label="Select Types"
+                              rendered="#{entityController.displayItemType}"
+                              id="itemType" value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
+                              filter="true" filterMatchMode="contains" >
+            <f:selectItems value="#{itemTypeController.availableItems}" /> 
+
+        </p:selectCheckboxMenu>
     </ui:define>
 
     <ui:define name="itemItemCategoryValue" >
-        <h:outputText id="itemCategory"
-                      value="editing not yet supported"
-                      rendered="#{entityController.displayItemCategory}"/>
+        <p:selectCheckboxMenu label="Select Categories"
+                              rendered="#{entityController.displayItemCategory}"
+                              id="itemCategory" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
+                              filter="true" filterMatchMode="contains" >
+            <f:selectItems value="#{itemCategoryController.availableItems}" /> 
+
+        </p:selectCheckboxMenu>
     </ui:define>
-    
+
+    <ui:define name="itemDomainValue" >
+        <p:selectOneMenu id="itemDomain" value="#{itemObject.domain}" required="true" 
+                         styleClass="cellSelect">
+            <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+            <f:selectItems var="domain" value="#{entityController.availableDomains}" itemLabel="#{domain.name}" itemValue="#{domain}"/>
+        </p:selectOneMenu>
+    </ui:define>
+
+    <ui:define name="entityInfoObject">
+        <ui:include src="../../../entityInfo/private/entityInfoEditObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
+        </ui:include>
+    </ui:define>
+
 </ui:composition>
