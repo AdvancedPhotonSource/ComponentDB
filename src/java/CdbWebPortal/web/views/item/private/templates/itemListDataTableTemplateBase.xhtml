@@ -21,7 +21,7 @@
 
     <p:dataTable id="#{entityTypeName}ListDataTable" 
                  widgetVar="#{entityTypeName}ListDataTableWidget"
-                 var="itemObject" 
+                 var="itemListObject" 
                  value="#{itemListDataTableValue}" 
                  filteredValue="#{entityController.filteredObjectList}"
                  rows="#{entityController.displayNumberOfItemsPerPage}" 
@@ -29,7 +29,7 @@
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No #{displayEntityTypeName}s found.">
         
-        <ui:param name="#{entityTypeName}Object" value="#{itemObject}" />
+        <ui:param name="itemListObject" value="#{itemListObject}" />
         
         <ui:insert name="rowExpansion" />
         
