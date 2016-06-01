@@ -2,151 +2,125 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="itemListObjectTemplateBase.xhtml">
 
 
     <ui:define name="idColumn">
-        <p:column sortBy="#{itemObject.id}" headerText="Id"
-                  filterBy="#{itemObject.id}" filterMatchMode="contains"
+        <p:column sortBy="#{itemListObject.id}" headerText="Id"
+                  filterBy="#{itemListObject.id}" filterMatchMode="contains"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
                   filterValue="#{entityController.filterById}"
                   rendered="#{entityController.displayId}" >
-            <h:outputText value="#{itemObject.id}" />
+            <ui:insert name="idColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="nameColumn" >
-        <p:column sortBy="#{itemObject.name}" headerText="Name"
-                  filterBy="#{itemObject.name}" filterMatchMode="contains"
+        <p:column sortBy="#{itemListObject.name}" headerText="Name"
+                  filterBy="#{itemListObject.name}" filterMatchMode="contains"
                   filterValue="#{entityController.filterByName}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayName}" >
-            <f:attribute name="exportValue" value="#{itemObject.name}"/>
-            <h:outputLink value="../item/view.xhtml?id=#{itemObject.id}" title="View #{entityTypeName} details"> 
-                <h:outputText value="#{itemObject.name}" />
-            </h:outputLink>
+            <ui:insert name="nameColumnObject" />
         </p:column>
 
     </ui:define>
 
     <ui:define name="qrIdColumn">
-        <p:column sortBy="#{itemObject.qrId}" headerText="QrId"
-                  filterBy="#{itemObject.qrIdDisplay}" filterMatchMode="contains"
+        <p:column sortBy="#{itemListObject.qrId}" headerText="QrId"
+                  filterBy="#{itemListObject.qrIdDisplay}" filterMatchMode="contains"
                   filterValue="#{entityController.filterByQrId}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayQrId}" >
-            <h:outputText value="#{itemObject.qrIdDisplay}" />
+            <ui:insert name="qrIdColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="itemIdentifier1Column">
-        <p:column sortBy="#{itemObject.itemIdentifier1}" 
+        <p:column sortBy="#{itemListObject.itemIdentifier1}" 
                   headerText="#{entityController.itemIdentifier1Title}"
-                  filterBy="#{itemObject.itemIdentifier1}"
+                  filterBy="#{itemListObject.itemIdentifier1}"
                   filterValue="#{entityController.filterByItemIdentifier1}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayItemIdentifier1}">
-            <h:outputText value="#{itemObject.itemIdentifier1}" />
+            <ui:insert name="itemIdentifier1ColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="itemIdentifier2Column">
-        <p:column sortBy="#{itemObject.itemIdentifier2}" 
+        <p:column sortBy="#{itemListObject.itemIdentifier2}" 
                   headerText="#{entityController.itemIdentifier2Title}"
-                  filterBy="#{itemObject.itemIdentifier2}"
+                  filterBy="#{itemListObject.itemIdentifier2}"
                   filterValue="#{entityController.filterByItemIdentifier2}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayItemIdentifier2}">
-            <h:outputText value="#{itemObject.itemIdentifier2}" />
+            <ui:insert name="itemIdentifier2ColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="itemTypeColumn"> 
-        <p:column sortBy="#{itemObject.itemTypeString}"
+        <p:column sortBy="#{itemListObject.itemTypeString}"
                   headerText="Type"
-                  filterBy="#{itemObject.itemTypeString}"
+                  filterBy="#{itemListObject.itemTypeString}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayItemType}"
                   >
-            <f:attribute name="exportValue" value="#{itemObject.itemTypeString}"/>
-            <ul>
-                <ui:repeat value="#{itemObject.itemTypeList}" var="itemTypeObject">
-                    <li>
-                        <h:outputText value="#{itemTypeObject.name}" />
-                    </li>
-                </ui:repeat>
-            </ul>
+            <ui:insert name="itemTypeColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="itemCategoryColumn" > 
-        <p:column sortBy="#{itemObject.itemCategoryString}"
+        <p:column sortBy="#{itemListObject.itemCategoryString}"
                   headerText="Category"
-                  filterBy="#{itemObject.itemCategoryString}"
+                  filterBy="#{itemListObject.itemCategoryString}"
                   filterOptions="#{itemCategoryController.availableItemsForSelectOne}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayItemCategory}"
                   >
-
-            <f:attribute name="exportValue" value="#{itemObject.itemCategoryString}"/>
-            <ul>
-                <ui:repeat value="#{itemObject.itemCategoryList}" var="itemCategoryObject">
-                    <li>
-                        <h:outputText value="#{itemCategoryObject.name}" />
-                    </li>
-                </ui:repeat>
-            </ul>
+            <ui:insert name="itemCategoryColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="itemSourceColumn" > 
-        <p:column sortBy="#{itemObject.itemSourceString}" 
+        <p:column sortBy="#{itemListObject.itemSourceString}" 
                   headerText="Sources"
-                  filterBy="#{itemObject.itemSourceString}"
+                  filterBy="#{itemListObject.itemSourceString}"
                   filterValue="#{entityController.filterByItemSources}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayItemSources}">
-
-            <f:attribute name="exportValue" value="#{itemObject.itemSourceString}"/>
-            <ul>
-                <ui:repeat value="#{itemObject.itemSourceList}" var="itemSource">
-                    <li>
-                        <h:outputText value="#{itemSource.source.name}" />
-                    </li>
-                </ui:repeat>
-            </ul>
+            <ui:insert name="itemSourceColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="derivedFromItemColumn" > 
         <p:column headerText="#{entityController.derivedFromItemTitle}"
                   rendered="#{entityController.displayDerivedFromItem}"
-                  filterBy="#{itemObject.derivedFromItem.name}"
-                  sortBy="#{itemObject.derivedFromItem.name}"
+                  filterBy="#{itemListObject.derivedFromItem.name}"
+                  sortBy="#{itemListObject.derivedFromItem.name}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   filterValue="#{componentInventoryEntityTypeViewController.filterByName}">
-            <h:outputText value="#{itemObject.derivedFromItem.name}"/>
+            <ui:insert name="derivedFromItemColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="descriptionColumn" > 
-        <p:column sortBy="#{itemObject.description}" headerText="Description" 
-                  filterBy="#{itemObject.description}" filterMatchMode="contains"
+        <p:column sortBy="#{itemListObject.description}" headerText="Description" 
+                  filterBy="#{itemListObject.description}" filterMatchMode="contains"
                   filterValue="#{entityController.filterByDescription}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{entityController.displayDescription}">
-            <h:outputText value="#{itemObject.description}"/>
+            <ui:insert name="descriptionColumnObject" />
         </p:column>
     </ui:define>
 
