@@ -4,6 +4,7 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="itemPanelGridTemplate.xhtml">
 
     <ui:param name="panelGridStyle" value="viewEntityDetails" />
@@ -67,19 +68,51 @@
             <p:ajax event="cancel" oncomplete="reloadItemType()"/>
             <p:remoteCommand name="reloadItemType"
                              action="#{entityController.reloadCurrent()}"
-                             update="itemType itemTypeCategory"
+                             update="itemType"
                              />
-            <!-- TODO add proper editing capabilities -->
+            <p:selectCheckboxMenu label="Select Types" value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{itemTypeController.availableItems}" /> 
+
+            </p:selectCheckboxMenu>
         </p:inplace>
     </ui:define>
 
     <ui:define name="itemItemCategoryValue" >
-        <h:outputText id="itemCategory"
-                      rendered="#{entityController.displayItemCategory}"
-                      value="#{itemObject.itemCategoryString}"
-                      title="Category" styleClass="entityDataText"/>
+        <p:inplace id="itemCategory" 
+                   rendered="#{entityController.displayItemCategory}"
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataText" 
+                   label="#{itemObject.itemCategoryString}"> 
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="cancel" oncomplete="reloadItemCategory()"/>
+            <p:remoteCommand name="reloadItemCategory"
+                             action="#{entityController.reloadCurrent()}"
+                             update="itemCategory"
+                             />
+            <p:selectCheckboxMenu label="Select Categories" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{itemCategoryController.availableItems}" /> 
+
+            </p:selectCheckboxMenu>
+        </p:inplace>
     </ui:define>
-    
+
+    <ui:define name="itemDomainValue">
+        <p:inplace id="itemDomain" 
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataText" 
+                   label="#{itemObject.domain.name}"> 
+            <p:selectOneMenu value="#{itemObject.domain}" required="true" 
+                             styleClass="cellSelect">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="domain" value="#{entityController.availableDomains}" itemLabel="#{domain.name}" itemValue="#{domain}"/>
+            </p:selectOneMenu>
+        </p:inplace>
+    </ui:define>
+
     <ui:define name="additionPanelGridContent">
         <p:remoteCommand name="inlineSaveEntity"
                          action="#{entityController.inlineUpdate()}"
