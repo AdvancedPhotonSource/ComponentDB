@@ -6,6 +6,8 @@
                 template="../item/private/templates/itemEditTemplate.xhtml">
     
     <ui:param name="entityController" value="#{componentCatalogEntityTypeViewController}"/>
+    
+    <ui:param name="itemDerivedController" value="#{componentInventoryEntityTypeViewController}" />
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{componentCatalogEntityTypeViewController.processViewRequestParams}"/>
