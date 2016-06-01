@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="itemListObjectTemplate.xhtml">
+
+
+    <ui:define name="idColumnObject">
+        <h:outputText value="#{itemListObject.id}" />
+    </ui:define>
+
+    <ui:define name="nameColumnObject">
+        <f:attribute name="exportValue" value="#{itemListObject.name}"/>
+        <h:outputLink value="../item/view.xhtml?id=#{itemListObject.id}" title="View #{entityTypeName} details"> 
+            <h:outputText value="#{itemListObject.name}" />
+        </h:outputLink>
+    </ui:define>
+
+    <ui:define name="qrIdColumnObject">
+        <h:outputText value="#{itemListObject.qrIdDisplay}" />
+    </ui:define>
+
+    <ui:define name="itemIdentifier1ColumnObject">
+        <h:outputText value="#{itemListObject.itemIdentifier1}" />
+    </ui:define>
+
+    <ui:define name="itemIdentifier2ColumnObject">
+        <h:outputText value="#{itemListObject.itemIdentifier2}" />
+    </ui:define>
+
+    <ui:define name="itemTypeColumnObject">
+        <f:attribute name="exportValue" value="#{itemListObject.itemTypeString}"/>
+        <ul>
+            <ui:repeat value="#{itemListObject.itemTypeList}" var="itemTypeObject">
+                <li>
+                    <h:outputText value="#{itemTypeObject.name}" />
+                </li>
+            </ui:repeat>
+        </ul>
+    </ui:define>
+
+    <ui:define name="itemCategoryColumnObject">
+        <f:attribute name="exportValue" value="#{itemListObject.itemCategoryString}"/>
+        <ul>
+            <ui:repeat value="#{itemListObject.itemCategoryList}" var="itemCategoryObject">
+                <li>
+                    <h:outputText value="#{itemCategoryObject.name}" />
+                </li>
+            </ui:repeat>
+        </ul>
+    </ui:define>
+
+    <ui:define name="itemSourceColumnObject">
+        <f:attribute name="exportValue" value="#{itemListObject.itemSourceString}"/>
+        <ul>
+            <ui:repeat value="#{itemListObject.itemSourceList}" var="itemSource">
+                <li>
+                    <h:outputText value="#{itemSource.source.name}" />
+                </li>
+            </ui:repeat>
+        </ul>
+    </ui:define>
+
+    <ui:define  name="derivedFromItemColumnObject">
+        <h:outputText value="#{itemListObject.derivedFromItem.name}"/>
+    </ui:define>
+
+    <ui:define name="descriptionColumnObject">
+        <h:outputText value="#{itemListObject.description}"/>
+    </ui:define>
+
+</ui:composition>
