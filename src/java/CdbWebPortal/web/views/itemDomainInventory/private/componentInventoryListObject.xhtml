@@ -2,23 +2,15 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                template="../../item/private/templates/itemListObjectTemplate.xhtml">
-    
-    <ui:define name="qrIdColumn">
-        <p:column sortBy="#{itemObject.qrId}" headerText="QrId"
-                  filterBy="#{itemObject.qrIdDisplay}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterByQrId}"
-                  filterable="#{filterable}"
-                  sortable="#{sortable}"
-                  rendered="#{entityController.displayQrId}" >
-            <h:outputLink value="../item/view.xhtml?id=#{itemObject.id}" title="View #{entityTypeName} details"> 
-                <h:outputText value="#{itemObject.qrIdDisplay}" />
-            </h:outputLink>
-        </p:column>
+                template="../../item/private/templates/itemListViewObjectTemplate.xhtml">
+
+    <ui:define name="qrIdColumnObject">
+        <h:outputLink value="../item/view.xhtml?id=#{itemListObject.id}" title="View #{entityTypeName} details"> 
+            <h:outputText value="#{itemListObject.qrIdDisplay}" />
+        </h:outputLink>
     </ui:define>
-    
+
 </ui:composition>
 
 
