@@ -10,6 +10,7 @@
             <p:accordionPanel activeIndex="">
                 <p:tab title="Elements">
                     <ui:include src="../../itemElement/private/itemElementListDataTable.xhtml">
+                        <ui:param name="itemObject" value="#{itemListObject}" />
                         <ui:param name="viewMode" value="rowExpansion" />
                         <ui:param name="loadPropertyValues" value="#{designLibraryEntityTypeViewController.loadDesignElementRowExpansionPropertyValues}" />
                     </ui:include>
