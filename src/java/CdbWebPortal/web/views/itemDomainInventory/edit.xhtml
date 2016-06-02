@@ -12,6 +12,10 @@
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
+    
+    <ui:define name="editPanelGrid">
+        <ui:include src="private/componentInventoryEditPanelGrid.xhtml" />
+    </ui:define>
 
 
 </ui:composition>
