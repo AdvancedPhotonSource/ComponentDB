@@ -7,10 +7,10 @@
                 template="../../../templates/domainEntityCustomizeDisplayDialogTemplate.xhtml">
     
     <ui:define name="domainEntitySpecificRowExpansion">
-        <p:selectBooleanCheckbox id="displayElementRowExpansion" value="#{designLibraryEntityTypeViewController.displayDesignElementRowExpansion}"/>  
+        <p:selectBooleanCheckbox id="displayElementRowExpansion" value="#{itemDomainDesignController.displayDesignElementRowExpansion}"/>  
         <h:outputLabel for="displayElementRowExpansion" value="Display Design Element Row Expansion*" styleClass="dialogDataLabel"/>
         
-        <p:selectBooleanCheckbox id="loadDesignElementRowExpansionPropertyValues" value="#{designLibraryEntityTypeViewController.loadDesignElementRowExpansionPropertyValues}"/>  
+        <p:selectBooleanCheckbox id="loadDesignElementRowExpansionPropertyValues" value="#{itemDomainDesignController.loadDesignElementRowExpansionPropertyValues}"/>  
         <h:outputLabel for="loadDesignElementRowExpansionPropertyValues" value="Load Design Element Row Exapnsion Property Values*" styleClass="dialogDataLabel"/>  
     </ui:define>
     
