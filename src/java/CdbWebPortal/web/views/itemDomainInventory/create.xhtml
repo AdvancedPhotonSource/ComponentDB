@@ -6,14 +6,14 @@
                 template="../item/private/templates/itemCreateTemplate.xhtml">
 
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{componentInventoryEntityTypeViewController.processCreateRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processCreateRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
 
-    <ui:param name="entityController" value="#{componentInventoryEntityTypeViewController}"/>
+    <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
     
     <ui:define name="itemEditPanelGrid">
-        <ui:include src="private/componentInventoryEditPanelGrid.xhtml" />
+        <ui:include src="private/componentInventoryCreatePanelGrid.xhtml" />
     </ui:define>
     
 </ui:composition>
