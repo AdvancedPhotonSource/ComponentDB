@@ -5,10 +5,10 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="../item/private/templates/itemListTemplate.xhtml">
     
-    <ui:param name="entityController" value="#{componentCatalogEntityTypeViewController}" />
+    <ui:param name="entityController" value="#{itemDomainCatalogController}" />
     
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{componentCatalogEntityTypeViewController.processPreRenderList()}"/>
+        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processPreRenderList()}"/>
     </f:metadata>
         
     <ui:define name="helpFragment">
