@@ -6,10 +6,10 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="../item/private/templates/itemViewTemplate.xhtml">
     
-    <ui:param name="entityController" value="#{componentInventoryEntityTypeViewController}"/>
+    <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
 
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{componentInventoryEntityTypeViewController.processViewRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processViewRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
@@ -21,7 +21,7 @@
     <ui:define name="additionalRightItemPanels">
         <p:panel header="Component Catalog Item Properties" toggleable="true" collapsed="#{!entityController.displayDerivedFromPropertyList}">
             <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
-                <ui:param name="entityController" value="#{componentCatalogEntityTypeViewController}"/>
+                <ui:param name="entityController" value="#{itemDomainCatalogController}"/>
                 <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
             </ui:include>
         </p:panel>

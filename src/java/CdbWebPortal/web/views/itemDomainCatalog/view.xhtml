@@ -5,16 +5,16 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemViewTemplate.xhtml">
     
-    <ui:param name="entityController" value="#{componentCatalogEntityTypeViewController}" />
+    <ui:param name="entityController" value="#{itemDomainCatalogController}" />
     
-    <ui:param name="itemDerivedController" value="#{componentInventoryEntityTypeViewController}" />
+    <ui:param name="itemDerivedController" value="#{itemDomainInventoryController}" />
 
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{componentCatalogEntityTypeViewController.processViewRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processViewRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{itemSourceController.processPreRender()}"/>
-        <f:event type="preRenderComponent" listener="#{componentInventoryEntityTypeViewController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
     
