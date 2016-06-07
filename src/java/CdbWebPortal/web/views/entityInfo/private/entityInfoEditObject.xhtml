@@ -24,7 +24,9 @@
 
 
     <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-    <p:selectBooleanCheckbox id="groupWriteable" value="#{entityInfoObject.isGroupWriteable}" styleClass="entityDataText"/>
+    <p:selectBooleanButton id="groupWriteable" 
+                           value="#{entityInfoObject.isGroupWriteable}" 
+                           styleClass="entityDataText" onLabel="Yes" offLabel="No" />
     <p:message for="groupWriteable"/> 
     <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
 
