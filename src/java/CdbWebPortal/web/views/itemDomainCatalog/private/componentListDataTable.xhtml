@@ -6,13 +6,13 @@
                 template="../../item/private/templates/itemListDataTableTemplate.xhtml">
     <ui:remove>
         <ui:define name="itemRowExpansionExtras">
-            <p:outputPanel styleClass="domainEntityRowExpansionDetails" rendered="#{componentCatalogEntityTypeViewController.displayComponentInstanceRowExpansion}">
+            <p:outputPanel styleClass="domainEntityRowExpansionDetails" rendered="#{itemDomainCatalogController.displayComponentInstanceRowExpansion}">
                 <p:accordionPanel activeIndex="">
                     <p:tab title="Component Instances">
                         <ui:include src="componentComponentInstanceListDataTable.xhtml">
                             <ui:param name="viewMode" value="rowExpansion" />
-                            <ui:param name="loadPropertyValues" value="#{componentCatalogEntityTypeViewController.loadComponentInstanceRowExpansionPropertyValues}" />
-                            <ui:param name="childEntityController" value="#{componentInventoryEntityTypeViewController}" />
+                            <ui:param name="loadPropertyValues" value="#{itemDomainCatalogController.loadComponentInstanceRowExpansionPropertyValues}" />
+                            <ui:param name="childEntityController" value="#{itemDomainInventoryController}" />
                         </ui:include>
                     </p:tab>
                 </p:accordionPanel>

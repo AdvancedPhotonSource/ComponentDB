@@ -12,53 +12,53 @@
               styleClass="dialog">
         <div class="dialog">
             <p:panelGrid columns="2">
-                <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{componentInventoryEntityTypeViewController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainInventoryController.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="componentInstanceDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{componentInventoryEntityTypeViewController.displayCreatedByUser}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{itemDomainInventoryController.displayCreatedByUser}"/>  
                 <h:outputLabel for="componentInstanceDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedOnDateTime" value="#{componentInventoryEntityTypeViewController.displayCreatedOnDateTime}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedOnDateTime" value="#{itemDomainInventoryController.displayCreatedOnDateTime}"/>  
                 <h:outputLabel for="componentInstanceDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{componentInventoryEntityTypeViewController.displayDescription}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{itemDomainInventoryController.displayDescription}"/>  
                 <h:outputLabel for="componentInstanceDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayId" value="#{componentInventoryEntityTypeViewController.displayId}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayId" value="#{itemDomainInventoryController.displayId}"/>  
                 <h:outputLabel for="componentInstanceDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedByUser" value="#{componentInventoryEntityTypeViewController.displayLastModifiedByUser}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedByUser" value="#{itemDomainInventoryController.displayLastModifiedByUser}"/>  
                 <h:outputLabel for="componentInstanceDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedOnDateTime" value="#{componentInventoryEntityTypeViewController.displayLastModifiedOnDateTime}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedOnDateTime" value="#{itemDomainInventoryController.displayLastModifiedOnDateTime}"/>  
                 <h:outputLabel for="componentInstanceDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{componentInventoryEntityTypeViewController.displayLocationDetails}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventoryController.displayLocationDetails}"/>  
                 <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerUser" value="#{componentInventoryEntityTypeViewController.displayOwnerUser}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerUser" value="#{itemDomainInventoryController.displayOwnerUser}"/>  
                 <h:outputLabel for="componentInstanceDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerGroup" value="#{componentInventoryEntityTypeViewController.displayOwnerGroup}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerGroup" value="#{itemDomainInventoryController.displayOwnerGroup}"/>  
                 <h:outputLabel for="componentInstanceDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>                
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{componentInventoryEntityTypeViewController.displayQrId}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{itemDomainInventoryController.displayQrId}"/>  
                 <h:outputLabel for="componentInstanceDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{componentInventoryEntityTypeViewController.displaySerialNumber}"/>  
+                <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{itemDomainInventoryController.displaySerialNumber}"/>  
                 <h:outputLabel for="componentInstanceDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
 
             </p:panelGrid>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton value="Done" alt="Done" 
-                                 action="#{componentInventoryEntityTypeViewController.customizeListDisplay()}"
+                                 action="#{itemDomainInventoryController.customizeListDisplay()}"
                                  update="#{childEntityTypeName}ListDataTable"
                                  oncomplete="PF('componentComponentInstanceListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
-                                 actionListener="#{componentInventoryEntityTypeViewController.saveListSettingsForSessionUserActionListener}"
+                                 actionListener="#{itemDomainInventoryController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('componentComponentInstanceListCustomizeDisplayDialogWidget').hide()" 
                                  update="#{childEntityTypeName}ListDataTable"
                                  rendered="#{loginController.loggedIn}"
