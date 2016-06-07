@@ -27,22 +27,31 @@
             <h:inputText id="itemElementObjectName" value="#{itemElementObject.name}" styleClass="cellInput"/>
             <p:tooltip for="itemElementObjectName" value="Enter name."/>
         </p:column>      
-        
+
         <p:column sortBy="#{itemElementObject.containedItem.name}" headerText="Comtained Item">
             <p:autoComplete id="itemDropdown#{itemElementObject.viewUUID}" 
-                                value="#{itemElementObject.containedItem}" 
-                                var="selectItemObject"
-                                converter="itemConverter" 
-                                completeMethod="#{entityController.completeItem}" 
-                                itemLabel="#{selectItemObject.name}"
-                                itemValue="#{selectItemObject}"
-                                valueChangeListener="#{itemElementController.selectItemValueChangeListener}"
-                                forceSelection="true"
-                                scrollHeight="200"
-                                dropdown="true" 
-                                styleClass="autocomplete">
-                    <p:ajax event="valueChange" immediate="true" process="@this"/>
-                </p:autoComplete>
+                            value="#{itemElementObject.containedItem}" 
+                            var="selectItemObject"
+                            converter="itemConverter" 
+                            completeMethod="#{entityController.completeItemElementItem}" 
+                            itemLabel="#{selectItemObject.name}"
+                            itemValue="#{selectItemObject}"
+                            valueChangeListener="#{itemElementController.selectItemValueChangeListener}"
+                            forceSelection="true"
+                            scrollHeight="200"
+                            dropdown="true" 
+                            styleClass="autocomplete">
+                <p:ajax event="valueChange" immediate="true" process="@this"/>
+            </p:autoComplete>
+            <p:commandButton id="itemElementItemSelectButton" 
+                             oncomplete="PF('#{itemElementController.entityTypeName}ItemSelectDialogWidget').show()"
+                             alt="Select Item Element Contained Item"
+                             immediate="true"
+                             styleClass="selectButtonForAutocomplete"
+                             icon="ui-icon-search">
+                <f:setPropertyActionListener value="#{itemElementObject}" target="#{itemElementController.current}"/>
+                <p:tooltip for="itemElementItemSelectButton" value="Search for Item."/>
+            </p:commandButton>
         </p:column>      
 
         <p:column sortBy="#{itemElementObject.sortOrder}" headerText="Sort Order"
@@ -67,6 +76,11 @@
             </div>
         </p:column>
     </p:dataTable>
+
+    <ui:include src="../../item/private/itemSelectDialog.xhtml">
+        <ui:param name="entityTypeName" value="#{itemElementController.entityTypeName}" />
+        <ui:param name="selectionTarget" value="#{itemElementController.current.containedItem}" />
+    </ui:include>
 
 </ui:composition>
 
