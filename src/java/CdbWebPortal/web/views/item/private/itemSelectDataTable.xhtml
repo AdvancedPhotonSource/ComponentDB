@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="#{entityTypeName}ItemSelectDataTable" 
+                 var="itemListObject" 
+                 value="#{entityController.selectDataModel}" 
+                 rowKey="#{itemListObject.id}"
+                 selection="#{entityController.selectedObject}"
+                 filteredValue="#{entityController.filteredObjectList}"
+                 selectionMode="single"
+                 paginator="true"
+                 paginatorAlwaysVisible="true"
+                 rows="#{resources.SelectDataTableNumberOfRows}"
+                 emptyMessage="No available property types found.">
+        
+        <p:ajax event="rowDblselect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
+        
+        <ui:include src="itemSelectListObject.xhtml">
+            <ui:param name="filterable" value="#{true}" />
+            <ui:param name="sortable" value="#{true}" />
+        </ui:include>
+    </p:dataTable>
+
+</ui:composition>
+
+
