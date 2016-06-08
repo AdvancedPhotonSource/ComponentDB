@@ -5,7 +5,14 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import java.util.List;
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 
 /**
@@ -15,6 +22,13 @@ import javax.inject.Named;
 @Named("itemGenericViewController")
 @SessionScoped
 public class ItemGenericViewController extends ItemController {
+    private final String DEFAULT_DOMAIN_NAME = "Item";
+    
+    @EJB
+    private DomainFacade domainFacade; 
+    
+    @EJB
+    private ItemFacade itemFacade; 
     
     public ItemGenericViewController() {
         super();
@@ -124,6 +138,21 @@ public class ItemGenericViewController extends ItemController {
     @Override
     public String getDisplayEntityTypeName() {
         return "Item"; 
+    }
+
+    @Override
+    public Domain getDefaultDomain() {
+        return domainFacade.findByName(DEFAULT_DOMAIN_NAME); 
+    }
+
+    @Override
+    public String getDomainHandlerName() {
+        return null; 
+    }
+
+    @Override
+    public List<Item> getItemList() {
+        return itemFacade.findAll(); 
     }
     
 }
