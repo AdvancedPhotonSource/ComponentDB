@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PdmLinkPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.TravelerInstancePropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import org.apache.log4j.Logger;
@@ -69,7 +70,7 @@ public class PropertyValueInfoActionBean implements Serializable {
      */
     private void performPdmLinkLoad() {
         if (pdmLinkDrawingBean == null) {
-            pdmLinkDrawingBean = (PdmLinkDrawingBean) findBean("pdmLinkDrawingBean");
+            pdmLinkDrawingBean = (PdmLinkDrawingBean) SessionUtility.findBean("pdmLinkDrawingBean");
         }
         logger.debug("Info action of type PDMLink, drawing #: " + value);
         pdmLinkDrawingBean.resetDrawingInfo();
@@ -81,7 +82,7 @@ public class PropertyValueInfoActionBean implements Serializable {
      */
     private void performTravelerInstanceLoad(){
         if (travelerBean == null) {
-            travelerBean = (TravelerBean) findBean("travelerBean");
+            travelerBean = (TravelerBean) SessionUtility.findBean("travelerBean");
         }
         logger.debug("Info action of type Traveler Instance, id: " + value);
         
@@ -109,17 +110,5 @@ public class PropertyValueInfoActionBean implements Serializable {
 
     public String getValue() {
         return value;
-    }
-    
-    /**
-     * Finds a named bean for local use within the current bean.
-     * 
-     * @param beanName Name of the named bean needed for further execution. 
-     * @return Named bean that has been requested. 
-     */
-    @SuppressWarnings("unchecked")
-    public static Object findBean(String beanName) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        return (Object) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
     }
 }
