@@ -3,9 +3,14 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
+import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -17,181 +22,126 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("userSettingController")
 @SessionScoped
-public class UserSettingController implements Serializable {
+public class UserSettingController extends CdbEntityController<UserSetting, UserSettingFacade>implements Serializable {
+     /*
+     * Controller specific settings
+     */
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserSetting.List.Display.NumberOfItemsPerPage";
 
-    private UserSetting current;
-    private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private UserSettingFacade userSettingFacade;
+    private static final Logger logger = Logger.getLogger(UserSettingController.class.getName());
+
+    // These do not correspond to setting types.
+    private String filterBySettingType = null;
+    private String filterByValue = null;
 
     public UserSettingController() {
     }
 
-    public UserSetting getSelected() {
-        if (current == null) {
-            current = new UserSetting();
-            selectedItemIndex = -1;
+    @Override
+    protected UserSettingFacade getEntityDbFacade() {
+        return userSettingFacade;
+    }
+
+    @Override
+    protected UserSetting createEntityInstance() {
+        UserSetting userSetting = new UserSetting();
+        return userSetting;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "userSetting";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "user setting";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getId().toString();
         }
-        return current;
+        return "";
     }
 
-    private UserSettingFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<UserSetting> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (UserSetting) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new UserSetting();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("UserSettingCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void destroy(UserSetting userSetting) {
+        if (userSetting.getId() != null) {
+            super.destroy(userSetting);
         }
     }
 
-    public String prepareEdit() {
-        current = (UserSetting) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
     }
 
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("UserSettingUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
+
+        Map<String, Object> filters = dataTable.getFilters();
+        filterBySettingType = (String) filters.get("settingType");
+        filterByValue = (String) filters.get("value");
     }
 
-    public String destroy() {
-        current = (UserSetting) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("UserSettingDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterBySettingType = null;
+        filterByValue = null;
     }
 
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
+    public String getFilterBySettingType() {
+        return filterBySettingType;
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
+    public void setFilterBySettingType(String filterBySettingType) {
+        this.filterBySettingType = filterBySettingType;
     }
 
-    private void recreateModel() {
-        items = null;
+    public String getFilterByValue() {
+        return filterByValue;
     }
 
-    private void recreatePagination() {
-        pagination = null;
+    public void setFilterByValue(String filterByValue) {
+        this.filterByValue = filterByValue;
     }
 
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public UserSetting getUserSetting(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
-
+    /**
+     * Converter class for user setting objects.
+     */
     @FacesConverter(forClass = UserSetting.class)
     public static class UserSettingControllerConverter implements Converter {
 
@@ -200,18 +150,22 @@ public class UserSettingController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            UserSettingController controller = (UserSettingController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "userSettingController");
-            return controller.getUserSetting(getKey(value));
+            try {
+                UserSettingController controller = (UserSettingController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "userSettingController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to user setting object.");
+                return null;
+            }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
@@ -231,5 +185,4 @@ public class UserSettingController implements Serializable {
         }
 
     }
-
 }
