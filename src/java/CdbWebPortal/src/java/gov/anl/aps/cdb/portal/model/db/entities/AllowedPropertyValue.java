@@ -33,8 +33,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AllowedPropertyValue.findByValue", query = "SELECT a FROM AllowedPropertyValue a WHERE a.value = :value"),
     @NamedQuery(name = "AllowedPropertyValue.findByUnits", query = "SELECT a FROM AllowedPropertyValue a WHERE a.units = :units"),
     @NamedQuery(name = "AllowedPropertyValue.findByDescription", query = "SELECT a FROM AllowedPropertyValue a WHERE a.description = :description"),
-    @NamedQuery(name = "AllowedPropertyValue.findBySortOrder", query = "SELECT a FROM AllowedPropertyValue a WHERE a.sortOrder = :sortOrder")})
-public class AllowedPropertyValue implements Serializable {
+    @NamedQuery(name = "AllowedPropertyValue.findBySortOrder", query = "SELECT a FROM AllowedPropertyValue a WHERE a.sortOrder = :sortOrder"),
+    @NamedQuery(name = "AllowedPropertyValue.findAllByPropertyTypeId", query = "SELECT a FROM AllowedPropertyValue a WHERE a.propertyType.id = :propertyTypeId")})
+public class AllowedPropertyValue extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

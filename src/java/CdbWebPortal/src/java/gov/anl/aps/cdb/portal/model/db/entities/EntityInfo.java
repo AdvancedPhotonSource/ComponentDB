@@ -63,8 +63,6 @@ public class EntityInfo implements Serializable {
     private Date obsoletedOnDateTime;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
     private ItemElement itemElement;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
-    private Item item;
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
     private UserInfo ownerUser;
@@ -142,14 +140,6 @@ public class EntityInfo implements Serializable {
 
     public void setItemElement(ItemElement itemElement) {
         this.itemElement = itemElement;
-    }
-
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
     }
 
     public UserInfo getOwnerUser() {

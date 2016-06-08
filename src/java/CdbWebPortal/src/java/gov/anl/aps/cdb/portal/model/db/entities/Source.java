@@ -6,8 +6,10 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -137,6 +139,14 @@ public class Source extends CdbEntity implements Serializable {
             displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
         }
         return displayUrl;
+    }
+    
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
     }
 
     @Override

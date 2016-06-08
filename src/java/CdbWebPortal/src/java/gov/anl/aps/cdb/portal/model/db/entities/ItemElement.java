@@ -73,7 +73,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @JoinTable(name = "item_element_property", joinColumns = {
         @JoinColumn(name = "item_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<PropertyValue> propertyValueList;
     @JoinTable(name = "item_element_log", joinColumns = {
         @JoinColumn(name = "item_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
@@ -87,7 +87,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @ManyToOne
     private Item containedItem;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @OneToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemElement")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
@@ -107,11 +107,16 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public ItemElement() {
     }
+    
+    public ItemElement(Item parentItem) {
+        this.parentItem = parentItem; 
+    }
 
     public ItemElement(Integer id) {
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -173,6 +178,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.listList = listList;
     }
 
+    @Override
     @XmlTransient
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
@@ -182,6 +188,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.propertyValueList = propertyValueList;
     }
 
+    @Override
     @XmlTransient
     public List<Log> getLogList() {
         return logList;
@@ -207,6 +214,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.containedItem = containedItem;
     }
 
+    @Override
     public EntityInfo getEntityInfo() {
         return entityInfo;
     }

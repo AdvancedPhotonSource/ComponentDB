@@ -341,6 +341,35 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setTargetValueToValue() {
         this.targetValue = value;
     }
+    
+    @Override
+    public PropertyValue clone() throws CloneNotSupportedException {
+        PropertyValue cloned = (PropertyValue) super.clone();
+        cloned.id = null;
+        cloned.enteredByUser = null;
+        cloned.enteredOnDateTime = null;
+        cloned.itemElementList = null;
+        cloned.itemElementRelationshipList = null; 
+        cloned.itemConnectorList = null;
+        cloned.connectorList = null;
+        cloned.propertyValueHistoryList = null;
+        cloned.tag = tag;
+        cloned.description = description;
+        return cloned;
+    }
+
+    
+    public PropertyValue copyAndSetUserInfoAndDate(UserInfo enteredByUser, Date enteredOnDateTime) {
+        PropertyValue copied = null;
+        try {
+            copied = clone();
+            copied.enteredByUser = enteredByUser;
+            copied.enteredOnDateTime = enteredOnDateTime;
+        } catch (CloneNotSupportedException ex) {
+            // will not happen 
+        }
+        return copied;
+    }
 
     @Override
     public int hashCode() {

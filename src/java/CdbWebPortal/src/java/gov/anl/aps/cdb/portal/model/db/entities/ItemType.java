@@ -116,7 +116,7 @@ public class ItemType extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.ItemType[ id=" + id + " ]";
+        return name; 
     }
     
 }
