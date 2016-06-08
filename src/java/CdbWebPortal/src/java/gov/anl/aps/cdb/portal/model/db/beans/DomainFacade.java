@@ -6,8 +6,10 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -28,5 +30,22 @@ public class DomainFacade extends CdbEntityFacade<Domain> {
     public DomainFacade() {
         super(Domain.class);
     }
-    
+
+    public Domain findByName(String name) {
+        try {
+            return (Domain) em.createNamedQuery("Domain.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public List<Domain> findByDomainHandlerName(String domainHandlerName) {
+        return (List<Domain>) em.createNamedQuery("Domain.findByDomainHandlerName")
+                .setParameter("domainHandlerName", domainHandlerName)
+                .getResultList();
+
+    }
+
 }
