@@ -160,5 +160,17 @@ public class SessionUtility {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         return sessionMap.get(ROLE_KEY);
     }
+    
+    /**
+     * Finds a named bean for local use within the current bean.
+     * 
+     * @param beanName Name of the named bean needed for further execution. 
+     * @return Named bean that has been requested. 
+     */
+    @SuppressWarnings("unchecked")
+    public static Object findBean(String beanName) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        return (Object) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    }
 
 }
