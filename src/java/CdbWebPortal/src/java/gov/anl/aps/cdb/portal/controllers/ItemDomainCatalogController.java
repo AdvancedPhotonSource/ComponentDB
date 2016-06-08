@@ -6,13 +6,16 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
+import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
@@ -21,12 +24,14 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-@Named("componentCatalogEntityTypeViewController")
+@Named("itemDomainCatalogController")
 @SessionScoped
-public class ComponentCatalogEntityTypeViewController extends ItemController {
+public class ItemDomainCatalogController extends ItemController {
     
     private final String ENTITY_TYPE_NAME = "Component";
     private final String DOMAIN_TYPE_NAME = "Catalog";
+    private final String DERIVED_DOMAIN_NAME = "Inventory";
+    private final String DOMAIN_HANDLER_NAME = "Catalog"; 
     
     /*
      * Controller specific settings
@@ -72,11 +77,14 @@ public class ComponentCatalogEntityTypeViewController extends ItemController {
 
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "Component.Help.ListPage.Display.Fragment";
 
-    private static final Logger logger = Logger.getLogger(ComponentCatalogEntityTypeViewController.class.getName());
+    private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
 
     
     @EJB
     private ItemFacade itemFacade; 
+    
+    @EJB 
+    private DomainFacade domainFacade; 
     
     private Boolean displayModelNumber = null;
 
@@ -96,13 +104,8 @@ public class ComponentCatalogEntityTypeViewController extends ItemController {
     private Boolean loadComponentInstanceRowExpansionPropertyValues = null;
     private Boolean displayComponentInstanceRowExpansion = null;
     
-    public ComponentCatalogEntityTypeViewController() {
+    public ItemDomainCatalogController() {
         super();
-    }
-
-    @Override
-    public void createListDataModel() {
-        setListDataModel(new ListDataModel(itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME))); 
     }
 
     @Override
@@ -112,7 +115,7 @@ public class ComponentCatalogEntityTypeViewController extends ItemController {
     
     @Override
     public String getDisplayEntityTypeName(){
-        return "Component"; 
+        return "Catalog Item"; 
     }
 
     @Override
@@ -436,6 +439,26 @@ public class ComponentCatalogEntityTypeViewController extends ItemController {
     @Override
     public String getStyleName() {
         return "components"; 
+    }
+
+    @Override
+    public Domain getDefaultDomain() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Domain getDerivedDomain() {
+        return domainFacade.findByName(DERIVED_DOMAIN_NAME); 
+    }
+
+    @Override
+    public String getDomainHandlerName() {
+        return DOMAIN_HANDLER_NAME; 
+    }
+
+    @Override
+    public List<Item> getItemList() {
+        return itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME); 
     }
     
 }

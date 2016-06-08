@@ -1,24 +1,30 @@
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
+import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.model.TreeNode; 
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
 
 /*
@@ -26,19 +32,20 @@ import org.primefaces.model.DefaultTreeNode;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author djarosz
  */
-@Named("componentInventoryEntityTypeViewController")
+@Named("itemDomainInventoryController")
 @SessionScoped
-public class ComponentInventoryEntityTypeViewController extends ItemController {
-    
+public class ItemDomainInventoryController extends ItemController {
+
     private final String ENTITY_TYPE_NAME = "Component";
     private final String DOMAIN_TYPE_NAME = "Inventory";
     private final String LOCATION_RELATIONSHIP_TYPE_NAME = "Location";
-    
+    private final String DEFAULT_DOMAIN_NAME = "Inventory";
+    private final String DOMAIN_HANDLER_NAME = "Inventory";
+
     /*
      * Controller specific settings
      */
@@ -79,11 +86,11 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
     private static final String FilterByTagSettingTypeKey = "ComponentInstance.List.FilterBy.Tag";
     private static final String FilterByQrIdSettingTypeKey = "ComponentInstance.List.FilterBy.QrId";
     private static final String FilterBySerialNumberSettingTypeKey = "ComponentInstance.List.FilterBy.SerialNumber";
-    private static final String DisplayListPageHelpFragmentSettingTypeKey = "ComponentInstance.Help.ListPage.Display.Fragment"; 
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "ComponentInstance.Help.ListPage.Display.Fragment";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ComponentInstance.List.AutoLoad.FilterBy.Properties";
 
-    private static final Logger logger = Logger.getLogger(ComponentInventoryEntityTypeViewController.class.getName());
-    
+    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
+
     private Boolean displayLocationDetails = null;
     private Boolean displaySerialNumber = null;
 
@@ -96,14 +103,20 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
     private Integer qrIdViewParam = null;
 
     private List<PropertyValue> filteredPropertyValueList = null;
-    
+
     @EJB
-    private ItemFacade itemFacade; 
-    
+    private ItemFacade itemFacade;
+
     @EJB
-    private ItemElementRelationshipFacade itemElementRelationshipFacade; 
-    
-    public ComponentInventoryEntityTypeViewController() {
+    private DomainFacade domainFacade;
+
+    @EJB
+    private ItemElementRelationshipFacade itemElementRelationshipFacade;
+
+    @EJB
+    private RelationshipTypeFacade relationshipTypeFacade;
+
+    public ItemDomainInventoryController() {
         super();
     }
 
@@ -114,7 +127,7 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
     public void setDisplayLocationDetails(Boolean displayLocationDetails) {
         this.displayLocationDetails = displayLocationDetails;
     }
-    
+
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         return DisplayListPageHelpFragmentSettingTypeKey;
@@ -127,70 +140,162 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
     public void setDisplaySerialNumber(Boolean displaySerialNumber) {
         this.displaySerialNumber = displaySerialNumber;
     }
-    
-    public TreeNode getLocationRelationshipTree(Item inventoryItem){
-        TreeNode locationTree = inventoryItem.getLocationTree(); 
+
+    public TreeNode getLocationRelationshipTree(Item inventoryItem) {
+        if (inventoryItem.getLocationTree() == null) {
+            setItemLocationInfo(inventoryItem);
+        }
+        return inventoryItem.getLocationTree();
+    }
+
+    private ItemElementRelationship findItemLocationRelationship(Item item) {
+        // Support items that have not yet been saved to db. 
+        if (item.getSelfElement().getId() != null) {
+            return itemElementRelationshipFacade.findItemElementRelationshipByNameAndItemElementId(LOCATION_RELATIONSHIP_TYPE_NAME, item.getSelfElement().getId());
+        } else {
+            return null;
+        }
+    }
+
+    /*
+    public void updateItemLocation(Item item) {
+        ItemElementRelationship locationRelationship = findItemLocationRelationship(item); 
+        if(locationRelationship != null) {
+            locationRelationship.setSecondItemElement(locationItem);
+        }
+    }*/
+    public String getLocationRelationshipDetails(Item inventoryItem) {
+        if (inventoryItem.getLocationDetails() == null) {
+            setItemLocationInfo(inventoryItem);
+        }
+
+        return inventoryItem.getLocationDetails();
+    }
+
+    public Item getLocation(Item inventoryItem) {
+        if (inventoryItem.getLocation() == null) {
+            setItemLocationInfo(inventoryItem);
+        }
+        return inventoryItem.getLocation();
+    }
+
+    public void setItemLocationInfo(Item inventoryItem) {
+        TreeNode locationTree = inventoryItem.getLocationTree();
+
         if (locationTree == null) {
-            locationTree = new DefaultTreeNode("Root", null); 
-            List<String> locationHierarchyStringList = new LinkedList<>(); 
-            
+            locationTree = new DefaultTreeNode("Root", null);
+            List<String> locationHierarchyStringList = new LinkedList<>();
+
             ItemElementRelationship itemElementRelationship;
             itemElementRelationship = findItemLocationRelationship(inventoryItem);
+
             if (itemElementRelationship != null) {
-                ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement(); 
-                while (locationSelfItemElement != null){
-                    Item locationParentItem = locationSelfItemElement.getParentItem(); 
-                    String locationName = locationParentItem.getName(); 
+                ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
+                inventoryItem.setLocation(locationSelfItemElement.getParentItem());
+                inventoryItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
+
+                while (locationSelfItemElement != null) {
+                    Item locationParentItem = locationSelfItemElement.getParentItem();
+                    String locationName = locationParentItem.getName();
                     locationHierarchyStringList.add(0, locationName);
-                    List<ItemElement> memberList = locationParentItem.getItemElementMemberList(); 
+                    List<ItemElement> memberList = locationParentItem.getItemElementMemberList();
                     if (memberList.size() > 0) {
-                        locationSelfItemElement = memberList.get(0); 
+                        locationSelfItemElement = memberList.get(0);
                     } else {
                         locationSelfItemElement = null;
                     }
                 }
             }
-            
-            TreeNode prevNode = null; 
+
+            TreeNode prevNode = null;
             for (String locationName : locationHierarchyStringList) {
                 if (prevNode == null) {
                     // Add first node 
-                    prevNode = new DefaultTreeNode(locationName, locationTree); 
+                    prevNode = new DefaultTreeNode(locationName, locationTree);
                 } else {
-                    TreeNode newNode = new DefaultTreeNode(locationName, prevNode); 
-                    prevNode = newNode; 
+                    TreeNode newNode = new DefaultTreeNode(locationName, prevNode);
+                    prevNode = newNode;
                 }
             }
             inventoryItem.setLocationTree(locationTree);
         }
-        return locationTree; 
+
     }
-    
-    private ItemElementRelationship findItemLocationRelationship(Item item) {
-        return itemElementRelationshipFacade.findItemElementRelationshipByNameAndItemElementId(LOCATION_RELATIONSHIP_TYPE_NAME, item.getSelfElement().getId());
+
+    private RelationshipType getLocationRelationshipType() {
+        return relationshipTypeFacade.findByName(LOCATION_RELATIONSHIP_TYPE_NAME);
     }
-    
-    public String getLocationRelationshipDetails(Item inventoryItem) {
-        String locationDetails = inventoryItem.getLocationDetails(); 
-        
-        if (locationDetails == null) {
-            ItemElementRelationship itemElementRelationship = findItemLocationRelationship(inventoryItem); 
-            if (itemElementRelationship != null) {
-                locationDetails = itemElementRelationship.getRelationshipDetails();                 
-            } else {
-                locationDetails = "";
-            }
-            inventoryItem.setLocationDetails(locationDetails);
+
+    @Override
+    public void prepareEntityInsert(Item item) throws CdbException {
+        if (item.getDerivedFromItem() == null) {
+            throw new CdbException("Please specify " + getDerivedFromItemTitle());
+        }
+
+        updateItemLocation(item);
+
+        super.prepareEntityInsert(item);
+    }
+
+    @Override
+    public void prepareEntityUpdate(Item item) throws CdbException {
+        updateItemLocation(item);
+        super.prepareEntityUpdate(item); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private void updateItemLocation(Item item) {
+        // Determie updating of location relationship. 
+        Item existingItem = null; 
+        ItemElementRelationship itemElementRelationship = null; 
+        if (item.getId() != null) {
+            existingItem = itemFacade.findById(item.getId());
+            setItemLocationInfo(existingItem);
+            itemElementRelationship = findItemLocationRelationship(item);
         }
         
-        return locationDetails; 
+        Boolean newItemWithNewLocation = (existingItem == null && 
+                (item.getLocation() != null || (item.getLocationDetails() != null && !item.getLocationDetails().isEmpty()))); 
+        Boolean locationDifferentOnCurrentItem = (existingItem != null && 
+                (!Objects.equals(existingItem.getLocation(), item.getLocation())
+                || !Objects.equals(existingItem.getLocationDetails(), item.getLocationDetails())));
+        
+        if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
+            
+            if (item.getLocation() != null) {
+            logger.debug("Updating location for Item " + item.toString()
+                    + " to: " + item.getLocation().getName());
+            } else if (item.getLocationDetails() != null) {
+                logger.debug("Updating location details for Item " + item.toString()
+                    + " to: " + item.getLocationDetails());
+            }
+            
+            if (itemElementRelationship == null) {
+                itemElementRelationship = new ItemElementRelationship();
+                itemElementRelationship.setRelationshipType(getLocationRelationshipType());
+                itemElementRelationship.setFirstItemElement(item.getSelfElement());
+                List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
+                if (itemElementRelationshipList == null) {
+                    itemElementRelationshipList = new ArrayList<>(); 
+                    item.getSelfElement().setItemElementRelationshipList(itemElementRelationshipList);
+                }
+                itemElementRelationshipList.add(itemElementRelationship);
+            }
+
+            List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
+
+            Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
+
+            itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
+            itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
+        }
     }
-    
+
     @Override
-    public void createListDataModel() {
-        setListDataModel(new ListDataModel(itemFacade.findByDomainAndEntityTypeOrderByQrId(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME)));
-    } 
-    
+    public void processEditRequestParams() {
+        super.processEditRequestParams();
+        setItemLocationInfo(getCurrent());
+    }
+
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -198,12 +303,12 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
         }
         return "";
     }
-    
+
     @Override
     public Boolean getDisplayItemIdentifier1() {
         return displaySerialNumber;
     }
-    
+
     @Override
     public String getFilterByItemIdentifier1() {
         return filterBySerialNumber;
@@ -223,14 +328,14 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
     public void setFilterByItemIdentifier2(String filterByItemIdentifier2) {
         this.filterByTag = filterByItemIdentifier2;
     }
-    
+
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
         if (settingTypeMap == null) {
             return;
         }
-        
+
         logger.debug("Updating list settings from setting type defaults");
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
@@ -247,7 +352,7 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
-        
+
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
         loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
 
@@ -279,10 +384,10 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
         filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
-        
-        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue()); 
-       
-        resetDomainEntityPropertyTypeIdIndexMappings(); 
+
+        displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
+
+        resetDomainEntityPropertyTypeIdIndexMappings();
     }
 
     @Override
@@ -291,7 +396,7 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
         if (sessionUser == null) {
             return;
         }
-        
+
         logger.debug("Updating list settings from session user");
 
         displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
@@ -310,7 +415,7 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
         displayRowExpansion = sessionUser.getUserSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         loadRowExpansionPropertyValues = sessionUser.getUserSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
-        
+
         displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
@@ -339,8 +444,8 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
         filterByPropertyValue4 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         filterByPropertyValue5 = sessionUser.getUserSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
         filterByPropertiesAutoLoad = sessionUser.getUserSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
-        
-        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment); 
+
+        displayListPageHelpFragment = sessionUser.getUserSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
         resetDomainEntityPropertyTypeIdIndexMappings();
 
@@ -387,7 +492,7 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
         sessionUser.setUserSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         sessionUser.setUserSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         sessionUser.setUserSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
-        
+
         sessionUser.setUserSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         sessionUser.setUserSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
 
@@ -418,9 +523,9 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
         sessionUser.setUserSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         sessionUser.setUserSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
         sessionUser.setUserSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
-        
+
         sessionUser.setUserSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-        
+
     }
 
     @Override
@@ -448,20 +553,20 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
     public String getDisplayEntityTypeName() {
         return "Component Instance";
     }
-    
+
     @Override
     public String getEntityListPageTitle() {
-        return "Component Inventory"; 
+        return "Component Inventory";
     }
 
     @Override
     public boolean getEntityDisplayItemIdentifier1() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemIdentifier2() {
-        return true; 
+        return true;
     }
 
     @Override
@@ -471,17 +576,17 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemName() {
-        return false; 
+        return false;
     }
 
     @Override
     public boolean getEntityDisplayItemType() {
-        return false; 
+        return false;
     }
 
     @Override
     public boolean getEntityDisplayItemCategory() {
-        return false; 
+        return false;
     }
 
     @Override
@@ -491,7 +596,7 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
     @Override
     public boolean getEntityDisplayQrId() {
-        return true; 
+        return true;
     }
 
     @Override
@@ -501,13 +606,13 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
     @Override
     public String getItemIdentifier2Title() {
-        return "Tag"; 
+        return "Tag";
     }
-    
+
     @Override
     public String getDerivedFromItemTitle() {
-        return "Catalog Item"; 
-    } 
+        return "Catalog Item";
+    }
 
     @Override
     public String getItemsDerivedFromItemTitle() {
@@ -516,27 +621,27 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemGallery() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemLogs() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemProperties() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
+        return false;
     }
 
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
-        return false; 
+        return false;
     }
 
     @Override
@@ -546,10 +651,22 @@ public class ComponentInventoryEntityTypeViewController extends ItemController {
 
     @Override
     public String getStyleName() {
-        return "instances"; 
+        return "instances";
     }
 
-    
-    
-    
+    @Override
+    public Domain getDefaultDomain() {
+        return domainFacade.findByName(DEFAULT_DOMAIN_NAME);
+    }
+
+    @Override
+    public String getDomainHandlerName() {
+        return DOMAIN_HANDLER_NAME;
+    }
+
+    @Override
+    public List<Item> getItemList() {
+        return itemFacade.findByDomainAndEntityTypeOrderByQrId(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME);
+    }
+
 }

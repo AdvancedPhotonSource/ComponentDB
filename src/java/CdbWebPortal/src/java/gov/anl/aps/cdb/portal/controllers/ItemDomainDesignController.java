@@ -1,13 +1,17 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
+import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 
@@ -22,12 +26,15 @@ import org.apache.log4j.Logger;
  * @author djarosz
  */
 
-@Named("designLibraryEntityTypeViewController")
+@Named("itemDomainDesignController")
 @SessionScoped
-public class DesignLibraryEntityTypeViewController extends ItemController {
+public class ItemDomainDesignController extends ItemController {
     
     private final String ENTITY_TYPE_NAME = "Design";
     private final String DOMAIN_TYPE_NAME = "Design";
+    private final String DOMAIN_HANDLER_NAME = "Design"; 
+    private final String CATALOG_DOMAIN_HANDLER_NAME = "Catalog"; 
+
     
     /*
      * Controller specific settings
@@ -66,15 +73,18 @@ public class DesignLibraryEntityTypeViewController extends ItemController {
     private static final String FilterByPropertiesAutoLoadTypeKey = "ComponentInstance.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "Design.Help.ListPage.Display.Fragment";
     
-    private static final Logger logger = Logger.getLogger(DesignLibraryEntityTypeViewController.class.getName());
+    private static final Logger logger = Logger.getLogger(ItemDomainDesignController.class.getName());
     
     @EJB
     ItemFacade itemFacade; 
     
+    @EJB
+    DomainFacade domainFacade; 
+    
     private Boolean loadDesignElementRowExpansionPropertyValues = null; 
     private Boolean displayDesignElementRowExpansion = null; 
     
-    public DesignLibraryEntityTypeViewController() {
+    public ItemDomainDesignController() {
         super();
     }
 
@@ -98,11 +108,6 @@ public class DesignLibraryEntityTypeViewController extends ItemController {
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         return DisplayListPageHelpFragmentSettingTypeKey;
     }
-    
-    @Override
-    public void createListDataModel() {
-        setListDataModel(new ListDataModel(itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME))); 
-    }
 
     @Override
     public String getEntityTypeName() {
@@ -117,6 +122,20 @@ public class DesignLibraryEntityTypeViewController extends ItemController {
     @Override
     public String getEntityListPageTitle() {
         return "Design Library"; 
+    }
+    
+    @Override
+    public List<Domain> getItemElementItemSelectionDomainList() {
+        List<Domain> designDomainList = domainFacade.findByDomainHandlerName(DOMAIN_HANDLER_NAME);
+        List<Domain> catalogDomainList = domainFacade.findByDomainHandlerName(CATALOG_DOMAIN_HANDLER_NAME); 
+        
+        List<Domain> fullList = new ArrayList<>(designDomainList); 
+        
+        for (Domain catalogDomain: catalogDomainList) {
+            fullList.add(catalogDomain); 
+        }
+        
+        return fullList;                 
     }
 
     @Override
@@ -390,7 +409,20 @@ public class DesignLibraryEntityTypeViewController extends ItemController {
         return true; 
     }
 
-    
-    
-    
+    @Override
+    public Domain getDefaultDomain() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getDomainHandlerName() {
+        return DOMAIN_HANDLER_NAME; 
+    }
+
+    @Override
+    public List<Item> getItemList() {
+        return itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME);
+    }
+
+ 
 }
