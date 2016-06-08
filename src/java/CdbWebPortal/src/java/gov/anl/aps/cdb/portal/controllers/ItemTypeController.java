@@ -78,7 +78,7 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "component type";
+        return "Component Type";
     }
 
     @Override
@@ -87,6 +87,11 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
             return getCurrent().getName();
         }
         return "";
+    }
+
+    @Override
+    public ItemType findById(Integer id) {
+        return itemTypeFacade.find(id); 
     }
 
     @Override
