@@ -830,18 +830,33 @@ CREATE TABLE `allowed_entity_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `allowed_domain`
+-- Table `allowed_domain_handler`
 --
 
-DROP TABLE IF EXISTS `allowed_domain`;
-CREATE TABLE `allowed_domain` (
+DROP TABLE IF EXISTS `allowed_domain_handler`;
+CREATE TABLE `allowed_domain_handler` (
   `property_type_id` int(11) unsigned NOT NULL,
-  `domain_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`property_type_id`, `domain_id`),
-  KEY `allowed_domain_k1` (`property_type_id`),
-  KEY `allowed_domain_k2` (`domain_id`),
-  CONSTRAINT `allowed_domain_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `allowed_domain_fk2` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE
+  `domain_handler_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`property_type_id`, `domain_handler_id`),
+  KEY `allowed_domain_handler_k1` (`property_type_id`),
+  KEY `allowed_domain_handler_k2` (`domain_handler_id`),
+  CONSTRAINT `allowed_domain_handler_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_domain_handler_fk2` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `allowed_domain_handler_entity_type`
+--
+
+DROP TABLE IF EXISTS `allowed_domain_handler_entity_type`;
+CREATE TABLE `allowed_domain_handler_entity_type` (
+  `domain_handler_id` int(11) unsigned NOT NULL,
+  `entity_type_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`domain_handler_id`, `entity_type_id`),
+  KEY `allowed_domain_handler_entity_type_k1` (`domain_handler_id`),
+  KEY `allowed_domain_handler_entity_type_k2` (`entity_type_id`),
+  CONSTRAINT `allowed_domain_handler_entity_type_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_domain_handler_entity_type_fk2` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
