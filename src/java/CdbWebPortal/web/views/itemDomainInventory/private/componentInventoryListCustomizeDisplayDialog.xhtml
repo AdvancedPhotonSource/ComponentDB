@@ -8,13 +8,13 @@
 
     <ui:define name="domainEntitySpecificColumns">
 
-        <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{componentInventoryEntityTypeViewController.displayQrId}"/>  
+        <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{itemDomainInventoryController.displayQrId}"/>  
         <h:outputLabel for="componentInstanceDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{componentInventoryEntityTypeViewController.displaySerialNumber}"/>  
+        <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{itemDomainInventoryController.displaySerialNumber}"/>  
         <h:outputLabel for="componentInstanceDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{componentInventoryEntityTypeViewController.displayLocationDetails}"/>  
+        <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventoryController.displayLocationDetails}"/>  
         <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
         
     </ui:define>

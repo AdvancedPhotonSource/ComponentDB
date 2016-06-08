@@ -11,7 +11,7 @@
         </ui:include>
     </p:column>
 
-    <ui:param name="locationDetails" value="#{componentInventoryEntityTypeViewController.getLocationRelationshipDetails(itemListObject)}" />
+    <ui:param name="locationDetails" value="#{itemDomainInventoryController.getLocationRelationshipDetails(itemListObject)}" />
 
     <p:column headerText="Location Details" sortBy="#{locationDetails}" 
               filterBy="#{locationDetails}"

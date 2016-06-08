@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
     <p:outputPanel>
         <p:tree
-            value="#{componentInventoryEntityTypeViewController.getLocationRelationshipTree(itemObject)}" 
+            value="#{itemDomainInventoryController.getLocationRelationshipTree(itemObject)}" 
             var="locationNode" animate="true">
             <p:treeNode>
                 <h:outputText value="#{locationNode}" />

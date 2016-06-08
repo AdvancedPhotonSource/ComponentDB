@@ -7,7 +7,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="../../item/private/templates/itemViewPanelGridTemplate.xhtml">
     
-    <ui:param name="domainEntityObject" value="#{componentInventoryEntityTypeViewController.selected}" />
+    <ui:param name="domainEntityObject" value="#{itemDomainInventoryController.selected}" />
     
     <ui:define name="additionalItemInformation">
         <p:column>
@@ -31,7 +31,7 @@
         
         <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
         <h:outputText id="locationDetails"
-                      value="#{componentInventoryEntityTypeViewController.getLocationRelationshipDetails(domainEntityObject)}"
+                      value="#{itemDomainInventoryController.getLocationRelationshipDetails(domainEntityObject)}"
                       styleClass="entityDataText"/>
     </ui:define>
 
