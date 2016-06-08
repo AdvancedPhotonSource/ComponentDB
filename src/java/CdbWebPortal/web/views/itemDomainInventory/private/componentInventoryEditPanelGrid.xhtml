@@ -4,31 +4,15 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../item/private/templates/itemEditPanelGridTemplate.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:define name="additionalItemInformation">
-
-        <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
-        <p:column id="location">
-            <p:autoComplete value="#{itemObject.location}" 
-                            var="selectItemObject"
-                            converter="itemConverter" 
-                            completeMethod="#{entityController.completeItem}" 
-                            itemLabel="#{selectItemObject.name}"
-                            itemValue="#{selectItemObject}"
-                            valueChangeListener="#{itemElementController.selectItemValueChangeListener}"
-                            forceSelection="true"
-                            scrollHeight="200"
-                            dropdown="true" 
-                            styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
-            </p:autoComplete>
-            
-        </p:column>
-        <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
-        <h:inputText id="locationDetails"
-                      value="#{itemObject.locationDetails}"
-                      styleClass="entityDataText"/>
+        <ui:include src="componentInventoryItemLocationEditPanelGrid.xhtml" />
+    </ui:define>
+    
+    <ui:define name="additionPanelGridContent">
+        <ui:include src="componentInventoryItemLocationSelectDialog.xhtml" />
     </ui:define>
 </ui:composition>
 
