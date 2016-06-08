@@ -98,15 +98,12 @@ class ItemHandler(CdbDbEntityHandler):
 
         # Create entity info
         entityInfoArgs = (createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
-        dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, *entityInfoArgs)
 
         # Create item
         dbItem = Item(name=name)
-        dbItem.entityInfo = dbEntityInfo
         dbItem.domain = self.domainHandler.findDomainByName(session, domainName)
         dbItem.derived_from_item_id = derivedFromItemId
         dbItem.qr_id = qrId
-        dbItem.description=description
         dbItem.item_identifier1 = itemIdentifier1
         dbItem.item_identifier2 = itemIdentifier2
 
@@ -114,7 +111,7 @@ class ItemHandler(CdbDbEntityHandler):
         session.flush()
 
         # Add self element
-        self.addItemElement(session, None, dbItem.id, None, False, None, *entityInfoArgs)
+        self.addItemElement(session, None, dbItem.id, None, False, description, *entityInfoArgs)
 
         self.logger.debug('Inserted item id %s' % dbItem.id)
         self.addItemEntityType(session, None, entityTypeName, dbItem)

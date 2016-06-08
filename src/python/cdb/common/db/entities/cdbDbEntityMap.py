@@ -91,7 +91,6 @@ CDB_DB_ENTITY_MAP = {
     'item' : (Item, {
         'domain' : { 'parentEntity' : Domain, 'lazy' : False },
         'derivedFromItem' : { 'parentEntity' : Item, 'lazy' : False },
-        'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False },
     }),
     'item_source' : ( ItemSource, {
         'item' : { 'parentEntity' : Item, 'lazy' : True },
