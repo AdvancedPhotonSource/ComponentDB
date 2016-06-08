@@ -333,18 +333,13 @@ CREATE TABLE `item` (
   `item_identifier1` varchar(32) DEFAULT NULL,
   `item_identifier2` varchar(32) DEFAULT NULL,
   `qr_id` int(11) unsigned DEFAULT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `item_u1` (`domain_id`, `name`, `item_identifier1`, `item_identifier2`, `derived_from_item_id`),
   UNIQUE KEY `item_u2` (`qr_id`),
-  UNIQUE KEY `item_u3` (`entity_info_id`),
   KEY `item_k1` (`domain_id`),
   KEY `item_k2` (`derived_from_item_id`),
-  KEY `item_k3` (`entity_info_id`),
   CONSTRAINT `item_fk1` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_fk2` FOREIGN KEY (`derived_from_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
-  CONSTRAINT `item_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `item_fk2` FOREIGN KEY (`derived_from_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
