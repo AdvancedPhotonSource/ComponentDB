@@ -2,24 +2,37 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
@@ -27,93 +40,187 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @EJB
     private ItemFacade itemFacade;
-    
+
+    @EJB
+    private ItemElementFacade itemElementFacade;
+
+    @EJB
+    private DomainFacade domainFacade;
+
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
-    protected Boolean displayItemSources = null; 
-    protected Boolean displayItemType = null; 
-    protected Boolean displayItemCategory = null; 
+    protected Boolean displayItemSources = null;
+    protected Boolean displayItemType = null;
+    protected Boolean displayItemCategory = null;
     protected Boolean displayName = null;
-    protected Boolean displayDerivedFromItem = null; 
+    protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
-    
-    private static final Logger logger = Logger.getLogger(Item.class.getName());
-     
 
-    protected String filterByItemSources = null; 
+    private static final Logger logger = Logger.getLogger(Item.class.getName());
+
+    protected String filterByItemSources = null;
     protected String filterByQrId = null;
-     
-    private List<Item> parentItemList; 
-    private int currentItemEntityHashCode; 
-    
+
+    private List<Item> parentItemList;
+    private int currentItemEntityHashCode;
+
     private Integer qrIdViewParam = null;
-    
+
     private TreeNode itemElementListTreeTableRootNode = null;
-    
+
+    private List<Item> selectItemCandidateList;
+    private List<Item> selectedItems;
+
+    private List<Item> selectItemElementItemCandidateList;
+
+    private Domain selectionDomain;
+
     public ItemController() {
     }
-    
+
+    public abstract Domain getDefaultDomain();
+
     public abstract boolean getEntityDisplayItemIdentifier1();
-    
-    public abstract boolean getEntityDisplayItemIdentifier2(); 
-    
+
+    public abstract boolean getEntityDisplayItemIdentifier2();
+
     public abstract boolean getEntityDisplayItemName();
-    
+
     public abstract boolean getEntityDisplayItemType();
-    
-    public abstract boolean getEntityDisplayItemCategory(); 
-    
+
+    public abstract boolean getEntityDisplayItemCategory();
+
     //TODO chagne to parent derived from item. 
-    public abstract boolean getEntityDisplayDerivedFromItem(); 
-    
+    public abstract boolean getEntityDisplayDerivedFromItem();
+
     public abstract boolean getEntityDisplayQrId();
-    
+
     public abstract boolean getEntityDisplayItemGallery();
-    
+
     public abstract boolean getEntityDisplayItemLogs();
-    
-    public abstract boolean getEntityDisplayItemSources(); 
-    
+
+    public abstract boolean getEntityDisplayItemSources();
+
     public abstract boolean getEntityDisplayItemProperties();
-    
+
     public abstract boolean getEntityDisplayItemElements();
-    
-    public abstract boolean getEntityDisplayItemsDerivedFromItem(); 
-    
+
+    public abstract boolean getEntityDisplayItemsDerivedFromItem();
+
     public abstract boolean getEntityDisplayItemMemberships();
-    
+
     public abstract String getItemIdentifier1Title();
-    
+
     public abstract String getItemIdentifier2Title();
-    
-    public abstract String getItemsDerivedFromItemTitle(); 
-    
-    public abstract String getDerivedFromItemTitle(); 
-    
+
+    public abstract String getItemsDerivedFromItemTitle();
+
+    public abstract String getDerivedFromItemTitle();
+
     public abstract String getStyleName();
-    
-    public String getEntityListPageTitle() {
-        return getDisplayEntityTypeName() + " List"; 
+
+    public abstract String getDomainHandlerName();
+
+    public abstract List<Item> getItemList();
+
+    public ListDataModel getDomainListDataModel() {
+        return new ListDataModel(getItemList());
+    }
+
+    @Override
+    public boolean entityHasTypes() {
+        return getEntityDisplayItemType();
+    }
+
+    @Override
+    public boolean entityHasCategories() {
+        return getEntityDisplayItemCategory(); 
+    }       
+
+    @Override
+    public String getEntityTypeTypeName() {
+        return "itemType"; 
+    }
+
+    @Override
+    public String getEntityTypeCategoryName() {
+        return "itemCategory"; 
     }
     
-    public boolean currentHasChanged(){
-        Item itemEntity = getCurrent(); 
+    public Domain getDerivedDomain() {
+        return getDefaultDomain();
+    }
+
+    public List<Domain> getItemElementItemSelectionDomainList() {
+        return domainFacade.findAll();
+    }
+
+    public final ItemController getSelectionController() {
+        if (selectionDomain == null) {
+            List<Domain> domainList = getItemElementItemSelectionDomainList();
+            if (domainList != null && domainList.size() > 0) {
+                selectionDomain = domainList.get(0);
+            }
+        }
+        if (selectionDomain != null) {
+            DomainHandler domainHandler = selectionDomain.getDomainHandler();
+            if (domainHandler != null) {
+                return (ItemController) SessionUtility.findBean("itemDomain" + selectionDomain.getDomainHandler().getName() + "Controller");
+            }
+        }
+        return (ItemController) SessionUtility.findBean("itemGenericViewController");
+    }
+
+    public List<Domain> getAvailableDomains() {
+        String domainHandlerName = getDomainHandlerName();
+        if (domainHandlerName != null) {
+            return domainFacade.findByDomainHandlerName(domainHandlerName);
+        } else {
+            return domainFacade.findAll();
+        }
+    }
+
+    public Domain getSelectionDomain() {
+        return selectionDomain;
+    }
+
+    public void setSelectionDomain(Domain selectionDomain) {
+        this.selectionDomain = selectionDomain;
+    }
+
+    @Override
+    public DataModel createSelectDataModel() {
+        selectDataModel = getDomainListDataModel();
+        return selectDataModel;
+    }
+
+    @Override
+    public void createListDataModel() {
+        setListDataModel(getDomainListDataModel());
+    }
+
+    public String getEntityListPageTitle() {
+        return getDisplayEntityTypeName() + " List";
+    }
+
+    public boolean currentHasChanged() {
+        Item itemEntity = getCurrent();
         if (currentItemEntityHashCode != itemEntity.hashCode()) {
-            currentItemEntityHashCode = hashCode(); 
-            return true; 
-        } 
-        return false; 
+            currentItemEntityHashCode = hashCode();
+            return true;
+        }
+        return false;
     }
 
     public Item getItem(java.lang.Integer id) {
         return itemFacade.find(id);
     }
-    
+
     @Override
     protected ItemFacade getEntityDbFacade() {
-       return itemFacade;
+        return itemFacade;
     }
-    
+
     void prepareItemElementListTreeTable(Item item) {
         try {
             itemElementListTreeTableRootNode = ItemElementUtility.createItemElementRoot(item);
@@ -121,7 +228,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             logger.warn("Could not create item element list for tree view: " + ex.toString());
         }
     }
-    
+
     public void prepareAddSource(Item item) {
         List<ItemSource> sourceList = item.getItemSourceList();
         ItemSource source = new ItemSource();
@@ -132,11 +239,109 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void saveSourceList() {
         update();
     }
-    
+
     public void deleteSource(ItemSource itemSource) {
         Item item = getCurrent();
         List<ItemSource> itemSourceList = item.getItemSourceList();
         itemSourceList.remove(itemSource);
+        updateOnRemoval();
+    }
+
+    public void prepareAddItemElement(Item item) {
+        List<ItemElement> itemElementList = item.getFullItemElementList();
+        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
+        ItemElement itemElement = new ItemElement();
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        itemElement.setEntityInfo(entityInfo);
+        itemElement.setParentItem(item);
+        itemElementList.add(itemElement);
+        itemElementsDisplayList.add(0, itemElement);
+    }
+
+    public void deleteItemElement(ItemElement itemElement) {
+        Item item = getCurrent();
+        List<ItemElement> itemElementList = item.getFullItemElementList();
+        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
+        itemElementList.remove(itemElement);
+        itemElementsDisplayList.remove(itemElement);
+        updateOnRemoval();
+    }
+
+    public void saveItemElementList() {
+        update();
+    }
+
+    public List<Item> getSelectItemCandidateList() {
+        if (selectItemCandidateList == null) {
+            selectItemCandidateList = getItemList();
+        }
+        return selectItemCandidateList;
+    }
+
+    public List<Item> getSelectedItems() {
+        return selectedItems;
+    }
+
+    public void setSelectedItems(List<Item> selectedItems) {
+        this.selectedItems = selectedItems;
+    }
+
+    public List<Item> completeItem(String query) {
+        return ItemUtility.filterItem(query, getSelectItemCandidateList());
+    }
+
+    public List<Item> getSelectItemElementItemCandidateList() {
+        if (selectItemElementItemCandidateList == null) {
+            List<Domain> domainList = getItemElementItemSelectionDomainList();
+            for (Domain domain : domainList) {
+                for (Item item : domain.getItemList()) {
+                    if (selectItemElementItemCandidateList.contains(item) == false) {
+                        selectItemElementItemCandidateList.add(item);
+                    }
+                }
+            }
+
+        }
+        return selectItemElementItemCandidateList;
+    }
+
+    public List<Item> completeItemElementItem(String queryString) {
+        return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
+    }
+
+    public void prepareAddItemDerivedFromItem(Item item) {
+        List<Item> itemDerivedFromItemList = item.getDerivedFromItemList();
+
+        Item itemDerivedFromItem = new Item();
+
+        itemDerivedFromItem.setDerivedFromItem(item);
+        itemDerivedFromItem.init(getDerivedDomain());
+
+        itemDerivedFromItemList.add(0, itemDerivedFromItem);
+    }
+
+    public void saveItemDerivedFromItemList() {
+        Item item = getCurrent();
+        List<Item> itemDerivedFromItemList = item.getDerivedFromItemList();
+        if (itemDerivedFromItemList != null) {
+            UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+            Date createdOnDateTime = new Date();
+
+            for (Item itemDerivedFromItem : itemDerivedFromItemList) {
+                // If id is null, this is a new component instance; check its properties
+                if (itemDerivedFromItem.getId() == null) {
+                    itemDerivedFromItem.updateDynamicProperties(createdByUser, createdOnDateTime);
+                }
+            }
+        }
+        update();
+    }
+
+    public void deleteItemDerivedFromItem(Item itemDerivedFromItem) {
+        Item item = itemDerivedFromItem.getDerivedFromItem();
+        List<Item> itemDerivedFromItemList = item.getDerivedFromItemList();
+        itemDerivedFromItemList.remove(itemDerivedFromItem);
+        setCurrent(item);
         updateOnRemoval();
     }
 
@@ -155,25 +360,25 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return "";
     }
-    
+
     public boolean getDisplayItemSourceList() {
         Item item = getCurrent();
         if (item != null) {
             List<ItemSource> itemSourceList = item.getItemSourceList();
-            return itemSourceList != null && !itemSourceList.isEmpty(); 
+            return itemSourceList != null && !itemSourceList.isEmpty();
         }
-        return false; 
-    } 
-    
+        return false;
+    }
+
     public boolean getDisplayItemElementList() {
         Item item = getCurrent();
         if (item != null) {
             List<ItemElement> itemElementList = item.getItemElementDisplayList();
-            return itemElementList != null && !itemElementList.isEmpty(); 
+            return itemElementList != null && !itemElementList.isEmpty();
         }
-        return false; 
+        return false;
     }
-    
+
     public Boolean getDisplayDerivedFromItemList() {
         Item item = getCurrent();
         if (item != null) {
@@ -182,7 +387,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return false;
     }
-    
+
     public Boolean getDisplayItemMembership() {
         Item item = getCurrent();
         if (item != null) {
@@ -191,26 +396,26 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return false;
     }
-    
+
     public Boolean getDisplayDerivedFromPropertyList() {
         Item item = getCurrent();
-            if (item != null) {
-                Item derivedFromItem = item.getDerivedFromItem(); 
-                if (derivedFromItem != null) {
-                    List<PropertyValue> derivedFromItemPropertyValueList = derivedFromItem.getPropertyValueList();
-                    return derivedFromItemPropertyValueList != null && !derivedFromItemPropertyValueList.isEmpty();
-                }
+        if (item != null) {
+            Item derivedFromItem = item.getDerivedFromItem();
+            if (derivedFromItem != null) {
+                List<PropertyValue> derivedFromItemPropertyValueList = derivedFromItem.getPropertyValueList();
+                return derivedFromItemPropertyValueList != null && !derivedFromItemPropertyValueList.isEmpty();
             }
-            return false;
+        }
+        return false;
     }
-    
+
     public List<Item> getParentItemList() {
         if (currentHasChanged()) {
-            Item itemEntity = getCurrent(); 
+            Item itemEntity = getCurrent();
 
-            parentItemList = new ArrayList<>(); 
+            parentItemList = new ArrayList<>();
 
-            List<ItemElement> itemElementList = itemEntity.getItemElementMemberList(); 
+            List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
             for (ItemElement itemElement : itemElementList) {
                 if (parentItemList.contains(itemElement.getParentItem()) == false) {
                     parentItemList.add(itemElement.getParentItem());
@@ -233,7 +438,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void clearListFilters() {
         super.clearListFilters();
         filterByItemIdentifier1 = null;
-        filterByItemIdentifier2 = null; 
+        filterByItemIdentifier2 = null;
 
         filterByPropertyValue1 = null;
         filterByPropertyValue2 = null;
@@ -246,7 +451,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void clearSelectFilters() {
         super.clearSelectFilters();
         filterByItemIdentifier1 = null;
-        filterByItemIdentifier2 = null; 
+        filterByItemIdentifier2 = null;
     }
 
     public String getFilterByItemIdentifier1() {
@@ -263,13 +468,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setFilterByItemIdentifier2(String filterByItemIdentifier2) {
         this.filterByItemIdentifier2 = filterByItemIdentifier2;
-    } 
+    }
 
     public Boolean getDisplayQrId() {
         if (displayQrId == null) {
-            displayQrId = getEntityDisplayQrId(); 
+            displayQrId = getEntityDisplayQrId();
         }
-        
+
         return displayQrId;
     }
 
@@ -279,7 +484,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayItemIdentifier1() {
         if (displayItemIdentifier1 == null) {
-            displayItemIdentifier1 = getEntityDisplayItemIdentifier1(); 
+            displayItemIdentifier1 = getEntityDisplayItemIdentifier1();
         }
         return displayItemIdentifier1;
     }
@@ -290,7 +495,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayItemIdentifier2() {
         if (displayItemIdentifier2 == null) {
-            displayItemIdentifier2 = getEntityDisplayItemIdentifier2(); 
+            displayItemIdentifier2 = getEntityDisplayItemIdentifier2();
         }
         return displayItemIdentifier2;
     }
@@ -301,7 +506,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayItemSources() {
         if (displayItemSources == null) {
-            displayItemSources = getEntityDisplayItemSources(); 
+            displayItemSources = getEntityDisplayItemSources();
         }
         return displayItemSources;
     }
@@ -312,7 +517,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayName() {
         if (displayName == null) {
-            displayName = getEntityDisplayItemName(); 
+            displayName = getEntityDisplayItemName();
         }
         return displayName;
     }
@@ -323,7 +528,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayItemType() {
         if (displayItemType == null) {
-            displayItemType = getEntityDisplayItemType(); 
+            displayItemType = getEntityDisplayItemType();
         }
         return displayItemType;
     }
@@ -334,7 +539,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayItemCategory() {
         if (displayItemCategory == null) {
-            displayItemCategory = getEntityDisplayItemCategory(); 
+            displayItemCategory = getEntityDisplayItemCategory();
         }
         return displayItemCategory;
     }
@@ -342,7 +547,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void setDisplayItemCategory(Boolean displayItemCategory) {
         this.displayItemCategory = displayItemCategory;
     }
-    
+
     public String getFilterByItemSources() {
         return filterByItemSources;
     }
@@ -353,7 +558,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayDerivedFromItem() {
         if (displayDerivedFromItem == null) {
-            displayDerivedFromItem = getEntityDisplayDerivedFromItem(); 
+            displayDerivedFromItem = getEntityDisplayDerivedFromItem();
         }
         return displayDerivedFromItem;
     }
@@ -361,25 +566,26 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void setDisplayDerivedFromItem(Boolean displayDerivedFromItem) {
         this.displayDerivedFromItem = displayDerivedFromItem;
     }
-    
+
     @Override
     protected Item createEntityInstance() {
         Item item = new Item();
-        item.initalizeItem();
+        item.init();
+
         return item;
     }
 
     @Override
     public Item findById(Integer id) {
-        return itemFacade.findById(id); 
+        return itemFacade.findById(id);
     }
-    
+
     @Override
     public Item selectByViewRequestParams() throws CdbException {
         setBreadcrumbRequestParams();
         Integer idParam = null;
         String paramValue = SessionUtility.getRequestParameterValue("id");
-        
+
         try {
             if (paramValue != null) {
                 idParam = Integer.parseInt(paramValue);
@@ -392,9 +598,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             if (item == null) {
                 throw new InvalidRequest("Item id " + idParam + " does not exist.");
             }
-            
+
             return performItemRedirection(item, "id=" + idParam, false);
-            
+
         } else {
             // Due to bug in primefaces, we cannot have more than one
             // f:viewParam on the web page, so process qrId here
@@ -413,8 +619,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         }
                         return null;
                     }
-                    
-                    return performItemRedirection(item, "qrId=" + qrIdViewParam, false); 
+
+                    return performItemRedirection(item, "qrId=" + qrIdViewParam, false);
                 } catch (NumberFormatException ex) {
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }
@@ -424,61 +630,139 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             return current;
         }
     }
-    
+
     @Override
     public String prepareView(Item item) {
         prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
-    
+
     private Item performItemRedirection(Item item, String paramString, boolean forceRedirection) {
-        String currentViewId = SessionUtility.getCurrentViewId(); 
-        
+        String currentViewId = SessionUtility.getCurrentViewId();
+
         DomainHandler itemDomainHandler = item.getDomain().getDomainHandler();
         String desiredViewId;
-        if(itemDomainHandler != null) {
+        if (itemDomainHandler != null) {
             desiredViewId = "/views/itemDomain" + itemDomainHandler.getName() + "/view.xhtml";
         } else {
-            desiredViewId = "/views/item/view.xhtml"; 
+            desiredViewId = "/views/item/view.xhtml";
         }
-        
+
         if (currentViewId.equals(desiredViewId)) {
             if (forceRedirection == false) {
                 setCurrent(item);
-                prepareView(item); 
+                prepareView(item);
                 return item;
             }
         }
-        
+
         SessionUtility.navigateTo(desiredViewId + "?" + paramString + "faces-redirect=true");
-        return null; 
+        return null;
     }
-    
+
     public String getCurrentItemDisplayTitle() {
         if (current != null) {
             if (current.getQrId() != null) {
-                return "Qr: " + current.getQrIdDisplay(); 
+                return "Qr: " + current.getQrIdDisplay();
             } else if (current.getName() != null) {
                 return ": " + current.getName();
             }
-        } 
-        return ""; 
-    } 
+        }
+        return "";
+    }
 
     public Item findByQrId(Integer qrId) {
         return itemFacade.findByQrId(qrId);
     }
-    
-    @FacesConverter(forClass = Item.class)
+
+    @Override
+    public void prepareEntityInsert(Item item) throws CdbException {
+        checkItem(item);
+    }
+
+    @Override
+    public void prepareEntityUpdate(Item item) throws CdbException {
+        checkItem(item);
+        item.resetAttributesToNullIfEmpty();
+        EntityInfo entityInfo = item.getEntityInfo();
+        EntityInfoUtility.updateEntityInfo(entityInfo);
+        Log logEntry = prepareLogEntry();
+        if (logEntry != null) {
+            List<Log> logList = item.getLogList();
+            logList.add(logEntry);
+            item.setLogList(logList);
+        }
+
+        // Compare properties with what is in the db
+        List<PropertyValue> originalPropertyValueList = itemFacade.findById(item.getId()).getPropertyValueList();
+        List<PropertyValue> newPropertyValueList = item.getPropertyValueList();
+        logger.debug("Verifying properties for item " + item);
+        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
+        item.clearPropertyValueCache();
+        prepareImageList(item);
+
+        List<Item> derivedFromItemList = item.getDerivedFromItemList();
+        if (derivedFromItemList != null) {
+            for (Item derivedItem : derivedFromItemList) {
+                derivedItem.resetAttributesToNullIfEmpty();
+                checkItem(derivedItem);
+            }
+        }
+
+        logger.debug("Updating item " + item.getId()
+                + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
+
+    }
+
+    private void checkItem(Item item) throws CdbException {
+        String name = item.getName();
+        String itemIdentifier1 = item.getItemIdentifier1();
+        String itemIdentifier2 = item.getItemIdentifier2();
+        Item derivedFromItem = item.getDerivedFromItem();
+        Domain itemDomain = item.getDomain();
+        Integer qrId = item.getQrId();
+        
+        if (itemDomain == null) {
+            throw new CdbException("No domain has been specified ");
+        }
+
+        if (getEntityDisplayItemName()) {
+            if (name != null && name.isEmpty()) {
+                throw new CdbException("No name has been specified ");
+            } 
+        }
+        
+        if (getEntityDisplayQrId()){
+            if (qrId != null) {
+                Item existingItem = itemFacade.findByQrId(qrId);
+                if (existingItem != null) {
+                    if (!Objects.equals(existingItem.getId(), item.getId())) {
+                        throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with qrId " + existingItem.getQrIdDisplay() + ".");
+                    }
+                }
+            } 
+        } 
+        
+        Item existingItem = itemFacade.findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
+        
+        // The same item will have all the same attributes if it wasn't changed.  
+        if (existingItem != null) {
+            if (Objects.equals(item.getId(), existingItem.getId()) == false) {
+                throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with id " + existingItem.getId() + ".");
+            } 
+        }
+    }
+
+    @FacesConverter(value = "itemConverter", forClass = Item.class)
     public static class ItemControllerConverter implements Converter {
 
         @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+        public Object getAsObject(FacesContext facesContext, UIComponent item, String value) {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            ItemController controller = (ItemController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "itemController");
+            ItemController controller = (ItemGenericViewController) facesContext.getApplication().getELResolver().
+                    getValue(facesContext.getELContext(), null, "itemGenericViewController");
             return controller.getItem(getKey(value));
         }
 
