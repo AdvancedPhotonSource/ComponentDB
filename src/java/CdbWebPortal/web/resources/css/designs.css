@@ -1,5 +1,9 @@
 @import url("portal.css");
 
+.defaultBackground {
+    background-color: #f1efe2;
+}
+
 html, body {
     background-color: #f1efe2;
 }
