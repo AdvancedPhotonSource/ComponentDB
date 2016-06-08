@@ -3,12 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-
-    <p:remoteCommand autoRun="#{searchController.performSearch}"
-                     rendered="#{searchController.displayAssemblyComponents 
-                                 and (resources.AssemblyComponentsUIFeatureDisabled == 0)}"
-                     action="#{assemblyComponentController.performEntitySearch(searchString, caseInsensitive)}"
-                     />
+    
+    <ui:remove>
     <p:remoteCommand autoRun="#{searchController.performSearch}"
                      rendered="#{searchController.displayComponents}"
                      action="#{componentController.performEntitySearch(searchString, caseInsensitive)}"
@@ -41,6 +37,29 @@
                      rendered="#{searchController.displayLocationTypes}"
                      action="#{locationTypeController.performEntitySearch(searchString, caseInsensitive)}"
                      />
+    
+    </ui:remove>
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayDesigns}"
+                     action="#{itemDomainCatalogController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayDesigns}"
+                     action="#{itemDomainDesignController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayComponentInstances}"
+                     action="#{itemDomainInventoryController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayLocations}"
+                     action="#{itemDomainLocationController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+
     <p:remoteCommand autoRun="#{searchController.performSearch}"
                      rendered="#{searchController.displayPropertyTypes}"
                      action="#{propertyTypeController.performEntitySearch(searchString, caseInsensitive)}"

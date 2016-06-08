@@ -3,15 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-
-    <p:panel header="Assembly Components" 
-             rendered="#{searchController.displayAssemblyComponents 
-                         and (resources.AssemblyComponentsUIFeatureDisabled == 0)}"
-             collapsed="#{!assemblyComponentController.displaySearchResultList}"
-             toggleable="true">
-        <ui:include src="../../assemblyComponent/private/assemblyComponentSearchDataTable.xhtml"/>
-    </p:panel> 
-
+    <ui:remove>
     <p:panel header="Components" 
              rendered="#{searchController.displayComponents}"
              collapsed="#{!componentController.displaySearchResultList}"
@@ -25,12 +17,13 @@
              toggleable="true">
         <ui:include src="../../componentInstance/private/componentInstanceSearchDataTable.xhtml"/>
     </p:panel>
+    
 
     <p:panel header="Component Types" 
              rendered="#{searchController.displayComponentTypes}"
              collapsed="#{!componentTypeController.displaySearchResultList}"
              toggleable="true">
-        <ui:include src="../../componentType/private/componentTypeSearchDataTable.xhtml"/>
+        <ui:include src="../../item/private/componentTypeSearchDataTable.xhtml"/>
     </p:panel>
 
     <p:panel header="Component Type Categories" 
@@ -38,36 +31,73 @@
              collapsed="#{!componentTypeCategoryController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../componentTypeCategory/private/componentTypeCategorySearchDataTable.xhtml"/>
-    </p:panel> 
+        </p:panel> 
 
-    <p:panel header="Designs" 
-             rendered="#{searchController.displayDesigns}"
-             collapsed="#{!designController.displaySearchResultList}"
-             toggleable="true">
-        <ui:include src="../../design/private/designSearchDataTable.xhtml"/>
-    </p:panel> 
+        <p:panel header="Designs" 
+                 rendered="#{searchController.displayDesigns}"
+                 collapsed="#{!designController.displaySearchResultList}"
+                 toggleable="true">
+            <ui:include src="../../design/private/designSearchDataTable.xhtml"/>
+        </p:panel> 
 
-    <p:panel header="Design Elements" 
-             rendered="#{searchController.displayDesigns}"
-             collapsed="#{!designElementController.displaySearchResultList}"
+        <p:panel header="Design Elements" 
+                 rendered="#{searchController.displayDesigns}"
+                 collapsed="#{!designElementController.displaySearchResultList}"
+                 toggleable="true">
+            <ui:include src="../../designElement/private/designElementSearchDataTable.xhtml"/>
+        </p:panel>
+
+        <p:panel header="Locations" 
+                 rendered="#{searchController.displayLocations}"
+                 collapsed="#{!locationController.displaySearchResultList}"
+                 toggleable="true">
+            <ui:include src="../../location/private/locationSearchDataTable.xhtml"/>
+        </p:panel>   
+
+        <p:panel header="Location Types" 
+                 rendered="#{searchController.displayLocationTypes}"
+                 collapsed="#{!locationTypeController.displaySearchResultList}"
+                 toggleable="true">
+            <ui:include src="../../locationType/private/locationTypeSearchDataTable.xhtml"/>
+        </p:panel> 
+    </ui:remove>
+    
+    <p:panel header="#{itemDomainCatalogController.displayEntityTypeName}"
+             
+             collapsed="#{!itemDomainCatalogController.displaySearchResultList}"
              toggleable="true">
-        <ui:include src="../../designElement/private/designElementSearchDataTable.xhtml"/>
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainCatalogController}" />
+        </ui:include>
     </p:panel>
-
-    <p:panel header="Locations" 
-             rendered="#{searchController.displayLocations}"
-             collapsed="#{!locationController.displaySearchResultList}"
+    
+    <p:panel header="#{itemDomainDesignController.displayEntityTypeName}"
+             
+             collapsed="#{!itemDomainDesignController.displaySearchResultList}"
              toggleable="true">
-        <ui:include src="../../location/private/locationSearchDataTable.xhtml"/>
-    </p:panel>   
-
-    <p:panel header="Location Types" 
-             rendered="#{searchController.displayLocationTypes}"
-             collapsed="#{!locationTypeController.displaySearchResultList}"
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainDesignController}" />
+        </ui:include>
+    </p:panel>
+    
+    <p:panel header="#{itemDomainInventoryController.displayEntityTypeName}"
+             
+             collapsed="#{!itemDomainInventoryController.displaySearchResultList}"
              toggleable="true">
-        <ui:include src="../../locationType/private/locationTypeSearchDataTable.xhtml"/>
-    </p:panel> 
-
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainInventoryController}" />
+        </ui:include>
+    </p:panel>
+    
+    <p:panel header="#{itemDomainLocationController.displayEntityTypeName}"
+             
+             collapsed="#{!itemDomainLocationController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainLocationController}" />
+        </ui:include>
+    </p:panel>
+    
     <p:panel header="Property Types" 
              rendered="#{searchController.displayPropertyTypes}"
              collapsed="#{!propertyTypeController.displaySearchResultList}"
