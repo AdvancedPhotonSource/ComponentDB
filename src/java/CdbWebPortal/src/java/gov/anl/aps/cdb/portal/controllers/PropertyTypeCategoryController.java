@@ -56,7 +56,7 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "property type category";
+        return "Property Type Category";
     }
 
     @Override
