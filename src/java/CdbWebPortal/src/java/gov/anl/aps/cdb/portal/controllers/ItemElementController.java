@@ -2,6 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -27,6 +28,7 @@ import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
@@ -165,7 +167,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     
     @Override
     public String getEntityTypeName() {
-        return "designElement";
+        return "itemElement";
     }
 
     @Override
@@ -204,6 +206,37 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         resetSelectObjectLists();
     }
 */
+    
+    // This listener is accessed either after selection made in dialog,
+    // or from selection menu.    
+    public void selectItemValueChangeListener(ValueChangeEvent valueChangeEvent) {
+        ItemElement itemElement = getCurrent();
+        if (itemElement == null || valueChangeEvent == null) {
+            return;
+        }
+
+        Item existingItem = itemElement.getContainedItem();
+        Item newEventItem = null;
+        Item oldEventItem = null;
+
+        Object newValue = valueChangeEvent.getNewValue();
+        if (newValue != null) {
+            newEventItem = (Item) newValue;
+        }
+        Object oldValue = valueChangeEvent.getOldValue();
+        if (oldValue != null) {
+            oldEventItem = (Item) oldValue;
+        }
+
+        if (ObjectUtility.equals(existingItem, oldEventItem)) {
+            // change via menu
+            itemElement.setContainedItem(newEventItem);
+        } else {
+            // change via dialog
+            itemElement.setContainedItem(oldEventItem);
+        }
+    }
+    
     @Override
     public void prepareEntityUpdateOnRemoval(ItemElement designElement) {
         EntityInfo entityInfo = designElement.getEntityInfo();
