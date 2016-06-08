@@ -215,7 +215,8 @@ CDB_DB_TABLES="\
     property_type \
     allowed_property_value \
     allowed_entity_type \
-    allowed_domain \
+    allowed_domain_handler \
+    allowed_domain_handler_entity_type \
     property_value \
     property_metadata \
     property_value_history \
