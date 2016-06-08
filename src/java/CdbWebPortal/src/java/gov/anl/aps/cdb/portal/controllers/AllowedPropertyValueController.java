@@ -1,12 +1,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade;
-
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.Serializable;
-import java.util.ResourceBundle;
+import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -16,182 +16,220 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
+import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 
 @Named("allowedPropertyValueController")
 @SessionScoped
-public class AllowedPropertyValueController implements Serializable {
+public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueFacade> implements Serializable {
 
-    private AllowedPropertyValue current;
-    private DataModel items = null;
+    /*
+     * Controller specific settings
+     */
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AllowedPropertyValue.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "AllowedPropertyValue.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "AllowedPropertyValue.List.Display.Description";
+    private static final String DisplaySortOrderSettingTypeKey = "AllowedPropertyValue.List.Display.SortOrder";
+    private static final String DisplayUnitsSettingTypeKey = "AllowedPropertyValue.List.Display.Units";
+    private static final String FilterByDescriptionSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Description";
+    private static final String FilterBySortOrderSettingTypeKey = "AllowedPropertyValue.List.FilterBy.SortOrder";
+    private static final String FilterByUnitsSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Units";
+    private static final String FilterByValueSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Value";
+
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    private AllowedPropertyValueFacade allowedPropertyValueFacade;
+    private static final Logger logger = Logger.getLogger(AllowedPropertyValueController.class.getName());
+
+    private Boolean displayUnits = null;
+    private Boolean displaySortOrder = null;
+
+    private String filterBySortOrder = null;
+    private String filterByUnits = null;
+    private String filterByValue = null;
 
     public AllowedPropertyValueController() {
     }
 
-    public AllowedPropertyValue getSelected() {
-        if (current == null) {
-            current = new AllowedPropertyValue();
-            selectedItemIndex = -1;
+    @Override
+    protected AllowedPropertyValueFacade getEntityDbFacade() {
+        return allowedPropertyValueFacade;
+    }
+
+    @Override
+    protected AllowedPropertyValue createEntityInstance() {
+        AllowedPropertyValue allowedPropertyValue = new AllowedPropertyValue();
+        return allowedPropertyValue;
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "allowedPropertyValue";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "allowed property value";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().getId().toString();
         }
-        return current;
+        return "";
     }
 
-    private AllowedPropertyValueFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public List<AllowedPropertyValue> getAvailableItems() {
+        return super.getAvailableItems();
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
+    /**
+     * Retrieve data model with all allowed property value objects that
+     * correspond to the given property type.
+     *
+     * @param propertyTypeId property type id
+     * @return data model with allowed property values
+     */
+    public DataModel getListDataModelByPropertyTypeId(Integer propertyTypeId) {
+        return new ListDataModel(allowedPropertyValueFacade.findAllByPropertyTypeId(propertyTypeId));
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
+    /**
+     * Find list of all allowed property value objects that correspond to the
+     * given property type.
+     *
+     * @param propertyTypeId property type id
+     * @return list of allowed property values
+     */
+    public List<AllowedPropertyValue> findAllByPropertyTypeId(Integer propertyTypeId) {
+        return allowedPropertyValueFacade.findAllByPropertyTypeId(propertyTypeId);
     }
 
-    public String prepareView() {
-        current = (AllowedPropertyValue) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new AllowedPropertyValue();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("AllowedPropertyValueCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (AllowedPropertyValue) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("AllowedPropertyValueUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
+    /**
+     * Remove specified allowed property value from the database
+     *
+     * @param allowedPropertyValue object to be deleted from the database
+     */
+    @Override
+    public void destroy(AllowedPropertyValue allowedPropertyValue) {
+        if (allowedPropertyValue.getId() != null) {
+            super.destroy(allowedPropertyValue);
         }
     }
 
-    public String destroy() {
-        current = (AllowedPropertyValue) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
+        displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+        filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
+        filterByUnits = settingTypeMap.get(FilterByUnitsSettingTypeKey).getDefaultValue();
+        filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();
     }
 
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
+    @Override
+    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+    }
+
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
         }
+
+        Map<String, Object> filters = dataTable.getFilters();
+        filterBySortOrder = (String) filters.get("sortOrder");
+        filterByUnits = (String) filters.get("units");
+        filterByValue = (String) filters.get("value");
     }
 
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("AllowedPropertyValueDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
+    @Override
+    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+        if (sessionUser == null) {
+            return;
         }
+
+        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
+        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+
+        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
     }
 
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterBySortOrder = null;
+        filterByUnits = null;
+        filterByValue = null;
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
+    public Boolean getDisplayUnits() {
+        return displayUnits;
     }
 
-    private void recreateModel() {
-        items = null;
+    public void setDisplayUnits(Boolean displayUnits) {
+        this.displayUnits = displayUnits;
     }
 
-    private void recreatePagination() {
-        pagination = null;
+    public Boolean getDisplaySortOrder() {
+        return displaySortOrder;
     }
 
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
+    public void setDisplaySortOrder(Boolean displaySortOrder) {
+        this.displaySortOrder = displaySortOrder;
     }
 
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
+    public String getFilterBySortOrder() {
+        return filterBySortOrder;
     }
 
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
+    public void setFilterBySortOrder(String filterBySortOrder) {
+        this.filterBySortOrder = filterBySortOrder;
     }
 
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
+    public String getFilterByUnits() {
+        return filterByUnits;
     }
 
-    public AllowedPropertyValue getAllowedPropertyValue(java.lang.Integer id) {
-        return ejbFacade.find(id);
+    public void setFilterByUnits(String filterByUnits) {
+        this.filterByUnits = filterByUnits;
     }
 
+    public String getFilterByValue() {
+        return filterByValue;
+    }
+
+    public void setFilterByValue(String filterByValue) {
+        this.filterByValue = filterByValue;
+    }
+
+    /**
+     * Converter class for allowed property value objects.
+     */
     @FacesConverter(forClass = AllowedPropertyValue.class)
     public static class AllowedPropertyValueControllerConverter implements Converter {
 
@@ -200,18 +238,22 @@ public class AllowedPropertyValueController implements Serializable {
             if (value == null || value.length() == 0) {
                 return null;
             }
-            AllowedPropertyValueController controller = (AllowedPropertyValueController) facesContext.getApplication().getELResolver().
-                    getValue(facesContext.getELContext(), null, "allowedPropertyValueController");
-            return controller.getAllowedPropertyValue(getKey(value));
+            try {
+                AllowedPropertyValueController controller = (AllowedPropertyValueController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "allowedPropertyValueController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to allowed property valueS object.");
+                return null;
+            }
         }
 
-        java.lang.Integer getKey(String value) {
-            java.lang.Integer key;
-            key = Integer.valueOf(value);
-            return key;
+        private Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
         }
 
-        String getStringKey(java.lang.Integer value) {
+        private String getStringKey(Integer value) {
             StringBuilder sb = new StringBuilder();
             sb.append(value);
             return sb.toString();
