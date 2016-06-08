@@ -47,15 +47,15 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     protected UserGroup createEntityInstance() {
         return new UserGroup();
     }
+    
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "Registered User Group";
+    }
 
     @Override
     public String getEntityTypeName() {
         return "userGroup";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "user group";
     }
 
     @Override
@@ -70,6 +70,12 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     public List<UserGroup> getAvailableItems() {
         return super.getAvailableItems();
     }
+    
+    @Override
+    public UserGroup findById(Integer id) {
+        return userGroupFacade.findById(id);
+    }
+
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
