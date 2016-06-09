@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="../item/private/templates/itemListTemplate.xhtml">
+                template="../item/private/templates/itemListTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
     
     <ui:param name="entityController" value="#{itemDomainCatalogController}" />
     
@@ -12,7 +13,9 @@
     </f:metadata>
         
     <ui:define name="helpFragment">
-        <ui:include src="private/componentListPageHelpFragment.xhtml" />
+        <ui:param name="listEntityTypePath" value="/#{itemDomainCatalogController.listEntityType.name}" />
+        <ui:param name="entityTypeFinalPath" value="#{listEntityTypePath != '/' ? listEntityTypePath : ''}" />  
+        <ui:include src="private/entityType#{entityTypeFinalPath}/listPageHelpFragment.xhtml" />
     </ui:define>
     
     <ui:define name="customizeDisplayDialog">

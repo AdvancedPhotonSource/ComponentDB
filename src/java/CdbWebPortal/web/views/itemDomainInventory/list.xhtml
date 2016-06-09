@@ -12,7 +12,9 @@
     </f:metadata>
     
     <ui:define name="helpFragment">
-        <ui:include src="private/componentInventoryListPageHelpFragment.xhtml" />
+        <ui:param name="listEntityTypePath" value="/#{itemDomainInventoryController.listEntityType.name}" />
+        <ui:param name="entityTypeFinalPath" value="#{listEntityTypePath != '/' ? listEntityTypePath : ''}" />  
+        <ui:include src="private/entityType#{entityTypeFinalPath}/listPageHelpFragment.xhtml" />
     </ui:define>
     
     <ui:define name="customizeDisplayDialog">
