@@ -26,7 +26,16 @@
                   rendered="#{entityController.displayName}" >
             <ui:insert name="nameColumnObject" />
         </p:column>
-
+    </ui:define>
+    
+    <ui:define name="entityTypeColumn">
+        <p:column sortBy="#{itemListObject.entityTypeDisplayString}" headerText="EntityType"
+                  filterBy="#{itemListObject.entityTypeDisplayString}" filterMatchMode="contains"
+                  filterable="#{filterable}"
+                  filterOptions="#{entityController.enityTypesForDataTableFilterSelectOne}"                  
+                  sortable="#{sortable}">
+            <ui:insert name="entityTypeColumnObject" />
+        </p:column>
     </ui:define>
 
     <ui:define name="qrIdColumn">

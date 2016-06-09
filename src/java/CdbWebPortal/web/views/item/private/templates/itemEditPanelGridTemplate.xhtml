@@ -36,6 +36,19 @@
                      rendered="#{entityController.entityDisplayItemIdentifier2}"
                      styleClass="entityDataEmphasizedText"/>        
     </ui:define>
+    
+    <ui:define name="itemEntityTypeValue" >
+        <p:column id="entityType">
+            <p:selectCheckboxMenu label="Select Entity Types"
+                                  rendered="#{entityController.entityTypeEditable}"
+                                  value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{entityController.domainHandlerAllowedEnityTypes}" /> 
+            </p:selectCheckboxMenu>
+            <h:outputText value="#{itemObject.entityTypeDisplayString}"
+                          rendered="#{entityController.entityTypeEditable == false}" />
+        </p:column>
+    </ui:define>
 
     <ui:define name="itemDescriptionValue" >        
         <h:inputTextarea id="description"

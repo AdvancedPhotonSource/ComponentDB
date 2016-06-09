@@ -49,6 +49,11 @@
             <p:inputText value="#{itemObject.itemIdentifier2}" title="Model Number" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
     </ui:define>
+    
+    <ui:define name="itemEntityTypeValue" >
+        <h:outputText value="#{itemObject.entityTypeDisplayString}"
+                      id="entityType" />
+    </ui:define>
 
     <ui:define name="itemDescriptionValue" >
         <p:inplace id="description" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataText">
