@@ -1,0 +1,86 @@
+@import url("portal.css");
+
+.defaultBackground {
+    background-color: #E0F8E0;
+}
+
+html, body {
+    background-color: #E0F8E0;
+}
+
+
+#bottom {
+    background-color: #E0F8E0;
+}
+
+.domainEntityRowExpansion {
+    background-color: #E0F8E0;
+}
+
+.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
+    background-color: #E0F8E0;
+}
+
+
+input, textarea {
+    background: #E0F8E0;
+}
+
+h1 {
+    color: #E0F8E0;
+}
+
+.ui-accordion .ui-accordion-content {
+    background: #E0F8E0;    
+}
+
+.ui-panelgrid tr, .ui-panelgrid td {
+    background: #E0F8E0;
+}
+
+.ui-panel {
+    border: 0px; 
+    background: #E0F8E0; 
+}
+
+.redRow {
+    background: #ff8080; 
+}
+
+.blueRow {
+    background: #b3d9ff; 
+}
+
+.greenRow {
+    background: #99e699;
+}
+
+.yellowRow {
+    background: #ffff99;
+}
+
+.orangeRow {
+    background: #ffcc80; 
+}
+
+.pinkRow {
+    background: #ffcce6; 
+}
+
+.purpleRow {
+    background: #e6ccff; 
+}
+
+.violetRow {
+    background: #9966ff;
+    color: white; 
+}
+
+.violetRow a {
+    color: white; 
+}
+
+.violetRow a:hover {
+    color: wheat; 
+}
+
