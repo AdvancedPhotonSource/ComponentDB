@@ -30,10 +30,21 @@
     <ui:define name="itemIdentifier2ColumnObject">
         <h:outputText value="#{itemListObject.itemIdentifier2}" />
     </ui:define>
+    
+    <ui:define name="entityTypeColumnObject">
+        <f:attribute name="exportValue" value="#{itemListObject.entityTypeDisplayString}"/>
+        <ul class="plainUnorderedList">
+            <ui:repeat value="#{itemListObject.entityTypeDisplayList}" var="itemEntityType" >
+                <li>
+                    <h:outputText value="#{itemEntityType.name}" />
+                </li>
+            </ui:repeat>
+        </ul>
+    </ui:define>
 
     <ui:define name="itemTypeColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemTypeString}"/>
-        <ul>
+        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.itemTypeList}" var="itemTypeObject">
                 <li>
                     <h:outputText value="#{itemTypeObject.name}" />
@@ -44,7 +55,7 @@
 
     <ui:define name="itemCategoryColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemCategoryString}"/>
-        <ul>
+        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.itemCategoryList}" var="itemCategoryObject">
                 <li>
                     <h:outputText value="#{itemCategoryObject.name}" />
@@ -55,7 +66,7 @@
 
     <ui:define name="itemSourceColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemSourceString}"/>
-        <ul>
+        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.itemSourceList}" var="itemSource">
                 <li>
                     <h:outputText value="#{itemSource.source.name}" />
