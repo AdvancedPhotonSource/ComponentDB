@@ -7,9 +7,8 @@
 
     <p:menubar>
         <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home" styleClass="mainMenuBarItemImportant"/>
-        <p:menuitem value="Component Catalog" url="/views/itemDomainCatalog/list" styleClass="mainMenuBarItemImportant"/>
-        <p:menuitem value="Component Inventory" url="/views/itemDomainInventory/list" styleClass="mainMenuBarItemImportant"/>
-        <p:menuitem value="Design Library" url="/views/itemDomainDesign/list" styleClass="mainMenuBarItemImportant"/>
+        <ui:include src="../views/itemDomainCatalog/private/itemDomainCatalogSubmenu.xhtml" />
+        <ui:include src="../views/itemDomainInventory/private/itemDomainInventorySubmenu.xhtml" />
         <p:menuitem value="Search" url="/views/search/search" icon="ui-icon-search" styleClass="mainMenuBarItemImportant"/>
         <f:facet name="options">
             <p:menubar styleClass="menuBarSupportingItems">

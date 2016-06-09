@@ -8,15 +8,10 @@
 
     <p:menubar>
         <p:menuitem value="Home" url="/views/home.xhtml" icon="ui-icon-home" styleClass="mainMenuBarItemImportant"/>
-        <p:menuitem value="Component Catalog" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    action="#{itemDomainCatalogController.prepareListFromViewPath('/views/itemDomainCatalog')}"/>
-        <p:menuitem value="Component Inventory" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    action="#{itemDomainInventoryController.prepareListFromViewPath('/views/itemDomainInventory')}"/>
-        <p:menuitem value="Design Library" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainDesign/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    action="#{itemDomainDesignController.prepareListFromViewPath('/views/itemDomainDesign')}"/>
+        <ui:include src="../views/itemDomainCatalog/private/itemDomainCatalogSubmenu.xhtml" />
+        
+        <ui:include src="../views/itemDomainInventory/private/itemDomainInventorySubmenu.xhtml" />
+        
         <p:menuitem value="Search"
                     styleClass="#{fn:startsWith(view.viewId, '/views/search/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
                     url="/views/search/search" icon="ui-icon-search"/>
