@@ -11,6 +11,7 @@
         use itemEditTemplate instead. 
     -->
 
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
 
     <ui:define name="templateCss">
         <link href="../../resources/css/#{entityController.currentItemStyleName}.css" rel="stylesheet" type="text/css"/>
@@ -23,7 +24,7 @@
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}EditForm"
                 enctype="multipart/form-data"
-                rendered="#{loginController.isEntityWriteable(entityController.current.entityInfo)}">
+                rendered="#{loginController.isEntityWriteable(entityController.current.entityInfo) and pageRendered}">
                 
             <div class="middleCenterLeftContent">
 

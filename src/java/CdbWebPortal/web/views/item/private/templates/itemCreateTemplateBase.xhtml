@@ -11,7 +11,8 @@
         use itemViewTemplate instead. 
     -->
 
-
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
+    
     <ui:define name="templateCss">
         <link href="../../resources/css/#{entityController.currentItemStyleName}.css" rel="stylesheet" type="text/css"/>
     </ui:define>
@@ -21,7 +22,7 @@
     <ui:define name="pageTitle">: Create #{entityController.displayEntityTypeName}</ui:define>        
     <ui:define name="middleCenter">
 
-        <h:form id="addComponentForm" rendered="#{loginController.loggedIn}">
+        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}">
             <div class="pageTitle">
                 <h1>Add #{entityController.displayEntityTypeName}</h1>
             </div>

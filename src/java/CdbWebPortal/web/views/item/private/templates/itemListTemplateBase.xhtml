@@ -8,7 +8,8 @@
     <!--
         Use itemListTemplate instead. 
     -->
-
+    
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
 
     <ui:define name="templateCss">
         <link href="../../resources/css/#{entityController.listStyleName}.css" rel="stylesheet" type="text/css"/>
@@ -19,7 +20,7 @@
     <ui:define name="pageTitle">: #{entityController.entityListPageTitle}</ui:define>
 
     <ui:define name="middleCenter">
-        <h:form id="#{entityTypeName}ListForm">  
+        <h:form id="#{entityTypeName}ListForm" rendered="#{pageRendered}">  
             <div class="pageTitle">
                 <h1>#{entityController.entityListPageTitle}</h1>
             </div>
