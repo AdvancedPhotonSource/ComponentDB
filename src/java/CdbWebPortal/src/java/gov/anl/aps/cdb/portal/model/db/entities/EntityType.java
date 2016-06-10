@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "EntityType.findById", query = "SELECT e FROM EntityType e WHERE e.id = :id"),
     @NamedQuery(name = "EntityType.findByName", query = "SELECT e FROM EntityType e WHERE e.name = :name"),
     @NamedQuery(name = "EntityType.findByDescription", query = "SELECT e FROM EntityType e WHERE e.description = :description")})
-public class EntityType implements Serializable {
+public class EntityType extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -52,8 +52,8 @@ public class EntityType implements Serializable {
         @JoinColumn(name = "parent_entity_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "child_entity_type_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<EntityType> entityTypeList;
-    @ManyToMany(mappedBy = "entityTypeList")
+    private List<EntityType> allowedEntityTypeList;
+    @ManyToMany(mappedBy = "allowedEntityTypeList")
     private List<EntityType> entityTypeList1;
     @ManyToMany(mappedBy = "entityTypeList")
     private List<Item> itemList;
@@ -97,12 +97,12 @@ public class EntityType implements Serializable {
     }
 
     @XmlTransient
-    public List<EntityType> getEntityTypeList() {
-        return entityTypeList;
+    public List<EntityType> getAllowedEntityTypeList() {
+        return allowedEntityTypeList;
     }
 
-    public void setEntityTypeList(List<EntityType> entityTypeList) {
-        this.entityTypeList = entityTypeList;
+    public void setAllowedEntityTypeList(List<EntityType> allowedEntityTypeList) {
+        this.allowedEntityTypeList = allowedEntityTypeList;
     }
 
     @XmlTransient
@@ -154,7 +154,7 @@ public class EntityType implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.EntityType[ id=" + id + " ]";
+        return getName();
     }
     
 }
