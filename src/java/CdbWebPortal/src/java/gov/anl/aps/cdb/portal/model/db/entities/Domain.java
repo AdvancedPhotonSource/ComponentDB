@@ -51,8 +51,6 @@ public class Domain extends CdbEntity implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
-    @ManyToMany(mappedBy = "domainList")
-    private List<PropertyType> propertyTypeList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "domain")
     private List<Item> itemList;
     @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
@@ -93,15 +91,6 @@ public class Domain extends CdbEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @XmlTransient
-    public List<PropertyType> getPropertyTypeList() {
-        return propertyTypeList;
-    }
-
-    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
-        this.propertyTypeList = propertyTypeList;
     }
 
     @XmlTransient
