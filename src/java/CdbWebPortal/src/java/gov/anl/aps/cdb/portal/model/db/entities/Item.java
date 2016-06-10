@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -58,9 +59,15 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "Item.findByQrId",
             query = "SELECT i FROM Item i WHERE i.qrId = :qrId"),
     @NamedQuery(name = "Item.findByDomainName",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName"),
+    @NamedQuery(name = "Item.findByDomainNameOrderByQrId",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
-            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC")
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
+    @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
+        query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC")
 })
 public class Item extends CdbDomainEntity implements Serializable {
 
@@ -128,6 +135,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient boolean isCloned = false;
 
     private transient List<ItemElement> itemElementDisplayList;
+    
+    private transient String entityTypeDisplayString = null; 
+    
+    private transient String listDisplayDescription = null; 
 
     public Item() {
     }
@@ -233,6 +244,38 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setDescription(String description) {
         this.getSelfElement().setDescription(description);
     }
+    
+    /**
+     * Function is used to limit the length of description for list column.
+     * @return shortened description (if needed)
+     */
+    public String getListDisplayDescription() {
+        if (listDisplayDescription == null) {
+            listDisplayDescription = getDescription(); 
+            if (listDisplayDescription != null) {
+                String[] descriptionWords = listDisplayDescription.split(" ");
+
+                listDisplayDescription = ""; 
+                for (String descriptionWord : descriptionWords) {
+                    if (descriptionWord.length() > 30) {
+                        descriptionWord =  " [...] " ; 
+                    } else if (descriptionWord.length() < 30 && descriptionWord.length() > 20) {
+                        descriptionWord = descriptionWord.substring(0, 20) + "...]";
+                    }
+
+                    listDisplayDescription += descriptionWord + " ";
+                }
+
+
+                if (listDisplayDescription.length() > 120) {
+                    listDisplayDescription = listDisplayDescription.substring(0,90); 
+                    listDisplayDescription += "..."; 
+                }
+            }
+        }
+        
+        return listDisplayDescription;
+    }
 
     @Override
     public List<Log> getLogList() {
@@ -245,10 +288,51 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @XmlTransient
     public List<EntityType> getEntityTypeList() {
+        return entityTypeList; 
+    }
+    
+    public List<EntityType> getEntityTypeDisplayList() {
+        if ((entityTypeList == null || entityTypeList.isEmpty()) && derivedFromItem != null) {
+            return derivedFromItem.entityTypeList; 
+        }
         return entityTypeList;
     }
+    
+    public String getEntityTypeDisplayString() {
+        if (entityTypeDisplayString == null) {
+            entityTypeDisplayString = ""; 
+            List<EntityType> entityTypeDisplayList = getEntityTypeDisplayList(); 
+            if (entityTypeDisplayList != null) {
+                for (EntityType entityType : entityTypeDisplayList) {
+                    if (entityTypeDisplayString.length() > 0){
+                        entityTypeDisplayString += " "; 
+                    }
+                    entityTypeDisplayString += entityType.getName();
+                }
+            }
+            entityTypeDisplayString = entityTypeDisplayString.replaceAll(" ", " | "); 
+        }
+        
+        return entityTypeDisplayString; 
+    }
 
-    public void setEntityTypeList(List<EntityType> entityTypeList) {
+    public void setEntityTypeList(List<EntityType> entityTypeList) throws CdbException {
+        if (domain != null) {
+            DomainHandler domainHandler = domain.getDomainHandler(); 
+            if (domainHandler != null) {
+                List<EntityType> allowedEntityTypeList = domainHandler.getAllowedEntityTypeList(); 
+                for (EntityType entityType : entityTypeList) {
+                    if (allowedEntityTypeList.contains(entityType) == false) {
+                        throw new CdbException(entityType.getName() + " is not in the domain hanlder allowed list for the item: " + toString());
+                    }
+                }
+            } else {
+                throw new CdbException("Entity Type cannot be set: no domain handler has been defined for the item " + toString());
+            } 
+        } else { 
+            throw new CdbException("Entity Type cannot be set: no domain has been defined for the item " + toString());
+        }
+        
         this.entityTypeList = entityTypeList;
     }
 
