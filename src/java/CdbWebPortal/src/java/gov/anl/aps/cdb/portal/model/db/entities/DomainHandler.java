@@ -12,6 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -46,8 +49,16 @@ public class DomainHandler implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
+    @JoinTable(name = "allowed_domain_handler_entity_type", joinColumns = {
+        @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
+    private List<EntityType> allowedEntityTypeList; 
+    @ManyToMany
+    private List<DomainHandler> domainHandlerList;
     @OneToMany(mappedBy = "domainHandler")
     private List<Domain> domainList;
+    @ManyToMany(mappedBy = "domainHandlerList")
+    private List<PropertyType> propertyTypeList;
 
     public DomainHandler() {
     }
@@ -92,6 +103,33 @@ public class DomainHandler implements Serializable {
 
     public void setDomainList(List<Domain> domainList) {
         this.domainList = domainList;
+    }
+
+    @XmlTransient
+    public List<PropertyType> getPropertyTypeList() {
+        return propertyTypeList;
+    }
+
+    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
+        this.propertyTypeList = propertyTypeList;
+    }
+
+    @XmlTransient
+    public List<EntityType> getAllowedEntityTypeList() {
+        return allowedEntityTypeList;
+    }
+
+    public void setAllowedEntityTypeList(List<EntityType> allowedEntityTypeList) {
+        this.allowedEntityTypeList = allowedEntityTypeList;
+    }
+
+    @XmlTransient
+    public List<DomainHandler> getDomainHandlerList() {
+        return domainHandlerList;
+    }
+
+    public void setDomainHandlerList(List<DomainHandler> domainHandlerList) {
+        this.domainHandlerList = domainHandlerList;
     }
 
     @Override
