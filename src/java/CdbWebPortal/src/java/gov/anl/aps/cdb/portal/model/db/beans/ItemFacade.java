@@ -30,9 +30,31 @@ public class ItemFacade extends CdbEntityFacade<Item> {
     
     public List<Item> findByDomainAndEntityType(String domainName, String entityTypeName) {
         try{
-            return (List<Item>) em.createNamedQuery("Item.findByDomainName")
+            return (List<Item>) em.createNamedQuery("Item.findByDomainNameAndEntityType")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+            
+        }
+        return null;
+    }
+    
+    public List<Item> findByDomain(String domainName) {
+        try{
+            return (List<Item>) em.createNamedQuery("Item.findByDomainName")
+                    .setParameter("domainName", domainName)                    
+                    .getResultList();
+        } catch (NoResultException ex) {
+            
+        }
+        return null;
+    }
+    
+    public List<Item> findByDomainOrderByQrId(String domainName) {
+        try{
+            return (List<Item>) em.createNamedQuery("Item.findByDomainNameOrderByQrId")
+                    .setParameter("domainName", domainName)                    
                     .getResultList();
         } catch (NoResultException ex) {
             
@@ -102,6 +124,18 @@ public class ItemFacade extends CdbEntityFacade<Item> {
     public List<Item> findByDomainAndEntityTypeOrderByQrId(String domainName, String entityTypeName) {
         try{
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameOderByQrId")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+            
+        }
+        return null;
+    }
+    
+    public List<Item> findByDomainAndDerivedEntityTypeOrderByQrId(String domainName, String entityTypeName) {
+        try{
+            return (List<Item>) em.createNamedQuery("Item.findByDomainAndDerivedEntityTypeOrderByQrId")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityTypeName)
                     .getResultList();
