@@ -24,7 +24,7 @@ public class ItemUtility {
 
         List<Item> filteredItemList = new ArrayList<>();
         for (Item item : candidateItemList) {
-            boolean nameContainsQuery = searchPattern.matcher(item.getName()).find();
+            boolean nameContainsQuery = searchPattern.matcher(item.toString()).find();
             if (nameContainsQuery) {
                 filteredItemList.add(item);
             }
