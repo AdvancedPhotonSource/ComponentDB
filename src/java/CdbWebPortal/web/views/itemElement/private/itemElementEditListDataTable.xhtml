@@ -34,7 +34,7 @@
                             var="selectItemObject"
                             converter="itemConverter" 
                             completeMethod="#{entityController.completeItemElementItem}" 
-                            itemLabel="#{selectItemObject.name}"
+                            itemLabel="#{selectItemObject.toString()}"
                             itemValue="#{selectItemObject}"
                             valueChangeListener="#{itemElementController.selectItemValueChangeListener}"
                             forceSelection="true"
@@ -80,6 +80,8 @@
     <ui:include src="../../item/private/itemSelectDialog.xhtml">
         <ui:param name="entityTypeName" value="#{itemElementController.entityTypeName}" />
         <ui:param name="selectionTarget" value="#{itemElementController.current.containedItem}" />
+        <ui:param name="selectDataModel" value="#{entityController.allowedChildItemSelectDataModel}" />
+        <ui:param name="selectionController" value="#{entityController}" />
     </ui:include>
 
 </ui:composition>
