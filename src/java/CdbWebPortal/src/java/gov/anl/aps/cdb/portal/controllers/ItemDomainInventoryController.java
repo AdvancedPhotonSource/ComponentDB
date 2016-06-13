@@ -1,12 +1,15 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -21,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
@@ -40,11 +44,11 @@ import org.primefaces.model.DefaultTreeNode;
 @SessionScoped
 public class ItemDomainInventoryController extends ItemController {
 
-    private final String ENTITY_TYPE_NAME = "Component";
     private final String DOMAIN_TYPE_NAME = "Inventory";
     private final String LOCATION_RELATIONSHIP_TYPE_NAME = "Location";
     private final String DEFAULT_DOMAIN_NAME = "Inventory";
     private final String DOMAIN_HANDLER_NAME = "Inventory";
+    private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog"; 
 
     /*
      * Controller specific settings
@@ -109,6 +113,9 @@ public class ItemDomainInventoryController extends ItemController {
 
     @EJB
     private DomainFacade domainFacade;
+    
+    @EJB 
+    private DomainHandlerFacade domainHandlerFacade; 
 
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
@@ -156,14 +163,25 @@ public class ItemDomainInventoryController extends ItemController {
             return null;
         }
     }
+    
+    @Override
+    public ListDataModel getDomainListDataModel(EntityType entityType) {
+        List<Item> itemList = itemFacade.findByDomainAndDerivedEntityTypeOrderByQrId(getListDomainName(), entityType.getName()); 
+        return new ListDataModel(itemList); 
+    }
+    
+    @Override
+    public ListDataModel getDomainListDataModel() {
+        List<Item> itemList = itemFacade.findByDomainOrderByQrId(getListDomainName()); 
+        return new ListDataModel(itemList); 
+    }
 
-    /*
-    public void updateItemLocation(Item item) {
-        ItemElementRelationship locationRelationship = findItemLocationRelationship(item); 
-        if(locationRelationship != null) {
-            locationRelationship.setSecondItemElement(locationItem);
-        }
-    }*/
+    @Override
+    public List<EntityType> getFilterableEntityTypes() {
+        return domainHandlerFacade.findByName(DERIVED_ITEM_DOMAIN_HANDLER_NAME).getAllowedEntityTypeList(); 
+    }
+    
+     
     public String getLocationRelationshipDetails(Item inventoryItem) {
         if (inventoryItem.getLocationDetails() == null) {
             setItemLocationInfo(inventoryItem);
@@ -191,7 +209,9 @@ public class ItemDomainInventoryController extends ItemController {
 
             if (itemElementRelationship != null) {
                 ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
-                inventoryItem.setLocation(locationSelfItemElement.getParentItem());
+                if (locationSelfItemElement != null) {
+                    inventoryItem.setLocation(locationSelfItemElement.getParentItem());
+                }
                 inventoryItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
 
                 while (locationSelfItemElement != null) {
@@ -255,9 +275,26 @@ public class ItemDomainInventoryController extends ItemController {
         
         Boolean newItemWithNewLocation = (existingItem == null && 
                 (item.getLocation() != null || (item.getLocationDetails() != null && !item.getLocationDetails().isEmpty()))); 
-        Boolean locationDifferentOnCurrentItem = (existingItem != null && 
-                (!Objects.equals(existingItem.getLocation(), item.getLocation())
-                || !Objects.equals(existingItem.getLocationDetails(), item.getLocationDetails())));
+        
+        Boolean locationDifferentOnCurrentItem = false; 
+        
+        if (existingItem != null) {
+            // Empty String should be the same as null for comparison puposes. 
+            String existingLocationDetails = existingItem.getLocationDetails();
+            String newLocationDetails = item.getLocationDetails(); 
+
+            if (existingLocationDetails != null && existingLocationDetails.isEmpty()) {
+                existingLocationDetails = null; 
+            } 
+            if (newLocationDetails != null && newLocationDetails.isEmpty()) { 
+                newLocationDetails = null; 
+            }
+
+            locationDifferentOnCurrentItem = (
+                    (!Objects.equals(existingItem.getLocation(), item.getLocation())
+                    || !Objects.equals(existingLocationDetails, newLocationDetails))
+                    );
+        }
         
         if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
             
@@ -284,8 +321,10 @@ public class ItemDomainInventoryController extends ItemController {
             List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
 
             Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
-
-            itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
+            
+            if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
+                itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
+            }
             itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
         }
     }
@@ -551,12 +590,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "Component Instance";
-    }
-
-    @Override
-    public String getEntityListPageTitle() {
-        return "Component Inventory";
+        return "Item Inventory";
     }
 
     @Override
@@ -651,7 +685,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String getStyleName() {
-        return "instances";
+        return "designComponentInventory";
     }
 
     @Override
@@ -665,8 +699,8 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
-    public List<Item> getItemList() {
-        return itemFacade.findByDomainAndEntityTypeOrderByQrId(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME);
+    public String getListDomainName() {
+        return DOMAIN_TYPE_NAME; 
     }
 
 }
