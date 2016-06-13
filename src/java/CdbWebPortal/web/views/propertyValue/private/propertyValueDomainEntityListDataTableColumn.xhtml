@@ -14,13 +14,9 @@
               sortable="#{propertyValueFilterable}"
               sortBy="#{propertyValueInformation.filterValue}">
         <p:outputPanel>
-            <ul class="plainUnorderedList">
                 <ui:repeat value="#{propertyValueInformation.propertyValueList}" var="propertyValueObject">
-                    <li>
-                        <ui:include src="propertyValueListObjectValue.xhtml"/>
-                    </li>
+                    <ui:include src="propertyValueListObjectValue.xhtml"/> <br/>
                 </ui:repeat>
-            </ul>
         </p:outputPanel>
     </p:column>
 
