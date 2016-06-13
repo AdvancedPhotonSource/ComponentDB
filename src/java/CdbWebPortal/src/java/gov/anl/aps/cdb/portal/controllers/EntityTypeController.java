@@ -1,12 +1,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -14,185 +11,41 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 
 @Named("entityTypeController")
 @SessionScoped
-public class EntityTypeController implements Serializable {
+public class EntityTypeController extends CdbEntityController<EntityType, EntityTypeFacade>implements Serializable {
 
-    private EntityType current;
-    private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
-
-    public EntityTypeController() {
+    EntityTypeFacade entityTypeFacade;
+    
+    @Override
+    protected EntityTypeFacade getEntityDbFacade() {
+        return entityTypeFacade; 
     }
 
-    public EntityType getSelected() {
-        if (current == null) {
-            current = new EntityType();
-            selectedItemIndex = -1;
-        }
-        return current;
+    @Override
+    protected EntityType createEntityInstance() {
+        EntityType entityType = new EntityType(); 
+        return entityType; 
     }
 
-    private EntityTypeFacade getFacade() {
-        return ejbFacade;
+    @Override
+    public String getEntityTypeName() {
+        return "entityType"; 
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
+    @Override
+    public String getCurrentEntityInstanceName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
+    @Override
+    public EntityType findById(Integer id) {
+        return entityTypeFacade.find(id);
+    }    
 
-    public String prepareView() {
-        current = (EntityType) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new EntityType();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("EntityTypeCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (EntityType) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("EntityTypeUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (EntityType) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("EntityTypeDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public EntityType getEntityType(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
-
-    @FacesConverter(forClass = EntityType.class)
+    @FacesConverter(value = "entityTypeConverter", forClass = EntityType.class)
     public static class EntityTypeControllerConverter implements Converter {
 
         @Override
@@ -202,7 +55,7 @@ public class EntityTypeController implements Serializable {
             }
             EntityTypeController controller = (EntityTypeController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "entityTypeController");
-            return controller.getEntityType(getKey(value));
+            return controller.findById(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
