@@ -5,13 +5,16 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
@@ -117,21 +120,55 @@ public class ItemDomainCatalogController extends ItemController {
     public String getDisplayEntityTypeName(){
         return "Catalog Item"; 
     }
-
-    @Override
-    public String getEntityListPageTitle() {
-        return "Component Catalog"; 
-    }
-
+    
     public Boolean getLoadComponentInstanceRowExpansionPropertyValues() {
         return loadComponentInstanceRowExpansionPropertyValues;
     }
 
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
-        return DisplayListPageHelpFragmentSettingTypeKey;
+        if (getListEntityType() == null) { 
+            return null; 
+        } else {
+            // TODO add setting for both entity types. 
+            return DisplayListPageHelpFragmentSettingTypeKey;
+        }
+    }
+    
+    @Override
+    protected void checkItem(Item item) throws CdbException {
+        super.checkItem(item);
+        
+        //Check needed to make sure it is not attempting to save one of the instances.
+        if (getItemDomainHandler().getName().equals(item.getDomain().getDomainHandler().getName())){
+            // Verify that atleast one entity type is selected.
+            List<EntityType> entityTypeList = item.getEntityTypeList();
+            if (entityTypeList == null || entityTypeList.isEmpty()) {
+                throw new CdbException("Atleast one entity type must be specified for a catalog item.");
+            }
+        }
+        
     }
 
+    @Override
+    protected Item createEntityInstance() {
+        Item item = super.createEntityInstance(); 
+        
+        // The user was on the list for the specific entity type when clickin add button. 
+        if (getListEntityType() != null) {
+            List<EntityType> itemEntityTypeList = item.getEntityTypeList(); 
+            if (itemEntityTypeList == null) {
+                itemEntityTypeList = new ArrayList<>(); 
+                try {
+                    item.setEntityTypeList(itemEntityTypeList);
+                } catch (Exception ex) {}
+            }            
+            item.getEntityTypeList().add(getListEntityType());             
+        }
+        
+        return item; 
+    }
+    
     public void setLoadComponentInstanceRowExpansionPropertyValues(Boolean loadComponentInstanceRowExpansionPropertyValues) {
         this.loadComponentInstanceRowExpansionPropertyValues = loadComponentInstanceRowExpansionPropertyValues;
     }
@@ -423,7 +460,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
+        return true; 
     }
 
     @Override
@@ -438,7 +475,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public String getStyleName() {
-        return "components"; 
+        return "designComponentCatalog"; 
     }
 
     @Override
@@ -457,8 +494,8 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     @Override
-    public List<Item> getItemList() {
-        return itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME); 
+    public String getListDomainName() {
+        return DOMAIN_TYPE_NAME; 
     }
     
 }
