@@ -6,13 +6,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 
 /**
@@ -29,6 +30,9 @@ public class ItemGenericViewController extends ItemController {
     
     @EJB
     private ItemFacade itemFacade; 
+    
+    @EJB
+    private EntityTypeFacade entityTypeFacade; 
     
     public ItemGenericViewController() {
         super();
@@ -153,6 +157,20 @@ public class ItemGenericViewController extends ItemController {
     @Override
     public List<Item> getItemList() {
         return itemFacade.findAll(); 
+    }
+
+    /**
+     * Generic controller does not have a list domain. 
+     * @return 
+     */
+    @Override
+    public String getListDomainName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<EntityType> getFilterableEntityTypes() {
+        return entityTypeFacade.findAll(); 
     }
     
 }
