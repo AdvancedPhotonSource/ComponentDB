@@ -8,8 +8,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -31,6 +29,7 @@ public class ItemDomainLocationController extends ItemController {
     public ItemDomainLocationController() {
         super();
         displayNumberOfItemsPerPage = 25; 
+        displayDescription = true; 
     }
     
 
@@ -150,8 +149,8 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     @Override
-    public List<Item> getItemList() {
-        return itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME); 
+    public String getListDomainName() {
+        return DOMAIN_TYPE_NAME; 
     }
     
 }
