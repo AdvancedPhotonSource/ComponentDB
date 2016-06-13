@@ -144,7 +144,7 @@ public class ItemDomainCatalogController extends ItemController {
             // Verify that atleast one entity type is selected.
             List<EntityType> entityTypeList = item.getEntityTypeList();
             if (entityTypeList == null || entityTypeList.isEmpty()) {
-                throw new CdbException("Atleast one entity type must be specified for a catalog item.");
+                throw new CdbException("At least one entity type must be specified for a catalog item.");
             }
         }
         

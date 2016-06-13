@@ -424,5 +424,10 @@ public class ItemDomainDesignController extends ItemController {
         return itemFacade.findByDomainAndEntityType(DOMAIN_TYPE_NAME, ENTITY_TYPE_NAME);
     }
 
+    @Override
+    public String getListDomainName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
  
 }
