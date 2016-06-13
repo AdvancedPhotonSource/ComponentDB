@@ -3,13 +3,17 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
@@ -33,6 +37,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
@@ -46,6 +51,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @EJB
     private DomainFacade domainFacade;
+
+    @EJB
+    private DomainHandlerFacade domainHandlerFacade;
+
+    @EJB
+    private EntityTypeFacade entityTypeFacade;
 
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
@@ -75,40 +86,108 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     private Domain selectionDomain;
 
+    private DomainHandler itemDomainHandler;
+
+    private EntityType listEntityType;
+    
+    protected DataModel allowedChildItemSelectDataModel = null;
+
     public ItemController() {
     }
 
+    /**
+     *
+     * @return
+     */
     public abstract Domain getDefaultDomain();
 
+    public abstract String getListDomainName();
+
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemIdentifier1();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemIdentifier2();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemName();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemType();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemCategory();
 
     //TODO chagne to parent derived from item. 
     public abstract boolean getEntityDisplayDerivedFromItem();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayQrId();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemGallery();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemLogs();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemSources();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemProperties();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemElements();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemsDerivedFromItem();
 
+    /**
+     *
+     * @return
+     */
     public abstract boolean getEntityDisplayItemMemberships();
 
+    /**
+     *
+     * @return
+     */
     public abstract String getItemIdentifier1Title();
 
     public abstract String getItemIdentifier2Title();
@@ -121,10 +200,34 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public abstract String getDomainHandlerName();
 
-    public abstract List<Item> getItemList();
+    public List<Item> getItemList() {
+        return itemFacade.findByDomain(getListDomainName());
+    }
 
     public ListDataModel getDomainListDataModel() {
         return new ListDataModel(getItemList());
+    }
+
+    public ListDataModel getDomainListDataModel(EntityType entityType) {
+        List<Item> itemList = itemFacade.findByDomainAndEntityType(getListDomainName(), entityType.getName());
+        return new ListDataModel(itemList);
+    }
+
+    public String prepareListForEntityType(String entityTypeName) {
+        EntityType entityType = entityTypeFacade.findByName(entityTypeName);
+        if (Objects.equals(entityType, getListEntityType()) == false) {
+
+            setListEntityType(entityType);
+
+            // This will now use the new list entity type; 
+            resetList();
+        }
+
+        return prepareListFromViewPath(getDomainHandlerPath(getItemDomainHandler()));
+    }
+
+    public String getDomainHandlerPath(DomainHandler domainHandler) {
+        return "/views/itemDomain" + domainHandler.getName();
     }
 
     @Override
@@ -134,19 +237,19 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @Override
     public boolean entityHasCategories() {
-        return getEntityDisplayItemCategory(); 
-    }       
+        return getEntityDisplayItemCategory();
+    }
 
     @Override
     public String getEntityTypeTypeName() {
-        return "itemType"; 
+        return "itemType";
     }
 
     @Override
     public String getEntityTypeCategoryName() {
-        return "itemCategory"; 
+        return "itemCategory";
     }
-    
+
     public Domain getDerivedDomain() {
         return getDefaultDomain();
     }
@@ -180,6 +283,41 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
     }
 
+    public DomainHandler getItemDomainHandler() {
+        if (itemDomainHandler == null) {
+            String domainHandlerName = getDomainHandlerName();
+            if (domainHandlerName != null) {
+                itemDomainHandler = domainHandlerFacade.findByName(domainHandlerName);
+            }
+        }
+        return itemDomainHandler;
+    }
+
+    public List<EntityType> getDomainHandlerAllowedEnityTypes() {
+        DomainHandler domainHandler = getItemDomainHandler();
+        if (domainHandler != null) {
+            return domainHandler.getAllowedEntityTypeList();
+        }
+        return null;
+    }
+
+    public List<EntityType> getFilterableEntityTypes() {
+        return getDomainHandlerAllowedEnityTypes();
+    }
+
+    public SelectItem[] getEnityTypesForDataTableFilterSelectOne() {
+        return CollectionUtility.getSelectItems(getFilterableEntityTypes(), true);
+    }
+
+    public boolean isEntityTypeEditable() {
+        List<EntityType> allowedEntityType = getDomainHandlerAllowedEnityTypes();
+        if (allowedEntityType != null && !allowedEntityType.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Domain getSelectionDomain() {
         return selectionDomain;
     }
@@ -196,11 +334,42 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @Override
     public void createListDataModel() {
-        setListDataModel(getDomainListDataModel());
+        if (listEntityType != null) {
+            setListDataModel(getDomainListDataModel(listEntityType));
+        } else {
+            setListDataModel(getDomainListDataModel());
+        }
     }
 
     public String getEntityListPageTitle() {
+        if (getListEntityType() != null) {
+            return getListEntityType().getName() + " " + getDomainHandlerName();
+        }
         return getDisplayEntityTypeName() + " List";
+    }
+
+    private String getEntityTypeStyleName(String genEntityTypeName) {
+        return genEntityTypeName.toLowerCase() + getDomainHandlerName();
+    }
+
+    public String getListStyleName() {
+        if (getListEntityType() != null) {
+            return getEntityTypeStyleName(getListEntityType().getName());
+        } else {
+            return getStyleName();
+        }
+    }
+
+    public String getCurrentItemStyleName() {
+        Item item = getCurrent();
+        if (item != null) {
+            List<EntityType> itemEntityTypeList = item.getEntityTypeDisplayList();
+            if (itemEntityTypeList != null && itemEntityTypeList.size() == 1) {
+                return getEntityTypeStyleName(itemEntityTypeList.get(0).getName());
+            }
+        }
+
+        return getStyleName();
     }
 
     public boolean currentHasChanged() {
@@ -292,17 +461,50 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public List<Item> getSelectItemElementItemCandidateList() {
         if (selectItemElementItemCandidateList == null) {
-            List<Domain> domainList = getItemElementItemSelectionDomainList();
-            for (Domain domain : domainList) {
-                for (Item item : domain.getItemList()) {
-                    if (selectItemElementItemCandidateList.contains(item) == false) {
-                        selectItemElementItemCandidateList.add(item);
+            selectItemElementItemCandidateList = new ArrayList<>();
+
+            Item item = getCurrent();
+            List<EntityType> entityTypeList = item.getEntityTypeList();
+
+            List<EntityType> allowedChildEntityTypeList = new ArrayList<>();
+
+            for (EntityType entityType : entityTypeList) {
+                List<EntityType> currentEntityTypeAllowedList = entityType.getAllowedEntityTypeList();
+
+                for (EntityType allowedEntityType : currentEntityTypeAllowedList) {
+                    if (allowedChildEntityTypeList.contains(allowedEntityType) == false) {
+                        allowedChildEntityTypeList.add(allowedEntityType);
                     }
                 }
             }
 
+            Domain itemDomain = item.getDomain();
+            for (EntityType allowedEntityType : allowedChildEntityTypeList) {
+                List<Item> itemList = itemFacade.findByDomainAndEntityType(itemDomain.getName(), allowedEntityType.getName());
+                if (itemList != null) {
+                    for (Item newItem : itemList) {
+                        if (selectItemElementItemCandidateList.contains(newItem) == false) {
+                            selectItemElementItemCandidateList.add(newItem);
+                        }
+                    }
+                }
+            }
         }
+        
         return selectItemElementItemCandidateList;
+    }
+
+    public DataModel getAllowedChildItemSelectDataModel() {
+        if (allowedChildItemSelectDataModel == null) {
+            selectDataModel = new ListDataModel(getSelectItemElementItemCandidateList());
+        }
+        return allowedChildItemSelectDataModel;
+    }
+
+    @Override
+    public void resetSelectDataModel() {
+        super.resetSelectDataModel(); 
+        allowedChildItemSelectDataModel = null; 
     }
 
     public List<Item> completeItemElementItem(String queryString) {
@@ -432,6 +634,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setFilterByQrId(String filterByQrId) {
         this.filterByQrId = filterByQrId;
+    }
+
+    public EntityType getListEntityType() {
+        return listEntityType;
+    }
+
+    public void setListEntityType(EntityType listEntityType) {
+        this.listEntityType = listEntityType;
     }
 
     @Override
@@ -570,7 +780,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     @Override
     protected Item createEntityInstance() {
         Item item = new Item();
-        item.init();
+
+        DomainHandler domainHandler = getItemDomainHandler();
+        if (domainHandler != null && domainHandler.getDomainList().size() > 0) {
+            item.init(domainHandler.getDomainList().get(0));
+        } else {
+            item.init();
+        }
 
         return item;
     }
@@ -643,7 +859,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         DomainHandler itemDomainHandler = item.getDomain().getDomainHandler();
         String desiredViewId;
         if (itemDomainHandler != null) {
-            desiredViewId = "/views/itemDomain" + itemDomainHandler.getName() + "/view.xhtml";
+            desiredViewId = getDomainHandlerPath(itemDomainHandler) + "/view.xhtml";
         } else {
             desiredViewId = "/views/item/view.xhtml";
         }
@@ -714,14 +930,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     }
 
-    private void checkItem(Item item) throws CdbException {
+    protected void checkItem(Item item) throws CdbException {
         String name = item.getName();
         String itemIdentifier1 = item.getItemIdentifier1();
         String itemIdentifier2 = item.getItemIdentifier2();
         Item derivedFromItem = item.getDerivedFromItem();
         Domain itemDomain = item.getDomain();
         Integer qrId = item.getQrId();
-        
+
         if (itemDomain == null) {
             throw new CdbException("No domain has been specified ");
         }
@@ -729,10 +945,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (getEntityDisplayItemName()) {
             if (name != null && name.isEmpty()) {
                 throw new CdbException("No name has been specified ");
-            } 
+            }
         }
-        
-        if (getEntityDisplayQrId()){
+
+        if (getEntityDisplayQrId()) {
             if (qrId != null) {
                 Item existingItem = itemFacade.findByQrId(qrId);
                 if (existingItem != null) {
@@ -740,16 +956,16 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with qrId " + existingItem.getQrIdDisplay() + ".");
                     }
                 }
-            } 
-        } 
-        
+            }
+        }
+
         Item existingItem = itemFacade.findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
-        
+
         // The same item will have all the same attributes if it wasn't changed.  
         if (existingItem != null) {
             if (Objects.equals(item.getId(), existingItem.getId()) == false) {
                 throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with id " + existingItem.getId() + ".");
-            } 
+            }
         }
     }
 
