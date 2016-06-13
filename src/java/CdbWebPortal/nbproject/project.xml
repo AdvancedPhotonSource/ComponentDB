@@ -67,6 +67,8 @@
                 <root id="test.src.dir"/>
             </test-roots>
         </data>
-        <libraries xmlns="http://www.netbeans.org/ns/cdnjs-libraries/1"/>
+        <libraries xmlns="http://www.netbeans.org/ns/cdnjs-libraries/1">
+		<definitions>lib/nblibraries.properties</definitions>
+        </libraries>
     </configuration>
 </project>
