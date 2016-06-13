@@ -72,11 +72,6 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
     }
 
     @Override
-    public String getEntityTypeCategoryName() {
-        return "itemTypeCategory";
-    }
-
-    @Override
     public String getDisplayEntityTypeName() {
         return "Component Type";
     }
@@ -172,11 +167,6 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
     public void clearSelectFilters() {
         super.clearSelectFilters();
         selectFilterByCategory = null;
-    }
-
-    @Override
-    public boolean entityHasCategories() {
-        return true;
     }
 
     public String getFilterByCategory() {
