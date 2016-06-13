@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 
 /**
@@ -200,6 +199,11 @@ public class ItemMemberViewController extends ItemController {
     
     @Override
     public List<Item> getItemList() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getListDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
