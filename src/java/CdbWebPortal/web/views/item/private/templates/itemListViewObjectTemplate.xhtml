@@ -33,46 +33,30 @@
     
     <ui:define name="entityTypeColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.entityTypeDisplayString}"/>
-        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.entityTypeDisplayList}" var="itemEntityType" >
-                <li>
-                    <h:outputText value="#{itemEntityType.name}" />
-                </li>
+                    <h:outputText value="#{itemEntityType.name}" /> <br/>
             </ui:repeat>
-        </ul>
     </ui:define>
 
     <ui:define name="itemTypeColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemTypeString}"/>
-        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.itemTypeList}" var="itemTypeObject">
-                <li>
-                    <h:outputText value="#{itemTypeObject.name}" />
-                </li>
+                <h:outputText value="#{itemTypeObject.name}" /> <br/>
             </ui:repeat>
-        </ul>
     </ui:define>
 
     <ui:define name="itemCategoryColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemCategoryString}"/>
-        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.itemCategoryList}" var="itemCategoryObject">
-                <li>
-                    <h:outputText value="#{itemCategoryObject.name}" />
-                </li>
+                <h:outputText value="#{itemCategoryObject.name}" /> <br/>
             </ui:repeat>
-        </ul>
     </ui:define>
 
     <ui:define name="itemSourceColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.itemSourceString}"/>
-        <ul class="plainUnorderedList">
             <ui:repeat value="#{itemListObject.itemSourceList}" var="itemSource">
-                <li>
-                    <h:outputText value="#{itemSource.source.name}" />
-                </li>
+                    <h:outputText value="#{itemSource.source.name}" /> <br/>
             </ui:repeat>
-        </ul>
     </ui:define>
 
     <ui:define  name="derivedFromItemColumnObject">
@@ -80,7 +64,7 @@
     </ui:define>
 
     <ui:define name="descriptionColumnObject">
-        <h:outputText value="#{itemListObject.description}"/>
+        <h:outputText value="#{itemListObject.listDisplayDescription}"/>
     </ui:define>
 
 </ui:composition>
