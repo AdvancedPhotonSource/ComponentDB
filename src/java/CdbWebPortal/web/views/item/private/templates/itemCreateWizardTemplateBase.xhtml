@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../../templates/portalViewTemplate.xhtml">
+
+    <!--
+        Please define entityController
+    -->
+
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
+    
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.currentItemStyleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    
+    <ui:param name="viewName" value="CreateWizard" />
+    
+    <ui:define name="pageTitle">: Create #{entityController.displayEntityTypeName}</ui:define>        
+    <ui:define name="middleCenter">
+
+        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}">
+            <div class="pageTitle">
+                <h1>Add #{entityController.displayEntityTypeName}</h1>
+            </div>
+            
+            <ui:param name="itemObject" value="#{entityController.current}"/>
+            
+            <p:wizard flowListener="#{entityController.createItemWizardFlowListener}"
+                      id="#{entityTypeName}ItemCreateWizard"
+                      widgetVar="#{entityTypeName}ItemCreateWizardWidget">
+                
+                <ui:insert name="derivedFromItemWizardTab"/>
+                
+                <ui:insert name="basicInformationTab"/>
+                
+                <ui:insert name="classificationTab"/>
+                
+                <ui:insert name="permissionsTab"/>
+                
+                <p:tab id="reviewItemTab" 
+                       title="Review Item">
+                    <p:panel header="Item Overview" style="border: 1px; border-style: solid;">
+                        <ui:insert name="itemOverviewHelpFragment" />
+                        <ui:insert name="itemOverviewPanelGrid" />
+                        <ui:insert name="itemCreateActionButtons" />
+                    </p:panel>                                                                
+                </p:tab>
+                
+            </p:wizard>    
+            
+            <ui:insert name="additonalCreateItemContent" />
+            <ui:insert name="templateUseAdditonalCreateItemContent" />
+
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>
