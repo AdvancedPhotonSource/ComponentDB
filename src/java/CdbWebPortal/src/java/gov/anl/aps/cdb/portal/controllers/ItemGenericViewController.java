@@ -172,5 +172,10 @@ public class ItemGenericViewController extends ItemController {
     public List<EntityType> getFilterableEntityTypes() {
         return entityTypeFacade.findAll(); 
     }
+
+    @Override
+    public String getItemDerivedFromDomainHandlerName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
