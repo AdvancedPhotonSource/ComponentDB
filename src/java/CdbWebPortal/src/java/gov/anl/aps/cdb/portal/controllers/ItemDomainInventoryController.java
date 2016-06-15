@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,7 @@ import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
 
@@ -244,6 +246,26 @@ public class ItemDomainInventoryController extends ItemController {
 
     private RelationshipType getLocationRelationshipType() {
         return relationshipTypeFacade.findByName(LOCATION_RELATIONSHIP_TYPE_NAME);
+    } 
+    
+    @Override
+    public String prepareCreate() {
+        ItemController derivedItemController = getItemDerivedFromDomainController(); 
+        if (derivedItemController != null) {
+            derivedItemController.getSelectedObjectAndResetDataModel();
+        }
+        return super.prepareCreate(); 
+    }
+    
+    @Override
+    public String createItemWizardFlowListener(FlowEvent event) {
+        if (getCurrent().getDerivedFromItem() == null) {
+            SessionUtility.addWarningMessage("No Catalog Item Selected", "Please select a catalog item.");            
+            return ItemCreateWizardSteps.derivedFromItemSelection.getValue();
+        } 
+        
+        return super.createItemWizardFlowListener(event); 
+        
     }
 
     @Override
@@ -590,7 +612,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "Item Inventory";
+        return "Inventory Item";
     }
 
     @Override
@@ -701,6 +723,11 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public String getListDomainName() {
         return DOMAIN_TYPE_NAME; 
+    }
+
+    @Override
+    public String getItemDerivedFromDomainHandlerName() {
+        return DERIVED_ITEM_DOMAIN_HANDLER_NAME; 
     }
 
 }
