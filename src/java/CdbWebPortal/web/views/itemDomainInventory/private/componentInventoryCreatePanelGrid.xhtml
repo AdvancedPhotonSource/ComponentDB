@@ -2,48 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../item/private/templates/itemEditPanelGridTemplate.xhtml"
+                template="../../item/private/templates/itemCreatePanelGridTemplate.xhtml"
                 xmlns:p="http://primefaces.org/ui">
-
-    <ui:define name="itemDerivedFromItemValue">      
-        <p:column>
-            <p:autoComplete id="derivedFromItem"
-                            value="#{itemObject.derivedFromItem}" 
-                            var="selectDerivedFromItemObject"
-                            converter="itemConverter" 
-                            completeMethod="#{itemDomainCatalogController.completeItem}" 
-                            itemLabel="#{selectDerivedFromItemObject.name}"
-                            itemValue="#{selectDerivedFromItemObject}"
-                            forceSelection="true"
-                            scrollHeight="200"
-                            dropdown="true" 
-                            styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
-            </p:autoComplete>
-
-            <p:commandButton id="derivedFromItemSelectButton" 
-                             oncomplete="PF('#{itemDomainCatalogController.entityTypeName}ItemSelectDialogWidget').show()"
-                             alt="Select Location"
-                             immediate="true"
-                             styleClass="selectButtonForAutocomplete"
-                             icon="ui-icon-search">
-                <p:tooltip for="derivedFromItemSelectButton" value="Search for catalog item."/>
-            </p:commandButton>
-        </p:column>
-    </ui:define>
 
     <ui:define name="additionalItemInformation">
         <ui:include src="componentInventoryItemLocationEditPanelGrid.xhtml" />
-    </ui:define>
-
-    <ui:define name="additionPanelGridContent">
-        <ui:include src="componentInventoryItemLocationSelectDialog.xhtml" />
-
-        <ui:include src="../../item/private/itemSelectDialog.xhtml">
-            <ui:param name="entityTypeName" value="#{itemDomainCatalogController.entityTypeName}" />
-            <ui:param name="selectionController" value="#{itemDomainCatalogController}" />
-            <ui:param name="selectionTarget" value="#{itemObject.derivedFromItem}" />
-        </ui:include>
     </ui:define>
 </ui:composition>
 
