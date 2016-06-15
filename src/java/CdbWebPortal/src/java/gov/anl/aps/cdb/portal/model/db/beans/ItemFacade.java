@@ -75,35 +75,35 @@ public class ItemFacade extends CdbEntityFacade<Item> {
     
     public Item findByUniqueAttributes(Item derivedFromItem, Domain domain, 
             String name, String itemIdentifier1, String itemIdentifier2) {
-        String QueryString = "SELECT i FROM Item i WHERE "; 
+        String queryString = "SELECT i FROM Item i WHERE "; 
         if (derivedFromItem == null) {
-           QueryString += "i.derivedFromItem is null ";  
+           queryString += "i.derivedFromItem is null ";  
         } else {
-            QueryString += "i.derivedFromItem.id = " + derivedFromItem.getId() + " "; 
+            queryString += "i.derivedFromItem.id = " + derivedFromItem.getId() + " "; 
         }
         
-        QueryString += " AND i.domain.id = " + domain.getId() + " "; 
+        queryString += " AND i.domain.id = " + domain.getId() + " "; 
         
         if(name == null || name.isEmpty()) {
-           QueryString += "AND i.name is null ";  
+           queryString += "AND (i.name is null OR i.name = '') ";  
         } else {
-           QueryString += "AND i.name = '" + name + "' ";   
+           queryString += "AND i.name = '" + name + "' ";   
         }
         
         if(itemIdentifier1 == null || itemIdentifier1.isEmpty()) {
-           QueryString += "AND i.itemIdentifier1 is null ";  
+           queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '')";  
         } else {
-           QueryString += "AND i.itemIdentifier1 = '" + itemIdentifier1 + "' ";   
+           queryString += "AND i.itemIdentifier1 = '" + itemIdentifier1 + "' ";   
         }
         
         if(itemIdentifier2 == null || itemIdentifier2.isEmpty()) {
-           QueryString += "AND i.itemIdentifier2 is null ";  
+           queryString += "AND (i.itemIdentifier2 is null OR i.itemIdentifier2 = '') ";  
         } else {
-           QueryString += "AND i.itemIdentifier2 = '" + itemIdentifier2 + "' ";   
+           queryString += "AND i.itemIdentifier2 = '" + itemIdentifier2 + "' ";   
         }
         
         try {
-            return (Item) em.createQuery(QueryString).getSingleResult(); 
+            return (Item) em.createQuery(queryString).getSingleResult(); 
         } catch (NoResultException ex) {
         }       
         
