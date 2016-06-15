@@ -39,6 +39,7 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
+import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
 
 public abstract class ItemController extends CdbDomainEntityController<Item, ItemFacade> implements Serializable {
@@ -89,8 +90,26 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private DomainHandler itemDomainHandler;
 
     private EntityType listEntityType;
-    
+
     protected DataModel allowedChildItemSelectDataModel = null;
+    
+    protected enum ItemCreateWizardSteps {
+        derivedFromItemSelection("derivedFromItemSelectionTab"), 
+        basicInformation("basicItemInformationTab"),
+        classification("itemClassificationTab"),
+        permissions("itemPermissionTab"),
+        reviewSave("reviewItemTab");
+        
+        private String value;
+        private ItemCreateWizardSteps(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    };
+    
 
     public ItemController() {
     }
@@ -199,6 +218,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getStyleName();
 
     public abstract String getDomainHandlerName();
+    
+    public abstract String getItemDerivedFromDomainHandlerName();
 
     public List<Item> getItemList() {
         return itemFacade.findByDomain(getListDomainName());
@@ -268,10 +289,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (selectionDomain != null) {
             DomainHandler domainHandler = selectionDomain.getDomainHandler();
             if (domainHandler != null) {
-                return (ItemController) SessionUtility.findBean("itemDomain" + selectionDomain.getDomainHandler().getName() + "Controller");
+                return findDomainController(selectionDomain.getDomainHandler().getName());
             }
         }
         return (ItemController) SessionUtility.findBean("itemGenericViewController");
+    }
+
+    public ItemController findDomainController(String domainHandlerName) {
+        return (ItemController) SessionUtility.findBean("itemDomain" + domainHandlerName + "Controller");
     }
 
     public List<Domain> getAvailableDomains() {
@@ -305,7 +330,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return getDomainHandlerAllowedEnityTypes();
     }
 
-    public SelectItem[] getEnityTypesForDataTableFilterSelectOne() {
+    public SelectItem[] getEntityTypesForDataTableFilterSelectOne() {
         return CollectionUtility.getSelectItems(getFilterableEntityTypes(), true);
     }
 
@@ -459,6 +484,34 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return ItemUtility.filterItem(query, getSelectItemCandidateList());
     }
 
+    public Boolean isRenderClassificationCreateWizardTab() {
+        return this.isEntityTypeEditable()
+                && this.getEntityDisplayItemType()
+                && this.getEntityDisplayItemCategory();
+    }
+    
+    public ItemController getItemDerivedFromDomainController() {
+        return findDomainController(getItemDerivedFromDomainHandlerName()); 
+    }
+    
+    public String createItemWizardFlowListener(FlowEvent event) {
+        String finishedStep = event.getOldStep(); 
+        
+        // Verify that the new item is unique. Prompt user to update information if this is not the case. 
+        if ( (finishedStep.equals(ItemCreateWizardSteps.basicInformation.getValue())) && 
+                (!event.getNewStep().equals(ItemCreateWizardSteps.derivedFromItemSelection.getValue())) ) {
+            try {
+                checkItemUniqueness(getCurrent());
+            } catch (CdbException ex) {
+                SessionUtility.addWarningMessage("Requirement Not Met", ex.getErrorMessage());
+                return ItemCreateWizardSteps.basicInformation.getValue();
+            }            
+        }
+        
+        
+        return event.getNewStep();
+    }
+
     public List<Item> getSelectItemElementItemCandidateList() {
         if (selectItemElementItemCandidateList == null) {
             selectItemElementItemCandidateList = new ArrayList<>();
@@ -490,7 +543,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 }
             }
         }
-        
+
         return selectItemElementItemCandidateList;
     }
 
@@ -503,8 +556,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @Override
     public void resetSelectDataModel() {
-        super.resetSelectDataModel(); 
-        allowedChildItemSelectDataModel = null; 
+        super.resetSelectDataModel();
+        allowedChildItemSelectDataModel = null;
     }
 
     public List<Item> completeItemElementItem(String queryString) {
@@ -929,18 +982,24 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
 
     }
+    
+    protected void checkItem(Item item) throws CdbException{
+        Domain itemDomain = item.getDomain();
+        
+        if (itemDomain == null) {
+            throw new CdbException("No domain has been specified ");
+        }
+        
+        checkItemUniqueness(item);
+    }
 
-    protected void checkItem(Item item) throws CdbException {
+    protected void checkItemUniqueness(Item item) throws CdbException {
         String name = item.getName();
         String itemIdentifier1 = item.getItemIdentifier1();
         String itemIdentifier2 = item.getItemIdentifier2();
         Item derivedFromItem = item.getDerivedFromItem();
         Domain itemDomain = item.getDomain();
-        Integer qrId = item.getQrId();
-
-        if (itemDomain == null) {
-            throw new CdbException("No domain has been specified ");
-        }
+        Integer qrId = item.getQrId();        
 
         if (getEntityDisplayItemName()) {
             if (name != null && name.isEmpty()) {
@@ -964,7 +1023,24 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         // The same item will have all the same attributes if it wasn't changed.  
         if (existingItem != null) {
             if (Objects.equals(item.getId(), existingItem.getId()) == false) {
-                throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with id " + existingItem.getId() + ".");
+                String additionalInfo = "Please update some of the following:  ";                 
+                
+                if (getEntityDisplayItemName()) {
+                    additionalInfo += "Name, "; 
+                } 
+                if (getEntityDisplayItemIdentifier1()) {
+                    additionalInfo += getItemIdentifier1Title() + ", ";
+                }
+                if (getEntityDisplayItemIdentifier2()) {
+                    additionalInfo += getItemIdentifier2Title() + ", ";
+                }
+                
+                //Remove last comma. 
+                additionalInfo = additionalInfo.substring(0, additionalInfo.length() - 2); 
+                
+                throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with id " + existingItem.getId() + ". " + additionalInfo);
+                
+                
             }
         }
     }
