@@ -1,121 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
                 template="itemPanelGridTemplate.xhtml">
 
     <ui:param name="panelGridStyle" value="viewEntityDetails" />
 
     <ui:define name="itemNameValue">
-        <p:inplace id="name" 
-                   rendered="#{entityController.entityDisplayItemName}"
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:inputText value="#{itemObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemName.xhtml"/>
     </ui:define>
 
     <ui:define name="itemQrIdValue">
-        <p:inplace label="#{itemObject.qrIdDisplay}" 
-                   rendered="#{entityController.entityDisplayQrId}"
-                   id="qrId" 
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" 
-                   styleClass="entityDataEmphasizedText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <h:inputText value="#{itemObject.qrId}" title="QR Id" styleClass="entityDataEmphasizedText"/>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemQrId.xhtml"/>
     </ui:define>
 
     <ui:define name="itemItemIdentifier1Value">
-        <p:inplace id="itemIdentifier1" 
-                   rendered="#{entityController.entityDisplayItemIdentifier1}"
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:inputText value="#{itemObject.itemIdentifier1}" title="Model Number" styleClass="entityDataEmphasizedText"/>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemIdentifier1.xhtml" />
     </ui:define>
 
     <ui:define name="itemItemIdentifier2Value">
-        <p:inplace id="itemIdentifier2"
-                   rendered="#{entityController.entityDisplayItemIdentifier2}"
-                   editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:inputText value="#{itemObject.itemIdentifier2}" title="Model Number" styleClass="entityDataEmphasizedText"/>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemIdentifier2.xhtml" />        
     </ui:define>
     
     <ui:define name="itemEntityTypeValue" >
-        <h:outputText value="#{itemObject.entityTypeDisplayString}"
-                      id="entityType" />
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemEntityType.xhtml" />
     </ui:define>
 
     <ui:define name="itemDescriptionValue" >
-        <p:inplace id="description" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <h:inputTextarea value="#{itemObject.description}" title="Description" styleClass="entityDataText"/>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemDescription.xhtml" />
     </ui:define>        
 
     <ui:define name="itemItemTypeValue">
-        <p:inplace id="itemType" 
-                   rendered="#{entityController.displayItemType}"
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" 
-                   styleClass="entityDataText" 
-                   label="#{itemObject.itemTypeString}"> 
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:ajax event="cancel" oncomplete="reloadItemType()"/>
-            <p:remoteCommand name="reloadItemType"
-                             action="#{entityController.reloadCurrent()}"
-                             update="itemType"
-                             />
-            <p:selectCheckboxMenu label="Select Types" value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
-                                  filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{itemTypeController.availableItems}" /> 
-
-            </p:selectCheckboxMenu>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemType.xhtml"/>
     </ui:define>
 
     <ui:define name="itemItemCategoryValue" >
-        <p:inplace id="itemCategory" 
-                   rendered="#{entityController.displayItemCategory}"
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" 
-                   styleClass="entityDataText" 
-                   label="#{itemObject.itemCategoryString}"> 
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:ajax event="cancel" oncomplete="reloadItemCategory()"/>
-            <p:remoteCommand name="reloadItemCategory"
-                             action="#{entityController.reloadCurrent()}"
-                             update="itemCategory"
-                             />
-            <p:selectCheckboxMenu label="Select Categories" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
-                                  filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{itemCategoryController.availableItems}" /> 
-
-            </p:selectCheckboxMenu>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemCategory.xhtml"/>
     </ui:define>
 
     <ui:define name="itemDomainValue">
-        <p:inplace id="itemDomain" 
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" 
-                   styleClass="entityDataText" 
-                   label="#{itemObject.domain.name}"> 
-            <p:selectOneMenu value="#{itemObject.domain}" required="true" 
-                             styleClass="cellSelect">
-                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                <f:selectItems var="domain" value="#{entityController.availableDomains}" itemLabel="#{domain.name}" itemValue="#{domain}"/>
-            </p:selectOneMenu>
-        </p:inplace>
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemDomain.xhtml" />
     </ui:define>
 
     <ui:define name="additionPanelGridContent">

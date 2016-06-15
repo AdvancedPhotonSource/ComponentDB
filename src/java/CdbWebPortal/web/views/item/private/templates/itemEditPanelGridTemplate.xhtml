@@ -10,77 +10,39 @@
     <ui:param name="panelGridStyle" value="editEntityDetails" />
 
     <ui:define name="itemNameValue">
-        <h:inputText id="name"
-                     value="#{itemObject.name}" 
-                     rendered="#{entityController.entityDisplayItemName}"
-                     title="Name" styleClass="entityDataEmphasizedText"/>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemName.xhtml" />
     </ui:define>
 
     <ui:define name="itemQrIdValue">
-        <h:inputText id="qrId"
-                     value="#{itemObject.qrId}" 
-                     rendered="#{entityController.entityDisplayQrId}"
-                     title="QR Id" styleClass="entityDataEmphasizedText"/>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemQrId.xhtml" />       
     </ui:define>
 
     <ui:define name="itemItemIdentifier1Value">
-        <h:inputText id="itemIdentifier1"
-                     value="#{itemObject.itemIdentifier1}" 
-                     rendered="#{entityController.entityDisplayItemIdentifier1}"
-                     styleClass="entityDataEmphasizedText"/>       
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" />
     </ui:define>
 
     <ui:define name="itemItemIdentifier2Value">        
-        <h:inputText id="itemIdentifier2"
-                     value="#{itemObject.itemIdentifier2}" 
-                     rendered="#{entityController.entityDisplayItemIdentifier2}"
-                     styleClass="entityDataEmphasizedText"/>        
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />        
     </ui:define>
     
     <ui:define name="itemEntityTypeValue" >
-        <p:column id="entityType">
-            <p:selectCheckboxMenu label="Select Entity Types"
-                                  rendered="#{entityController.entityTypeEditable}"
-                                  value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
-                                  filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{entityController.domainHandlerAllowedEnityTypes}" /> 
-            </p:selectCheckboxMenu>
-            <h:outputText value="#{itemObject.entityTypeDisplayString}"
-                          rendered="#{entityController.entityTypeEditable == false}" />
-        </p:column>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemEntityType.xhtml" />                
     </ui:define>
 
     <ui:define name="itemDescriptionValue" >        
-        <h:inputTextarea id="description"
-                         value="#{itemObject.description}" 
-                         title="Description" styleClass="entityDataText"/>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemDescription.xhtml" />        
     </ui:define>        
 
     <ui:define name="itemItemTypeValue">
-        <p:selectCheckboxMenu label="Select Types"
-                              rendered="#{entityController.displayItemType}"
-                              id="itemType" value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
-                              filter="true" filterMatchMode="contains" >
-            <f:selectItems value="#{itemTypeController.availableItems}" /> 
-
-        </p:selectCheckboxMenu>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemType.xhtml"/>       
     </ui:define>
 
     <ui:define name="itemItemCategoryValue" >
-        <p:selectCheckboxMenu label="Select Categories"
-                              rendered="#{entityController.displayItemCategory}"
-                              id="itemCategory" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
-                              filter="true" filterMatchMode="contains" >
-            <f:selectItems value="#{itemCategoryController.availableItems}" /> 
-
-        </p:selectCheckboxMenu>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemCategory.xhtml" />        
     </ui:define>
 
     <ui:define name="itemDomainValue" >
-        <p:selectOneMenu id="itemDomain" value="#{itemObject.domain}" required="true" 
-                         styleClass="cellSelect">
-            <f:selectItems var="domain" value="#{entityController.availableDomains}" itemLabel="#{domain.name}" itemValue="#{domain}"/>
-        </p:selectOneMenu>
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemDomain.xhtml" />
     </ui:define>
 
     <ui:define name="entityInfoObject">
