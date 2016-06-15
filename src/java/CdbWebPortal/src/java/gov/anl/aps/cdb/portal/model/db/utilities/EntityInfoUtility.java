@@ -36,6 +36,7 @@ public class EntityInfoUtility {
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
+        entityInfo.setIsGroupWriteable(true);
         List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
         if (!ownerUserGroupList.isEmpty()) {
             entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
