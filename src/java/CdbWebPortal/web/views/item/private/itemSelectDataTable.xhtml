@@ -2,27 +2,51 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
+    <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
 
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable" 
                  var="itemListObject" 
-                 value="#{entityController.selectDataModel}" 
+                 value="#{selectDataModel}" 
                  rowKey="#{itemListObject.id}"
-                 selection="#{entityController.selectedObject}"
-                 filteredValue="#{entityController.filteredObjectList}"
+                 selection="#{selectionController.selectedObject}"
+                 resizableColumns="true"
+                 liveResize="true"
+                 draggableColumns="true"
+                 filteredValue="#{selectionController.filteredObjectList}"
                  selectionMode="single"
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
-                 emptyMessage="No available property types found.">
-        
-        <p:ajax event="rowDblselect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
-        
+                 emptyMessage="No available items found.">
+
+        <p:ajax event="rowSelect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
+        <p:ajax event="rowUnselect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
+
         <ui:include src="itemSelectListObject.xhtml">
+            <ui:param name="entityController" value="#{selectionController}" />
             <ui:param name="filterable" value="#{true}" />
             <ui:param name="sortable" value="#{true}" />
         </ui:include>
+
+        <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityController" value="#{selectionController}" />
+            <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
+            <ui:param name="filterable" value="true" />
+            <ui:param name="sortable" value="true" />
+        </ui:include>
     </p:dataTable>
+
+    <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
+                     update="@form"
+                     >
+        <f:setPropertyActionListener value="#{selectionController.selectedObject}" target="#{selectionTarget}" />
+    </p:remoteCommand>
+
+
 
 </ui:composition>
 
