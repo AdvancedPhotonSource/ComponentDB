@@ -3,7 +3,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                template="../item/private/templates/itemCreateTemplate.xhtml">
+                template="../item/private/templates/itemCreateWizardTemplate.xhtml">
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processCreateRequestParams}"/>
@@ -12,8 +12,18 @@
 
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
     
-    <ui:define name="itemEditPanelGrid">
-        <ui:include src="private/componentInventoryCreatePanelGrid.xhtml" />
+    <ui:define name="additionalBasicInfo">
+        <ui:include src="private/componentInventoryItemLocationEditPanelGrid.xhtml" />
+    </ui:define>
+    
+    <ui:define name="additonalCreateItemContent">
+        <ui:include src="private/componentInventoryItemLocationSelectDialog.xhtml" />
+    </ui:define>
+    
+    <ui:define name="itemOverviewPanelGrid">
+        <ui:include src="private/componentInventoryCreatePanelGrid.xhtml">
+            <ui:param name="viewName" value="Overview" />
+        </ui:include>
     </ui:define>
     
 </ui:composition>
