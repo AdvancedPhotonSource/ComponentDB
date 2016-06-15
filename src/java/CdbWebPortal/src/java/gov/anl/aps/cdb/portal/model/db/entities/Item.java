@@ -136,7 +136,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     private transient List<ItemElement> itemElementDisplayList;
     
-    private transient String entityTypeDisplayString = null; 
+    private transient String entityTypeString = null; 
     
     private transient String listDisplayDescription = null; 
 
@@ -298,22 +298,32 @@ public class Item extends CdbDomainEntity implements Serializable {
         return entityTypeList;
     }
     
-    public String getEntityTypeDisplayString() {
-        if (entityTypeDisplayString == null) {
-            entityTypeDisplayString = ""; 
+    public String getEntityTypeString() {
+        if (entityTypeString == null) {
+            entityTypeString = ""; 
             List<EntityType> entityTypeDisplayList = getEntityTypeDisplayList(); 
             if (entityTypeDisplayList != null) {
                 for (EntityType entityType : entityTypeDisplayList) {
-                    if (entityTypeDisplayString.length() > 0){
-                        entityTypeDisplayString += " "; 
+                    if (entityTypeString.length() > 0){
+                        entityTypeString += " "; 
                     }
-                    entityTypeDisplayString += entityType.getName();
+                    entityTypeString += entityType.getName();
                 }
             }
-            entityTypeDisplayString = entityTypeDisplayString.replaceAll(" ", " | "); 
+            entityTypeString = entityTypeString.replaceAll(" ", " | "); 
         }
         
-        return entityTypeDisplayString; 
+        return entityTypeString; 
+    }
+    
+    public String getEditEntityTypeString() {
+        String entityTypeString = getEntityTypeString();
+        
+        if (entityTypeString.isEmpty()) {
+            return "Select Entity Type"; 
+        } else {
+            return entityTypeString; 
+        }
     }
 
     public void setEntityTypeList(List<EntityType> entityTypeList) throws CdbException {
@@ -333,6 +343,7 @@ public class Item extends CdbDomainEntity implements Serializable {
             throw new CdbException("Entity Type cannot be set: no domain has been defined for the item " + toString());
         }
         
+        entityTypeString = null; 
         this.entityTypeList = entityTypeList;
     }
 
@@ -357,8 +368,19 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return itemCategoryString;
     }
+    
+    public String getEditItemCategoryString() {
+        String itemCategoryString = getItemCategoryString(); 
+        
+        if (itemCategoryString.isEmpty()) {
+            return "Select Item Category"; 
+        }
+        
+        return itemCategoryString; 
+    }
 
     public void setItemCategoryList(List<ItemCategory> itemCategoryList) {
+        this.itemCategoryString = null; 
         this.itemCategoryList = itemCategoryList;
     }
 
@@ -368,6 +390,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setItemTypeList(List<ItemType> itemTypeList) {
+        this.itemTypeString = null; 
         this.itemTypeList = itemTypeList;
     }
 
@@ -386,6 +409,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
 
         return itemTypeString;
+    }
+    
+    public String getEditItemTypeString() {
+        String itemTypeString = getItemTypeString(); 
+        
+        if (itemTypeString.isEmpty()) {
+            return "Select Item Type"; 
+        }
+        
+        return itemTypeString; 
     }
 
     @XmlTransient
