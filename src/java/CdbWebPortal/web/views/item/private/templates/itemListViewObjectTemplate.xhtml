@@ -32,7 +32,7 @@
     </ui:define>
     
     <ui:define name="entityTypeColumnObject">
-        <f:attribute name="exportValue" value="#{itemListObject.entityTypeDisplayString}"/>
+        <f:attribute name="exportValue" value="#{itemListObject.entityTypeString}"/>
             <ui:repeat value="#{itemListObject.entityTypeDisplayList}" var="itemEntityType" >
                     <h:outputText value="#{itemEntityType.name}" /> <br/>
             </ui:repeat>

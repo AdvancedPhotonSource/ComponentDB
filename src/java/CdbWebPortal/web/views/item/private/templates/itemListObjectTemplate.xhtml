@@ -29,10 +29,10 @@
     </ui:define>
     
     <ui:define name="entityTypeColumn">
-        <p:column sortBy="#{itemListObject.entityTypeDisplayString}" headerText="EntityType"
-                  filterBy="#{itemListObject.entityTypeDisplayString}" filterMatchMode="contains"
+        <p:column sortBy="#{itemListObject.entityTypeString}" headerText="EntityType"
+                  filterBy="#{itemListObject.entityTypeString}" filterMatchMode="contains"
                   filterable="#{filterable}"
-                  filterOptions="#{entityController.enityTypesForDataTableFilterSelectOne}"                  
+                  filterOptions="#{entityController.entityTypesForDataTableFilterSelectOne}"                  
                   sortable="#{sortable}">
             <ui:insert name="entityTypeColumnObject" />
         </p:column>
