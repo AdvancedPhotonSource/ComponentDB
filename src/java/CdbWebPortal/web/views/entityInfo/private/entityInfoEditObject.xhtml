@@ -6,29 +6,28 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-    <p:selectOneMenu id="ownerUser" value="#{entityInfoObject.ownerUser}" styleClass="entityDataText">
+    <h:outputLabel for="ownerUser#{viewName}" value="Owner User" styleClass="entityDataLabel"/>
+    <p:selectOneMenu id="ownerUser#{viewName}" value="#{entityInfoObject.ownerUser}" styleClass="entityDataText">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
         <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
     </p:selectOneMenu>
-    <p:message for="ownerUser"/>
-    <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>
+    <p:message for="ownerUser#{viewName}"/>
+    <p:tooltip for="ownerUser#{viewName}" value="Owner user has the ability to modify this entity."/>
 
-    <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
-    <p:selectOneMenu id="ownerGroup" value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
+    <h:outputLabel for="ownerGroup#{viewName}" value="Owner Group" styleClass="entityDataLabel"/>
+    <p:selectOneMenu id="ownerGroup#{viewName}" value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
         <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
     </p:selectOneMenu>
-    <p:message for="ownerGroup"/> 
-    <p:tooltip for="ownerGroup" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+    <p:message for="ownerGroup#{viewName}"/> 
+    <p:tooltip for="ownerGroup#{viewName}" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
 
-
-    <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
-    <p:selectBooleanButton id="groupWriteable" 
+    <h:outputLabel for="groupWriteable#{viewName}" value="Group Writeable" styleClass="entityDataLabel"/>
+    <p:selectBooleanButton id="groupWriteable#{viewName}" 
                            value="#{entityInfoObject.isGroupWriteable}" 
                            styleClass="entityDataText" onLabel="Yes" offLabel="No" />
-    <p:message for="groupWriteable"/> 
-    <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
+    <p:message for="groupWriteable#{viewName}"/> 
+    <p:tooltip for="groupWriteable#{viewName}" value="This flag determines whether owner group members can modify this entity."/>
 
 </ui:composition>
 
