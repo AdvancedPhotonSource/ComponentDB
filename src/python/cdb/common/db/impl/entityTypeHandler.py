@@ -7,6 +7,7 @@ from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.exceptions.invalidArgument import InvalidArgument
 from cdb.common.db.entities.entityType import EntityType
+from cdb.common.db.entities.allowedChildEntityType import AllowedChildEntityType
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 
 
@@ -23,4 +24,20 @@ class EntityTypeHandler(CdbDbEntityHandler):
 
     def addEntityType(self, session, entityTypeName, description):
         return self._addSimpleNameDescriptionTable(session, EntityType, entityTypeName, description)
+
+    def addAllowedChildEntityType(self, session, parentEntityTypeName, childEntityTypeName):
+        parentEntityType = self.findEntityTypeByName(session, parentEntityTypeName)
+        childEntityType = self.findEntityTypeByName(session, childEntityTypeName)
+
+        dbAllowedChildEntityType = AllowedChildEntityType()
+
+        dbAllowedChildEntityType.parentEntityType = parentEntityType
+        dbAllowedChildEntityType.childEntityType = childEntityType
+
+        session.add(dbAllowedChildEntityType)
+        session.flush()
+        self.logger.debug('Inserted allowed child entity type %s for parent %s' % (childEntityTypeName, parentEntityTypeName))
+
+        return dbAllowedChildEntityType
+
 
