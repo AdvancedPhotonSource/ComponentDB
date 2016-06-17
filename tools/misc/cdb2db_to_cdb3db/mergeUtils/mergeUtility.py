@@ -68,16 +68,16 @@ class MergeUtility():
         self.componentEntityTypeName = None
         self.catalogDomainName = None
         self.catalogDomainId = None
-        self.libraryDomainName = None
-        self.libraryDomainId = None
         self.catalogDomainHandlerName = None
-        self.designDomainHandlerName = None
         self.instanceDomainName = None
         self.locationEntityTypeName = None
+        self.instanceEntityTypeName = None
         self.locationDomainName = None
         self.locationDomainId = None
         self.locationRelationshipTypeName = None
         self.designEntityTypeName = None
+
+        self.doneAllowedEntity = False
 
     def backupCurrentDb(self):
         print 'Backing up original database.'
@@ -289,11 +289,6 @@ class MergeUtility():
                 self.propertyDbApi.addAllowedPropertyValue(propertyTypeName, value, units, description, sortOrder)
 
     def populateItemsUsingLocations(self):
-
-        # Create Entity Type
-        locationEntityType = self.itemDbApi.addEntityType('Location', 'location entity type')
-        self.locationEntityTypeName = locationEntityType.data['name']
-
         # Create Domain
         locationDomainHandler = self.itemDbApi.addDomainHandler('Location', 'Handler responsible for locations.')
         locationDomainHandlerName = locationDomainHandler.data['name']
@@ -349,14 +344,14 @@ class MergeUtility():
 
     def __findLocationItem(self, location):
         locationName = location.data['name']
-        return self.itemDbApi.getItem(self.locationDomainId, locationName, None, None)
+        return self.itemDbApi.getItem(self.locationDomainId, locationName, None, None, None)
 
     def __findComponentItemIdById(self, componentId):
         component = self.legacyDbComponent.getComponentById(componentId)
         componentName = component.data['name']
         itemIdentifier1 = component.data['modelNumber']
 
-        item = self.itemDbApi.getItem(self.catalogDomainId, componentName, itemIdentifier1, None)
+        item = self.itemDbApi.getItem(self.catalogDomainId, componentName, itemIdentifier1, None, None)
 
         return item.data['id']
 
@@ -365,19 +360,41 @@ class MergeUtility():
             design = self.legacyDbDesign.getDesignById(designId)
         designName = design.data['name']
 
-        item = self.itemDbApi.getItem(self.libraryDomainId, designName, None, None)
+        item = self.itemDbApi.getItem(self.catalogDomainId, designName, None, None, None)
 
         return item.data['id']
+
+    def createEntityTypes(self):
+        self.__createCatalogDomainComponentDesignEntityTypes()
+
+    def __createCatalogDomainComponentDesignEntityTypes(self):
+        self.__createCatalogDomain()
+        if self.designEntityTypeName is None:
+            designEntityType = self.itemDbApi.addEntityType('Design', 'classification for design type objects')
+            self.designEntityTypeName = designEntityType.data['name']
+        if self.componentEntityTypeName is None:
+            componentEntityType = self.itemDbApi.addEntityType('Component', 'classification for component type objects')
+            self.componentEntityTypeName = componentEntityType.data['name']
+
+
+        if self.doneAllowedEntity is False:
+            # Add allowed child entity types
+            self.itemDbApi.addAllowedChildEntityType(self.componentEntityTypeName, self.designEntityTypeName)
+            self.itemDbApi.addAllowedChildEntityType(self.componentEntityTypeName, self.componentEntityTypeName)
+
+            self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.componentEntityTypeName)
+            self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.designEntityTypeName)
+
+            # Add allowed entity type domain handler
+            self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.designEntityTypeName)
+            self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.componentEntityTypeName)
+
+            self.doneAllowedEntity = True
 
     def __createCatalogDomainHandler(self):
         if self.catalogDomainHandlerName is None:
             catalogDomainHandler = self.itemDbApi.addDomainHandler('Catalog', 'Handler responsible for items in a catalog type domain.')
             self.catalogDomainHandlerName = catalogDomainHandler.data['name']
-
-    def __createDesignDomainHandler(self):
-        if self.designDomainHandlerName is None:
-            designDomainHandler = self.itemDbApi.addDomainHandler('Design', 'Handler responsible for items in a design type domain.')
-            self.designDomainHandlerName = designDomainHandler.data['name']
 
     def __createCatalogDomain(self):
         if self.catalogDomainName is None:
@@ -386,18 +403,12 @@ class MergeUtility():
             self.catalogDomainName = catalogDomain.data['name']
             self.catalogDomainId = catalogDomain.data['id']
 
-    def __createLibraryDomain(self):
-        if self.libraryDomainName is None:
-            self.__createDesignDomainHandler()
-            libraryDomain = self.itemDbApi.addDomain('Design', 'Design Domain', self.designDomainHandlerName)
-            self.libraryDomainName = libraryDomain.data['name']
-            self.libraryDomainId = libraryDomain.data['id']
+    def populateCatalogInventoryItems(self, populateTypesAndCategoriesAsNeeded):
+        self.__populateItemsUsingComponents(populateTypesAndCategoriesAsNeeded)
+        self.__populateItemsUsingDesigns()
 
-    def populateItemsUsingDesigns(self):
-        designEntityType = self.itemDbApi.addEntityType('Design', 'classification for design type objects')
-        self.designEntityTypeName = designEntityType.data['name']
-
-        self.__createLibraryDomain()
+    def __populateItemsUsingDesigns(self):
+        self.__createCatalogDomainComponentDesignEntityTypes()
 
         for design in self.allDesigns:
             designData = design.data
@@ -411,7 +422,14 @@ class MergeUtility():
             entityInfoData = designData['entityInfo'].data
             entityInfoArgs = self.argsGenerator.getEntityInfoArgs(entityInfoData)
 
-            currentItem = self.itemDbApi.addItem(self.libraryDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.designEntityTypeName, qrId, description, *entityInfoArgs)
+            # A model number must be assigned if a component already exists with same attributes.
+            try:
+                self.itemDbApi.getItem(self.catalogDomainId, name, itemIdentifier1, itemIdentifier2, None)
+                itemIdentifier1 = "Auto Assigned Design Model"
+            except:
+                pass
+
+            currentItem = self.itemDbApi.addItem(self.catalogDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.designEntityTypeName, qrId, description, *entityInfoArgs)
             itemId = currentItem.data['id']
 
             selfItemElement = self.itemDbApi.getSelfElementByItemId(itemId)
@@ -459,11 +477,8 @@ class MergeUtility():
                 designElementLogs = designElementData['designElementLogs']
                 self.__populateDomainEntityLogsForItemElements(itemElementId, designElementLogs)
 
-    def populateItemsUsingComponents(self, populateTypesAndCategoriesAsNeeded=False):
-        componentEntityType = self.itemDbApi.addEntityType('Component', 'classification for component type objects')
-        self.componentEntityTypeName = componentEntityType.data['name']
-
-        self.__createCatalogDomain()
+    def __populateItemsUsingComponents(self, populateTypesAndCategoriesAsNeeded=False):
+        self.__createCatalogDomainComponentDesignEntityTypes()
         
         for component in self.allComponents:
             print 'Moving Component id %s' % component.data['id']
@@ -563,7 +578,7 @@ class MergeUtility():
                 itemIdentifier2 = 'Auto Tag %s' % (numberAssignment)
 
 
-            currentItem = self.itemDbApi.addItem(self.instanceDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.componentEntityTypeName, qrId, description, *entityInfoArgs)
+            currentItem = self.itemDbApi.addItem(self.instanceDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.instanceEntityTypeName, qrId, description, *entityInfoArgs)
             instanceItemId = currentItem.data['id']
 
             selfItemElement = self.itemDbApi.getSelfElementByItemId(instanceItemId)
