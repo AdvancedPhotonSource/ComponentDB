@@ -11,11 +11,13 @@ class ArgsGenerator:
         self.usersDict = {}
         self.groupDict = {}
 
-    def getNameDescriptionArgs(self, cdbObject):
+    def getNameDescriptionArgs(self, cdbObject, addionalArg = None):
         cdbObject = cdbObject.data
         name = cdbObject['name']
         description = cdbObject['description']
-        return (name, description)
+        if addionalArg is None:
+            return (name, description)
+        return (name, description, addionalArg)
 
     def getEntityInfoArgs(self, entityInfoData):
         createdByUserName = entityInfoData['createdByUserInfo'].data['username']
