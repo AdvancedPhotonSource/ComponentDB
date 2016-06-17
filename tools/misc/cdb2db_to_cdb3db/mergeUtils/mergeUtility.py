@@ -73,6 +73,7 @@ class MergeUtility():
         self.locationEntityTypeName = None
         self.instanceEntityTypeName = None
         self.locationDomainName = None
+        self.locationDomainHandlerName = None
         self.locationDomainId = None
         self.locationRelationshipTypeName = None
         self.designEntityTypeName = None
@@ -230,13 +231,15 @@ class MergeUtility():
             self.itemDbApi.addSource(sourceName, description, contactInfo, url)
 
     def populateCategories(self):
+        self.__createCatalogDomain()
         for category in self.allCategories:
-            args = self.argsGenerator.getNameDescriptionArgs(category)
+            args = self.argsGenerator.getNameDescriptionArgs(category, self.catalogDomainHandlerName)
             self.itemDbApi.addItemCategory(*args)
 
     def populateTypes(self):
+        self.__createCatalogDomain()
         for type in self.allTypes:
-            args = self.argsGenerator.getNameDescriptionArgs(type)
+            args = self.argsGenerator.getNameDescriptionArgs(type, self.catalogDomainHandlerName)
             self.itemDbApi.addItemType(*args)
 
     def populateLogTopics(self):
@@ -291,18 +294,15 @@ class MergeUtility():
     def populateItemsUsingLocations(self):
         # Create Domain
         locationDomainHandler = self.itemDbApi.addDomainHandler('Location', 'Handler responsible for locations.')
-        locationDomainHandlerName = locationDomainHandler.data['name']
-        locationDomain = self.itemDbApi.addDomain('Location', 'Location Domain', locationDomainHandlerName)
+        self.locationDomainHandlerName = locationDomainHandler.data['name']
+        locationDomain = self.itemDbApi.addDomain('Location', 'Location Domain', self.locationDomainHandlerName)
         self.locationDomainName = locationDomain.data['name']
         self.locationDomainId = locationDomain.data['id']
 
         # Add Location Types
         for locationType in self.allLocationTypes:
-            args = self.argsGenerator.getNameDescriptionArgs(locationType)
-            try:
-                self.itemDbApi.addItemType(*args)
-            except Exception as ex:
-                print(ex.message)
+            args = self.argsGenerator.getNameDescriptionArgs(locationType, self.locationDomainHandlerName)
+            self.itemDbApi.addItemType(*args)
 
         # Add default relationship for locations
         relationshipTypeHandler = self.itemDbApi.addRelationshipTypeHandler('Location', 'Handler for location type relationships')
@@ -340,7 +340,11 @@ class MergeUtility():
         derivedFromItemId=None
         qrId = None
 
-        return self.itemDbApi.addItem(self.locationDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.locationEntityTypeName, qrId, description, 1, 1, 1, 0)
+        dbLocationItem = self.itemDbApi.addItem(self.locationDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.locationEntityTypeName, qrId, description, 1, 1, 1, 0)
+        locationTypeName = locationData['locationType'].data['name']
+        self.itemDbApi.addItemItemType(dbLocationItem.data['id'], locationTypeName)
+
+        return dbLocationItem
 
     def __findLocationItem(self, location):
         locationName = location.data['name']
@@ -523,11 +527,11 @@ class MergeUtility():
                 categoryDescription = componentTypeCategory.data['description']
                 typeDescription = componentType.data['description']
                 try:
-                    self.itemDbApi.addItemType(typeName, typeDescription)
+                    self.itemDbApi.addItemType(typeName, typeDescription, self.catalogDomainHandlerName)
                 except:
                     pass
                 try:
-                    self.itemDbApi.addItemCategory(categoryName, categoryDescription)
+                    self.itemDbApi.addItemCategory(categoryName, categoryDescription, self.catalogDomainHandlerName)
                 except:
                     pass
         
