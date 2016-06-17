@@ -24,9 +24,21 @@ class ItemDbApi(CdbDbApi):
         return dbEntityType.getCdbObject()
 
     @CdbDbApi.executeTransaction
+    def addAllowedChildEntityType(self, parentEntityTypeName, childEntityTypeName, **kwargs):
+        session = kwargs['session']
+        dbEntityType = self.entityTypeHandler.addAllowedChildEntityType(session, parentEntityTypeName, childEntityTypeName)
+        return dbEntityType.getCdbObject()
+
+    @CdbDbApi.executeTransaction
     def addDomainHandler(self, name, description, **kwargs):
         session = kwargs['session']
         dbDomainHandler = self.domainHandler.addDomainHandler(session, name, description)
+        return dbDomainHandler.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addAllowedDomainHandlerEntityType(self, domainHandlerName, entityTypeName, **kwargs):
+        session = kwargs['session']
+        dbDomainHandler = self.domainHandler.addAllowedEntityType(session, domainHandlerName, entityTypeName)
         return dbDomainHandler.getCdbObject()
 
     @CdbDbApi.executeTransaction
@@ -64,9 +76,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemElement.getCdbObject()
 
     @CdbDbApi.executeQuery
-    def getItem(self, domainId, name, itemIdentifier1, itemIdentifier2, **kwargs):
+    def getItem(self, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId, **kwargs):
         session = kwargs['session']
-        dbItem = self.itemHandler.getItemByUniqueAttributes(session, domainId, name, itemIdentifier1, itemIdentifier2)
+        dbItem = self.itemHandler.getItemByUniqueAttributes(session, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId)
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeTransaction
