@@ -195,6 +195,8 @@ CDB_DB_TABLES="\
     item_item_category \
     item_type \
     item_item_type \
+    item_project \
+    item_item_project \
     entity_type \
     item_entity_type \
     allowed_child_entity_type \
