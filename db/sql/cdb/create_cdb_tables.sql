@@ -352,6 +352,7 @@ CREATE TABLE `item_element` (
   `name` varchar(64) NULL,
   `parent_item_id` int(11) unsigned NOT NULL,
   `contained_item_id` int(11) unsigned DEFAULT NULL,
+  `derived_from_item_element_id` int(11) unsigned DEFAULT NULL,
   `is_required` bool NULL DEFAULT 0,
   `description` varchar(256) DEFAULT NULL,
   `sort_order` float(10,2) unsigned DEFAULT NULL,
@@ -362,9 +363,11 @@ CREATE TABLE `item_element` (
   KEY `item_element_k1` (`parent_item_id`),
   KEY `item_element_k2` (`contained_item_id`),
   KEY `item_element_k3` (`entity_info_id`),
+  KEY `item_element_k4` (`derived_from_item_element_id`),
   CONSTRAINT `item_element_fk1` FOREIGN KEY (`parent_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_element_fk2` FOREIGN KEY (`contained_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_element_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE
+  CONSTRAINT `item_element_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_fk4` FOREIGN KEY (`derived_from_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -406,8 +409,11 @@ CREATE TABLE `item_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `domain_handler_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_category_u1` (`name`)
+  UNIQUE KEY `item_category_u1` (`name`, `domain_handler_id`),
+  KEY `item_category_k1` (`domain_handler_id`),
+  CONSTRAINT `item_category_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -434,8 +440,11 @@ CREATE TABLE `item_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `domain_handler_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_type_u1` (`name`)
+  UNIQUE KEY `item_type_u1` (`name`, `domain_handler_id`),
+  KEY `item_type_k1` (`domain_handler_id`),
+  CONSTRAINT `item_type_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -451,6 +460,34 @@ CREATE TABLE `item_item_type` (
   KEY `item_item_type_k2` (`item_type_id`),
   CONSTRAINT `item_item_type_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `item_item_type_fk2` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_project`
+--
+
+DROP TABLE IF EXISTS `item_project`;
+CREATE TABLE `item_project` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL,
+  `description` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `item_project_u1` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_item_project`
+--
+
+DROP TABLE IF EXISTS `item_item_project`;
+CREATE TABLE `item_item_project` (
+  `item_id` int(11) unsigned NOT NULL,
+  `item_project_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`item_id`, `item_project_id`),
+  KEY `item_item_project_k1` (`item_id`),
+  KEY `item_item_project_k2` (`item_project_id`),
+  CONSTRAINT `item_item_project_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_item_project_fk2` FOREIGN KEY (`item_project_id`) REFERENCES `item_project` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -718,7 +755,7 @@ CREATE TABLE `item_element_relationship_history` (
   `item_element_relationship_id` int(11) unsigned NOT NULL,
   `first_item_element_id` int(11) unsigned NOT NULL,
   `first_item_connector_id` int(11) unsigned DEFAULT NULL,
-  `second_item_element_id` int(11) unsigned NOT NULL,
+  `second_item_element_id` int(11) unsigned NULL,
   `second_item_connector_id` int(11) unsigned DEFAULT NULL,
   `link_item_element_id` int(11) unsigned DEFAULT NULL,
   `relationship_details` varchar(64) DEFAULT NULL,
