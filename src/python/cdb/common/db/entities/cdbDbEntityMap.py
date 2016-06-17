@@ -96,8 +96,12 @@ CDB_DB_ENTITY_MAP = {
         'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
     }),
     'source' : (Source, {}),
-    'item_category' : (ItemCategory, {}),
-    'item_type' : (ItemType, {}),
+    'item_category' : (ItemCategory, {
+        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
+    }),
+    'item_type' : (ItemType, {
+        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
+    }),
     'item' : (Item, {
         'domain' : { 'parentEntity' : Domain, 'lazy' : False },
         'derivedFromItem' : { 'parentEntity' : Item, 'lazy' : False },
