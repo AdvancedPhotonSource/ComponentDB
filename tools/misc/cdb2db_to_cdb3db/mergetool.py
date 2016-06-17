@@ -21,6 +21,7 @@ if len(sys.argv) < 2:
     exit(1)
 
 databaseName = sys.argv[1]
+populateTypesAndCategoriesAsNeeded=True
 
 
 mergeUtility = MergeUtility(databaseName)
@@ -29,15 +30,17 @@ mergeUtility.backupCurrentDb()
 mergeUtility.populateGroupTable()
 mergeUtility.populateUserTable()
 mergeUtility.populateSources()
-#mergeUtility.populateCategories()
-#mergeUtility.populateTypes()
+
+if populateTypesAndCategoriesAsNeeded is False:
+    mergeUtility.populateCategories()
+    mergeUtility.populateTypes()
+
 mergeUtility.populateLogTopics()
 mergeUtility.populatePropertyTypeHandler()
 mergeUtility.populatePropertyTypeCategories()
 mergeUtility.populatePropertyType()
 mergeUtility.populateItemsUsingLocations()
-mergeUtility.populateItemsUsingComponents(populateTypesAndCategoriesAsNeeded=True)
-mergeUtility.populateItemsUsingDesigns()
+mergeUtility.populateCatalogInventoryItems(populateTypesAndCategoriesAsNeeded)
 
 mergeUtility.backupTempDb()
 mergeUtility.destroyTempDb()
