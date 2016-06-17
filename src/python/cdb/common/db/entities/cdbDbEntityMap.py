@@ -37,6 +37,8 @@ from cdb.common.db.entities.resourceTypeCategory import ResourceTypeCategory
 from cdb.common.db.entities.resourceType import ResourceType
 from cdb.common.db.entities.itemElementLog import ItemElementLog
 from cdb.common.db.entities.itemElementRelationshipHistory import ItemElementRelationshipHistory
+from cdb.common.db.entities.allowedChildEntityType import AllowedChildEntityType
+from cdb.common.db.entities.allowedDomainHandlerEntityType import AllowedDomainHandlerEntityType
 
 
 # Map db table/db entity class
@@ -80,8 +82,16 @@ CDB_DB_ENTITY_MAP = {
         'userInfo' : { 'parentEntity' : UserInfo, 'lazy' : False }, 
         'userGroup' : { 'parentEntity' : UserGroup, 'lazy' : False }, 
     }),
+    'allowed_child_entity_type' : (AllowedChildEntityType, {
+        'parentEntityType' : { 'parentEntity' : EntityType, 'lazy' : False, 'foreignKeyColumns' : ['parent_entity_type_id'] },
+        'childEntityType' : { 'parentEntity' : EntityType, 'lazy' : False, 'foreignKeyColumns' : ['child_entity_type_id'] },
+    }),
     'entity_type' : (EntityType, {}),
     'domain_handler' : (DomainHandler, {}),
+    'allowed_domain_handler_entity_type' : (AllowedDomainHandlerEntityType, {
+        'entityType' : { 'parentEntity' : EntityType, 'lazy' : False },
+        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False },
+    }),
     'domain' : (Domain, {
         'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
     }),
