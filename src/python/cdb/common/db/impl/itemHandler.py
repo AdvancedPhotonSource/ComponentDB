@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -72,19 +71,21 @@ class ItemHandler(CdbDbEntityHandler):
     def getItemElementRelationshipById(self, session, id):
         return self._findDbObjById(session, ItemElementRelationship, id)
 
-    def getItemByUniqueAttributes(self, session, domainId, name, itemIdentifier1, itemIdentifier2):
+    def getItemByUniqueAttributes(self, session, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId):
         entityDisplayName = self._getEntityDisplayName(Item)
+
         try:
             dbItem = session.query(Item).filter(Item.domain_id==domainId)\
                 .filter(Item.name==name)\
                 .filter(Item.item_identifier1==itemIdentifier1)\
-                .filter(Item.item_identifier2==itemIdentifier2).one()
+                .filter(Item.item_identifier2==itemIdentifier2)\
+                .filter(Item.derived_from_item_id==derivedFromItemId).one()
             return dbItem
         except NoResultFound, ex:
             raise ObjectNotFound('No %s with name: %s, item identifier 1: %s, item identifier 2: %s in domain id %s exists.'
                                  % (entityDisplayName, name, itemIdentifier1, itemIdentifier1, domainId))
 
-    def addItem(self, session, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description,
+    def addItem(self, session, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeNames, qrId, description,
                     createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime=None, lastModifiedOnDateTime=None):
 
         dbItems = session.query(Item).filter(Item.name==name).all()
@@ -114,7 +115,13 @@ class ItemHandler(CdbDbEntityHandler):
         self.addItemElement(session, None, dbItem.id, None, False, description, *entityInfoArgs)
 
         self.logger.debug('Inserted item id %s' % dbItem.id)
-        self.addItemEntityType(session, None, entityTypeName, dbItem)
+        if entityTypeNames is not None:
+            if type(entityTypeNames) is list:
+                for entityTypeName in entityTypeNames:
+                    self.addItemEntityType(session, None, entityTypeName, dbItem)
+            elif type(entityTypeNames) is str:
+                self.addItemEntityType(session, None, entityTypeNames, dbItem)
+
 
         return dbItem
 
