@@ -19,7 +19,7 @@
     </ui:define>
 
     <ui:define name="additionalRightItemPanels">
-        <p:panel header="Component Catalog Item Properties" toggleable="true" collapsed="#{!entityController.displayDerivedFromPropertyList}">
+        <p:panel header="Catalog Item Properties" toggleable="true" collapsed="#{!entityController.displayDerivedFromPropertyList}">
             <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
                 <ui:param name="entityController" value="#{itemDomainCatalogController}"/>
                 <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
