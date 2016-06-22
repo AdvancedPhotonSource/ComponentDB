@@ -495,6 +495,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
     
     public String createItemWizardFlowListener(FlowEvent event) {
+        logger.debug("User entering step " + event.getNewStep() + " in " + getDisplayEntityTypeName() + "Create Wizard.");
         String finishedStep = event.getOldStep(); 
         
         // Verify that the new item is unique. Prompt user to update information if this is not the case. 
@@ -840,7 +841,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         } else {
             item.init();
         }
-
+        
         return item;
     }
 
@@ -942,6 +943,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Item findByQrId(Integer qrId) {
         return itemFacade.findByQrId(qrId);
+    }
+    
+    public String getItemElementContainedItemText(ItemElement itemElement) {
+        if (itemElement.getContainedItem() == null) {
+            return "No item is contained.";
+        }
+        
+        return itemElement.getContainedItem().getName(); 
     }
 
     @Override
