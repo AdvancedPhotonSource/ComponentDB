@@ -15,7 +15,7 @@
         <p:tab id="derivedFromItemSelectionTab"
                rendered="#{entityController.entityDisplayDerivedFromItem}"
                title="#{entityController.derivedFromItemTitle}">
-            <p:panel header="Select Catalog Item" style="border: 1px; border-style: solid;">
+            <p:panel header="Select Catalog Item" styleClass="createWizardPanel">
                 <ui:include src="../itemSelectDataTable.xhtml">
                     <ui:param name="selectionController" value="#{entityController.itemDerivedFromDomainController}" />         
                     <ui:param name="selectionTarget" value="#{itemObject.derivedFromItem}" />
@@ -27,7 +27,7 @@
     <ui:define name="basicInformationTab">
         <p:tab id="basicItemInformationTab"
                title="Basic Information">
-            <p:panel header="Item Details" style="border: 1px; border-style: solid;">
+            <p:panel header="Item Details" styleClass="createWizardPanel">
                 <p:panelGrid columns="2">
                     <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemName.xhtml"/>
@@ -53,7 +53,7 @@
     <ui:define name="classificationTab">
         <p:tab id="itemClassificationTab"
                title="Classification" rendered="#{entityController.isRenderClassificationCreateWizardTab()}">
-            <p:panel header="Item Classification" style="border: 1px; border-style: solid;">
+            <p:panel header="Item Classification" styleClass="createWizardPanel">
                 <div class="sectionText">
                     Set the classification information about the item.
                 </div>
@@ -75,7 +75,7 @@
     <ui:define name="permissionsTab">
         <p:tab id="itemPermissionTab"
                title="Permissions">
-            <p:panel header="Item Permissions" style="border: 1px; border-style: solid;">
+            <p:panel header="Item Permissions" styleClass="createWizardPanel">
                 <div class="sectionText">
                     Please set all of the item permissions.
                 </div>
@@ -88,7 +88,7 @@
             </p:panel>
         </p:tab>
     </ui:define>
-
+    
     <ui:define name="itemOverviewHelpFragment">
         <div class="sectionText">
             Please review all of the entered information before saving.
