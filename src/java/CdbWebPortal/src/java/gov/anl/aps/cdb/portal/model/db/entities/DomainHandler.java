@@ -57,6 +57,10 @@ public class DomainHandler implements Serializable {
     private List<DomainHandler> domainHandlerList;
     @OneToMany(mappedBy = "domainHandler")
     private List<Domain> domainList;
+    @OneToMany(mappedBy = "domainHandler")
+    private List<ItemType> itemTypeList;
+    @OneToMany(mappedBy = "domainHandler")
+    private List<ItemCategory> itemCategoryList;
     @ManyToMany(mappedBy = "domainHandlerList")
     private List<PropertyType> propertyTypeList;
 
