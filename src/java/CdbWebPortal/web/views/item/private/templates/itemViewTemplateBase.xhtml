@@ -29,6 +29,8 @@
                 </div>
 
                 <ui:param name="itemObject" value="#{entityController.selected}"/>
+                <!-- Included for easy code readability in use such as item element list. enityController is very generic-->
+                <ui:param name="currentItemController" value="#{entityController}" />
                 <ui:param name="domainEntityObject" value="#{itemObject}" />
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
 
