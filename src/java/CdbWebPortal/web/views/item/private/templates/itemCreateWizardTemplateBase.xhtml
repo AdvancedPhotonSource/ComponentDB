@@ -43,9 +43,11 @@
                 
                 <ui:insert name="permissionsTab"/>
                 
+                <ui:insert name="additionalCreateWizardTabs" />
+                
                 <p:tab id="reviewItemTab" 
                        title="Review Item">
-                    <p:panel header="Item Overview" style="border: 1px; border-style: solid;">
+                    <p:panel header="Item Overview" styleClass="createWizardPanel">
                         <ui:insert name="itemOverviewHelpFragment" />
                         <ui:insert name="itemOverviewPanelGrid" />
                         <ui:insert name="itemCreateActionButtons" />
