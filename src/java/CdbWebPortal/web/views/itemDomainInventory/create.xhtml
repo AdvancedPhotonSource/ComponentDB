@@ -2,7 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:f="http://java.sun.com/jsf/core"                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 template="../item/private/templates/itemCreateWizardTemplate.xhtml">
 
     <f:metadata>
@@ -11,21 +13,89 @@
     </f:metadata>
 
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
-    
+
     <ui:define name="additionalBasicInfo">
         <ui:include src="private/componentInventoryItemLocationEditPanelGrid.xhtml" />
     </ui:define>
-    
+
     <ui:define name="additonalCreateItemContent">
         <ui:include src="private/componentInventoryItemLocationSelectDialog.xhtml" />
     </ui:define>
-    
+
     <ui:define name="itemOverviewPanelGrid">
         <ui:include src="private/componentInventoryCreatePanelGrid.xhtml">
             <ui:param name="viewName" value="Overview" />
         </ui:include>
     </ui:define>
-    
+
+    <ui:define name="additionalCreateWizardTabs">
+        <p:tab id="itemElementInstantiation"
+               title="Bill of Materials">
+            <p:panel styleClass="createWizardPanel">
+                <p:outputPanel rendered="#{itemDomainInventoryController.renderCurrentItemFullBOM}">
+                    <ui:repeat value="#{itemDomainInventoryController.newItemsToAdd}" var="newItem">
+                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderItemBom(newItem)}"
+                                       styleClass="createWizardPanel" >
+                            <div>
+                                <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Instance #{newItem.toString()}</h1>
+                            </div>
+                            <ui:repeat value="#{newItem.inventoryDomainBillOfMaterialList}" var="billOfMaterialItem">
+
+                                <ui:param name="catalogItemElement" value="#{billOfMaterialItem.catalogItemElement}"/>
+                                <p:panel header="Element: #{catalogItemElement.name}" toggleable="true">
+                                    <p:panel header="Catalog Item Details" toggleable="true">
+                                        <ui:include src="../item/private/itemViewPanelGrid.xhtml">
+                                            <ui:param name="entityController" value="#{itemDomainCatalogController}"/>
+                                            <ui:param name="itemObject" value="#{catalogItemElement.containedItem}"/>
+                                            <ui:param name="isEntityWriteable" value="#{false}" />
+                                        </ui:include>                                                                        
+                                    </p:panel>
+
+                                    <p:panel header="Options for Adding" toggleable="true">
+                                        <p:selectOneButton value="#{billOfMaterialItem.state}">
+                                            <f:selectItem itemLabel="Placeholder" itemValue="placeholder"/>
+                                            <f:selectItem itemLabel="Use Existing Item" itemDisabled="true"  itemValue="existingItem" />
+                                            <f:selectItem itemLabel="Create a new instance" itemValue="newItem" />
+                                            <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
+                                        </p:selectOneButton>
+
+                                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)}">
+                                            No item will be created
+                                        </p:outputPanel>
+
+                                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem)}">
+                                            Existing
+                                            <p:dataTable value="#{catalogItemElement.containedItem.derivedFromItemList}"
+                                                         var="itemListObject">
+                                                <p:column headerText="Identifier">
+                                                    <h:outputText value="#{itemListObject.toString()}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:outputPanel>
+
+                                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomNew(billOfMaterialItem)}">
+                                            <ui:include src="private/itemBillOfMaterialsNewItemPanel.xhtml">
+                                                <ui:param name="itemObject" value="#{billOfMaterialItem.newItem}"/>
+                                            </ui:include>
+                                        </p:outputPanel>
+                                    </p:panel>
+                                </p:panel>
+                                <br/>
+                            </ui:repeat>
+                        </p:outputPanel>
+                    </ui:repeat>
+                </p:outputPanel>
+                <p:outputPanel rendered="#{!itemDomainInventoryController.renderCurrentItemFullBOM}">
+                    <div>
+                        <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">No parts need to be defined for this item.</h1>
+                    </div>
+                </p:outputPanel>
+                <ui:include src="../common/private/commonLoadingDialog.xhtml" />
+            </p:panel>
+
+        </p:tab>
+    </ui:define>
+
 </ui:composition>
 
 
