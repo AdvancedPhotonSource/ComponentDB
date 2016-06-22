@@ -35,7 +35,7 @@
                   sortBy="#{itemElementObject.containedItem.name}"
                   sortable="#{sortable}"
                   filterable="#{filterable}">
-            <h:outputText value="#{itemElementObject.containedItem.name}" />
+            <h:outputText value="#{currentItemController.getItemElementContainedItemText(itemElementObject)}" />
         </p:column>
     </ui:define>
 
