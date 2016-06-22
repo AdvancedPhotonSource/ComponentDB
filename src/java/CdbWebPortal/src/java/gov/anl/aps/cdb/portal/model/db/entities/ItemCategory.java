@@ -12,7 +12,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -48,6 +50,9 @@ public class ItemCategory extends CdbEntity implements Serializable {
     private String description;
     @ManyToMany(mappedBy = "itemCategoryList")
     private List<Item> itemList;
+    @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
+    @ManyToOne
+    private DomainHandler domainHandler;
 
     public ItemCategory() {
     }
@@ -92,6 +97,15 @@ public class ItemCategory extends CdbEntity implements Serializable {
 
     public void setItemList(List<Item> itemList) {
         this.itemList = itemList;
+    }
+
+    @XmlTransient
+    public DomainHandler getDomainHandler() {
+        return domainHandler;
+    }
+
+    public void setDomainHandler(DomainHandler domainHandler) {
+        this.domainHandler = domainHandler;
     }
 
     @Override
