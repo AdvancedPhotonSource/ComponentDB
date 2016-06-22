@@ -358,7 +358,7 @@ CREATE TABLE `item_element` (
   `sort_order` float(10,2) unsigned DEFAULT NULL,
   `entity_info_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_element_u1` (`parent_item_id`, `name`),
+  UNIQUE KEY `item_element_u1` (`parent_item_id`, `name`, `derived_from_item_element_id`),
   UNIQUE KEY `item_element_u2` (`entity_info_id`),
   KEY `item_element_k1` (`parent_item_id`),
   KEY `item_element_k2` (`contained_item_id`),
