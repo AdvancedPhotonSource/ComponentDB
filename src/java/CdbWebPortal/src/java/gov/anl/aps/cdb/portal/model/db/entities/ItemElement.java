@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -36,17 +37,17 @@ import org.primefaces.model.TreeNode;
 @Table(name = "item_element")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ItemElement.findAll", 
+    @NamedQuery(name = "ItemElement.findAll",
             query = "SELECT i FROM ItemElement i"),
-    @NamedQuery(name = "ItemElement.findById", 
+    @NamedQuery(name = "ItemElement.findById",
             query = "SELECT i FROM ItemElement i WHERE i.id = :id"),
-    @NamedQuery(name = "ItemElement.findByName", 
+    @NamedQuery(name = "ItemElement.findByName",
             query = "SELECT i FROM ItemElement i WHERE i.name = :name"),
-    @NamedQuery(name = "ItemElement.findByIsRequired", 
+    @NamedQuery(name = "ItemElement.findByIsRequired",
             query = "SELECT i FROM ItemElement i WHERE i.isRequired = :isRequired"),
-    @NamedQuery(name = "ItemElement.findByDescription", 
+    @NamedQuery(name = "ItemElement.findByDescription",
             query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
-    @NamedQuery(name = "ItemElement.findBySortOrder", 
+    @NamedQuery(name = "ItemElement.findBySortOrder",
             query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder"),
 })
 public class ItemElement extends CdbDomainEntity implements Serializable {
@@ -83,8 +84,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @JoinColumn(name = "parent_item_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Item parentItem;
-    @JoinColumn(name = "contained_item_id", referencedColumnName = "id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "derivedFromItemElement")
+    private List<ItemElement> derivedFromItemElementList;
+    @JoinColumn(name = "derived_from_item_element_id", referencedColumnName = "id")
     @ManyToOne
+    private ItemElement derivedFromItemElement;
+    @JoinColumn(name = "contained_item_id", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.ALL)
     private Item containedItem;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @OneToOne(cascade = CascadeType.ALL, optional = false)
@@ -101,15 +107,27 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationship> itemElementRelationshipList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList2;
-    
-    private static transient Integer sortByPropertyTypeId = null; 
+
+    private static transient Integer sortByPropertyTypeId = null;
     private transient TreeNode childItemElementListTreeTableRootNode = null;
 
     public ItemElement() {
     }
+
+    public void init(Item parentItem, ItemElement derivedFromItemElement) {
+        EntityInfo newEntityInfo = EntityInfoUtility.createEntityInfo();
+        this.setEntityInfo(newEntityInfo);
+        this.setParentItem(parentItem);
+        this.setDerivedFromItemElement(derivedFromItemElement);
+
+    }
     
+    public void init(Item parentItem) {
+        init(parentItem, null);
+    }
+
     public ItemElement(Item parentItem) {
-        this.parentItem = parentItem; 
+        this.parentItem = parentItem;
     }
 
     public ItemElement(Integer id) {
@@ -124,11 +142,11 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setId(Integer id) {
         this.id = id;
     }
-    
+
     public Object getCustomizableSortOrder() {
         if (sortByPropertyTypeId == null) {
-            return getSortOrder(); 
-        } else { 
+            return getSortOrder();
+        } else {
             return getPropertyValue(sortByPropertyTypeId);
         }
     }
@@ -138,6 +156,11 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     public String getName() {
+        if (name == null || name.isEmpty()) {
+            if (derivedFromItemElement != null) {
+                return derivedFromItemElement.getName(); 
+            }
+        }
         return name;
     }
 
@@ -194,10 +217,29 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         return logList;
     }
 
+    @XmlTransient
+    public List<ItemElement> getDerivedFromItemElementList() {
+        return derivedFromItemElementList;
+    }
+
+    public void setDerivedFromItemElementList(List<ItemElement> derivedFromItemElementList) {
+        this.derivedFromItemElementList = derivedFromItemElementList;
+    }
+
+    @XmlTransient
+    public ItemElement getDerivedFromItemElement() {
+        return derivedFromItemElement;
+    }
+
+    public void setDerivedFromItemElement(ItemElement derivedFromItemElement) {
+        this.derivedFromItemElement = derivedFromItemElement;
+    }
+
     public void setLogList(List<Log> logList) {
         this.logList = logList;
     }
 
+    @XmlTransient
     public Item getParentItem() {
         return parentItem;
     }
@@ -206,6 +248,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.parentItem = parentItem;
     }
 
+    @XmlTransient
     public Item getContainedItem() {
         return containedItem;
     }
@@ -276,7 +319,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setItemElementRelationshipList2(List<ItemElementRelationship> itemElementRelationshipList2) {
         this.itemElementRelationshipList2 = itemElementRelationshipList2;
     }
-    
+
     public TreeNode getChildItemElementListTreeTableRootNode() {
         return childItemElementListTreeTableRootNode;
     }
@@ -309,5 +352,5 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemElement[ id=" + id + " ]";
     }
-    
+
 }
