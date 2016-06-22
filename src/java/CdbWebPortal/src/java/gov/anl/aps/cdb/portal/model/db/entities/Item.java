@@ -6,8 +6,8 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -67,7 +67,7 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
-        query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC")
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC")
 })
 public class Item extends CdbDomainEntity implements Serializable {
 
@@ -102,6 +102,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
     private List<ItemType> itemTypeList;
+    @JoinTable(name = "item_item_type", joinColumns = {
+        @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "item_project_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<ItemProject> itemProjectList;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
     private List<ItemElement> fullItemElementList;
     @OneToMany(mappedBy = "containedItem")
@@ -135,19 +140,19 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient boolean isCloned = false;
 
     private transient List<ItemElement> itemElementDisplayList;
+
+    private transient String entityTypeString = null;
+
+    private transient String listDisplayDescription = null;
     
-    private transient String entityTypeString = null; 
-    
-    private transient String listDisplayDescription = null; 
+    private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
 
     public Item() {
     }
 
     public void init() {
         ItemElement selfElement = new ItemElement();
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        selfElement.setEntityInfo(entityInfo);
-        selfElement.setParentItem(this);
+        selfElement.init(this);
         this.fullItemElementList = new ArrayList<>();
         this.fullItemElementList.add(selfElement);
     }
@@ -244,18 +249,19 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setDescription(String description) {
         this.getSelfElement().setDescription(description);
     }
-    
+
     /**
      * Function is used to limit the length of description for list column.
+     *
      * @return shortened description (if needed)
      */
     public String getListDisplayDescription() {
         if (listDisplayDescription == null) {
-            listDisplayDescription = getDescription(); 
+            listDisplayDescription = getDescription();
             if (listDisplayDescription != null) {
                 String[] descriptionWords = listDisplayDescription.split(" ");
 
-                listDisplayDescription = ""; 
+                listDisplayDescription = "";
                 for (String descriptionWord : descriptionWords) {
                     if (descriptionWord.length() > 30) {
                         descriptionWord =  " [...] " ; 
@@ -266,14 +272,14 @@ public class Item extends CdbDomainEntity implements Serializable {
                     listDisplayDescription += descriptionWord + " ";
                 }
 
-
+                
                 if (listDisplayDescription.length() > 120) {
                     listDisplayDescription = listDisplayDescription.substring(0,90); 
-                    listDisplayDescription += "..."; 
+                    listDisplayDescription += "...";
                 }
             }
         }
-        
+
         return listDisplayDescription;
     }
 
@@ -288,49 +294,49 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @XmlTransient
     public List<EntityType> getEntityTypeList() {
-        return entityTypeList; 
+        return entityTypeList;
     }
-    
+
     public List<EntityType> getEntityTypeDisplayList() {
         if ((entityTypeList == null || entityTypeList.isEmpty()) && derivedFromItem != null) {
-            return derivedFromItem.entityTypeList; 
+            return derivedFromItem.entityTypeList;
         }
         return entityTypeList;
     }
-    
+
     public String getEntityTypeString() {
         if (entityTypeString == null) {
-            entityTypeString = ""; 
-            List<EntityType> entityTypeDisplayList = getEntityTypeDisplayList(); 
+            entityTypeString = "";
+            List<EntityType> entityTypeDisplayList = getEntityTypeDisplayList();
             if (entityTypeDisplayList != null) {
                 for (EntityType entityType : entityTypeDisplayList) {
-                    if (entityTypeString.length() > 0){
-                        entityTypeString += " "; 
+                    if (entityTypeString.length() > 0) {
+                        entityTypeString += " ";
                     }
                     entityTypeString += entityType.getName();
                 }
             }
-            entityTypeString = entityTypeString.replaceAll(" ", " | "); 
+            entityTypeString = entityTypeString.replaceAll(" ", " | ");
         }
-        
-        return entityTypeString; 
+
+        return entityTypeString;
     }
-    
+
     public String getEditEntityTypeString() {
         String entityTypeString = getEntityTypeString();
-        
+
         if (entityTypeString.isEmpty()) {
-            return "Select Entity Type"; 
+            return "Select Entity Type";
         } else {
-            return entityTypeString; 
+            return entityTypeString;
         }
     }
 
     public void setEntityTypeList(List<EntityType> entityTypeList) throws CdbException {
         if (domain != null) {
-            DomainHandler domainHandler = domain.getDomainHandler(); 
+            DomainHandler domainHandler = domain.getDomainHandler();
             if (domainHandler != null) {
-                List<EntityType> allowedEntityTypeList = domainHandler.getAllowedEntityTypeList(); 
+                List<EntityType> allowedEntityTypeList = domainHandler.getAllowedEntityTypeList();
                 for (EntityType entityType : entityTypeList) {
                     if (allowedEntityTypeList.contains(entityType) == false) {
                         throw new CdbException(entityType.getName() + " is not in the domain hanlder allowed list for the item: " + toString());
@@ -338,12 +344,12 @@ public class Item extends CdbDomainEntity implements Serializable {
                 }
             } else {
                 throw new CdbException("Entity Type cannot be set: no domain handler has been defined for the item " + toString());
-            } 
-        } else { 
+            }
+        } else {
             throw new CdbException("Entity Type cannot be set: no domain has been defined for the item " + toString());
         }
-        
-        entityTypeString = null; 
+
+        entityTypeString = null;
         this.entityTypeList = entityTypeList;
     }
 
@@ -368,19 +374,19 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return itemCategoryString;
     }
-    
+
     public String getEditItemCategoryString() {
-        String itemCategoryString = getItemCategoryString(); 
-        
+        String itemCategoryString = getItemCategoryString();
+
         if (itemCategoryString.isEmpty()) {
-            return "Select Item Category"; 
+            return "Select Item Category";
         }
-        
-        return itemCategoryString; 
+
+        return itemCategoryString;
     }
 
     public void setItemCategoryList(List<ItemCategory> itemCategoryList) {
-        this.itemCategoryString = null; 
+        this.itemCategoryString = null;
         this.itemCategoryList = itemCategoryList;
     }
 
@@ -390,7 +396,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setItemTypeList(List<ItemType> itemTypeList) {
-        this.itemTypeString = null; 
+        this.itemTypeString = null;
         this.itemTypeList = itemTypeList;
     }
 
@@ -410,15 +416,15 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return itemTypeString;
     }
-    
+
     public String getEditItemTypeString() {
-        String itemTypeString = getItemTypeString(); 
-        
+        String itemTypeString = getItemTypeString();
+
         if (itemTypeString.isEmpty()) {
-            return "Select Item Type"; 
+            return "Select Item Type";
         }
-        
-        return itemTypeString; 
+
+        return itemTypeString;
     }
 
     @XmlTransient
@@ -521,6 +527,14 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.derivedFromItem = derivedFromItem;
     }
 
+    public List<InventoryBillOfMaterialItem> getInventoryDomainBillOfMaterialList() {
+        return inventoryDomainBillOfMaterialList;
+    }
+
+    public void setInventoryDomainBillOfMaterialList(List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList) {
+        this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
+    }
+
     @Override
     public EntityInfo getEntityInfo() {
         return getSelfElement().getEntityInfo();
@@ -605,6 +619,10 @@ public class Item extends CdbDomainEntity implements Serializable {
         return selfItemElement;
     }
 
+    public boolean isItemElementDisplayListEmpty() {
+        return getItemElementDisplayList().isEmpty();
+    }
+
     @Override
     public List<PropertyValue> getPropertyValueList() {
         return this.getSelfElement().getPropertyValueList();
@@ -677,29 +695,29 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setPropertyValue5(String propertyValue5) {
         getSelfElement().setPropertyValueByIndex(5, propertyValue5);
     }
-    
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult;
-        
+
         if (name != null) {
             searchResult = new SearchResult(id, name);
             searchResult.doesValueContainPattern("name", name, searchPattern);
         } else if (derivedFromItem != null && derivedFromItem.getName() != null) {
-            String title = "Derived from: " + derivedFromItem.getName(); 
+            String title = "Derived from: " + derivedFromItem.getName();
             if (qrId != null) {
-                title += " (QRID: " + getQrIdDisplay() + ")";  
+                title += " (QRID: " + getQrIdDisplay() + ")";
             }
             searchResult = new SearchResult(id, title);
         } else {
             searchResult = new SearchResult(id, "Item");
         }
-        
+
         if (derivedFromItem != null) {
             searchResult.doesValueContainPattern("derived from name", derivedFromItem.getName(), searchPattern);
         }
-        
-        searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern); 
+
+        searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("last modified by", getEntityInfo().getLastModifiedByUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("description", getDescription(), searchPattern);
@@ -719,7 +737,7 @@ public class Item extends CdbDomainEntity implements Serializable {
             return false;
         }
         Item other = (Item) object;
-        
+
         return (Objects.equals(other.getItemIdentifier1(), itemIdentifier1)
                 && Objects.equals(other.getItemIdentifier2(), itemIdentifier2)
                 && Objects.equals(other.getDerivedFromItem(), derivedFromItem)
@@ -731,7 +749,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (getName() != null) {
             return getName();
         } else if (getDerivedFromItem() != null && getDerivedFromItem().getName() != null) {
-            return "derived from " + getDerivedFromItem().getName(); 
+            return "derived from " + getDerivedFromItem().getName();
         }
         else if (getId() != null) {
             return getId().toString();
