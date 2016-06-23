@@ -18,7 +18,6 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -414,7 +413,7 @@ public class ItemDomainCatalogController extends ItemController {
     public boolean getEntityDisplayItemIdentifier2() {
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemSources() {
         return true;

@@ -362,19 +362,39 @@ public class ItemDomainInventoryController extends ItemController {
                     }
                 }
             } else if (InventoryBillOfMaterialItemStates.newItem.getValue().equals(bomItem.getState())) {
+                bomItem.setShownBOM(false);
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
                 Item catalogItem = catalogItemElement.getContainedItem();
 
                 Item newInventoryItem = createEntityInstance();
 
                 newInventoryItem.setDerivedFromItem(catalogItem);
-                InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(newInventoryItem);
+                InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(newInventoryItem, bomItem);
 
                 bomItem.setNewItem(newInventoryItem);
 
                 newItemsToAdd.add(newInventoryItem);
             }
         }
+    }
+
+    public boolean isShowBOMForItem(Item item) {
+        if (this.isRenderItemBom(item)) {
+            InventoryBillOfMaterialItem containtedBOM = item.getContainedInBOM();
+            if (containtedBOM != null) {
+                return containtedBOM.isShownBOM(); 
+            }
+            
+            return true; 
+        }
+
+        return false;
+    }
+    
+    public boolean isRenderShowButtonForBOM(InventoryBillOfMaterialItem bom) {
+        List<InventoryBillOfMaterialItem> newItemBomList = bom.getNewItem().getInventoryDomainBillOfMaterialList();
+         
+        return (newItemBomList != null && newItemBomList.isEmpty() == false) && bom.isShownBOM() == false; 
     }
 
     public List<Item> getNewItemsToAdd() {
@@ -385,20 +405,20 @@ public class ItemDomainInventoryController extends ItemController {
     public String getItemElementContainedItemText(ItemElement instanceItemElement) {
         if (instanceItemElement.getContainedItem() == null) {
             if (instanceItemElement.getDerivedFromItemElement().getContainedItem() != null) {
-                return "No instance of " + instanceItemElement.getDerivedFromItemElement().getContainedItem().getName() + " defined"; 
-            } else { 
-                return "Catalog item: " + instanceItemElement.getDerivedFromItemElement().getParentItem().getName() + " has no defined item."; 
-            }            
+                return "No instance of " + instanceItemElement.getDerivedFromItemElement().getContainedItem().getName() + " defined";
+            } else {
+                return "Catalog item: " + instanceItemElement.getDerivedFromItemElement().getParentItem().getName() + " has no defined item.";
+            }
         }
-        
+
         Item containedItem = instanceItemElement.getContainedItem();
-        String containedText = "Instance of " + containedItem.getDerivedFromItem().getName(); 
-        
+        String containedText = "Instance of " + containedItem.getDerivedFromItem().getName();
+
         if (containedItem.getQrId() != null) {
-            containedText += " (" + containedItem.getQrIdDisplay() + ")"; 
+            containedText += " (" + containedItem.getQrIdDisplay() + ")";
         }
-        
-        return containedText; 
+
+        return containedText;
     }
 
     @Override
