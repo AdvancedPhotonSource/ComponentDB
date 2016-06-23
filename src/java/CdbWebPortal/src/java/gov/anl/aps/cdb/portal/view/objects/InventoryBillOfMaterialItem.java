@@ -35,12 +35,14 @@ public class InventoryBillOfMaterialItem {
     
     // an event needs to be processon state change. SelectOneButton does not support this.
     protected ItemDomainInventoryController itemDomainInventoryController = null; 
+    
+    protected boolean shownBOM = false; 
 
     public InventoryBillOfMaterialItem(ItemElement catalogItemElement, String innitialState, Item parentItemInstance) {
         this.catalogItemElement = catalogItemElement;
         this.state = innitialState;        
         this.parentItemInstance = parentItemInstance;
-        
+        this.shownBOM = true; 
     }
 
     public String getState() {               
@@ -69,7 +71,7 @@ public class InventoryBillOfMaterialItem {
     }
     
     // Creates a bill of materials list based on the catalog item and assigns it to the instance item. 
-    public static void setBillOfMaterialsListForItem(Item parentItemInstance, Item newItem) {
+    public static void setBillOfMaterialsListForItem(Item parentItemInstance, InventoryBillOfMaterialItem containedInBOM) {
         if (parentItemInstance.getInventoryDomainBillOfMaterialList() == null) {
             List<ItemElement> catalogItemElementList = parentItemInstance.getDerivedFromItem().getItemElementDisplayList();
 
@@ -77,8 +79,8 @@ public class InventoryBillOfMaterialItem {
             
             for (ItemElement catalogItemElement : catalogItemElementList) {
                 InventoryBillOfMaterialItem iBillOfMaterials = new InventoryBillOfMaterialItem(catalogItemElement, InventoryBillOfMaterialItemStates.placeholder.getValue(), parentItemInstance);
-                if (newItem != null) {
-                    iBillOfMaterials.setNewItem(newItem);
+                if (containedInBOM != null) {
+                    parentItemInstance.setContainedInBOM(containedInBOM);
                 }
                 
                 iBillOfMaterialsList.add(iBillOfMaterials);
@@ -103,6 +105,14 @@ public class InventoryBillOfMaterialItem {
     
     public void setNewItem(Item newItem) {
         this.newItem = newItem; 
+    }
+
+    public boolean isShownBOM() {
+        return shownBOM;
+    }
+
+    public void setShownBOM(boolean shownBOM) {
+        this.shownBOM = shownBOM;
     }
 
 }
