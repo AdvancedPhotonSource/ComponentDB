@@ -55,21 +55,21 @@
                                     <p:panel header="New Inventory Item Details" toggleable="true">
                                         <p:panelGrid columns="2">
                                             <h:outputLabel for="newInstanceAddOptions" 
-                                                           value="Select Option for adding this part: " 
+                                                           value="Select option for adding this part: " 
                                                            styleClass="entityDataEmphasizedLabel"/>
                                             <p:selectOneRadio id="newInstanceAddOptions"
                                                               value="#{billOfMaterialItem.state}"
                                                               styleClass="entityDataEmphasizedText">
                                                 <f:selectItem itemLabel="Not Yet Defined" itemValue="placeholder"/>
-                                                <f:selectItem itemLabel="Use Existing Item" itemDisabled="true"  itemValue="existingItem" />
-                                                <f:selectItem itemLabel="Create a new instance" itemValue="newItem" />
+                                                <f:selectItem itemLabel="Use Existing Item (Feature in progress)" itemDisabled="true"  itemValue="existingItem" />
+                                                <f:selectItem itemLabel="Create a New Instance" itemValue="newItem" />
                                                 <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
                                             </p:selectOneRadio>
                                         </p:panelGrid>
                                         <p/>
 
                                         <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)}">
-                                            No item will be created
+                                            No item will be created, a placeholder for this item will be created. 
                                         </p:outputPanel>
 
                                         <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem)}">
