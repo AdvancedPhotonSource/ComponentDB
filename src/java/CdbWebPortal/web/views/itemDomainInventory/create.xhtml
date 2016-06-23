@@ -34,16 +34,17 @@
             <p:panel styleClass="createWizardPanel">
                 <p:outputPanel rendered="#{itemDomainInventoryController.renderCurrentItemFullBOM}">
                     <ui:repeat value="#{itemDomainInventoryController.newItemsToAdd}" var="newItem">
-                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderItemBom(newItem)}"
+                        <p:outputPanel rendered="#{itemDomainInventoryController.isShowBOMForItem(newItem)}"
                                        styleClass="createWizardPanel" >
                             <div>
-                                <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Instance #{newItem.toString()}</h1>
+                                <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Define parts for new instance #{newItem.toString()}</h1>
                             </div>
                             <ui:repeat value="#{newItem.inventoryDomainBillOfMaterialList}" var="billOfMaterialItem">
 
                                 <ui:param name="catalogItemElement" value="#{billOfMaterialItem.catalogItemElement}"/>
-                                <p:panel header="Element: #{catalogItemElement.name}" toggleable="true">
-                                    <p:panel header="Catalog Item Details" toggleable="true">
+                                <p:panel header="Part: #{catalogItemElement.name}" toggleable="true">
+
+                                    <p:panel header="Expand to view catalog item details for this part" toggleable="true" collapsed="true">
                                         <ui:include src="../item/private/itemViewPanelGrid.xhtml">
                                             <ui:param name="entityController" value="#{itemDomainCatalogController}"/>
                                             <ui:param name="itemObject" value="#{catalogItemElement.containedItem}"/>
@@ -51,13 +52,21 @@
                                         </ui:include>                                                                        
                                     </p:panel>
 
-                                    <p:panel header="Options for Adding" toggleable="true">
-                                        <p:selectOneButton value="#{billOfMaterialItem.state}">
-                                            <f:selectItem itemLabel="Placeholder" itemValue="placeholder"/>
-                                            <f:selectItem itemLabel="Use Existing Item" itemDisabled="true"  itemValue="existingItem" />
-                                            <f:selectItem itemLabel="Create a new instance" itemValue="newItem" />
-                                            <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
-                                        </p:selectOneButton>
+                                    <p:panel header="New Inventory Item Details" toggleable="true">
+                                        <p:panelGrid columns="2">
+                                            <h:outputLabel for="newInstanceAddOptions" 
+                                                           value="Select Option for adding this part: " 
+                                                           styleClass="entityDataEmphasizedLabel"/>
+                                            <p:selectOneRadio id="newInstanceAddOptions"
+                                                              value="#{billOfMaterialItem.state}"
+                                                              styleClass="entityDataEmphasizedText">
+                                                <f:selectItem itemLabel="Not Yet Defined" itemValue="placeholder"/>
+                                                <f:selectItem itemLabel="Use Existing Item" itemDisabled="true"  itemValue="existingItem" />
+                                                <f:selectItem itemLabel="Create a new instance" itemValue="newItem" />
+                                                <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
+                                            </p:selectOneRadio>
+                                        </p:panelGrid>
+                                        <p/>
 
                                         <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)}">
                                             No item will be created
@@ -77,6 +86,18 @@
                                             <ui:include src="private/itemBillOfMaterialsNewItemPanel.xhtml">
                                                 <ui:param name="itemObject" value="#{billOfMaterialItem.newItem}"/>
                                             </ui:include>
+
+                                            <p:outputPanel rendered="#{itemDomainInventoryController.isRenderShowButtonForBOM(billOfMaterialItem)}">
+                                                <p/>
+                                                <p:panelGrid columns="2">
+                                                    <p:outputLabel value="This inventory item has additional parts to be defined."/>
+                                                    <p:commandButton value="Show additional parts for this item." 
+                                                                     action="#{billOfMaterialItem.setShownBOM(true)}"
+                                                                     update="@form"
+                                                                     onstart="PF('loadingDialog').show()"
+                                                                     oncomplete="PF('loadingDialog').hide()"/>
+                                                </p:panelGrid>
+                                            </p:outputPanel>
                                         </p:outputPanel>
                                     </p:panel>
                                 </p:panel>
