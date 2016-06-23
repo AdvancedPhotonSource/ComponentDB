@@ -146,6 +146,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String listDisplayDescription = null;
     
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
+    private transient InventoryBillOfMaterialItem containedInBOM; 
 
     public Item() {
     }
@@ -533,6 +534,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setInventoryDomainBillOfMaterialList(List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList) {
         this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
+    }
+
+    public InventoryBillOfMaterialItem getContainedInBOM() {
+        return containedInBOM;
+    }
+
+    public void setContainedInBOM(InventoryBillOfMaterialItem containedInBOM) {
+        this.containedInBOM = containedInBOM;
     }
 
     @Override
