@@ -28,91 +28,114 @@
         </ui:include>
     </ui:define>
 
+    <ui:define name="basicInformationTab"/>
+    <ui:define name="permissionsTab"/>
+    <ui:define name="reviewItemTab" />
+
     <ui:define name="additionalCreateWizardTabs">
+
         <p:tab id="itemElementInstantiation"
                title="Bill of Materials">
-            <p:panel styleClass="createWizardPanel">
-                <p:outputPanel rendered="#{itemDomainInventoryController.renderCurrentItemFullBOM}">
-                    <ui:repeat value="#{itemDomainInventoryController.newItemsToAdd}" var="newItem">
-                        <p:outputPanel rendered="#{itemDomainInventoryController.isShowBOMForItem(newItem)}"
-                                       styleClass="createWizardPanel" >
-                            <div>
-                                <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Define parts for new instance #{newItem.toString()}</h1>
-                            </div>
-                            <ui:repeat value="#{newItem.inventoryDomainBillOfMaterialList}" var="billOfMaterialItem">
+            <p:outputPanel styleClass="createWizardPanel">
+                <p:panelGrid >
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
+                                      border: gray; border-style: solid; border-width: 1px; font-weight: bold;">Parts List</p:column>
+                            <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
+                                      border: gray; border-style: solid; border-width: 1px;">Add options for selected part</p:column>
+                        </p:row>
+                    </f:facet>
 
-                                <ui:param name="catalogItemElement" value="#{billOfMaterialItem.catalogItemElement}"/>
-                                <p:panel header="Part: #{catalogItemElement.name}" toggleable="true">
+                    <p:row>
+                        <p:column>
+                            <p:tree value="#{itemDomainInventoryController.currentItemBOMListTree}"
+                                    id="partsTree"
+                                    var="inventoryBOM"
+                                    selectionMode="single"
+                                    selection="#{itemDomainInventoryController.selectedItemBOMTreeNode}"                                    
+                                    >
+                                <p:ajax event="select" update="@form"/>
 
-                                    <p:panel header="Expand to view catalog item details for this part" toggleable="true" collapsed="true">
-                                        <ui:include src="../item/private/itemViewPanelGrid.xhtml">
-                                            <ui:param name="entityController" value="#{itemDomainCatalogController}"/>
-                                            <ui:param name="itemObject" value="#{catalogItemElement.containedItem}"/>
-                                            <ui:param name="isEntityWriteable" value="#{false}" />
-                                        </ui:include>                                                                        
-                                    </p:panel>
+                                <p:treeNode type="newItem" icon="ui-icon-plus">
+                                    <h:outputText value="#{inventoryBOM.toString()}"/>
+                                </p:treeNode>
+                                <p:treeNode type="existingItem" icon="ui-icon-check">
+                                    <h:outputText value="#{inventoryBOM.toString()}"/>
+                                </p:treeNode>
+                                <p:treeNode type="placeholder" icon="ui-icon-close">
+                                    <h:outputText value="#{inventoryBOM.toString()}"/>
+                                </p:treeNode>
+                                <p:treeNode>
+                                    <h:outputText value="#{inventoryBOM.toString()}"/>
+                                </p:treeNode>
+                            </p:tree>
+                        </p:column>
+                        <p:column>
+                            <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode != null}">
+                                <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data}" />
 
-                                    <p:panel header="New Inventory Item Details" toggleable="true">
-                                        <p:panelGrid columns="2">
-                                            <h:outputLabel for="newInstanceAddOptions" 
-                                                           value="Select option for adding this part: " 
-                                                           styleClass="entityDataEmphasizedLabel"/>
-                                            <p:selectOneRadio id="newInstanceAddOptions"
-                                                              value="#{billOfMaterialItem.state}"
-                                                              styleClass="entityDataEmphasizedText">
-                                                <f:selectItem itemLabel="Not Yet Defined" itemValue="placeholder"/>
-                                                <f:selectItem itemLabel="Use Existing Item (Feature in progress)" itemDisabled="true"  itemValue="existingItem" />
-                                                <f:selectItem itemLabel="Create a New Instance" itemValue="newItem" />
-                                                <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
-                                            </p:selectOneRadio>
-                                        </p:panelGrid>
-                                        <p/>
+                                <div>
+                                    <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Define #{billOfMaterialItem.toString()}</h1>
+                                </div>
 
-                                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)}">
-                                            No item will be created, a placeholder for this item will be created. 
-                                        </p:outputPanel>
+                                <p:panelGrid columns="2" rendered="#{billOfMaterialItem.partItem}">
+                                    <h:outputLabel for="newInstanceAddOptions" 
+                                                   value="Select option for adding this part: " 
+                                                   styleClass="entityDataEmphasizedLabel"/>
+                                    <p:selectOneRadio id="newInstanceAddOptions"
+                                                      value="#{billOfMaterialItem.state}"
+                                                      styleClass="entityDataEmphasizedText">
+                                        <f:selectItem itemLabel="Not Yet Defined" itemValue="placeholder"/>
+                                        <f:selectItem itemLabel="Use Existing Item (Under dev)" itemDisabled="true" itemValue="existingItem" />
+                                        <f:selectItem itemLabel="Create a New Instance" itemValue="newItem" />
+                                        <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
+                                    </p:selectOneRadio>
+                                </p:panelGrid>
+                                <p/>
 
-                                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem)}">
-                                            Existing
-                                            <p:dataTable value="#{catalogItemElement.containedItem.derivedFromItemList}"
-                                                         var="itemListObject">
-                                                <p:column headerText="Identifier">
-                                                    <h:outputText value="#{itemListObject.toString()}" />
-                                                </p:column>
-                                            </p:dataTable>
-                                        </p:outputPanel>
+                                <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)}">
+                                    No item will be created, a placeholder for this item will be created. 
+                                </p:outputPanel>
 
-                                        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomNew(billOfMaterialItem)}">
-                                            <ui:include src="private/itemBillOfMaterialsNewItemPanel.xhtml">
-                                                <ui:param name="itemObject" value="#{billOfMaterialItem.newItem}"/>
-                                            </ui:include>
+                                <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem)}">
+                                    The list contains available inventory items that are not assigned to any assembly. 
+                                    <ui:include src="../item/private/itemSelectDataTable.xhtml">
+                                        <ui:param name="selectDataModel" value="#{billOfMaterialItem.existingInventoryItemSelectDataModel}" />
+                                        <ui:param name="selectionValue" value="#{billOfMaterialItem.newItem}" />
+                                        <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
+                                        <ui:param name="viewName" value="BOM" />
+                                    </ui:include>
+                                </p:outputPanel>
 
-                                            <p:outputPanel rendered="#{itemDomainInventoryController.isRenderShowButtonForBOM(billOfMaterialItem)}">
-                                                <p/>
-                                                <p:panelGrid columns="2">
-                                                    <p:outputLabel value="This inventory item has additional parts to be defined."/>
-                                                    <p:commandButton value="Show additional parts for this item." 
-                                                                     action="#{billOfMaterialItem.setShownBOM(true)}"
-                                                                     update="@form"
-                                                                     onstart="PF('loadingDialog').show()"
-                                                                     oncomplete="PF('loadingDialog').hide()"/>
-                                                </p:panelGrid>
-                                            </p:outputPanel>
-                                        </p:outputPanel>
-                                    </p:panel>
-                                </p:panel>
-                                <br/>
-                            </ui:repeat>
-                        </p:outputPanel>
-                    </ui:repeat>
-                </p:outputPanel>
-                <p:outputPanel rendered="#{!itemDomainInventoryController.renderCurrentItemFullBOM}">
-                    <div>
-                        <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">No parts need to be defined for this item.</h1>
-                    </div>
-                </p:outputPanel>
-                <ui:include src="../common/private/commonLoadingDialog.xhtml" />
-            </p:panel>
+                                <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomNew(billOfMaterialItem)}">
+
+                                    <ui:include src="private/itemBillOfMaterialsNewItemPanel.xhtml">
+                                        <ui:param name="itemObject" value="#{billOfMaterialItem.newItem}"/>
+                                        <ui:param name="viewName" value="BOMInstance" />
+                                    </ui:include>
+                                </p:outputPanel>
+
+                            </p:outputPanel>
+                            <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode == null}">
+                                <div>
+                                    <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Please Select a part from parts list to begin.</h1>
+                                </div>
+                            </p:outputPanel>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>
+
+                <div class="actionButton">
+                    <p:commandButton id="#{entityTypeName}CreateSaveButton" action="#{entityController.create()}" 
+                                     value="Save Current Progress" alt="Save" icon="ui-icon-check" update="@form">
+                        <p:tooltip for="#{entityTypeName}CreateSaveButton" value="Save new #{entityController.displayEntityTypeName}."/>
+                    </p:commandButton>
+                </div>
+
+
+            </p:outputPanel>
 
         </p:tab>
     </ui:define>
