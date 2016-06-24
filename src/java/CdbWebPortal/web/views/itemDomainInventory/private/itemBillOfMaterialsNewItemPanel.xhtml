@@ -3,18 +3,32 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                xmlns:p="http://primefaces.org/ui"
-                template="../../item/private/templates/itemCreatePanelGridTemplate.xhtml">
-    
-    <ui:param name="viewName" value="BOMInstance" />
-    
-    <!-- clear the sections from create panel grid -->
-    <ui:define name="itemDerivedFromItemValue" />
-    <ui:define name="itemDerivedFromItemLabel" />
+                xmlns:p="http://primefaces.org/ui">
 
-    <ui:define name="itemEntityTypeValue" />
-    <ui:define name="itemEntityTypeLabel" />
-    
+
+    <p:panelGrid columns="2">
+        <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
+
+        <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />
+    </p:panelGrid>
+
+    <p:panel header="Additional Attributes" collapsed="true" toggleable="true" >
+        <p:panelGrid columns="2">
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
+            
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier1.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" />
+            
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemDescription.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml" />         
+            
+            <ui:include src="componentInventoryItemLocationEditPanelGrid.xhtml" />
+        </p:panelGrid>
+    </p:panel> 
+
 </ui:composition>
 
 
