@@ -7,12 +7,13 @@
 
     <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
     <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
+    <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />
 
-    <p:dataTable id="#{entityTypeName}ItemSelectDataTable" 
+    <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
                  var="itemListObject" 
                  value="#{selectDataModel}" 
                  rowKey="#{itemListObject.id}"
-                 selection="#{selectionController.selectedObject}"
+                 selection="#{selectionValue}"
                  resizableColumns="true"
                  liveResize="true"
                  draggableColumns="true"
@@ -43,7 +44,9 @@
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
                      update="@form"
                      >
-        <f:setPropertyActionListener value="#{selectionController.selectedObject}" target="#{selectionTarget}" />
+        <f:setPropertyActionListener rendered="#{selectionTarget != null}"
+                                     value="#{selectionValue}" 
+                                     target="#{selectionTarget}" />
     </p:remoteCommand>
 
 
