@@ -88,23 +88,31 @@
             </p:panel>
         </p:tab>
     </ui:define>
-    
-    <ui:define name="itemOverviewHelpFragment">
-        <div class="sectionText">
-            Please review all of the entered information before saving.
-        </div>
-        <p/>
+
+    <ui:define name="reviewItemTab">
+        <p:tab id="reviewItemTab" 
+               title="Review Item">
+            <p:panel header="Item Overview" styleClass="createWizardPanel">
+                <div class="sectionText">
+                    Please review all of the entered information before saving.
+                </div>
+                <p/>
+                <ui:insert name="itemOverviewPanelGrid">
+                    <ui:include src="../itemCreatePanelGrid.xhtml">
+                        <ui:param name="viewName" value="Overview" />
+                    </ui:include>
+                </ui:insert>
+                <ui:insert name="itemCreateActionButtons">
+                    <ui:define name="itemCreateActionButtons">
+                        <ui:include src="../../../common/private/commonCreateActionButtons.xhtml"/>
+                    </ui:define>
+                </ui:insert>
+            </p:panel>                                                                
+        </p:tab>
     </ui:define>
 
-    <ui:define name="itemOverviewPanelGrid">
-        <ui:include src="../itemCreatePanelGrid.xhtml">
-            <ui:param name="viewName" value="Overview" />
-        </ui:include>
-    </ui:define>
 
-    <ui:define name="itemCreateActionButtons">
-        <ui:include src="../../../common/private/commonCreateActionButtons.xhtml"/>
-    </ui:define>
+
 
 
 </ui:composition>
