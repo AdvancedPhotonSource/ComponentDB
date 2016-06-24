@@ -112,7 +112,11 @@ public class ItemDomainInventoryController extends ItemController {
 
     private List<PropertyValue> filteredPropertyValueList = null;
 
+    //Variables used for creation of new inventory item. 
     private List<Item> newItemsToAdd = null;
+    private TreeNode currentItemBOMListTree = null;
+    private TreeNode selectedItemBOMTreeNode = null;
+    private InventoryBillOfMaterialItem currentlyDisplayedBOM;
 
     @EJB
     private ItemFacade itemFacade;
@@ -278,7 +282,9 @@ public class ItemDomainInventoryController extends ItemController {
 
         if (nsEvent.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
             // Prepare bill of materials if not yet done so. 
-            InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent());
+            InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
+            iBom.setShownBOM(true);
+            InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
         }
 
         if (nsEvent.equals(ItemCreateWizardSteps.reviewSave.getValue())) {
@@ -292,6 +298,85 @@ public class ItemDomainInventoryController extends ItemController {
 
         return super.createItemWizardFlowListener(event);
 
+    }
+
+    public TreeNode getCurrentItemBOMListTree() {
+        if (currentItemBOMListTree == null) {
+            currentItemBOMListTree = buildTreeNodeFromParentItem(getCurrent().getContainedInBOM());
+        }
+
+        return currentItemBOMListTree;
+    }
+
+    private TreeNode buildTreeNodeFromParentItem(InventoryBillOfMaterialItem startingBOM) {
+        return buildTreeNodeFromParentItem(null, null, startingBOM);
+    }
+
+    private TreeNode buildTreeNodeFromParentItem(TreeNode root, TreeNode parent, InventoryBillOfMaterialItem nextBOM) {
+        // The tree needs to be created. 
+        if (root == null) {
+            root = new DefaultTreeNode(null, null);
+            parent = new DefaultTreeNode(nextBOM, root);
+            parent.setExpanded(true);
+            parent.setType(nextBOM.getState());
+            /*
+            if (selectedItemBOMTreeNode == null) {
+                selectedItemBOMTreeNode = parent; 
+                currentlyDisplayedBOM = nextBOM; 
+            } 
+             */
+        }
+
+        /*
+        if (updateSelectedPointer) {
+            if (parent.getData() == selectedItemBOMTreeNode.getData()) {
+                selectedItemBOMTreeNode = parent; 
+                updateSelectedPointer = false; 
+            }
+        }
+         */
+        if (nextBOM.getNewItem() != null) {
+            List<InventoryBillOfMaterialItem> nextItemBOMList;
+            nextItemBOMList = nextBOM.getNewItem().getInventoryDomainBillOfMaterialList();
+
+            if (nextItemBOMList != null && nextItemBOMList.isEmpty() == false) {
+                for (InventoryBillOfMaterialItem iBOM : nextItemBOMList) {
+                    TreeNode newNode = new DefaultTreeNode(iBOM, parent);
+                    newNode.setExpanded(true);
+                    newNode.setType(iBOM.getState());
+                    buildTreeNodeFromParentItem(root, newNode, iBOM);
+                }
+            }
+        }
+
+        return root;
+
+    }
+
+    public void addNewChildrenToCurrentSelection() {
+        buildTreeNodeFromParentItem(currentItemBOMListTree,
+                selectedItemBOMTreeNode,
+                (InventoryBillOfMaterialItem) selectedItemBOMTreeNode.getData());
+    }
+
+    public TreeNode getSelectedItemBOMTreeNode() {
+        return selectedItemBOMTreeNode;
+    }
+
+    public void setSelectedItemBOMTreeNode(TreeNode selectedItemBOMTreeNode) {
+        if (selectedItemBOMTreeNode == null) {
+            // Tree will set to null on every form update. 
+            return;
+        }
+        this.selectedItemBOMTreeNode = selectedItemBOMTreeNode;
+    }
+
+    public InventoryBillOfMaterialItem getCurrentlyDisplayedBOM() {
+        return currentlyDisplayedBOM;
+    }
+
+    public void setCurrentlyDisplayedBOM(InventoryBillOfMaterialItem currentlyDisplayedBOM) {
+        this.currentlyDisplayedBOM = currentlyDisplayedBOM;
     }
 
     public void addItemElementsFromBillOfMaterials(Item item) throws CdbException {
@@ -321,15 +406,24 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     public boolean isRenderBomPlaceholder(InventoryBillOfMaterialItem billOfMaterialsItem) {
-        return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.placeholder.getValue());
+        if (billOfMaterialsItem != null) {
+            return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.placeholder.getValue());
+        }
+        return false;
     }
 
     public boolean isRenderBomExisting(InventoryBillOfMaterialItem billOfMaterialsItem) {
-        return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.existingItem.getValue());
+        if (billOfMaterialsItem != null) {
+            return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.existingItem.getValue());
+        }
+        return false;
     }
 
     public boolean isRenderBomNew(InventoryBillOfMaterialItem billOfMaterialsItem) {
-        return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.newItem.getValue());
+        if (billOfMaterialsItem != null) {
+            return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.newItem.getValue());
+        }
+        return false;
     }
 
     public boolean isRenderItemBom(Item item) {
@@ -350,13 +444,21 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     public void changeBillOfMaterialsState(InventoryBillOfMaterialItem bomItem, String previousState) {
+        // Update type of selected tree node. 
+        selectedItemBOMTreeNode.setType(bomItem.getState());
+        
         if (!previousState.equals(bomItem.getState())) {
             if (previousState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                 Item newItem = bomItem.getNewItem();
+                
+                // The current item will not be defined. it has no children.                 
+                selectedItemBOMTreeNode.getChildren().clear();
+                
                 if (newItem != null) {
                     for (int i = 0; i < newItemsToAdd.size(); i++) {
-                        if (newItemsToAdd.get(i).getViewUUID().equals(newItem.getViewUUID())) {
+                        if (newItemsToAdd.get(i) == newItem) {
                             newItemsToAdd.remove(i);
+                            
                             break;
                         }
                     }
@@ -373,6 +475,9 @@ public class ItemDomainInventoryController extends ItemController {
 
                 bomItem.setNewItem(newInventoryItem);
 
+                // The tree needs to be updated.
+                addNewChildrenToCurrentSelection();
+
                 newItemsToAdd.add(newInventoryItem);
             }
         }
@@ -382,19 +487,19 @@ public class ItemDomainInventoryController extends ItemController {
         if (this.isRenderItemBom(item)) {
             InventoryBillOfMaterialItem containtedBOM = item.getContainedInBOM();
             if (containtedBOM != null) {
-                return containtedBOM.isShownBOM(); 
+                return containtedBOM.isShownBOM();
             }
-            
-            return true; 
+
+            return true;
         }
 
         return false;
     }
-    
+
     public boolean isRenderShowButtonForBOM(InventoryBillOfMaterialItem bom) {
         List<InventoryBillOfMaterialItem> newItemBomList = bom.getNewItem().getInventoryDomainBillOfMaterialList();
-         
-        return (newItemBomList != null && newItemBomList.isEmpty() == false) && bom.isShownBOM() == false; 
+
+        return (newItemBomList != null && newItemBomList.isEmpty() == false) && bom.isShownBOM() == false;
     }
 
     public List<Item> getNewItemsToAdd() {
