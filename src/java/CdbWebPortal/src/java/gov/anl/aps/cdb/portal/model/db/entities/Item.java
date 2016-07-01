@@ -156,6 +156,10 @@ public class Item extends CdbDomainEntity implements Serializable {
         selfElement.init(this);
         this.fullItemElementList = new ArrayList<>();
         this.fullItemElementList.add(selfElement);
+        
+        name = "";
+        itemIdentifier1 = ""; 
+        itemIdentifier2 = "";
     }
 
     public void init(Domain domain) {
@@ -450,6 +454,10 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return itemElementDisplayList;
     }
+    
+    public void resetItemElementDisplayList() {
+        itemElementDisplayList = null;
+    }
 
     public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
         if (isCloned) {
@@ -503,7 +511,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     public String getItemType() {
         if (itemType == null) {
             String entityTypeString = null;
-            for (EntityType entityType : entityTypeList) {
+            for (EntityType entityType : getEntityTypeDisplayList()) {
                 if (entityTypeString == null) {
                     entityTypeString = entityType.getName();
                 } else {
@@ -618,7 +626,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     public ItemElement getSelfElement() {
         if (selfItemElement == null) {
             for (ItemElement ie : this.fullItemElementList) {
-                if (ie.getName() == null) {
+                if (ie.getName() == null && ie.getDerivedFromItemElement() == null) {
                     selfItemElement = ie;
                     break;
                 }
@@ -755,7 +763,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public String toString() {
-        if (getName() != null) {
+        if (getName() != null && getName().isEmpty() == false) {
             return getName();
         } else if (getDerivedFromItem() != null && getDerivedFromItem().getName() != null) {
             return "derived from " + getDerivedFromItem().getName();
