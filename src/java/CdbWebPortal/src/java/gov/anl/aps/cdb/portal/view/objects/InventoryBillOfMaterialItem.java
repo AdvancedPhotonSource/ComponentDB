@@ -27,7 +27,7 @@ public class InventoryBillOfMaterialItem {
     protected String state = null;
 
     // new item to be linked to placeholder (Item Element of instance).
-    protected Item newItem = null;
+    protected Item inventoryItem = null;
 
     // a reference to the parent item instance which includes this as a bom item.
     protected Item parentItemInstance = null;
@@ -38,7 +38,9 @@ public class InventoryBillOfMaterialItem {
     // an event needs to be processon state change. SelectOneButton does not support this.
     protected ItemDomainInventoryController itemDomainInventoryController = null;
 
-    protected boolean shownBOM = false;
+    protected boolean applyPermissionToAllNewParts = false;
+
+    private Item catalogItem = null;
 
     protected DataModel existingInventoryItemSelectDataModel = null;
 
@@ -46,17 +48,25 @@ public class InventoryBillOfMaterialItem {
         this.catalogItemElement = catalogItemElement;
         this.state = innitialState;
         this.parentItemInstance = parentItemInstance;
-        this.shownBOM = true;             
     }
-    
-    public InventoryBillOfMaterialItem(Item newItem) {
-        this.state = InventoryBillOfMaterialItemStates.newItem.getValue(); 
-        this.newItem = newItem; 
-        
-        if (newItem.getDerivedFromItem() != null) {
-            // Set default tag
-            if (newItem.getItemIdentifier2() == null || newItem.getItemIdentifier2().isEmpty()) {
-                newItem.setItemIdentifier2(newItem.getDerivedFromItem().getName());
+
+    public InventoryBillOfMaterialItem(Item inventoryItem) {
+        this.state = InventoryBillOfMaterialItemStates.newItem.getValue();
+        this.inventoryItem = inventoryItem;
+
+        // Set default tag
+        setDefaultTag();
+    }
+
+    private void setDefaultTag() {
+        if (inventoryItem != null) {
+            if (inventoryItem.getItemIdentifier2() == null || inventoryItem.getItemIdentifier2().isEmpty()) {
+                this.loadItemDomainInventoryController();
+                int newItemCount = itemDomainInventoryController.getNewItemCount(getCatalogItem());
+                // Remove this item from the count. 
+                newItemCount -= 1;
+                // Add one for user readability. No use of 0 for first item. 
+                inventoryItem.setItemIdentifier2("Unit: " + (getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1) + "");
             }
         }
     }
@@ -69,13 +79,29 @@ public class InventoryBillOfMaterialItem {
         String prevState = this.state;
 
         this.state = state;
-
-        if (itemDomainInventoryController == null) {
-            itemDomainInventoryController = (ItemDomainInventoryController) SessionUtility.findBean(INVENTORY_DOMAIN_CONTROLLER_NAME);
-        }
+        this.loadItemDomainInventoryController();
 
         itemDomainInventoryController.changeBillOfMaterialsState(this, prevState);
 
+    }
+
+    public void loadItemDomainInventoryController() {
+        if (itemDomainInventoryController == null) {
+            itemDomainInventoryController = (ItemDomainInventoryController) SessionUtility.findBean(INVENTORY_DOMAIN_CONTROLLER_NAME);
+        }
+    }
+
+    public Item getCatalogItem() {
+        if (catalogItem == null) {
+            if (catalogItemElement == null) {
+                if (inventoryItem != null) {
+                    catalogItem = inventoryItem.getDerivedFromItem();
+                }
+            } else {
+                catalogItem = catalogItemElement.getContainedItem();
+            }
+        }
+        return catalogItem;
     }
 
     public ItemElement getCatalogItemElement() {
@@ -91,13 +117,14 @@ public class InventoryBillOfMaterialItem {
         if (parentItemInstance.getInventoryDomainBillOfMaterialList() == null) {
             List<ItemElement> catalogItemElementList = parentItemInstance.getDerivedFromItem().getItemElementDisplayList();
 
+            if (containedInBOM != null) {
+                parentItemInstance.setContainedInBOM(containedInBOM);
+            }
+
             List<InventoryBillOfMaterialItem> iBillOfMaterialsList = new ArrayList<>();
 
             for (ItemElement catalogItemElement : catalogItemElementList) {
                 InventoryBillOfMaterialItem iBillOfMaterials = new InventoryBillOfMaterialItem(catalogItemElement, InventoryBillOfMaterialItemStates.placeholder.getValue(), parentItemInstance);
-                if (containedInBOM != null) {
-                    parentItemInstance.setContainedInBOM(containedInBOM);
-                }
 
                 iBillOfMaterialsList.add(iBillOfMaterials);
             }
@@ -106,48 +133,49 @@ public class InventoryBillOfMaterialItem {
         }
     }
 
+    public boolean isApplyPermissionToAllNewParts() {
+        return applyPermissionToAllNewParts;
+    }
+
+    public void setApplyPermissionToAllNewParts(boolean applyPermissionToAllNewParts) {
+        this.applyPermissionToAllNewParts = applyPermissionToAllNewParts;
+    }
+
     public Item getParentItemInstance() {
         return parentItemInstance;
     }
 
-    public Item getNewItem() {
-        return newItem;
+    public Item getInventoryItem() {
+        return inventoryItem;
     }
 
-    public void setNewItem(Item newItem) {        
+    public void setInventoryItem(Item inventoryItem) {
+        this.inventoryItem = inventoryItem;
         //Set default tag
-        if (catalogItemElement != null) {
-            newItem.setItemIdentifier2(catalogItemElement.getName());
+        if (inventoryItem != null) {
+            if (inventoryItem.getId() == null) {
+                setDefaultTag();
+            }
         }
-        
-        this.newItem = newItem;
     }
 
-    public boolean isShownBOM() {
-        return shownBOM;
-    }
-
-    public void setShownBOM(boolean shownBOM) {
-        this.shownBOM = shownBOM;
-    }
-    
     public boolean isPartItem() {
-        return this.catalogItemElement != null; 
+        return this.catalogItemElement != null;
+    }
+
+    public boolean isRootItem() {
+        return !isPartItem();
     }
     
-    public boolean isRootItem() {
-        return !isPartItem(); 
+    public boolean hasCatalogItem() {
+        return getCatalogItem() != null; 
     }
 
     public DataModel getExistingInventoryItemSelectDataModel() {
         if (existingInventoryItemSelectDataModel == null) {
-            List<Item> selectAvailableInventoryList = new ArrayList<>(); 
-            for (Item item : catalogItemElement.getContainedItem().getDerivedFromItemList()) {
-                if (item.getItemElementMemberList() != null && item.getItemElementMemberList().isEmpty()) {
-                    selectAvailableInventoryList.add(item); 
-                }
+            if (getCatalogItem() != null) {
+                existingInventoryItemSelectDataModel = new ListDataModel(getCatalogItem().getDerivedFromItemList());
             }
-            existingInventoryItemSelectDataModel = new ListDataModel(selectAvailableInventoryList);
         }
 
         return existingInventoryItemSelectDataModel;
@@ -156,28 +184,27 @@ public class InventoryBillOfMaterialItem {
     public void setExistingInventoryItemSelectDataModel(DataModel existingInventoryItemSelectDataModel) {
         this.existingInventoryItemSelectDataModel = existingInventoryItemSelectDataModel;
     }
-    
-    public String toString() {        
-        String response = ""; 
+
+    @Override
+    public String toString() {
+        String response = "";
         if (isRootItem()) {
             // Root Item
-            response += newItem.getDerivedFromItem().getName(); 
+            response += inventoryItem.getDerivedFromItem().getName();
         } else {
             // Part of root item. 
-            response += catalogItemElement.getName(); 
+            response += catalogItemElement.getName();
         }
-        
+
         // Add simple attributes specified by user. 
-        if (newItem != null) {
+        if (inventoryItem != null) {
             // Tag
-            if(newItem.getItemIdentifier2() != null && !newItem.getItemIdentifier2().isEmpty()) {
-                response += " - " + newItem.getItemIdentifier2();
+            if (inventoryItem.getItemIdentifier2() != null && !inventoryItem.getItemIdentifier2().isEmpty()) {
+                response += " - " + inventoryItem.getItemIdentifier2();
             }
         }
-        
-        return response; 
+
+        return response;
     }
-    
-    
 
 }
