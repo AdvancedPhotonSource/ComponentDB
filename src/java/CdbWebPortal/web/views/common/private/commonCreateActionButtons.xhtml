@@ -7,14 +7,8 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}CreateSaveButton" action="#{entityController.create()}" 
-                         value="Save" alt="Save" icon="ui-icon-check" update="@form">
-            <p:tooltip for="#{entityTypeName}CreateSaveButton" value="Save new #{entityController.displayEntityTypeName}."/>
-        </p:commandButton>
-        <p:commandButton id="#{entityTypeName}CreateCancelButton" action="#{entityController.prepareList()}" immediate="true" 
-                         value="Cancel" alt="Cancel" icon="ui-icon-cancel">
-            <p:tooltip for="#{entityTypeName}CreateCancelButton" value="Cancel and return to #{entityController.displayEntityTypeName} list page."/>
-        </p:commandButton>
+        <ui:include src="commonCreateSaveButton.xhtml"/>
+        <ui:include src="commonCreateCancelButton.xhtml"/>
     </div>
 
 </ui:composition>
