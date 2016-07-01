@@ -6,23 +6,23 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:inplace id="itemCategory" 
-               rendered="#{entityController.displayItemCategory}"
-               editor="#{isEntityWriteable}" 
-               toggleable="#{isEntityWriteable}" 
-               styleClass="entityDataText" 
-               label="#{itemObject.itemCategoryString}"> 
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-        <p:ajax event="cancel" oncomplete="reloadItemCategory()"/>
-        <p:remoteCommand name="reloadItemCategory"
-                         action="#{entityController.reloadCurrent()}"
-                         update="itemCategory"
-                         />
-        <p:selectCheckboxMenu label="Select Categories" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
-                              filter="true" filterMatchMode="contains" >
-            <f:selectItems value="#{itemCategoryController.availableItems}" /> 
+        <p:inplace id="itemCategory#{viewName}"
+                   rendered="#{entityController.displayItemCategory}"
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataText" 
+                   label="#{itemObject.itemCategoryString}"> 
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="cancel" oncomplete="reloadItemCategory()"/>
+            <p:remoteCommand name="reloadItemCategory"
+                             action="#{entityController.reloadCurrent()}"
+                             update="itemCategory#{viewName}"
+                             />
+            <p:selectCheckboxMenu label="Select Categories" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{itemCategoryController.availableItems}" /> 
 
-        </p:selectCheckboxMenu>
-    </p:inplace>
+            </p:selectCheckboxMenu>
+        </p:inplace>
 
 </ui:composition>

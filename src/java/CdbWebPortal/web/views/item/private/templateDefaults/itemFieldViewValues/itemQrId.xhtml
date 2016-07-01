@@ -5,7 +5,7 @@
 
     <p:inplace label="#{itemObject.qrIdDisplay}" 
                rendered="#{entityController.entityDisplayQrId}"
-               id="qrId" 
+               id="qrId#{viewName}" 
                editor="#{isEntityWriteable}" 
                toggleable="#{isEntityWriteable}" 
                styleClass="entityDataEmphasizedText">

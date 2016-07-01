@@ -4,7 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:inplace id="itemIdentifier1" 
+    <p:inplace id="itemIdentifier1#{viewName}" 
                rendered="#{entityController.entityDisplayItemIdentifier1}"
                editor="#{isEntityWriteable}" 
                toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
