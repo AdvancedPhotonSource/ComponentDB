@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -23,136 +25,175 @@ public class ItemFacade extends CdbEntityFacade<Item> {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
+    List<Item> itemsToAdd;
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
+    @Override
+    public void create(Item item) {
+        itemsToAdd = new ArrayList<>();
+        this.populateItemsToAdd(item);
+
+        try {
+            for (Item newItem : itemsToAdd) {
+                em.persist(newItem);
+            }
+        } catch (Exception ex) {
+            em.clear();
+            throw ex;
+        }       
+    }
+
+    private void populateItemsToAdd(Item item) {
+        if (item != null) {
+            item.resetItemElementDisplayList();
+            for (ItemElement itemElement : item.getItemElementDisplayList()) {
+                Item containedItem = itemElement.getContainedItem();
+                if (containedItem != null) {
+                    Boolean nonExistantItem = true;
+                    if (containedItem.getId() != null) {
+                        Item dbItem = find(containedItem.getId());
+                        if (dbItem == null) {
+                            // Not yet existend in DB. 
+                            populateItemsToAdd(containedItem);
+                        }
+                    } else {
+                        populateItemsToAdd(containedItem);
+                    }
+                }
+            }
+            itemsToAdd.add(item);
+        }
+    }
+
     public List<Item> findByDomainAndEntityType(String domainName, String entityTypeName) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameAndEntityType")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityTypeName)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
+
     public List<Item> findByDomain(String domainName) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainName")
-                    .setParameter("domainName", domainName)                    
+                    .setParameter("domainName", domainName)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
+
     public List<Item> findByDomainOrderByQrId(String domainName) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameOrderByQrId")
-                    .setParameter("domainName", domainName)                    
+                    .setParameter("domainName", domainName)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
+
     public List<Item> findByName(String name) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByName")
                     .setParameter("name", name)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
-    public Item findByUniqueAttributes(Item derivedFromItem, Domain domain, 
+
+    public Item findByUniqueAttributes(Item derivedFromItem, Domain domain,
             String name, String itemIdentifier1, String itemIdentifier2) {
-        String queryString = "SELECT i FROM Item i WHERE "; 
+        String queryString = "SELECT i FROM Item i WHERE ";
         if (derivedFromItem == null) {
-           queryString += "i.derivedFromItem is null ";  
+            queryString += "i.derivedFromItem is null ";
         } else {
-            queryString += "i.derivedFromItem.id = " + derivedFromItem.getId() + " "; 
+            queryString += "i.derivedFromItem.id = " + derivedFromItem.getId() + " ";
         }
-        
-        queryString += " AND i.domain.id = " + domain.getId() + " "; 
-        
-        if(name == null || name.isEmpty()) {
-           queryString += "AND (i.name is null OR i.name = '') ";  
+
+        queryString += " AND i.domain.id = " + domain.getId() + " ";
+
+        if (name == null || name.isEmpty()) {
+            queryString += "AND (i.name is null OR i.name = '') ";
         } else {
-           queryString += "AND i.name = '" + name + "' ";   
+            queryString += "AND i.name = '" + name + "' ";
         }
-        
-        if(itemIdentifier1 == null || itemIdentifier1.isEmpty()) {
-           queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '')";  
+
+        if (itemIdentifier1 == null || itemIdentifier1.isEmpty()) {
+            queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '')";
         } else {
-           queryString += "AND i.itemIdentifier1 = '" + itemIdentifier1 + "' ";   
+            queryString += "AND i.itemIdentifier1 = '" + itemIdentifier1 + "' ";
         }
-        
-        if(itemIdentifier2 == null || itemIdentifier2.isEmpty()) {
-           queryString += "AND (i.itemIdentifier2 is null OR i.itemIdentifier2 = '') ";  
+
+        if (itemIdentifier2 == null || itemIdentifier2.isEmpty()) {
+            queryString += "AND (i.itemIdentifier2 is null OR i.itemIdentifier2 = '') ";
         } else {
-           queryString += "AND i.itemIdentifier2 = '" + itemIdentifier2 + "' ";   
+            queryString += "AND i.itemIdentifier2 = '" + itemIdentifier2 + "' ";
         }
-        
+
         try {
-            return (Item) em.createQuery(queryString).getSingleResult(); 
+            return (Item) em.createQuery(queryString).getSingleResult();
         } catch (NoResultException ex) {
-        }       
-        
-        return null; 
+        }
+
+        return null;
     }
-    
+
     public List<Item> findByDerivedFromItemId(int derivedFromItemId) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByDerivedFromItemId")
                     .setParameter("id", derivedFromItemId)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
+
     public List<Item> findByDomainAndEntityTypeOrderByQrId(String domainName, String entityTypeName) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameOderByQrId")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityTypeName)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
+
     public List<Item> findByDomainAndDerivedEntityTypeOrderByQrId(String domainName, String entityTypeName) {
-        try{
+        try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainAndDerivedEntityTypeOrderByQrId")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityTypeName)
                     .getResultList();
         } catch (NoResultException ex) {
-            
+
         }
         return null;
     }
-    
+
     public List<Item> findAllWithName() {
-        return (List<Item>) em.createNamedQuery("Item.findAllWithName").getResultList(); 
+        return (List<Item>) em.createNamedQuery("Item.findAllWithName").getResultList();
     }
 
     public ItemFacade() {
         super(Item.class);
     }
-    
+
     public Item findByQrId(Integer qrId) {
         try {
             return (Item) em.createNamedQuery("Item.findByQrId")
@@ -162,7 +203,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public Item findById(Integer id) {
         try {
             return (Item) em.createNamedQuery("Item.findById")
@@ -172,5 +213,5 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
 }
