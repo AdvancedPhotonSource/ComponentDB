@@ -8,7 +8,10 @@
     <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
     <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
     <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />
-
+    
+    <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
+    <ui:param name="sortable" value="#{sortable !=null ? sortable : true}" />
+    
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
                  var="itemListObject" 
                  value="#{selectDataModel}" 
@@ -28,16 +31,12 @@
         <p:ajax event="rowUnselect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
 
         <ui:include src="itemSelectListObject.xhtml">
-            <ui:param name="entityController" value="#{selectionController}" />
-            <ui:param name="filterable" value="#{true}" />
-            <ui:param name="sortable" value="#{true}" />
+            <ui:param name="entityController" value="#{selectionController}" />            
         </ui:include>
 
         <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
             <ui:param name="entityController" value="#{selectionController}" />
             <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
-            <ui:param name="filterable" value="true" />
-            <ui:param name="sortable" value="true" />
         </ui:include>
     </p:dataTable>
 
