@@ -34,7 +34,7 @@ h1 {
     background: #f1efe2;    
 }
 
-.ui-panelgrid tr, .ui-panelgrid td {
+.ui-panelgrid .ui-panelgrid-cell {
     background: #f1efe2;
 }
 

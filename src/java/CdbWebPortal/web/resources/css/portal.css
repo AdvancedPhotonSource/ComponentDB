@@ -648,9 +648,7 @@ h2 {
 }
 
 .ui-panelgrid tr, .ui-panelgrid td {
-    background: #f2f4f7;
-    border: none;
-    font-weight: bold;
+    border: none;    
 }
 
 .ui-menu, .ui-menuitem, .ui-menu .ui-menu-child {
@@ -777,7 +775,9 @@ h2 {
 }
 
 .ui-panelgrid .ui-panelgrid-cell {
+    background: #f2f4f7;
     border-style: none;
+    font-weight: bold;
 }
 
 .ui-datatable .ui-sortable-column {
@@ -803,4 +803,9 @@ h2 {
 .createWizardPanel {
     border: 1px !important; 
     border-style: solid !important;
+}
+
+.catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
+    border: 1px solid !important; 
+    border-color: black;     
 }
