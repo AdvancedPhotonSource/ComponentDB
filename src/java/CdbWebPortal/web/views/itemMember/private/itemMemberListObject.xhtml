@@ -10,9 +10,9 @@
         <h:outputText value="#{parentItemObject.id}"/>
     </p:column>
 
-    <p:column sortBy="#{parentItemObject.name}" headerText="Name">
+    <p:column sortBy="#{parentItemObject.name}" headerText="Part">
         <h:outputLink value="../item/view.xhtml?id=#{parentItemObject.id}" title="View design details">
-            <h:outputText value="#{parentItemObject.name}"/>
+            <h:outputText value="#{currentItemController.getItemMembmershipPartIdentifier(parentItemObject)}"/>
         </h:outputLink>         
     </p:column>
 
