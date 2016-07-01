@@ -155,7 +155,7 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     @Override
-    public String createItemWizardFlowListener(FlowEvent event) {
+    public String getNextStepForCreateItemWizard(FlowEvent event) {
         String currentStep = event.getOldStep();
 
         if (currentStep.equals(ItemCreateWizardSteps.classification.getValue())) {
@@ -168,6 +168,11 @@ public class ItemDomainCatalogController extends ItemController {
         }
 
         return super.createItemWizardFlowListener(event);
+    }
+
+    @Override
+    public String getFirstCreateWizardStep() {
+        return ItemCreateWizardSteps.basicInformation.getValue();
     }
 
     @Override
