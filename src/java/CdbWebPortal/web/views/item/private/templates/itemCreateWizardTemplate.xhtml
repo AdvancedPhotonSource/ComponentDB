@@ -18,7 +18,7 @@
             <p:panel header="Select Catalog Item" styleClass="createWizardPanel">
                 <ui:include src="../itemSelectDataTable.xhtml">
                     <ui:param name="selectionController" value="#{entityController.itemDerivedFromDomainController}" />         
-                    <ui:param name="selectionTarget" value="#{itemObject.derivedFromItem}" />
+                    <ui:param name="selectionTarget" value="#{entityController.currentDerivedFromItem}" />
                 </ui:include>
             </p:panel>
         </p:tab>
