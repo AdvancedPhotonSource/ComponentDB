@@ -3,12 +3,12 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
     
-    <p:column id="qrId#{viewName}">
+    <p:column id="qrId#{viewName}"
+              rendered="#{entityController.entityDisplayQrId}">
               <h:inputText id="qrIdIT#{viewName}"
-                 value="#{itemObject.qrId}" 
-                 rendered="#{entityController.entityDisplayQrId}"
+                 value="#{itemObject.qrId}"                  
                  title="QR Id" styleClass="entityDataEmphasizedText"
-                 onchange="updateQrId#{viewName}()"/>
+                 onkeyup="updateQrId#{viewName}()"/>
               <p:remoteCommand name="updateQrId#{viewName}"
                                update="qrId#{viewName}" />
     </p:column>

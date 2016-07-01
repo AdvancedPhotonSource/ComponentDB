@@ -9,7 +9,7 @@
         <h:inputTextarea id="descriptionITA#{viewName}"
                          value="#{itemObject.description}" 
                          title="Description" styleClass="entityDataText" 
-                         onchange="updateDescription#{viewName}()"/>
+                         onkeyup="updateDescription#{viewName}()"/>
         <p:remoteCommand name="updateDescription#{viewName}"
                          update="description#{viewName}" />
     </p:column>

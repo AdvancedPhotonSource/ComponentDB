@@ -5,12 +5,12 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column id="itemIdentifier1#{viewName}">
+    <p:column id="itemIdentifier1#{viewName}"
+              rendered="#{entityController.entityDisplayItemIdentifier1}">
         <h:inputText id="itemIdentifier1IT#{viewName}"
-                     value="#{itemObject.itemIdentifier1}" 
-                     rendered="#{entityController.entityDisplayItemIdentifier1}"
+                     value="#{itemObject.itemIdentifier1}"                      
                      styleClass="entityDataEmphasizedText"
-                     onchange="updateItemIdentifier1#{viewName}()"/>
+                     onkeyup="updateItemIdentifier1#{viewName}()"/>
         <p:remoteCommand name="updateItemIdentifier1#{viewName}"
                          update="itemIdentifier1#{viewName}"/>        
     </p:column>
