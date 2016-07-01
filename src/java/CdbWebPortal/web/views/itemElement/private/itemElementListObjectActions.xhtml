@@ -15,6 +15,7 @@
             </p:commandLink>
             <p:commandLink id="designElementListViewComponentLink" 
                            action="#{itemGenericViewController.prepareView(itemElementObject.containedItem)}" 
+                           rendered="#{itemElementObject.containedItem != null}"
                            styleClass="ui-icon ui-icon-component" 
                            title="View">
                 <p:tooltip for="designElementListViewComponentLink" value="View child component details."/>
