@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay}">
+        <p:panelGrid style="background: black;">
+            <f:facet name="header">
+                <p:row>
+                    <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
+                              border: gray; border-style: solid; border-width: 1px; font-weight: bold;">Parts List</p:column>
+                    <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
+                              border: gray; border-style: solid; border-width: 1px;">Add options for selected part</p:column>
+                </p:row>
+            </f:facet>
+
+            <p:row>
+                <p:column>
+                    <p:panel>
+                        <p:tree value="#{itemDomainInventoryController.currentItemBOMListTree}"
+                                id="partsTree"
+                                var="inventoryBOM"
+                                selectionMode="single"
+                                selection="#{itemDomainInventoryController.selectedItemBOMTreeNode}"                                    
+                                >
+                            <p:ajax event="select" update="@form"/>
+
+                            <p:treeNode type="newItem" icon="ui-icon-plus">
+                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                                    <ui:param name="viewName" value="newItem"/>
+                                </ui:include>
+                            </p:treeNode>
+                            <p:treeNode type="existingItem" icon="ui-icon-check">
+                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                                    <ui:param name="viewName" value="existingItem"/>
+                                </ui:include>
+                            </p:treeNode>
+                            <p:treeNode type="placeholder" icon="ui-icon-close">
+                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                                    <ui:param name="viewName" value="placeholder"/>
+                                </ui:include>
+                            </p:treeNode>
+                            <p:treeNode>
+                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml"/>
+                            </p:treeNode>
+                        </p:tree>
+                    </p:panel>
+                </p:column>
+                <p:column>
+                    <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode != null}">                       
+                        <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
+                            <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data}" />
+                            <ui:param name="viewName" value="BOMTreeView" />
+                        </ui:include>
+
+                    </p:outputPanel>
+                    <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode == null}">
+                        <div>
+                            <h1 style="padding: 15px; padding-bottom: 20px; color: #4e80b6;">Please Select a part from parts list to begin.</h1>
+                        </div>
+                    </p:outputPanel>
+                </p:column>
+            </p:row>
+        </p:panelGrid>                
+    </p:outputPanel>
+
+
+
+    <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay == false}">
+        <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
+            <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.current.containedInBOM}" />
+            <ui:param name="viewName" value="BOMSingleView" />
+        </ui:include>
+    </p:outputPanel>
+
+
+
+</ui:composition>
+
+
