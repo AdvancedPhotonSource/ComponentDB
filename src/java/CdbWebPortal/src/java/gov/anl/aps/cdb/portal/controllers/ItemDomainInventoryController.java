@@ -30,6 +30,7 @@ import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
@@ -268,6 +269,29 @@ public class ItemDomainInventoryController extends ItemController {
 
         return createResult;
     }
+    
+    public void createSaveFromDialog(String onSuccessCommand) {
+        String result = create(); 
+        if (result != null) {
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        }        
+    }
+    
+    public void createCancelFromDialog() {
+        if (getCurrent() != null) {
+            Item catalogItem = getCurrent().getDerivedFromItem(); 
+            if (catalogItem != null) {
+                catalogItem.getDerivedFromItemList().remove(getCurrent());
+            }
+            setCurrent(null);
+        }
+    }
+
+    @Override
+    public void prepareAddItemDerivedFromItem(Item item) {
+        super.prepareAddItemDerivedFromItem(item);
+        prepareBillOfMaterialsForCurrentItem();
+    }
 
     @Override
     public String getNextStepForCreateItemWizard(FlowEvent event) {
@@ -279,9 +303,7 @@ public class ItemDomainInventoryController extends ItemController {
         String nsEvent = event.getNewStep();
 
         if (nsEvent.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
-            // Prepare bill of materials if not yet done so. 
-            InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
-            InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
+            prepareBillOfMaterialsForCurrentItem();
         }
 
         if (nsEvent.equals(ItemCreateWizardSteps.reviewSave.getValue())) {
@@ -294,6 +316,12 @@ public class ItemDomainInventoryController extends ItemController {
         }
 
         return super.getNextStepForCreateItemWizard(event);
+    }
+    
+    public void prepareBillOfMaterialsForCurrentItem() {
+        // Prepare bill of materials if not yet done so. 
+        InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
+        InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
     }
 
     @Override
