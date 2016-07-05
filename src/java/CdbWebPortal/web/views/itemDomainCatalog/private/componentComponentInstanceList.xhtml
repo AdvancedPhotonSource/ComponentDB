@@ -11,6 +11,8 @@
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
+        <ui:param name="displayAddButton" value="#{true}" />
+        <ui:param name="onCompleteAddButtonCommand" value="prepareAddInventoryItem()" />
     </ui:include>    
     
     <ui:include src="componentComponentInstanceListDataTable.xhtml"/>
