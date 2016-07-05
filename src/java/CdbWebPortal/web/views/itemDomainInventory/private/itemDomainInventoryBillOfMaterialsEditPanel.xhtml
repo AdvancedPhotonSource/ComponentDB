@@ -21,7 +21,7 @@
                 <f:selectItem itemLabel="Not Yet Defined" itemValue="placeholder"/>
                 <f:selectItem itemLabel="Use Existing Item" itemValue="existingItem" />
                 <f:selectItem itemLabel="Create a New Inventory Item" itemValue="newItem" />
-                <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="@form"/>
+                <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="#{fullUpateTarget}"/>
             </p:selectOneRadio>
         </p:panelGrid>
         <p/>
@@ -37,6 +37,7 @@
                     <ui:param name="selectionValue" value="#{billOfMaterialItem.inventoryItem}" />
                     <ui:param name="selectionTarget" value="#{billOfMaterialItem.inventoryItem}" />
                     <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
+                    <ui:param name="updateTarget" value="#{fullUpateTarget}" />
                 </ui:include>
             </p:panel>
         </p:outputPanel>

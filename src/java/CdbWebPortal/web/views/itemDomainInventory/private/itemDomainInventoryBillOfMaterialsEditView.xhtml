@@ -8,7 +8,10 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay}">
-        <p:panelGrid style="background: black;">
+        
+        <ui:param name="fullUpateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
+        <p:panelGrid id="inventoryItemEditBOMViewPanelGrid"
+                     style="background: black;">
             <f:facet name="header">
                 <p:row>
                     <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
@@ -27,7 +30,7 @@
                                 selectionMode="single"
                                 selection="#{itemDomainInventoryController.selectedItemBOMTreeNode}"                                    
                                 >
-                            <p:ajax event="select" update="@form"/>
+                            <p:ajax event="select" update="#{fullUpateTarget}"/>
 
                             <p:treeNode type="newItem" icon="ui-icon-plus">
                                 <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
@@ -65,7 +68,7 @@
                     </p:outputPanel>
                 </p:column>
             </p:row>
-        </p:panelGrid>                
+        </p:panelGrid>                       
     </p:outputPanel>
 
 
