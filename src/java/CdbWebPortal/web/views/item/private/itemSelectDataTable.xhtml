@@ -9,6 +9,8 @@
     <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
     <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />
     
+    <ui:param name="updateTarget" value="#{updateTarget != null ? updateTarget : '@form'}" />
+    
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
     <ui:param name="sortable" value="#{sortable !=null ? sortable : true}" />
     
@@ -41,7 +43,7 @@
     </p:dataTable>
 
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
-                     update="@form"
+                     update="#{updateTarget}"
                      >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
                                      value="#{selectionValue}" 
