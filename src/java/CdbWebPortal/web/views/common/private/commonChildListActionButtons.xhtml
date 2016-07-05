@@ -12,7 +12,7 @@
 
         <p:commandButton id="#{childEntityTypeName}AddButton"
                          value="Add" icon="ui-icon-plus" 
-                         rendered="#{isEntityWriteable and (onCompleteAddButtonCommand != null)}"
+                         rendered="#{(isEntityWriteable or displayAddButton) and (onCompleteAddButtonCommand != null)}"
                          oncomplete="#{onCompleteAddButtonCommand}">
             <p:tooltip for="#{childEntityTypeName}AddButton" value="Add #{childEntityTypeName}" />
         </p:commandButton>
