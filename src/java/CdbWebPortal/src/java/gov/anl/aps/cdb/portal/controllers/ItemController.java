@@ -621,15 +621,18 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
     }
 
-    public void prepareAddItemDerivedFromItem(Item item) {
-        List<Item> itemDerivedFromItemList = item.getDerivedFromItemList();
+    public void prepareAddItemDerivedFromItem(Item derivedFromItem) {        
+        List<Item> itemDerivedFromItemList = derivedFromItem.getDerivedFromItemList();
 
-        Item itemDerivedFromItem = new Item();
+        Item newItemDerivedFromItem = new Item();
+        
+        newItemDerivedFromItem.init(getDerivedDomain());
 
-        itemDerivedFromItem.setDerivedFromItem(item);
-        itemDerivedFromItem.init(getDerivedDomain());
-
-        itemDerivedFromItemList.add(0, itemDerivedFromItem);
+        itemDerivedFromItemList.add(0, newItemDerivedFromItem);
+        
+        current = newItemDerivedFromItem; 
+        
+        setCurrentDerivedFromItem(derivedFromItem);
     }
 
     public void saveItemDerivedFromItemList() {
