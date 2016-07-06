@@ -807,5 +807,19 @@ h2 {
 
 .catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
     border: 1px solid !important; 
-    border-color: black;     
+    border-color: black;         
+}
+
+.panelGridHeaderColumn {
+    background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0% !important;
+    border: gray !important; 
+    border-style: solid !important; 
+    border-width: 1px !important; 
+    font-weight: bold !important;
+}
+
+.panelGridBorderedCell {
+    border: gray !important; 
+    border-style: solid !important; 
+    border-width: 1px !important; 
 }
