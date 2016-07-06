@@ -378,14 +378,18 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public String getListStyleName() {
+        /* Style is changed based on the list shown 
         if (getListEntityType() != null) {
             return getEntityTypeStyleName(getListEntityType().getName());
-        } else {
-            return getStyleName();
         }
+        */
+        
+        return getStyleName();
+        
     }
 
     public String getCurrentItemStyleName() {
+        /* Style is change based on entity type of item shown. 
         Item item = getCurrent();
         if (item != null) {
             List<EntityType> itemEntityTypeList = item.getEntityTypeDisplayList();
@@ -393,6 +397,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 return getEntityTypeStyleName(itemEntityTypeList.get(0).getName());
             }
         }
+        */
 
         return getStyleName();
     }
@@ -494,7 +499,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return findDomainController(getItemDerivedFromDomainHandlerName()); 
     }
     
-    protected Boolean isItemExistInDb(Item item) {
+    public Boolean isItemExistInDb(Item item) {
         Item dbItem = null; 
         if (item.getId() != null) {
             dbItem = itemFacade.find(item.getId());
@@ -1013,6 +1018,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     @Override
+    public EntityInfo getEntityInfo(Item item) {
+        return item.getEntityInfo(); 
+    }
+
+    @Override
     public void prepareEntityInsert(Item item) throws CdbException {
         checkItem(item);
     }
@@ -1077,7 +1087,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected String itemDomainToString(Item item) {
         return item.toString(); 
     }
-
+    
     protected void checkItemUniqueness(Item item) throws CdbException {
         String name = item.getName();
         String itemIdentifier1 = item.getItemIdentifier1();

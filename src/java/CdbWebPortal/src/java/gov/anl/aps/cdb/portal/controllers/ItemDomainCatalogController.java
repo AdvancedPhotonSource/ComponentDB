@@ -501,7 +501,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public String getStyleName() {
-        return "designComponentCatalog";
+        return "catalog";
     }
 
     @Override
