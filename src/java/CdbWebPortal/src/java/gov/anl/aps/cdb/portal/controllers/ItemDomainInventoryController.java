@@ -325,6 +325,14 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
+    public String prepareEdit(Item inventoryItem) {
+        setCurrent(inventoryItem);
+        resetBOMSupportVariables();
+        prepareBillOfMaterialsForCurrentItem(); 
+        return super.prepareEdit(inventoryItem);
+    } 
+
+    @Override
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
         if (getCurrent().getDerivedFromItem() == derivedFromItem) {
             //No need to set it is currently the same catalog item.
@@ -334,7 +342,6 @@ public class ItemDomainInventoryController extends ItemController {
         resetBOMSupportVariables();
 
         // Add current item to list
-        newItemsToAdd = new ArrayList<>();
         newItemsToAdd.add(getCurrent());
     }
 
@@ -344,7 +351,7 @@ public class ItemDomainInventoryController extends ItemController {
             getCurrent().setInventoryDomainBillOfMaterialList(null);
             getCurrent().setContainedInBOM(null);
         }
-        newItemsToAdd = null;
+        newItemsToAdd = new ArrayList<>();
         currentItemBOMListTree = null;
         selectedItemBOMTreeNode = null;
 
@@ -374,12 +381,6 @@ public class ItemDomainInventoryController extends ItemController {
             parent = new DefaultTreeNode(nextBOM, root);
             parent.setExpanded(true);
             parent.setType(nextBOM.getState());
-            /*
-            if (selectedItemBOMTreeNode == null) {
-                selectedItemBOMTreeNode = parent; 
-                currentlyDisplayedBOM = nextBOM; 
-            } 
-             */
         }
 
         /*
@@ -438,10 +439,25 @@ public class ItemDomainInventoryController extends ItemController {
     public void addItemElementsFromBillOfMaterials(Item item) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
-
+        
         for (InventoryBillOfMaterialItem bomItem : bomItems) {
-            ItemElement newItemElement = new ItemElement();
-            newItemElement.init(item, bomItem.getCatalogItemElement());
+            // Check if current catalog item element already has an item element defined. 
+            ItemElement catalogItemElement = bomItem.getCatalogItemElement(); 
+            ItemElement currentInventoryItemElement = null; 
+            for (ItemElement inventoryItemElement: item.getFullItemElementList()) {
+                if (inventoryItemElement.getDerivedFromItemElement() == catalogItemElement) {
+                    currentInventoryItemElement = inventoryItemElement; 
+                    logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);        
+                    break; 
+                }
+            }            
+            
+            if (currentInventoryItemElement == null) {
+                currentInventoryItemElement = new ItemElement();
+                currentInventoryItemElement.init(item, bomItem.getCatalogItemElement());
+                item.getFullItemElementList().add(currentInventoryItemElement);
+                logger.debug("Creating instance adding element " + currentInventoryItemElement + " to item " + item);
+            }
 
             // User has specified to create a new item for this bill of materials item. 
             String currentBomState = bomItem.getState();
@@ -462,19 +478,19 @@ public class ItemDomainInventoryController extends ItemController {
                 // No need to do that for existing items. 
                 if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                     addItemElementsFromBillOfMaterials(inventoryItem);
-                    newItemElement.setContainedItem(inventoryItem);
+                    currentInventoryItemElement.setContainedItem(inventoryItem);
 
                 } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
-                    newItemElement.setContainedItem(itemFacade.find(inventoryItem.getId()));
+                    if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
+                        currentInventoryItemElement.setContainedItem(itemFacade.find(inventoryItem.getId()));
+                    }
                 }
+            } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
+                currentInventoryItemElement.setContainedItem(null);
             }
 
             // Use permissions defined in parent of the item for the item element. 
-            updateItemElementPermissionsToItem(newItemElement, bomItem.getParentItemInstance());
-
-            logger.debug("Creating instance adding element " + newItemElement + " to item " + item);
-
-            item.getFullItemElementList().add(newItemElement);
+            updateItemElementPermissionsToItem(currentInventoryItemElement, bomItem.getParentItemInstance());
         }
 
     }
@@ -501,7 +517,7 @@ public class ItemDomainInventoryController extends ItemController {
         return false;
     }
 
-    public boolean isRenderBomNew(InventoryBillOfMaterialItem billOfMaterialsItem) {
+    public boolean isRenderBomEdit(InventoryBillOfMaterialItem billOfMaterialsItem) {
         if (billOfMaterialsItem != null) {
             return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.newItem.getValue());
         }
@@ -626,16 +642,7 @@ public class ItemDomainInventoryController extends ItemController {
         
         super.prepareEntityInsert(item);
 
-        for (Item newItem : newItemsToAdd) {
-            // item is checked by default. 
-            if (item != newItem) {
-                checkItem(newItem);
-            }
-            updateItemLocation(item);
-        }       
-        
-        // Cross check the nonadded items. 
-        checkUniquenessBetweenNewItemsToAdd();
+        checkNewItemsToAdd();
 
         // Clear new item elements for new items. In case a previous insert failed. 
         for (Item itemToAdd : newItemsToAdd) {
@@ -652,6 +659,20 @@ public class ItemDomainInventoryController extends ItemController {
         updatePermissionOnAllNewPartsIfNeeded();
 
         addItemElementsFromBillOfMaterials(item);
+    }
+    
+    private void checkNewItemsToAdd() throws CdbException {
+        Item item = getCurrent();
+        for (Item newItem : newItemsToAdd) {
+            // item is checked by default. 
+            if (item != newItem) {
+                checkItem(newItem);
+            }
+            updateItemLocation(item);
+        }       
+        
+        // Cross check the nonadded items. 
+        checkUniquenessBetweenNewItemsToAdd();
     }
 
     @Override
@@ -725,7 +746,10 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public void prepareEntityUpdate(Item item) throws CdbException {
         updateItemLocation(item);
-        super.prepareEntityUpdate(item); //To change body of generated methods, choose Tools | Templates.
+        super.prepareEntityUpdate(item); 
+        checkNewItemsToAdd();
+        
+        addItemElementsFromBillOfMaterials(item);
     }
 
     private void updateItemLocation(Item item) {
@@ -1152,7 +1176,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String getStyleName() {
-        return "designComponentInventory";
+        return "inventory";
     }
 
     @Override
