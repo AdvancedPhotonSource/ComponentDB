@@ -7,9 +7,11 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
     <p:outputPanel rendered="#{billOfMaterialItem.hasCatalogItem()}">
-        <div>
-            <h1 style="color: #4e80b6;">Define #{billOfMaterialItem.toString()}</h1>
-        </div>
+        <p:outputPanel rendered="#{renderEditPanelHeader}">
+            <div>
+                <h1 style="color: #4e80b6;">Define #{billOfMaterialItem.toString()}</h1>
+            </div>
+        </p:outputPanel>
 
         <p:panelGrid columns="2" rendered="#{billOfMaterialItem.partItem}">
             <h:outputLabel for="newInstanceAddOptions#{viewName}" 
@@ -30,7 +32,7 @@
             No item will be created, a placeholder for this item will be created. 
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem)}">
+        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem) and billOfMaterialItem.partItem}">
             <p:panel>
                 <ui:include src="../../item/private/itemSelectDataTable.xhtml">
                     <ui:param name="selectDataModel" value="#{billOfMaterialItem.existingInventoryItemSelectDataModel}" />
@@ -42,7 +44,7 @@
             </p:panel>
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomNew(billOfMaterialItem)}">
+        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomEdit(billOfMaterialItem) or !billOfMaterialItem.partItem}">
             <ui:include src="itemBillOfMaterialsNewItemEditPanel.xhtml">
                 <ui:param name="itemObject" value="#{billOfMaterialItem.inventoryItem}"/>            
             </ui:include>

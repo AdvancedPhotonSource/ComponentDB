@@ -14,15 +14,13 @@
                      style="background: black;">
             <f:facet name="header">
                 <p:row>
-                    <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
-                              border: gray; border-style: solid; border-width: 1px; font-weight: bold;">Parts List</p:column>
-                    <p:column style="background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0%;
-                              border: gray; border-style: solid; border-width: 1px;">Add options for selected part</p:column>
+                    <p:column styleClass="panelGridHeaderColumn">Parts List</p:column>
+                    <p:column styleClass="panelGridHeaderColumn">Add options for selected part</p:column>
                 </p:row>
             </f:facet>
 
             <p:row>
-                <p:column>
+                <p:column styleClass="panelGridBorderedCell">
                     <p:panel>
                         <p:tree value="#{itemDomainInventoryController.currentItemBOMListTree}"
                                 id="partsTree"
@@ -53,7 +51,7 @@
                         </p:tree>
                     </p:panel>
                 </p:column>
-                <p:column>
+                <p:column styleClass="panelGridBorderedCell">
                     <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode != null}">                       
                         <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
                             <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data}" />
@@ -77,6 +75,7 @@
         <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">
             <ui:param name="billOfMaterialItem" value="#{itemDomainInventoryController.current.containedInBOM}" />
             <ui:param name="viewName" value="BOMSingleView" />
+            <ui:param name="renderEditPanelHeader" value="#{renderEditPanelHeader != null ? renderEditPanelHeader : true}" />
         </ui:include>
     </p:outputPanel>
 
