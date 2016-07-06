@@ -12,7 +12,7 @@
 
     <ui:param name="itemDerivedController" value="#{itemDomainInventoryController}" />
 
-    <ui:include src="../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemDerivedController}"/>
         <ui:param name="childEntityTypeName" value="#{childEntityTypeName}"/>
@@ -21,7 +21,7 @@
         <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
     </ui:include>  
 
-    <ui:include src="../item/private/itemDerivedEditListDataTable.xhtml"/>
+    <ui:include src="../../item/private/itemDerivedEditListDataTable.xhtml"/>
 
 </ui:composition>
 
