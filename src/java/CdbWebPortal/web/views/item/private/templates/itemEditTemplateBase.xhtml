@@ -63,10 +63,7 @@
                         <ui:insert name="itemSources" /> 
                     </p:tab> 
 
-                    <p:tab title="Elements"
-                           rendered="#{entityController.entityDisplayItemElements}">
-                        <ui:insert name="itemElements" />
-                    </p:tab>  
+                    <ui:insert name="itemElements" />
                     
                     <p:tab title="#{entityController.itemsDerivedFromItemTitle}" 
                            rendered="#{entityController.entityDisplayItemsDerivedFromItem}">
