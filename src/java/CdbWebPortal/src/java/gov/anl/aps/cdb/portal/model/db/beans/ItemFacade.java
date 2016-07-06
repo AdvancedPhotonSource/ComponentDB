@@ -45,6 +45,23 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             em.clear();
             throw ex;
         }       
+    }    
+
+    @Override
+    public Item edit(Item item) {
+        itemsToAdd = new ArrayList<>();
+        this.populateItemsToAdd(item);
+        
+        try {
+            for (Item newItem : itemsToAdd) {
+                em.persist(newItem);
+            }
+        } catch (Exception ex) {
+            em.clear();
+            throw ex;
+        }       
+        
+        return super.edit(item);
     }
 
     private void populateItemsToAdd(Item item) {
@@ -63,6 +80,12 @@ public class ItemFacade extends CdbEntityFacade<Item> {
                     } else {
                         populateItemsToAdd(containedItem);
                     }
+                }
+            }
+            if (item.getId() != null) {
+                if (find(item.getId()) != null) {
+                    // No need to add new item. 
+                    return; 
                 }
             }
             itemsToAdd.add(item);
