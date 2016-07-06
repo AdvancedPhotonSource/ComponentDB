@@ -14,9 +14,12 @@
     </f:metadata>
     
     <ui:define name="editPanelGrid">
-        <ui:include src="private/componentInventoryEditPanelGrid.xhtml" />
+        <ui:include src="private/itemDomainInventoryBillOfMaterialsEditView.xhtml">
+            <ui:param name="renderEditPanelHeader" value="#{false}" />
+        </ui:include>
     </ui:define>
-
+    
+    <ui:define name="itemElements" />
 
 </ui:composition>
 
