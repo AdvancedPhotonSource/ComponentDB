@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
+import com.sun.javafx.scene.control.skin.VirtualFlow;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -44,14 +45,48 @@ public class InventoryBillOfMaterialItem {
 
     protected DataModel existingInventoryItemSelectDataModel = null;
 
-    public InventoryBillOfMaterialItem(ItemElement catalogItemElement, String innitialState, Item parentItemInstance) {
+    public InventoryBillOfMaterialItem(ItemElement catalogItemElement, Item parentItemInstance) {
+        loadItemDomainInventoryController();
+        ItemElement inventoryItemElement = null;
+        if (itemDomainInventoryController.isItemExistInDb(parentItemInstance)) {
+            for (ItemElement inventoryElement : parentItemInstance.getFullItemElementList()) {
+                if (inventoryElement.getDerivedFromItemElement() != null) {
+                    if (inventoryElement.getDerivedFromItemElement() == catalogItemElement) {
+                        inventoryItemElement = inventoryElement;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (inventoryItemElement != null) {
+            if (inventoryItemElement.getContainedItem() != null) {
+                inventoryItem = inventoryItemElement.getContainedItem();
+                if (itemDomainInventoryController.isItemExistInDb(inventoryItem)) {
+                    this.state = InventoryBillOfMaterialItemStates.existingItem.getValue();
+                    // No need to display bom for built part. 
+                    inventoryItem.setInventoryDomainBillOfMaterialList(null);
+                } else {
+                    this.state = InventoryBillOfMaterialItemStates.newItem.getValue();
+                }
+            } else { 
+                this.state = InventoryBillOfMaterialItemStates.placeholder.getValue();
+            }
+        } else {
+            this.state = InventoryBillOfMaterialItemStates.placeholder.getValue();
+        }
+               
         this.catalogItemElement = catalogItemElement;
-        this.state = innitialState;
         this.parentItemInstance = parentItemInstance;
     }
 
     public InventoryBillOfMaterialItem(Item inventoryItem) {
-        this.state = InventoryBillOfMaterialItemStates.newItem.getValue();
+        this.loadItemDomainInventoryController();
+        if (itemDomainInventoryController.isItemExistInDb(inventoryItem)) {
+            this.state = InventoryBillOfMaterialItemStates.existingItem.getValue();
+        } else {
+            this.state = InventoryBillOfMaterialItemStates.newItem.getValue();
+        }
         this.inventoryItem = inventoryItem;
 
         // Set default tag
@@ -124,7 +159,7 @@ public class InventoryBillOfMaterialItem {
             List<InventoryBillOfMaterialItem> iBillOfMaterialsList = new ArrayList<>();
 
             for (ItemElement catalogItemElement : catalogItemElementList) {
-                InventoryBillOfMaterialItem iBillOfMaterials = new InventoryBillOfMaterialItem(catalogItemElement, InventoryBillOfMaterialItemStates.placeholder.getValue(), parentItemInstance);
+                InventoryBillOfMaterialItem iBillOfMaterials = new InventoryBillOfMaterialItem(catalogItemElement, parentItemInstance);
 
                 iBillOfMaterialsList.add(iBillOfMaterials);
             }
@@ -166,15 +201,25 @@ public class InventoryBillOfMaterialItem {
     public boolean isRootItem() {
         return !isPartItem();
     }
-    
+
     public boolean hasCatalogItem() {
-        return getCatalogItem() != null; 
+        return getCatalogItem() != null;
     }
 
     public DataModel getExistingInventoryItemSelectDataModel() {
         if (existingInventoryItemSelectDataModel == null) {
             if (getCatalogItem() != null) {
-                existingInventoryItemSelectDataModel = new ListDataModel(getCatalogItem().getDerivedFromItemList());
+                List<Item> inventoryItemList = getCatalogItem().getDerivedFromItemList();
+                if (inventoryItem != null) {
+                    loadItemDomainInventoryController();
+                    if (itemDomainInventoryController.isItemExistInDb(inventoryItem) == false) {
+                        if (inventoryItemList.contains(inventoryItem)) {
+                            // Remove since it is not yet existing. 
+                            inventoryItemList.remove(inventoryItem);
+                        }
+                    }
+                }
+                existingInventoryItemSelectDataModel = new ListDataModel(inventoryItemList);
             }
         }
 
