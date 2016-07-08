@@ -618,8 +618,10 @@ public class ItemDomainInventoryController extends ItemController {
         }
 
         Item containedItem = instanceItemElement.getContainedItem();
-        String containedText = "Instance of " + containedItem.getDerivedFromItem().getName();
-
+        String containedText = containedItem.getDerivedFromItem().getName();
+        
+        containedText += " - " + containedItem.getName(); 
+        
         if (containedItem.getQrId() != null) {
             containedText += " (" + containedItem.getQrIdDisplay() + ")";
         }
@@ -680,22 +682,12 @@ public class ItemDomainInventoryController extends ItemController {
         String result = item.getDerivedFromItem().getName(); 
         
         //Tag to help user identify the item
-        String tag = item.getItemIdentifier2(); 
+        String tag = item.getName(); 
         if (tag != null && !tag.isEmpty()) {
             result += " - " + tag; 
         }
         
         return result; 
-    }
-
-    @Override
-    protected void checkItem(Item item) throws CdbException {
-        // Require tag be specified 
-        if (item.getItemIdentifier2() == null || item.getItemIdentifier2().isEmpty()) {
-            throw new CdbException("No " + getItemIdentifier2Title() + " has been specified for " + itemDomainToString(item));
-        }
-        
-        super.checkItem(item); //To change body of generated methods, choose Tools | Templates.
     }
     
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
@@ -717,9 +709,9 @@ public class ItemDomainInventoryController extends ItemController {
                 
                 if (itemA.getDerivedFromItem() == itemB.getDerivedFromItem()) {
                     if (itemA.getItemIdentifier1().equals(itemB.getItemIdentifier1())
-                            && itemA.getItemIdentifier2().equals(itemB.getItemIdentifier2())) {
+                            && itemA.getName().equals(itemB.getName())) {
                         throw new CdbException(itemCompareString + " have same combination of " +
-                                getItemIdentifier1Title() + " and " + getItemIdentifier2Title()); 
+                                getItemIdentifier1Title() + " and " + getNameTitle()); 
                     }
                 }
             }
@@ -1091,7 +1083,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemIdentifier2() {
-        return true;
+        return false;
     }
 
     @Override
@@ -1101,7 +1093,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemName() {
-        return false;
+        return true;
     }
 
     @Override
@@ -1130,7 +1122,7 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
-    public String getItemIdentifier2Title() {
+    public String getNameTitle() {
         return "Tag";
     }
 
@@ -1197,6 +1189,11 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public String getItemDerivedFromDomainHandlerName() {
         return DERIVED_ITEM_DOMAIN_HANDLER_NAME;
+    }
+
+    @Override
+    public String getItemIdentifier2Title() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }
