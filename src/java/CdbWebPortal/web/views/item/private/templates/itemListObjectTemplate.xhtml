@@ -18,7 +18,7 @@
     </ui:define>
 
     <ui:define name="nameColumn" >
-        <p:column sortBy="#{itemListObject.name}" headerText="Name"
+        <p:column sortBy="#{itemListObject.name}" headerText="#{entityController.nameTitle}"
                   filterBy="#{itemListObject.name}" filterMatchMode="contains"
                   filterValue="#{entityController.filterByName}"
                   filterable="#{filterable}"
