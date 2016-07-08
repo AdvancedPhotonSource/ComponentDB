@@ -167,7 +167,7 @@ public class ItemDomainCatalogController extends ItemController {
             }
         }
 
-        return super.createItemWizardFlowListener(event);
+        return super.getNextStepForCreateItemWizard(event);
     }
 
     @Override
@@ -416,7 +416,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemIdentifier2() {
-        return false;
+        return true;
     }
     
     @Override
@@ -456,7 +456,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public String getItemIdentifier2Title() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "Alternate Id 2";
     }
 
     @Override
