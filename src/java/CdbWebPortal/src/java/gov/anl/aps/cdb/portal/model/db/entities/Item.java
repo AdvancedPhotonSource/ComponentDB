@@ -763,16 +763,28 @@ public class Item extends CdbDomainEntity implements Serializable {
             return false;
         }
         Item other = (Item) object;
+        
+        if (other == this) {
+            return true; 
+        }
+        
+        if (other.getId().equals(id)) {
+            return true; 
+        }
 
         return (Objects.equals(other.getItemIdentifier1(), itemIdentifier1)
                 && Objects.equals(other.getItemIdentifier2(), itemIdentifier2)
                 && Objects.equals(other.getDerivedFromItem(), derivedFromItem)
-                && Objects.equals(other.getDomain(), domain));
+                && Objects.equals(other.getDomain(), domain)
+                && Objects.equals(other.getName(), name));
     }
 
     @Override
     public String toString() {
         if (getName() != null && getName().isEmpty() == false) {
+            if (derivedFromItem != null) {
+                return derivedFromItem.toString() + " - " + getName(); 
+            }
             return getName();
         } else if (getDerivedFromItem() != null && getDerivedFromItem().getName() != null) {
             return "derived from " + getDerivedFromItem().getName();
