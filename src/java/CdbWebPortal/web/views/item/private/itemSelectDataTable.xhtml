@@ -8,29 +8,45 @@
     <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
     <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
     <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />
-    
+
     <ui:param name="updateTarget" value="#{updateTarget != null ? updateTarget : '@form'}" />
-    
+
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
     <ui:param name="sortable" value="#{sortable !=null ? sortable : true}" />
+
+    <ui:param name="singleClickSelectionDisabled" value="#{singleClickSelectionDisabled != null ? singleClickSelectionDisabled : false}" />
     
+    <ui:param name="selectionWithResetEnabled" value="#{selectionWithResetEnabled != null ? selectionWithResetEnabled : false}" />
+    <!-- selectionValueWithReset ui:param pointing to a method must be defined when above parameter is true -->         
+    
+    <ui:param name="itemSelectionMadeWithResetRemoteCommand" value="#{entityTypeName}ItemSelectionMadeWithReset" />
+    <ui:param name="itemSelectionMadeRemoteCommand" value="#{entityTypeName}ItemSelectionMade" />
+    <ui:param name="selectionRemoteComandName" value="#{selectionWithResetEnabled ? itemSelectionMadeWithResetRemoteCommand : itemSelectionMadeRemoteCommand}" />
+
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
                  var="itemListObject" 
                  value="#{selectDataModel}" 
                  rowKey="#{itemListObject.id}"
                  selection="#{selectionValue}"
-                 resizableColumns="true"
-                 liveResize="true"
-                 draggableColumns="true"
-                 filteredValue="#{selectionController.filteredObjectList}"
+                 resizableColumns="true"              
+                 liveResize="true"                 
+                 filteredValue="#{selectionController.filteredObjectList}"                                  
                  selectionMode="single"
                  paginator="true"
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  emptyMessage="No available items found.">
 
-        <p:ajax event="rowSelect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
-        <p:ajax event="rowUnselect" oncomplete="#{entityTypeName}ItemSelectionMade()" />
+        <p:ajax event="rowSelect"
+                disabled="#{singleClickSelectionDisabled}"
+                oncomplete="#{selectionRemoteComandName}()" />
+        <p:ajax event="rowUnselect"
+                disabled="#{singleClickSelectionDisabled}"
+                oncomplete="#{selectionRemoteComandName}()" />
+
+        <p:ajax event="rowDblselect"
+                disabled="#{!singleClickSelectionDisabled}"
+                oncomplete="#{selectionRemoteComandName}()" />        
 
         <ui:include src="itemSelectListObject.xhtml">
             <ui:param name="entityController" value="#{selectionController}" />            
@@ -43,14 +59,22 @@
     </p:dataTable>
 
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
-                     update="#{updateTarget}"
+                     update="#{updateTarget}"                      
                      >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
                                      value="#{selectionValue}" 
                                      target="#{selectionTarget}" />
     </p:remoteCommand>
 
-
+    
+    <p:remoteCommand name="#{entityTypeName}ItemSelectionMadeWithReset"
+                     update="#{updateTarget}" 
+                    >
+        <f:setPropertyActionListener rendered="#{selectionTarget != null}"
+                                     value="#{selectionValueWithReset}" 
+                                     target="#{selectionTarget}" />
+        
+    </p:remoteCommand>
 
 </ui:composition>
 
