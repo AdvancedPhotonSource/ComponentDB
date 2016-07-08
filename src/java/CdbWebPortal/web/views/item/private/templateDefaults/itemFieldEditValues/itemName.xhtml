@@ -9,7 +9,10 @@
         <h:inputText value="#{itemObject.name}"                  
                      title="Name" styleClass="entityDataEmphasizedText"
                      required="#{required}"
-                     requiredMessage="#{requiredMessage}"/>
+                     requiredMessage="#{requiredMessage}"
+                     onkeyup="updateName#{viewName}()"/>
+        <p:remoteCommand name="updateName#{viewName}"
+                         update="name#{viewName}" />
     </p:column>
 
 
