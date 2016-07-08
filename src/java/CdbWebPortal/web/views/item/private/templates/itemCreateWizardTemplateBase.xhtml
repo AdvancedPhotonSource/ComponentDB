@@ -24,7 +24,7 @@
     <ui:define name="pageTitle">: Create #{entityController.displayEntityTypeName}</ui:define>        
     <ui:define name="middleCenter">
 
-        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}">
+        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}">            
             <div class="pageTitle">
                 <h1>Add #{entityController.displayEntityTypeName}</h1>
             </div>
@@ -33,8 +33,7 @@
 
             <p:wizard flowListener="#{entityController.createItemWizardFlowListener}"
                       id="#{entityTypeName}ItemCreateWizard"
-                      widgetVar="#{entityTypeName}ItemCreateWizardWidget"
-                      binding="#{facesUtility.wizard}"
+                      widgetVar="#{entityTypeName}ItemCreateWizardWidget"                     
                       showNavBar="false">
 
                 <ui:insert name="derivedFromItemWizardTab"/>
@@ -47,32 +46,35 @@
 
                 <ui:insert name="additionalCreateWizardTabs" />
 
-                <ui:insert name="reviewItemTab"/>                
+                <ui:insert name="reviewItemTab"/>        
 
             </p:wizard>
 
-            <div>                
+            <p:outputPanel id="wizardButtonsOutputPanel">
                 <div style="float: left">
                     <p:commandButton value="Previous Step" 
-                                     onclick="PF('#{entityTypeName}ItemCreateWizardWidget').back();" 
+                                     onstart="PF('#{entityTypeName}ItemCreateWizardWidget').back();" 
                                      icon="ui-icon-arrowthick-1-w"
                                      update="@form"
-                                     rendered="#{!entityController.isCreateWizardOnFirstStep(facesUtility.wizardStep)}"/>
+                                     rendered="#{!entityController.isCreateWizardOnFirstStep()}"/>
                     <ui:include src="../../../common/private/commonCreateCancelButton.xhtml" />
                 </div>
-            </div>
-            <div style="float: right">
-                <ui:include src="../../../common/private/commonCreateSaveButton.xhtml"> 
-                    <ui:param name="saveButtonRendered" value="#{entityController.isCreateWizardOnLastStep(facesUtility.wizardStep)}" />
-                </ui:include>
-                <p:commandButton value="Next Step" 
-                                 onclick="PF('#{entityTypeName}ItemCreateWizardWidget').next();"
-                                 icon="ui-icon-arrowthick-1-e"
-                                 iconPos="right"
-                                 update="@form"
-                                 rendered="#{!entityController.isCreateWizardOnLastStep(facesUtility.wizardStep)}"/>
+                <div style="float: right">
+                    <ui:include src="../../../common/private/commonCreateSaveButton.xhtml"> 
+                        <ui:param name="saveButtonRendered" value="#{entityController.isCreateWizardOnLastStep()}" />
+                    </ui:include>
+                    <p:commandButton value="Next Step" 
+                                     onstart="PF('#{entityTypeName}ItemCreateWizardWidget').next();"
+                                     icon="ui-icon-arrowthick-1-e"
+                                     iconPos="right"
+                                     update="@form"
+                                     rendered="#{!entityController.isCreateWizardOnLastStep()}"/>
 
-            </div>
+                </div>
+
+                <p:remoteCommand name="updateWizardButtonsOutputPanel"
+                                 update="wizardButtonsOutputPanel" />
+            </p:outputPanel>
 
             <ui:insert name="additonalCreateItemContent" />
             <ui:insert name="templateUseAdditonalCreateItemContent" />
