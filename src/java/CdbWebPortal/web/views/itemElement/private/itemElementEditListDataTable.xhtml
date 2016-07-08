@@ -76,12 +76,14 @@
             </div>
         </p:column>
     </p:dataTable>
-
+    
     <ui:include src="../../item/private/itemSelectDialog.xhtml">
         <ui:param name="entityTypeName" value="#{itemElementController.entityTypeName}" />
         <ui:param name="selectionTarget" value="#{itemElementController.current.containedItem}" />
-        <ui:param name="selectDataModel" value="#{entityController.allowedChildItemSelectDataModel}" />
-        <ui:param name="selectionController" value="#{entityController}" />
+        <ui:param name="selectDataModel" value="#{currentItemController.allowedChildItemSelectDataModel}" />
+        <ui:param name="selectionController" value="#{currentItemController}" />     
+        <ui:param name="selectionWithResetEnabled" value="#{true}" />
+        <ui:param name="selectionValueWithReset" value="#{currentItemController.getSelectedObjectAndReset()}" />
     </ui:include>
 
 </ui:composition>
