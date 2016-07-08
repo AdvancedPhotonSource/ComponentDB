@@ -95,13 +95,13 @@ public class InventoryBillOfMaterialItem {
 
     private void setDefaultTag() {
         if (inventoryItem != null) {
-            if (inventoryItem.getItemIdentifier2() == null || inventoryItem.getItemIdentifier2().isEmpty()) {
+            if (inventoryItem.getName() == null || inventoryItem.getName().isEmpty()) {
                 this.loadItemDomainInventoryController();
                 int newItemCount = itemDomainInventoryController.getNewItemCount(getCatalogItem());
                 // Remove this item from the count. 
                 newItemCount -= 1;
                 // Add one for user readability. No use of 0 for first item. 
-                inventoryItem.setItemIdentifier2("Unit: " + (getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1) + "");
+                inventoryItem.setName("Unit: " + (getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1) + "");
             }
         }
     }
@@ -209,7 +209,9 @@ public class InventoryBillOfMaterialItem {
     public DataModel getExistingInventoryItemSelectDataModel() {
         if (existingInventoryItemSelectDataModel == null) {
             if (getCatalogItem() != null) {
-                List<Item> inventoryItemList = getCatalogItem().getDerivedFromItemList();
+                List<Item> ItemInventoryItemList = getCatalogItem().getDerivedFromItemList();
+                // Copy list to not update actual derived from item list. 
+                List<Item> inventoryItemList = new ArrayList<>(ItemInventoryItemList); 
                 if (inventoryItem != null) {
                     loadItemDomainInventoryController();
                     if (itemDomainInventoryController.isItemExistInDb(inventoryItem) == false) {
@@ -244,8 +246,8 @@ public class InventoryBillOfMaterialItem {
         // Add simple attributes specified by user. 
         if (inventoryItem != null) {
             // Tag
-            if (inventoryItem.getItemIdentifier2() != null && !inventoryItem.getItemIdentifier2().isEmpty()) {
-                response += " - " + inventoryItem.getItemIdentifier2();
+            if (inventoryItem.getName() != null && !inventoryItem.getName().isEmpty()) {
+                response += " - " + inventoryItem.getName();
             }
         }
 
