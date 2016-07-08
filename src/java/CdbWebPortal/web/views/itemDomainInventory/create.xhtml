@@ -10,6 +10,7 @@
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processCreateRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
+        <f:viewAction action="#{itemDomainInventoryController.resetCurrentWizardStep()}" rendered="#{facesContext.postBack}"/>
     </f:metadata>
 
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
