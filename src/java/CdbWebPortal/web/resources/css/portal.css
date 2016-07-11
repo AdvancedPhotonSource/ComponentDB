@@ -819,3 +819,15 @@ h2 {
     border-style: solid !important; 
     border-width: 1px !important; 
 }
+
+.blueTransparentBackground {
+    background-color: rgba(230, 245, 255, 0.85);
+}
+
+.transparentPanel {
+    background: transparent; 
+}
+
+.transparentPanel h1 {
+    color: #4E80B6; 
+}
