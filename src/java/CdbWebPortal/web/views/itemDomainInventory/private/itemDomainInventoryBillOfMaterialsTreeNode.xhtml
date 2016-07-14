@@ -12,12 +12,16 @@
     
 
     <p:tooltip for="nodeValue#{viewName}" 
-               styleClass="blueTransparentBackground"
+               styleClass="viewTransparentBackground"
                >
         <ui:param name="treeNodeCatalogItem" value="#{inventoryBOM.getCatalogItem()}" />
         <p:outputPanel rendered="#{treeNodeCatalogItem != null}"
                        styleClass="transparentPanel">
-            <h1>Part Catalog Item Information</h1>
+            <div class="viewColors">
+                <h1>
+                    Part Catalog Item Information
+                </h1>
+            </div>
             <ui:include src="../../item/private/itemViewSimplePanelGrid.xhtml">
                 <ui:param name="viewName" value="treeNodeToolTip#{viewName}"/>
                 <ui:param name="itemObject" value="#{treeNodeCatalogItem}" />
