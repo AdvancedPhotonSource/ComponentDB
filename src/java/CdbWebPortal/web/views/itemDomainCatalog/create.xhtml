@@ -13,6 +13,40 @@
 
     <ui:param name="entityController" value="#{itemDomainCatalogController}"/>
     
+    <ui:define name="itemIdentifier1HelpFragment">
+        <ui:include src="../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Recommended. Model of the catalog item. For PDMLink drawings use the drawing number." />
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="itemIdentifier2HelpFragment">
+        <ui:include src="../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Alternate Name allows for storing an alternate version of an item that already exists in its basic form (name/model)" />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="itemEntityTypeHelpFragment">
+        <ui:include src="../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Required. Item Entity Type Catagorizes the item as being a component, a design, or both." />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="itemItemTypeHelpFragment">
+        <ui:include src="../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Item function categorizes the item by its function." />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="itemItemCategoryHelpFragment">
+        <ui:include src="../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Item techsys categorizes the item by its techincal system." />
+        </ui:include>
+    </ui:define>
     
 </ui:composition>
 
