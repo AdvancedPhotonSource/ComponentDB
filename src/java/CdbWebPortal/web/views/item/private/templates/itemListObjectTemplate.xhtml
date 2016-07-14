@@ -75,7 +75,7 @@
 
     <ui:define name="itemTypeColumn"> 
         <p:column sortBy="#{itemListObject.itemTypeString}"
-                  headerText="Type"
+                  headerText="#{entityController.itemItemTypeTitle}" 
                   filterBy="#{itemListObject.itemTypeString}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
@@ -87,7 +87,7 @@
 
     <ui:define name="itemCategoryColumn" > 
         <p:column sortBy="#{itemListObject.itemCategoryString}"
-                  headerText="Category"
+                  headerText="#{entityController.itemItemCategoryTitle}" 
                   filterBy="#{itemListObject.itemCategoryString}"
                   filterOptions="#{itemCategoryController.availableItemsForSelectOne}"
                   filterable="#{filterable}"
