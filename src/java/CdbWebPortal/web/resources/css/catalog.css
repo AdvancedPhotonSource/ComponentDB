@@ -26,10 +26,6 @@ input, textarea {
     background: #f1efe2;
 }
 
-h1 {
-    color: #f1efe2;
-}
-
 .ui-accordion .ui-accordion-content {
     background: #f1efe2;    
 }
@@ -86,5 +82,25 @@ h1 {
 
 .ui-dialog {
     background: #f1efe2; 
+}
+
+.viewTransparentBackground {
+    background-color: rgba(248, 248, 246, 0.85);
+}
+
+.pageTitle h1 {
+    color: #8a8142; 
+}
+
+.sectionText {
+    color: #8a8142; 
+}
+
+.sectionTitleHelp h2 {
+    color: #8a8142; 
+}
+
+.viewColors h1 {
+    color: #8a8142; 
 }
 

@@ -424,6 +424,18 @@ input, textarea {
     width: 300px;
 }
 
+.ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
+    width: 276px;
+}
+
+.ui-selectonemenu .ui-selectonemenu-label {
+    width: 272px;
+}
+
+.ui-autocomplete .ui-inputfield {
+    width: 268px;
+}
+
 .loginInput input {
     width: 200px;
 }
@@ -820,14 +832,53 @@ h2 {
     border-width: 1px !important; 
 }
 
-.blueTransparentBackground {
+.viewTransparentBackground {
     background-color: rgba(230, 245, 255, 0.85);
+}
+
+.viewColors h1 {
+    color: #4E80B6; 
 }
 
 .transparentPanel {
     background: transparent; 
 }
 
-.transparentPanel h1 {
-    color: #4E80B6; 
+.triangle-isosceles {
+    position:relative;
+    padding:9px;
+    /*margin:1em 0 1em;*/
+    margin: 0px;
+    color:#000;
+    /* css3 */
+    background-color: rgba(160, 160, 160, .2);
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+    display: inline-block;
+}
+
+.triangle-isosceles.left {
+    margin-left: 10px;
+}
+
+.triangle-isosceles::after {
+    content:"";
+    position:absolute;
+    bottom:-15px; /* value = - border-top-width - border-bottom-width */
+    left:50px; /* controls horizontal position */
+    border-width:15px 15px 0; /* vary these values to change the angle of the vertex */
+    border-style:solid;
+    border-color:#f3961c transparent;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
+}
+
+.triangle-isosceles.left:after {
+  top:50%; /* controls vertical position */
+  left:-20px; /* value = - border-left-width - border-right-width */
+  bottom:auto;
+  border-width:4px 20px 3px 0;
+  border-color:transparent rgba(160, 160, 160, .2);
 }
