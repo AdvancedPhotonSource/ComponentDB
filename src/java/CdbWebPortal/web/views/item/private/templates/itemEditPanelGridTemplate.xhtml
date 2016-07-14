@@ -44,6 +44,7 @@
     <ui:define name="entityInfoObject">
         <ui:include src="../../../entityInfo/private/entityInfoEditObject.xhtml">
             <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
+            <ui:param name="renderHelpFragments" value="#{false}" />
         </ui:include>
     </ui:define>
 

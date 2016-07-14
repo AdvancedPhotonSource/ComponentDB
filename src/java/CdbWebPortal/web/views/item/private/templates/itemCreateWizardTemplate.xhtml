@@ -28,21 +28,46 @@
         <p:tab id="basicItemInformationTab"
                title="Basic Information">
             <p:panel header="Item Details" styleClass="createWizardPanel">
-                <p:panelGrid columns="2">
+                <p:panelGrid columns="3">
                     <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemName.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemName}">
+                        <ui:insert name="nameHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
 
                     <ui:include src="../templateDefaults/itemFieldLabels/itemQrId.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemQrId.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayQrId}">
+                        <ui:insert name="qrIdHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
+                        </ui:insert> 
+                    </p:outputPanel>
 
                     <ui:include src="../templateDefaults/itemFieldLabels/itemItemIdentifier1.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemIdentifier1}">
+                        <ui:insert name="itemIdentifier1HelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemIdentifier1.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
 
                     <ui:include src="../templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemIdentifier2}">
+                        <ui:insert name="itemIdentifier2HelpFragment" >
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
 
                     <ui:include src="../templateDefaults/itemFieldLabels/itemDescription.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemDescription.xhtml"/>
+                    <p:outputPanel>
+                        <ui:insert name="descriptionHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemDescription.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
 
                     <ui:insert name="additionalBasicInfo" />
                 </p:panelGrid>
@@ -58,15 +83,30 @@
                     Set the classification information about the item.
                 </div>
                 <p/>
-                <p:panelGrid columns="2">
+                <p:panelGrid columns="3">
                     <ui:include src="../templateDefaults/itemFieldLabels/itemEntityType.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemEntityType.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemIdentifier2}">
+                        <ui:insert name="itemEntityTypeHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemEntityType.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemCategory.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemCategory.xhtml"/>    
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemCategory}">
+                        <ui:insert name="itemItemCategoryHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemCategory.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
 
                     <ui:include src="../templateDefaults/itemFieldLabels/itemItemType.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemItemType.xhtml"/>
-
-                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemCategory.xhtml"/>
-                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemCategory.xhtml"/>                
+                    <p:outputPanel rendered="#{entityController.entityTypeEditable}">
+                        <ui:insert name="itemItemTypeHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemType.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
                 </p:panelGrid>
             </p:panel>
         </p:tab>
@@ -80,9 +120,10 @@
                     Please set all of the item permissions.
                 </div>
                 <p/>
-                <p:panelGrid columns="4">
+                <p:panelGrid columns="3">
                     <ui:include src="../../../entityInfo/private/entityInfoEditObject.xhtml">
                         <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
+                        <ui:param name="renderHelpFragments" value="#{true}" />
                     </ui:include>
                 </p:panelGrid>
             </p:panel>
