@@ -380,11 +380,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemCategoryString;
     }
 
-    public String getEditItemCategoryString() {
+    public String getEditItemCategoryString(String itemCategoryTitle) {
         String itemCategoryString = getItemCategoryString();
 
         if (itemCategoryString.isEmpty()) {
-            return "Select Item Category";
+            return "Select " + itemCategoryTitle;
         }
 
         return itemCategoryString;
@@ -431,11 +431,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemTypeString;
     }
 
-    public String getEditItemTypeString() {
+    public String getEditItemTypeString(String itemTypeTitle) {
         String itemTypeString = getItemTypeString();
 
         if (itemTypeString.isEmpty()) {
-            return "Select Item Type";
+            return "Select " + itemTypeTitle;
         }
 
         return itemTypeString;
