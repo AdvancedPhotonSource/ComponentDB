@@ -227,6 +227,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public String getNameTitle() {
         return "Name";
     }
+    
+    public String getItemItemTypeTitle() {
+        return "Type";
+    }
+    
+    public String getItemItemCategoryTitle() {
+        return "Category";
+    }
 
     public List<Item> getItemList() {
         return itemFacade.findByDomain(getListDomainName());

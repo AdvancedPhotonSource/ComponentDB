@@ -121,6 +121,16 @@ public class ItemDomainCatalogController extends ItemController {
     public String getDisplayEntityTypeName() {
         return "Catalog Item";
     }
+    
+    @Override
+    public String getItemItemTypeTitle() {
+        return "Function";
+    }
+    
+    @Override
+    public String getItemItemCategoryTitle() {
+        return "Technical System";
+    }
 
     public Boolean getLoadComponentInstanceRowExpansionPropertyValues() {
         return loadComponentInstanceRowExpansionPropertyValues;
@@ -456,7 +466,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public String getItemIdentifier2Title() {
-        return "Alternate Id 2";
+        return "Alternate Name";
     }
 
     @Override
