@@ -6,10 +6,10 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column id="entityType#{viewName}">
+    <p:column id="entityType#{viewName}"
+              rendered="#{entityController.entityTypeEditable}">
         <p:selectCheckboxMenu id="entityTypeSelectCB#{viewName}"
-                              label="#{itemObject.editEntityTypeString}"
-                              rendered="#{entityController.entityTypeEditable}"
+                              label="#{itemObject.editEntityTypeString}"                              
                               value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
                               onHide="entityTypeSelectCBUpdate#{viewName}()"
                               filter="true" filterMatchMode="contains" >

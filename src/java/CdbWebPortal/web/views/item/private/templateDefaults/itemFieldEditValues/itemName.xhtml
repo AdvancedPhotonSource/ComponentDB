@@ -7,7 +7,8 @@
     <p:column id="name#{viewName}"
               rendered="#{entityController.entityDisplayItemName}">
         <h:inputText value="#{itemObject.name}"                  
-                     title="Name" styleClass="entityDataEmphasizedText"
+                     title="#{entityController.nameTitle}" 
+                     styleClass="entityDataEmphasizedText"
                      required="#{required}"
                      requiredMessage="#{requiredMessage}"
                      onkeyup="updateName#{viewName}()"/>

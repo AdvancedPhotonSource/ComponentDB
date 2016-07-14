@@ -5,10 +5,10 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <p:column id="itemCategory#{viewName}">
+    <p:column id="itemCategory#{viewName}"
+              rendered="#{entityController.entityDisplayItemCategory}">
         <p:selectCheckboxMenu id="itemCategorySelectCB#{viewName}" 
-                              label="#{itemObject.editItemCategoryString}"                           
-                              rendered="#{entityController.displayItemCategory}"
+                              label="#{itemObject.getEditItemCategoryString(entityController.itemItemCategoryTitle)}"
                               onHide="itemCategorySelectCBUpdate#{viewName}()"
                               value="#{itemObject.itemCategoryList}" 
                               converter="itemCategoryConverter"
