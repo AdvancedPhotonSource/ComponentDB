@@ -134,8 +134,9 @@ public class ItemDomainInventoryController extends ItemController {
     @EJB
     private RelationshipTypeFacade relationshipTypeFacade;
 
-    public ItemDomainInventoryController() {
+    public ItemDomainInventoryController() {        
         super();
+        displayDerivedFromItem = false; 
     }
 
     public Boolean getDisplayLocationDetails() {
@@ -326,11 +327,28 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String prepareEdit(Item inventoryItem) {
-        setCurrent(inventoryItem);
-        resetBOMSupportVariables();
-        prepareBillOfMaterialsForCurrentItem(); 
+        setCurrent(inventoryItem);        
         return super.prepareEdit(inventoryItem);
     } 
+    
+    public Boolean displayBOMEditButton() {
+        if (current != null) {
+            List<ItemElement> catalogItemElementDisplayList; 
+            catalogItemElementDisplayList  = current.getDerivedFromItem().getItemElementDisplayList();
+            return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
+        } 
+
+        return false; 
+    }
+    
+    public String saveEditBOMList() {
+        return this.update();
+    }
+    
+    public void prepareEditBOMForCurrent() {
+        resetBOMSupportVariables();
+        prepareBillOfMaterialsForCurrentItem(); 
+    }
 
     @Override
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
@@ -617,16 +635,9 @@ public class ItemDomainInventoryController extends ItemController {
             }
         }
 
-        Item containedItem = instanceItemElement.getContainedItem();
-        String containedText = containedItem.getDerivedFromItem().getName();
-        
-        containedText += " - " + containedItem.getName(); 
-        
-        if (containedItem.getQrId() != null) {
-            containedText += " (" + containedItem.getQrIdDisplay() + ")";
-        }
+        Item containedItem = instanceItemElement.getContainedItem();        
 
-        return containedText;
+        return getItemDisplayString(containedItem);
     }
 
     public boolean isCurrentHasPartsToDisplay() {
@@ -676,18 +687,26 @@ public class ItemDomainInventoryController extends ItemController {
         // Cross check the nonadded items. 
         checkUniquenessBetweenNewItemsToAdd();
     }
+    
+    @Override
+    public String getItemDisplayString(Item item) {
+        if (item != null && item.getDerivedFromItem() != null) {
+            String result = item.getDerivedFromItem().getName(); 
+
+            //Tag to help user identify the item
+            String tag = item.getName(); 
+            if (tag != null && !tag.isEmpty()) {
+                result += "\n [" + tag + "]"; 
+            }
+
+            return result; 
+        }
+        return null; 
+    }
 
     @Override
     public String getItemMembmershipPartIdentifier(Item item) {
-        String result = item.getDerivedFromItem().getName(); 
-        
-        //Tag to help user identify the item
-        String tag = item.getName(); 
-        if (tag != null && !tag.isEmpty()) {
-            result += " - " + tag; 
-        }
-        
-        return result; 
+        return getItemDisplayString(item); 
     }
     
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
