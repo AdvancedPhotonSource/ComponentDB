@@ -417,21 +417,6 @@ CREATE TABLE `item_category` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `item_item_category`
---
-
-DROP TABLE IF EXISTS `item_item_category`;
-CREATE TABLE `item_item_category` (
-  `item_id` int(11) unsigned NOT NULL,
-  `item_category_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`item_id`, `item_category_id`),
-  KEY `item_item_category_k1` (`item_id`),
-  KEY `item_item_category_k2` (`item_category_id`),
-  CONSTRAINT `item_item_category_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_item_category_fk2` FOREIGN KEY (`item_category_id`) REFERENCES `item_category` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
 -- Table `item_type`
 --
 
@@ -445,6 +430,36 @@ CREATE TABLE `item_type` (
   UNIQUE KEY `item_type_u1` (`name`, `domain_handler_id`),
   KEY `item_type_k1` (`domain_handler_id`),
   CONSTRAINT `item_type_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_category_type`
+--
+
+DROP TABLE IF EXISTS `item_category_type`;
+CREATE TABLE `item_category_type` (
+  `item_category_id` int(11) unsigned NOT NULL,
+  `item_type_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`item_type_id`, `item_category_id`),
+  KEY `item_category_type_k1` (`item_category_id`),
+  KEY `item_category_type_k2` (`item_type_id`),
+  CONSTRAINT `item_category_type_fk1` FOREIGN KEY (`item_category_id`) REFERENCES `item_category` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_category_type_fk2` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `item_item_category`
+--
+
+DROP TABLE IF EXISTS `item_item_category`;
+CREATE TABLE `item_item_category` (
+  `item_id` int(11) unsigned NOT NULL,
+  `item_category_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`item_id`, `item_category_id`),
+  KEY `item_item_category_k1` (`item_id`),
+  KEY `item_item_category_k2` (`item_category_id`),
+  CONSTRAINT `item_item_category_fk1` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_item_category_fk2` FOREIGN KEY (`item_category_id`) REFERENCES `item_category` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
