@@ -24,11 +24,11 @@
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}ViewForm" rendered="#{pageRendered}">
             <div class="domainEntityLeftContent middleCenterLeftContent">
-                <div class="pageTitle">
-                    <h1>#{entityController.displayEntityTypeName} Details</h1>
-                </div>
-
                 <ui:param name="itemObject" value="#{entityController.selected}"/>
+                <div class="pageTitle">
+                    <h1><ui:insert name="pageTitle"/></h1>
+                </div>
+                
                 <!-- Included for easy code readability in use such as item element list. enityController is very generic-->
                 <ui:param name="currentItemController" value="#{entityController}" />
                 <ui:param name="domainEntityObject" value="#{itemObject}" />

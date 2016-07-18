@@ -9,6 +9,10 @@
         - entityController 
     -->
     
+    <ui:define name="pageTitle">
+        #{entityController.displayEntityTypeName} Details
+    </ui:define>
+    
     <ui:define name="viewPanelGrid">
         <ui:include src="../itemViewPanelGrid.xhtml" />
     </ui:define>
