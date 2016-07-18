@@ -11,13 +11,7 @@
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processEditRequestParams()}"/>
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
-    </f:metadata>
-    
-    <ui:define name="editPanelGrid">
-        <ui:include src="private/itemDomainInventoryBillOfMaterialsEditView.xhtml">
-            <ui:param name="renderEditPanelHeader" value="#{false}" />
-        </ui:include>
-    </ui:define>
+    </f:metadata>   
     
     <ui:define name="itemElements" />
 
