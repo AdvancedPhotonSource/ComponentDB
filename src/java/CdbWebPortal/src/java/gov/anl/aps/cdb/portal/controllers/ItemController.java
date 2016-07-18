@@ -594,9 +594,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         resetCreateItemWizardVariables();
         return super.prepareCreate();
     }
+    
+    public String getItemDisplayString(Item item) {
+        return item.toString();
+    }
 
     public String getItemMembmershipPartIdentifier(Item item) {
-        return item.toString();
+        return getItemDisplayString(item);
     }
 
     public List<Item> getSelectItemElementItemCandidateList() {
