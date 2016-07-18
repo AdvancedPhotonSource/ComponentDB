@@ -1,29 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
-    
-    
-    <ui:param name="childEntityController" value="#{itemElementController}"/>   
-    <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
-    
-    <ui:fragment rendered="#{childEntityController.displayFlatTableView}">
-        <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
-            <ui:param name="parentEntityController" value="#{entityController}"/>
-            <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
-            <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
-        </ui:include>
-
-        <ui:include src="itemElementListDataTable.xhtml"/>
-    </ui:fragment>
-
-    <ui:fragment rendered="#{!childEntityController.displayFlatTableView}">
-        <ui:include src="../../common/private/commonChildListTreeTableActionButtons.xhtml"/>
-        <ui:include src="itemElementListTreeTable.xhtml"/>
-    </ui:fragment>
-
-    
-    <ui:include src="itemElementListCustomizeDisplayDialog.xhtml"/>
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="templates/itemElementListTemplate.xhtml">
 </ui:composition>
 
 
