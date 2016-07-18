@@ -9,6 +9,8 @@
  */
 package gov.anl.aps.cdb.common.utilities;
 
+import java.util.List;
+
 /**
  * String utility class.
  */
@@ -31,6 +33,26 @@ public class StringUtility {
             return false;
         }
         return cs1.equals(cs2);
+    }
+
+    /**
+     * 
+     * @param cdbEntityList
+     * @return 
+     */
+    public static String getStringifyCdbList(List<?> cdbEntityList) {
+        String stringRep = "";        
+        if (cdbEntityList != null) {
+            for (Object entity : cdbEntityList) {
+                if (cdbEntityList.indexOf(entity) == cdbEntityList.size() - 1) {                   
+                    stringRep += entity.toString();
+                } else {
+                    stringRep += entity.toString() + " | ";
+                }
+            };
+        }
+
+        return stringRep;
     }
 
     /**
