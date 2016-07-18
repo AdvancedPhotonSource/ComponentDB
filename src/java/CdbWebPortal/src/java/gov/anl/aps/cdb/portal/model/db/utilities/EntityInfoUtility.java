@@ -12,6 +12,7 @@ package gov.anl.aps.cdb.portal.model.db.utilities;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.Date;
@@ -22,6 +23,9 @@ import java.util.regex.Pattern;
  * DB utility class for entity info objects.
  */
 public class EntityInfoUtility {
+
+    private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
+    private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
 
     public static EntityInfo createEntityInfo() {
         UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
@@ -39,7 +43,19 @@ public class EntityInfoUtility {
         entityInfo.setIsGroupWriteable(true);
         List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
         if (!ownerUserGroupList.isEmpty()) {
-            entityInfo.setOwnerUserGroup(ownerUserGroupList.get(0));
+            UserGroup ownerUserGroup = null; 
+            for (UserGroup userGroup : ownerUserGroupList) {
+                if (adminGroupNameList.contains(userGroup.getName()) == false) {
+                    ownerUserGroup = userGroup;
+                    break;
+                }
+            }
+            if (ownerUserGroup == null) {
+                ownerUserGroup = ownerUserGroupList.get(0);
+            }
+            
+            entityInfo.setOwnerUserGroup(ownerUserGroup);
+
         }
         return entityInfo;
     }
