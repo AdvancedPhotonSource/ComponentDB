@@ -13,6 +13,8 @@
 
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
     <ui:param name="sortable" value="#{sortable !=null ? sortable : true}" />
+    
+    <ui:param name="calucatedFilterable" value="#{filterable ? facesUtility.displayFilters(selectDataModel, resources.SelectDataTableNumberOfRows) : false}" />
 
     <ui:param name="singleClickSelectionDisabled" value="#{singleClickSelectionDisabled != null ? singleClickSelectionDisabled : false}" />
     
@@ -50,11 +52,13 @@
 
         <ui:include src="itemSelectListObject.xhtml">
             <ui:param name="entityController" value="#{selectionController}" />            
+            <ui:param name="filterable" value="#{calucatedFilterable}" />
         </ui:include>
 
         <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
             <ui:param name="entityController" value="#{selectionController}" />
             <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
+            <ui:param name="filterable" value="#{calucatedFilterable}" />
         </ui:include>
     </p:dataTable>
 
