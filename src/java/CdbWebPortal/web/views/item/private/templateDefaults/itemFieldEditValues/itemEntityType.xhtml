@@ -6,20 +6,24 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column id="entityType#{viewName}"
-              rendered="#{entityController.entityTypeEditable}">
-        <p:selectCheckboxMenu id="entityTypeSelectCB#{viewName}"
-                              label="#{itemObject.editEntityTypeString}"                              
-                              value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
-                              onHide="entityTypeSelectCBUpdate#{viewName}()"
-                              filter="true" filterMatchMode="contains" >
-            <f:selectItems value="#{entityController.domainHandlerAllowedEnityTypes}" /> 
-        </p:selectCheckboxMenu>
-        <h:outputText value="#{itemObject.entityTypeString}"
-                      rendered="#{entityController.entityTypeEditable == false}" />
-        <p:remoteCommand name="entityTypeSelectCBUpdate#{viewName}"
-                         update="entityTypeSelectCB#{viewName}" />
+    <p:column id="entityType#{viewName}">
+        <p:outputPanel rendered="#{entityController.entityTypeEditable}">
+            <p:selectCheckboxMenu id="entityTypeSelectCB#{viewName}"
+                                  label="#{itemObject.editEntityTypeString}"                              
+                                  value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
+                                  onHide="entityTypeSelectCBUpdate#{viewName}()"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{entityController.domainHandlerAllowedEnityTypes}" /> 
+            </p:selectCheckboxMenu>
+            <h:outputText value="#{itemObject.entityTypeString}"
+                          rendered="#{entityController.entityTypeEditable == false}" />
+            <p:remoteCommand name="entityTypeSelectCBUpdate#{viewName}"
+                             update="entityTypeSelectCB#{viewName}" />
+        </p:outputPanel>
+        <p:outputPanel rendered="#{!entityController.entityTypeEditable}">
+            <h:outputText value="#{itemObject.entityTypeString}" />
+        </p:outputPanel>
     </p:column>
-    
-    
+
+
 </ui:composition>
