@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "DomainHandler.findById", query = "SELECT d FROM DomainHandler d WHERE d.id = :id"),
     @NamedQuery(name = "DomainHandler.findByName", query = "SELECT d FROM DomainHandler d WHERE d.name = :name"),
     @NamedQuery(name = "DomainHandler.findByDescription", query = "SELECT d FROM DomainHandler d WHERE d.description = :description")})
-public class DomainHandler implements Serializable {
+public class DomainHandler extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
