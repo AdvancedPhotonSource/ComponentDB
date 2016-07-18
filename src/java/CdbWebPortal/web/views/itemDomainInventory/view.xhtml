@@ -7,6 +7,10 @@
                 template="../item/private/templates/itemViewTemplate.xhtml">
     
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
+    
+    <ui:define name="pageTitle">
+        #{itemDomainInventoryController.getItemDisplayString(itemObject)} 
+    </ui:define>
 
     <f:metadata>
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processViewRequestParams}"/>
@@ -25,6 +29,15 @@
                 <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
             </ui:include>
         </p:panel>
+    </ui:define>
+    
+    <ui:define name="itemElements">
+        <ui:include src="private/itemDomainInventoryItemElementList.xhtml" />
+    </ui:define>
+    
+    <ui:define name="additionalViewItemContent">
+        <ui:include src="private/itemDomainInventoryBillOfMaterialsEditDialog.xhtml" />
+        
     </ui:define>
     
     <ui:remove>
