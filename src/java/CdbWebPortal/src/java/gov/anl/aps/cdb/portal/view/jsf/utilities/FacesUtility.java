@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.view.jsf.utilities;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ViewScoped;
+import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
@@ -63,6 +64,14 @@ public class FacesUtility {
 
     public Panel getAutoCollapsePanel() {
         return null;
+    }
+    
+    public boolean displayFilters(DataModel dataModel, int countRows) {
+        if (dataModel != null) {
+            return dataModel.getRowCount() > countRows; 
+        }
+
+        return false; 
     }
 
 }
