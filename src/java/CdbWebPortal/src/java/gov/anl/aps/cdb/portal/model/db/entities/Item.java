@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.io.Serializable;
@@ -102,7 +103,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
     private List<ItemType> itemTypeList;
-    @JoinTable(name = "item_item_type", joinColumns = {
+    @JoinTable(name = "item_item_project", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_project_id", referencedColumnName = "id")})
     @ManyToMany
@@ -416,16 +417,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public String getItemTypeString() {
         if (itemTypeString == null) {
-            itemTypeString = "";
-            if (itemTypeList != null) {
-                itemTypeList.stream().forEach((itemType) -> {
-                    if (itemTypeList.indexOf(itemType) == itemTypeList.size() - 1) {
-                        itemTypeString += itemType.getName();
-                    } else {
-                        itemTypeString += itemType.getName() + " | ";
-                    }
-                });
-            }
+            itemTypeString = StringUtility.getStringifyCdbList(itemTypeList);
         }
 
         return itemTypeString;
