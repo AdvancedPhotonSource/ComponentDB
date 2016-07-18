@@ -17,9 +17,7 @@
     <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />
     
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
-            <p:tooltip for="#{entityTypeName}AddButton" value="Add new #{entityController.displayEntityTypeName}."/>
-        </p:commandButton>
+        <ui:include src="reusedParts/listAddButton.xhtml" />
         
         <p:commandButton id="#{entityTypeName}LoadPropertyValuesButton" 
                          rendered="#{displayLoadPropertiesFilterValuesButton}" 
