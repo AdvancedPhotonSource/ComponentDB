@@ -11,7 +11,7 @@
         <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
         <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
-            
+
         <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml" />
         <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
@@ -21,7 +21,10 @@
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
 
         <ui:include src="componentInventoryItemLocationDropdown.xhtml" />
-        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Select current location for this item." />
+        </ui:include>
     </p:panelGrid>
 
     <p:panel header="Additional Attributes" collapsed="true" toggleable="true"
@@ -29,7 +32,10 @@
         <p:panelGrid columns="3">            
             <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier1.xhtml"/>
             <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" />
-            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemIdentifier1.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+                <ui:param name="helpFragmentText"
+                          value="A unique identifier assigned to an item by the vendor." />
+            </ui:include>
 
             <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemDescription.xhtml"/>
             <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml" />
@@ -50,17 +56,17 @@
              binding="#{facesUtility.autoCollapsePanel}">
         <p:outputPanel id="permissionsEditPanelUnlock#{viewName}" 
                        rendered="#{!billOfMaterialItem.partItem or !itemDomainInventoryController.applyPermissionToAllNewPartsForCurrent}">
-            
+
             <ui:param name="renderedPermissionsEditPanelApplyAll"
                       value="#{!billOfMaterialItem.partItem and itemDomainInventoryController.currentHasPartsToDisplay}"
                       />
-           
+
             <p:panelGrid columns="3">
                 <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">
                     <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
                     <ui:param name="renderHelpFragments" value="#{true}" />
                 </ui:include>
-                
+
                 <p:outputLabel for="applyPermissionToAllParts#{viewName}"
                                rendered="#{renderedPermissionsEditPanelApplyAll}"
                                value="Apply to new parts"/>
@@ -78,10 +84,10 @@
                               value="Apply Selected Permissions to all new parts created for this assembly." />
                     <ui:param name="rendered" value="#{renderedPermissionsEditPanelApplyAll}"/>
                 </ui:include>
-                
+
             </p:panelGrid>
             <p:panelGrid columns="2" rendered="#{renderedPermissionsEditPanelApplyAll}">
-                
+
             </p:panelGrid>
         </p:outputPanel>
         <p:outputPanel id="permissionsEditPanelLock#{viewName}" 
