@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -13,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -53,6 +55,13 @@ public class ItemCategory extends CdbEntity implements Serializable {
     @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
     @ManyToOne
     private DomainHandler domainHandler;
+     @JoinTable(name = "item_category_type", joinColumns = {
+        @JoinColumn(name = "item_category_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<ItemType> itemTypeList;
+     
+    private transient String itemTypeString = null; 
 
     public ItemCategory() {
     }
@@ -88,6 +97,34 @@ public class ItemCategory extends CdbEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @XmlTransient
+    public List<ItemType> getItemTypeList() {
+        return itemTypeList;
+    }
+
+    public void setItemTypeList(List<ItemType> itemTypeList) {
+        itemTypeString = null; 
+        this.itemTypeList = itemTypeList;
+    }
+    
+    public String getItemTypeString() {
+        if (itemTypeString == null) {
+            itemTypeString = StringUtility.getStringifyCdbList(itemTypeList);
+        }
+
+        return itemTypeString;
+    }
+    
+    public String getEditItemTypeString() {
+        itemTypeString = getItemTypeString(); 
+        if (itemTypeString.isEmpty()) {
+            return "Select Item Type";
+        }
+        else {
+            return itemTypeString; 
+        }
     }
 
     @XmlTransient
