@@ -7,7 +7,10 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -27,6 +30,8 @@ public class ItemFacade extends CdbEntityFacade<Item> {
 
     List<Item> itemsToAdd;
 
+    private final String QUERY_STRING_START = "SELECT i FROM Item i ";
+
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -44,14 +49,14 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         } catch (Exception ex) {
             em.clear();
             throw ex;
-        }       
-    }    
+        }
+    }
 
     @Override
     public Item edit(Item item) {
         itemsToAdd = new ArrayList<>();
         this.populateItemsToAdd(item);
-        
+
         try {
             for (Item newItem : itemsToAdd) {
                 em.persist(newItem);
@@ -59,8 +64,8 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         } catch (Exception ex) {
             em.clear();
             throw ex;
-        }       
-        
+        }
+
         return super.edit(item);
     }
 
@@ -85,7 +90,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             if (item.getId() != null) {
                 if (find(item.getId()) != null) {
                     // No need to add new item. 
-                    return; 
+                    return;
                 }
             }
             itemsToAdd.add(item);
@@ -139,7 +144,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
 
     public Item findByUniqueAttributes(Item derivedFromItem, Domain domain,
             String name, String itemIdentifier1, String itemIdentifier2) {
-        String queryString = "SELECT i FROM Item i WHERE ";
+        String queryString = QUERY_STRING_START + "WHERE ";
         if (derivedFromItem == null) {
             queryString += "i.derivedFromItem is null ";
         } else {
@@ -169,6 +174,48 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         try {
             return (Item) em.createQuery(queryString).getSingleResult();
         } catch (NoResultException ex) {
+        }
+
+        return null;
+    }
+
+    public List<Item> findByFilterViewAttributes(ItemProject itemProject,
+            List<ItemCategory> itemCategoryList, ItemType itemType) {
+        String queryString = QUERY_STRING_START;
+
+        List<String> queryParameters = new ArrayList<>();
+
+        if (itemProject != null) {
+            queryParameters.add("i.itemProject. id = " + itemProject.getId());
+        }
+
+        if (itemCategoryList != null) {
+            if (!itemCategoryList.isEmpty()) {
+                queryString += "JOIN i.itemCategoryList icl ";
+                for (ItemCategory itemCategory : itemCategoryList) {
+                    queryParameters.add("icl.id = " + itemCategory.getId());
+                }
+            }
+        }
+
+        if (itemType != null) {
+            queryString += " JOIN i.itemTypeList itl ";
+            queryParameters.add("itl.id = " + itemType.getId());
+        }
+
+        if (!queryParameters.isEmpty()) {
+            
+            queryString += "WHERE ";
+            
+            for (String queryParameter : queryParameters) {
+                if (queryParameters.indexOf(queryParameter) == 0) {
+                    queryString += queryParameter + " ";
+                } else {
+                    queryString += "AND " + queryParameter + " ";
+                }
+            }
+
+            return (List<Item>) em.createQuery(queryString).getResultList();
         }
 
         return null;
