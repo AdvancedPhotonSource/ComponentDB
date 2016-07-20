@@ -132,6 +132,11 @@ public class ItemDomainCatalogController extends ItemController {
         return "Technical System";
     }
 
+    @Override
+    public boolean isItemHasSimpleListView() {
+        return true; 
+    }
+
     public Boolean getLoadComponentInstanceRowExpansionPropertyValues() {
         return loadComponentInstanceRowExpansionPropertyValues;
     }
