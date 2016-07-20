@@ -36,7 +36,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemCategory.findAll", query = "SELECT i FROM ItemCategory i"),
     @NamedQuery(name = "ItemCategory.findById", query = "SELECT i FROM ItemCategory i WHERE i.id = :id"),
     @NamedQuery(name = "ItemCategory.findByName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name"),
-    @NamedQuery(name = "ItemCategory.findByDescription", query = "SELECT i FROM ItemCategory i WHERE i.description = :description")})
+    @NamedQuery(name = "ItemCategory.findByDescription", query = "SELECT i FROM ItemCategory i WHERE i.description = :description"),
+    @NamedQuery(name = "ItemCategory.findByDomainHandlerName", query = "SELECT i FROM ItemCategory i WHERE i.domainHandler.name = :domainHandlerName")})
 public class ItemCategory extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

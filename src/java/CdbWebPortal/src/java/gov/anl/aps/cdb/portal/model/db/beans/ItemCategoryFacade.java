@@ -6,8 +6,10 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -27,6 +29,17 @@ public class ItemCategoryFacade extends CdbEntityFacade<ItemCategory> {
 
     public ItemCategoryFacade() {
         super(ItemCategory.class);
+    }
+    
+    public List<ItemCategory> findByDomainHandlerName(String domainHandlerName) {
+        try {
+            return (List<ItemCategory>) em.createNamedQuery("ItemCategory.findByDomainHandlerName")
+                    .setParameter("domainHandlerName", domainHandlerName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
     }
     
 }
