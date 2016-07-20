@@ -4,9 +4,11 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.portal.constants.ItemViews;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -14,8 +16,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -60,6 +64,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     @EJB
     private EntityTypeFacade entityTypeFacade;
 
+    @EJB
+    private ItemCategoryFacade itemCategoryFacade;
+
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
     protected Boolean displayItemSources = null;
@@ -94,6 +101,27 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     protected DataModel allowedChildItemSelectDataModel = null;
 
+    protected List<ItemCategory> domainItemCategoryList = null;
+
+    protected List<ItemCategory> filterViewItemCategorySelectionList = null;
+
+    // Geenerated based on the currently selected item category. 
+    protected List<ItemType> filterViewItemTypeList = null;
+
+    protected ItemType filterViewSelectedItemType = null;
+
+    protected boolean filterViewListDataModelLoaded = false;
+
+    protected ListDataModel filterViewListDataModel = null;
+
+    protected String listViewSelected;
+
+    private final int FILTER_VIEW_MIN_ROWS = 8;
+
+    private final int FILTER_VIEW_MAX_ROWS = 15;
+
+    private int filterViewDataTableRowCount = -1;
+
     protected enum ItemCreateWizardSteps {
         derivedFromItemSelection("derivedFromItemSelectionTab"),
         basicInformation("basicItemInformationTab"),
@@ -111,8 +139,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             return value;
         }
     };
-    
-    private String currentWizardStep; 
+
+    private String currentWizardStep;
 
     public ItemController() {
     }
@@ -227,17 +255,158 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public String getNameTitle() {
         return "Name";
     }
-    
+
     public String getItemItemTypeTitle() {
         return "Type";
     }
-    
+
     public String getItemItemCategoryTitle() {
         return "Category";
     }
 
     public List<Item> getItemList() {
         return itemFacade.findByDomain(getListDomainName());
+    }
+    
+    public boolean isItemHasSimpleListView() {
+        return false;
+    }
+
+    public String getListViewSelected() {
+        if (listViewSelected == null) {
+            if (isItemHasSimpleListView()) {
+                listViewSelected = ItemViews.simpleListView.getValue();
+            } else {
+                listViewSelected = ItemViews.advancedListView.getValue();
+            }
+        }
+        return listViewSelected;
+    }
+
+    public void setListViewSelected(String listViewSelected) {
+        this.listViewSelected = listViewSelected;
+    }
+
+    public boolean getRenderSimpleView() {
+        return getListViewSelected().equals(ItemViews.simpleListView.getValue());
+    }
+
+    public boolean getRenderAdvanceView() {
+        return getListViewSelected().equals(ItemViews.advancedListView.getValue());
+    }
+
+    public List<ItemCategory> getDomainItemCategoryList() {
+        if (domainItemCategoryList == null) {
+            domainItemCategoryList = itemCategoryFacade.findByDomainHandlerName(this.getDomainHandlerName());
+        }
+        return domainItemCategoryList;
+    }
+
+    public List<ItemCategory> getFilterViewItemCategorySelection() {
+        return filterViewItemCategorySelectionList;
+    }
+
+    public void setFilterViewItemCategorySelection(List<ItemCategory> filterViewItemCategorySelectionList) {
+        List<ItemCategory> test = new ArrayList<>(filterViewItemCategorySelectionList);
+        if (this.filterViewItemCategorySelectionList != null) {
+            test.removeAll(this.filterViewItemCategorySelectionList);
+        }
+
+        // List is diferent.
+        if (test.isEmpty() == false || filterViewItemCategorySelectionList.isEmpty()) {
+            filterViewItemTypeList = null;
+            filterViewListDataModelLoaded = false;
+            filterViewSelectedItemType = null;
+            this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
+        }
+    }
+
+    public ItemType getFilterViewSelectedItemType() {
+        return filterViewSelectedItemType;
+    }
+
+    public void setFilterViewSelectedItemType(ItemType filterViewSelectedItemType) {
+        filterViewListDataModelLoaded = false;
+        this.filterViewSelectedItemType = filterViewSelectedItemType;
+    }
+
+    public List<ItemType> getFilterViewItemTypeList() {
+        if (filterViewItemTypeList == null) {
+            filterViewItemTypeList = new ArrayList<>();
+            if (filterViewItemCategorySelectionList != null) {
+                for (ItemCategory itemCategory : filterViewItemCategorySelectionList) {
+                    for (ItemType itemType : itemCategory.getItemTypeList()) {
+                        if (!filterViewItemTypeList.contains(itemType)) {
+                            filterViewItemTypeList.add(itemType);
+                        }
+                    }
+                }
+            }
+        }
+        return filterViewItemTypeList;
+    }
+
+    public ListDataModel getFilterViewListDataModel() {
+        if (filterViewListDataModelLoaded == false) {
+            ItemType itemType = filterViewSelectedItemType;
+
+            List<Item> filterViewItemList = itemFacade.findByFilterViewAttributes(null, filterViewItemCategorySelectionList, itemType);
+            filterViewListDataModel = new ListDataModel(filterViewItemList);
+            filterViewListDataModelLoaded = true;
+            filterViewDataTableRowCount = -1;
+        }
+
+        return filterViewListDataModel;
+    }
+
+    /**
+     * Function generates number of optimal rows for a data table.
+     * A known issue is that data table will stop attempting to fetch number of rows after interaction with paginator. 
+     * @return number of rows to display in data table.
+     */
+    public int getFilterViewDataTableRowCount() {
+        if (filterViewDataTableRowCount == -1) {
+            ListDataModel filterDataModel = getFilterViewListDataModel();
+
+            int filterDataModelRowCount = filterDataModel.getRowCount();
+            
+            int lastBestNumRows = 0;
+            if (filterDataModelRowCount != -1) {
+                
+                Double lastBestResult = null;
+                for (int i = FILTER_VIEW_MAX_ROWS; i > FILTER_VIEW_MIN_ROWS; i--) {
+                    if (lastBestResult == null) {
+                        lastBestResult = (i * 1.0) / (filterDataModelRowCount * 1.0);
+                        lastBestNumRows = i;
+                    } else {
+                        double currentResult = (i * 1.0) / (filterDataModelRowCount * 1.0);
+                        double resultDecimal = currentResult - Math.floor(currentResult);
+                        if (resultDecimal != 0) {
+                            double lastDecimal = lastBestResult - Math.floor(lastBestResult); 
+                            if (currentResult > lastDecimal) {
+                                lastBestResult = currentResult; 
+                                lastBestNumRows = i; 
+                            }
+                        } else {
+                            // Whole number reached. 
+                            lastBestResult = currentResult;                         
+                        }
+
+                    }
+
+                    // Optimal result reached... whole number returned. 
+                    if (lastBestResult % 1 == 0) {
+                        lastBestNumRows = i;
+                        break;
+                    }
+                }
+            } 
+
+            filterViewDataTableRowCount = lastBestNumRows;
+        }
+
+        return filterViewDataTableRowCount;
+
     }
 
     public ListDataModel getDomainListDataModel() {
@@ -526,16 +695,16 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public String createItemWizardFlowListener(FlowEvent event) {
         String prevStep = event.getOldStep();
         String nextStep = getNextStepForCreateItemWizard(event);
-        
-        currentWizardStep = nextStep; 
-        if (prevStep.equals(currentWizardStep) == false) {        
+
+        currentWizardStep = nextStep;
+        if (prevStep.equals(currentWizardStep) == false) {
             RequestContext.getCurrentInstance().execute("updateWizardButtonsOutputPanel()");
         }
         return nextStep;
     }
-    
+
     public void resetCurrentWizardStep() {
-        currentWizardStep = null; 
+        currentWizardStep = null;
     }
 
     public boolean isCreateWizardOnLastStep() {
@@ -564,7 +733,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void resetCreateItemWizardVariables() {
         // Reset any variables for the wizard.
-        currentWizardStep = null; 
+        currentWizardStep = null;
     }
 
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
@@ -594,7 +763,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         resetCreateItemWizardVariables();
         return super.prepareCreate();
     }
-    
+
     public String getItemDisplayString(Item item) {
         return item.toString();
     }
@@ -645,17 +814,17 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return allowedChildItemSelectDataModel;
     }
-    
+
     @Override
     public void resetSelectDataModel() {
         super.resetSelectDataModel();
         allowedChildItemSelectDataModel = null;
     }
-    
+
     public Item getSelectedObjectAndReset() {
         Item selectedItem = getSelectedObject();
         selectedObject = null;
-        return selectedItem; 
+        return selectedItem;
     }
 
     public List<Item> completeItemElementItem(String queryString) {
