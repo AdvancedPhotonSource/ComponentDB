@@ -307,17 +307,24 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public void setFilterViewItemCategorySelection(List<ItemCategory> filterViewItemCategorySelectionList) {
-        List<ItemCategory> test = new ArrayList<>(filterViewItemCategorySelectionList);
-        if (this.filterViewItemCategorySelectionList != null) {
-            test.removeAll(this.filterViewItemCategorySelectionList);
+        Boolean listIsDifferent = true; 
+        if (this.filterViewItemCategorySelectionList == null ||
+                filterViewItemCategorySelectionList.size() == this.filterViewItemCategorySelectionList.size()) {
+            List<ItemCategory> test = new ArrayList<>(filterViewItemCategorySelectionList);
+            if (this.filterViewItemCategorySelectionList != null) {
+                test.removeAll(this.filterViewItemCategorySelectionList);
+            }
+            
+            listIsDifferent = !test.isEmpty(); 
         }
 
         // List is diferent.
-        if (test.isEmpty() == false || filterViewItemCategorySelectionList.isEmpty()) {
+        if (listIsDifferent) {
+            this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
             filterViewItemTypeList = null;
             filterViewListDataModelLoaded = false;
-            filterViewSelectedItemType = null;
-            this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
+            // Verify validity of current selection. 
+            setFilterViewSelectedItemType(filterViewSelectedItemType);            
         }
     }
 
@@ -326,8 +333,17 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public void setFilterViewSelectedItemType(ItemType filterViewSelectedItemType) {
-        filterViewListDataModelLoaded = false;
-        this.filterViewSelectedItemType = filterViewSelectedItemType;
+        if (getFilterViewItemTypeList().contains(filterViewSelectedItemType)) {
+            filterViewListDataModelLoaded = false;
+            this.filterViewSelectedItemType = filterViewSelectedItemType;
+        } else if (!getFilterViewItemTypeList().contains(this.filterViewSelectedItemType)) {
+            // Current item is not valid
+            filterViewListDataModelLoaded = false;
+            this.filterViewSelectedItemType = null;            
+        } else if (filterViewSelectedItemType == null) {
+            filterViewListDataModelLoaded = false;
+            this.filterViewSelectedItemType = null;            
+        }
     }
 
     public List<ItemType> getFilterViewItemTypeList() {
