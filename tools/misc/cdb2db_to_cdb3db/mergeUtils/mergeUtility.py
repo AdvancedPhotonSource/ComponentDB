@@ -5,6 +5,7 @@ import sys
 import shutil
 import subprocess
 from getpass import getpass
+from unicodedata import name
 
 try:
     from dbLegacy.api.componentDbApi import ComponentDbApi as LegacyComponentDbApi
@@ -79,6 +80,8 @@ class MergeUtility():
         self.designEntityTypeName = None
 
         self.doneAllowedEntity = False
+
+        self.newItemDesignDict = {}
 
     def backupCurrentDb(self):
         print 'Backing up original database.'
@@ -364,7 +367,10 @@ class MergeUtility():
             design = self.legacyDbDesign.getDesignById(designId)
         designName = design.data['name']
 
-        item = self.itemDbApi.getItem(self.catalogDomainId, designName, None, None, None)
+        if (self.newItemDesignDict[designName]):
+            item = self.newItemDesignDict[designName]
+        else:
+            item = self.itemDbApi.getItem(self.catalogDomainId, designName, None, None, None)
 
         return item.data['id']
 
@@ -444,6 +450,8 @@ class MergeUtility():
 
             designLogs = designData['designLogs']
             self.__populateDomainEntityLogsForItemElements(selfItemElementId, designLogs)
+
+            self.newItemDesignDict[name] = currentItem
 
         self.__populateItemElementsWithDesignElements()
 
@@ -563,23 +571,18 @@ class MergeUtility():
             componentInstanceId = componentInstanceData['id']
             print 'Moving Component insatance id %s' % componentInstanceId
 
-            name = None
+            name = componentInstanceData['tag']
             itemIdentifier1 = componentInstanceData['serialNumber']
-            itemIdentifier2 = componentInstanceData['tag']
+            itemIdentifier2 = None
             description = componentInstanceData['description']
             derivedFromItemId=itemId
             qrId = componentInstanceData['qrId']
             entityInfoData = componentInstanceData['entityInfo'].data
             entityInfoArgs = self.argsGenerator.getEntityInfoArgs(entityInfoData)
 
-            if itemIdentifier1 == "":
-                itemIdentifier1 = None
-            if itemIdentifier2 == "":
-                itemIdentifier2 = None
-
             # Need to assign an arbitrary tag to non-unique component instance
-            if itemIdentifier1 is None and itemIdentifier2 is None:
-                itemIdentifier2 = 'Auto Tag %s' % (numberAssignment)
+            if name is None or not name.strip():
+                name = 'Unit: %s' % (numberAssignment)
 
 
             currentItem = self.itemDbApi.addItem(self.instanceDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.instanceEntityTypeName, qrId, description, *entityInfoArgs)
