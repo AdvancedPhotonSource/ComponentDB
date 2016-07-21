@@ -192,9 +192,15 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         if (itemCategoryList != null) {
             if (!itemCategoryList.isEmpty()) {
                 queryString += "JOIN i.itemCategoryList icl ";
+                String queryParameter = "(";
                 for (ItemCategory itemCategory : itemCategoryList) {
-                    queryParameters.add("icl.id = " + itemCategory.getId());
+                    if (itemCategoryList.indexOf(itemCategory) != 0) {
+                        queryParameter += " OR ";
+                    }
+                    queryParameter += "icl.id = " + itemCategory.getId();
                 }
+                queryParameter += ")";
+                queryParameters.add(queryParameter);
             }
         }
 
@@ -204,9 +210,9 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
 
         if (!queryParameters.isEmpty()) {
-            
+
             queryString += "WHERE ";
-            
+
             for (String queryParameter : queryParameters) {
                 if (queryParameters.indexOf(queryParameter) == 0) {
                     queryString += queryParameter + " ";
