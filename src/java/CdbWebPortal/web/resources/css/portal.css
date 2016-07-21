@@ -883,3 +883,19 @@ h2 {
   border-width:4px 20px 3px 0;
   border-color:transparent rgba(160, 160, 160, .2);
 }
+
+.tallListBox .ui-selectlistbox-listcontainer {
+    height: 450px !important; 
+}
+
+.wideListBox {
+    width: 200px;
+}
+
+.topAlignedDataCell {
+    vertical-align: top;
+}
+
+.filterViewDataTableColumn {    
+    width: "100%";
+}
