@@ -5,9 +5,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:panelGrid style="border: 1px;">
+    <p:panelGrid>
         <p:row>
-            <p:column style="vertical-align: top;">
+            <p:column styleClass="topAlignedDataCell">
                 <p:panelGrid>
                     <p:row>
                         <p:column>
@@ -21,11 +21,12 @@
                         </p:column>
                     </p:row>
                     <p:row>
-                        <p:column style="vertical-align: top;">
+                        <p:column>
                             #{entityController.itemItemCategoryTitle}
                             <p:selectManyMenu id="filterViewItemCategorySelection"
                                               value="#{entityController.filterViewItemCategorySelection}"
                                               converter="itemCategoryConverter"
+                                              styleClass="wideListBox"
                                               onchange="updateForm()">
                                 <f:selectItems value="#{entityController.domainItemCategoryList}"
                                                var="itemCategory"
@@ -36,12 +37,13 @@
                     </p:row>
                 </p:panelGrid>
             </p:column>
-            <p:column rowspan="2" style="vertical-align: top;">
+            <p:column rowspan="2" styleClass="topAlignedDataCell">
                 #{entityController.itemItemTypeTitle}
                 <p:selectOneListbox id="filterViewItemType"
                                     onchange="updateForm()"
                                     converter="itemTypeConverter"
-                                    value="#{entityController.filterViewSelectedItemType}">
+                                    value="#{entityController.filterViewSelectedItemType}"
+                                    styleClass="tallListBox">
 
                     <f:selectItem itemLabel="All" />
                     <f:selectItems value="#{entityController.filterViewItemTypeList}"
@@ -50,7 +52,7 @@
                                    itemValue="#{itemType}"/>
                 </p:selectOneListbox>
             </p:column>
-            <p:column rowspan="2" style="vertical-align: top; width: 100%">
+            <p:column rowspan="2" styleClass="topAlignedDataCell filterViewDataTableColumn">
                 <p:dataTable value="#{entityController.filterViewListDataModel}"
                              var="itemListObject"
                              paginator="true"
