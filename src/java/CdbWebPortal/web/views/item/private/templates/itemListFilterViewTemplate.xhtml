@@ -10,9 +10,14 @@
             <p:column styleClass="topAlignedDataCell">
                 <p:panelGrid>
                     <p:row>
-                        <p:column>
-                            Project
-                            <p:selectOneRadio id="customRadio" layout="grid" columns="1">
+                        <p:column >
+                            Choose a Project
+                            <p:selectOneRadio id="customRadio" 
+                                              layout="grid" 
+                                              columns="1"
+                                              converter="itemProjectConverter"
+                                              value="#{entityController.filterViewSelectedItemProject}"
+                                              onchange="updateForm()">
                                 <f:selectItems value="#{itemProjectController.availableItems}"
                                                var="itemProject"
                                                itemLabel="#{itemProject.name}"
@@ -22,7 +27,7 @@
                     </p:row>
                     <p:row>
                         <p:column>
-                            #{entityController.itemItemCategoryTitle}
+                            Choose a #{entityController.itemItemCategoryTitle}
                             <p:selectManyMenu id="filterViewItemCategorySelection"
                                               value="#{entityController.filterViewItemCategorySelection}"
                                               converter="itemCategoryConverter"
@@ -37,14 +42,14 @@
                     </p:row>
                 </p:panelGrid>
             </p:column>
-            <p:column rowspan="2" styleClass="topAlignedDataCell">
-                #{entityController.itemItemTypeTitle}
+            <p:column styleClass="topAlignedDataCell contentSeperatorBorder">
+                #{entityController.itemItemTypeTitle}s
                 <p:selectOneListbox id="filterViewItemType"
                                     onchange="updateForm()"
                                     converter="itemTypeConverter"
                                     value="#{entityController.filterViewSelectedItemType}"
+                                    disabled="#{entityController.filterViewItemTypeSelectOneDisabled}"
                                     styleClass="tallListBox">
-
                     <f:selectItem itemLabel="All" />
                     <f:selectItems value="#{entityController.filterViewItemTypeList}"
                                    var="itemType"
@@ -52,7 +57,7 @@
                                    itemValue="#{itemType}"/>
                 </p:selectOneListbox>
             </p:column>
-            <p:column rowspan="2" styleClass="topAlignedDataCell filterViewDataTableColumn">
+            <p:column styleClass="topAlignedDataCell filterViewDataTableColumn">
                 <p:dataTable value="#{entityController.filterViewListDataModel}"
                              var="itemListObject"
                              paginator="true"
