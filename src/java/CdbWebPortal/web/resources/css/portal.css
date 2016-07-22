@@ -897,5 +897,9 @@ h2 {
 }
 
 .filterViewDataTableColumn {    
-    width: "100%";
+    width: 100%;
+}
+
+.contentSeperatorBorder {
+    border-right: 2px dashed !important;
 }
