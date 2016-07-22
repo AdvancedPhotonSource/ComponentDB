@@ -24,15 +24,20 @@
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}ListForm" rendered="#{pageRendered}">  
 
-            <div class="pageTitle">
-                <h1>#{entityController.entityListPageTitle}</h1>
-            </div>
+
 
             <p:outputPanel rendered="#{entityController.renderSimpleView}">
+                <div class="pageTitle">
+                    <h1>Browse</h1>
+                </div>
                 <ui:insert name="itemListSimpleView"/>                
             </p:outputPanel>
 
             <p:outputPanel rendered="#{entityController.renderAdvanceView}">
+                <div class="pageTitle">
+                    <h1>#{entityController.entityListPageTitle}</h1>
+                </div>
+
                 <ui:insert name="helpFragment"/>
 
                 <p:outputPanel>
