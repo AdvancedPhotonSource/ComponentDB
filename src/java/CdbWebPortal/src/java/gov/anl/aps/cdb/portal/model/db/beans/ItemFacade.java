@@ -186,7 +186,8 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         List<String> queryParameters = new ArrayList<>();
 
         if (itemProject != null) {
-            queryParameters.add("i.itemProject. id = " + itemProject.getId());
+            queryString += "JOIN i.itemProjectList ipl ";
+            queryParameters.add("ipl.id = " + itemProject.getId());
         }
 
         if (itemCategoryList != null) {

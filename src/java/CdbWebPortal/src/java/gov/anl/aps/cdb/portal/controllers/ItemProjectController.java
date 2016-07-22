@@ -59,9 +59,9 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
    
     
     /**
-     * Converter class for component category objects.
+     * Converter class for component project objects.
      */
-    @FacesConverter(value = "itemProjectConverter", forClass = ItemCategory.class)
+    @FacesConverter(value = "itemProjectConverter", forClass = ItemProject.class)
     public static class ItemProjectControllerConverter implements Converter {
 
         @Override
@@ -71,11 +71,11 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
             }
             try {
                 ItemProjectController controller = (ItemProjectController) facesContext.getApplication().getELResolver().
-                        getValue(facesContext.getELContext(), null, "itemCategoryController");
+                        getValue(facesContext.getELContext(), null, "itemProjectController");
                 return controller.getEntity(getIntegerKey(value));
             } catch (Exception ex) {
                 // we cannot get entity from a given key
-                logger.warn("Value " + value + " cannot be converted to component category object.");
+                logger.warn("Value " + value + " cannot be converted to component project object.");
                 return null;
             }
         }
@@ -95,11 +95,11 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
             if (object == null) {
                 return null;
             }
-            if (object instanceof ItemCategory) {
-                ItemCategory o = (ItemCategory) object;
+            if (object instanceof ItemProject) {
+                ItemProject o = (ItemProject) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of category " + object.getClass().getName() + "; expected category: " + ItemCategory.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of project " + object.getClass().getName() + "; expected project: " + ItemProject.class.getName());
             }
         }
 

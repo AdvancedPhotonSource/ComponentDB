@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
@@ -102,6 +103,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected DataModel allowedChildItemSelectDataModel = null;
 
     protected List<ItemCategory> domainItemCategoryList = null;
+    
+    protected String listViewSelected;
 
     protected List<ItemCategory> filterViewItemCategorySelectionList = null;
 
@@ -114,7 +117,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     protected ListDataModel filterViewListDataModel = null;
 
-    protected String listViewSelected;
+    protected ItemProject filterViewSelectedItemProject = null; 
 
     private final int FILTER_VIEW_MIN_ROWS = 8;
 
@@ -345,6 +348,21 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             this.filterViewSelectedItemType = null;            
         }
     }
+    
+    public boolean isFilterViewItemTypeSelectOneDisabled() {
+        return getFilterViewItemTypeList().isEmpty(); 
+    }
+
+    public ItemProject getFilterViewSelectedItemProject() {
+        return filterViewSelectedItemProject;
+    }
+
+    public void setFilterViewSelectedItemProject(ItemProject filterViewSelectedItemProject) {
+        if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {
+            filterViewListDataModelLoaded = false;
+        }
+        this.filterViewSelectedItemProject = filterViewSelectedItemProject;
+    }
 
     public List<ItemType> getFilterViewItemTypeList() {
         if (filterViewItemTypeList == null) {
@@ -364,9 +382,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public ListDataModel getFilterViewListDataModel() {
         if (filterViewListDataModelLoaded == false) {
-            ItemType itemType = filterViewSelectedItemType;
-
-            List<Item> filterViewItemList = itemFacade.findByFilterViewAttributes(null, filterViewItemCategorySelectionList, itemType);
+            List<Item> filterViewItemList = itemFacade.findByFilterViewAttributes(filterViewSelectedItemProject, 
+                    filterViewItemCategorySelectionList, filterViewSelectedItemType);
+            
             filterViewListDataModel = new ListDataModel(filterViewItemList);
             filterViewListDataModelLoaded = true;
             filterViewDataTableRowCount = -1;
