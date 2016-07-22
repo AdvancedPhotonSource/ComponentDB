@@ -413,11 +413,15 @@ class MergeUtility():
             self.catalogDomainName = catalogDomain.data['name']
             self.catalogDomainId = catalogDomain.data['id']
 
-    def populateCatalogInventoryItems(self, populateTypesAndCategoriesAsNeeded):
-        self.__populateItemsUsingComponents(populateTypesAndCategoriesAsNeeded)
-        self.__populateItemsUsingDesigns()
+    def populateProjects(self, projects):
+        for project in projects:
+            self.itemDbApi.addItemProject(project, '')
 
-    def __populateItemsUsingDesigns(self):
+    def populateCatalogInventoryItems(self, populateTypesAndCategoriesAsNeeded, defaultItemProject):
+        self.__populateItemsUsingComponents(populateTypesAndCategoriesAsNeeded, defaultItemProject)
+        self.__populateItemsUsingDesigns(defaultItemProject)
+
+    def __populateItemsUsingDesigns(self, defaultItemProjectName):
         self.__createCatalogDomainComponentDesignEntityTypes()
 
         for design in self.allDesigns:
@@ -441,6 +445,8 @@ class MergeUtility():
 
             currentItem = self.itemDbApi.addItem(self.catalogDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.designEntityTypeName, qrId, description, *entityInfoArgs)
             itemId = currentItem.data['id']
+
+            self.itemDbApi.addItemItemProject(itemId, defaultItemProjectName)
 
             selfItemElement = self.itemDbApi.getSelfElementByItemId(itemId)
             selfItemElementId = selfItemElement.data['id']
@@ -489,7 +495,7 @@ class MergeUtility():
                 designElementLogs = designElementData['designElementLogs']
                 self.__populateDomainEntityLogsForItemElements(itemElementId, designElementLogs)
 
-    def __populateItemsUsingComponents(self, populateTypesAndCategoriesAsNeeded=False):
+    def __populateItemsUsingComponents(self, populateTypesAndCategoriesAsNeeded, defaultItemProjectName):
         self.__createCatalogDomainComponentDesignEntityTypes()
         
         for component in self.allComponents:
@@ -545,6 +551,7 @@ class MergeUtility():
         
             self.itemDbApi.addItemItemCategory(itemId, categoryName)
             self.itemDbApi.addItemItemType(itemId, typeName)
+            self.itemDbApi.addItemItemProject(itemId, defaultItemProjectName)
         
             componentLogs = componentData['componentLogs']
             self.__populateDomainEntityLogsForItemElements(selfItemElementId, componentLogs)
