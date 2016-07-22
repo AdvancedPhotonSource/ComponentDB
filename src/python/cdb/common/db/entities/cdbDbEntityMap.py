@@ -2,6 +2,7 @@
 
 from cdb.common.db.entities.allowedPropertyValue import AllowedPropertyValue
 from cdb.common.db.entities.entityInfo import EntityInfo
+from cdb.common.db.entities.itemProject import ItemProject
 from cdb.common.db.entities.propertyTypeCategory import PropertyTypeCategory 
 from cdb.common.db.entities.propertyTypeHandler import PropertyTypeHandler
 from cdb.common.db.entities.propertyType import PropertyType
@@ -39,7 +40,8 @@ from cdb.common.db.entities.itemElementLog import ItemElementLog
 from cdb.common.db.entities.itemElementRelationshipHistory import ItemElementRelationshipHistory
 from cdb.common.db.entities.allowedChildEntityType import AllowedChildEntityType
 from cdb.common.db.entities.allowedDomainHandlerEntityType import AllowedDomainHandlerEntityType
-
+from cdb.common.db.entities.itemProject import ItemProject
+from cdb.common.db.entities.itemItemProject import ItemItemProject
 
 # Map db table/db entity class
 CDB_DB_ENTITY_MAP = {
@@ -102,6 +104,7 @@ CDB_DB_ENTITY_MAP = {
     'item_type' : (ItemType, {
         'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
     }),
+    'item_project' : (ItemProject, {}),
     'item' : (Item, {
         'domain' : { 'parentEntity' : Domain, 'lazy' : False },
         'derivedFromItem' : { 'parentEntity' : Item, 'lazy' : False },
@@ -121,6 +124,10 @@ CDB_DB_ENTITY_MAP = {
     'item_item_category' : ( ItemItemCategory, {
         'item' : { 'parentEntity' : Item, 'lazy' : True },
         'category' : { 'parentEntity' : ItemCategory, 'lazy' : False },
+    }),
+    'item_item_project' : (ItemItemProject,{
+        'item' : { 'parentEntity' : Item, 'lazy' : True },
+        'project' : { 'parentEntity' : ItemProject, 'lazy' : False},
     }),
     'item_element' : ( ItemElement, {
         'parentItem' : { 'parentEntity' : Item, 'lazy' : False, 'foreignKeyColumns' : ['parent_item_id'] },

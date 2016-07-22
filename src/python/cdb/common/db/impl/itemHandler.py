@@ -2,6 +2,8 @@
 from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 
+from cdb.common.db.entities.itemItemProject import ItemItemProject
+from cdb.common.db.entities.itemProject import ItemProject
 from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.exceptions.invalidArgument import InvalidArgument
@@ -80,6 +82,9 @@ class ItemHandler(CdbDbEntityHandler):
         self.logger.debug('Inserted %s id %s' % (entityDisplayName, dbItemCategory.id))
         return dbItemCategory
 
+    def addItemProject(self, session, itemProjectName, description):
+        return self._addSimpleNameDescriptionTable(session, ItemProject, itemProjectName, description)
+
     def addItemType(self, session, itemTypeName, description, domainHandlerName):
         entityDisplayName = self._getEntityDisplayName(ItemType)
 
@@ -117,6 +122,9 @@ class ItemHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('No %s with name: %s, domain handler id: %s exists.'
                                  % (entityDisplayName, name, domainHandlerId))
+
+    def getItemProjectByName(self, session, itemProjectName):
+        return self._findDbObjByName(session, ItemProject, itemProjectName)
 
     def getItemTypeByName(self, session, name, domainHandlerId):
         entityDisplayName = self._getEntityDisplayName(ItemType)
@@ -282,6 +290,22 @@ class ItemHandler(CdbDbEntityHandler):
         self.logger.debug('Added category %s for item id %s' % (itemCategoryName, itemId))
 
         return dbItemItemCategory
+
+    def addItemItemProject(self, session, itemId, itemProjectName):
+        dbItem = self.getItemById(session, itemId)
+
+        dbProject = self.getItemProjectByName(session, itemProjectName)
+
+        dbItemItemProject = ItemItemProject()
+        dbItemItemProject.item = dbItem
+        dbItemItemProject.project = dbProject
+
+        session.add(dbItemItemProject)
+        session.flush()
+
+        self.logger.debug('Added category %s for item id %s' % (itemProjectName, itemId))
+
+        return dbItemItemProject
 
     def addItemItemType(self, session, itemId, itemTypeName):
         dbItem = self.getItemById(session, itemId)
