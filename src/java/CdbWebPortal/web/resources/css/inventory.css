@@ -17,11 +17,6 @@ html, body {
     background-color: #d5ebf5;
 }
 
-.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
-    background-color: #d5ebf5;
-}
-
-
 input, textarea {
     background: #d5ebf5;
 }

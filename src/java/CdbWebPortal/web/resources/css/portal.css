@@ -103,9 +103,13 @@ footer {
     background: #6da5d8;
 }
 
-.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
-    background-color: #f2f4f7;
-    color: #4e80b6;  
+.activeMenuItem {
+    background: #76bff0 !important;
+    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
 }
 
 .menuContent {
@@ -144,6 +148,19 @@ footer {
 
 .mainMenuBarItemImportant {
     margin-top: 1px;
+    margin-right: 5px;
+    padding: 6px !important;
+    border-radius: 6px;
+    background: #acd6f2;
+    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
+}
+
+.mainMenuBarItemImportant .ui-menuitem-text {
+    color: #5e5e5e; 
 }
 
 .menuBarSupportingItems {
@@ -877,15 +894,16 @@ h2 {
 }
 
 .triangle-isosceles.left:after {
-  top:50%; /* controls vertical position */
-  left:-20px; /* value = - border-left-width - border-right-width */
-  bottom:auto;
-  border-width:4px 20px 3px 0;
-  border-color:transparent rgba(160, 160, 160, .2);
+    top:50%; /* controls vertical position */
+    left:-20px; /* value = - border-left-width - border-right-width */
+    bottom:auto;
+    border-width:4px 20px 3px 0;
+    border-color:transparent rgba(160, 160, 160, .2);
 }
 
-.tallListBox .ui-selectlistbox-listcontainer {
-    height: 450px !important; 
+.wideListBox .ui-selectlistbox-listcontainer {
+    width: 200px !important; 
+
 }
 
 .wideListBox {
