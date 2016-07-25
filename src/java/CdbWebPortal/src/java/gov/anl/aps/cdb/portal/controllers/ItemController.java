@@ -119,9 +119,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     protected ItemProject filterViewSelectedItemProject = null; 
 
-    private final int FILTER_VIEW_MIN_ROWS = 8;
+    private final int FILTER_VIEW_MIN_ROWS = 14;
 
-    private final int FILTER_VIEW_MAX_ROWS = 15;
+    private final int FILTER_VIEW_MAX_ROWS = 20;
 
     private int filterViewDataTableRowCount = -1;
 
