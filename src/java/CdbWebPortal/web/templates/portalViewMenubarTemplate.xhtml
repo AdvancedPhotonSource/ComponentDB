@@ -7,8 +7,11 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:menubar>
+        <p:menuitem value="Browse" url="/views/itemDomainCatalog/browse" 
+                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
         <p:menuitem value="Catalog" url="/views/itemDomainCatalog/list" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
+                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
+                                  !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
         <p:menuitem value="Inventory" url="/views/itemDomainInventory/list"
                     styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
 
@@ -36,8 +39,8 @@
                 <p:menuitem value="Settings"
                             action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
                             rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
-                <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
-                <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
+                <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" styleClass="mainMenuBarItemImportant" icon="ui-icon-person"/>
+                <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" styleClass="mainMenuBarItemImportant" icon="ui-icon-close"/>
                 <p:menuitem value="About" url="/views/home.xhtml" icon="ui-icon-help" styleClass="mainMenuBarItemImportant"/>
             </p:menubar>
         </f:facet>
