@@ -2,12 +2,11 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
@@ -125,25 +124,25 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
-        displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
-        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayEnteredByUser = settingEntity.getSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        displayEnteredOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayTag = settingEntity.getSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
+        displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
 
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
-        filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-        filterByTag = sessionUser.getUserSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
-        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
-        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByEnteredByUser = settingEntity.getSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        filterByEnteredOnDateTime = settingEntity.getSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByTag = settingEntity.getSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
+        filterByUnits = settingEntity.getSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = settingEntity.getSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
     }
 
     @Override
@@ -161,25 +160,25 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
-        sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
-        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        settingEntity.setSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        settingEntity.setSettingValue(DisplayTagSettingTypeKey, displayTag);
+        settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
 
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
-        sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-        sessionUser.setUserSettingValue(FilterByTagSettingTypeKey, filterByTag);
-        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
-        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        settingEntity.setSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        settingEntity.setSettingValue(FilterByTagSettingTypeKey, filterByTag);
+        settingEntity.setSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        settingEntity.setSettingValue(FilterByValueSettingTypeKey, filterByValue);
 
     }
 

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.List;
@@ -49,37 +50,37 @@ public class ItemMemberViewController extends ItemController {
     }
     
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
         
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayMemberNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayMemberIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayMemberDescriptionSettingTypeKey, displayDescription);
-        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayMemberOwnerUserSettingTypeKey, displayOwnerUser);
-        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayMemberOwnerGroupSettingTypeKey, displayOwnerGroup);
-        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayMemberCreatedByUserSettingTypeKey, displayCreatedByUser);
-        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayMemberCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayMemberLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayMemberLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayMemberNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayMemberIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayMemberDescriptionSettingTypeKey, displayDescription);
+        displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayMemberOwnerUserSettingTypeKey, displayOwnerUser);
+        displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayMemberOwnerGroupSettingTypeKey, displayOwnerGroup);
+        displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayMemberCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayMemberCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        displayLastModifiedByUser = settingEntity.getSettingValueAsBoolean(DisplayMemberLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayMemberLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
     }
     
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
         
-        sessionUser.setUserSettingValue(DisplayMemberNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayMemberIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayMemberDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayMemberOwnerUserSettingTypeKey, displayOwnerUser);
-        sessionUser.setUserSettingValue(DisplayMemberOwnerGroupSettingTypeKey, displayOwnerGroup);
-        sessionUser.setUserSettingValue(DisplayMemberCreatedByUserSettingTypeKey, displayCreatedByUser);
-        sessionUser.setUserSettingValue(DisplayMemberCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        sessionUser.setUserSettingValue(DisplayMemberLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        sessionUser.setUserSettingValue(DisplayMemberLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        settingEntity.setSettingValue(DisplayMemberNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayMemberIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayMemberDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayMemberOwnerUserSettingTypeKey, displayOwnerUser);
+        settingEntity.setSettingValue(DisplayMemberOwnerGroupSettingTypeKey, displayOwnerGroup);
+        settingEntity.setSettingValue(DisplayMemberCreatedByUserSettingTypeKey, displayCreatedByUser);
+        settingEntity.setSettingValue(DisplayMemberCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        settingEntity.setSettingValue(DisplayMemberLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        settingEntity.setSettingValue(DisplayMemberLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
     }
 
     @Override

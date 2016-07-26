@@ -2,8 +2,8 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -133,19 +133,19 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displaySortOrder = settingEntity.getSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
-        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterBySortOrder = settingEntity.getSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        filterByUnits = settingEntity.getSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = settingEntity.getSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
     }
 
     @Override
@@ -162,21 +162,21 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
 
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
-        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        settingEntity.setSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        settingEntity.setSettingValue(FilterByValueSettingTypeKey, filterByValue);
     }
 
     @Override

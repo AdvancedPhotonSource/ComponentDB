@@ -2,6 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemSourceFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -136,30 +137,30 @@ public class ItemSourceController extends CdbEntityController<ItemSource, ItemSo
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayContactInfo = sessionUser.getUserSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
-        displayCost = sessionUser.getUserSettingValueAsBoolean(DisplayCostSettingTypeKey, displayCost);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayIsManufacturer = sessionUser.getUserSettingValueAsBoolean(DisplayIsManufacturerSettingTypeKey, displayIsManufacturer);
-        displayIsVendor = sessionUser.getUserSettingValueAsBoolean(DisplayIsVendorSettingTypeKey, displayIsVendor);
-        displayPartNumber = sessionUser.getUserSettingValueAsBoolean(DisplayPartNumberSettingTypeKey, displayPartNumber);
-        displayUrl = sessionUser.getUserSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayContactInfo = settingEntity.getSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
+        displayCost = settingEntity.getSettingValueAsBoolean(DisplayCostSettingTypeKey, displayCost);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayIsManufacturer = settingEntity.getSettingValueAsBoolean(DisplayIsManufacturerSettingTypeKey, displayIsManufacturer);
+        displayIsVendor = settingEntity.getSettingValueAsBoolean(DisplayIsVendorSettingTypeKey, displayIsVendor);
+        displayPartNumber = settingEntity.getSettingValueAsBoolean(DisplayPartNumberSettingTypeKey, displayPartNumber);
+        displayUrl = settingEntity.getSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
 
-        filterByContactInfo = sessionUser.getUserSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
-        filterByCost = sessionUser.getUserSettingValueAsString(FilterByCostSettingTypeKey, filterByCost);
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByIsManufacturer = sessionUser.getUserSettingValueAsString(FilterByIsManufacturerSettingTypeKey, filterByIsManufacturer);
-        filterByIsVendor = sessionUser.getUserSettingValueAsString(FilterByIsVendorSettingTypeKey, filterByIsVendor);
+        filterByContactInfo = settingEntity.getSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
+        filterByCost = settingEntity.getSettingValueAsString(FilterByCostSettingTypeKey, filterByCost);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByIsManufacturer = settingEntity.getSettingValueAsString(FilterByIsManufacturerSettingTypeKey, filterByIsManufacturer);
+        filterByIsVendor = settingEntity.getSettingValueAsString(FilterByIsVendorSettingTypeKey, filterByIsVendor);
 
-        filterByPartNumber = sessionUser.getUserSettingValueAsString(FilterByPartNumberSettingTypeKey, filterByPartNumber);
-        filterBySourceName = sessionUser.getUserSettingValueAsString(FilterBySourceNameSettingTypeKey, filterBySourceName);
-        filterByUrl = sessionUser.getUserSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
+        filterByPartNumber = settingEntity.getSettingValueAsString(FilterByPartNumberSettingTypeKey, filterByPartNumber);
+        filterBySourceName = settingEntity.getSettingValueAsString(FilterBySourceNameSettingTypeKey, filterBySourceName);
+        filterByUrl = settingEntity.getSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
     @Override
@@ -180,29 +181,29 @@ public class ItemSourceController extends CdbEntityController<ItemSource, ItemSo
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
-        sessionUser.setUserSettingValue(DisplayCostSettingTypeKey, displayCost);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayIsManufacturerSettingTypeKey, displayIsManufacturer);
-        sessionUser.setUserSettingValue(DisplayIsVendorSettingTypeKey, displayIsVendor);
-        sessionUser.setUserSettingValue(DisplayPartNumberSettingTypeKey, displayPartNumber);
-        sessionUser.setUserSettingValue(DisplayUrlSettingTypeKey, displayUrl);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
+        settingEntity.setSettingValue(DisplayCostSettingTypeKey, displayCost);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayIsManufacturerSettingTypeKey, displayIsManufacturer);
+        settingEntity.setSettingValue(DisplayIsVendorSettingTypeKey, displayIsVendor);
+        settingEntity.setSettingValue(DisplayPartNumberSettingTypeKey, displayPartNumber);
+        settingEntity.setSettingValue(DisplayUrlSettingTypeKey, displayUrl);
 
-        sessionUser.setUserSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
-        sessionUser.setUserSettingValue(FilterByCostSettingTypeKey, filterByCost);
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterByIsManufacturerSettingTypeKey, filterByIsManufacturer);
-        sessionUser.setUserSettingValue(FilterByIsVendorSettingTypeKey, filterByIsVendor);
-        sessionUser.setUserSettingValue(FilterByPartNumberSettingTypeKey, filterByPartNumber);
-        sessionUser.setUserSettingValue(FilterBySourceNameSettingTypeKey, filterBySourceName);
-        sessionUser.setUserSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
+        settingEntity.setSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
+        settingEntity.setSettingValue(FilterByCostSettingTypeKey, filterByCost);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByIsManufacturerSettingTypeKey, filterByIsManufacturer);
+        settingEntity.setSettingValue(FilterByIsVendorSettingTypeKey, filterByIsVendor);
+        settingEntity.setSettingValue(FilterByPartNumberSettingTypeKey, filterByPartNumber);
+        settingEntity.setSettingValue(FilterBySourceNameSettingTypeKey, filterBySourceName);
+        settingEntity.setSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
     @Override

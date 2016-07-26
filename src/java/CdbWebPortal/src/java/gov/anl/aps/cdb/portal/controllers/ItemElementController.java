@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
@@ -331,58 +332,58 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        super.updateSettingsFromSessionUser(sessionUser);
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        super.updateSettingsFromSessionSettingEntity(settingEntity);
+        if (settingEntity == null) {
             return;
         }
         
         logger.debug("Updating list settings from session user");
         
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayFlatTableView = sessionUser.getUserSettingValueAsBoolean(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
-        displayOwnerUser = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
-        displayOwnerGroup = sessionUser.getUserSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
-        displayCreatedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
-        displayCreatedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        displayLastModifiedByUser = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        displayLastModifiedOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayFlatTableView = settingEntity.getSettingValueAsBoolean(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
+        displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        displayCreatedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        displayLastModifiedByUser = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         
-        displayRowExpansion = sessionUser.getUserSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
-        loadRowExpansionPropertyValues = sessionUser.getUserSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        loadRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
         
-        displayPropertyTypeId1 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
-        displayPropertyTypeId2 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
-        displayPropertyTypeId3 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
-        displayPropertyTypeId4 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
-        displayPropertyTypeId5 = sessionUser.getUserSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+        displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        displayPropertyTypeId3 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        displayPropertyTypeId4 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        displayPropertyTypeId5 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
         
-        sortByPropertyTypeId = sessionUser.getUserSettingValueAsInteger(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId); 
+        sortByPropertyTypeId = settingEntity.getSettingValueAsInteger(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId); 
 
-        displayChildItem = sessionUser.getUserSettingValueAsBoolean(DisplayChildItemSettingTypeKey, displayChildItem);
-        displayComponent = sessionUser.getUserSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
-        displayComponentType = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypeSettingTypeKey, displayComponentType);
-        displayLocation = sessionUser.getUserSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
-        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        displayItemElementRowColor = sessionUser.getUserSettingValueAsBoolean(DisplayItemElementRowColorTypeKey, displayItemElementRowColor);
-        displayBillOfMaterialsActionColumn = sessionUser.getUserSettingValueAsBoolean(DisplayBillOfMaterialsActionColumnTypeKey, displayBillOfMaterialsActionColumn);
+        displayChildItem = settingEntity.getSettingValueAsBoolean(DisplayChildItemSettingTypeKey, displayChildItem);
+        displayComponent = settingEntity.getSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
+        displayComponentType = settingEntity.getSettingValueAsBoolean(DisplayComponentTypeSettingTypeKey, displayComponentType);
+        displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
+        displaySortOrder = settingEntity.getSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        displayItemElementRowColor = settingEntity.getSettingValueAsBoolean(DisplayItemElementRowColorTypeKey, displayItemElementRowColor);
+        displayBillOfMaterialsActionColumn = settingEntity.getSettingValueAsBoolean(DisplayBillOfMaterialsActionColumnTypeKey, displayBillOfMaterialsActionColumn);
         
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByOwnerUser = sessionUser.getUserSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
-        filterByOwnerGroup = sessionUser.getUserSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
-        filterByCreatedByUser = sessionUser.getUserSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
-        filterByCreatedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
-        filterByLastModifiedByUser = sessionUser.getUserSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
-        filterByLastModifiedOnDateTime = sessionUser.getUserSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByOwnerUser = settingEntity.getSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        filterByOwnerGroup = settingEntity.getSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        filterByCreatedByUser = settingEntity.getSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        filterByCreatedOnDateTime = settingEntity.getSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        filterByLastModifiedByUser = settingEntity.getSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        filterByLastModifiedOnDateTime = settingEntity.getSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
 
-        filterByChildItem = sessionUser.getUserSettingValueAsString(FilterByChildItemSettingTypeKey, filterByChildItem);
-        filterByComponent = sessionUser.getUserSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);
-        filterByComponentType = sessionUser.getUserSettingValueAsString(FilterByComponentTypeSettingTypeKey, filterByComponentType);
-        filterByLocation = sessionUser.getUserSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
-        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        filterByChildItem = settingEntity.getSettingValueAsString(FilterByChildItemSettingTypeKey, filterByChildItem);
+        filterByComponent = settingEntity.getSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);
+        filterByComponentType = settingEntity.getSettingValueAsString(FilterByComponentTypeSettingTypeKey, filterByComponentType);
+        filterByLocation = settingEntity.getSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
+        filterBySortOrder = settingEntity.getSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
         
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -409,56 +410,56 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        super.saveSettingsForSessionUser(sessionUser);
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        super.saveSettingsForSessionSettingEntity(settingEntity);
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
-        sessionUser.setUserSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
-        sessionUser.setUserSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
-        sessionUser.setUserSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
-        sessionUser.setUserSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        sessionUser.setUserSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        sessionUser.setUserSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
+        settingEntity.setSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
+        settingEntity.setSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
+        settingEntity.setSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
+        settingEntity.setSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
+        settingEntity.setSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
+        settingEntity.setSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         
-        sessionUser.setUserSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
-        sessionUser.setUserSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
+        settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
+        settingEntity.setSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
         
-        sessionUser.setUserSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
-        sessionUser.setUserSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
-        sessionUser.setUserSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
-        sessionUser.setUserSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
-        sessionUser.setUserSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
+        settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        settingEntity.setSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
         
-        sessionUser.setUserSettingValue(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId);
+        settingEntity.setSettingValue(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId);
 
-        sessionUser.setUserSettingValue(DisplayChildItemSettingTypeKey, displayChildItem);
-        sessionUser.setUserSettingValue(DisplayComponentSettingTypeKey, displayComponent);
-        sessionUser.setUserSettingValue(DisplayComponentTypeSettingTypeKey, displayComponentType);
-        sessionUser.setUserSettingValue(DisplayLocationSettingTypeKey, displayLocation);
-        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        sessionUser.setUserSettingValue(DisplayItemElementRowColorTypeKey, displayItemElementRowColor);
-        sessionUser.setUserSettingValue(DisplayBillOfMaterialsActionColumnTypeKey, displayBillOfMaterialsActionColumn);
+        settingEntity.setSettingValue(DisplayChildItemSettingTypeKey, displayChildItem);
+        settingEntity.setSettingValue(DisplayComponentSettingTypeKey, displayComponent);
+        settingEntity.setSettingValue(DisplayComponentTypeSettingTypeKey, displayComponentType);
+        settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
+        settingEntity.setSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        settingEntity.setSettingValue(DisplayItemElementRowColorTypeKey, displayItemElementRowColor);
+        settingEntity.setSettingValue(DisplayBillOfMaterialsActionColumnTypeKey, displayBillOfMaterialsActionColumn);
         
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
-        sessionUser.setUserSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
-        sessionUser.setUserSettingValue(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
-        sessionUser.setUserSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
-        sessionUser.setUserSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
-        sessionUser.setUserSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
+        settingEntity.setSettingValue(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
+        settingEntity.setSettingValue(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
+        settingEntity.setSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
+        settingEntity.setSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
+        settingEntity.setSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
 
-        sessionUser.setUserSettingValue(FilterByChildItemSettingTypeKey, filterByChildItem);
-        sessionUser.setUserSettingValue(FilterByComponentSettingTypeKey, filterByComponent);
-        sessionUser.setUserSettingValue(FilterByComponentTypeSettingTypeKey, filterByComponentType);
-        sessionUser.setUserSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
-        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        settingEntity.setSettingValue(FilterByChildItemSettingTypeKey, filterByChildItem);
+        settingEntity.setSettingValue(FilterByComponentSettingTypeKey, filterByComponent);
+        settingEntity.setSettingValue(FilterByComponentTypeSettingTypeKey, filterByComponentType);
+        settingEntity.setSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
+        settingEntity.setSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
     }
 
     @Override

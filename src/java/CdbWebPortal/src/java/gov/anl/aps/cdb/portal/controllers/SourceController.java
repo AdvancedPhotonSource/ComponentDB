@@ -3,6 +3,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -125,21 +126,21 @@ public class SourceController extends CdbEntityController<Source, SourceFacade>i
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayContactInfo = sessionUser.getUserSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayUrl = sessionUser.getUserSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayContactInfo = settingEntity.getSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayUrl = settingEntity.getSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByContactInfo = sessionUser.getUserSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByUrl = sessionUser.getUserSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByContactInfo = settingEntity.getSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByUrl = settingEntity.getSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
     @Override
@@ -154,21 +155,21 @@ public class SourceController extends CdbEntityController<Source, SourceFacade>i
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayUrlSettingTypeKey, displayUrl);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayUrlSettingTypeKey, displayUrl);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
-        sessionUser.setUserSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        settingEntity.setSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
     }
 
     @Override

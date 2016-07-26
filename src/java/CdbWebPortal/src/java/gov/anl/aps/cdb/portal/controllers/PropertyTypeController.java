@@ -2,19 +2,15 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -22,9 +18,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
@@ -169,27 +162,27 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        displayCategory = sessionUser.getUserSettingValueAsBoolean(DisplayCategorySettingTypeKey, displayCategory);
-        displayDefaultUnits = sessionUser.getUserSettingValueAsBoolean(DisplayDefaultUnitsSettingTypeKey, displayDefaultUnits);
-        displayDefaultValue = sessionUser.getUserSettingValueAsBoolean(DisplayDefaultValueSettingTypeKey, displayDefaultValue);
-        displayHandler = sessionUser.getUserSettingValueAsBoolean(DisplayHandlerSettingTypeKey, displayHandler);
+        displayCategory = settingEntity.getSettingValueAsBoolean(DisplayCategorySettingTypeKey, displayCategory);
+        displayDefaultUnits = settingEntity.getSettingValueAsBoolean(DisplayDefaultUnitsSettingTypeKey, displayDefaultUnits);
+        displayDefaultValue = settingEntity.getSettingValueAsBoolean(DisplayDefaultValueSettingTypeKey, displayDefaultValue);
+        displayHandler = settingEntity.getSettingValueAsBoolean(DisplayHandlerSettingTypeKey, displayHandler);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
 
-        filterByCategory = sessionUser.getUserSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
-        filterByDefaultUnits = sessionUser.getUserSettingValueAsString(FilterByDefaultUnitsSettingTypeKey, filterByDefaultUnits);
-        filterByDefaultValue = sessionUser.getUserSettingValueAsString(FilterByDefaultValueSettingTypeKey, filterByDefaultValue);
-        filterByHandler = sessionUser.getUserSettingValueAsString(FilterByHandlerSettingTypeKey, filterByHandler);
+        filterByCategory = settingEntity.getSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
+        filterByDefaultUnits = settingEntity.getSettingValueAsString(FilterByDefaultUnitsSettingTypeKey, filterByDefaultUnits);
+        filterByDefaultValue = settingEntity.getSettingValueAsString(FilterByDefaultValueSettingTypeKey, filterByDefaultValue);
+        filterByHandler = settingEntity.getSettingValueAsString(FilterByHandlerSettingTypeKey, filterByHandler);
     }
 
     @Override
@@ -206,27 +199,27 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        sessionUser.setUserSettingValue(DisplayCategorySettingTypeKey, displayCategory);
-        sessionUser.setUserSettingValue(DisplayDefaultUnitsSettingTypeKey, displayDefaultUnits);
-        sessionUser.setUserSettingValue(DisplayDefaultValueSettingTypeKey, displayDefaultValue);
-        sessionUser.setUserSettingValue(DisplayHandlerSettingTypeKey, displayHandler);
+        settingEntity.setSettingValue(DisplayCategorySettingTypeKey, displayCategory);
+        settingEntity.setSettingValue(DisplayDefaultUnitsSettingTypeKey, displayDefaultUnits);
+        settingEntity.setSettingValue(DisplayDefaultValueSettingTypeKey, displayDefaultValue);
+        settingEntity.setSettingValue(DisplayHandlerSettingTypeKey, displayHandler);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
 
-        sessionUser.setUserSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
-        sessionUser.setUserSettingValue(FilterByDefaultUnitsSettingTypeKey, filterByDefaultUnits);
-        sessionUser.setUserSettingValue(FilterByDefaultValueSettingTypeKey, filterByDefaultValue);
-        sessionUser.setUserSettingValue(FilterByHandlerSettingTypeKey, filterByHandler);
+        settingEntity.setSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
+        settingEntity.setSettingValue(FilterByDefaultUnitsSettingTypeKey, filterByDefaultUnits);
+        settingEntity.setSettingValue(FilterByDefaultValueSettingTypeKey, filterByDefaultValue);
+        settingEntity.setSettingValue(FilterByHandlerSettingTypeKey, filterByHandler);
     }
 
     @Override

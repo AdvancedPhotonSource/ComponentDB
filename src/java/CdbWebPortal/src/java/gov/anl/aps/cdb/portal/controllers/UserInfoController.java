@@ -5,6 +5,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -120,7 +121,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     public String prepareEdit(UserInfo userInfo) {
         ArrayList<UserSetting> userSettingList = new ArrayList<>();
         for (SettingType settingType : getSettingTypeList()) {
-            UserSetting setting = userInfo.getUserSetting(settingType.getName());
+            UserSetting setting = (UserSetting) userInfo.getSetting(settingType.getName());
             if (setting == null) {
                 setting = new UserSetting();
                 setting.setUser(userInfo);
@@ -177,7 +178,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         update();
         UserInfo selectedUser = getSelected();
         selectedUser.updateSettingsModificationDate();
-        logger.debug("Settings for user " + selectedUser.getUsername() + " have been modified at " + selectedUser.getUserSettingsModificationDate());
+        logger.debug("Settings for user " + selectedUser.getUsername() + " have been modified at " + selectedUser.getSettingsModificationDate());
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser.getId().equals(selectedUser.getId())) {
             logger.debug("Settings modified for session user");
@@ -237,27 +238,27 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayEmail = sessionUser.getUserSettingValueAsBoolean(DisplayEmailSettingTypeKey, displayEmail);
-        displayFirstName = sessionUser.getUserSettingValueAsBoolean(DisplayFirstNameSettingTypeKey, displayFirstName);
-        displayGroups = sessionUser.getUserSettingValueAsBoolean(DisplayGroupsSettingTypeKey, displayGroups);
-        displayLastName = sessionUser.getUserSettingValueAsBoolean(DisplayLastNameSettingTypeKey, displayLastName);
-        displayMiddleName = sessionUser.getUserSettingValueAsBoolean(DisplayMiddleNameSettingTypeKey, displayMiddleName);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayEmail = settingEntity.getSettingValueAsBoolean(DisplayEmailSettingTypeKey, displayEmail);
+        displayFirstName = settingEntity.getSettingValueAsBoolean(DisplayFirstNameSettingTypeKey, displayFirstName);
+        displayGroups = settingEntity.getSettingValueAsBoolean(DisplayGroupsSettingTypeKey, displayGroups);
+        displayLastName = settingEntity.getSettingValueAsBoolean(DisplayLastNameSettingTypeKey, displayLastName);
+        displayMiddleName = settingEntity.getSettingValueAsBoolean(DisplayMiddleNameSettingTypeKey, displayMiddleName);
 
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByEmail = sessionUser.getUserSettingValueAsString(FilterByEmailSettingTypeKey, filterByEmail);
-        filterByFirstName = sessionUser.getUserSettingValueAsString(FilterByFirstNameSettingTypeKey, filterByFirstName);
-        filterByGroups = sessionUser.getUserSettingValueAsString(FilterByGroupsSettingTypeKey, filterByGroups);
-        filterByLastName = sessionUser.getUserSettingValueAsString(FilterByLastNameSettingTypeKey, filterByLastName);
-        filterByMiddleName = sessionUser.getUserSettingValueAsString(FilterByMiddleNameSettingTypeKey, filterByMiddleName);
-        filterByUsername = sessionUser.getUserSettingValueAsString(FilterByUsernameSettingTypeKey, filterByUsername);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByEmail = settingEntity.getSettingValueAsString(FilterByEmailSettingTypeKey, filterByEmail);
+        filterByFirstName = settingEntity.getSettingValueAsString(FilterByFirstNameSettingTypeKey, filterByFirstName);
+        filterByGroups = settingEntity.getSettingValueAsString(FilterByGroupsSettingTypeKey, filterByGroups);
+        filterByLastName = settingEntity.getSettingValueAsString(FilterByLastNameSettingTypeKey, filterByLastName);
+        filterByMiddleName = settingEntity.getSettingValueAsString(FilterByMiddleNameSettingTypeKey, filterByMiddleName);
+        filterByUsername = settingEntity.getSettingValueAsString(FilterByUsernameSettingTypeKey, filterByUsername);
     }
 
     @Override
@@ -277,27 +278,27 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayEmailSettingTypeKey, displayEmail);
-        sessionUser.setUserSettingValue(DisplayFirstNameSettingTypeKey, displayFirstName);
-        sessionUser.setUserSettingValue(DisplayGroupsSettingTypeKey, displayGroups);
-        sessionUser.setUserSettingValue(DisplayLastNameSettingTypeKey, displayLastName);
-        sessionUser.setUserSettingValue(DisplayMiddleNameSettingTypeKey, displayMiddleName);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayEmailSettingTypeKey, displayEmail);
+        settingEntity.setSettingValue(DisplayFirstNameSettingTypeKey, displayFirstName);
+        settingEntity.setSettingValue(DisplayGroupsSettingTypeKey, displayGroups);
+        settingEntity.setSettingValue(DisplayLastNameSettingTypeKey, displayLastName);
+        settingEntity.setSettingValue(DisplayMiddleNameSettingTypeKey, displayMiddleName);
 
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterByEmailSettingTypeKey, filterByEmail);
-        sessionUser.setUserSettingValue(FilterByFirstNameSettingTypeKey, filterByFirstName);
-        sessionUser.setUserSettingValue(FilterByGroupsSettingTypeKey, filterByGroups);
-        sessionUser.setUserSettingValue(FilterByLastNameSettingTypeKey, filterByLastName);
-        sessionUser.setUserSettingValue(FilterByMiddleNameSettingTypeKey, filterByMiddleName);
-        sessionUser.setUserSettingValue(FilterByUsernameSettingTypeKey, filterByUsername);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByEmailSettingTypeKey, filterByEmail);
+        settingEntity.setSettingValue(FilterByFirstNameSettingTypeKey, filterByFirstName);
+        settingEntity.setSettingValue(FilterByGroupsSettingTypeKey, filterByGroups);
+        settingEntity.setSettingValue(FilterByLastNameSettingTypeKey, filterByLastName);
+        settingEntity.setSettingValue(FilterByMiddleNameSettingTypeKey, filterByMiddleName);
+        settingEntity.setSettingValue(FilterByUsernameSettingTypeKey, filterByUsername);
     }
 
     @Override

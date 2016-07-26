@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
@@ -94,25 +95,25 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
     
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
         
         logger.debug("Updating list settings from session user for: " + this.getEntityTypeName());
         
-        displayGalleryViewableDocuments = sessionUser.getUserSettingValueAsBoolean(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
+        displayGalleryViewableDocuments = settingEntity.getSettingValueAsBoolean(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
         
         prepareImageList(getCurrent()); 
     }
     
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
+        settingEntity.setSettingValue(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
     }
     
     public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
@@ -569,8 +570,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         List<Log> componentInstanceLogList = cdbDomainEntity.getLogList();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
-            if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                updateSettingsFromSessionUser(sessionUser);
+            if (settingsTimestamp == null || sessionUser.areSettingsModifiedAfterDate(settingsTimestamp)) {
+                updateSettingsFromSessionSettingEntity(sessionUser);
                 settingsTimestamp = new Date();
             }
         }
