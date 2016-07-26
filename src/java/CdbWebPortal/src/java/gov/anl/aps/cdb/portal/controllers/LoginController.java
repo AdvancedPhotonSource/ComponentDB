@@ -10,19 +10,15 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.common.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -43,8 +39,6 @@ public class LoginController implements Serializable {
 
     @EJB
     private UserInfoFacade userFacade;
-    @EJB
-    private SettingTypeFacade settingTypeFacade;
 
     private String username = null;
     private String password = null;
@@ -52,6 +46,9 @@ public class LoginController implements Serializable {
     private boolean loggedInAsUser = false;
     private UserInfo user = null;
     private Integer sessionTimeoutInMiliseconds = null;
+    
+    private SettingController settingController = null; 
+    private final String SETTING_CONTROLLER_NAME = "settingController"; 
 
     private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
@@ -139,9 +136,11 @@ public class LoginController implements Serializable {
         }
 
         if (validCredentials) {
-            if (!user.hasUserSettings()) {
-                setSessionUserSettingsFromSettingTypeDefaults(user);
+            if (settingController == null) {
+                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME); 
             }
+            settingController.loadSessionUser(user);
+            
             SessionUtility.setUser(user);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
@@ -160,19 +159,6 @@ public class LoginController implements Serializable {
             return (username = password = null);
         }
 
-    }
-
-    private void setSessionUserSettingsFromSettingTypeDefaults(UserInfo sessionUser) {
-        List<SettingType> settingTypeList = settingTypeFacade.findAll();
-        List<UserSetting> userSettingList = new ArrayList<>();
-        for (SettingType settingType : settingTypeList) {
-            UserSetting userSetting = new UserSetting();
-            userSetting.setSettingType(settingType);
-            userSetting.setUser(sessionUser);
-            userSetting.setValue(settingType.getDefaultValue());
-            userSettingList.add(userSetting);
-        }
-        sessionUser.setUserSettingList(userSettingList);
     }
 
     public String getLandingPage() {
