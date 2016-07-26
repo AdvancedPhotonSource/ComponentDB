@@ -22,7 +22,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
@@ -33,6 +32,7 @@ import gov.anl.aps.cdb.portal.view.jsf.components.CdbExcelExporter;
 import gov.anl.aps.cdb.portal.view.jsf.components.CdbPdfExporter;
 import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import java.io.IOException;
 
 import java.io.Serializable;
@@ -66,6 +66,8 @@ import org.primefaces.component.export.Exporter;
  */
 public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>> implements Serializable {
 
+    private final String SETTING_CONTROLLER_NAME = "settingController";
+
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
 
     @EJB
@@ -83,7 +85,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected Date settingsTimestamp = null;
     protected List<SettingType> settingTypeList;
     protected Map<String, SettingType> settingTypeMap;
-    protected boolean settingsInitializedFromDefaults = false;
 
     protected DataModel selectDataModel = null;
     protected DataTable selectDataTable = null;
@@ -142,6 +143,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private String searchString = null;
     private boolean caseInsensitive = true;
     private LinkedList<SearchResult> searchResultList;
+
+    private SettingController settingController = null;
 
     /**
      * Default constructor.
@@ -538,29 +541,42 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         updateSettings();
     }
 
+    public void loadSettings(SettingEntity settingEntity) {
+        logger.debug("Updating settings for " + getEntityTypeName() + " from session (settings timestamp: " + settingEntity.getSettingsModificationDate() + ")");
+        updateSettingsFromSessionSettingEntity(settingEntity);
+        settingsTimestamp = new Date();
+    }
+
     /**
      * Update controller session settings based on session user and settings
      * modification date.
+     *
+     * @return true if some settings have been loaded.
      */
-    public void updateSettings() {
+    public boolean updateSettings() {
         try {
-            UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-            boolean settingsUpdated = false;
-            if (sessionUser != null) {
-                List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-                if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                    updateSettingsFromSessionUser(sessionUser);
-                    settingsUpdated = true;
-                }
+            if (settingController == null) {
+                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
             }
 
-            if (!settingsUpdated && !settingsInitializedFromDefaults) {
-                settingsInitializedFromDefaults = true;
-                updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+            SettingEntity settingEntity = settingController.getCurrentSettingEntity();
+            if (settingEntity != null) {
+                if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    loadSettings(settingEntity);
+                    return true;
+                }
+            } else if (settingEntity == null) {
+                if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+                    settingsTimestamp = new Date();
+                    return true;
+                }
             }
         } catch (Exception ex) {
             logger.error(ex);
         }
+
+        return false;
     }
 
     /**
@@ -604,9 +620,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * This method should be overridden in any derived controller class that has
      * its own settings.
      *
-     * @param sessionUser current session user
+     * @param settingEntity current session setting entity
      */
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
     }
 
     /**
@@ -615,9 +631,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * This method should be overridden in any derived controller class that has
      * its own settings.
      *
-     * @param sessionUser current session user
+     * @param settingEntity current session setting entity
      */
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
     }
 
     /**
@@ -627,20 +643,25 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
         logger.debug("Saving settings");
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
+        if (settingController == null) {
+            settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
+        }
+
+        SettingEntity settingEntity = settingController.getCurrentSettingEntity();
+
+        if (settingEntity != null) {
             logger.debug("Updating list settings for session user");
-            saveSettingsForSessionUser(sessionUser);
+            saveSettingsForSessionSettingEntity(settingEntity);
             resetListDataModel();
             settingsTimestamp = new Date();
         }
     }
-    
+
     public void saveListSettingsForSessionUserSetCurrentActionListener(ActionEvent actionEvent) {
-        EntityType currentEntity = this.current; 
+        EntityType currentEntity = this.current;
         saveListSettingsForSessionUserActionListener(actionEvent);
         if (current == null) {
-            this.current = currentEntity; 
+            this.current = currentEntity;
         }
     }
 
@@ -778,49 +799,23 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         String loadView = breadcrumbViewParam;
         if (loadView == null) {
             loadView = prepareList();
-        } else {
-            if (breadcrumbObjectIdViewParam != null) {
-                Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
-                loadView = breadcrumbViewParam + "?faces-redirect=true&id=" + entityId;
-            }
+        } else if (breadcrumbObjectIdViewParam != null) {
+            Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
+            loadView = breadcrumbViewParam + "?faces-redirect=true&id=" + entityId;
         }
         breadcrumbViewParam = null;
         breadcrumbObjectIdViewParam = null;
         return loadView;
     }
-    
+
     public void processPreRender() {
-        userSettingsChanged();  
+        updateSettings();
     }
-    
+
     public void processPreRenderList() {
-        if(userSettingsChanged()) {
+        if (updateSettings()) {
             resetListDataModel();
         }
-    }
-
-    /**
-     * Check if user settings changed or not.
-     *
-     * @return true if user just logged in or modified settings, false otherwise
-     */
-    public boolean userSettingsChanged() {
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser == null) {
-            return false;
-        }
-
-        if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-            loadUserSettings(sessionUser);
-            return true;
-        }
-        return false;
-    }
-     
-    public void loadUserSettings(UserInfo sessionUser){ 
-        logger.debug("Updating settings for " + getEntityTypeName() +" from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
-        updateSettingsFromSessionUser(sessionUser);
-        settingsTimestamp = new Date();
     }
 
     /**
@@ -874,31 +869,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * Update session view settings based on settings modification timestamp.
-     */
-    public void updateViewSettings() {
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        boolean settingsUpdated = false;
-        if (sessionUser != null) {
-            List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-            if (sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                if (userSettingList != null && !userSettingList.isEmpty()) {
-                    loadUserSettings(sessionUser); 
-                    settingsUpdated = true;
-                }
-            } else { 
-                // Settings have been previously loaded, no need to override with defaults. 
-                return; 
-            }
-        }
-
-        if (!settingsUpdated && !settingsInitializedFromDefaults) {
-            settingsInitializedFromDefaults = true;
-            updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
-        }
-    }
-
-    /**
      * Listener for saving user session settings.
      *
      * @param actionEvent event
@@ -907,7 +877,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Saving settings for session user");
-            saveSettingsForSessionUser(sessionUser);
+            saveSettingsForSessionSettingEntity(sessionUser);
             settingsTimestamp = new Date();
         }
     }
@@ -955,7 +925,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
-        updateViewSettings();
+        updateSettings();
         prepareEntityView(entity);
         return view();
     }
@@ -1104,21 +1074,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
     }
-    
+
     public void reloadCurrent() {
-        current = getEntityDbFacade().find(current.getId()); 
+        current = getEntityDbFacade().find(current.getId());
     }
-    
-    public String inlineUpdate(){
+
+    public String inlineUpdate() {
         String updateResult = update();
-        
+
         // An error occured, reload the page with correct information. 
         if (updateResult == null) {
             reloadCurrent();
-            return view(); 
+            return view();
         }
-        
-        return null; 
+
+        return null;
     }
 
     /**
@@ -1228,9 +1198,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void createListDataModel() {
         listDataModel = new ListDataModel(getEntityDbFacade().findAll());
     }
-    
+
     public void setListDataModel(ListDataModel listDataModel) {
-        this.listDataModel = listDataModel; 
+        this.listDataModel = listDataModel;
     }
 
     /**
@@ -1373,13 +1343,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void setFilteredItems(List<EntityType> filteredItems) {
         this.filteredObjectList = filteredItems;
     }
-    
-    public EntityType getSelectedObjectAndResetDataModel(){
-        EntityType entity = getSelectedObject(); 
+
+    public EntityType getSelectedObjectAndResetDataModel() {
+        EntityType entity = getSelectedObject();
         selectedObject = null;
         resetSelectDataModel();
         return entity;
-        
+
     }
 
     public EntityType getSelectedObject() {
@@ -1538,9 +1508,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public LinkedList<SearchResult> getSearchResultList() {
         return searchResultList;
     }
-    
-    public boolean getDisplaySearchResultList(){
-        return searchResultList != null && !searchResultList.isEmpty(); 
+
+    public boolean getDisplaySearchResultList() {
+        return searchResultList != null && !searchResultList.isEmpty();
     }
 
     public boolean searchHasResults() {
@@ -1740,7 +1710,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Updating display list settings for " + this.getEntityTypeName() + "Entity");
-            sessionUser.setUserSettingValue(getDisplayListPageHelpFragmentSettingTypeKey(), displayListPageHelpFragment);
+            sessionUser.setSettingValue(getDisplayListPageHelpFragmentSettingTypeKey(), displayListPageHelpFragment);
             settingsTimestamp = new Date();
             SessionUtility.addInfoMessage("Saved", "Saved setting for displaying help info for " + this.getEntityTypeName() + " entity.");
         } else {
@@ -1749,13 +1719,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             logger.error(error);
         }
     }
-    
-    public Boolean getDisplayLoadPropertyValuesButton(){
-        return false; 
+
+    public Boolean getDisplayLoadPropertyValuesButton() {
+        return false;
     }
-    
-    public Boolean getDisplayUpdateSortOrderButton(){
-        return false; 
+
+    public Boolean getDisplayUpdateSortOrderButton() {
+        return false;
     }
 
     /**
