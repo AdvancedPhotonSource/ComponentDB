@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserGroupSetting.findAll", query = "SELECT u FROM UserGroupSetting u"),
     @NamedQuery(name = "UserGroupSetting.findById", query = "SELECT u FROM UserGroupSetting u WHERE u.id = :id"),
     @NamedQuery(name = "UserGroupSetting.findByValue", query = "SELECT u FROM UserGroupSetting u WHERE u.value = :value")})
-public class UserGroupSetting implements Serializable {
+public class UserGroupSetting extends EntitySetting implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -53,6 +53,7 @@ public class UserGroupSetting implements Serializable {
         this.id = id;
     }
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -61,10 +62,12 @@ public class UserGroupSetting implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
     public void setValue(String value) {
         this.value = value;
     }
@@ -77,6 +80,7 @@ public class UserGroupSetting implements Serializable {
         this.userGroup = userGroup;
     }
 
+    @Override
     public SettingType getSettingType() {
         return settingType;
     }

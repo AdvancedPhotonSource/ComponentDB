@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -39,7 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserGroup.findById", query = "SELECT u FROM UserGroup u WHERE u.id = :id"),
     @NamedQuery(name = "UserGroup.findByName", query = "SELECT u FROM UserGroup u WHERE u.name = :name"),
     @NamedQuery(name = "UserGroup.findByDescription", query = "SELECT u FROM UserGroup u WHERE u.description = :description")})
-public class UserGroup extends CdbEntity implements Serializable {
+public class UserGroup extends SettingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -64,7 +65,7 @@ public class UserGroup extends CdbEntity implements Serializable {
     @OneToMany(mappedBy = "ownerUserGroup")
     private List<EntityInfo> entityInfoList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
-    private List<UserGroupSetting> userGroupSettingList;
+    private List<UserGroupSetting> userGroupSettingList;   
 
     public UserGroup() {
     }
@@ -178,6 +179,25 @@ public class UserGroup extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public List<EntitySetting> getSettingList() {
+        return (List<EntitySetting>)(List<?>) getUserGroupSettingList(); 
+    }
+    
+    @Override
+    public void populateDefaultSettingList(List<SettingType> settingTypeList) {
+        List<UserGroupSetting> settingList = new ArrayList<>();
+        for (SettingType settingType : settingTypeList) {
+            UserGroupSetting userGroupSetting = new UserGroupSetting();
+            userGroupSetting.setSettingType(settingType);
+            userGroupSetting.setUserGroup(this);
+            userGroupSetting.setValue(settingType.getDefaultValue());
+            settingList.add(userGroupSetting);
+        }
+
+        setUserGroupSettingList(settingList);
     }
     
 }

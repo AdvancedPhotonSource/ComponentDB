@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserInfo.findByEmail", query = "SELECT u FROM UserInfo u WHERE u.email = :email"),
     @NamedQuery(name = "UserInfo.findByPassword", query = "SELECT u FROM UserInfo u WHERE u.password = :password"),
     @NamedQuery(name = "UserInfo.findByDescription", query = "SELECT u FROM UserInfo u WHERE u.description = :description")})
-public class UserInfo extends CdbEntity implements Serializable {
+public class UserInfo extends SettingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -108,12 +109,10 @@ public class UserInfo extends CdbEntity implements Serializable {
     private List<EntityInfo> entityInfoList3;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
-    
-    private transient HashMap<String, UserSetting> userSettingMap = null;
-    private transient Date userSettingsModificationDate = null;
+            
     private transient String fullNameForSelection = null;
     private transient String userGroupListString = null; 
-
+    
     public UserInfo() {
     }
 
@@ -307,107 +306,7 @@ public class UserInfo extends CdbEntity implements Serializable {
     public void setItemElementRelationshipHistoryList(List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList) {
         this.itemElementRelationshipHistoryList = itemElementRelationshipHistoryList;
     }
-    
-    private void createUserSettingMap() {
-        userSettingMap = new HashMap<>();
-        for (UserSetting setting : userSettingList) {
-            userSettingMap.put(setting.getSettingType().getName(), setting);
-        }
-        updateSettingsModificationDate();
-    }
-
-    public UserSetting getUserSetting(String name) {
-        if (userSettingMap == null) {
-            createUserSettingMap();
-        }
-        return userSettingMap.get(name);
-    }
-
-    public void setUserSetting(String name, UserSetting userSetting) {
-        if (userSettingMap == null) {
-            createUserSettingMap();
-        }
-        UserSetting oldUserSetting = userSettingMap.get(name);
-        if (oldUserSetting != null) {
-            oldUserSetting.setValue(userSetting.getValue());
-        } else {
-            userSettingMap.put(name, userSetting);
-        }
-        userSettingsModificationDate = new Date();
-    }
-
-    public void setUserSettingValue(String name, Object value) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting != null && value != null) {
-            userSetting.setValue(value.toString());
-        } else if (userSetting != null) {
-            userSetting.setValue("");
-        }
-    }
-
-    public String getUserSettingValueAsString(String name, String defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        return userSetting.getValue();
-    }
-
-    public Boolean getUserSettingValueAsBoolean(String name, Boolean defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        String settingValue = userSetting.getValue();
-        if (settingValue == null || settingValue.isEmpty()) {
-            return false;
-        }
-        return Boolean.parseBoolean(settingValue);
-    }
-
-    public Integer getUserSettingValueAsInteger(String name, Integer defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        String settingValue = userSetting.getValue();
-        if (settingValue == null || settingValue.isEmpty()) {
-            return null;
-        }
-        return Integer.parseInt(settingValue);
-    }
-
-    public Float getUserSettingValueAsFloat(String name, Float defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        String settingValue = userSetting.getValue();
-        if (settingValue == null || settingValue.isEmpty()) {
-            return null;
-        }
-        return Float.parseFloat(settingValue);
-    }
-
-    public void updateSettingsModificationDate() {
-        userSettingsModificationDate = new Date();
-    }
-
-    public Date getUserSettingsModificationDate() {
-        if (userSettingsModificationDate == null) {
-            updateSettingsModificationDate();
-        }
-        return userSettingsModificationDate;
-    }
-    
-    public boolean areUserSettingsModifiedAfterDate(Date date) {
-        return date == null || userSettingsModificationDate == null || userSettingsModificationDate.after(date);
-    }
-
-    public boolean hasUserSettings() {
-        return userSettingList != null && !userSettingList.isEmpty();
-    }
-    
+        
     public String getFullNameForSelection() {
         if (fullNameForSelection != null) {
             return fullNameForSelection;
@@ -462,6 +361,24 @@ public class UserInfo extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.UserInfo[ id=" + id + " ]";
+    }
+
+    @Override
+    public List<EntitySetting> getSettingList() {
+        return (List<EntitySetting>)(List<?>) getUserSettingList(); 
+    }
+
+    @Override
+    public void populateDefaultSettingList(List<SettingType> settingTypeList) {
+        List<UserSetting> settingList = new ArrayList<>();
+        for (SettingType settingType : settingTypeList) {
+            UserSetting userSetting = new UserSetting();
+            userSetting.setSettingType(settingType);
+            userSetting.setUser(this);
+            userSetting.setValue(settingType.getDefaultValue());
+            settingList.add(userSetting);
+        }
+        setUserSettingList(settingList);
     }
     
 }
