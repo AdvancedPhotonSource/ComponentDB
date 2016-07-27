@@ -921,3 +921,11 @@ h2 {
 .contentSeperatorBorder {
     border-right: 2px dashed !important;
 }
+
+.clckableLabel {
+    text-decoration: underline; 
+}
+
+.clckableLabel:hover {
+    color: #EEE;
+}
