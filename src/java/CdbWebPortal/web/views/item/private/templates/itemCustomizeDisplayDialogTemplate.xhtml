@@ -92,7 +92,7 @@
 
     <ui:define name="itemListCustomizeSaveButton">
         <p:commandButton value="Save" alt="Save"
-                         action="#{userInfoController.saveSettingListForSessionUser()}"
+                         action="#{settingController.saveSettingListForSettingEntity()}"
                          actionListener="#{entityController.saveListSettingsForSessionUserActionListener}"
                          oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
                          update="@form"
