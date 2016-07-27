@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -36,6 +37,16 @@ public class UserGroupFacade extends CdbEntityFacade<UserGroup> {
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+    public List<UserGroup> findUserGroupsWithSettings() {
+        try {
+            return (List<UserGroup>) em.createNamedQuery("UserGroup.findGroupsWithSettings")
+                    .getResultList();
+        } catch (NoResultException ex) {
+
         }
         return null;
     }

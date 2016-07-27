@@ -39,7 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserGroup.findAll", query = "SELECT u FROM UserGroup u"),
     @NamedQuery(name = "UserGroup.findById", query = "SELECT u FROM UserGroup u WHERE u.id = :id"),
     @NamedQuery(name = "UserGroup.findByName", query = "SELECT u FROM UserGroup u WHERE u.name = :name"),
-    @NamedQuery(name = "UserGroup.findByDescription", query = "SELECT u FROM UserGroup u WHERE u.description = :description")})
+    @NamedQuery(name = "UserGroup.findByDescription", query = "SELECT u FROM UserGroup u WHERE u.description = :description"),
+    @NamedQuery(name = "UserGroup.findGroupsWithSettings", query = "SELECT u FROM UserGroup u WHERE u.userGroupSettingList IS NOT EMPTY")
+})
 public class UserGroup extends SettingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
