@@ -168,7 +168,7 @@ public class SettingController implements Serializable {
     public String getDefaultSelectionLabel() {
         UserInfo sessionUser = getSessionUser();
         if (sessionUser != null) {
-            return "User(" + sessionUser.getUsername() + ")";
+            return sessionUser.getUsername();
         }
         return "Default";
     }
@@ -176,7 +176,7 @@ public class SettingController implements Serializable {
     public String getViewAsLabel() {
         SettingEntity settingEntity = getCurrentSettingEntity();
         if (settingEntity instanceof UserGroup) {
-            return "Group(" + ((UserGroup) settingEntity).getName() + ")";
+            return ((UserGroup) settingEntity).getName();
         }
 
         return getDefaultSelectionLabel();
