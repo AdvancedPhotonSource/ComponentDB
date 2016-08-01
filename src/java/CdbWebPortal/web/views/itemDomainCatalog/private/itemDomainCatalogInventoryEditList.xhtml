@@ -12,16 +12,19 @@
 
     <ui:param name="itemDerivedController" value="#{itemDomainInventoryController}" />
 
+    <ui:param name="childEntityTypeName" value="#{entityController.entityTypeName}#{itemDerivedController.entityTypeName}"/>
+    
     <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}">
         <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="childEntityController" value="#{itemDerivedController}"/>
-        <ui:param name="childEntityTypeName" value="#{childEntityTypeName}"/>
+        <ui:param name="childEntityController" value="#{itemDerivedController}"/>        
         <ui:param name="addActionOnComplete" value="prepareAddInventoryItem()"/>
         <ui:param name="saveAction" value="saveItemDerivedFromItemList"/>
         <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
     </ui:include>  
 
     <ui:include src="../../item/private/itemDerivedEditListDataTable.xhtml"/>
+    
+    <ui:include src="itemDomainCatalogInventoryEditListCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 
