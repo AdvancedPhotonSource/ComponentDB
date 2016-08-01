@@ -4,7 +4,29 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="../../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+
+    <ui:define name="customizeDisplayDialogConent">
+        <p:accordionPanel multiple="false">
+            <ui:insert name="entitySpecificCustomizeOptionsTab"/>
+
+            <ui:insert name="extraOptionsCustomizeOptionsTab"/>
+
+            <ui:insert name="propertyValueCustomizeOptionsTab"/>
+
+            <ui:insert name="rowExpansionCustomizeOptionsTab"/>
+
+            <ui:insert name="domainEntityExtraTabs"/>
+
+            <ui:insert name="otherCustomizeOptionsTab"/>
+
+        </p:accordionPanel>
+
+        <p:panel>
+            <h:outputText value="* Disabling this setting may improve overall performance of the list" />
+        </p:panel>
+    </ui:define>
 
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
 
@@ -13,28 +35,10 @@
               header="Customize #{entityTypeDisplayName} List Display" 
               styleClass="dialog">
         <div class="dialog">
-            <p:accordionPanel multiple="false">
-                <ui:insert name="entitySpecificCustomizeOptionsTab"/>
-                              
-                <ui:insert name="extraOptionsCustomizeOptionsTab"/>
-                
-                <ui:insert name="propertyValueCustomizeOptionsTab"/>
-                
-                <ui:insert name="rowExpansionCustomizeOptionsTab"/>
-                                    
-                <ui:insert name="domainEntityExtraTabs"/>
-               
-                <ui:insert name="otherCustomizeOptionsTab"/>
-                    
-            </p:accordionPanel>
 
-            <p:panel>
-                <h:outputText value="* Disabling this setting may improve overall performance of the list" />
-            </p:panel>
 
-            <f:facet name="footer" class="dialog">
-                <ui:insert name="itemListCustomizeDoneButton"/>
-                <ui:insert name="itemListCustomizeSaveButton"/>
+            <f:facet name="footer" class="transparentPanel">
+                
             </f:facet>
         </div>
     </p:dialog>

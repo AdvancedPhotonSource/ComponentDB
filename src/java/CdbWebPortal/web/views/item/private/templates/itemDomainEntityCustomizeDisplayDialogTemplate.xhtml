@@ -5,6 +5,9 @@
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 template="itemCustomizeDisplayDialogTemplateBase.xhtml">
+    
+    <!--Define a entity controller for the template if needed.-->
+    <ui:insert name="domainEntityController"/>
 
     <ui:define name="entitySpecificCustomizeOptionsTab">
         <p:tab title="Display #{entityTypeDisplayName} Columns">
@@ -81,30 +84,5 @@
             </p:panelGrid>
         </p:tab>
     </ui:define>
-
-    <ui:define name="itemListCustomizeDoneButton">
-        <p:commandButton value="Done" alt="Done" 
-                         action="#{entityController.customizeListDisplay()}"
-                         update="@form"
-                         oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
-                         icon="ui-icon-arrowreturnthick-1-w"/>
-    </ui:define>
-
-    <ui:define name="itemListCustomizeSaveButton">
-        <p:commandButton value="Save" alt="Save"
-                         action="#{settingController.saveSettingListForSettingEntity()}"
-                         actionListener="#{entityController.saveListSettingsForSessionUserActionListener}"
-                         oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
-                         update="@form"
-                         ajax="false"
-                         rendered="#{loginController.loggedIn}"
-                         icon="ui-icon-check"/>
-    </ui:define>
-
-
-
-
-
-
 
 </ui:composition>
