@@ -4,17 +4,19 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entityTypeName" value="#{additionalEntityController.entityTypeName}" />
     
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(entityObject.entityInfo)}"/>
         <ui:param name="childEntityController" value="#{propertyValueController}"/>
         <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
+        <ui:param name="customizeDisplayChildEntityTypeName" value="#{entityController.entityTypeName}Property" />
     </ui:include>    
     
-    <ui:include src="domainEntityPropertyListDataTable.xhtml"/>
-
+    <ui:include src="domainEntityPropertyListDataTable.xhtml">
+        <ui:param name="entityController" value="#{additionalEntityController}" />
+    </ui:include>
+    
 </ui:composition>
 
 
