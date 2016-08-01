@@ -178,6 +178,7 @@ public class LoginController implements Serializable {
         loggedInAsAdmin = false;
         loggedInAsUser = true;
         SessionUtility.setRole(CdbRole.USER);
+        settingController.resetSessionVariables();
         return getLandingPage();
     }
 
