@@ -131,6 +131,11 @@ public class ItemMemberViewController extends ItemController {
     @Override
     public String getEntityTypeName() {
         return "designMember"; 
+    } 
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "Design Member";
     }
 
     @Override

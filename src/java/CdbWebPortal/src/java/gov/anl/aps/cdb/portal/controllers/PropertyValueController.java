@@ -97,6 +97,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     @Override
+    public String getDisplayEntityTypeName() {
+        return "Property Value";
+    }
+
+    @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
             return getCurrent().getId().toString();
