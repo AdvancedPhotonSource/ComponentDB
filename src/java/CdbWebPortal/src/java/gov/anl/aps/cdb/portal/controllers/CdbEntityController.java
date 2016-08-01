@@ -641,7 +641,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      *
      * @param actionEvent event
      */
-    public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+    public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
         logger.debug("Saving settings");
         if (settingController == null) {
             settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
@@ -657,9 +657,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
     }
 
-    public void saveListSettingsForSessionUserSetCurrentActionListener(ActionEvent actionEvent) {
+    public void saveListSettingsForSessionSettingEntitySetCurrentActionListener(ActionEvent actionEvent) {
         EntityType currentEntity = this.current;
-        saveListSettingsForSessionUserActionListener(actionEvent);
+        saveListSettingsForSessionSettingEntityActionListener(actionEvent);
         if (current == null) {
             this.current = currentEntity;
         }
