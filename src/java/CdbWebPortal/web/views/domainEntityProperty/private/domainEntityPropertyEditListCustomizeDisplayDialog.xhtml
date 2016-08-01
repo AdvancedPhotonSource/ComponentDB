@@ -4,30 +4,17 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
-
-    <p:dialog id="#{entityTypeName}PropertyEditListCustomizeDisplayDialog" 
-              widgetVar="#{entityTypeName}PropertyEditListCustomizeDisplayDialogWidget" 
-              header="Customize Display" 
-              styleClass="dialog">
-        <div class="dialog">
-            <ui:include src="../../propertyValue/private/propertyValueEditCustomizePanelGrid.xhtml"/>
-
-            <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
-                                 action="#{propertyValueController.customizeListDisplay()}"
-                                 update="#{entityTypeName}PropertyEditListDataTable"
-                                 oncomplete="PF('#{entityTypeName}PropertyValueEditCustomizeDisplayDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-                <p:commandButton value="Save" alt="Save"
-                                 action="#{userInfoController.saveSettingListForSessionUser()}"
-                                 actionListener="#{propertyValueController.saveListSettingsForSessionUserActionListener}"
-                                 oncomplete="PF('#{entityTypeName}PropertyValueEditCustomizeDisplayDialogWidget').hide()" 
-                                 update="#{entityTypeName}PropertyEditListDataTable"
-                                 rendered="#{loginController.loggedIn}"
-                                 icon="ui-icon-check"/>
-            </f:facet>
-        </div>
-    </p:dialog>
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+       
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayEntityTypeName" value="#{entityController.entityTypeName}Property" />
+        <ui:param name="entityController" value="#{propertyValueController}" />
+        <ui:param name="viewName" value="Edit" />
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogConent">
+        <ui:include src="../../propertyValue/private/propertyValueEditCustomizePanelGrid.xhtml"/>
+    </ui:define>
 
 </ui:composition>
