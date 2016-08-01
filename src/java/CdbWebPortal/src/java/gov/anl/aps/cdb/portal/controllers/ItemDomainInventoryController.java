@@ -841,7 +841,7 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
-            return getCurrent().getId().toString();
+            return getCurrent().toString();
         }
         return "";
     }
