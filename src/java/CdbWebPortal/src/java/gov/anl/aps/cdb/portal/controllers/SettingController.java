@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,6 +35,7 @@ public class SettingController implements Serializable {
 
     private final String USER_GROUP_CONTROLLER_NAME = "userGroupController";
     private final String USER_INFO_CONTROLLER_NAME = "userInfoController";
+    private final String USER_GROUP_SETTINGS_ADMIN_ROLE_NAME = "group_settings_admin";
 
     @EJB
     private SettingTypeFacade settingTypeFacade;
@@ -85,6 +87,12 @@ public class SettingController implements Serializable {
     public void saveSettingListForSettingEntity() {
         UserGroup sessionUserGroup = getUserGroupForSettingsView();
         if (sessionUserGroup != null) {
+            if(!isSessionUserHaveGroupWritePermission(sessionUserGroup)) {
+                SessionUtility.addErrorMessage("Cannot Save group settings", 
+                        "User does not have sufficient privilages to save to the current group settings.");
+                return; 
+            }
+            
             if (userGroupController == null) {
                 userGroupController = (UserGroupController) SessionUtility.findBean(USER_GROUP_CONTROLLER_NAME);
             }
@@ -96,7 +104,6 @@ public class SettingController implements Serializable {
             userGroupController.update();
             return;
         }
-        //TODO add permission checks for group setting mod. 
 
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
@@ -139,7 +146,7 @@ public class SettingController implements Serializable {
         ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
     }
 
-    private void resetSessionVariables() {
+    public void resetSessionVariables() {
         settingsTimestamp = null;
         currentSettingEntity = null;
         userGroupForSettingsView = null;
@@ -252,7 +259,13 @@ public class SettingController implements Serializable {
     public boolean isSessionUserHaveGroupWritePermission(UserGroup userGroup) {
         UserInfo sessionUser = getSessionUser();
         if (sessionUser != null) {
-            // TODO user the group settings writeable role that oculd be assigned to users. 
+            for (UserRole userRole : userGroup.getUserRoleList()) {
+                if (userRole.getRoleType().getName().equals(USER_GROUP_SETTINGS_ADMIN_ROLE_NAME)) {
+                    if (Objects.equals(sessionUser.getId(), userRole.getUserInfo().getId())) {
+                        return true;
+                    }
+                }
+            }
             return SessionUtility.getRole().equals(CdbRole.ADMIN);
         }
         return false;
@@ -264,5 +277,37 @@ public class SettingController implements Serializable {
             return userGroup.getUserInfoList().contains(sessionUser);
         }
         return false;
+    }
+
+    public boolean isSessionUserHaveSettingsWritePermissions() {
+        UserInfo sessionUser = getSessionUser();
+        if (sessionUser != null) {
+            SettingEntity settingEntity = getCurrentSettingEntity();
+            if (settingEntity instanceof UserInfo) {
+                return Objects.equals(sessionUser.getId(), ((UserInfo) settingEntity).getId()); 
+            } else if (settingEntity instanceof UserGroup) {
+                return isSessionUserHaveGroupWritePermission((UserGroup)settingEntity);
+            }
+        }
+        return false; 
+    }
+    
+    public boolean isCurrentSettingEntityUserGroupEntity() {
+        SettingEntity settingEntity = getCurrentSettingEntity();
+        return (settingEntity instanceof UserGroup);
+    }
+    
+    /**
+     * Determines when settings could be displayed for editing even temporarly. 
+     * When group settings are selected option are shown only with sufficient privilages. 
+     * 
+     * @return boolean that specify if settings options should be displayed. 
+     */
+    public boolean isDisplayCurrentSettingOptions() {        
+        if (isCurrentSettingEntityUserGroupEntity()) {
+            SettingEntity settingEntity = getCurrentSettingEntity();
+            return isSessionUserHaveGroupWritePermission((UserGroup) settingEntity);
+        }
+        return true;
     }
 }
