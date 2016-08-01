@@ -13,7 +13,7 @@
                      message="Destroy #{displayEntityTypeName}: #{currentEntityInstnaceName}?"
                      header="Destroy #{displayEntityTypeName}" 
                      severity="alert" 
-                     styleClass="dialog">
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <p:commandButton value="Yes" 
                          oncomplete="PF('#{entityTypeName}DestroyDialogWidget').hide()" 
                          action="#{entityController.destroy()}" update="@form"/>
