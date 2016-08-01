@@ -10,11 +10,12 @@
 
     <p:dialog widgetVar="editInventoryItemDialogWidget"
               header="Edit Inventory Item"
-              modal="true">
+              modal="true"
+              resizable="false">
         <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
             <ui:include src="itemDomainInventoryBillOfMaterialsEditView.xhtml"/>
         </p:outputPanel>
-        <f:facet name="footer" class="dialog">
+        <f:facet name="footer">
             <p:commandButton  action="#{itemDomainInventoryController.saveEditBOMList()}"
                               value="Save" alt="Save" icon="ui-icon-check"/>
 

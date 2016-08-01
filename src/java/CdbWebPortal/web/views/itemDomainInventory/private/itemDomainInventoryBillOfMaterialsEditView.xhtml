@@ -10,8 +10,7 @@
     <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay}">
         
         <ui:param name="fullUpateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
-        <p:panelGrid id="inventoryItemEditBOMViewPanelGrid"
-                     style="background: black;">
+        <p:panelGrid id="inventoryItemEditBOMViewPanelGrid">
             <f:facet name="header">
                 <p:row>
                     <p:column styleClass="panelGridHeaderColumn">Parts List</p:column>
