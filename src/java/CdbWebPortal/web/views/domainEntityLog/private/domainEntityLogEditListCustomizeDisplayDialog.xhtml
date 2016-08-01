@@ -3,31 +3,18 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
-
-    <p:dialog id="#{entityTypeName}LogEditListCustomizeDisplayDialog" 
-              widgetVar="#{entityTypeName}LogEditListCustomizeDisplayDialogWidget" 
-              header="Customize Display" 
-              styleClass="dialog">
-        <div class="dialog">
-            <ui:include src="../../log/private/logEditCustomizePanelGrid.xhtml"/>
-
-            <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
-                                 action="#{logController.customizeListDisplay()}"
-                                 update="#{entityTypeName}LogEditListDataTable"
-                                 oncomplete="PF('#{entityTypeName}LogEditListCustomizeDisplayDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-                <p:commandButton value="Save" alt="Save"
-                                 action="#{userInfoController.saveSettingListForSessionUser()}"
-                                 actionListener="#{logController.saveListSettingsForSessionUserActionListener}"
-                                 oncomplete="PF('#{entityTypeName}LogEditListCustomizeDisplayDialogWidget').hide()" 
-                                 update="#{entityTypeName}LogEditListDataTable"
-                                 rendered="#{loginController.loggedIn}"
-                                 icon="ui-icon-check"/>
-            </f:facet>
-        </div>
-    </p:dialog>
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+    
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayEntityTypeName" value="#{entityController.entityTypeName}Log" />
+        <ui:param name="entityController" value="#{logController}" />
+        <ui:param name="viewName" value="Edit" />
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogConent">
+        <ui:include src="../../log/private/logEditCustomizePanelGrid.xhtml"/>
+    </ui:define>      
 
 </ui:composition>
 
