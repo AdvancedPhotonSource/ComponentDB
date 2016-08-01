@@ -8,7 +8,10 @@
 
     <p:dialog widgetVar="settingsViewAsDialog"
               modal="true"
-              header="Change shown settings for current session.">
+              header="Change shown settings for current session."
+              styleClass="viewTransparentBackgroundDialog"
+              dynamic="true"
+              resizable="false">
         <p:panelGrid columns="2">
             <h:outputText value="View: " /> 
             <p:selectOneMenu id="groupSettingsViewSelection" 
