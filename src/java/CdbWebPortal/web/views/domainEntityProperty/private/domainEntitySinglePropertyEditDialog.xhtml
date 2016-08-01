@@ -12,11 +12,11 @@
     <p:dialog id="#{entityTypeName}SinglePropertyEditDialog"
               widgetVar="#{entityTypeName}SinglePropertyEditDialogWidget" 
               header="Edit property value" 
-              styleClass="dialog"
+              styleClass="viewTransparentBackgroundDialog"
               closable="false"
               modal="true">
         <p:outputPanel rendered="#{propertyValueObject != null}">
-            <div class="dialog">
+            <div>
 
                 <p:panelGrid columns="2" styleClass="createEntityDetails">
                     <h:outputLabel for="propertyTypeName" value="Property Type" styleClass="entityDataEmphasizedLabel"/>
@@ -46,7 +46,7 @@
                 </p:panelGrid>
             </div>
         </p:outputPanel>
-        <f:facet name="footer" class="dialog">
+        <f:facet name="footer">
             <p:outputPanel rendered="#{propertyValueObject != null}">
                 <p:commandButton value="Save" alt="Save" 
                                  action="#{entityController.updateEditProperty()}"

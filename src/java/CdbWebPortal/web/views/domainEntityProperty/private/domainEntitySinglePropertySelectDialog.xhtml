@@ -10,13 +10,13 @@
     <p:dialog id="#{entityTypeName}SinglePropertySelectDialog" 
               widgetVar="#{entityTypeName}SinglePropertySelectDialogWidget" 
               header="Select Property Type" 
-              styleClass="dialog">
-        <div class="dialog">
+              styleClass="viewTransparentBackgroundDialog">
+        <div>
 
             <div class="actionButton">
                 <p:commandButton id="#{childEntityTypeName}SelectCustomizeDisplay" 
                                  onclick="PF('#{entityTypeName}SinglePropertySelectDialogWidget').hide();
-                                          PF('#{entityTypeName}SinglePropertySelectCustomizeDisplayDialogWidget').show()"
+                                          PF('#{entityTypeName}SinglePropertySelectListCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
@@ -25,7 +25,7 @@
             </div>
             <ui:include src="domainEntitySinglePropertySelectDataTable.xhtml"/>
             
-            <f:facet name="footer" class="dialog">
+            <f:facet name="footer">
                 <ui:param name="onSuccessShowEntityEditDialog"
                           value="show#{entityTypeName}EntitySinglePropertyController()" />
                 

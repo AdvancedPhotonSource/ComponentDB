@@ -10,13 +10,13 @@
     <p:dialog id="#{entityTypeName}PropertySelectDialog" 
               widgetVar="#{entityTypeName}PropertySelectDialogWidget" 
               header="Select #{entityTypeDisplayName} Property Types" 
-              styleClass="dialog">
-        <div class="dialog">
+              styleClass="viewTransparentBackgroundDialog">
+        <div>
 
             <div class="actionButton">
                 <p:commandButton id="#{entityTypeName}PropertySelectCustomizeDisplay" 
                                  onclick="PF('#{entityTypeName}PropertySelectDialogWidget').hide();
-                                         PF('#{entityTypeName}PropertySelectCustomizeDisplayDialogWidget').show()"
+                                         PF('#{entityTypeName}PropertySelectListCustomizeDisplayDialogWidget').show()"
                                  alt="Customize selection view." 
                                  icon="ui-icon-wrench" 
                                  styleClass="actionButtonRight">
