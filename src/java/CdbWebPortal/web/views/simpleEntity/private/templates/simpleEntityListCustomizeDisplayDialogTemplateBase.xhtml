@@ -4,33 +4,23 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
 
-    <p:dialog id="#{entityTypeName}ListCustomizeDisplayDialog" 
-              widgetVar="#{entityTypeName}ListCustomizeDisplayDialogWidget"               
-              header="Customize Display" 
-              styleClass="dialog">
-        <div class="dialog">
-            <p:panelGrid columns="2">
-                
-                <ui:insert name="displayNumberOfItemsPerPageValue"/>       
-                <ui:insert name="displayNumberOfItemsPerPageLabel"/>
-                
-                <ui:insert name="displayDescriptionValue"/>
-                <ui:insert name="displayDescriptionLabel"/>
-                                
-                <ui:insert name="displayIdValue"/>
-                <ui:insert name="displayIdLabel"/>
-                
-                <ui:insert name="additionalCustomizeDialogItems" />
+    <ui:define name="customizeDisplayDialogConent">
+        <p:panelGrid columns="2">
 
-            </p:panelGrid>
+            <ui:insert name="displayNumberOfItemsPerPageValue"/>       
+            <ui:insert name="displayNumberOfItemsPerPageLabel"/>
 
-            <f:facet name="footer" class="dialog">
-                <ui:insert name="customizeDialogDoneButton"/>
-                <ui:insert name="customizeDialogSaveButton"/>             
-            </f:facet>
-        </div>
-    </p:dialog>
+            <ui:insert name="displayDescriptionValue"/>
+            <ui:insert name="displayDescriptionLabel"/>
 
+            <ui:insert name="displayIdValue"/>
+            <ui:insert name="displayIdLabel"/>
+
+            <ui:insert name="additionalCustomizeDialogItems" />
+
+        </p:panelGrid>
+    </ui:define>
 </ui:composition>

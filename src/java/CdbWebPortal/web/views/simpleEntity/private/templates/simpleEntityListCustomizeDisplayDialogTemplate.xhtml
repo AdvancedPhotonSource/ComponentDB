@@ -30,22 +30,4 @@
         <p:selectBooleanCheckbox id="displayId" value="#{entityController.displayId}"/>  
     </ui:define>
 
-    <ui:define name="customizeDialogDoneButton">
-        <p:commandButton value="Done" alt="Done" 
-                         action="#{entityController.customizeListDisplay()}"
-                         update="#{entityTypeName}ListDataTable"
-                         oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
-                         icon="ui-icon-arrowreturnthick-1-w"/>
-    </ui:define>
-
-    <ui:define name="customizeDialogSaveButton">
-        <p:commandButton value="Save" alt="Save"
-                         action="#{userInfoController.saveSettingListForSessionUser()}"
-                         actionListener="#{entityController.saveListSettingsForSessionUserActionListener}"
-                         oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
-                         update="#{entityTypeName}ListDataTable"
-                         rendered="#{loginController.loggedIn}"
-                         icon="ui-icon-check"/>
-    </ui:define>
-
 </ui:composition>
