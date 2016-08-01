@@ -4,54 +4,15 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
 
-    <p:dialog id="itemSourceListCustomizeDisplayDialog" header="Customize Display" widgetVar="itemSourceListCustomizeDisplayDialogWidget" styleClass="dialog">
-        <div class="dialog">
-            <p:panelGrid columns="2">
-                <p:inputText id="displayNumberOfItemsPerPage" value="#{itemSourceController.displayNumberOfItemsPerPage}" style="width:20px"/>
-                <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="entityController" value="#{itemSourceController}" />       
+    </ui:define>
 
-                <p:selectBooleanCheckbox id="displayContactInfo" value="#{itemSourceController.displayContactInfo}"/>  
-                <h:outputLabel for="displayContactInfo" value="Display Contact Info" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayCost" value="#{itemSourceController.displayCost}"/>  
-                <h:outputLabel for="displayCost" value="Display Cost" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayDescription" value="#{itemSourceController.displayDescription}"/>  
-                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayId" value="#{itemSourceController.displayId}"/>  
-                <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayIsManufacturer" value="#{itemSourceController.displayIsManufacturer}"/>  
-                <h:outputLabel for="displayIsManufacturer" value="Display Manufacturer Designation" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayIsVendor" value="#{itemSourceController.displayIsVendor}"/>  
-                <h:outputLabel for="displayIsVendor" value="Display Vendor Designation" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayPartNumber" value="#{itemSourceController.displayPartNumber}"/>  
-                <h:outputLabel for="displayPartNumber" value="Display Part Number" styleClass="dialogDataLabel"/>
-
-                <p:selectBooleanCheckbox id="displayUrl" value="#{itemSourceController.displayUrl}"/>  
-                <h:outputLabel for="displayUrl" value="Display URL" styleClass="dialogDataLabel"/>
-            </p:panelGrid>
-
-            <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
-                                 action="#{itemSourceController.customizeListDisplay()}"
-                                 update="itemSourceListDataTable"
-                                 oncomplete="PF('itemSourceListCustomizeDisplayDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-                <p:commandButton value="Save" alt="Save"
-                                 action="#{userInfoController.saveSettingListForSessionUser()}"
-                                 actionListener="#{itemSourceController.saveListSettingsForSessionUserActionListener}"
-                                 oncomplete="PF('itemSourceListCustomizeDisplayDialogWidget').hide()" 
-                                 update="itemSourceListDataTable"          
-                                 rendered="#{loginController.loggedIn}"
-                                 icon="ui-icon-check"/>
-            </f:facet>
-        </div>
-    </p:dialog>
+    <ui:define name="customizeDisplayDialogConent">
+        <ui:include src="itemSourceListCustomizePanelGrid.xhtml" />
+    </ui:define>
 
 </ui:composition>
