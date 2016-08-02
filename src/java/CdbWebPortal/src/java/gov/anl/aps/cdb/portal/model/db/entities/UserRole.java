@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.io.Serializable;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserRole.findByUserId", query = "SELECT u FROM UserRole u WHERE u.userRolePK.userId = :userId"),
     @NamedQuery(name = "UserRole.findByRoleTypeId", query = "SELECT u FROM UserRole u WHERE u.userRolePK.roleTypeId = :roleTypeId"),
     @NamedQuery(name = "UserRole.findByUserGroupId", query = "SELECT u FROM UserRole u WHERE u.userRolePK.userGroupId = :userGroupId")})
-public class UserRole implements Serializable {
+public class UserRole extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
@@ -43,6 +44,10 @@ public class UserRole implements Serializable {
     private UserGroup userGroup;
 
     public UserRole() {
+    }
+
+    public void init(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
     public UserRole(UserRolePK userRolePK) {
@@ -86,6 +91,29 @@ public class UserRole implements Serializable {
     }
 
     @Override
+    public Object getId() {
+        return userRolePK; 
+    }
+    
+    public static UserRolePK createPrimaryKeyObject(UserRole userRole) throws CdbException {
+        if (userRole.getUserInfo() == null ) {
+            throw new CdbException("User info not specified for a user role object.");
+        }
+        
+        if (userRole.getRoleType() == null ) {
+            throw new CdbException("Role type not specified for a user role object.");
+        }
+        
+        if (userRole.getUserGroup() == null ) {
+            throw new CdbException("User Group not specified for a user role object.");
+        }
+        
+        return new UserRolePK(userRole.getUserInfo().getId()
+                , userRole.getRoleType().getId()
+                , userRole.getUserGroup().getId());                
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
         hash += (userRolePK != null ? userRolePK.hashCode() : 0);
@@ -109,5 +137,5 @@ public class UserRole implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.UserRole[ userRolePK=" + userRolePK + " ]";
     }
-    
+
 }
