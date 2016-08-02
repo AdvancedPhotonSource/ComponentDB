@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -71,6 +72,9 @@ public class ItemSource extends CdbEntity implements Serializable {
     @JoinColumn(name = "source_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Source source;
+    
+    private transient String targetUrl;
+    private transient String displayUrl;
 
     public ItemSource() {
     }
@@ -141,6 +145,20 @@ public class ItemSource extends CdbEntity implements Serializable {
         this.contactInfo = contactInfo;
     }
 
+    public String getTargetUrl() {
+        if (targetUrl == null && url != null) {
+            targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        }
+        return targetUrl;
+    }
+
+    public String getDisplayUrl() {
+        if (displayUrl == null && url != null) {
+            displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
+        }
+        return displayUrl;
+    }
+
     public String getUrl() {
         return url;
     }
@@ -189,5 +207,5 @@ public class ItemSource extends CdbEntity implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemSource[ id=" + id + " ]";
     }
-    
+
 }
