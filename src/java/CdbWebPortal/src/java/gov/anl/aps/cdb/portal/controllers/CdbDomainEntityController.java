@@ -290,15 +290,15 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
     
     @Override
-    public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
-        super.saveListSettingsForSessionUserActionListener(actionEvent);
+    public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
+        super.saveListSettingsForSessionSettingEntityActionListener(actionEvent);
 
         forceLoadPropertyTypeFilter(); 
     }
     
     @Override
-    public void saveListSettingsForSessionUserSetCurrentActionListener(ActionEvent actionEvent) {
-        super.saveListSettingsForSessionUserSetCurrentActionListener(actionEvent);
+    public void saveListSettingsForSessionSettingEntitySetCurrentActionListener(ActionEvent actionEvent) {
+        super.saveListSettingsForSessionSettingEntitySetCurrentActionListener(actionEvent);
 
         forceLoadPropertyTypeFilter(); 
     }
