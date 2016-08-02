@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "RoleType.findById", query = "SELECT r FROM RoleType r WHERE r.id = :id"),
     @NamedQuery(name = "RoleType.findByName", query = "SELECT r FROM RoleType r WHERE r.name = :name"),
     @NamedQuery(name = "RoleType.findByDescription", query = "SELECT r FROM RoleType r WHERE r.description = :description")})
-public class RoleType implements Serializable {
+public class RoleType extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
