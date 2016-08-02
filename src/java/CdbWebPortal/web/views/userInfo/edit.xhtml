@@ -26,12 +26,16 @@
                 <ui:include src="../common/private/commonEditActionButtons.xhtml"/>
             </div>
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true">
+                <p:accordionPanel multiple="true" activeIndex="0,1">
                     <p:tab title="Settings">
 
                         <ui:include src="../userSetting/private/userSettingEditList.xhtml"/>
 
-                    </p:tab>>
+                    </p:tab>
+                    <p:tab rendered="#{loginController.loggedInAsAdmin}"
+                           title="User Roles">
+                        <ui:include src="../userRole/private/userInfoUserRoleEditList.xhtml"/>
+                    </p:tab>
                 </p:accordionPanel>
             </div>
         </h:form>

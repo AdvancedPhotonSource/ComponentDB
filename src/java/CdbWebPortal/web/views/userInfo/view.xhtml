@@ -29,9 +29,14 @@
 
             </div>
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="true" rendered="#{loginController.loggedIn}">
+                <p:accordionPanel multiple="true" activeIndex="0,1"
+                                  rendered="#{loginController.loggedIn}">
                     <p:tab title="Settings">
                         <ui:include src="../userSetting/private/userSettingView.xhtml"/>
+                    </p:tab>
+                    <p:tab title="User Role">
+                        <ui:include src="../userRole/private/userInfoUserRoleList.xhtml"/>
+                        
                     </p:tab>
                 </p:accordionPanel>
             </div>
