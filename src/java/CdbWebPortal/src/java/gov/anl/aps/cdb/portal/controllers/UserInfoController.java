@@ -7,6 +7,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
+import gov.anl.aps.cdb.portal.model.db.entities.UserRolePK;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
@@ -30,7 +32,7 @@ import org.primefaces.component.datatable.DataTable;
 @SessionScoped
 public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFacade> implements Serializable {
 
-     /*
+    /*
      * Controller specific settings
      */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
@@ -53,7 +55,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
 
     @EJB
     private UserInfoFacade userInfoFacade;
-
+    
     private String passwordEntry = null;
 
     private Boolean displayEmail = null;
@@ -155,6 +157,8 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
 
     @Override
     public void prepareEntityUpdate(UserInfo userInfo) throws CdbException {
+        prepareSaveUserRoleList();
+        
         UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
         if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
@@ -172,6 +176,40 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
             userInfo.setPassword(cryptedPassword);
             logger.debug("Updated crypted password: " + cryptedPassword);
         }
+    }
+    
+    public void deleteUserRole(UserRole userRole) {
+        UserInfo userInfo = getCurrent();
+        List<UserRole> userRoleList = userInfo.getUserRoleList();
+        userRoleList.remove(userRole);
+        if (userRole.getUserRolePK() != null) {
+            updateOnRemoval();
+        } else {
+            SessionUtility.addInfoMessage("Success", "Removed new user role.");
+        }
+        
+    }
+    
+    public void prepareSaveUserRoleList() throws CdbException {
+        for (UserRole currentUserRole : getCurrent().getUserRoleList()) {
+            UserRolePK currentPK = UserRole.createPrimaryKeyObject(currentUserRole);
+            for (UserRole userRole : getCurrent().getUserRoleList()) {
+                UserRolePK pk = UserRole.createPrimaryKeyObject(userRole);
+                // Ensure that same object is not being compared 
+                if (userRole != currentUserRole) {
+                    if (pk.equals(currentPK)) {
+                        throw new CdbException("Duplicate role entry exists: " 
+                                + currentUserRole.getRoleType().getName() + " | " 
+                                + currentUserRole.getUserGroup().getName());
+                    }
+                }
+            }            
+            currentUserRole.setUserRolePK(currentPK);
+        }
+    }
+    
+    public void saveUserRoleList() {
+        update();
     }
 
     public void saveSettingList() {
