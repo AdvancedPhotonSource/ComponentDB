@@ -25,15 +25,13 @@
                     <p:outputPanel rendered="#{userGroup != null}">
                         <p:outputLabel id="viewAsSettingsUserHasPermissions" 
                                        styleClass="ui-icon ui-icon-unlocked"
-                                       rendered="#{settingController.isSessionUserHaveGroupWritePermission(userGroup)}">
-                            <p:tooltip for="viewAsSettingsUserHasPermissions"
-                                       value="User has permissions to modify settings for this group"/>
-                        </p:outputLabel>
+                                       rendered="#{settingController.isSessionUserHaveGroupWritePermission(userGroup)}"/>
                         <p:outputLabel id="viewAsSettingsUserMemberOf" 
                                        styleClass="ui-icon ui-icon-person"
                                        rendered="#{settingController.isSessionUserMemeberOfGroup(userGroup)}"/>
 
-                        #{userGroup.name}
+                        <b>#{userGroup.name}</b>
+                        <br/> #{userGroup.description}
                     </p:outputPanel>
                     <p:outputPanel rendered="#{userGroup == null}">
                         <p:outputLabel styleClass="ui-icon ui-icon-home" />
