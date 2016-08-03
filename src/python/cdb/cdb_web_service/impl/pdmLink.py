@@ -40,6 +40,10 @@ class PdmLink:
 
     WINDCHILL_WEBPARTS_URL = '/servlet/SimpleTaskDispatcher?CLASS=com.ptc.windchill.webparts'
     WINDCHILL_WS_URL = '/servlet/SimpleTaskDispatcher?CLASS=com.ptc.windchill.ws'
+    WINDCHILL_VERSION_PROPERTY_NAME = 'versionInfo.identifier.versionId'
+    WINDCHILL_ITERATION_PROPERTY_NAME = 'iterationInfo.identifier.iterationId'
+    WINDCHILL_NUMBER_PROPERTY_NAME = 'number'
+
     SOAP_ENCODING_SCHEMA_URL = 'http://schemas.xmlsoap.org/soap/encoding/'
     ICMS_USER = 'cdb_soap'
     ICMS_PASS = 'soap$4cdb'
@@ -55,6 +59,10 @@ class PdmLink:
         self.icmsConnection = None
         self.componentDbApi = None
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
+
+        self.versionIndex = None
+        self.iterationIndex = None
+        self.numberIndex = None
 
         # searchArgs are used in search functions of Windchill webparts class
         # Only keyword needs to be changed when searching for a node. 
@@ -106,6 +114,36 @@ class PdmLink:
         # initialize db api
         self.componentDbApi = ComponentDbApi()
 
+    def __isDrawingListEmpty(self, drawingList):
+        if drawingList is not None:
+            if drawingList.__len__() == 0:
+                return True
+            if str(drawingList[0].properties[0].name) == 'hasMore':
+                return True
+        return False
+
+    def __getPropertyNameIndex(self, sampleDrawing, propertyName):
+        sampleDrawingProperties = sampleDrawing.properties
+        for i in range(0, sampleDrawingProperties.__len__()):
+            if sampleDrawingProperties[i].name == propertyName:
+                return i
+
+    def __getVersionIndex(self, sampleDrawing):
+        if self.versionIndex is None:
+            self.versionIndex = self.__getPropertyNameIndex(sampleDrawing, self.WINDCHILL_VERSION_PROPERTY_NAME)
+
+        return self.versionIndex
+
+    def __getIterationIndex(self, sampleDrawing):
+        if self.iterationIndex is None:
+            self.iterationIndex = self.__getPropertyNameIndex(sampleDrawing, self.WINDCHILL_ITERATION_PROPERTY_NAME)
+        return self.iterationIndex
+
+    def __getNumberIndex(self, sampleDrawing):
+        if self.numberIndex is None:
+            self.numberIndex = self.__getPropertyNameIndex(sampleDrawing, self.WINDCHILL_NUMBER_PROPERTY_NAME)
+        return self.numberIndex
+
     def __cleanPDMLinkDrawingList(self, drawingList):
         """
         PDM Link has an inconsistency when retrieving multiple results.
@@ -116,9 +154,18 @@ class PdmLink:
         :return: new list of unique drawings
         """
 
-        verInx = 6
-        itrInx = 5
         newList = []
+
+        # Drawing list is empty
+        if self.__isDrawingListEmpty(drawingList):
+            return newList
+
+        # List is not empty.
+        sampleDrawing = drawingList[0]
+
+        verInx = self.__getVersionIndex(sampleDrawing)
+        itrInx = self.__getIterationIndex(sampleDrawing)
+        numInx = self.__getNumberIndex(sampleDrawing)
         revList = []
 
         def addLatestRev(curDrawing=None):
@@ -151,13 +198,9 @@ class PdmLink:
             elif curDrawing is not None:
                 newList.append(curDrawing)
 
-        # Drawing list is empty
-        if drawingList.__len__() == 0:
-            return newList
-        if str(drawingList[0].properties[0].name) == 'hasMore':
-            return newList
 
-        prevNumber = drawingList[0].properties[1].value
+
+        prevNumber = drawingList[0].properties[numInx].value
         revList.append(drawingList[0])
 
         for drawing in drawingList[1:]:
@@ -167,7 +210,7 @@ class PdmLink:
                 continue
 
             # Add non-repeated values
-            currentNumber = drawing.properties[1].value
+            currentNumber = drawing.properties[numInx].value
             if prevNumber == currentNumber:
                 revList.append(drawing)
             elif prevNumber != currentNumber:
@@ -505,10 +548,11 @@ class PdmLink:
         :raises InvalidArgument: The drawing name is not complete
         """
         def findNameInList():
-            for drawing in drawingList:
-                curDrawingNumber = drawing.properties[1].value
-                if curDrawingNumber.lower() == drawingNumber.lower():
-                    return drawing
+            if self.__isDrawingListEmpty(drawingList) is False:
+                for drawing in drawingList:
+                    curDrawingNumber = drawing.properties[self.__getNumberIndex(drawing)].value
+                    if curDrawingNumber.lower() == drawingNumber.lower():
+                        return drawing
             return None
 
         # Getting a single PDM Link requires the full name with extension.
@@ -761,7 +805,8 @@ class PdmLink:
 #######################################################################
 # Testing.
 if __name__ == '__main__':
-    pdmLink = PdmLink('edp', 'PakTai8', 'http://windchill-vm.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
+    #pdmLink = PdmLink('edp', 'PakTai8', 'http://windchill-vm.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
+    pdmLink = PdmLink('edp', 'PakTai8', 'http://chilly.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
 
     def getDrawingFromPDMLink(drawingNumber):
         print 'Get Drawing: ', drawingNumber
