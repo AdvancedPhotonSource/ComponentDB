@@ -13,7 +13,7 @@ from pdmLink import PdmLink
 class PdmLinkControllerImpl(CdbObjectManager):
     def __init__(self):
         CdbObjectManager.__init__(self)
-        self.pdmLink = PdmLink('edp', 'PakTai8', 'http://windchill-vm.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
+        self.pdmLink = PdmLink('edp', 'PakTai8', 'http://chilly.aps.anl.gov/Windchill', 'https://icmsdocs.aps.anl.gov')
 
     def getDrawing(self, drawingNumber):
         return self.pdmLink.getDrawing(drawingNumber)
