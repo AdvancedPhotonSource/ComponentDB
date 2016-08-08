@@ -42,7 +42,7 @@ public class SettingController implements Serializable {
 
     @EJB
     private UserGroupFacade userGroupFacade;
-
+    
     private static final Logger logger = Logger.getLogger(SettingController.class.getName());
 
     private UserInfoController userInfoController = null;
@@ -102,6 +102,8 @@ public class SettingController implements Serializable {
             group.setUserGroupSettingList(sessionUserGroup.getUserGroupSettingList());
             userGroupController.setCurrent(group);
             userGroupController.update();
+            this.userGroupForSettingsView = userGroupController.getCurrent();
+            settingsTimestamp = null;
             return;
         }
 
@@ -116,9 +118,10 @@ public class SettingController implements Serializable {
             user.setUserSettingList(sessionUser.getUserSettingList());
             userInfoController.setCurrent(user);
             userInfoController.update();
+            settingsTimestamp = null;
         }
     }
-
+    
     public UserGroup getUserGroupForSettingsView() {
         return userGroupForSettingsView;
     }
@@ -157,7 +160,7 @@ public class SettingController implements Serializable {
         resetSessionVariables();
         populateSessionSettingEntityFromSettingTypeDefaults(sessionUser);
     }
-
+        
     // TODO add checks that determine if any additional settings need to be added. 
     private void populateSessionSettingEntityFromSettingTypeDefaults(SettingEntity settingEntity) {
         if (settingEntity != null) {
@@ -254,6 +257,10 @@ public class SettingController implements Serializable {
         }
 
         return newUserGroupList;
+    }
+    
+    public boolean isUserHaveUpdateFavoritesPermission() {
+        return isSessionUserHaveSettingsWritePermissions(); 
     }
 
     public boolean isSessionUserHaveGroupWritePermission(UserGroup userGroup) {
