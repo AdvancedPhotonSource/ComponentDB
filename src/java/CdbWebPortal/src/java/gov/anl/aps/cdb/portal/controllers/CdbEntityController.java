@@ -547,6 +547,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         settingsTimestamp = new Date();
     }
 
+    public SettingController getSettingController() {
+        if (settingController == null) {
+            settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
+        }
+
+        return settingController;
+    }
+    
+    /**
+     * Override this function if a derived controller needs to process when new settings are present. 
+     */
+    public void settingsAreReloaded() {
+        resetListDataModel();
+    }
+
     /**
      * Update controller session settings based on session user and settings
      * modification date.
@@ -555,18 +570,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public boolean updateSettings() {
         try {
-            if (settingController == null) {
-                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
-            }
+            settingController = getSettingController();
 
             SettingEntity settingEntity = settingController.getCurrentSettingEntity();
             if (settingEntity != null) {
                 if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    settingsAreReloaded();
                     loadSettings(settingEntity);
                     return true;
                 }
             } else if (settingEntity == null) {
                 if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    settingsAreReloaded();
                     updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
                     settingsTimestamp = new Date();
                     return true;
@@ -626,7 +641,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * Save controller session settings for the current user.
+     * Save controller session settings for the current setting entity.
      *
      * This method should be overridden in any derived controller class that has
      * its own settings.
@@ -643,9 +658,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
         logger.debug("Saving settings");
-        if (settingController == null) {
-            settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
-        }
+        settingController = getSettingController();
 
         SettingEntity settingEntity = settingController.getCurrentSettingEntity();
 
