@@ -336,7 +336,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             listIsDifferent = !test.isEmpty();
         }
 
-        // ListTbl is diferent.
+        // List is diferent.
         if (listIsDifferent) {
             this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
             filterViewItemTypeList = null;
