@@ -1,6 +1,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.entities.List;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
@@ -22,7 +22,7 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class ListController implements Serializable {
 
-    private List current;
+    private ListTbl current;
     private DataModel items = null;
     @EJB
     private gov.anl.aps.cdb.portal.model.db.beans.ListFacade ejbFacade;
@@ -32,9 +32,9 @@ public class ListController implements Serializable {
     public ListController() {
     }
 
-    public List getSelected() {
+    public ListTbl getSelected() {
         if (current == null) {
-            current = new List();
+            current = new ListTbl();
             selectedItemIndex = -1;
         }
         return current;
@@ -68,13 +68,13 @@ public class ListController implements Serializable {
     }
 
     public String prepareView() {
-        current = (List) getItems().getRowData();
+        current = (ListTbl) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "View";
     }
 
     public String prepareCreate() {
-        current = new List();
+        current = new ListTbl();
         selectedItemIndex = -1;
         return "Create";
     }
@@ -91,7 +91,7 @@ public class ListController implements Serializable {
     }
 
     public String prepareEdit() {
-        current = (List) getItems().getRowData();
+        current = (ListTbl) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         return "Edit";
     }
@@ -108,7 +108,7 @@ public class ListController implements Serializable {
     }
 
     public String destroy() {
-        current = (List) getItems().getRowData();
+        current = (ListTbl) getItems().getRowData();
         selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
         performDestroy();
         recreatePagination();
@@ -188,11 +188,11 @@ public class ListController implements Serializable {
         return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
     }
 
-    public List getList(java.lang.Integer id) {
+    public ListTbl getList(java.lang.Integer id) {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = List.class)
+    @FacesConverter(forClass = ListTbl.class)
     public static class ListControllerConverter implements Converter {
 
         @Override
@@ -222,11 +222,11 @@ public class ListController implements Serializable {
             if (object == null) {
                 return null;
             }
-            if (object instanceof List) {
-                List o = (List) object;
+            if (object instanceof ListTbl) {
+                ListTbl o = (ListTbl) object;
                 return getStringKey(o.getId());
             } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + List.class.getName());
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + ListTbl.class.getName());
             }
         }
 
