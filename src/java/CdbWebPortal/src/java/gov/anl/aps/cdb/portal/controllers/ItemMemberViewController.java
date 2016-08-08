@@ -16,21 +16,21 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 /**
- * Controller used to manage settings for the design member view for the Design Entity. 
+ * Controller used to manage settings for the item member view for the Item Entity. 
  */
 @Named("itemMemberViewController")
 @SessionScoped
 public class ItemMemberViewController extends ItemController {
 
-    private static final String DisplayMemberNumberOfItemsPerPageSettingTypeKey = "Design.Member.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayMemberIdSettingTypeKey = "Design.Member.List.Display.Id";
-    private static final String DisplayMemberDescriptionSettingTypeKey = "Design.Member.List.Display.Description";
-    private static final String DisplayMemberOwnerUserSettingTypeKey = "Design.Member.List.Display.OwnerUser";
-    private static final String DisplayMemberOwnerGroupSettingTypeKey = "Design.Member.List.Display.OwnerGroup";
-    private static final String DisplayMemberCreatedByUserSettingTypeKey = "Design.Member.List.Display.CreatedByUser";
-    private static final String DisplayMemberCreatedOnDateTimeSettingTypeKey = "Design.Member.List.Display.CreatedOnDateTime";
-    private static final String DisplayMemberLastModifiedByUserSettingTypeKey = "Design.Member.List.Display.LastModifiedByUser";
-    private static final String DisplayMemberLastModifiedOnDateTimeSettingTypeKey = "Design.Member.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayMemberNumberOfItemsPerPageSettingTypeKey = "Item.Member.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayMemberIdSettingTypeKey = "Item.Member.List.Display.Id";
+    private static final String DisplayMemberDescriptionSettingTypeKey = "Item.Member.List.Display.Description";
+    private static final String DisplayMemberOwnerUserSettingTypeKey = "Item.Member.List.Display.OwnerUser";
+    private static final String DisplayMemberOwnerGroupSettingTypeKey = "Item.Member.List.Display.OwnerGroup";
+    private static final String DisplayMemberCreatedByUserSettingTypeKey = "Item.Member.List.Display.CreatedByUser";
+    private static final String DisplayMemberCreatedOnDateTimeSettingTypeKey = "Item.Member.List.Display.CreatedOnDateTime";
+    private static final String DisplayMemberLastModifiedByUserSettingTypeKey = "Item.Member.List.Display.LastModifiedByUser";
+    private static final String DisplayMemberLastModifiedOnDateTimeSettingTypeKey = "Item.Member.List.Display.LastModifiedOnDateTime";
     
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
