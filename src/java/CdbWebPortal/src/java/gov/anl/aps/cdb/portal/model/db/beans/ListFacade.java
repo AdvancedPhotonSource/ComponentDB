@@ -5,7 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
-import gov.anl.aps.cdb.portal.model.db.entities.List;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -15,7 +15,7 @@ import javax.persistence.PersistenceContext;
  * @author djarosz
  */
 @Stateless
-public class ListFacade extends CdbEntityFacade<List> {
+public class ListFacade extends CdbEntityFacade<ListTbl> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
@@ -26,7 +26,7 @@ public class ListFacade extends CdbEntityFacade<List> {
     }
 
     public ListFacade() {
-        super(List.class);
+        super(ListTbl.class);
     }
     
 }
