@@ -68,7 +68,40 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
-            query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC")
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
+    @NamedQuery(name = "Item.findItemsOwnedByUserId",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
+                    + "WHERE i.domain.name = :domainName "
+                    + "AND fiel.name is NULL "
+                    + "AND fiel.derivedFromItemElement is NULL "
+                    + "AND fiel.entityInfo.ownerUser.id = :ownerUserId"),
+    @NamedQuery(name = "Item.findItemsOwnedByUserGroupId",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
+                    + "WHERE i.domain.name = :domainName "
+                    + "AND fiel.name is NULL "
+                    + "AND fiel.derivedFromItemElement is NULL "
+                    + "AND fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId"),
+    @NamedQuery(name = "Item.findItemsInList",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
+                    + "WHERE i.domain.name = :domainName "
+                    + "AND fiel.derivedFromItemElement is NULL "
+                    + "AND fiel.name is NULL "
+                    + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsOwnedByUserGroupIdOrInList",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN fiel.listList ieList "
+                    + "WHERE  fiel.name is NULL "
+                    + "AND fiel.derivedFromItemElement is NULL "
+                    + "AND (fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId "
+                    + "OR ieList = :list)"
+                    + "AND i.domain.name = :domainName"),
+    @NamedQuery(name = "Item.findItemsOwnedByUserIdOrInList",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN fiel.listList ieList "
+                    + "WHERE  fiel.name is NULL "
+                    + "AND fiel.derivedFromItemElement is NULL "
+                    + "AND (fiel.entityInfo.ownerUser.id = :ownerUserId "
+                    + "OR ieList = :list)"
+                    + "AND i.domain.name = :domainName"),
+        
 })
 public class Item extends CdbDomainEntity implements Serializable {
 
