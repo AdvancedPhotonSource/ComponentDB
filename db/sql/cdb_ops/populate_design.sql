@@ -9,7 +9,7 @@ INSERT INTO `design` VALUES
 (6,'35-ID-E','',11),
 (7,'White Beam Stop D14308-110000','D14308-110000-02',25),
 (10,'Mask Assembly','Mask 3 rigidly mounted to Mask 2',112),
-(11,'6-ID FRONT END','6-ID FRONT END',120),
+(11,'6-ID FRONT END 410201-111050-00','6-ID FRONT END 410201-111050-00',120),
 (12,'P4-30 Integral Shutter','',132),
 (13,'23-ID','23-ID straight section, front end and beamline',137),
 (14,'Canted Undulator Front End (Windowless)','1 mrad separation',141),

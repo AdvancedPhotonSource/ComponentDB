@@ -28,6 +28,7 @@ INSERT INTO `component` VALUES
 (41,'Pnuematic Function Module','FM-OAP102-0','',37,118),
 (42,'GUIDED CYLINDER ASSEMBLY','4105090104-810100','A4 HEAVY LOAD PNEUMATIC; 33 mm - 8\" LINEAR ACTUATOR; GUIDED CYLINDER ASSEMBLY.                                                    \r\nSP-XXA4-0001 17-0350-42/1-1b, 17-0350-42/1-1a \"BOTH items are part of One Assempbly\"',134,122),
 (43,'P4-30 Integral Shutter','P4-300000-03-2','',104,131),
-(44,'Storage Ring Quadrupole','31010203-00029','.5 meter Quadrupole (AQ1, AQ3, BQ4)',83,134);
+(44,'Storage Ring Quadrupole','31010203-00029','.5 meter Quadrupole (AQ1, AQ3, BQ4)',83,134),
+(45,'6-ID FRONT END 410201-111050-00','6-ID FRONT END 410201-111050-00','FRONT END',133,144);
 /*!40000 ALTER TABLE `component` ENABLE KEYS */;
 UNLOCK TABLES;

@@ -203,7 +203,6 @@ INSERT INTO `property_value` VALUES
 (295,74,'','D.1.4.3.2','','','2016-02-26 16:05:23',42,0,0,'D.1.4.3.2','D.1.4.3.2'),
 (296,17,'Model Ref','D14308-110000.drw','','','2016-03-01 09:05:27',42,0,0,NULL,NULL),
 (297,74,'','D.1.4.3.8','','','2016-02-26 16:18:55',42,0,0,'D.1.4.3.8','D.1.4.3.8'),
-(300,14,'Layout Image','image.2807372039632144034.jpg','','','2016-03-08 16:27:15',42,0,0,'image.2807372039632144034.jpg','image.2807372039632144034.jpg'),
 (301,15,'Layout Image','document.3206965677958160885.pdf','','','2016-03-08 16:26:56',42,0,0,'document.3206965677958160885.pdf','/cdb_ops/propertyValue/documents/document.3206965677958160885.pdf'),
 (302,74,'','X.1.4.1.5.9.9.10','','','2016-03-10 09:36:25',42,0,0,'X.1.4.1.5.9.9.10','X.1.4.1.5.9.9.10'),
 (303,17,'Model Ref','4105090910-150000','','','2016-03-10 09:36:25',42,0,0,'4105090910-150000','4105090910-150000'),
@@ -273,7 +272,7 @@ INSERT INTO `property_value` VALUES
 (367,15,'Infosheet','document.8919943981632067995.pdf','','','2016-03-11 14:55:34',42,0,0,'document.8919943981632067995.pdf','/cdb_ops/propertyValue/documents/document.8919943981632067995.pdf'),
 (368,15,'Tech. Bulletin','document.2041546983330796879.pdf','','','2016-03-11 14:56:54',42,0,0,'document.2041546983330796879.pdf','/cdb_ops/propertyValue/documents/document.2041546983330796879.pdf'),
 (369,15,'Spares Location','document.7840154110432775007.pdf','1','','2016-03-11 15:08:55',42,0,0,NULL,NULL),
-(370,16,'','','','6-ID FRONT END Layout','2016-03-15 15:00:29',48,0,0,'','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_'),
+(370,16,'Top Level Assembly','410201-111050-00.DWG','','','2016-07-25 13:22:03',48,0,0,'410201-111050-00.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-111050-00.DWG'),
 (371,17,'Model Ref','4105090104-810100','','','2016-03-15 15:03:30',42,0,0,'4105090104-810100','4105090104-810100'),
 (372,74,'','X.1.4.1.5.9.1.4','','','2016-03-15 15:03:30',42,0,0,'X.1.4.1.5.9.1.4','X.1.4.1.5.9.1.4'),
 (374,7,'','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=4105090104-810100.DWG','','','2016-03-15 15:33:39',42,0,0,'https://icmsdoc...0104-810100.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=4105090104-810100.DWG'),
@@ -285,6 +284,20 @@ INSERT INTO `property_value` VALUES
 (380,15,'','document.3439733379456960772.pdf','','','2016-03-17 11:51:36',42,0,0,'',NULL),
 (381,85,'','Vacuum','','','2016-03-17 16:01:46',42,0,0,'','Vacuum'),
 (382,16,'','D14305-110000.drw','','','2016-03-23 17:20:03',42,0,0,'','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=D14305-110000.drw'),
-(383,16,'','4105090104-810100.DWG','','','2016-03-23 17:29:30',42,0,0,'','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_4105090104-810100.DWG');
+(383,16,'','4105090104-810100.DWG','','','2016-03-23 17:29:30',42,0,0,'','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=APS_4105090104-810100.DWG'),
+(394,16,'Top Level Assembly','410201-111050-00.DWG','','','2016-07-25 15:34:49',48,0,0,'410201-111050-00.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-111050-00.DWG'),
+(395,16,'','410201-220000-03.DWG','','','2016-07-25 13:25:29',48,0,0,'410201-220000-03.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-220000-03.DWG'),
+(396,16,'','410201-330000-01.DWG','','','2016-07-25 13:27:09',48,0,0,'410201-330000-01.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-330000-01.DWG'),
+(397,16,'','410201-630000-02.DWG','','','2016-07-25 13:28:35',48,0,0,'410201-630000-02.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-630000-02.DWG'),
+(398,16,'','410201-240000-02.DWG','','','2016-07-25 13:29:30',48,0,0,'410201-240000-02.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-240000-02.DWG'),
+(399,16,'','410201-280000-03.DWG','','','2016-07-25 13:30:21',48,0,0,'410201-280000-03.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-280000-03.DWG'),
+(400,16,'','410201-290000-03.DWG','','','2016-07-25 13:31:09',48,0,0,'410201-290000-03.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-290000-03.DWG'),
+(402,17,'','410201-320000.DRW','','','2016-07-25 13:36:29',48,0,0,'410201-320000.DRW','410201-320000.DRW'),
+(403,16,'','410201-320000.DRW','','','2016-07-25 13:37:34',48,0,0,'410201-320000.DRW','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-320000.DRW'),
+(404,16,'','410201-650000-04.DWG','','','2016-07-25 13:39:22',48,0,0,'410201-650000-04.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-650000-04.DWG'),
+(405,16,'','410201-920000-00.DWG','','','2016-07-25 13:40:12',48,0,0,'410201-920000-00.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-920000-00.DWG'),
+(406,16,'','410201-260000-03.DWG','','','2016-07-25 13:40:59',48,0,0,'410201-260000-03.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=410201-260000-03.DWG'),
+(407,16,'','4105091407-600000-00.DWG','','','2016-07-25 13:41:47',48,0,0,'4105091407-600000-00.DWG','https://icmsdocs.aps.anl.gov/docs/idcplg?IdcService=DISPLAY_URL&dDocName=4105091407-600000-00.DWG'),
+(408,16,'Ray Tracing','410201-110000-01.DWG','','','2016-07-25 15:33:11',48,0,0,NULL,NULL);
 /*!40000 ALTER TABLE `property_value` ENABLE KEYS */;
 UNLOCK TABLES;
