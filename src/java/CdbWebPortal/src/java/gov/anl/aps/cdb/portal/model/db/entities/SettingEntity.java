@@ -24,6 +24,8 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
     public abstract List<EntitySetting> getSettingList();
     
     public abstract void populateDefaultSettingList(List<SettingType> settingTypeList);
+    
+    public abstract List<ListTbl> getItemElementLists();
 
     protected void createSettingMap() {
         entitySettingMap = new HashMap<>();

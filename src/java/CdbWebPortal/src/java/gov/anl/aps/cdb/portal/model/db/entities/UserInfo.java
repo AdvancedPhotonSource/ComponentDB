@@ -8,8 +8,6 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -83,7 +81,7 @@ public class UserInfo extends SettingEntity implements Serializable {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "list_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<gov.anl.aps.cdb.portal.model.db.entities.List> listList;
+    private List<ListTbl> listList;
     @JoinTable(name = "user_user_group", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
@@ -200,11 +198,11 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
-    public List<gov.anl.aps.cdb.portal.model.db.entities.List> getListList() {
+    public List<ListTbl> getListList() {
         return listList;
     }
 
-    public void setListList(List<gov.anl.aps.cdb.portal.model.db.entities.List> listList) {
+    public void setListList(List<ListTbl> listList) {
         this.listList = listList;
     }
 
@@ -379,6 +377,11 @@ public class UserInfo extends SettingEntity implements Serializable {
             settingList.add(userSetting);
         }
         setUserSettingList(settingList);
+    }
+
+    @Override
+    public List<ListTbl> getItemElementLists() {
+        return getListList(); 
     }
     
 }

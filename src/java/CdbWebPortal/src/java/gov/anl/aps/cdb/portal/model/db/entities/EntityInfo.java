@@ -79,7 +79,7 @@ public class EntityInfo implements Serializable {
     @ManyToOne
     private UserInfo obsoletedByUser;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
-    private List list;
+    private ListTbl list;
 
     public EntityInfo() {
     }
@@ -215,11 +215,11 @@ public class EntityInfo implements Serializable {
         this.obsoletedByUser = obsoletedByUser;
     }
     
-    public List getList() {
+    public ListTbl getList() {
         return list;
     }
 
-    public void setList(List list) {
+    public void setList(ListTbl list) {
         this.list = list;
     }
 

@@ -61,7 +61,7 @@ public class UserGroup extends SettingEntity implements Serializable {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "list_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<gov.anl.aps.cdb.portal.model.db.entities.List> listList;
+    private List<ListTbl> listList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userGroup")
     private List<UserRole> userRoleList;
     @OneToMany(mappedBy = "ownerUserGroup")
@@ -115,11 +115,11 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
-    public List<gov.anl.aps.cdb.portal.model.db.entities.List> getListList() {
+    public List<gov.anl.aps.cdb.portal.model.db.entities.ListTbl> getListList() {
         return listList;
     }
 
-    public void setListList(List<gov.anl.aps.cdb.portal.model.db.entities.List> listList) {
+    public void setListList(List<gov.anl.aps.cdb.portal.model.db.entities.ListTbl> listList) {
         this.listList = listList;
     }
 
@@ -200,6 +200,11 @@ public class UserGroup extends SettingEntity implements Serializable {
         }
 
         setUserGroupSettingList(settingList);
+    }
+
+    @Override
+    public List<ListTbl> getItemElementLists() {
+        return getListList(); 
     }
     
 }
