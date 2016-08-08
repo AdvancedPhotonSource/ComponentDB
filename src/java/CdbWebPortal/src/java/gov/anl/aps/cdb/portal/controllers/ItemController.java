@@ -4,7 +4,9 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
+import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemViews;
+import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
@@ -12,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -21,8 +24,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
@@ -68,6 +74,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     @EJB
     private ItemCategoryFacade itemCategoryFacade;
 
+    @EJB
+    private ListFacade listFacade;
+
+    protected final String FAVORITES_LIST_NAME = "Favorites";
+
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
     protected Boolean displayItemSources = null;
@@ -76,6 +87,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayName = null;
     protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
+
+    protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
+    protected List<String> displayListDataModelScopeSelectionList = null;
+    protected DataModel scopedListDataModel = null;
 
     private static final Logger logger = Logger.getLogger(Item.class.getName());
 
@@ -103,7 +118,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected DataModel allowedChildItemSelectDataModel = null;
 
     protected List<ItemCategory> domainItemCategoryList = null;
-    
+
     protected String listViewSelected;
 
     protected List<ItemCategory> filterViewItemCategorySelectionList = null;
@@ -117,7 +132,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     protected ListDataModel filterViewListDataModel = null;
 
-    protected ItemProject filterViewSelectedItemProject = null; 
+    protected ItemProject filterViewSelectedItemProject = null;
 
     private final int FILTER_VIEW_MIN_ROWS = 14;
 
@@ -270,7 +285,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public List<Item> getItemList() {
         return itemFacade.findByDomain(getListDomainName());
     }
-    
+
     public boolean isItemHasSimpleListView() {
         return false;
     }
@@ -310,24 +325,24 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public void setFilterViewItemCategorySelection(List<ItemCategory> filterViewItemCategorySelectionList) {
-        Boolean listIsDifferent = true; 
-        if (this.filterViewItemCategorySelectionList == null ||
-                filterViewItemCategorySelectionList.size() == this.filterViewItemCategorySelectionList.size()) {
+        Boolean listIsDifferent = true;
+        if (this.filterViewItemCategorySelectionList == null
+                || filterViewItemCategorySelectionList.size() == this.filterViewItemCategorySelectionList.size()) {
             List<ItemCategory> test = new ArrayList<>(filterViewItemCategorySelectionList);
             if (this.filterViewItemCategorySelectionList != null) {
                 test.removeAll(this.filterViewItemCategorySelectionList);
             }
-            
-            listIsDifferent = !test.isEmpty(); 
+
+            listIsDifferent = !test.isEmpty();
         }
 
-        // List is diferent.
+        // ListTbl is diferent.
         if (listIsDifferent) {
             this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
             filterViewItemTypeList = null;
             filterViewListDataModelLoaded = false;
             // Verify validity of current selection. 
-            setFilterViewSelectedItemType(filterViewSelectedItemType);            
+            setFilterViewSelectedItemType(filterViewSelectedItemType);
         }
     }
 
@@ -342,15 +357,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         } else if (!getFilterViewItemTypeList().contains(this.filterViewSelectedItemType)) {
             // Current item is not valid
             filterViewListDataModelLoaded = false;
-            this.filterViewSelectedItemType = null;            
+            this.filterViewSelectedItemType = null;
         } else if (filterViewSelectedItemType == null) {
             filterViewListDataModelLoaded = false;
-            this.filterViewSelectedItemType = null;            
+            this.filterViewSelectedItemType = null;
         }
     }
-    
+
     public boolean isFilterViewItemTypeSelectOneDisabled() {
-        return getFilterViewItemTypeList().isEmpty(); 
+        return getFilterViewItemTypeList().isEmpty();
     }
 
     public ItemProject getFilterViewSelectedItemProject() {
@@ -382,9 +397,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public ListDataModel getFilterViewListDataModel() {
         if (filterViewListDataModelLoaded == false) {
-            List<Item> filterViewItemList = itemFacade.findByFilterViewAttributes(filterViewSelectedItemProject, 
+            List<Item> filterViewItemList = itemFacade.findByFilterViewAttributes(filterViewSelectedItemProject,
                     filterViewItemCategorySelectionList, filterViewSelectedItemType);
-            
+
             filterViewListDataModel = new ListDataModel(filterViewItemList);
             filterViewListDataModelLoaded = true;
             filterViewDataTableRowCount = -1;
@@ -394,8 +409,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     /**
-     * Function generates number of optimal rows for a data table.
-     * A known issue is that data table will stop attempting to fetch number of rows after interaction with paginator. 
+     * Function generates number of optimal rows for a data table. A known issue
+     * is that data table will stop attempting to fetch number of rows after
+     * interaction with paginator.
+     *
      * @return number of rows to display in data table.
      */
     public int getFilterViewDataTableRowCount() {
@@ -403,10 +420,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             ListDataModel filterDataModel = getFilterViewListDataModel();
 
             int filterDataModelRowCount = filterDataModel.getRowCount();
-            
+
             int lastBestNumRows = 0;
             if (filterDataModelRowCount != -1) {
-                
+
                 Double lastBestResult = null;
                 for (int i = FILTER_VIEW_MAX_ROWS; i > FILTER_VIEW_MIN_ROWS; i--) {
                     if (lastBestResult == null) {
@@ -416,14 +433,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         double currentResult = (i * 1.0) / (filterDataModelRowCount * 1.0);
                         double resultDecimal = currentResult - Math.floor(currentResult);
                         if (resultDecimal != 0) {
-                            double lastDecimal = lastBestResult - Math.floor(lastBestResult); 
+                            double lastDecimal = lastBestResult - Math.floor(lastBestResult);
                             if (currentResult > lastDecimal) {
-                                lastBestResult = currentResult; 
-                                lastBestNumRows = i; 
+                                lastBestResult = currentResult;
+                                lastBestNumRows = i;
                             }
                         } else {
                             // Whole number reached. 
-                            lastBestResult = currentResult;                         
+                            lastBestResult = currentResult;
                         }
 
                     }
@@ -434,7 +451,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         break;
                     }
                 }
-            } 
+            }
 
             filterViewDataTableRowCount = lastBestNumRows;
         }
@@ -584,6 +601,144 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
     }
 
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel();
+        scopedListDataModel = null;
+    }
+
+    public DataModel getScopedListDataModel() {
+        // Show all
+        if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showAll.getValue())) {
+            return getListDataModel();
+        } else if (scopedListDataModel == null) {
+            // Determine if currently viewed as group or user. 
+            SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+            // All the remaining options require a setting entity loaded. 
+            if (settingEntity == null) {
+                return getListDataModel();
+            }
+
+            // Show only favorites
+            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
+                List<Item> itemList = itemFacade.getItemListContainedInList(getListDomainName(), getFavoritesList());
+                scopedListDataModel = new ListDataModel(itemList);
+            } else if (settingEntity instanceof UserInfo) {
+                // Show owned by user
+                if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
+                    List<Item> itemList = itemFacade.getItemListOwnedByUser(getListDomainName(), (UserInfo) settingEntity);
+                    scopedListDataModel = new ListDataModel(itemList);
+                } // show owned by user and favorites 
+                else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
+                    List<Item> itemList = itemFacade
+                            .getItemListContainedInListOrOwnedByUser(getListDomainName(), getFavoritesList(), (UserInfo) settingEntity);
+                    scopedListDataModel = new ListDataModel(itemList);
+                }
+            } else if (settingEntity instanceof UserGroup) {
+                // Show owned by group
+                if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
+                    List<Item> itemList = itemFacade.getItemListOwnedByUserGroup(getListDomainName(), (UserGroup) settingEntity);
+                    scopedListDataModel = new ListDataModel(itemList);
+                } // show owned by group and favorites 
+                else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
+                    List<Item> itemList = itemFacade
+                            .getItemListContainedInListOrOwnedByGroup(getListDomainName(), getFavoritesList(), (UserGroup) settingEntity);
+                    scopedListDataModel = new ListDataModel(itemList);
+                }
+            }
+        }
+        if (scopedListDataModel == null) {
+            //Nothing was populated into the list data model. 
+            scopedListDataModel = new ListDataModel<>(); 
+        }
+
+        return scopedListDataModel;
+    }
+
+    public void toggleItemInFavoritesList(Item item) {
+        if (SessionUtility.getUser() == null) {
+            SessionUtility.addErrorMessage("Error", "Cannot add item to favorites list no user logged in.");
+            return;
+        }
+
+        ListTbl favoriteList = getFavoritesList();
+        if (favoriteList == null) {
+            favoriteList = createFavoritesList();
+        }
+
+        ItemElement favoriteItemElement = item.getSelfElement();
+        List<ItemElement> favoriteItemElementList = favoriteList.getItemElementList();
+
+        if (favoriteItemElementList.contains(favoriteItemElement)) {
+            favoriteItemElementList.remove(favoriteItemElement);
+            logger.debug(String.format("Removing %s to %s List", favoriteItemElement, FAVORITES_LIST_NAME));
+        } else {
+            favoriteItemElementList.add(item.getSelfElement());
+            logger.debug(String.format("Adding %s to %s List", favoriteItemElement, FAVORITES_LIST_NAME));
+        }
+
+        // Update
+        try {
+            listFacade.edit(favoriteList);
+        } catch (Exception ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            logger.error(ex);
+        }
+
+    }
+
+    public String getItemFavoritesIconStyle(Item item) {
+        ListTbl favoritesList = getFavoritesList();
+        if (favoritesList != null) {
+            if (favoritesList.getItemElementList().contains(item.getSelfElement())) {
+                return PortalStyles.favoritesOn.getValue();
+            }
+        }
+
+        return PortalStyles.favoritesOff.getValue();
+    }
+
+    private List<ListTbl> getSettingEntityItemElementLists() {
+        SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+        if (settingEntity != null) {
+            return settingEntity.getItemElementLists();
+        }
+        return null;
+    }
+
+    private ListTbl getFavoritesList() {
+        List<ListTbl> itemElementLists = getSettingEntityItemElementLists();
+        if (itemElementLists != null) {
+            for (ListTbl list : itemElementLists) {
+                if (list.getName().equals(FAVORITES_LIST_NAME)) {
+                    return list;
+                }
+            }
+        }
+
+        // List does not exist
+        return null;
+    }
+
+    private ListTbl createFavoritesList() {
+        ListTbl favoriteList = new ListTbl();
+
+        // Link the setting entity and the new favorites list
+        SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+        settingEntity.getItemElementLists().add(favoriteList);
+        favoriteList.init(FAVORITES_LIST_NAME, settingEntity);
+
+        logger.debug(String.format("Creating %s List for %s", FAVORITES_LIST_NAME, settingEntity));
+        try {
+            listFacade.create(favoriteList);
+        } catch (Exception ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            logger.error(ex);
+        }
+
+        return favoriteList;
+    }
+
     public String getEntityListPageTitle() {
         if (getListEntityType() != null) {
             return getListEntityType().getName() + " " + getDomainHandlerName();
@@ -610,7 +765,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         /* Style is change based on entity type of item shown. 
         Item item = getCurrent();
         if (item != null) {
-            List<EntityType> itemEntityTypeList = item.getEntityTypeDisplayList();
+            ListTbl<EntityType> itemEntityTypeList = item.getEntityTypeDisplayList();
             if (itemEntityTypeList != null && itemEntityTypeList.size() == 1) {
                 return getEntityTypeStyleName(itemEntityTypeList.get(0).getName());
             }
@@ -1132,6 +1287,27 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setDisplayDerivedFromItem(Boolean displayDerivedFromItem) {
         this.displayDerivedFromItem = displayDerivedFromItem;
+    }
+
+    public String getDisplayListDataModelScope() {
+        return displayListDataModelScope;
+    }
+
+    public void setDisplayListDataModelScope(String listDataModelMode) {
+        if (!this.displayListDataModelScope.equals(listDataModelMode)) {
+            resetListDataModel();
+        }
+        this.displayListDataModelScope = listDataModelMode;
+    }
+
+    public List<String> getDisplayListDataScopeSelectionList() {
+        if (displayListDataModelScopeSelectionList == null) {
+            displayListDataModelScopeSelectionList = new ArrayList<>();
+            for (ItemDisplayListDataModelScope value : ItemDisplayListDataModelScope.values()) {
+                displayListDataModelScopeSelectionList.add(value.getValue());
+            }
+        }
+        return displayListDataModelScopeSelectionList;
     }
 
     @Override
