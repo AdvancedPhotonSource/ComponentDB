@@ -702,6 +702,11 @@ h2 {
 
 .ui-icon {
     display: inline-block;
+    opacity: 0.75;
+}
+
+.ui-icon:hover {
+    opacity: 1; 
 }
 
 .ui-dialog-footer, .ui-dialog-buttonpane, .ui-dialog .ui-dialog-buttonpane {
@@ -938,7 +943,7 @@ h2 {
     margin: 0;
     margin-left: auto;
     margin-right: auto;
-    
+
 }
 
 .viewTransparentBackgroundDialog-alert {
@@ -951,4 +956,28 @@ h2 {
 .viewTransparentBackgroundDialog .ui-dialog-footer,
 .viewTransparentBackgroundDialog .ui-panel {
     background: transparent !important;
+}
+
+.favoriteOff {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star_no.png) no-repeat;    
+    opacity: 0.75;
+}
+
+.favoriteOff:hover {
+    opacity: 1.0;
+}
+
+
+.favoriteOn {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star.png) no-repeat;    
+}
+
+.favoriteOn:hover {
+    opacity: 0.75; 
 }
