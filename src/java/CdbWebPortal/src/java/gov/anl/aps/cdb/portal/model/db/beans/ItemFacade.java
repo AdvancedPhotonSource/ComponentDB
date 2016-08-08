@@ -11,12 +11,16 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 /**
  *
@@ -287,6 +291,71 @@ public class ItemFacade extends CdbEntityFacade<Item> {
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public List<Item> getItemListOwnedByUser(String domainName, UserInfo ownerUserInfo) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findItemsOwnedByUserId")
+                    .setParameter("domainName", domainName)
+                    .setParameter("ownerUserId", ownerUserInfo.getId())
+                    .getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+
+    }
+
+    public List<Item> getItemListOwnedByUserGroup(String domainName, UserGroup ownerUserGroup) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findItemsOwnedByUserGroupId")
+                    .setParameter("domainName", domainName)
+                    .setParameter("ownerUserGroupId", ownerUserGroup.getId())
+                    .getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public List<Item> getItemListContainedInList(String domainName, ListTbl list) {
+        if (list != null) {
+            try {
+                return (List<Item>) em.createNamedQuery("Item.findItemsInList")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+    
+    public List<Item> getItemListContainedInListOrOwnedByUser(String domainName, ListTbl list, UserInfo ownerUserInfo) {
+        if (list != null) {
+            try {
+                return (List<Item>) em.createNamedQuery("Item.findItemsOwnedByUserIdOrInList")
+                        .setParameter("domainName", domainName)
+                        .setParameter("ownerUserId", ownerUserInfo.getId())
+                        .setParameter("list", list)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+    
+    public List<Item> getItemListContainedInListOrOwnedByGroup(String domainName, ListTbl list, UserGroup ownerUserGroup) {
+        if (list != null) {
+            try {
+                Query namedQuery = em.createNamedQuery("Item.findItemsOwnedByUserGroupIdOrInList")
+                        .setParameter("domainName", domainName)
+                        .setParameter("ownerUserGroupId", ownerUserGroup.getId())
+                        .setParameter("list", list);                
+                
+                return (List<Item>) namedQuery.getResultList();
+            } catch (NoResultException ex) {
+            }
         }
         return null;
     }
