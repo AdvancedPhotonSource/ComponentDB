@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,46 +41,48 @@ public class ItemDomainCatalogController extends ItemController {
     /*
      * Controller specific settings
      */
-    private static final String DisplayCategorySettingTypeKey = "Component.List.Display.Category";
-    private static final String DisplayCreatedByUserSettingTypeKey = "Component.List.Display.CreatedByUser";
-    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "Component.List.Display.CreatedOnDateTime";
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Component.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayDescriptionSettingTypeKey = "Component.List.Display.Description";
-    private static final String DisplayIdSettingTypeKey = "Component.List.Display.Id";
-    private static final String DisplayLastModifiedByUserSettingTypeKey = "Component.List.Display.LastModifiedByUser";
-    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "Component.List.Display.LastModifiedOnDateTime";
-    private static final String DisplayModelNumberSettingTypeKey = "Component.List.Display.ModelNumber";
-    private static final String DisplayOwnerUserSettingTypeKey = "Component.List.Display.OwnerUser";
-    private static final String DisplayOwnerGroupSettingTypeKey = "Component.List.Display.OwnerGroup";
-    private static final String DisplayPropertyTypeId1SettingTypeKey = "Component.List.Display.PropertyTypeId1";
-    private static final String DisplayPropertyTypeId2SettingTypeKey = "Component.List.Display.PropertyTypeId2";
-    private static final String DisplayPropertyTypeId3SettingTypeKey = "Component.List.Display.PropertyTypeId3";
-    private static final String DisplayPropertyTypeId4SettingTypeKey = "Component.List.Display.PropertyTypeId4";
-    private static final String DisplayPropertyTypeId5SettingTypeKey = "Component.List.Display.PropertyTypeId5";
-    private static final String DisplayTypeSettingTypeKey = "Component.List.Display.Type";
-    private static final String DisplayRowExpansionSettingTypeKey = "Component.List.Display.RowExpansion";
-    private static final String DisplayComponentInstanceRowExpansionSettingTypeKey = "Component.List.Display.ComponentInstance.RowExpansion";
-    private static final String LoadRowExpansionPropertyValueSettingTypeKey = "Component.List.Load.RowExpansionPropertyValue";
-    private static final String LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey = "Component.List.Load.ComponentInstance.RowExpansionPropertyValue";
-    private static final String FilterByCategorySettingTypeKey = "Component.List.FilterBy.Category";
-    private static final String FilterByCreatedByUserSettingTypeKey = "Component.List.FilterBy.CreatedByUser";
-    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "Component.List.FilterBy.CreatedOnDateTime";
-    private static final String FilterByDescriptionSettingTypeKey = "Component.List.FilterBy.Description";
-    private static final String FilterByLastModifiedByUserSettingTypeKey = "Component.List.FilterBy.LastModifiedByUser";
-    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "Component.List.FilterBy.LastModifiedOnDateTime";
-    private static final String FilterByNameSettingTypeKey = "Component.List.FilterBy.Name";
-    private static final String FilterByModelNumberSettingTypeKey = "Component.List.FilterBy.ModelNumber";
-    private static final String FilterByOwnerUserSettingTypeKey = "Component.List.FilterBy.OwnerUser";
-    private static final String FilterByOwnerGroupSettingTypeKey = "Component.List.FilterBy.OwnerGroup";
-    private static final String FilterByPropertyValue1SettingTypeKey = "Component.List.FilterBy.PropertyValue1";
-    private static final String FilterByPropertyValue2SettingTypeKey = "Component.List.FilterBy.PropertyValue2";
-    private static final String FilterByPropertyValue3SettingTypeKey = "Component.List.FilterBy.PropertyValue3";
-    private static final String FilterByPropertyValue4SettingTypeKey = "Component.List.FilterBy.PropertyValue4";
-    private static final String FilterByPropertyValue5SettingTypeKey = "Component.List.FilterBy.PropertyValue5";
-    private static final String FilterByTypeSettingTypeKey = "Component.List.FilterBy.Type";
-    private static final String FilterByPropertiesAutoLoadTypeKey = "Component.List.AutoLoad.FilterBy.Properties";
+    private static final String DisplayCategorySettingTypeKey = "ItemDomainCatalog.List.Display.Category";
+    private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainCatalog.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainCatalog.List.Display.CreatedOnDateTime";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainCatalog.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayDescriptionSettingTypeKey = "ItemDomainCatalog.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "ItemDomainCatalog.List.Display.Id";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainCatalog.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainCatalog.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayModelNumberSettingTypeKey = "ItemDomainCatalog.List.Display.ModelNumber";
+    private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainCatalog.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainCatalog.List.Display.OwnerGroup";
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId5";
+    private static final String DisplayTypeSettingTypeKey = "ItemDomainCatalog.List.Display.Type";
+    private static final String DisplayRowExpansionSettingTypeKey = "ItemDomainCatalog.List.Display.RowExpansion";
+    private static final String DisplayComponentInstanceRowExpansionSettingTypeKey = "ItemDomainCatalog.List.Display.ComponentInstance.RowExpansion";
+    private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ItemDomainCatalog.List.Load.RowExpansionPropertyValue";
+    private static final String LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey = "ItemDomainCatalog.List.Load.ComponentInstance.RowExpansionPropertyValue";
+    private static final String FilterByCategorySettingTypeKey = "ItemDomainCatalog.List.FilterBy.Category";
+    private static final String FilterByCreatedByUserSettingTypeKey = "ItemDomainCatalog.List.FilterBy.CreatedByUser";
+    private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ItemDomainCatalog.List.FilterBy.CreatedOnDateTime";
+    private static final String FilterByDescriptionSettingTypeKey = "ItemDomainCatalog.List.FilterBy.Description";
+    private static final String FilterByLastModifiedByUserSettingTypeKey = "ItemDomainCatalog.List.FilterBy.LastModifiedByUser";
+    private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "ItemDomainCatalog.List.FilterBy.LastModifiedOnDateTime";
+    private static final String FilterByNameSettingTypeKey = "ItemDomainCatalog.List.FilterBy.Name";
+    private static final String FilterByModelNumberSettingTypeKey = "ItemDomainCatalog.List.FilterBy.ModelNumber";
+    private static final String FilterByOwnerUserSettingTypeKey = "ItemDomainCatalog.List.FilterBy.OwnerUser";
+    private static final String FilterByOwnerGroupSettingTypeKey = "ItemDomainCatalog.List.FilterBy.OwnerGroup";
+    private static final String FilterByPropertyValue1SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue1";
+    private static final String FilterByPropertyValue2SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue2";
+    private static final String FilterByPropertyValue3SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue3";
+    private static final String FilterByPropertyValue4SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue4";
+    private static final String FilterByPropertyValue5SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue5";
+    private static final String FilterByTypeSettingTypeKey = "ItemDomainCatalog.List.FilterBy.Type";
+    private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCatalog.List.AutoLoad.FilterBy.Properties";
 
-    private static final String DisplayListPageHelpFragmentSettingTypeKey = "Component.Help.ListPage.Display.Fragment";
+    private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCatalog.Help.ListPage.Display.Fragment";
+    
+    private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainCatalog.List.Scope.Display";
 
     private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
 
@@ -289,6 +290,8 @@ public class ItemDomainCatalogController extends ItemController {
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
 
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
+        
+        displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -346,6 +349,8 @@ public class ItemDomainCatalogController extends ItemController {
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
+        
+        displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -422,6 +427,8 @@ public class ItemDomainCatalogController extends ItemController {
         settingEntity.setSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
+        
+        settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
 
     }
 

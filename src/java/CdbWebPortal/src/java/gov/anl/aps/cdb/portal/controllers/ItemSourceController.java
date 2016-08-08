@@ -25,23 +25,23 @@ public class ItemSourceController extends CdbEntityController<ItemSource, ItemSo
     /*
      * Controller specific settings
      */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentSource.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayContactInfoSettingTypeKey = "ComponentSource.List.Display.ContactInfo";
-    private static final String DisplayCostSettingTypeKey = "ComponentSource.List.Display.Cost";
-    private static final String DisplayDescriptionSettingTypeKey = "ComponentSource.List.Display.Description";
-    private static final String DisplayIdSettingTypeKey = "ComponentSource.List.Display.Id";
-    private static final String DisplayIsManufacturerSettingTypeKey = "ComponentSource.List.Display.IsManufacturer";
-    private static final String DisplayIsVendorSettingTypeKey = "ComponentSource.List.Display.IsVendor";
-    private static final String DisplayPartNumberSettingTypeKey = "ComponentSource.List.Display.PartNumber";
-    private static final String DisplayUrlSettingTypeKey = "ComponentSource.List.Display.Url";
-    private static final String FilterByContactInfoSettingTypeKey = "ComponentSource.List.FilterBy.ContactInfo";
-    private static final String FilterByCostSettingTypeKey = "ComponentSource.List.FilterBy.Cost";
-    private static final String FilterByDescriptionSettingTypeKey = "ComponentSource.List.FilterBy.Description";
-    private static final String FilterByIsManufacturerSettingTypeKey = "ComponentSource.List.FilterBy.IsManufacturer";
-    private static final String FilterByIsVendorSettingTypeKey = "ComponentSource.List.FilterBy.IsVendor";
-    private static final String FilterByPartNumberSettingTypeKey = "ComponentSource.List.FilterBy.PartNumber";
-    private static final String FilterBySourceNameSettingTypeKey = "ComponentSource.List.FilterBy.SourceName";
-    private static final String FilterByUrlSettingTypeKey = "ComponentSource.List.FilterBy.Url";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemSource.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayContactInfoSettingTypeKey = "ItemSource.List.Display.ContactInfo";
+    private static final String DisplayCostSettingTypeKey = "ItemSource.List.Display.Cost";
+    private static final String DisplayDescriptionSettingTypeKey = "ItemSource.List.Display.Description";
+    private static final String DisplayIdSettingTypeKey = "ItemSource.List.Display.Id";
+    private static final String DisplayIsManufacturerSettingTypeKey = "ItemSource.List.Display.IsManufacturer";
+    private static final String DisplayIsVendorSettingTypeKey = "ItemSource.List.Display.IsVendor";
+    private static final String DisplayPartNumberSettingTypeKey = "ItemSource.List.Display.PartNumber";
+    private static final String DisplayUrlSettingTypeKey = "ItemSource.List.Display.Url";
+    private static final String FilterByContactInfoSettingTypeKey = "ItemSource.List.FilterBy.ContactInfo";
+    private static final String FilterByCostSettingTypeKey = "ItemSource.List.FilterBy.Cost";
+    private static final String FilterByDescriptionSettingTypeKey = "ItemSource.List.FilterBy.Description";
+    private static final String FilterByIsManufacturerSettingTypeKey = "ItemSource.List.FilterBy.IsManufacturer";
+    private static final String FilterByIsVendorSettingTypeKey = "ItemSource.List.FilterBy.IsVendor";
+    private static final String FilterByPartNumberSettingTypeKey = "ItemSource.List.FilterBy.PartNumber";
+    private static final String FilterBySourceNameSettingTypeKey = "ItemSource.List.FilterBy.SourceName";
+    private static final String FilterByUrlSettingTypeKey = "ItemSource.List.FilterBy.Url";
 
     @EJB
     private ItemSourceFacade itemSourceFacade;

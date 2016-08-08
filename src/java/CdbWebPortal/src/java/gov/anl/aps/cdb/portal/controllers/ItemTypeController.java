@@ -26,13 +26,11 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
     /*
      * Controller specific settings
      */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ComponentType.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "ComponentType.List.Display.Id";
-    private static final String DisplayDescriptionSettingTypeKey = "ComponentType.List.Display.Description";
-    private static final String DisplayCategorySettingTypeKey = "ComponentType.List.Display.Category";
-    private static final String FilterByNameSettingTypeKey = "ComponentType.List.FilterBy.Name";
-    private static final String FilterByDescriptionSettingTypeKey = "ComponentType.List.FilterBy.Description";
-    private static final String FilterByCategorySettingTypeKey = "ComponentType.List.FilterBy.Category";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemType.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "ItemType.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "ItemType.List.Display.Description";
+    private static final String FilterByNameSettingTypeKey = "ItemType.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "ItemType.List.FilterBy.Description";
 
     private static final Logger logger = Logger.getLogger(ItemTypeController.class.getName());
 
@@ -101,12 +99,9 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-        displayCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayCategorySettingTypeKey).getDefaultValue());
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
-
-        filterByCategory = settingTypeMap.get(FilterByCategorySettingTypeKey).getDefaultValue();
     }
 
     @Override
@@ -118,12 +113,9 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
         displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayCategory = settingEntity.getSettingValueAsBoolean(DisplayCategorySettingTypeKey, displayCategory);
 
         filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-
-        filterByCategory = settingEntity.getSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
 
     }
 
@@ -147,12 +139,10 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
         settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
         settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        settingEntity.setSettingValue(DisplayCategorySettingTypeKey, displayCategory);
 
         settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
         settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
 
-        settingEntity.setSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
     }
 
     @Override
