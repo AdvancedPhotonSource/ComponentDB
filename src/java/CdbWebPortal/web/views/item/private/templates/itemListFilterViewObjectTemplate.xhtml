@@ -4,6 +4,10 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="itemListViewObjectTemplate.xhtml">
 
+    <ui:param name="renderWheneverAvaiable" value="#{true}" />
+    
+    <ui:define name="idColumn" />
+
     <ui:define name="itemTypeColumn"/>
 
     <ui:define name="itemCategoryColumn" />
@@ -11,5 +15,5 @@
     <ui:define name="itemSourceColumn" />
 
     <ui:define name="derivedFromItemColumn" />
-    
+
 </ui:composition>
