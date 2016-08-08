@@ -6,8 +6,10 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -70,7 +72,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         @JoinColumn(name = "item_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "list_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<gov.anl.aps.cdb.portal.model.db.entities.List> listList;
+    private List<ListTbl> listList;
     @JoinTable(name = "item_element_property", joinColumns = {
         @JoinColumn(name = "item_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
@@ -193,11 +195,11 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
-    public List<gov.anl.aps.cdb.portal.model.db.entities.List> getListList() {
+    public List<gov.anl.aps.cdb.portal.model.db.entities.ListTbl> getListList() {
         return listList;
     }
 
-    public void setListList(List<gov.anl.aps.cdb.portal.model.db.entities.List> listList) {
+    public void setListList(List<ListTbl> listList) {
         this.listList = listList;
     }
 
@@ -326,6 +328,34 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setChildItemElementListTreeTableRootNode(TreeNode childItemElementListTreeTableRootNode) {
         this.childItemElementListTreeTableRootNode = childItemElementListTreeTableRootNode;
+    }
+    
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        
+        SearchResult searchResult;
+        
+        String identifier = ""; 
+        
+        if (name != null) {
+            identifier = name;            
+        } else if (derivedFromItemElement != null && derivedFromItemElement.getName() != null) {
+            identifier = "Derived from: " + derivedFromItemElement.getName();            
+        } else if (parentItem != null && parentItem.getName() != null) { 
+            identifier = "Child of: " + parentItem.getName(); 
+        }
+        
+        searchResult = new SearchResult(id, identifier);
+        
+        searchResult.doesValueContainPattern("name", name, searchPattern); 
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        
+        if (derivedFromItemElement != null) {
+            searchResult.doesValueContainPattern("derived from", derivedFromItemElement.getName(), searchPattern);
+        }
+        
+        
+        return searchResult;
     }
 
     @Override

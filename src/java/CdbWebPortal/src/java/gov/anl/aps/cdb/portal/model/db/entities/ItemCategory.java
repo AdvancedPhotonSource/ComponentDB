@@ -6,8 +6,10 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -144,6 +146,19 @@ public class ItemCategory extends CdbEntity implements Serializable {
 
     public void setDomainHandler(DomainHandler domainHandler) {
         this.domainHandler = domainHandler;
+    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name); 
+        
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        if (domainHandler != null) {
+            searchResult.doesValueContainPattern("domain handler name", domainHandler.getName(), searchPattern);
+        }
+        
+        return searchResult;
     }
 
     @Override
