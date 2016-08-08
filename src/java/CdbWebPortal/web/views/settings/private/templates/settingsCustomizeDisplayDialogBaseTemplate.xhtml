@@ -8,7 +8,9 @@
     
     <ui:insert name="defineCustomizeDisplayDialogVariables" />
 
-    <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
+    <ui:param name="entityTypeDisplayName" value="#{entityTypeDisplayName != null 
+                                                    ? entityTypeDisplayName 
+                                                    : entityController.displayEntityTypeName}" />
     <ui:param name="customizeDisplayEntityTypeName" value="#{customizeDisplayEntityTypeName != null ? customizeDisplayEntityTypeName :
                                                              entityController.entityTypeName}" />
     <ui:param name="savable" value="#{savable != null ? savable : true}" />
@@ -23,7 +25,11 @@
                                                                             ? customizeDisplayRunCustomizeListDisplayAction
                                                                             : !hasAdditionalOnCompleteDefined}" />
     
-    <ui:param name="customizeDisplayDialogId" value="#{customizeDisplayEntityTypeName}#{viewName}ListCustomizeDisplayDialog" />
+    <ui:param name="customizeDialogName" value="#{customizeDialogName != null 
+                                                  ? customizeDialogName 
+                                                  : 'ListCustomizeDisplayDialog'}" />
+    
+    <ui:param name="customizeDisplayDialogId" value="#{customizeDisplayEntityTypeName}#{viewName}#{customizeDialogName}" />
 
     <p:dialog id="#{customizeDisplayDialogId}"
               widgetVar="#{customizeDisplayDialogId}Widget" 
