@@ -2,8 +2,11 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 
 import java.io.Serializable;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -19,6 +22,13 @@ public class ItemCategoryController extends CdbEntityController<ItemCategory, It
 
     @EJB
     ItemCategoryFacade itemCategoryFacade; 
+    
+    
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemCategory.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayIdSettingTypeKey = "ItemCategory.List.Display.Id";
+    private static final String DisplayDescriptionSettingTypeKey = "ItemCategory.List.Display.Description";
+    private static final String FilterByNameSettingTypeKey = "ItemCategory.List.FilterBy.Name";
+    private static final String FilterByDescriptionSettingTypeKey = "ItemCategory.List.FilterBy.Description";
     
     private static final Logger logger = Logger.getLogger(ItemCategoryController.class.getName());
     
@@ -59,6 +69,49 @@ public class ItemCategoryController extends CdbEntityController<ItemCategory, It
             return getCurrent().getName();
         }
         return "";
+    }
+    
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
+
+        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
+        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
+    }
+
+    @Override
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
+            return;
+        }
+
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+
+    }
+
+    @Override
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
+            return;
+        }
+
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
     
     /**
