@@ -42,6 +42,10 @@
                 <ui:param name="entityObject" value="#{itemListObject}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemListObject.entityInfo)}"/>
                 <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
+                <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
+                <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />
+                <ui:param name="toggleFavoritesParameter" value="#{itemListObject}" />
+                <ui:param name="currentFavoritesIconStyle" value="#{entityController.getItemFavoritesIconStyle(itemListObject)}" />
             </ui:include>
         </p:column>
     </ui:define>
