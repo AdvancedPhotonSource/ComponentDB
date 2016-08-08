@@ -5,13 +5,17 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -30,11 +34,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "list")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "List.findAll", query = "SELECT l FROM List l"),
-    @NamedQuery(name = "List.findById", query = "SELECT l FROM List l WHERE l.id = :id"),
-    @NamedQuery(name = "List.findByName", query = "SELECT l FROM List l WHERE l.name = :name"),
-    @NamedQuery(name = "List.findByDescription", query = "SELECT l FROM List l WHERE l.description = :description")})
-public class List implements Serializable {
+    @NamedQuery(name = "List.findAll", query = "SELECT l FROM ListTbl l"),
+    @NamedQuery(name = "List.findById", query = "SELECT l FROM ListTbl l WHERE l.id = :id"),
+    @NamedQuery(name = "List.findByName", query = "SELECT l FROM ListTbl l WHERE l.name = :name"),
+    @NamedQuery(name = "List.findByDescription", query = "SELECT l FROM ListTbl l WHERE l.description = :description")})
+public class ListTbl implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -47,24 +51,50 @@ public class List implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
-    @ManyToMany(mappedBy = "listList")
+    @JoinTable(name = "item_element_list", joinColumns = {
+        @JoinColumn(name = "list_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "item_element_id", referencedColumnName = "id")})
+    @ManyToMany
     private java.util.List<ItemElement> itemElementList;
-    @ManyToMany(mappedBy = "listList")
+    @JoinTable(name = "user_list", joinColumns = {
+        @JoinColumn(name = "list_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "user_id", referencedColumnName = "id")})
+    @ManyToMany
     private java.util.List<UserInfo> userInfoList;
-    @ManyToMany(mappedBy = "listList")
+    @JoinTable(name = "user_group_list", joinColumns = {
+        @JoinColumn(name = "list_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
+    @ManyToMany
     private java.util.List<UserGroup> userGroupList;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @OneToOne(optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
 
-    public List() {
+    public ListTbl() {
     }
 
-    public List(Integer id) {
+    public void init(String name) {
+        EntityInfo newEntityInfo = EntityInfoUtility.createEntityInfo();
+        this.setEntityInfo(newEntityInfo);
+        this.name = name;
+    }
+
+    public void init(String name, SettingEntity settingEntity) {
+        init(name);
+        if (settingEntity instanceof UserInfo) {
+            userInfoList = new ArrayList<>();
+            userInfoList.add((UserInfo) settingEntity);
+        } else if (settingEntity instanceof UserGroup) {
+            userGroupList = new ArrayList<>();
+            userGroupList.add((UserGroup) settingEntity);
+        }
+    }
+
+    public ListTbl(Integer id) {
         this.id = id;
     }
 
-    public List(Integer id, String name) {
+    public ListTbl(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -138,10 +168,10 @@ public class List implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof List)) {
+        if (!(object instanceof ListTbl)) {
             return false;
         }
-        List other = (List) object;
+        ListTbl other = (ListTbl) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -152,5 +182,5 @@ public class List implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.List[ id=" + id + " ]";
     }
-    
+
 }
