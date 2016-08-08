@@ -5,6 +5,51 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="itemListObjectTemplateBase.xhtml">
 
+    <!-- Specify true whenever columns are fixed for a view; override unneeded columns. -->
+    <ui:param name="renderWheneverAvaiable" value="#{renderWheneverAvaiable != null 
+                                                     ? renderWheneverAvaiable 
+                                                     : false}" />
+
+    <ui:param name="itemListRenderId" value="#{renderWheneverAvaiable 
+                                               ? true 
+                                               : entityController.displayId }" />
+
+    <ui:param name="itemListRenderName" value="#{renderWheneverAvaiable 
+                                                 ? entityController.entityDisplayItemName
+                                                 : entityController.displayName }" />
+
+    <ui:param name="itemListRenderQrId" value="#{renderWheneverAvaiable 
+                                                 ? entityController.entityDisplayQrId
+                                                 :entityController.displayQrId}" />
+
+    <ui:param name="itemListRenderItemIdentifier1" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemIdentifier1
+                                                            :entityController.displayItemIdentifier1}" />
+
+    <ui:param name="itemListRenderItemIdentifier2" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemIdentifier2
+                                                            :entityController.displayItemIdentifier2}" />
+
+    <ui:param name="itemListRenderItemType" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemType
+                                                            : entityController.displayItemType}" />
+    
+    <ui:param name="itemListRenderItemCategory" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemCategory
+                                                            : entityController.displayItemCategory}" />
+    
+    <ui:param name="itemListRenderItemSources" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemSources
+                                                            : entityController.displayItemSources}" />
+    
+    <ui:param name="itemListRenderDerivedFromItem" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayDerivedFromItem
+                                                            : entityController.displayDerivedFromItem}" />
+    
+    <ui:param name="itemListRenderDescription" value="#{renderWheneverAvaiable 
+                                                            ? true
+                                                            : entityController.displayDescription}" />
+    
 
     <ui:define name="idColumn">
         <p:column sortBy="#{itemListObject.id}" headerText="Id"
@@ -12,7 +57,7 @@
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   filterValue="#{entityController.filterById}"
-                  rendered="#{entityController.displayId}" >
+                  rendered="#{itemListRenderId}" >
             <ui:insert name="idColumnObject" />
         </p:column>
     </ui:define>
@@ -23,11 +68,11 @@
                   filterValue="#{entityController.filterByName}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayName}" >
+                  rendered="#{itemListRenderName}" >
             <ui:insert name="nameColumnObject" />
         </p:column>
     </ui:define>
-    
+
     <ui:define name="entityTypeColumn">
         <p:column sortBy="#{itemListObject.entityTypeString}" headerText="EntityType"
                   filterBy="#{itemListObject.entityTypeString}" filterMatchMode="contains"
@@ -44,7 +89,7 @@
                   filterValue="#{entityController.filterByQrId}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayQrId}" >
+                  rendered="#{itemListRenderQrId}" >
             <ui:insert name="qrIdColumnObject" />
         </p:column>
     </ui:define>
@@ -56,7 +101,7 @@
                   filterValue="#{entityController.filterByItemIdentifier1}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayItemIdentifier1}">
+                  rendered="#{itemListRenderItemIdentifier1}">
             <ui:insert name="itemIdentifier1ColumnObject" />
         </p:column>
     </ui:define>
@@ -68,7 +113,7 @@
                   filterValue="#{entityController.filterByItemIdentifier2}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayItemIdentifier2}">
+                  rendered="#{itemListRenderItemIdentifier2}">
             <ui:insert name="itemIdentifier2ColumnObject" />
         </p:column>
     </ui:define>
@@ -79,7 +124,7 @@
                   filterBy="#{itemListObject.itemTypeString}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayItemType}"
+                  rendered="#{itemListRenderItemType}"
                   >
             <ui:insert name="itemTypeColumnObject" />
         </p:column>
@@ -92,7 +137,7 @@
                   filterOptions="#{itemCategoryController.availableItemsForSelectOne}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayItemCategory}"
+                  rendered="#{itemListRenderItemCategory}"
                   >
             <ui:insert name="itemCategoryColumnObject" />
         </p:column>
@@ -105,18 +150,18 @@
                   filterValue="#{entityController.filterByItemSources}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayItemSources}">
+                  rendered="#{itemListRenderItemSources}">
             <ui:insert name="itemSourceColumnObject" />
         </p:column>
     </ui:define>
 
     <ui:define name="derivedFromItemColumn" > 
-        <p:column headerText="#{entityController.derivedFromItemTitle}"
-                  rendered="#{entityController.displayDerivedFromItem}"
+        <p:column headerText="#{entityController.derivedFromItemTitle}"                  
                   filterBy="#{itemListObject.derivedFromItem.name}"
                   sortBy="#{itemListObject.derivedFromItem.name}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
+                  rendered="#{itemListRenderDerivedFromItem}"
                   filterValue="#{entityController.filterByName}">
             <ui:insert name="derivedFromItemColumnObject" />
         </p:column>
@@ -128,7 +173,7 @@
                   filterValue="#{entityController.filterByDescription}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{entityController.displayDescription}">
+                  rendered="#{itemListRenderDescription}">
             <ui:insert name="descriptionColumnObject" />
         </p:column>
     </ui:define>
