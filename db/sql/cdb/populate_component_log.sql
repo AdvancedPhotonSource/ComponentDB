@@ -33,6 +33,10 @@ INSERT INTO `component_log` VALUES
 (299,60),
 (301,74),
 (309,82),
-(320,83);
+(320,83),
+(327,93),
+(330,94),
+(331,95),
+(332,96);
 /*!40000 ALTER TABLE `component_log` ENABLE KEYS */;
 UNLOCK TABLES;

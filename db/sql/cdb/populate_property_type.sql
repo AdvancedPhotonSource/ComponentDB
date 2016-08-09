@@ -3,8 +3,8 @@ LOCK TABLES `property_type` WRITE;
 INSERT INTO `property_type` VALUES
 (1,'EDP Collection','Provides a link to an EDP collection of documents. The handler will accept the full EDP ID string (e.g. EDP_000123) or just the collection number (e.g. 123)',4,4,'',''),
 (2,'QA Level','Enumerated values of A | B | C | D',2,NULL,'D',''),
-(3,'QA Inspection Template','Inspection Procedure Document',2,NULL,NULL,NULL),
-(4,'QA Inspection Report','Inspection Result Document',2,NULL,NULL,NULL),
+(3,'QA Inspection Template','Inspection Procedure Document',2,5,'',''),
+(4,'QA Inspection Report','Inspection Result Document',2,5,'',''),
 (5,'Electrical Equipment Status','NRTL Approved or APS Inspection Required or Not Required',2,NULL,NULL,NULL),
 (6,'Electrical Inspection #','Inspection # from DEEI (use desc of Status?)',2,NULL,NULL,NULL),
 (7,'Documentation (WEB)','Provides a link to any web address (URL)',4,3,'',''),

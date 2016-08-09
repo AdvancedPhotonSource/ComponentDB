@@ -111,8 +111,8 @@ INSERT INTO `component_instance` VALUES
 (131,304,NULL,'M4 Trim Coil Winding Fixture Assembly',NULL,136,NULL,'Building 378',757),
 (132,305,NULL,'M4 Potting Mold Assembly',NULL,137,NULL,'',759),
 (133,255,398,NULL,NULL,NULL,'','',760),
-(134,159,NULL,NULL,'9246524',NULL,'','Procurred for SPX RTFB DAQ',761),
-(135,159,NULL,NULL,NULL,NULL,NULL,'Procurred because the other one is broke',762),
+(134,159,126,NULL,'9246524',199,'S27 Integrated Test','Procurred for SPX RTFB DAQ',761),
+(135,159,402,NULL,NULL,198,'3rd Drawer','Procurred because the other one is broke',762),
 (136,306,7,'Spare',NULL,172,'Power Systems Group injector test area','Interleaving magnet power supply',792),
 (137,252,398,NULL,NULL,NULL,'','',795),
 (138,232,214,NULL,'BO50717',85,'','',803),
@@ -148,6 +148,20 @@ INSERT INTO `component_instance` VALUES
 (178,265,398,NULL,NULL,NULL,'','',869),
 (179,275,398,NULL,NULL,NULL,'','',870),
 (180,256,398,NULL,NULL,NULL,'','',871),
-(181,266,398,NULL,NULL,NULL,'','',872);
+(181,266,398,NULL,NULL,NULL,'','',872),
+(182,326,NULL,'Prototype #1 unit 1',NULL,185,NULL,'Red front panel',876),
+(183,326,NULL,'Prototype #1 unit 2',NULL,186,NULL,'Red front panel',881),
+(184,332,30,'1st component',NULL,190,'C0217','',891),
+(185,332,30,'2nd component',NULL,191,'C0217','',892),
+(186,332,30,'3rd component',NULL,192,'','',894),
+(187,332,30,'4th component',NULL,193,'','',893),
+(188,335,398,NULL,NULL,NULL,'','',898),
+(189,335,398,NULL,NULL,NULL,'','',899),
+(191,336,30,NULL,NULL,203,'C0217','',902),
+(192,337,NULL,NULL,NULL,200,NULL,'',904),
+(193,338,NULL,NULL,NULL,55,NULL,'',906),
+(194,339,NULL,NULL,NULL,202,NULL,'',908),
+(195,339,NULL,NULL,NULL,201,NULL,'',909),
+(196,326,NULL,'Prototype #1 unit 3',NULL,187,NULL,'Black chassis',910);
 /*!40000 ALTER TABLE `component_instance` ENABLE KEYS */;
 UNLOCK TABLES;

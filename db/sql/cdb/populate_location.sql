@@ -400,6 +400,7 @@ INSERT INTO `location` VALUES
 (398,'382','APS Vacuum Factory',1,0,NULL),
 (399,'C2257','Shifu\'s Office',3,0,NULL),
 (400,'314','',1,0,NULL),
-(401,'C2259','Dariusz and Ke Office',3,0,NULL);
+(401,'C2259','Dariusz and Ke Office',3,0,NULL),
+(402,'C2268','Ned\'s Office',3,0,NULL);
 /*!40000 ALTER TABLE `location` ENABLE KEYS */;
 UNLOCK TABLES;

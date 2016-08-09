@@ -82,6 +82,23 @@ INSERT INTO `log` VALUES
 (89,'vacum leak check on 3/18/16 by Kevin K.','2016-03-25 14:53:07',25,1),
 (90,'B.Deriy changed 5% tol VREFN resistors to hand-picked resistors to improve gain error.  0.01% resistors are on order.','2016-03-31 12:12:55',23,1),
 (91,'U20 is not installed','2016-03-31 12:15:37',23,NULL),
-(92,'Received from NAT on 3/31/2016:\r\nToday N.A.T. notifies you that version 2.17.9 of the NAT-MCH firmware has been deleted from the archive and been replaced by version 2.17.10.\r\nYesterday Engineering discovered an issue in version 2.17.9 of the MCH firmware which affects the control of the Cooling Units in a MicroTCA system and is related to an AMC board issuing a temperature event to the MCH. It may happen that the Cooling Units are not correctly regulated to a higher fan speed which could result in critical temperature situations where AMCs are not sufficiently cooled.\r\n\r\nTherefore, Engineering has deleted firmware version 2.17.9 from the archive and strongly recommends not to use any copies in any of your systems. You can either switch back to an older version 2.17.8 or to the new version 2.17.10 which is released today. MCH firmware version 2.17.10 fixed said problem.\r\n','2016-04-18 08:46:31',3,NULL);
+(92,'Received from NAT on 3/31/2016:\r\nToday N.A.T. notifies you that version 2.17.9 of the NAT-MCH firmware has been deleted from the archive and been replaced by version 2.17.10.\r\nYesterday Engineering discovered an issue in version 2.17.9 of the MCH firmware which affects the control of the Cooling Units in a MicroTCA system and is related to an AMC board issuing a temperature event to the MCH. It may happen that the Cooling Units are not correctly regulated to a higher fan speed which could result in critical temperature situations where AMCs are not sufficiently cooled.\r\n\r\nTherefore, Engineering has deleted firmware version 2.17.9 from the archive and strongly recommends not to use any copies in any of your systems. You can either switch back to an older version 2.17.8 or to the new version 2.17.10 which is released today. MCH firmware version 2.17.10 fixed said problem.\r\n','2016-04-18 08:46:31',3,NULL),
+(93,'Documentation resides in my network drive','2016-04-27 09:53:40',13,NULL),
+(94,'Document resides in my network drive.','2016-04-28 15:25:06',13,NULL),
+(95,'Document resides in my network drive.','2016-04-28 15:46:33',13,NULL),
+(96,'Special handling: delicate inner conductor should be protected at all times.  UHV component.  ','2016-05-06 08:37:21',53,1),
+(98,'Inspection','2016-06-02 08:12:56',53,1),
+(99,'Inspection','2016-06-02 08:14:46',53,1),
+(100,'inspection','2016-06-02 08:15:09',53,1),
+(102,'Received from repair ... again','2016-06-22 09:40:53',3,NULL),
+(110,'Cloned from DMM Vacuum Assembly Old','2016-07-18 09:31:51',2,NULL),
+(111,'Conductor Inspection','2016-07-29 08:00:44',53,1),
+(112,'Leak Check','2016-07-29 08:01:22',53,1),
+(113,'Conductor Inspection','2016-07-29 08:01:46',53,NULL),
+(114,'Leak Check','2016-07-29 08:02:04',53,NULL),
+(115,'Conductor Inspection','2016-07-29 08:03:22',53,NULL),
+(116,'Leak Check','2016-07-29 08:03:44',53,NULL),
+(117,'Conductor inspection','2016-07-29 08:04:02',53,NULL),
+(118,'Leak Check','2016-07-29 08:04:18',53,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

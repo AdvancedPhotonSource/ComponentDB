@@ -12,7 +12,6 @@ INSERT INTO `design_property` VALUES
 (15,533),
 (15,616),
 (15,617),
-(16,446),
 (32,178),
 (32,315),
 (32,362),
@@ -59,6 +58,7 @@ INSERT INTO `design_property` VALUES
 (58,660),
 (59,666),
 (60,667),
-(61,681);
+(61,681),
+(71,843);
 /*!40000 ALTER TABLE `design_property` ENABLE KEYS */;
 UNLOCK TABLES;

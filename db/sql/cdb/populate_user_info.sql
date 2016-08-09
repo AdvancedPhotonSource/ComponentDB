@@ -33,7 +33,7 @@ INSERT INTO `user_info` VALUES
 (30,'hbui','Hanh','Bui','','hbui@aps.anl.gov',NULL,NULL),
 (31,'sereno','Nick','Sereno','','sereno@aps.anl.ogv',NULL,NULL),
 (32,'xusf','Shifu','Xu','','xusf@aps.anl.gov',NULL,NULL),
-(33,'afp','Tony','Pietryla','','afp',NULL,NULL),
+(33,'afp','Tony','Pietryla','','afp@aps.anl.gov','Q8Uq$3bonYbpWbtNP5nOrgH8AAwzmLbkskKIO',''),
 (34,'rblake','Ron','Blake','','rblake@aps.anl.gov',NULL,NULL),
 (35,'dejus','Roger','Dejus','','dejus@aps.anl.gov',NULL,NULL),
 (36,'collins','Jeff','Collins','','collins@aps.anl.gov',NULL,NULL),
@@ -52,6 +52,10 @@ INSERT INTO `user_info` VALUES
 (49,'adonnelly','Aric','Donnelly','','adonnelly@aps.anl.gov',NULL,''),
 (50,'hoytman','John','Hoyt','','hoytman@aps.anl.gov',NULL,''),
 (51,'suthar','Kamlesh','Suthar','','suthar@aps.anl.gov',NULL,''),
-(52,'dwalters','Dean','Walters','','dwalters@aps.anl.gov',NULL,'');
+(52,'dwalters','Dean','Walters','','dwalters@aps.anl.gov',NULL,''),
+(53,'clute','Timothy','Clute','','',NULL,''),
+(54,'gmm','Greg','Markovich','','gmm@aps.anl.gov',NULL,''),
+(55,'bderiy','Boris','Deriy','','bderiy@aps.anl.gov',NULL,''),
+(56,'gas','Gary','Sprau','','gas@aps.anl.gov',NULL,'');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;

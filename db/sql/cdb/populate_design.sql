@@ -9,7 +9,6 @@ INSERT INTO `design` VALUES
 (13,'DMM  Top Level Design (#1)','Top level design of the Dummy Modular Multiplet prototype',173),
 (14,'DMM Water Handling System','',174),
 (15,'DMM MAGNET ASSEMBLY','',175),
-(16,'DMM Vacuum Assembly','',176),
 (17,'DMM Supports','',177),
 (19,'Quad Doublet (upstream)','',194),
 (20,'Quad Doublet (downstream)','',195),
@@ -37,7 +36,7 @@ INSERT INTO `design` VALUES
 (45,'DMM QUADRUPOLE U221020202-115100','DMM QUADRUPLE, MUSHROOM STEEL POLE TIP, EDM',739),
 (46,'DMM MAGNET SUPPORT PLATE U221020202-110001','SUPPORT PLATE FOR DMM MAGNETS, INTERFACE TO DMM SUPPORTS AND VACUUM COMPONENTS',742),
 (47,'DMM Magnet + Vacuum Assembly','',763),
-(48,'FODO Magnet Weights + Vacuum Assembly','',764),
+(48,'Full Length FODO R&D - Magnet Weights + Vacuum','',764),
 (49,'M1 Dipole Prototype (FNAL) + Vacuum Assembly','',765),
 (50,'EAA Partial Sector Mockup Top Level Design','High level designs and mockup modules and R&D in EAA',767),
 (51,'EAA Partial Sector Mockup Modules','Design modules used in the EAA R&D plan',768),
@@ -51,6 +50,8 @@ INSERT INTO `design` VALUES
 (59,'Full Length FODO R&D - Vacuum System','',789),
 (60,'M1 Dipole Prototype (FNAL) Vacuum Assembly','',790),
 (61,'R&D EAA Magnet Power PID','R&D EAA Magnet Power PID documentation',793),
-(62,'L-BEND Vacuum Assembly','L-BEND Vacuum Assembly',831);
+(62,'L-BEND Vacuum Assembly','L-BEND Vacuum Assembly',831),
+(63,'Prototype Fast Corrector Power Supply Assembly','',877),
+(71,'DMM Vacuum Assembly','',918);
 /*!40000 ALTER TABLE `design` ENABLE KEYS */;
 UNLOCK TABLES;
