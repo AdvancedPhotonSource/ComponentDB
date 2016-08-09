@@ -649,7 +649,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         if (scopedListDataModel == null) {
             //Nothing was populated into the list data model. 
-            scopedListDataModel = new ListDataModel<>(); 
+            scopedListDataModel = new ListDataModel<>();
         }
 
         return scopedListDataModel;
@@ -1130,9 +1130,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             parentItemList = new ArrayList<>();
 
             List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
-            for (ItemElement itemElement : itemElementList) {
-                if (parentItemList.contains(itemElement.getParentItem()) == false) {
-                    parentItemList.add(itemElement.getParentItem());
+            // Remove currently being viewed item. 
+            if (itemElementList != null) {
+                for (ItemElement itemElement : itemElementList) {
+                    if (parentItemList.contains(itemElement.getParentItem()) == false) {
+                        parentItemList.add(itemElement.getParentItem());
+                    }
                 }
             }
         }
