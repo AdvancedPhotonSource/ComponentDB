@@ -16,6 +16,8 @@
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processViewRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{itemElementController.processPreRender()}"/>
+        <f:event type="preRenderComponent" listener="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
 
     <ui:define name="viewPanelGrid">
