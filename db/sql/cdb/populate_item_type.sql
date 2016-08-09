@@ -129,6 +129,9 @@ INSERT INTO `item_type` VALUES
 (126,'Gateway/Protocol Converter',NULL,2),
 (127,'Current Transformer',NULL,2),
 (128,'Support',NULL,2),
-(129,'Signal Converter',NULL,2);
+(129,'Signal Converter',NULL,2),
+(130,'Overhaul Kit',NULL,2),
+(131,'Actuator',NULL,2),
+(132,'Frontend Component',NULL,2);
 /*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
 UNLOCK TABLES;

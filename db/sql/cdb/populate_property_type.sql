@@ -3,8 +3,8 @@ LOCK TABLES `property_type` WRITE;
 INSERT INTO `property_type` VALUES
 (1,'EDP Collection','Provides a link to an EDP collection of documents. The handler will accept the full EDP ID string (e.g. EDP_000123) or just the collection number (e.g. 123)',4,4,'','',0,0,0,1),
 (2,'QA Level','Enumerated values of A | B | C | D',2,NULL,'D','',0,0,0,1),
-(3,'QA Inspection Template','Inspection Procedure Document',2,NULL,NULL,NULL,0,0,0,1),
-(4,'QA Inspection Report','Inspection Result Document',2,NULL,NULL,NULL,0,0,0,1),
+(3,'QA Inspection Template','Inspection Procedure Document',2,5,'','',0,0,0,1),
+(4,'QA Inspection Report','Inspection Result Document',2,5,'','',0,0,0,1),
 (5,'Electrical Equipment Status','NRTL Approved or APS Inspection Required or Not Required',2,NULL,NULL,NULL,0,0,0,1),
 (6,'Electrical Inspection #','Inspection # from DEEI (use desc of Status?)',2,NULL,NULL,NULL,0,0,0,1),
 (7,'Documentation (WEB)','Provides a link to any web address (URL)',4,3,'','',0,0,0,1),
@@ -82,6 +82,13 @@ INSERT INTO `property_type` VALUES
 (79,'Critical Component','',10,10,'','',0,0,0,1),
 (80,'Traveler Template (Electronic)','Allows integration of traveler templates from traveler application.',2,13,'','',0,0,0,1),
 (81,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'','',0,0,0,1),
-(82,'CSI #','Record Argonne\'s CSI # of a component instance',4,NULL,'','',0,0,0,1);
+(82,'CSI #','Record Argonne\'s CSI # of a component instance',4,NULL,'','',0,0,0,1),
+(83,'Documentation URI','Provides a link to any web address (URL)',4,3,'','',0,0,0,1),
+(84,'Document/Drawing (Upload)','',4,1,'','',0,0,0,1),
+(85,'Document/Drawing (ICMS)','',4,5,'','',0,0,0,1),
+(86,'RSS Verified','',10,11,'','',0,0,0,1),
+(87,'RSS Sequence Number','',10,NULL,'','',0,0,0,1),
+(88,'Design Element Row Color','',8,NULL,'','',0,0,0,1),
+(89,'MOM Group','',3,NULL,'','',0,0,0,1);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

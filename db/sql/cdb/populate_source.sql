@@ -48,6 +48,10 @@ INSERT INTO `source` VALUES
 (45,'ROBINSON METAL INC','Precision Machining, Assembly and UHV Welding',NULL,'www.robinsonmetal.com'),
 (46,'HiTech Mfg.',NULL,NULL,NULL),
 (47,'Atlas',NULL,NULL,NULL),
-(48,'saes-group','ACCELERATOR COMPONENT VENDOR',NULL,'https://www.saesgetters.com/');
+(48,'saes-group','ACCELERATOR COMPONENT VENDOR',NULL,'https://www.saesgetters.com/'),
+(49,'Tecknit Shielding Systems inc.',NULL,NULL,NULL),
+(50,'Barber-Nichols',NULL,NULL,NULL),
+(51,'Johnson Controls',NULL,NULL,NULL),
+(52,'Oxford',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `source` ENABLE KEYS */;
 UNLOCK TABLES;

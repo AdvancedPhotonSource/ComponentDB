@@ -33,7 +33,7 @@ INSERT INTO `user_info` VALUES
 (30,'hbui','Hanh','Bui',NULL,'hbui@aps.anl.gov',NULL,NULL),
 (31,'sereno','Nick','Sereno',NULL,'sereno@aps.anl.ogv',NULL,NULL),
 (32,'xusf','Shifu','Xu',NULL,'xusf@aps.anl.gov',NULL,NULL),
-(33,'afp','Tony','Pietryla',NULL,'afp',NULL,NULL),
+(33,'afp','Tony','Pietryla',NULL,'afp@aps.anl.gov',NULL,NULL),
 (34,'rblake','Ron','Blake',NULL,'rblake@aps.anl.gov',NULL,NULL),
 (35,'dejus','Roger','Dejus',NULL,'dejus@aps.anl.gov',NULL,NULL),
 (36,'collins','Jeff','Collins',NULL,'collins@aps.anl.gov',NULL,NULL),
@@ -52,6 +52,18 @@ INSERT INTO `user_info` VALUES
 (49,'adonnelly','Aric','Donnelly',NULL,'adonnelly@aps.anl.gov',NULL,NULL),
 (50,'hoytman','John','Hoyt',NULL,'hoytman@aps.anl.gov',NULL,NULL),
 (51,'suthar','Kamlesh','Suthar',NULL,'suthar@aps.anl.gov',NULL,NULL),
-(52,'dwalters','Dean','Walters',NULL,'dwalters@aps.anl.gov',NULL,NULL);
+(52,'dwalters','Dean','Walters',NULL,'dwalters@aps.anl.gov',NULL,NULL),
+(53,'clute','Timothy','Clute',NULL,NULL,NULL,NULL),
+(54,'gmm','Greg','Markovich',NULL,'gmm@aps.anl.gov',NULL,NULL),
+(55,'bderiy','Boris','Deriy',NULL,'bderiy@aps.anl.gov',NULL,NULL),
+(56,'gas','Gary','Sprau',NULL,'gas@aps.anl.gov',NULL,NULL),
+(57,'jtoeller','Jeff','Toeller',NULL,'jtoeller@aps.anl.gov',NULL,NULL),
+(58,'berenc','Tim','Berenc',NULL,'berenc@aps.anl.gov',NULL,NULL),
+(59,'jox','Julie','Cross','Olmted','jox@anl.gov',NULL,NULL),
+(60,'denharto','Pat','Den Hartog',NULL,'denharto@aps.anl.gov',NULL,NULL),
+(61,'erdmann','Mark','Erdmann',NULL,'erdmann@aps.anl.gov',NULL,NULL),
+(62,'bechtold','Ralph','Bechtold','R','bechtold@aps.anl.gov',NULL,NULL),
+(63,'gagliano','Joseph','Gagliano',NULL,'gagliano@aps.anl.gov',NULL,NULL),
+(64,'martens','Mark','Martens',NULL,'martens@aps.anl.gov',NULL,NULL);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
