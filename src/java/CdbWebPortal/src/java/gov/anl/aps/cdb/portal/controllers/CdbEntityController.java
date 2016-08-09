@@ -1392,7 +1392,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         listDataTable = null;
         listDataModelReset = true;
         filteredObjectList = null;
-        current = null;
         // Flush cache 
         //getFacade().flush();
     }
