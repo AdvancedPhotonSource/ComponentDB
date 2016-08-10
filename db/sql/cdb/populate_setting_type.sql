@@ -23,7 +23,7 @@ INSERT INTO `setting_type` VALUES
 (2009,'ItemDomainCatalog.List.Display.ModelNumber','Display component model number.','true'),
 (2010,'ItemDomainCatalog.List.Display.OwnerUser','Display owner username.','true'),
 (2011,'ItemDomainCatalog.List.Display.OwnerGroup','Display owner group name.','true'),
-(2012,'ItemDomainCatalog.List.Display.PropertyTypeId1','Display property value for property type id #1.','72'),
+(2012,'ItemDomainCatalog.List.Display.PropertyTypeId1','Display property value for property type id #1.',''),
 (2013,'ItemDomainCatalog.List.Display.PropertyTypeId2','Display property value for property type id #2.',''),
 (2014,'ItemDomainCatalog.List.Display.PropertyTypeId3','Display property value for property type id #3.',''),
 (2015,'ItemDomainCatalog.List.Display.PropertyTypeId4','Display property value for property type id #4.',''),
