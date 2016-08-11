@@ -31,6 +31,10 @@
         <h:outputText value="#{itemListObject.itemIdentifier2}" />
     </ui:define>
     
+    <ui:define name="itemProjectObject">
+        <h:outputText value="#{itemListObject.itemProjectString}" />
+    </ui:define>
+    
     <ui:define name="entityTypeColumnObject">
         <f:attribute name="exportValue" value="#{itemListObject.entityTypeString}"/>
             <ui:repeat value="#{itemListObject.entityTypeDisplayList}" var="itemEntityType" >

@@ -50,6 +50,10 @@
                                                             ? true
                                                             : entityController.displayDescription}" />
     
+    <ui:param name="itemListRenderItemProject" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemProject
+                                                            : entityController.displayItemProject}" />
+    
 
     <ui:define name="idColumn">
         <p:column sortBy="#{itemListObject.id}" headerText="Id"
@@ -71,6 +75,17 @@
                   rendered="#{itemListRenderName}" >
             <ui:insert name="nameColumnObject" />
         </p:column>
+    </ui:define>
+    
+    <ui:define name="itemProjectColumn">
+        <p:column sortBy="#{itemListObject.itemProjectString}" headerText="Project"
+                  filterBy="#{itemListObject.itemProjectString}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  rendered="#{itemListRenderItemProject}">
+            <ui:insert name="itemProjectObject" />
+        </p:column>
+                  
     </ui:define>
 
     <ui:define name="entityTypeColumn">

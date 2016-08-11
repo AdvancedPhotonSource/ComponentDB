@@ -107,6 +107,14 @@
                             <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemType.xhtml" />
                         </ui:insert>
                     </p:outputPanel>
+                    
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemProject.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemProject}">
+                        <ui:insert name="itemItemProjectHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
                 </p:panelGrid>
             </p:panel>
         </p:tab>
