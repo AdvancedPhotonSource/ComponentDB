@@ -71,38 +71,36 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findItemsOwnedByUserId",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
-                    + "WHERE i.domain.name = :domainName "
-                    + "AND fiel.name is NULL "
-                    + "AND fiel.derivedFromItemElement is NULL "
-                    + "AND fiel.entityInfo.ownerUser.id = :ownerUserId"),
+            + "WHERE i.domain.name = :domainName "
+            + "AND fiel.name is NULL "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.entityInfo.ownerUser.id = :ownerUserId"),
     @NamedQuery(name = "Item.findItemsOwnedByUserGroupId",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
-                    + "WHERE i.domain.name = :domainName "
-                    + "AND fiel.name is NULL "
-                    + "AND fiel.derivedFromItemElement is NULL "
-                    + "AND fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId"),
+            + "WHERE i.domain.name = :domainName "
+            + "AND fiel.name is NULL "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId"),
     @NamedQuery(name = "Item.findItemsInList",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
-                    + "WHERE i.domain.name = :domainName "
-                    + "AND fiel.derivedFromItemElement is NULL "
-                    + "AND fiel.name is NULL "
-                    + "AND fiel.listList = :list "),
+            + "WHERE i.domain.name = :domainName "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
     @NamedQuery(name = "Item.findItemsOwnedByUserGroupIdOrInList",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN fiel.listList ieList "
-                    + "WHERE  fiel.name is NULL "
-                    + "AND fiel.derivedFromItemElement is NULL "
-                    + "AND (fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId "
-                    + "OR ieList = :list)"
-                    + "AND i.domain.name = :domainName"),
+            + "WHERE  fiel.name is NULL "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND (fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId "
+            + "OR ieList = :list)"
+            + "AND i.domain.name = :domainName"),
     @NamedQuery(name = "Item.findItemsOwnedByUserIdOrInList",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN fiel.listList ieList "
-                    + "WHERE  fiel.name is NULL "
-                    + "AND fiel.derivedFromItemElement is NULL "
-                    + "AND (fiel.entityInfo.ownerUser.id = :ownerUserId "
-                    + "OR ieList = :list)"
-                    + "AND i.domain.name = :domainName"),
-        
-})
+            + "WHERE  fiel.name is NULL "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND (fiel.entityInfo.ownerUser.id = :ownerUserId "
+            + "OR ieList = :list)"
+            + "AND i.domain.name = :domainName"),})
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -140,7 +138,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_project_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<ItemProject> itemProjectList;    
+    private List<ItemProject> itemProjectList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
     private List<ItemElement> fullItemElementList;
     @OneToMany(mappedBy = "containedItem")
@@ -164,6 +162,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemTypeString = null;
     private transient String itemCategoryString = null;
     private transient String itemSourceString = null;
+    private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
     private transient TreeNode locationTree = null;
     private transient String itemType = null;
@@ -178,9 +177,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String entityTypeString = null;
 
     private transient String listDisplayDescription = null;
-    
+
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
-    private transient InventoryBillOfMaterialItem containedInBOM; 
+    private transient InventoryBillOfMaterialItem containedInBOM;
 
     public Item() {
     }
@@ -190,9 +189,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         selfElement.init(this);
         this.fullItemElementList = new ArrayList<>();
         this.fullItemElementList.add(selfElement);
-        
+
         name = "";
-        itemIdentifier1 = ""; 
+        itemIdentifier1 = "";
         itemIdentifier2 = "";
     }
 
@@ -303,7 +302,7 @@ public class Item extends CdbDomainEntity implements Serializable {
                 listDisplayDescription = "";
                 for (String descriptionWord : descriptionWords) {
                     if (descriptionWord.length() > 30) {
-                        descriptionWord =  " [...] " ; 
+                        descriptionWord = " [...] ";
                     } else if (descriptionWord.length() < 30 && descriptionWord.length() > 20) {
                         descriptionWord = descriptionWord.substring(0, 20) + "...]";
                     }
@@ -311,9 +310,8 @@ public class Item extends CdbDomainEntity implements Serializable {
                     listDisplayDescription += descriptionWord + " ";
                 }
 
-                
                 if (listDisplayDescription.length() > 120) {
-                    listDisplayDescription = listDisplayDescription.substring(0,90); 
+                    listDisplayDescription = listDisplayDescription.substring(0, 90);
                     listDisplayDescription += "...";
                 }
             }
@@ -399,16 +397,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public String getItemCategoryString() {
         if (itemCategoryString == null) {
-            itemCategoryString = "";
-            if (itemCategoryList != null) {
-                itemCategoryList.stream().forEach((itemCategory) -> {
-                    if (itemCategoryList.indexOf(itemCategory) == itemCategoryList.size() - 1) {
-                        itemCategoryString += itemCategory.getName();
-                    } else {
-                        itemCategoryString += itemCategory.getName() + " | ";
-                    }
-                });
-            }
+            itemCategoryString = StringUtility.getStringifyCdbList(itemCategoryList);
         }
 
         return itemCategoryString;
@@ -417,7 +406,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     public String getEditItemCategoryString(String itemCategoryTitle) {
         String itemCategoryString = getItemCategoryString();
 
-        if (itemCategoryString.isEmpty()) {
+        if (itemCategoryString.equals("-")) {
             return "Select " + itemCategoryTitle;
         }
 
@@ -445,7 +434,16 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setItemProjectList(List<ItemProject> itemProjectList) {
+        this.itemProjectString = null; 
         this.itemProjectList = itemProjectList;
+    }
+
+    public String getItemProjectString() {
+        if (itemProjectString == null) {
+            itemProjectString = StringUtility.getStringifyCdbList(itemProjectList);
+        }
+
+        return itemProjectString;
     }
 
     public String getItemTypeString() {
@@ -459,11 +457,21 @@ public class Item extends CdbDomainEntity implements Serializable {
     public String getEditItemTypeString(String itemTypeTitle) {
         String itemTypeString = getItemTypeString();
 
-        if (itemTypeString.isEmpty()) {
+        if (itemTypeString.equals("-")) {
             return "Select " + itemTypeTitle;
         }
 
         return itemTypeString;
+    }
+    
+    public String getEditItemProjectString() {
+        String itemProjectString = getItemProjectString();
+
+        if (itemProjectString.equals("-")) {
+            return "Select Project";
+        }
+
+        return itemProjectString;
     }
 
     @XmlTransient
@@ -488,7 +496,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return itemElementDisplayList;
     }
-    
+
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
     }
@@ -788,13 +796,13 @@ public class Item extends CdbDomainEntity implements Serializable {
             return false;
         }
         Item other = (Item) object;
-        
+
         if (other == this) {
-            return true; 
+            return true;
         }
-        
+
         if (other.getId().equals(id)) {
-            return true; 
+            return true;
         }
 
         return (Objects.equals(other.getItemIdentifier1(), itemIdentifier1)
@@ -808,13 +816,12 @@ public class Item extends CdbDomainEntity implements Serializable {
     public String toString() {
         if (getName() != null && getName().isEmpty() == false) {
             if (derivedFromItem != null) {
-                return derivedFromItem.toString() + " - " + getName(); 
+                return derivedFromItem.toString() + " - " + getName();
             }
             return getName();
         } else if (getDerivedFromItem() != null && getDerivedFromItem().getName() != null) {
             return "derived from " + getDerivedFromItem().getName();
-        }
-        else if (getId() != null) {
+        } else if (getId() != null) {
             return getId().toString();
         } else {
             return "New Item";
