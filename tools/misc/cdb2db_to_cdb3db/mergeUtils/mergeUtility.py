@@ -5,7 +5,7 @@ import sys
 import shutil
 import subprocess
 from getpass import getpass
-from unicodedata import name
+from mergeUtils import typesOfMerge
 
 try:
     from dbLegacy.api.componentDbApi import ComponentDbApi as LegacyComponentDbApi
@@ -23,6 +23,8 @@ try:
     from cdb.common.db.api.propertyDbApi import PropertyDbApi
     from cdb.common.db.api.developerDbApi import DeveloperDbApi
     from cdb.common.utility.configurationManager import ConfigurationManager
+    from cdb.common.exceptions.objectNotFound import ObjectNotFound
+    from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 except:
     directory = os.path.dirname(__file__)
     fullPath = os.path.abspath(directory + "/../../../..")
@@ -31,7 +33,8 @@ except:
 
 class MergeUtility():
 
-    def __init__(self, databaseName, createTempDb=True):
+    def __init__(self, databaseName, typeOfMerge):
+        self.typeOfMerge = typeOfMerge
         self.dbName = databaseName
         self.tempDbName = 'cdb_temporary_db'
         self.rootDbPassword = None
@@ -50,7 +53,7 @@ class MergeUtility():
 
         self.__loadLegacyData()
 
-        if createTempDb:
+        if typeOfMerge != typesOfMerge.finish:
             self.createTempDb()
 
         # Load New DB Utils
@@ -75,6 +78,7 @@ class MergeUtility():
         self.instanceEntityTypeName = None
         self.locationDomainName = None
         self.locationDomainHandlerName = None
+        self.locationDomainHandlerId = None
         self.locationDomainId = None
         self.locationRelationshipTypeName = None
         self.designEntityTypeName = None
@@ -183,7 +187,10 @@ class MergeUtility():
         self.newSchemaPopulateScriptsPath = "%s/newPopulateScripts" % self.scriptDataPath
         if os.path.exists(self.newSchemaPopulateScriptsPath) is False:
             os.mkdir(self.newSchemaPopulateScriptsPath)
-        self.newSchemaPopulateScriptsPath = "%s/%s" % (self.newSchemaPopulateScriptsPath, self.dbName)
+        dbDirectoryName = self.dbName
+        if self.__isAddOnMode():
+            dbDirectoryName += "-Addon"
+        self.newSchemaPopulateScriptsPath = "%s/%s" % (self.newSchemaPopulateScriptsPath, dbDirectoryName)
         if os.path.exists(self.newSchemaPopulateScriptsPath) is False:
             os.mkdir(self.newSchemaPopulateScriptsPath)
 
@@ -206,32 +213,68 @@ class MergeUtility():
         self.allLocations = self.legacyDbLocation.getLocations()
         self.allLocationLinks = self.legacyDbLocation.getLocationLinks()
 
-    def populateGroupTable(self):
+    def __isAddOnMode(self):
+        return self.typeOfMerge == typesOfMerge.finish
+
+    def __isUniqueAttributeEntityInList(self, list, entity, uniqueAttribute):
+        for listEntity in list:
+            if entity.data[uniqueAttribute] == listEntity.data[uniqueAttribute]:
+                print listEntity.data[uniqueAttribute] + " was found."
+                return True
+
+
+    def populateGroupTable(self, addOnGroups = False):
+        if self.__isAddOnMode():
+            addedGroups = self.usersDbApi.getUserGroups()
+
         for group in self.allGroups:
-            args = self.argsGenerator.getNameDescriptionArgs(group)
-            self.usersDbApi.addGroup(*args)
+            skipGroup = False;
+            if self.__isAddOnMode():
+                skipGroup = self.__isUniqueAttributeEntityInList(addedGroups, group, 'name')
+
+            if not skipGroup:
+                args = self.argsGenerator.getNameDescriptionArgs(group)
+                self.usersDbApi.addGroup(*args)
 
     def populateUserTable(self):
+        if self.__isAddOnMode():
+            addedUsers = self.usersDbApi.getUsers()
         for user in self.allUsers:
-            userData = user.data
-            firstName = userData['firstName']
-            lastName = userData['lastName']
-            middleName = userData['middleName']
-            description = userData['description']
-            email = userData['email']
-            username = userData['username']
-            self.usersDbApi.addUser(username, firstName, lastName, middleName, email, description, '')
+            skipUser = False
+            if self.__isAddOnMode():
+                skipUser = self.__isUniqueAttributeEntityInList(addedUsers, user, 'username')
+
+            username = user.data['username']
+            if not skipUser:
+                userData = user.data
+                firstName = userData['firstName']
+                lastName = userData['lastName']
+                middleName = userData['middleName']
+                description = userData['description']
+                email = userData['email']
+                self.usersDbApi.addUser(username, firstName, lastName, middleName, email, description, '')
             for group in user['userGroupList']:
-                self.usersDbApi.addUserToGroup(username, group.data['name'])
+                try:
+                    self.usersDbApi.addUserToGroup(username, group.data['name'])
+                except Exception as ex:
+                    print ex.message
 
     def populateSources(self):
+        if self.__isAddOnMode():
+            addedSources = self.itemDbApi.getSources()
+
         for source in self.allSources:
-            sourceData = source.data
-            sourceName = sourceData['name']
-            description = sourceData['description']
-            contactInfo = sourceData['contactInfo']
-            url = source['url']
-            self.itemDbApi.addSource(sourceName, description, contactInfo, url)
+            skipSource = False
+            if self.__isAddOnMode():
+                skipSource = self.__isUniqueAttributeEntityInList(addedSources, source, 'name')
+
+            if not skipSource:
+                sourceData = source.data
+                sourceName = sourceData['name']
+                description = sourceData['description']
+                contactInfo = sourceData['contactInfo']
+                url = source['url']
+                self.itemDbApi.addSource(sourceName, description, contactInfo, url)
 
     def populateCategories(self):
         self.__createCatalogDomain()
@@ -246,72 +289,129 @@ class MergeUtility():
             self.itemDbApi.addItemType(*args)
 
     def populateLogTopics(self):
+        if self.__isAddOnMode():
+            addedLogTopics = self.logDbApi.getLogTopics()
+
         for logTopic in self.allLogTopics:
-            args = self.argsGenerator.getNameDescriptionArgs(logTopic)
-            self.logDbApi.addLogTopic(*args)
+            skipLogTopic = False
+            if self.__isAddOnMode():
+                skipLogTopic = self.__isUniqueAttributeEntityInList(addedLogTopics, logTopic, 'name')
+
+            if not skipLogTopic:
+                args = self.argsGenerator.getNameDescriptionArgs(logTopic)
+                self.logDbApi.addLogTopic(*args)
 
     def populatePropertyTypeHandler(self):
+        if self.__isAddOnMode():
+            addedPropertyTypeHandlers = self.propertyDbApi.getPropertyTypeHandlers()
+
         for propertyTypeHandler in self.allPropertyTypeHandlers:
-            args = self.argsGenerator.getNameDescriptionArgs(propertyTypeHandler)
-            self.propertyDbApi.addPropertyTypeHandler(*args)
+            skipPropertyTypeHandler = False
+            if self.__isAddOnMode():
+                skipPropertyTypeHandler = self.__isUniqueAttributeEntityInList(addedPropertyTypeHandlers, propertyTypeHandler, 'name')
+
+            if not skipPropertyTypeHandler:
+                args = self.argsGenerator.getNameDescriptionArgs(propertyTypeHandler)
+                self.propertyDbApi.addPropertyTypeHandler(*args)
 
     def populatePropertyTypeCategories(self):
+        if self.__isAddOnMode():
+            addedPropertyTypeCategories = self.propertyDbApi.getPropertyTypeCategories()
+
         for propertyTypeCategory in self.allPropertyTypeCategories:
-            args = self.argsGenerator.getNameDescriptionArgs(propertyTypeCategory)
-            self.propertyDbApi.addPropertyTypeCategory(*args)
+            skipPropertyTypeCategory = False
+            if self.__isAddOnMode():
+                skipPropertyTypeCategory = self.__isUniqueAttributeEntityInList(addedPropertyTypeCategories, propertyTypeCategory, 'name')
+
+            if not skipPropertyTypeCategory:
+                args = self.argsGenerator.getNameDescriptionArgs(propertyTypeCategory)
+                self.propertyDbApi.addPropertyTypeCategory(*args)
             
     def populatePropertyType(self):
-        for propertyType in self.allPropertyTypes:
-            propertyTypeData = propertyType.data
-            propertyTypeName = propertyTypeData['name']
-            description = propertyTypeData['description']
-        
-        
-            propertyTypeCategory = propertyTypeData['propertyTypeCategory']
-            propertyTypeCategoryName = None
-            if propertyTypeCategory:
-                propertyTypeCategoryName = propertyTypeCategory.data['name']
-        
-            propertyTypeHandler = propertyTypeData['propertyTypeHandler']
-            propertyTypeHandlerName = None
-            if propertyTypeHandler:
-                propertyTypeHandlerName = propertyTypeHandler.data['name']
-            defaultValue = propertyTypeData['defaultValue']
-            defaultUnits = propertyTypeData['defaultUnits']
-            isUserWriteable = False
-            isDynamic = False
-            isInternal = False
-            isActive = True
-        
-            self.propertyDbApi.addPropertyType(propertyTypeName, description, propertyTypeCategoryName, propertyTypeHandlerName, defaultValue, defaultUnits, isUserWriteable, isDynamic, isInternal, isActive)
+        if self.__isAddOnMode():
+            addedPropertyTypes = self.propertyDbApi.getPropertyTypes()
 
-            allowedPropertyValues = propertyTypeData['allowedPropertyValueList']
-            for allowedPropertyValue in allowedPropertyValues:
-                value = allowedPropertyValue.value
-                units = allowedPropertyValue.units
-                description = allowedPropertyValue.description
-                sortOrder = allowedPropertyValue.sort_order
-        
-                self.propertyDbApi.addAllowedPropertyValue(propertyTypeName, value, units, description, sortOrder)
+        for propertyType in self.allPropertyTypes:
+            skipPropertyType = False
+            if self.__isAddOnMode():
+                skipPropertyType = self.__isUniqueAttributeEntityInList(addedPropertyTypes, propertyType, 'name')
+
+            if not skipPropertyType:
+                propertyTypeData = propertyType.data
+                propertyTypeName = propertyTypeData['name']
+                description = propertyTypeData['description']
+
+
+                propertyTypeCategory = propertyTypeData['propertyTypeCategory']
+                propertyTypeCategoryName = None
+                if propertyTypeCategory:
+                    propertyTypeCategoryName = propertyTypeCategory.data['name']
+
+                propertyTypeHandler = propertyTypeData['propertyTypeHandler']
+                propertyTypeHandlerName = None
+                if propertyTypeHandler:
+                    propertyTypeHandlerName = propertyTypeHandler.data['name']
+                defaultValue = propertyTypeData['defaultValue']
+                defaultUnits = propertyTypeData['defaultUnits']
+                isUserWriteable = False
+                isDynamic = False
+                isInternal = False
+                isActive = True
+
+                self.propertyDbApi.addPropertyType(propertyTypeName, description, propertyTypeCategoryName, propertyTypeHandlerName, defaultValue, defaultUnits, isUserWriteable, isDynamic, isInternal, isActive)
+
+                allowedPropertyValues = propertyTypeData['allowedPropertyValueList']
+                for allowedPropertyValue in allowedPropertyValues:
+                    value = allowedPropertyValue.value
+                    units = allowedPropertyValue.units
+                    description = allowedPropertyValue.description
+                    sortOrder = allowedPropertyValue.sort_order
+
+                    self.propertyDbApi.addAllowedPropertyValue(propertyTypeName, value, units, description, sortOrder)
 
     def populateItemsUsingLocations(self):
-        # Create Domain
-        locationDomainHandler = self.itemDbApi.addDomainHandler('Location', 'Handler responsible for locations.')
+        # Load Domain
+        locationName = 'Location'
+        if self.__isAddOnMode():
+            locationDomainHandler = self.itemDbApi.getDomainHandlerByName(locationName)
+        else:
+            locationDomainHandler = self.itemDbApi.addDomainHandler(locationName, 'Handler responsible for locations.')
         self.locationDomainHandlerName = locationDomainHandler.data['name']
-        locationDomain = self.itemDbApi.addDomain('Location', 'Location Domain', self.locationDomainHandlerName)
+        self.locationDomainHandlerId = locationDomainHandler.data['id']
+        if self.__isAddOnMode():
+            locationDomain = self.itemDbApi.getDomainByName(locationName)
+        else:
+            locationDomain = self.itemDbApi.addDomain(locationName, 'Location Domain', self.locationDomainHandlerName)
         self.locationDomainName = locationDomain.data['name']
         self.locationDomainId = locationDomain.data['id']
 
         # Add Location Types
         for locationType in self.allLocationTypes:
-            args = self.argsGenerator.getNameDescriptionArgs(locationType, self.locationDomainHandlerName)
-            self.itemDbApi.addItemType(*args)
+            skipLocationType = False
+            if self.__isAddOnMode():
+                try:
+                    self.itemDbApi.getItemType(locationType.data['name'], self.locationDomainHandlerId)
+                    skipLocationType = True
+                except ObjectNotFound as ex:
+                    print ex.message
+                    skipLocationType = False
+
+            if not skipLocationType:
+                args = self.argsGenerator.getNameDescriptionArgs(locationType, self.locationDomainHandlerName)
+                self.itemDbApi.addItemType(*args)
+
 
         # Add default relationship for locations
-        relationshipTypeHandler = self.itemDbApi.addRelationshipTypeHandler('Location', 'Handler for location type relationships')
+        if self.__isAddOnMode():
+            relationshipTypeHandler = self.itemDbApi.getRelationshipTypeHandlerByName(locationName)
+        else:
+            relationshipTypeHandler = self.itemDbApi.addRelationshipTypeHandler(locationName, 'Handler for location type relationships')
         relationshipTypeHandlerName = relationshipTypeHandler.data['name']
 
-        relationshipType = self.itemDbApi.addRelationshipType('Location', 'Location Relationship', relationshipTypeHandlerName)
+        if self.__isAddOnMode():
+            relationshipType = self.itemDbApi.getRelationshipTypeByName(locationName)
+        else:
+            relationshipType = self.itemDbApi.addRelationshipType(locationName, 'Location Relationship', relationshipTypeHandlerName)
         self.locationRelationshipTypeName = relationshipType.data['name']
 
         for location in self.allLocations:
@@ -321,10 +421,10 @@ class MergeUtility():
         lastParentId = -1
         for locationLink in self.allLocationLinks:
             parentItem = self.__findLocationItem(locationLink.data['parentLocation'])
-            childItem =  self.__findLocationItem(locationLink.data['childLocation'])
+            containedItem =  self.__findLocationItem(locationLink.data['childLocation'])
 
             parentId = parentItem.data['id']
-            childId = childItem.data['id']
+            containedItemId = containedItem.data['id']
 
             if lastParentId == parentId:
                 uniqueNameAssigment += 1
@@ -332,26 +432,50 @@ class MergeUtility():
                 lastParentId = parentId
                 uniqueNameAssigment = 1
 
-            self.itemDbApi.addItemElement(str(uniqueNameAssigment), parentId, childId, False, None, 1, 1, 1, 0)
+            skipLocationLink = False
+
+            if self.__isAddOnMode():
+                itemElements = self.itemDbApi.getItemElementsByItemId(parentId)
+                for itemElement in itemElements:
+                    if itemElement.data['contained_item_id'] == containedItemId:
+                        skipLocationLink = True
+                        break;
+            if not skipLocationLink:
+                self.itemDbApi.addItemElement(str(uniqueNameAssigment), parentId, containedItemId, False, None, 1, 1, 1, 0)
+            else:
+                print "Skipping adding item element with parent id %s and contained id %s" % (parentId, containedItemId)
 
     def __addLocation(self, location):
-        locationData = location.data
-        name = locationData['name']
-        itemIdentifier1 = None
-        itemIdentifier2 = None
-        description = locationData['description']
-        derivedFromItemId=None
-        qrId = None
+        skipLocation = False
 
-        dbLocationItem = self.itemDbApi.addItem(self.locationDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.locationEntityTypeName, qrId, description, 1, 1, 1, 0)
-        locationTypeName = locationData['locationType'].data['name']
-        self.itemDbApi.addItemItemType(dbLocationItem.data['id'], locationTypeName)
+        if self.__isAddOnMode():
+            addedLocation = self.__findLocationItem(location)
+            skipLocation = addedLocation is not None
 
-        return dbLocationItem
+        if not skipLocation:
+            locationData = location.data
+            name = locationData['name']
+            itemIdentifier1 = None
+            itemIdentifier2 = None
+            description = locationData['description']
+            derivedFromItemId=None
+            qrId = None
+
+            dbLocationItem = self.itemDbApi.addItem(self.locationDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.locationEntityTypeName, qrId, description, 1, 1, 1, 0)
+            locationTypeName = locationData['locationType'].data['name']
+            self.itemDbApi.addItemItemType(dbLocationItem.data['id'], locationTypeName)
+
+            return dbLocationItem
+        else:
+            print "Skipping location: " + location.data['name']
 
     def __findLocationItem(self, location):
         locationName = location.data['name']
-        return self.itemDbApi.getItem(self.locationDomainId, locationName, None, None, None)
+        try:
+            return self.itemDbApi.getItem(self.locationDomainId, locationName, None, None, None)
+        except ObjectNotFound as ex:
+            print ex.message
+            return None
 
     def __findComponentItemIdById(self, componentId):
         component = self.legacyDbComponent.getComponentById(componentId)
@@ -380,46 +504,86 @@ class MergeUtility():
     def __createCatalogDomainComponentDesignEntityTypes(self):
         self.__createCatalogDomain()
         if self.designEntityTypeName is None:
-            designEntityType = self.itemDbApi.addEntityType('Design', 'classification for design type objects')
+            designName = 'Design'
+            if self.__isAddOnMode():
+                designEntityType = self.itemDbApi.getEntityTypeByName(designName)
+            else:
+                designEntityType = self.itemDbApi.addEntityType(designName, 'classification for design type objects')
             self.designEntityTypeName = designEntityType.data['name']
         if self.componentEntityTypeName is None:
-            componentEntityType = self.itemDbApi.addEntityType('Component', 'classification for component type objects')
+            componentName = 'Component'
+            if self.__isAddOnMode():
+                componentEntityType = self.itemDbApi.getEntityTypeByName(componentName)
+            else:
+                componentEntityType = self.itemDbApi.addEntityType(componentName, 'classification for component type objects')
             self.componentEntityTypeName = componentEntityType.data['name']
 
+        # Should only be populated on the start or full mode
+        if not self.__isAddOnMode():
+            if self.doneAllowedEntity is False:
+                # Add allowed child entity types
+                self.itemDbApi.addAllowedChildEntityType(self.componentEntityTypeName, self.designEntityTypeName)
+                self.itemDbApi.addAllowedChildEntityType(self.componentEntityTypeName, self.componentEntityTypeName)
 
-        if self.doneAllowedEntity is False:
-            # Add allowed child entity types
-            self.itemDbApi.addAllowedChildEntityType(self.componentEntityTypeName, self.designEntityTypeName)
-            self.itemDbApi.addAllowedChildEntityType(self.componentEntityTypeName, self.componentEntityTypeName)
+                self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.componentEntityTypeName)
+                self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.designEntityTypeName)
 
-            self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.componentEntityTypeName)
-            self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.designEntityTypeName)
+                # Add allowed entity type domain handler
+                self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.designEntityTypeName)
+                self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.componentEntityTypeName)
 
-            # Add allowed entity type domain handler
-            self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.designEntityTypeName)
-            self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.componentEntityTypeName)
-
-            self.doneAllowedEntity = True
+                self.doneAllowedEntity = True
 
     def __createCatalogDomainHandler(self):
         if self.catalogDomainHandlerName is None:
-            catalogDomainHandler = self.itemDbApi.addDomainHandler('Catalog', 'Handler responsible for items in a catalog type domain.')
+            catalogName = 'Catalog'
+            if self.__isAddOnMode():
+                catalogDomainHandler = self.itemDbApi.getDomainHandlerByName(catalogName)
+            else:
+                catalogDomainHandler = self.itemDbApi.addDomainHandler(catalogName, 'Handler responsible for items in a catalog type domain.')
             self.catalogDomainHandlerName = catalogDomainHandler.data['name']
 
     def __createCatalogDomain(self):
         if self.catalogDomainName is None:
             self.__createCatalogDomainHandler()
-            catalogDomain = self.itemDbApi.addDomain('Catalog', 'Catalog Domain', self.catalogDomainHandlerName)
+            catalogName = 'Catalog'
+            if self.__isAddOnMode():
+                catalogDomain = self.itemDbApi.getDomainByName(catalogName)
+            else:
+                catalogDomain = self.itemDbApi.addDomain(catalogName, 'Catalog Domain', self.catalogDomainHandlerName)
             self.catalogDomainName = catalogDomain.data['name']
             self.catalogDomainId = catalogDomain.data['id']
 
     def populateProjects(self, projects):
+        if self.__isAddOnMode():
+            addedProjects = self.itemDbApi.getItemProjects()
+
         for project in projects:
-            self.itemDbApi.addItemProject(project, '')
+            skipProject = False
+            if self.__isAddOnMode():
+                for addedProject in addedProjects:
+                    if addedProject.data['name'] == project:
+                        skipProject = True
+                        break
+
+            if not skipProject:
+                self.itemDbApi.addItemProject(project, '')
 
     def populateCatalogInventoryItems(self, populateTypesAndCategoriesAsNeeded, defaultItemProject):
         self.__populateItemsUsingComponents(populateTypesAndCategoriesAsNeeded, defaultItemProject)
         self.__populateItemsUsingDesigns(defaultItemProject)
+
+    def __addItem(self, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description, *entityInfoArgs ):
+        try:
+            return self.itemDbApi.addItem(domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description, *entityInfoArgs)
+        except ObjectAlreadyExists as ex:
+            if self.__isAddOnMode():
+                # item identifier 2 is not used in cdb 2 schema
+                print "Assigning duplicate identifier to current item."
+                itemIdentifier2 = "Duplicate DB merge entry"
+                return self.itemDbApi.addItem(domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description, *entityInfoArgs)
+            else:
+                raise ex
 
     def __populateItemsUsingDesigns(self, defaultItemProjectName):
         self.__createCatalogDomainComponentDesignEntityTypes()
@@ -443,7 +607,8 @@ class MergeUtility():
             except:
                 pass
 
-            currentItem = self.itemDbApi.addItem(self.catalogDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.designEntityTypeName, qrId, description, *entityInfoArgs)
+            currentItem = self.__addItem(self.catalogDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.designEntityTypeName, qrId, description, *entityInfoArgs)
+
             itemId = currentItem.data['id']
 
             self.itemDbApi.addItemItemProject(itemId, defaultItemProjectName)
@@ -511,8 +676,8 @@ class MergeUtility():
             entityInfoData = componentData['entityInfo'].data
             entityInfoArgs = self.argsGenerator.getEntityInfoArgs(entityInfoData)
 
+            currentItem = self.__addItem(self.catalogDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.componentEntityTypeName, qrId, description, *entityInfoArgs)
 
-            currentItem = self.itemDbApi.addItem(self.catalogDomainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, self.componentEntityTypeName, qrId, description, *entityInfoArgs)
             itemId = currentItem.data['id']
 
             selfItemElement = self.itemDbApi.getSelfElementByItemId(itemId)
@@ -560,13 +725,20 @@ class MergeUtility():
             self.__populateDomainEntityProperties(selfItemElementId, componentProperties)
 
             componentInstances = componentData['componentInstance']
-            self.__addComponentInstances(itemId, componentInstances)
+            self.__addComponentInstances(itemId, componentInstances, defaultItemProjectName)
 
-    def __addComponentInstances(self, itemId, componentInstances):
+    def __addComponentInstances(self, itemId, componentInstances, defaultItemProjectName):
         if self.instanceDomainName is None:
-            instanceDomainHandler = self.itemDbApi.addDomainHandler('Inventory', 'Handler responsible for handling phyisical inventory of items.')
+            inventoryName = 'Inventory'
+            if self.__isAddOnMode():
+                instanceDomainHandler = self.itemDbApi.getDomainHandlerByName(inventoryName)
+            else:
+                instanceDomainHandler = self.itemDbApi.addDomainHandler(inventoryName, 'Handler responsible for handling phyisical inventory of items.')
             instanceDomainHandlerName = instanceDomainHandler.data['name']
-            instanceDomain = self.itemDbApi.addDomain('Inventory', 'Inventory Domain', instanceDomainHandlerName)
+            if self.__isAddOnMode():
+                instanceDomain = self.itemDbApi.getDomainByName(inventoryName)
+            else:
+                instanceDomain = self.itemDbApi.addDomain(inventoryName, 'Inventory Domain', instanceDomainHandlerName)
 
             self.instanceDomainName = instanceDomain.data['name']
 
@@ -599,6 +771,9 @@ class MergeUtility():
             selfItemElementId = selfItemElement.data['id']
 
             componentInstaceLogs = componentInstanceData['componentInstanceLogs']
+
+            self.itemDbApi.addItemItemProject(instanceItemId, defaultItemProjectName)
+
             self.__populateDomainEntityLogsForItemElements(selfItemElementId, componentInstaceLogs)
 
             componentInstanceProperties = componentInstanceData['componentInstanceProperties']
