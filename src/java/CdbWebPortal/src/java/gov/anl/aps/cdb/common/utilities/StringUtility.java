@@ -51,6 +51,10 @@ public class StringUtility {
                 }
             };
         }
+        
+        if (stringRep.isEmpty()) {
+            stringRep = "-";
+        }
 
         return stringRep;
     }
