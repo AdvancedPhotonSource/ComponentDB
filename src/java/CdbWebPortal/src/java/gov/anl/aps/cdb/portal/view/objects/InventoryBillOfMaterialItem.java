@@ -5,11 +5,11 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +90,25 @@ public class InventoryBillOfMaterialItem {
         this.inventoryItem = inventoryItem;
 
         // Set default tag
+        setDefaultValuesForInventoryItem();
+    }
+    
+    private void setDefaultValuesForInventoryItem() {
+        setDefaultProject();
         setDefaultTag();
+    }
+    
+    private void setDefaultProject() {
+        if (inventoryItem != null) {
+            Item catalogItem = getCatalogItem(); 
+            if (catalogItem != null) {
+                if (catalogItem.getItemProjectList() != null 
+                        & !catalogItem.getItemProjectList().isEmpty()) {
+                    List<ItemProject> catalogItemProjectList = catalogItem.getItemProjectList(); 
+                    inventoryItem.setItemProjectList(new ArrayList<>(catalogItemProjectList));
+                }
+            }
+        }
     }
 
     private void setDefaultTag() {
@@ -189,7 +207,7 @@ public class InventoryBillOfMaterialItem {
         //Set default tag
         if (inventoryItem != null) {
             if (inventoryItem.getId() == null) {
-                setDefaultTag();
+                setDefaultValuesForInventoryItem();
             }
         }
     }
