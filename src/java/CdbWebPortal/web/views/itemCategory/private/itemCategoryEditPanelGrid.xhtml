@@ -30,7 +30,7 @@
                                   onHide="updateItemType()"
                                   converter="itemTypeConverter"
                                   filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{itemTypeController.availableItems}" /> 
+                <f:selectItems value="#{simpleEntityObject.domainHandler.itemTypeList}" /> 
 
             </p:selectCheckboxMenu>
             <p:remoteCommand name="updateItemType"
