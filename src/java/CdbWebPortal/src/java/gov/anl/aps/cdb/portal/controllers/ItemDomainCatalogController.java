@@ -133,6 +133,14 @@ public class ItemDomainCatalogController extends ItemController {
     public String getItemItemCategoryTitle() {
         return "Technical System";
     }
+    
+    public boolean isCurrentItemElementListEditable() {
+        Item item = getCurrent();
+        if (item != null) {
+            return item.getDerivedFromItemList().isEmpty(); 
+        }
+        return false; 
+    }
 
     @Override
     public boolean isItemHasSimpleListView() {
