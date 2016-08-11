@@ -326,6 +326,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public EntityType findById(Integer id) {
         return null;
     }
+    
+    /**
+     * New current is being set, reset related variables. 
+     */
+    protected void resetVariablesForCurrent() {
+        
+    }
 
     /**
      * Set current entity instance.
@@ -333,6 +340,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @param current entity instance
      */
     public void setCurrent(EntityType current) {
+        resetVariablesForCurrent();
         this.current = current;
     }
 
@@ -527,7 +535,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public EntityType getSelected() {
         if (current == null) {
-            current = createEntityInstance();
+            setCurrent(createEntityInstance());
         }
         return current;
     }
@@ -958,7 +966,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return URL to create page in the entity folder
      */
     public String prepareCreate() {
-        current = createEntityInstance();
+        setCurrent(createEntityInstance());
         return "create?faces-redirect=true";
     }
 
