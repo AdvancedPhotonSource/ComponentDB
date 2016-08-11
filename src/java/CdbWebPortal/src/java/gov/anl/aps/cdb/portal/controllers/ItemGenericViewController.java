@@ -164,7 +164,7 @@ public class ItemGenericViewController extends ItemController {
      * @return 
      */
     @Override
-    public String getListDomainName() {
+    public String getDefaultDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -176,6 +176,11 @@ public class ItemGenericViewController extends ItemController {
     @Override
     public String getItemDerivedFromDomainHandlerName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean getEntityDisplayItemProject() {
+        return true; 
     }
     
 }

@@ -149,13 +149,18 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     @Override
-    public String getListDomainName() {
+    public String getDefaultDomainName() {
         return DOMAIN_TYPE_NAME; 
     }
 
     @Override
     public String getItemDerivedFromDomainHandlerName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean getEntityDisplayItemProject() {
+        return false; 
     }
     
 }

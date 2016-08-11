@@ -179,13 +179,13 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public ListDataModel getDomainListDataModel(EntityType entityType) {
-        List<Item> itemList = itemFacade.findByDomainAndDerivedEntityTypeOrderByQrId(getListDomainName(), entityType.getName());
+        List<Item> itemList = itemFacade.findByDomainAndDerivedEntityTypeOrderByQrId(getDefaultDomainName(), entityType.getName());
         return new ListDataModel(itemList);
     }
 
     @Override
     public ListDataModel getDomainListDataModel() {
-        List<Item> itemList = itemFacade.findByDomainOrderByQrId(getListDomainName());
+        List<Item> itemList = itemFacade.findByDomainOrderByQrId(getDefaultDomainName());
         return new ListDataModel(itemList);
     }
 
@@ -1208,7 +1208,7 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
-    public String getListDomainName() {
+    public String getDefaultDomainName() {
         return DOMAIN_TYPE_NAME;
     }
 
@@ -1220,6 +1220,11 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public String getItemIdentifier2Title() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public boolean getEntityDisplayItemProject() {
+        return true; 
     }
 
 }

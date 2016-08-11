@@ -543,13 +543,18 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     @Override
-    public String getListDomainName() {
+    public String getDefaultDomainName() {
         return DOMAIN_TYPE_NAME;
     }
 
     @Override
     public String getItemDerivedFromDomainHandlerName() {
         return null;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemProject() {
+        return true; 
     }
 
 }

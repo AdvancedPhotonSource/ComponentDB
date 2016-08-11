@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.SessionScoped;
@@ -209,12 +208,17 @@ public class ItemMemberViewController extends ItemController {
     }
 
     @Override
-    public String getListDomainName() {
+    public String getDefaultDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public String getItemDerivedFromDomainHandlerName() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean getEntityDisplayItemProject() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
