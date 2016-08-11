@@ -87,6 +87,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayName = null;
     protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
+    protected Boolean displayItemProject = null;
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected List<String> displayListDataModelScopeSelectionList = null;
@@ -140,6 +141,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     private int filterViewDataTableRowCount = -1;
 
+    protected List<ItemType> availableItemTypesForCurrentItem = null;
+    protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
+
     protected enum ItemCreateWizardSteps {
         derivedFromItemSelection("derivedFromItemSelectionTab"),
         basicInformation("basicItemInformationTab"),
@@ -169,7 +173,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      */
     public abstract Domain getDefaultDomain();
 
-    public abstract String getListDomainName();
+    public abstract String getDefaultDomainName();
 
     /**
      *
@@ -260,6 +264,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public abstract String getItemIdentifier2Title();
 
+    public abstract boolean getEntityDisplayItemProject();
+
     public abstract String getItemsDerivedFromItemTitle();
 
     public abstract String getDerivedFromItemTitle();
@@ -283,7 +289,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public List<Item> getItemList() {
-        return itemFacade.findByDomain(getListDomainName());
+        return itemFacade.findByDomain(getDefaultDomainName());
     }
 
     public boolean isItemHasSimpleListView() {
@@ -318,6 +324,90 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             domainItemCategoryList = itemCategoryFacade.findByDomainHandlerName(this.getDomainHandlerName());
         }
         return domainItemCategoryList;
+    }
+
+    @Override
+    protected void resetVariablesForCurrent() {
+        super.resetVariablesForCurrent();
+        availableItemTypesForCurrentItem = null;
+        lastKnownItemCategoryListForCurrentItem = null;
+    }
+
+    public List<ItemType> getAvailableItemTypesForCurrentItem() {
+        Item currentItem = getCurrent();
+        if (currentItem != null) {
+            List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
+
+            if (lastKnownItemCategoryListForCurrentItem != null) {
+                if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
+                    availableItemTypesForCurrentItem = null;
+                } else {
+                    for (ItemCategory itemCategory : lastKnownItemCategoryListForCurrentItem) {
+                        if (itemCategoryList.contains(itemCategory) == false) {
+                            availableItemTypesForCurrentItem = null;
+                            break;
+                        }
+                    }
+                }
+            }
+            lastKnownItemCategoryListForCurrentItem = itemCategoryList;
+
+            if (availableItemTypesForCurrentItem == null) {
+                availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
+                updateItemTypeListBasedOnNewAvailableTypes(availableItemTypesForCurrentItem, currentItem);
+            }
+        }
+
+        return availableItemTypesForCurrentItem;
+    }
+
+    private void updateItemTypeListBasedOnNewAvailableTypes(List<ItemType> avaiableItemTypes, Item item) {
+        if (item.getItemTypeList() != null) {
+            List<ItemType> itemItemTypeList = new ArrayList<>(item.getItemTypeList());
+
+            for (ItemType itemType : itemItemTypeList) {
+                if (avaiableItemTypes.contains(itemType) == false) {
+                    item.getItemTypeList().remove(itemType);
+                }
+            }
+        }
+    }
+
+    private List<ItemType> getAvaiableTypesForItemCategoryList(List<ItemCategory> itemCategoryList) {
+        List<ItemType> avaiableItemTypes = new ArrayList<>();
+
+        if (itemCategoryList != null) {
+            for (ItemCategory itemCategory : itemCategoryList) {
+                if (itemCategoryList.size() == 1) {
+                    avaiableItemTypes.addAll(itemCategory.getItemTypeList());
+                    break;
+                } else {
+                    for (ItemType itemType : itemCategory.getItemTypeList()) {
+                        if (avaiableItemTypes.contains(itemType) == false) {
+                            avaiableItemTypes.add(itemType);
+                        }
+                    }
+                }
+            }
+        }
+
+        return avaiableItemTypes;
+    }
+
+    public String getCurrentItemItemTypeEditString() {
+        Item item = getCurrent();
+        if (item != null) {
+            if (isDisabledItemItemType()) {
+                return "First Select Techincal System";
+            } else {
+                return item.getEditItemTypeString(getItemItemTypeTitle());
+            }
+        }
+        return "";
+    }
+
+    public boolean isDisabledItemItemType() {
+        return getAvailableItemTypesForCurrentItem().isEmpty();
     }
 
     public List<ItemCategory> getFilterViewItemCategorySelection() {
@@ -383,13 +473,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (filterViewItemTypeList == null) {
             filterViewItemTypeList = new ArrayList<>();
             if (filterViewItemCategorySelectionList != null) {
-                for (ItemCategory itemCategory : filterViewItemCategorySelectionList) {
-                    for (ItemType itemType : itemCategory.getItemTypeList()) {
-                        if (!filterViewItemTypeList.contains(itemType)) {
-                            filterViewItemTypeList.add(itemType);
-                        }
-                    }
-                }
+                filterViewItemTypeList = getAvaiableTypesForItemCategoryList(filterViewItemCategorySelectionList);
             }
         }
         return filterViewItemTypeList;
@@ -465,7 +549,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public ListDataModel getDomainListDataModel(EntityType entityType) {
-        List<Item> itemList = itemFacade.findByDomainAndEntityType(getListDomainName(), entityType.getName());
+        List<Item> itemList = itemFacade.findByDomainAndEntityType(getDefaultDomainName(), entityType.getName());
         return new ListDataModel(itemList);
     }
 
@@ -621,28 +705,28 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
             // Show only favorites
             if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                List<Item> itemList = itemFacade.getItemListContainedInList(getListDomainName(), getFavoritesList());
+                List<Item> itemList = itemFacade.getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
                 scopedListDataModel = new ListDataModel(itemList);
             } else if (settingEntity instanceof UserInfo) {
                 // Show owned by user
                 if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
-                    List<Item> itemList = itemFacade.getItemListOwnedByUser(getListDomainName(), (UserInfo) settingEntity);
+                    List<Item> itemList = itemFacade.getItemListOwnedByUser(getDefaultDomainName(), (UserInfo) settingEntity);
                     scopedListDataModel = new ListDataModel(itemList);
                 } // show owned by user and favorites 
                 else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
                     List<Item> itemList = itemFacade
-                            .getItemListContainedInListOrOwnedByUser(getListDomainName(), getFavoritesList(), (UserInfo) settingEntity);
+                            .getItemListContainedInListOrOwnedByUser(getDefaultDomainName(), getFavoritesList(), (UserInfo) settingEntity);
                     scopedListDataModel = new ListDataModel(itemList);
                 }
             } else if (settingEntity instanceof UserGroup) {
                 // Show owned by group
                 if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
-                    List<Item> itemList = itemFacade.getItemListOwnedByUserGroup(getListDomainName(), (UserGroup) settingEntity);
+                    List<Item> itemList = itemFacade.getItemListOwnedByUserGroup(getDefaultDomainName(), (UserGroup) settingEntity);
                     scopedListDataModel = new ListDataModel(itemList);
                 } // show owned by group and favorites 
                 else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
                     List<Item> itemList = itemFacade
-                            .getItemListContainedInListOrOwnedByGroup(getListDomainName(), getFavoritesList(), (UserGroup) settingEntity);
+                            .getItemListContainedInListOrOwnedByGroup(getDefaultDomainName(), getFavoritesList(), (UserGroup) settingEntity);
                     scopedListDataModel = new ListDataModel(itemList);
                 }
             }
@@ -1205,6 +1289,17 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setDisplayQrId(Boolean displayQrId) {
         this.displayQrId = displayQrId;
+    }
+
+    public Boolean getDisplayItemProject() {
+        if (displayItemProject == null) {
+            displayItemProject = getEntityDisplayItemProject();
+        }
+        return displayItemProject;
+    }
+
+    public void setDisplayItemProject(Boolean displayItemProject) {
+        this.displayItemProject = displayItemProject;
     }
 
     public Boolean getDisplayItemIdentifier1() {
