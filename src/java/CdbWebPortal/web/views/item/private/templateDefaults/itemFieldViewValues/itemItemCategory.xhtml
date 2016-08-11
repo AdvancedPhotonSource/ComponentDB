@@ -12,7 +12,7 @@
                    toggleable="#{isEntityWriteable}" 
                    styleClass="entityDataText" 
                    label="#{itemObject.itemCategoryString}"> 
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="save" oncomplete="inlineSaveEntity()" update="itemTypeSelectCB#{viewName}"/>
             <p:ajax event="cancel" oncomplete="reloadItemCategory()"/>
             <p:remoteCommand name="reloadItemCategory"
                              action="#{entityController.reloadCurrent()}"

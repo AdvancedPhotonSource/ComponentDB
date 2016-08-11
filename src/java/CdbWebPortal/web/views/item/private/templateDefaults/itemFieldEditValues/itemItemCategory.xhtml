@@ -13,10 +13,11 @@
                               value="#{itemObject.itemCategoryList}" 
                               converter="itemCategoryConverter"
                               filter="true" filterMatchMode="contains" >
-            <f:selectItems value="#{itemCategoryController.availableItems}" /> 
+            <f:selectItems value="#{entityController.domainItemCategoryList}" /> 
 
             <p:remoteCommand name="itemCategorySelectCBUpdate#{viewName}"
-                             update="itemCategorySelectCB#{viewName}" />
+                             update="itemCategorySelectCB#{viewName} 
+                                     itemTypeSelectCB#{viewName}" />
 
         </p:selectCheckboxMenu>
     </p:column>
