@@ -135,6 +135,11 @@ public class DomainHandler extends CdbEntity implements Serializable {
     public void setDomainHandlerList(List<DomainHandler> domainHandlerList) {
         this.domainHandlerList = domainHandlerList;
     }
+    
+    @XmlTransient
+    public List<ItemType> getItemTypeList() {
+        return itemTypeList;
+    }
 
     @Override
     public int hashCode() {
