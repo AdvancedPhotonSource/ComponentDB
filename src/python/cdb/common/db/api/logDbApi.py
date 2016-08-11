@@ -34,6 +34,11 @@ class LogDbApi(CdbDbApi):
         dbLogTopic = self.logHandler.addLogTopic(session, name, description)
         return dbLogTopic.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getLogTopics(self, **kwargs):
+        session = kwargs['session']
+        dbLogTopics = self.logHandler.getLogTopics(session)
+        return self.toCdbObjectList(dbLogTopics)
 
     @CdbDbApi.executeTransaction
     def addLogAttachment(self, logId, attachmentName, attachmentTag, attachmentDescription, **kwargs):
