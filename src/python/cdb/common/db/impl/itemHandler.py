@@ -55,6 +55,16 @@ class ItemHandler(CdbDbEntityHandler):
     def getItemElementById(self, session, id):
         return self._findDbObjById(session, ItemElement, id)
 
+    def getItemElementsByItemId(self, session, itemId):
+        entityDisplayName = self._getEntityDisplayName(ItemCategory)
+
+        try:
+            dbItemElements = session.query(ItemElement).filter(ItemElement.parent_item_id==itemId).all()
+            return dbItemElements
+        except NoResultFound, ex:
+            raise ObjectNotFound('No %s with item id: %s found.'
+                                 % (entityDisplayName, itemId))
+
     def addItemCategory(self, session, itemCategoryName, description, domainHandlerName):
         entityDisplayName = self._getEntityDisplayName(ItemCategory)
 
@@ -84,6 +94,11 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemProject(self, session, itemProjectName, description):
         return self._addSimpleNameDescriptionTable(session, ItemProject, itemProjectName, description)
+
+    def getItemProjects(self, session):
+        self.logger.debug('Retrieving item projects.')
+        dbItemProjects = session.query(ItemProject).all()
+        return dbItemProjects
 
     def addItemType(self, session, itemTypeName, description, domainHandlerName):
         entityDisplayName = self._getEntityDisplayName(ItemType)
