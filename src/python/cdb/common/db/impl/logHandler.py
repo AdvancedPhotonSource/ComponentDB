@@ -60,6 +60,9 @@ class LogHandler(CdbDbEntityHandler):
     def addLogTopic(self, session, logTopicName, description):
         return self._addSimpleNameDescriptionTable(session, LogTopic, logTopicName, description)
 
+    def getLogTopics(self, session):
+        return self._getAllDbObjects(session, LogTopic)
+
     def findLogTopicByName(self, session, logTopicName):
         self._findDbObjByName(session, LogTopic, logTopicName)
 
