@@ -23,6 +23,12 @@ class ItemDbApi(CdbDbApi):
         dbEntityType = self.entityTypeHandler.addEntityType(session, name, description)
         return dbEntityType.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getEntityTypeByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbEntityType = self.entityTypeHandler.findEntityTypeByName(session, name)
+        return dbEntityType.getCdbObject()
+
     @CdbDbApi.executeTransaction
     def addAllowedChildEntityType(self, parentEntityTypeName, childEntityTypeName, **kwargs):
         session = kwargs['session']
@@ -34,6 +40,18 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbDomainHandler = self.domainHandler.addDomainHandler(session, name, description)
         return dbDomainHandler.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getDomainHandlerByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, name)
+        return dbDomainHandler.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getDomainByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbDomain = self.domainHandler.findDomainByName(session, name)
+        return dbDomain.getCdbObject()
 
     @CdbDbApi.executeTransaction
     def addAllowedDomainHandlerEntityType(self, domainHandlerName, entityTypeName, **kwargs):
@@ -53,10 +71,22 @@ class ItemDbApi(CdbDbApi):
         dbRelationshipTypeHandler = self.relationshipTypeHandler.addRelationshipTypeHandler(session, name, description)
         return dbRelationshipTypeHandler.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getRelationshipTypeHandlerByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbRelationshipTypeHandler = self.relationshipTypeHandler.getRelationshipTypeHandlerByName(session, name)
+        return dbRelationshipTypeHandler.getCdbObject()
+
     @CdbDbApi.executeTransaction
     def addRelationshipType(self, name, description, relationshipTypeHandlerName, **kwargs):
         session = kwargs['session']
         dbRelationshipType = self.relationshipTypeHandler.addRelationshipType(session, name, description, relationshipTypeHandlerName)
+        return dbRelationshipType.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getRelationshipTypeByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbRelationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, name)
         return dbRelationshipType.getCdbObject()
     
     @CdbDbApi.executeTransaction
@@ -81,11 +111,23 @@ class ItemDbApi(CdbDbApi):
         dbItem = self.itemHandler.getItemByUniqueAttributes(session, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId)
         return dbItem.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getItemElementsByItemId(self, itemId, **kwargs):
+        session = kwargs['session']
+        dbItemElements = self.itemHandler.getItemElementsByItemId(session, itemId)
+        return self.toCdbObjectList(dbItemElements)
+
     @CdbDbApi.executeTransaction
     def addSource(self, sourceName, description, contactInfo, url, **kwargs):
         session = kwargs['session']
         dbSource = self.sourceHandler.addSource(session, sourceName, description, contactInfo, url)
         return dbSource.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getSources(self, **kwargs):
+        session = kwargs['session']
+        dbSources = self.sourceHandler.getSources(session)
+        return self.toCdbObjectList(dbSources)
 
     @CdbDbApi.executeTransaction
     def addItemSource(self, itemId, sourceName, partNumber, cost, description, isVendor, isManufacturer, contactInfo, url, **kwargs):
@@ -104,6 +146,12 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbItemCategory = self.itemHandler.addItemProject(session, itemProjectName, description)
         return dbItemCategory.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getItemProjects(self, **kwargs):
+        session = kwargs['session']
+        dbItemProjects = self.itemHandler.getItemProjects(session)
+        return self.toCdbObjectList(dbItemProjects)
 
     @CdbDbApi.executeTransaction
     def addItemItemProject(self, itemId, itemProjectName, **kwargs):
@@ -124,9 +172,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemCategory.getCdbObject()
 
     @CdbDbApi.executeQuery
-    def getItemType(self, name, **kwargs):
+    def getItemType(self, name, domainHandlerId, **kwargs):
         session = kwargs['session']
-        dbItemType = self.itemHandler.getItemTypeByName(session, name)
+        dbItemType = self.itemHandler.getItemTypeByName(session, name, domainHandlerId)
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeTransaction
