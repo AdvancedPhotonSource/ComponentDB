@@ -8,14 +8,11 @@
     
     <p:column id="itemType#{viewName}"
               rendered="#{entityController.entityDisplayItemType}">
-        <p:selectCheckboxMenu id="itemTypeSelectCB#{viewName}"
-                              label="#{itemObject.getEditItemTypeString(entityController.itemItemTypeTitle)}"                              
-                              onHide="itemTypeSelectCBUpdate#{viewName}()"
-                              value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
-                              filter="true" filterMatchMode="contains" >
-            <f:selectItems value="#{itemTypeController.availableItems}" /> 
-
-        </p:selectCheckboxMenu>
+        <ui:include src="editWidgets/itemItemTypeSelectCheckboxMenu.xhtml">
+            <ui:param name="onHide"
+                      value="itemTypeSelectCBUpdate#{viewName}()"/>
+        </ui:include>
+        
         
         <p:remoteCommand name="itemTypeSelectCBUpdate#{viewName}"
                          update="itemTypeSelectCB#{viewName}" />

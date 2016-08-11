@@ -18,10 +18,6 @@
                              action="#{entityController.reloadCurrent()}"
                              update="itemType#{viewName}"
                              />
-            <p:selectCheckboxMenu label="Select Types" value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
-                                  filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{itemTypeController.availableItems}" /> 
-
-            </p:selectCheckboxMenu>
+            <ui:include src="../itemFieldEditValues/editWidgets/itemItemTypeSelectCheckboxMenu.xhtml"/>            
         </p:inplace>
 </ui:composition>
