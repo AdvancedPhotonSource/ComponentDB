@@ -37,8 +37,26 @@ class PropertyDbApi(CdbDbApi):
     @CdbDbApi.executeTransaction
     def addPropertyTypeHandler(self, propertyTypeHandlerName, description, **kwargs):
         session = kwargs['session']
-        dbPropertyTypeHandlers = self.propertyTypeHandlerHandler.addPropertyTypeHandler(session, propertyTypeHandlerName, description)
-        return dbPropertyTypeHandlers.getCdbObject()
+        dbPropertyTypeHandler = self.propertyTypeHandlerHandler.addPropertyTypeHandler(session, propertyTypeHandlerName, description)
+        return dbPropertyTypeHandler.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypeHandlers(self, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypeHandlers = self.propertyTypeHandlerHandler.getPropertyTypeHandlers(session)
+        return self.toCdbObjectList(dbPropertyTypeHandlers)
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypes(self, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypes = self.propertyTypeHandler.getPropertyTypes(session)
+        return self.toCdbObjectList(dbPropertyTypes)
+
+    @CdbDbApi.executeQuery
+    def getPropertyTypeCategories(self, **kwargs):
+        session = kwargs['session']
+        dbPropertyTypeCategories = self.propertyTypeCategoryHandler.getPropertyTypeCategories(session)
+        return self.toCdbObjectList(dbPropertyTypeCategories)
 
     @CdbDbApi.executeTransaction
     def addPropertyTypeCategory(self, propertyTypeCategoryName, description, **kwargs):
