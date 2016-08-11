@@ -28,6 +28,25 @@
         <ui:include src="private/itemDomainCatalogInventoryCreateDialog.xhtml" />
     </ui:define>
 
+    <ui:define name="itemElements">
+        <p:tab title="Elements"
+               id="itemDomainCatalogItemElementEditListTab"
+               rendered="#{entityController.entityDisplayItemElements}">
+            <ui:include src="#{itemDomainCatalogController.currentItemElementListEditable 
+                               ? '../itemElement/private/itemElementEditList.xhtml' 
+                               : '../itemElement/private/itemElementList.xhtml'}" />
+
+            <p:blockUI block="itemDomainCatalogItemElementEditListTab" 
+                       blocked="#{!itemDomainCatalogController.currentItemElementListEditable}"
+                       widgetVar="itemDomainCatalogItemElementEditListBlockWidget">
+                Current Item already has inventory items. Cannot edit elements of this item. 
+                <br/>
+                <p:commandButton value="View Item Elements" 
+                                 onclick="PF('itemDomainCatalogItemElementEditListBlockWidget').hide()"/>
+            </p:blockUI>
+        </p:tab>
+    </ui:define>
+
 </ui:composition>
 
 
