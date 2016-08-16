@@ -1,37 +1,37 @@
 @import url("portal.css");
 
 .defaultBackground {
-    background-color: #f1efe2;
+    background-color: #F7F7F2;
 }
 
 html, body {
-    background-color: #f1efe2;
+    background-color: #F7F7F2;
 }
 
 
 #bottom {
-    background-color: #f1efe2;
+    background-color: #F7F7F2;
 }
 
 .domainEntityRowExpansion {
-    background-color: #f1efe2;
+    background-color: #F7F7F2;
 }
 
 input, textarea {
-    background: #f1efe2;
+    background: #F7F7F2;
 }
 
 .ui-accordion .ui-accordion-content {
-    background: #f1efe2;    
+    background: #F7F7F2;    
 }
 
 .ui-panelgrid .ui-panelgrid-cell {
-    background: #f1efe2;
+    background: #F7F7F2;
 }
 
 .ui-panel {
     border: 0px; 
-    background: #f1efe2; 
+    background: #F7F7F2; 
 }
 
 .redRow {
@@ -76,7 +76,7 @@ input, textarea {
 }
 
 .ui-dialog {
-    background: #f1efe2; 
+    background: #F7F7F2; 
 }
 
 .viewTransparentBackground {
