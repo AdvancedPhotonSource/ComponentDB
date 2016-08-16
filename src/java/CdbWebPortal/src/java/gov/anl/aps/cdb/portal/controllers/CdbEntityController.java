@@ -326,12 +326,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public EntityType findById(Integer id) {
         return null;
     }
-    
+
     /**
-     * New current is being set, reset related variables. 
+     * New current is being set, reset related variables.
      */
     protected void resetVariablesForCurrent() {
-        
+
     }
 
     /**
@@ -562,9 +562,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
         return settingController;
     }
-    
+
     /**
-     * Override this function if a derived controller needs to process when new settings are present. 
+     * Override this function if a derived controller needs to process when new
+     * settings are present.
      */
     public void settingsAreReloaded() {
         resetListDataModel();
@@ -995,7 +996,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public String prepareClone(EntityType entity) {
         current = cloneEntityInstance(entity);
-        return "/views/" + getEntityTypeName() + "/create?faces-redirect=true";
+        return getEntityApplicationViewPath() + "/" + getCloneCreatePageName() + "?faces-redirect=true";
+    }
+
+    protected String getCloneCreatePageName() {
+        return "create";
+    }
+
+    protected String getEntityApplicationViewPath() {
+        return "/views/" + getEntityTypeName();
     }
 
     /**
