@@ -144,6 +144,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected List<ItemType> availableItemTypesForCurrentItem = null;
     protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
 
+    protected Boolean cloneProperties = false;
+    protected Boolean cloneCreateItemElementPlaceholders = false;
+    protected Boolean cloneSources = false;
+    protected Item itemToClone;
+
     protected enum ItemCreateWizardSteps {
         derivedFromItemSelection("derivedFromItemSelectionTab"),
         basicInformation("basicItemInformationTab"),
@@ -568,6 +573,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public String getDomainHandlerPath(DomainHandler domainHandler) {
         return "/views/itemDomain" + domainHandler.getName();
+    }
+
+    @Override
+    protected String getEntityApplicationViewPath() {
+        return getDomainHandlerPath(getItemDomainHandler());
     }
 
     @Override
@@ -1143,6 +1153,182 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         updateOnRemoval();
     }
 
+    private Item cloneProperties(Item clonedItem, Item cloningFrom) {
+        List<PropertyValue> cloningFromPropertyValueList = cloningFrom.getPropertyValueList();
+
+        if (cloningFromPropertyValueList != null) {
+            List<PropertyValue> newItemPropertyValueList = new ArrayList<>();
+
+            Date enteredOnDateTime = new Date();
+            UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
+
+            for (PropertyValue propertyValue : cloningFromPropertyValueList) {
+                PropertyValue newPropertyValue = new PropertyValue();
+                newPropertyValue.setPropertyType(propertyValue.getPropertyType());
+                newPropertyValue.setValue(propertyValue.getValue());
+                newPropertyValue.setTag(propertyValue.getTag());
+                newPropertyValue.setUnits(propertyValue.getUnits());
+                newPropertyValue.setDescription(propertyValue.getDescription());
+                newPropertyValue.setEnteredOnDateTime(enteredOnDateTime);
+                newPropertyValue.setEnteredByUser(enteredByUser);
+
+                newItemPropertyValueList.add(newPropertyValue);
+            }
+
+            clonedItem.setPropertyValueList(newItemPropertyValueList);
+        }
+
+        return clonedItem;
+    }
+
+    private Item cloneSources(Item clonedItem, Item cloningFrom) {
+        List<ItemSource> cloningFromSourceList = cloningFrom.getItemSourceList();
+
+        if (cloningFromSourceList != null) {
+            List<ItemSource> newItemSourceList = new ArrayList<>();
+
+            for (ItemSource itemSource : cloningFromSourceList) {
+                ItemSource newItemSource = new ItemSource();
+
+                newItemSource.setItem(clonedItem);
+                newItemSource.setSource(itemSource.getSource());
+                newItemSource.setPartNumber(itemSource.getPartNumber());
+                newItemSource.setCost(itemSource.getCost());
+                newItemSource.setDescription(itemSource.getDescription());
+                newItemSource.setIsVendor(itemSource.getIsVendor());
+                newItemSource.setIsManufacturer(itemSource.getIsManufacturer());
+                newItemSource.setContactInfo(itemSource.getContactInfo());
+                newItemSource.setUrl(itemSource.getUrl());
+
+                newItemSourceList.add(newItemSource);
+            }
+
+            clonedItem.setItemSourceList(newItemSourceList);
+        }
+
+        return clonedItem;
+    }
+
+    private Item cloneCreateItemElementPlaceholders(Item clonedItem, Item cloningFrom) {
+        List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
+
+        if (cloningFromItemElementList != null) {
+            for (ItemElement itemElement : cloningFromItemElementList) {
+                ItemElement newItemElement = new ItemElement();
+
+                if (itemElement.getDerivedFromItemElement() != null) {
+                    newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement());
+                } else {
+                    newItemElement.init(clonedItem);
+                }
+
+                newItemElement.setName(itemElement.getName());
+
+                clonedItem.getFullItemElementList().add(newItemElement);
+            }
+        }
+
+        return clonedItem;
+    }
+    
+    public Item completeClone(Item clonedItem, Integer cloningFromItemId) {
+        Item cloningFrom = findById(cloningFromItemId);
+
+        if (cloneProperties) {
+            clonedItem = cloneProperties(clonedItem, cloningFrom);
+        }
+        if (cloneSources) {
+            clonedItem = cloneSources(clonedItem, cloningFrom);
+        }
+        if (cloneCreateItemElementPlaceholders) {
+            clonedItem = cloneCreateItemElementPlaceholders(clonedItem, cloningFrom);
+        }
+        
+        cloneProperties = false;
+        cloneSources = false;
+        cloneCreateItemElementPlaceholders = false;         
+        
+        return clonedItem;
+    }
+
+    public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
+        if (itemToClone != null) {
+            return !itemToClone.getItemElementDisplayList().isEmpty();
+        }
+        return false; 
+    }
+    
+    public boolean isShowCloneSourcesOption() {
+        if (itemToClone != null) {
+            return itemToClone.getItemSourceList() != null && !itemToClone.getItemSourceList().isEmpty();
+        }
+        return false; 
+    }
+    
+    public boolean isShowClonePropertiesOption() {
+        if (itemToClone != null) {
+            return itemToClone.getPropertyValueList() != null && !itemToClone.getPropertyValueList().isEmpty();
+        }
+        return false; 
+    }
+    
+    public boolean isNoCloneOptionsAvailable() {
+        return !isShowCloneCreateItemElementsPlaceholdersOption() 
+                && !isShowClonePropertiesOption()
+                && !isShowCloneSourcesOption(); 
+    }
+    
+    public String prepareCloneForItemToClone() {
+        Item item = itemToClone;
+        itemToClone = null;
+        return prepareClone(item); 
+    } 
+    
+    public String checkNoOptionsPrepareCloneForItemToClone() {
+        if (isNoCloneOptionsAvailable()) {
+            return prepareCloneForItemToClone(); 
+        }
+        
+        return "";
+    }
+
+    @Override
+    protected String getCloneCreatePageName() {
+        return "simpleCreate";
+    }
+
+    public Boolean getCloneProperties() {
+        return cloneProperties;
+    }
+
+    public void setCloneProperties(Boolean cloneProperties) {
+        this.cloneProperties = cloneProperties;
+    }
+
+    public Boolean getCloneCreateItemElementPlaceholders() {
+        return cloneCreateItemElementPlaceholders;
+    }
+
+    public void setCloneCreateItemElementPlaceholders(Boolean cloneCreateItemElementPlaceholders) {
+        this.cloneCreateItemElementPlaceholders = cloneCreateItemElementPlaceholders;
+    }
+
+    public Boolean getCloneSources() {
+        return cloneSources;
+    }
+
+    public void setCloneSources(Boolean cloneSources) {
+        this.cloneSources = cloneSources;
+    }
+
+    public Item getItemToClone() {
+        return itemToClone;
+    }
+
+    public void setItemToClone(Item itemToClone) {
+        this.itemToClone = itemToClone;
+    }
+
     public TreeNode getItemElementListTreeTableRootNode() {
         return itemElementListTreeTableRootNode;
     }
@@ -1472,7 +1658,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }
             } else if (current == null) {
-                throw new InvalidRequest("Component instance has not been selected.");
+                throw new InvalidRequest(getDisplayEntityTypeName() + " has not been selected.");
             }
             return current;
         }
