@@ -7,7 +7,10 @@
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
-
+    
+    <ui:param name="renderEntityCloneWithRemoteCommand" 
+              value="#{entityCloneRemoteCommandName != null ? true : false}" />
+    
     <div>
         <p:commandLink id="#{entityTypeName}ListViewLink" 
                        action="#{entityController.prepareView(entityObject)}" 
@@ -24,11 +27,21 @@
         </p:commandLink>
         <p:commandLink id="#{entityTypeName}ListCloneLink" 
                        action="#{entityController.prepareClone(entityObject)}" 
-                       rendered="#{isEntityCloneable}" 
+                       rendered="#{!renderEntityCloneWithRemoteCommand and isEntityCloneable}" 
                        styleClass="ui-icon ui-icon-copy" 
                        title="Clone">
         </p:commandLink>
         <p:tooltip for="#{entityTypeName}ListCloneLink" value="Clone #{entityController.displayEntityTypeName}."/>            
+        
+        <p:commandLink id="#{entityTypeName}ListCloneRemoteCommandLink" 
+                       oncomplete="#{entityCloneRemoteCommandName}()"
+                       rendered="#{renderEntityCloneWithRemoteCommand and isEntityCloneable}" 
+                       styleClass="ui-icon ui-icon-copy" 
+                       title="Clone">
+            <f:setPropertyActionListener value="#{entityObject}"
+                                         target="#{entityCloneItemToCloneTargetValue}" />
+        </p:commandLink>
+        <p:tooltip for="#{entityTypeName}ListCloneRemoteCommandLink" value="Clone #{entityController.displayEntityTypeName}."/>            
 
         <p:commandLink id="#{entityTypeName}ListDeleteLink" oncomplete="PF('#{entityTypeName}DestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
             <f:setPropertyActionListener target="#{entityController.current}" value="#{entityObject}"/>
