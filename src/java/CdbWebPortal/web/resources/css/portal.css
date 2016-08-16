@@ -462,6 +462,10 @@ input, textarea {
     width: 150px;
 }
 
+.cellSelect .ui-selectonemenu-label {
+    width: 150px;
+}
+
 .longCellSelect {
     width: 300px;
 }
