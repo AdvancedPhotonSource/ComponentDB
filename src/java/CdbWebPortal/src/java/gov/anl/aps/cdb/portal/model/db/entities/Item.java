@@ -7,13 +7,17 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -181,6 +185,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
     private transient InventoryBillOfMaterialItem containedInBOM;
 
+    private transient ItemController itemDomainController = null;
+
+    private transient final String ITEM_CONTROLLER_NAME_BASE = "itemDomain";
+
     public Item() {
     }
 
@@ -199,6 +207,59 @@ public class Item extends CdbDomainEntity implements Serializable {
         init();
 
         this.domain = domain;
+    }
+
+    @Override
+    public Item clone() throws CloneNotSupportedException {
+        Item clonedItem = new Item(); 
+        
+        clonedItem.setDomain(this.getDomain());
+        clonedItem.entityTypeList = this.getEntityTypeList(); 
+        clonedItem.setItemCategoryList(this.getItemCategoryList());
+        clonedItem.setItemTypeList(this.getItemTypeList());
+        clonedItem.setDerivedFromItem(this.getDerivedFromItem());    
+        clonedItem.setItemProjectList(this.getItemProjectList());
+        
+        clonedItem.setId(null);
+        clonedItem.setName("(Cloned) " + this.getName());
+        clonedItem.setItemIdentifier1(this.getItemIdentifier1());
+        clonedItem.setItemIdentifier2(this.getItemIdentifier2());
+      
+        ItemElement newSelfElement = new ItemElement();
+        ItemElement oldSelfElement = this.getSelfElement();
+
+        newSelfElement.init(clonedItem);
+        newSelfElement.setDescription(oldSelfElement.getDescription());
+        
+        clonedItem.setFullItemElementList(new ArrayList<>());
+        clonedItem.resetItemElementDisplayList();
+        clonedItem.resetSelfElement();
+        clonedItem.fullItemElementList.add(newSelfElement);
+
+        clonedItem.setItemSourceList(null);
+        clonedItem.setQrId(null);
+        clonedItem.setLocationDetails(null);
+        clonedItem.setLocation(null);
+        clonedItem.setPropertyValueList(null);
+        clonedItem.setLogList(null);
+        clonedItem.setDerivedFromItemList(null);
+        clonedItem.setItemElementMemberList(null);
+        
+        clonedItem = getItemDomainController().completeClone(clonedItem, this.getId());
+
+        return clonedItem; 
+    }
+
+    public ItemController getItemDomainController() {
+        if (itemDomainController == null) {
+            if (domain != null) {
+                String domainHandlerName = domain.getDomainHandler().getName();
+                String controllerName = ITEM_CONTROLLER_NAME_BASE + domainHandlerName + "Controller";
+                itemDomainController = (ItemController) SessionUtility.findBean(controllerName);
+            }
+        }
+
+        return itemDomainController;
     }
 
     public Item(Integer id) {
@@ -434,7 +495,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setItemProjectList(List<ItemProject> itemProjectList) {
-        this.itemProjectString = null; 
+        this.itemProjectString = null;
         this.itemProjectList = itemProjectList;
     }
 
@@ -463,7 +524,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return itemTypeString;
     }
-    
+
     public String getEditItemProjectString() {
         String itemProjectString = getItemProjectString();
 
@@ -499,6 +560,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
+    }
+    
+    public void resetSelfElement() {
+        selfItemElement = null; 
     }
 
     public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
@@ -547,6 +612,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setDomain(Domain domain) {
+        itemDomainController = null;
         this.domain = domain;
     }
 
