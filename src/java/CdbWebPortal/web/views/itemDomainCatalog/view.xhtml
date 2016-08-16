@@ -10,8 +10,8 @@
     <ui:param name="itemDerivedController" value="#{itemDomainInventoryController}" />
 
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processViewRequestParams}"/>
-        <f:event type="preRenderComponent" listener="#{itemElementController.processViewRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processViewRequestParams()}"/>
+        <f:event type="preRenderComponent" listener="#{itemElementController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{itemSourceController.processPreRender()}"/>
