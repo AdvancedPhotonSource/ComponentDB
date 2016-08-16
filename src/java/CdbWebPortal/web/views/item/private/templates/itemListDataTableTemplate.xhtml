@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="itemListDataTableTemplateBase.xhtml"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
     
     <ui:define name="itemColumns">
         <ui:include src="../itemListObject.xhtml" />
@@ -42,11 +43,13 @@
                 <ui:param name="entityObject" value="#{itemListObject}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemListObject.entityInfo)}"/>
                 <ui:param name="isEntityCloneable" value="#{loginController.loggedIn}"/>
+                <ui:param name="entityCloneRemoteCommandName" value="show#{entityTypeName}CloneDialog" />
+                <ui:param name="entityCloneItemToCloneTargetValue" value="#{entityController.itemToClone}" />
                 <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
                 <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />
                 <ui:param name="toggleFavoritesParameter" value="#{itemListObject}" />
                 <ui:param name="currentFavoritesIconStyle" value="#{entityController.getItemFavoritesIconStyle(itemListObject)}" />
-            </ui:include>
+            </ui:include>                                             
         </p:column>
     </ui:define>
 
