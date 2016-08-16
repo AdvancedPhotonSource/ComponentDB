@@ -135,9 +135,9 @@ public class ItemDomainInventoryController extends ItemController {
     @EJB
     private RelationshipTypeFacade relationshipTypeFacade;
 
-    public ItemDomainInventoryController() {        
+    public ItemDomainInventoryController() {
         super();
-        displayDerivedFromItem = false; 
+        displayDerivedFromItem = false;
     }
 
     public Boolean getDisplayLocationDetails() {
@@ -265,23 +265,23 @@ public class ItemDomainInventoryController extends ItemController {
             derivedItemController.getSelectedObjectAndResetDataModel();
             derivedItemController.clearListFilters();
             derivedItemController.setFilteredObjectList(null);
-        }        
+        }
 
         String createResult = super.prepareCreate();
 
         return createResult;
     }
-    
+
     public void createSaveFromDialog(String onSuccessCommand) {
-        String result = create(); 
+        String result = create();
         if (result != null) {
             RequestContext.getCurrentInstance().execute(onSuccessCommand);
-        }        
+        }
     }
-    
+
     public void createCancelFromDialog() {
         if (getCurrent() != null) {
-            Item catalogItem = getCurrent().getDerivedFromItem(); 
+            Item catalogItem = getCurrent().getDerivedFromItem();
             if (catalogItem != null) {
                 catalogItem.getDerivedFromItemList().remove(getCurrent());
             }
@@ -319,7 +319,7 @@ public class ItemDomainInventoryController extends ItemController {
 
         return super.getNextStepForCreateItemWizard(event);
     }
-    
+
     public void prepareBillOfMaterialsForCurrentItem() {
         // Prepare bill of materials if not yet done so. 
         InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
@@ -328,27 +328,27 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String prepareEdit(Item inventoryItem) {
-        setCurrent(inventoryItem);        
+        setCurrent(inventoryItem);
         return super.prepareEdit(inventoryItem);
-    } 
-    
+    }
+
     public Boolean displayBOMEditButton() {
         if (current != null) {
-            List<ItemElement> catalogItemElementDisplayList; 
-            catalogItemElementDisplayList  = current.getDerivedFromItem().getItemElementDisplayList();
+            List<ItemElement> catalogItemElementDisplayList;
+            catalogItemElementDisplayList = current.getDerivedFromItem().getItemElementDisplayList();
             return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
-        } 
+        }
 
-        return false; 
+        return false;
     }
-    
+
     public String saveEditBOMList() {
         return this.update();
     }
-    
+
     public void prepareEditBOMForCurrent() {
         resetBOMSupportVariables();
-        prepareBillOfMaterialsForCurrentItem(); 
+        prepareBillOfMaterialsForCurrentItem();
     }
 
     @Override
@@ -443,34 +443,34 @@ public class ItemDomainInventoryController extends ItemController {
             // Tree will set to null on every form update. 
             return;
         }
-        
+
         // Clear selection in case same type of component item is in parts list.
         selectedObject = null;
-        
+
         // Clear Filters
         clearListFilters();
-        filteredObjectList = null; 
-        
+        filteredObjectList = null;
+
         this.selectedItemBOMTreeNode = selectedItemBOMTreeNode;
-        
+
     }
 
     public void addItemElementsFromBillOfMaterials(Item item) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
-        
+
         for (InventoryBillOfMaterialItem bomItem : bomItems) {
             // Check if current catalog item element already has an item element defined. 
-            ItemElement catalogItemElement = bomItem.getCatalogItemElement(); 
-            ItemElement currentInventoryItemElement = null; 
-            for (ItemElement inventoryItemElement: item.getFullItemElementList()) {
+            ItemElement catalogItemElement = bomItem.getCatalogItemElement();
+            ItemElement currentInventoryItemElement = null;
+            for (ItemElement inventoryItemElement : item.getFullItemElementList()) {
                 if (inventoryItemElement.getDerivedFromItemElement() == catalogItemElement) {
-                    currentInventoryItemElement = inventoryItemElement; 
-                    logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);        
-                    break; 
+                    currentInventoryItemElement = inventoryItemElement;
+                    logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);
+                    break;
                 }
-            }            
-            
+            }
+
             if (currentInventoryItemElement == null) {
                 currentInventoryItemElement = new ItemElement();
                 currentInventoryItemElement.init(item, bomItem.getCatalogItemElement());
@@ -483,12 +483,12 @@ public class ItemDomainInventoryController extends ItemController {
             if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())
                     || currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                 if (bomItem.getInventoryItem() == null) {
-                    
-                    String actionWord = "defined"; 
+
+                    String actionWord = "defined";
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         actionWord = "selected";
                     }
-                    
+
                     throw new CdbException("An item for: " + bomItem.getCatalogItemElement().getName() + " is not " + actionWord + ".");
                 }
 
@@ -570,7 +570,7 @@ public class ItemDomainInventoryController extends ItemController {
 
                 // The current item will not be defined. it has no children.                 
                 selectedItemBOMTreeNode.getChildren().clear();
-                
+
                 bomItem.setInventoryItem(null);
 
                 if (newItem != null) {
@@ -595,7 +595,7 @@ public class ItemDomainInventoryController extends ItemController {
                 bomItem.setInventoryItem(newInventoryItem);
 
                 // The tree needs to be updated.
-                addNewChildrenToCurrentSelection();                
+                addNewChildrenToCurrentSelection();
             }
         }
     }
@@ -636,7 +636,7 @@ public class ItemDomainInventoryController extends ItemController {
             }
         }
 
-        Item containedItem = instanceItemElement.getContainedItem();        
+        Item containedItem = instanceItemElement.getContainedItem();
 
         return getItemDisplayString(containedItem);
     }
@@ -653,114 +653,135 @@ public class ItemDomainInventoryController extends ItemController {
         if (item.getDerivedFromItem() == null) {
             throw new CdbException("Please specify " + getDerivedFromItemTitle());
         }
-        
+
         super.prepareEntityInsert(item);
 
-        checkNewItemsToAdd();
+        if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
+            checkNewItemsToAdd();
 
-        // Clear new item elements for new items. In case a previous insert failed. 
-        for (Item itemToAdd : newItemsToAdd) {
-            if (isItemExistInDb(itemToAdd) == false) {
-                //Make sure newest version of display list is fetched.
-                ItemElement selfElement = itemToAdd.getSelfElement(); 
-                itemToAdd.getFullItemElementList().clear();
-                itemToAdd.getFullItemElementList().add(selfElement); 
-                //Make sure display list is updated to reflect changes. 
-                item.resetItemElementDisplayList();
+            // Clear new item elements for new items. In case a previous insert failed. 
+            for (Item itemToAdd : newItemsToAdd) {
+                if (isItemExistInDb(itemToAdd) == false) {
+                    //Make sure newest version of display list is fetched.
+                    ItemElement selfElement = itemToAdd.getSelfElement();
+                    itemToAdd.getFullItemElementList().clear();
+                    itemToAdd.getFullItemElementList().add(selfElement);
+                    //Make sure display list is updated to reflect changes. 
+                    item.resetItemElementDisplayList();
+                }
             }
+
+            updatePermissionOnAllNewPartsIfNeeded();
+
+            addItemElementsFromBillOfMaterials(item);
         }
-
-        updatePermissionOnAllNewPartsIfNeeded();
-
-        addItemElementsFromBillOfMaterials(item);
     }
-    
+
     private void checkNewItemsToAdd() throws CdbException {
         Item item = getCurrent();
-        for (Item newItem : newItemsToAdd) {
-            // item is checked by default. 
-            if (item != newItem) {
-                checkItem(newItem);
+        if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
+            for (Item newItem : newItemsToAdd) {
+                // item is checked by default. 
+                if (item != newItem) {
+                    checkItem(newItem);
+                }
             }
-            updateItemLocation(item);
-        }       
-        
-        // Cross check the nonadded items. 
-        checkUniquenessBetweenNewItemsToAdd();
+            // Cross check the nonadded items. 
+            checkUniquenessBetweenNewItemsToAdd();
+        } else {
+            checkItem(item);
+        }
+
+        updateItemLocation(item);
     }
-    
+
     @Override
     public String getItemDisplayString(Item item) {
         if (item != null && item.getDerivedFromItem() != null) {
-            String result = item.getDerivedFromItem().getName(); 
+            String result = item.getDerivedFromItem().getName();
 
             //Tag to help user identify the item
-            String tag = item.getName(); 
+            String tag = item.getName();
             if (tag != null && !tag.isEmpty()) {
-                result += "\n [" + tag + "]"; 
+                result += "\n [" + tag + "]";
             }
 
-            return result; 
+            return result;
         }
-        return null; 
+        return null;
     }
 
     @Override
     public String getItemMembmershipPartIdentifier(Item item) {
-        return getItemDisplayString(item); 
+        return getItemDisplayString(item);
     }
-    
+
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
         for (int i = 0; i < newItemsToAdd.size(); i++) {
-            for (int j = newItemsToAdd.size() -1; j > -1; j--) {
+            for (int j = newItemsToAdd.size() - 1; j > -1; j--) {
                 if (i == j) {
-                    break; 
+                    break;
                 }
                 Item itemA = newItemsToAdd.get(i);
-                Item itemB = newItemsToAdd.get(j); 
-                
-                String itemCompareString = itemA.getContainedInBOM().toString() + " and " + itemB.getContainedInBOM().toString(); 
-                
+                Item itemB = newItemsToAdd.get(j);
+
+                String itemCompareString = itemA.getContainedInBOM().toString() + " and " + itemB.getContainedInBOM().toString();
+
                 if (itemA.getQrId() != null && itemB.getQrId() != null) {
-                    if (itemA.getQrId().equals(itemB.getQrId())) {                        
-                        throw new CdbException(itemCompareString + " have QrId: " + itemA.getQrIdDisplay()); 
+                    if (itemA.getQrId().equals(itemB.getQrId())) {
+                        throw new CdbException(itemCompareString + " have QrId: " + itemA.getQrIdDisplay());
                     }
                 }
-                
+
                 if (itemA.getDerivedFromItem() == itemB.getDerivedFromItem()) {
                     if (itemA.getItemIdentifier1().equals(itemB.getItemIdentifier1())
                             && itemA.getName().equals(itemB.getName())) {
-                        throw new CdbException(itemCompareString + " have same combination of " +
-                                getItemIdentifier1Title() + " and " + getNameTitle()); 
+                        throw new CdbException(itemCompareString + " have same combination of "
+                                + getItemIdentifier1Title() + " and " + getNameTitle());
                     }
                 }
             }
         }
-        
+
     }
-    
+
+    @Override
+    public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
+        // Item elements should match the assembly. User has no control over that.
+        return false; 
+    } 
+
+    @Override
+    public String prepareCloneForItemToClone() {
+        // Item elements should match the assembly. User has no control over that.
+        cloneCreateItemElementPlaceholders = true; 
+        newItemsToAdd = null; 
+        
+        return super.prepareCloneForItemToClone(); 
+    }    
+
     /**
-     * Counts new items that will be added for a certain catalog item. 
-     * 
+     * Counts new items that will be added for a certain catalog item.
+     *
      * @param catalogItem
      * @return count
      */
     public int getNewItemCount(Item catalogItem) {
-        int count = 0; 
-        for (Item item: newItemsToAdd) {
+        int count = 0;
+        for (Item item : newItemsToAdd) {
             if (item.getDerivedFromItem() == catalogItem) {
-                count ++; 
+                count++;
             }
         }
-        return count; 
+        return count;
     }
 
     @Override
     public void prepareEntityUpdate(Item item) throws CdbException {
         updateItemLocation(item);
-        super.prepareEntityUpdate(item); 
+        super.prepareEntityUpdate(item);
         checkNewItemsToAdd();
-        
+
         addItemElementsFromBillOfMaterials(item);
     }
 
@@ -928,8 +949,8 @@ public class ItemDomainInventoryController extends ItemController {
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
 
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
-        
-        displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue(); 
+
+        displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -990,7 +1011,7 @@ public class ItemDomainInventoryController extends ItemController {
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-        
+
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
 
         resetDomainEntityPropertyTypeIdIndexMappings();
@@ -1071,7 +1092,7 @@ public class ItemDomainInventoryController extends ItemController {
         settingEntity.setSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-        
+
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
 
     }
@@ -1221,10 +1242,10 @@ public class ItemDomainInventoryController extends ItemController {
     public String getItemIdentifier2Title() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
     @Override
     public boolean getEntityDisplayItemProject() {
-        return true; 
+        return true;
     }
 
 }
