@@ -418,12 +418,13 @@ class PdmLink:
         componentInfo['drawingNumber'] = drawingNumber
         componentInfo['pdmPropertyValues'] = pdmPropertyValues
 
+        '''
         # Generate component type suggestions
         self.__createComponentDbApi()
 
         # Get a list of available types
         componentTypes = self.componentDbApi.getComponentTypes()
-
+        '''
         # Get drawing details for keywords
         if drawingDetails is None:
             drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
@@ -449,7 +450,7 @@ class PdmLink:
             componentInfo['name'] = drawingDetails['title5']
         else:
             componentInfo['name'] = pdmComponentModel
-
+        '''
         # Key is id of a component type and value is commonality of a component type based on keywords.
         stats = {}
         suggestedTypeList = []
@@ -477,6 +478,7 @@ class PdmLink:
                     continue
 
         componentInfo['suggestedComponentTypes'] = suggestedTypeList
+        '''
 
         return PdmLinkComponent(componentInfo)
 
@@ -757,6 +759,8 @@ if __name__ == '__main__':
     oid = results[0]['oid']
     ufid = results[0]['ufid']
     print pdmLink.completeDrawingInformation(ufid, oid)
+
+    print pdmLink.generateComponentInfo('D14100201-113160.asm')
 
     # Getting a drawing from PDMLink
     getDrawingFromPDMLink('D14100201-113160.asm')
