@@ -1780,6 +1780,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return domain.getName();
     }
+    
+    public void checkCurrentItem() throws CdbException {
+        if (getCurrent() != null) {
+            checkItem(getCurrent());
+        }
+    }
 
     protected void checkItem(Item item) throws CdbException {
         Domain itemDomain = item.getDomain();
