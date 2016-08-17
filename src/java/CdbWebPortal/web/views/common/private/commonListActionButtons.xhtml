@@ -17,7 +17,9 @@
     <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />
     
     <div class="actionButton">
-        <ui:include src="reusedParts/listAddButton.xhtml" />
+        <ui:insert name="listAddButton">
+            <ui:include src="reusedParts/listAddButton.xhtml" />
+        </ui:insert>
         
         <p:commandButton id="#{entityTypeName}LoadPropertyValuesButton" 
                          rendered="#{displayLoadPropertiesFilterValuesButton}" 
