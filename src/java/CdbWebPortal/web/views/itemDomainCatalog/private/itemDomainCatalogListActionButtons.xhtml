@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../common/private/commonListActionButtons.xhtml">
+    
+    <ui:define name="listAddButton">
+        <p:splitButton id="#{entityTypeName}#{viewName}AddButton"
+                       rendered="#{displayAddButton}" 
+                       value="Add" 
+                       action="#{entityController.prepareCreate()}"
+                       alt="Add new #{entityTypeName}" 
+                       icon="ui-icon-plus">
+            <p:menuitem value="Add from PDMLink" styleClass="splitButtonMenuItem" 
+                        onclick="PF('itemDomainCatalogPDMLinkDrawingSearchDialogWidget').show()"
+                        icon="ui-icon-plus"/>
+        </p:splitButton>
+    </ui:define>
+
+    
+    
+</ui:composition>
+
