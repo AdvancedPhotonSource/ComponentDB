@@ -386,6 +386,10 @@ tr:hover .actionLink {
     margin-right: auto;
 }
 
+.borderAbove {
+    border-top: 1px solid gray;
+}
+
 .entityListPageHelpFragmentPanel {
     background: transparent; 
     border: none; 
@@ -685,7 +689,7 @@ h2 {
     border: none;    
 }
 
-.ui-menu, .ui-menuitem, .ui-menu .ui-menu-child {
+.mainMenuBar .ui-menu, .mainMenuBar .ui-menuitem, .mainMenuBar .ui-menu .ui-menu-child {
     background: #6da5d8;
     color: white;
     margin-top: 0px;
@@ -984,4 +988,16 @@ h2 {
 
 .favoriteOn:hover {
     opacity: 0.75; 
+}
+
+.splitButtonMenuItem .ui-menuitem-text{
+    color: rgb(80, 80, 76); 
+}
+
+.centeredContent {
+    display: flex;
+    margin: 0px;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
 }
