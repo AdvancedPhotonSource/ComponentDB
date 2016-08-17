@@ -565,4 +565,9 @@ public class ItemDomainCatalogController extends ItemController {
         return true; 
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+
 }

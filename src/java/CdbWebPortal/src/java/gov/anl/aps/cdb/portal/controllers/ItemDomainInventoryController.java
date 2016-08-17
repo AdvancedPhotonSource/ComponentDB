@@ -1248,4 +1248,9 @@ public class ItemDomainInventoryController extends ItemController {
         return true;
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+
 }
