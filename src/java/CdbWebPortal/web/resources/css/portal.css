@@ -7,6 +7,14 @@ html, body {
     height: 100%;
 }
 
+.apsStorageRingBackground {
+    background-image: url("../images/ApsStorageRing.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+    background-size: 20%;
+}
+
 a:link, a:visited {
     color: #4e80b6;
     font-weight: bold;
@@ -597,55 +605,6 @@ h1 {
     margin-left: 2%;
     margin-right: 2%;
     border-style: solid;
-}
-
-.entityHelpButtonComponent {
-    background: #ebf4fa;
-    border-color: #D1E1E1;
-}
-
-.entityHelpButtonComponentInstance {
-    background: #d5ebf5;
-    border-color: #CFDFDF;
-}
-
-.entityHelpButtonDesign {
-    background: #f1efe2;
-    border-color: #E2DED2;
-}
-
-.entityHelpButtonDesignInstance {
-    background: #efeab9;
-    border-color: #D2CDC2;
-}
-
-
-.entityHelpButtonImageContainer {
-    width: 60%;
-    margin: auto;
-}
-
-.entityHelpButtonContainer {
-    text-align: center; 
-    display: flex; 
-    border-radius:  10px;
-
-    /* Entity Gradients */
-    /* Old browsers */
-    /*background: #f2f4f7; */
-    /* FF3.6-15 */
-    /*ackground: -moz-linear-gradient(left, #ebf4fa 0%, #ebf4fa 20%, #d5ebf5 26%, #d5ebf5 46%, #f1efe2 53%, #f1efe2 73%, #efeab9 80%, #efeab9 100%); */
-    /* Chrome10-25,Safari5.1-6 */
-    /*background: -webkit-linear-gradient(left, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%);*/
-    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    /*background: linear-gradient(right, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%); */
-}
-.entityHelpButtonCommandLink {
-    text-decoration: none; 
-}
-
-.entityHelpButtonCommandLink:hover {
-    text-decoration: underline;
 }
 
 .propertyValueImageGalleria {
