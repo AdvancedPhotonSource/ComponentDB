@@ -5,45 +5,46 @@
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <p:outputPanel styleClass="mainMenuBar">
+        <p:menubar>
+            <p:menuitem value="Browse" url="/views/itemDomainCatalog/browse" 
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
+            <p:menuitem value="Catalog" url="/views/itemDomainCatalog/list" 
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
+                                      !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
+            <p:menuitem value="Inventory" url="/views/itemDomainInventory/list"
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
 
-    <p:menubar>
-        <p:menuitem value="Browse" url="/views/itemDomainCatalog/browse" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
-        <p:menuitem value="Catalog" url="/views/itemDomainCatalog/list" 
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
-                                  !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
-        <p:menuitem value="Inventory" url="/views/itemDomainInventory/list"
-                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"/>
-
-        <p:menuitem value="Search"
-                    styleClass="#{fn:startsWith(view.viewId, '/views/search/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                    url="/views/search/search" icon="ui-icon-search"/>
-        <f:facet name="options">
-            <p:menubar styleClass="menuBarSupportingItems">
-                <p:menuitem value="Locations" 
-                            rendered="#{loginController.loggedInAsAdmin}"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                            action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
-                <p:menuitem value="Property Types" 
-                            rendered="#{loginController.loggedInAsAdmin}"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                            action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
-                <p:menuitem value="Sources"
-                            rendered="#{loginController.loggedInAsAdmin}"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                            action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
-                <p:menuitem value="Users"
-                            rendered="#{loginController.loggedInAsAdmin}"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
-                            action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>  
-                <p:menuitem value="Settings"
-                            styleClass="mainMenuBarItemImportant"
-                            action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
-                            rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
-                <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" styleClass="mainMenuBarItemImportant" icon="ui-icon-person"/>
-                <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" styleClass="mainMenuBarItemImportant" icon="ui-icon-close"/>
-                <p:menuitem value="About" url="/views/home.xhtml" icon="ui-icon-help" styleClass="mainMenuBarItemImportant"/>
-            </p:menubar>
-        </f:facet>
-    </p:menubar>
+            <p:menuitem value="Search"
+                        styleClass="#{fn:startsWith(view.viewId, '/views/search/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                        url="/views/search/search" icon="ui-icon-search"/>
+            <f:facet name="options">
+                <p:menubar styleClass="menuBarSupportingItems">
+                    <p:menuitem value="Locations" 
+                                rendered="#{loginController.loggedInAsAdmin}"
+                                styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                                action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
+                    <p:menuitem value="Property Types" 
+                                rendered="#{loginController.loggedInAsAdmin}"
+                                styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                                action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
+                    <p:menuitem value="Sources"
+                                rendered="#{loginController.loggedInAsAdmin}"
+                                styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                                action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
+                    <p:menuitem value="Users"
+                                rendered="#{loginController.loggedInAsAdmin}"
+                                styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} mainMenuBarItemImportant"
+                                action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>  
+                    <p:menuitem value="Settings"
+                                styleClass="mainMenuBarItemImportant"
+                                action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
+                                rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
+                    <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" styleClass="mainMenuBarItemImportant" icon="ui-icon-person"/>
+                    <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" styleClass="mainMenuBarItemImportant" icon="ui-icon-close"/>
+                    <p:menuitem value="About" url="/views/home.xhtml" icon="ui-icon-help" styleClass="mainMenuBarItemImportant"/>
+                </p:menubar>
+            </f:facet>
+        </p:menubar>
+    </p:outputPanel>
 </ui:composition>
