@@ -54,6 +54,10 @@
                                                             ? entityController.entityDisplayItemProject
                                                             : entityController.displayItemProject}" />
     
+    <ui:param name="itemListRenderItemEntityTypes" value="#{renderWheneverAvaiable 
+                                                            ? entityController.entityDisplayItemEntityTypes 
+                                                            : entityController.displayItemEntityTypes}" />
+    
 
     <ui:define name="idColumn">
         <p:column sortBy="#{itemListObject.id}" headerText="Id"
@@ -89,10 +93,11 @@
     </ui:define>
 
     <ui:define name="entityTypeColumn">
-        <p:column sortBy="#{itemListObject.entityTypeString}" headerText="EntityType"
+        <p:column sortBy="#{itemListObject.entityTypeString}" headerText="Entity Types"
                   filterBy="#{itemListObject.entityTypeString}" filterMatchMode="contains"
                   filterable="#{filterable}"
-                  filterOptions="#{entityController.entityTypesForDataTableFilterSelectOne}"                  
+                  filterOptions="#{entityController.entityTypesForDataTableFilterSelectOne}"
+                  rendered="#{itemListRenderItemEntityTypes}"
                   sortable="#{sortable}">
             <ui:insert name="entityTypeColumnObject" />
         </p:column>
