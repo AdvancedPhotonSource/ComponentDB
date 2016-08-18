@@ -59,6 +59,10 @@ public class ItemDomainCatalogController extends ItemController {
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId5";
     private static final String DisplayTypeSettingTypeKey = "ItemDomainCatalog.List.Display.Type";
     private static final String DisplayRowExpansionSettingTypeKey = "ItemDomainCatalog.List.Display.RowExpansion";
+    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainCatalog.List.Display.AlternateName"; 
+    private static final String DisplayItemProjectSettingTypeKey = "ItemDomainCatalog.List.Display.Project"; 
+    private static final String DisplayItemSourcesSettingTypeKey = "ItemDomainCatalog.List.Display.Sources"; 
+    private static final String DisplayItemEntityTypesSettingTypeKey = "ItemDomainCatalog.List.Display.EntityTypes"; 
     private static final String DisplayComponentInstanceRowExpansionSettingTypeKey = "ItemDomainCatalog.List.Display.ComponentInstance.RowExpansion";
     private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ItemDomainCatalog.List.Load.RowExpansionPropertyValue";
     private static final String LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey = "ItemDomainCatalog.List.Load.ComponentInstance.RowExpansionPropertyValue";
@@ -93,6 +97,7 @@ public class ItemDomainCatalogController extends ItemController {
     private DomainFacade domainFacade;
 
     private Boolean displayModelNumber = null;
+    private Boolean displayAlternateName = null; 
 
     private String filterByType = null;
     private String filterByCategory = null;
@@ -232,17 +237,24 @@ public class ItemDomainCatalogController extends ItemController {
         this.displayComponentInstanceRowExpansion = displayComponentInstanceRowExpansion;
     }
 
-    public Boolean getDisplayModelNumber() {
-        return displayModelNumber;
-    }
-
-    public void setDisplayModelNumber(Boolean displayModelNumber) {
-        this.displayModelNumber = displayModelNumber;
-    }
-
     @Override
     public Boolean getDisplayItemIdentifier1() {
         return displayModelNumber;
+    }
+
+    @Override
+    public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
+        this.displayModelNumber = displayItemIdentifier1;
+    } 
+
+    @Override
+    public Boolean getDisplayItemIdentifier2() {
+        return this.displayAlternateName; 
+    }
+
+    @Override
+    public void setDisplayItemIdentifier2(Boolean displayItemIdentifier2) {
+        this.displayAlternateName = displayItemIdentifier2;
     }
 
     @Override
@@ -266,6 +278,10 @@ public class ItemDomainCatalogController extends ItemController {
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         displayModelNumber = Boolean.parseBoolean(settingTypeMap.get(DisplayModelNumberSettingTypeKey).getDefaultValue());
+        displayAlternateName = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateNameSettingTypeKey).getDefaultValue());
+        displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
+        displayItemSources = Boolean.parseBoolean(settingTypeMap.get(DisplayItemSourcesSettingTypeKey).getDefaultValue());
+        displayItemEntityTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemEntityTypesSettingTypeKey).getDefaultValue()); 
 
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
         displayComponentInstanceRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstanceRowExpansionSettingTypeKey).getDefaultValue());
@@ -325,6 +341,10 @@ public class ItemDomainCatalogController extends ItemController {
         displayLastModifiedByUser = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         displayModelNumber = settingEntity.getSettingValueAsBoolean(DisplayModelNumberSettingTypeKey, displayModelNumber);
+        displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName);
+        displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
+        displayItemSources = settingEntity.getSettingValueAsBoolean(DisplayItemSourcesSettingTypeKey, displayItemSources);
+        displayItemEntityTypes = settingEntity.getSettingValueAsBoolean(DisplayItemEntityTypesSettingTypeKey, displayItemEntityTypes);
 
         displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         displayComponentInstanceRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayComponentInstanceRowExpansionSettingTypeKey, displayComponentInstanceRowExpansion);
@@ -399,6 +419,10 @@ public class ItemDomainCatalogController extends ItemController {
         settingEntity.setSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         settingEntity.setSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         settingEntity.setSettingValue(DisplayModelNumberSettingTypeKey, displayModelNumber);
+        settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
+        settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
+        settingEntity.setSettingValue(DisplayItemSourcesSettingTypeKey, displayItemSources);
+        settingEntity.setSettingValue(DisplayItemEntityTypesSettingTypeKey, displayItemEntityTypes);
 
         settingEntity.setSettingValue(DisplayTypeSettingTypeKey, displayItemType);
         settingEntity.setSettingValue(DisplayCategorySettingTypeKey, displayItemCategory);
@@ -567,6 +591,11 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public boolean entityCanBeCreatedByUsers() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemEntityTypes() {
         return true;
     }
 

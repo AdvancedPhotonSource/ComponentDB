@@ -66,6 +66,7 @@ public class ItemDomainInventoryController extends ItemController {
     private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainInventory.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainInventory.List.Display.LastModifiedOnDateTime";
     private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainInventory.List.Display.LocationDetails";
+    private static final String DisplayLocationSettingTypeKey = "ItemDomainInventory.List.Display.Location";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainInventory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainInventory.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainInventory.List.Display.OwnerGroup";
@@ -76,6 +77,8 @@ public class ItemDomainInventoryController extends ItemController {
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainInventory.List.Display.PropertyTypeId5";
     private static final String DisplayQrIdSettingTypeKey = "ItemDomainInventory.List.Display.QrId";
     private static final String DisplaySerialNumberSettingTypeKey = "ItemDomainInventory.List.Display.SerialNumber";
+    private static final String DisplayItemProjectSettingTypeKey = "ItemDomainInventory.List.Display.Project";
+    private static final String DisplayItemEntityTypeSettingTypeKey = "ItemDomainInventory.List.Display.EntityTypes";
     private static final String DisplayRowExpansionSettingTypeKey = "ItemDomainInventory.List.Display.RowExpansion";
     private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ItemDomainInventory.List.Load.RowExpansionPropertyValue";
     private static final String FilterByComponentSettingTypeKey = "ItemDomainInventory.List.FilterBy.Component";
@@ -103,6 +106,7 @@ public class ItemDomainInventoryController extends ItemController {
     private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
 
     private Boolean displayLocationDetails = null;
+    private Boolean displayLocation = null;
     private Boolean displaySerialNumber = null;
 
     private String filterByComponent = null;
@@ -148,17 +152,17 @@ public class ItemDomainInventoryController extends ItemController {
         this.displayLocationDetails = displayLocationDetails;
     }
 
+    public Boolean getDisplayLocation() {
+        return displayLocation;
+    }
+
+    public void setDisplayLocation(Boolean displayLocation) {
+        this.displayLocation = displayLocation;
+    }
+
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         return DisplayListPageHelpFragmentSettingTypeKey;
-    }
-
-    public Boolean getDisplaySerialNumber() {
-        return displaySerialNumber;
-    }
-
-    public void setDisplaySerialNumber(Boolean displaySerialNumber) {
-        this.displaySerialNumber = displaySerialNumber;
     }
 
     public TreeNode getLocationRelationshipTree(Item inventoryItem) {
@@ -870,6 +874,19 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public Boolean getDisplayItemIdentifier1() {
         return displaySerialNumber;
+    } 
+
+    @Override
+    public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
+        this.displaySerialNumber = displayItemIdentifier1;
+    }
+
+    public Boolean getDisplaySerialNumber() {
+        return displaySerialNumber;
+    }
+
+    public void setDisplaySerialNumber(Boolean displaySerialNumber) {
+        this.displaySerialNumber = displaySerialNumber;
     }
 
     @Override
@@ -912,10 +929,13 @@ public class ItemDomainInventoryController extends ItemController {
         displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedByUserSettingTypeKey).getDefaultValue());
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
+        displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
 
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
-
+        displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
+        displayItemEntityTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemEntityTypeSettingTypeKey).getDefaultValue());
+                
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
         loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
 
@@ -975,8 +995,11 @@ public class ItemDomainInventoryController extends ItemController {
         displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displaySerialNumber = settingEntity.getSettingValueAsBoolean(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
+        displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
+        displayItemEntityTypes = settingEntity.getSettingValueAsBoolean(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
 
         displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         loadRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
@@ -1057,8 +1080,11 @@ public class ItemDomainInventoryController extends ItemController {
         settingEntity.setSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
 
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         settingEntity.setSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
+        settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
+        settingEntity.setSettingValue(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
 
         settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         settingEntity.setSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
@@ -1260,6 +1286,11 @@ public class ItemDomainInventoryController extends ItemController {
         }
         
         return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemEntityTypes() {
+        return true; 
     }
 
 }
