@@ -88,6 +88,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
+    protected Boolean displayItemEntityTypes = null; 
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected List<String> displayListDataModelScopeSelectionList = null;
@@ -270,6 +271,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getItemIdentifier2Title();
 
     public abstract boolean getEntityDisplayItemProject();
+    
+    public abstract boolean getEntityDisplayItemEntityTypes();
 
     public abstract String getItemsDerivedFromItemTitle();
 
@@ -1486,6 +1489,17 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setDisplayItemProject(Boolean displayItemProject) {
         this.displayItemProject = displayItemProject;
+    }
+
+    public Boolean getDisplayItemEntityTypes() {
+        if (displayItemEntityTypes == null) {
+            displayItemEntityTypes = getEntityDisplayItemEntityTypes(); 
+        }
+        return displayItemEntityTypes;
+    }
+
+    public void setDisplayItemEntityTypes(Boolean displayItemEntityTypes) {
+        this.displayItemEntityTypes = displayItemEntityTypes;
     }
 
     public Boolean getDisplayItemIdentifier1() {
