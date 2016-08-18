@@ -6,17 +6,12 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="../../item/private/templates/itemListCustomizeDisplayDialogTemplate.xhtml">
 
-    <ui:define name="domainEntitySpecificColumns">
-
-        <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{itemDomainInventoryController.displayQrId}"/>  
-        <h:outputLabel for="componentInstanceDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
-
-        <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{itemDomainInventoryController.displaySerialNumber}"/>  
-        <h:outputLabel for="componentInstanceDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
-
-        <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventoryController.displayLocationDetails}"/>  
-        <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
+    <ui:define name="additionalItemSpecificColumns">
+        <p:selectBooleanCheckbox id="componentInstanceDisplayLocation" value="#{itemDomainInventoryController.displayLocation}"/>  
+        <h:outputLabel for="componentInstanceDisplayLocation" value="Display Location " styleClass="dialogDataLabel"/>        
         
+        <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventoryController.displayLocationDetails}"/>  
+        <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>        
     </ui:define>
     
     <ui:define name="domainEntitySpecificOthers">
