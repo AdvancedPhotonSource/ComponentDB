@@ -1807,6 +1807,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected String itemDomainToString(Item item) {
         return item.toString();
     }
+    
+    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
+        return getEntityDisplayDerivedFromItem(); 
+    }
 
     protected void checkItemUniqueness(Item item) throws CdbException {
         String name = item.getName();

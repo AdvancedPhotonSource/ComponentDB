@@ -1253,4 +1253,13 @@ public class ItemDomainInventoryController extends ItemController {
         return true;
     }
 
+    @Override
+    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
+        if (getCurrent() != null) {
+            return !getCurrent().isIsCloned(); 
+        }
+        
+        return false;
+    }
+
 }
