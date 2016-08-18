@@ -162,5 +162,10 @@ public class ItemDomainLocationController extends ItemController {
     public boolean getEntityDisplayItemProject() {
         return false; 
     }
+
+    @Override
+    public boolean getEntityDisplayItemEntityTypes() {
+        return false; 
+    }
     
 }

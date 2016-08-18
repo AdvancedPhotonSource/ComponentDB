@@ -182,5 +182,10 @@ public class ItemGenericViewController extends ItemController {
     public boolean getEntityDisplayItemProject() {
         return true; 
     }
+
+    @Override
+    public boolean getEntityDisplayItemEntityTypes() {
+        return true;
+    }
     
 }
