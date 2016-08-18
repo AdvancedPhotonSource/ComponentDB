@@ -27,20 +27,5 @@
             <h:outputText value="* Disabling this setting may improve overall performance of the list" />
         </p:panel>
     </ui:define>
-
-    <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
-
-    <p:dialog id="#{entityTypeName}ListCustomizeDisplayDialog"
-              widgetVar="#{entityTypeName}ListCustomizeDisplayDialogWidget" 
-              header="Customize #{entityTypeDisplayName} List Display" 
-              styleClass="dialog">
-        <div class="dialog">
-
-
-            <f:facet name="footer" class="transparentPanel">
-                
-            </f:facet>
-        </div>
-    </p:dialog>
-
+    
 </ui:composition>
