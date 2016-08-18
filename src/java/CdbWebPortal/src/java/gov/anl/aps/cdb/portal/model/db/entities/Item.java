@@ -212,6 +212,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Override
     public Item clone() throws CloneNotSupportedException {
         Item clonedItem = new Item(); 
+        clonedItem.isCloned = true;
         
         clonedItem.setDomain(this.getDomain());
         clonedItem.entityTypeList = this.getEntityTypeList(); 
@@ -219,7 +220,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         clonedItem.setItemTypeList(this.getItemTypeList());
         clonedItem.setDerivedFromItem(this.getDerivedFromItem());    
         clonedItem.setItemProjectList(this.getItemProjectList());
-        
+                       
         clonedItem.setId(null);
         clonedItem.setName("(Cloned) " + this.getName());
         clonedItem.setItemIdentifier1(this.getItemIdentifier1());
@@ -819,6 +820,14 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Override
     public void setPropertyValue5(String propertyValue5) {
         getSelfElement().setPropertyValueByIndex(5, propertyValue5);
+    }
+
+    public boolean isIsCloned() {
+        return isCloned;
+    }
+
+    public void setIsCloned(boolean isCloned) {
+        this.isCloned = isCloned;
     }
 
     @Override
