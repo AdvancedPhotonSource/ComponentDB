@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/db/entities/CdbEntity.java $
+ *   $Date: 2016-03-04 15:24:44 -0600 (Fri, 04 Mar 2016) $
+ *   $Revision: 1155 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 

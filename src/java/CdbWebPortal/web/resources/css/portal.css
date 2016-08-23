@@ -7,6 +7,14 @@ html, body {
     height: 100%;
 }
 
+.apsStorageRingBackground {
+    background-image: url("../images/ApsStorageRing.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+    background-size: 20%;
+}
+
 a:link, a:visited {
     color: #4e80b6;
     font-weight: bold;
@@ -103,9 +111,13 @@ footer {
     background: #6da5d8;
 }
 
-.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
-    background-color: #f2f4f7;
-    color: #4e80b6;  
+.activeMenuItem {
+    background: #76bff0 !important;
+    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
 }
 
 .menuContent {
@@ -144,6 +156,19 @@ footer {
 
 .mainMenuBarItemImportant {
     margin-top: 1px;
+    margin-right: 5px;
+    padding: 6px !important;
+    border-radius: 6px;
+    background: #acd6f2;
+    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
+}
+
+.mainMenuBarItemImportant .ui-menuitem-text {
+    color: #5e5e5e; 
 }
 
 .menuBarSupportingItems {
@@ -176,6 +201,7 @@ footer {
 
 .domainEntityLeftContent {
     min-width: 500px;
+    width: 500px;
 }
 
 .domainEntityRightContent {
@@ -337,7 +363,7 @@ tr:hover .actionLink {
 }
 
 .dialog {
-    background: #6da5d8;
+    background: #6da5d8;    
     box-shadow: 0px 3px 5px #d5d5d5;    
     vertical-align: central;
     text-align: center;
@@ -366,6 +392,10 @@ tr:hover .actionLink {
     margin: 0;
     margin-left: auto;
     margin-right: auto;
+}
+
+.borderAbove {
+    border-top: 1px solid gray;
 }
 
 .entityListPageHelpFragmentPanel {
@@ -407,7 +437,7 @@ tr:hover .actionLink {
 }
 
 .invisibleDialogText {
-    color: #6da5d8;
+    color: rgba(255,255,255, 0.0);
 }
 
 .dialogDataLabel {
@@ -424,11 +454,27 @@ input, textarea {
     width: 300px;
 }
 
+.ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
+    width: 276px;
+}
+
+.ui-selectonemenu .ui-selectonemenu-label {
+    width: 272px;
+}
+
+.ui-autocomplete .ui-inputfield {
+    width: 268px;
+}
+
 .loginInput input {
     width: 200px;
 }
 
 .cellSelect {
+    width: 150px;
+}
+
+.cellSelect .ui-selectonemenu-label {
     width: 150px;
 }
 
@@ -561,55 +607,6 @@ h1 {
     border-style: solid;
 }
 
-.entityHelpButtonComponent {
-    background: #ebf4fa;
-    border-color: #D1E1E1;
-}
-
-.entityHelpButtonComponentInstance {
-    background: #d5ebf5;
-    border-color: #CFDFDF;
-}
-
-.entityHelpButtonDesign {
-    background: #f1efe2;
-    border-color: #E2DED2;
-}
-
-.entityHelpButtonDesignInstance {
-    background: #efeab9;
-    border-color: #D2CDC2;
-}
-
-
-.entityHelpButtonImageContainer {
-    width: 60%;
-    margin: auto;
-}
-
-.entityHelpButtonContainer {
-    text-align: center; 
-    display: flex; 
-    border-radius:  10px;
-
-    /* Entity Gradients */
-    /* Old browsers */
-    /*background: #f2f4f7; */
-    /* FF3.6-15 */
-    /*ackground: -moz-linear-gradient(left, #ebf4fa 0%, #ebf4fa 20%, #d5ebf5 26%, #d5ebf5 46%, #f1efe2 53%, #f1efe2 73%, #efeab9 80%, #efeab9 100%); */
-    /* Chrome10-25,Safari5.1-6 */
-    /*background: -webkit-linear-gradient(left, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%);*/
-    /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    /*background: linear-gradient(right, #ebf4fa 0%,#ebf4fa 20%,#d5ebf5 26%,#d5ebf5 46%,#f1efe2 53%,#f1efe2 73%,#efeab9 80%,#efeab9 100%); */
-}
-.entityHelpButtonCommandLink {
-    text-decoration: none; 
-}
-
-.entityHelpButtonCommandLink:hover {
-    text-decoration: underline;
-}
-
 .propertyValueImageGalleria {
     text-align: center;
 }
@@ -637,18 +634,21 @@ h2 {
     background: #f2f4f7;    
 }
 
+.transparent-tree {
+    background: none;
+    border: none;
+}
+
 .ui-panel {
     border: 0px; 
     background: #f2f4f7; 
 }
 
 .ui-panelgrid tr, .ui-panelgrid td {
-    background: #f2f4f7;
-    border: none;
-    font-weight: bold;
+    border: none;    
 }
 
-.ui-menu, .ui-menuitem, .ui-menu .ui-menu-child {
+.mainMenuBar .ui-menu, .mainMenuBar .ui-menuitem, .mainMenuBar .ui-menu .ui-menu-child {
     background: #6da5d8;
     color: white;
     margin-top: 0px;
@@ -669,15 +669,16 @@ h2 {
 
 .ui-icon {
     display: inline-block;
+    opacity: 0.75;
+}
+
+.ui-icon:hover {
+    opacity: 1; 
 }
 
 .ui-dialog-footer, .ui-dialog-buttonpane, .ui-dialog .ui-dialog-buttonpane {
     background: #6da5d8;
     text-align: center !important;
-}
-
-.ui-confirm-dialog-message {
-    color: white;
 }
 
 .ui-column-dnd-bottom {
@@ -772,7 +773,9 @@ h2 {
 }
 
 .ui-panelgrid .ui-panelgrid-cell {
+    background: #f2f4f7;
     border-style: none;
+    font-weight: bold;
 }
 
 .ui-datatable .ui-sortable-column {
@@ -793,4 +796,179 @@ h2 {
 .newItemInRow {
     background: #99e699;
     height: 80px;
+}
+
+.createWizardPanel {
+    border: 1px !important; 
+    border-style: solid !important;
+}
+
+.catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
+    border: 1px solid !important; 
+    border-color: black;         
+}
+
+.panelGridHeaderColumn {
+    background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0% !important;
+    border: gray !important; 
+    border-style: solid !important; 
+    border-width: 1px !important; 
+    font-weight: bold !important;
+}
+
+.panelGridBorderedCell {
+    border: gray !important; 
+    border-style: solid !important; 
+    border-width: 1px !important; 
+}
+
+.viewTransparentBackground {
+    background-color: rgba(230, 245, 255, 0.85);
+}
+
+.viewColors h1 {
+    color: #4E80B6; 
+}
+
+.transparentPanel {
+    background: transparent; 
+}
+
+.triangle-isosceles {
+    position:relative;
+    padding:9px;
+    /*margin:1em 0 1em;*/
+    margin: 0px;
+    color:#000;
+    /* css3 */
+    background-color: rgba(160, 160, 160, .2);
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+    display: inline-block;
+}
+
+.triangle-isosceles.left {
+    margin-left: 10px;
+}
+
+.triangle-isosceles::after {
+    content:"";
+    position:absolute;
+    bottom:-15px; /* value = - border-top-width - border-bottom-width */
+    left:50px; /* controls horizontal position */
+    border-width:15px 15px 0; /* vary these values to change the angle of the vertex */
+    border-style:solid;
+    border-color:#f3961c transparent;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
+}
+
+.triangle-isosceles.left:after {
+    top:50%; /* controls vertical position */
+    left:-20px; /* value = - border-left-width - border-right-width */
+    bottom:auto;
+    border-width:4px 20px 3px 0;
+    border-color:transparent rgba(160, 160, 160, .2);
+}
+
+.wideListBox .ui-selectlistbox-listcontainer {
+    width: 200px !important; 
+
+}
+
+.wideListBox {
+    width: 200px;
+}
+
+.topAlignedDataCell {
+    vertical-align: top;
+}
+
+.filterViewDataTableColumn {    
+    width: 100%;
+}
+
+.contentSeperatorBorder {
+    border-right: 2px dashed !important;
+}
+
+.clckableLabel {
+    text-decoration: underline; 
+}
+
+.clckableLabel:hover {
+    color: #EEE;
+}
+
+.viewTransparentBackgroundDialog  {
+    background-color: rgba(242, 250, 255, 0.93) !important;
+    border-radius: 5px 5px 10px 10px;
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.viewTransparentBackgroundDialog-alert {
+    background-color: rgba(255, 180, 180, 0.93) !important;
+}
+
+.viewTransparentBackgroundDialog .ui-panelgrid tr, 
+.viewTransparentBackgroundDialog .ui-panelgrid td,
+.viewTransparentBackgroundDialog .ui-accordion .ui-accordion-content,
+.viewTransparentBackgroundDialog .ui-dialog-footer,
+.viewTransparentBackgroundDialog .ui-panel {
+    background: transparent !important;
+}
+
+.favoriteOff {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star_no.png) no-repeat;    
+    opacity: 0.75;
+}
+
+.favoriteOff:hover {
+    opacity: 1.0;
+}
+
+
+.favoriteOn {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star.png) no-repeat;    
+}
+
+.favoriteOn:hover {
+    opacity: 0.75; 
+}
+
+.splitButtonMenuItem .ui-menuitem-text{
+    color: rgb(80, 80, 76); 
+}
+
+.centeredContent {
+    display: flex;
+    margin: 0px;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.cdbWizard .ui-wizard-step-titles .ui-state-default {
+    background: #eaf1fa;
+}
+
+.cdbWizard .ui-wizard-step-titles .ui-state-highlight {
+    background: #84afe1;
+}
+
+.cdbWizard .ui-state-highlight .ui-menuitem-link {
+    color: white;
 }

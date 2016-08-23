@@ -1,15 +1,12 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -26,10 +23,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Attachment entity class.
+ *
+ * @author djarosz
  */
 @Entity
-@Table(name = "attachment")
+@Table(name="attachment")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Attachment.findAll", query = "SELECT a FROM Attachment a"),
@@ -37,8 +35,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Attachment.findByName", query = "SELECT a FROM Attachment a WHERE a.name = :name"),
     @NamedQuery(name = "Attachment.findByTag", query = "SELECT a FROM Attachment a WHERE a.tag = :tag"),
     @NamedQuery(name = "Attachment.findByDescription", query = "SELECT a FROM Attachment a WHERE a.description = :description")})
-public class Attachment extends CdbEntity {
+public class Attachment implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -53,7 +52,7 @@ public class Attachment extends CdbEntity {
     private String description;
     @ManyToMany(mappedBy = "attachmentList")
     private List<Log> logList;
-
+    
     private transient String filePath = null;
 
     public Attachment() {
@@ -63,12 +62,11 @@ public class Attachment extends CdbEntity {
         this.id = id;
     }
 
-    public Attachment(Integer id, String path) {
+    public Attachment(Integer id, String name) {
         this.id = id;
-        this.name = path;
+        this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -124,18 +122,22 @@ public class Attachment extends CdbEntity {
             return false;
         }
         Attachment other = (Attachment) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "Attachment[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.Attachment[ id=" + id + " ]";
     }
-
-    public String getFilePath() {
+    
+     public String getFilePath() {
         if (filePath == null) {
             filePath = StorageUtility.getApplicationLogAttachmentPath(name);
         }
         return filePath;
     }
+    
 }

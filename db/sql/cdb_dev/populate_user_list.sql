@@ -1,0 +1,4 @@
+LOCK TABLES `user_list` WRITE;
+/*!40000 ALTER TABLE `user_list` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_list` ENABLE KEYS */;
+UNLOCK TABLES;

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:param name="itemDerivedController" value="#{itemDerivedController != null ? itemDerivedController : entityController}" />
+    <ui:param name="childEntityTypeName" value="#{itemDerivedController.entityTypeName}ItemDerived"/>
+
+    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
+    
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="childEntityController" value="#{itemDerivedController}"/>
+        <ui:param name="childEntityTypeName" value="#{childEntityTypeName}"/>
+        <ui:param name="addActionController" value="#{itemDerivedController}"/>
+        <ui:param name="addAction" value="prepareAddItemDerivedFromItem"/>
+        <ui:param name="addActionParameter" value="#{entityController.current}"/>
+        <ui:param name="addActionOnComplete" value=""/>
+        <ui:param name="saveAction" value="saveItemDerivedFromItemList"/>
+        <ui:param name="displayAddButton" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
+    </ui:include>  
+
+    <ui:include src="itemDerivedEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+
+    <ui:include src="itemDerivedEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+
+</ui:composition>
+
+

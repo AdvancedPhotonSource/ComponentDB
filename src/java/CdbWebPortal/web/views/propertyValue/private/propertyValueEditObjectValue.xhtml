@@ -66,10 +66,6 @@
 
     <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}">
         <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
-                                   == "componentDesignPropertyValueEditPanel"}' styleClass="longCellInput">
-            <ui:include src="../../componentDesignProperty/private/componentDesignPropertyValueEditPanel.xhtml"/>
-        </p:outputPanel>
-        <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
                                    == "travelerTemplatePropertyValueEditPanel"}' styleClass="longCellInput">
             <ui:include src="../../travelerProperty/private/travelerTemplatePropertyValueEditPanel.xhtml"/>
         </p:outputPanel>

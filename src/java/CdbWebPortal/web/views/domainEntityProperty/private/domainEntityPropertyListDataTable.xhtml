@@ -9,19 +9,22 @@
     <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion' and viewMode != 'inViewRowExpansion'}" />
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
+    <ui:param name="propertyValueDataList" value="#{entityObject.propertyValueList}" />
 
     <p:dataTable id="#{entityTypeName}PropertyListDataTable" 
                  widgetVar="#{entityTypeName}PropertyListDataTableWidget"
                  var="propertyValueObject" 
                  reflow="true"
-                 value="#{entityObject.propertyValueList}" 
+                 value="#{propertyValueDataList}" 
                  filteredValue="#{entityController.filteredPropertyValueList}"
                  rows="#{propertyValueController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No #{entityTypeDisplayName} properties found.">
 
-        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml"/>
+        <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml">
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(propertyValueDataList, 10)}" />
+        </ui:include>
 
         <p:column headerText="Actions" exportable="false" rendered="#{renderActionColumn}">
             <div>

@@ -9,42 +9,41 @@
     <p:dialog id="#{entityTypeName}LogAddDialog"
               widgetVar="#{entityTypeName}LogAddDialogWidget" 
               header="Add Log Entry" 
-              styleClass="dialog"
+              styleClass="viewTransparentBackgroundDialog"
               closable="false"
               modal="true">
 
         <ui:param name="logObject" value="#{entityController.newLogEdit}" />
-        <div class="dialog">
-            <p:panelGrid columns="2" rendered="#{logObject != null}">
 
-                <h:outputLabel for="logEntryValue" value="Log Entry" styleClass="entityDataEmphasizedLabel"/>
-                <h:inputTextarea id="logEntryValue" value="#{logObject.text}"/>
+        <p:panelGrid columns="2" rendered="#{logObject != null}">
 
-                <h:outputLabel for="logTopicValue" value="Log Topic" styleClass="entityDataEmphasizedLabel"/>
-                <p:selectOneMenu id="logTopicValue" value="#{logObject.logTopic}" styleClass="entityDataText">
-                    <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                    <f:selectItems var="topic" value="#{logTopicController.availableItems}" itemLabel="#{topic.name}" itemValue="#{topic}"/>
-                </p:selectOneMenu>
+            <h:outputLabel for="logEntryValue" value="Log Entry" styleClass="entityDataEmphasizedLabel"/>
+            <h:inputTextarea id="logEntryValue" value="#{logObject.text}"/>
 
-                <h:outputLabel for="logAttachmentsValue" value="Attachments" styleClass="entityDataEmphasizedLabel"/>
-                <p:outputPanel>
-                    <ui:include src="../../log/private/logAttachmentFileUpload.xhtml">
-                        <ui:param name="updateTarget" value="attachementsValueList" />
-                    </ui:include>
-                    <p:remoteCommand autoRun="true"
-                                     action="#{logAttachmentUploadBean.setLogEntry(logObject)}"/>
-                    <p:outputPanel id="attachementsValueList">
-                        <ui:repeat var="attachment" value="#{logObject.attachmentList}">
-                            <h:outputLink value="#{attachment.filePath}" target="_page_#{attachment.name}" title="#{attachment.name}" styleClass="entityDataIcon">
-                                <h:graphicImage alt="Attachment" library="images" name="attachment.ico"/>
-                            </h:outputLink>   
-                        </ui:repeat>
-                    </p:outputPanel>
+            <h:outputLabel for="logTopicValue" value="Log Topic" styleClass="entityDataEmphasizedLabel"/>
+            <p:selectOneMenu id="logTopicValue" value="#{logObject.logTopic}" styleClass="entityDataText">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="topic" value="#{logTopicController.availableItems}" itemLabel="#{topic.name}" itemValue="#{topic}"/>
+            </p:selectOneMenu>
+
+            <h:outputLabel for="logAttachmentsValue" value="Attachments" styleClass="entityDataEmphasizedLabel"/>
+            <p:outputPanel id="logAttachmentsValue">
+                <ui:include src="../../log/private/logAttachmentFileUpload.xhtml">
+                    <ui:param name="updateTarget" value="attachementsValueList" />
+                </ui:include>
+                <p:remoteCommand autoRun="true"
+                                 action="#{logAttachmentUploadBean.setLogEntry(logObject)}"/>
+                <p:outputPanel id="attachementsValueList">
+                    <ui:repeat var="attachment" value="#{logObject.attachmentList}">
+                        <h:outputLink value="#{attachment.filePath}" target="_page_#{attachment.name}" title="#{attachment.name}" styleClass="entityDataIcon">
+                            <h:graphicImage alt="Attachment" library="images" name="attachment.ico"/>
+                        </h:outputLink>   
+                    </ui:repeat>
                 </p:outputPanel>
+            </p:outputPanel>
 
 
-            </p:panelGrid>
-        </div>
+        </p:panelGrid>
         <f:facet name="footer" class="dialog">
             <p:outputPanel rendered="#{logObject != null}">
                 <p:commandButton value="Save" alt="Save" 

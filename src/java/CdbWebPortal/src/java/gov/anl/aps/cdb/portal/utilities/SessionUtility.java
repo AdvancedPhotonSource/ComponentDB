@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/SessionUtility.java $
+ *   $Date: 2016-01-08 14:26:41 -0600 (Fri, 08 Jan 2016) $
+ *   $Revision: 907 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.portal.utilities;
 
@@ -159,6 +159,18 @@ public class SessionUtility {
     public static Object getRole() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         return sessionMap.get(ROLE_KEY);
+    }
+    
+    /**
+     * Finds a named bean for local use within the current bean.
+     * 
+     * @param beanName Name of the named bean needed for further execution. 
+     * @return Named bean that has been requested. 
+     */
+    @SuppressWarnings("unchecked")
+    public static Object findBean(String beanName) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        return (Object) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
     }
 
 }

@@ -5,9 +5,12 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
 
     <p:column sortBy="#{logObject.id}" headerText="Id" 
-              rendered="#{logController.displayId}">
+              rendered="#{logController.displayId}"
+              filterable="#{filterable}">
         <h:outputText value="#{logObject.id}"/>
     </p:column>
 
@@ -15,6 +18,7 @@
               filterBy="#{logObject.enteredOnDateTime}" filterMatchMode="contains"
               filterValue="#{logController.filterByEnteredOnDateTime}"
               filterStyle="width:60px"
+              filterable="#{filterable}"
               style="width:85px"
               rendered="#{logController.displayEnteredOnDateTime}">
         <h:outputText value="#{logObject.shortDisplayEnteredOnDateTime}"/>
@@ -24,6 +28,7 @@
               filterBy="#{logObject.enteredByUser}" filterMatchMode="contains"
               filterValue="#{logController.filterByEnteredByUser}"
               filterStyle="width:40px"
+              filterable="#{filterable}"
               style="width:50px"
               rendered="#{logController.displayEnteredByUser}">
         <h:outputText value="#{logObject.enteredByUser.username}"/>
@@ -34,6 +39,7 @@
               filterOptions="#{logTopicController.availableItemsForSelectOne}"
               filterValue="#{logController.filterByTopic}"
               filterStyle="width:40px"
+              filterable="#{filterable}"
               style="width:50px"
               rendered="#{logController.displayTopic}">
         <p:cellEditor>
@@ -53,6 +59,7 @@
               filterBy="#{logObject.text}" filterMatchMode="contains"
               filterValue="#{logController.filterByText}"
               filterStyle="width:80px"
+              filterable="#{filterable}"
               style="width:200px">
         <p:cellEditor>
             <f:facet name="output">
@@ -67,7 +74,8 @@
 
     <p:column style="width:35px"
               headerText="Attachments"
-              rendered="#{logController.displayAttachments}">
+              rendered="#{logController.displayAttachments}"
+              filterable="#{filterable}">
             <f:facet name="header">
                 <h:graphicImage alt="Attachments" library="images" name="attachment.ico"/>
             </f:facet>

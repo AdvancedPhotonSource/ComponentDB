@@ -8,6 +8,13 @@
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
 
     <div class="actionButton">
+        
+        <ui:include src="reusedParts/childListAddButton.xhtml" >
+            <ui:param name="viewName" value="TreeTable" />
+        </ui:include>
+        <ui:include src="reusedParts/childListEditButton.xhtml" >
+            <ui:param name="viewName" value="TreeTable" />
+        </ui:include>
 
         <p:commandButton id="#{childEntityTypeName}ListTreeTableCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
             <p:tooltip for="#{childEntityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize view."/>

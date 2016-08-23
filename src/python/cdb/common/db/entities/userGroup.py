@@ -5,6 +5,8 @@ from cdb.common.objects import userGroup
 
 class UserGroup(CdbDbEntity):
 
+    entityDisplayName = 'user group'
+
     cdbObjectClass = userGroup.UserGroup
 
     def __init__(self, **kwargs):

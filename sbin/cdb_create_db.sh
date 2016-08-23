@@ -6,7 +6,7 @@
 #
 # Usage:
 #
-# $0 [CDB_DB_NAME [CDB_DB_SCRIPTS_DIR]]
+# $0 [CDB_DB_NAME [CDB_DB_SCRIPTS_DIR] [ONLY_TABLES_BIT 0/1]]
 #
 
 CDB_DB_NAME=cdb
@@ -37,6 +37,8 @@ CDB_ETC_DIR=$CDB_INSTALL_DIR/etc
 # Use first argument as db name, if provided
 if [ ! -z "$1" ]; then
     CDB_DB_NAME=$1
+    CDB_DB_USER=$1
+    CDB_DB_PASSWORD=$1
 fi
 echo "Using DB name: $CDB_DB_NAME"
 
@@ -55,6 +57,9 @@ CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/$CDB_DB_NAME
 CDB_DB_SCRIPTS_DIR=${CDB_DB_SCRIPTS_DIR:=$CDB_SQL_DIR}
 if [ ! -z "$2" ]; then
     CDB_DB_SCRIPTS_DIR=$2
+    if [ -f "$2/create_cdb_tables.sql" ]; then
+	CDB_SQL_DIR=$2
+    fi
 fi
 if [ ! -d $CDB_DB_SCRIPTS_DIR ]; then
     echo "DB Scripts directory $CDB_DB_SCRIPTS_DIR does not exist."
@@ -124,7 +129,11 @@ execute() {
     else
         echo "Executing: $@"
     fi
-    eval "$@"
+    if eval "$@"; then
+	echo 'Success'
+    else
+	exit 1
+    fi
 }
 
 # recreate db
@@ -151,58 +160,73 @@ passwordFile=$CDB_ETC_DIR/$CDB_DB_NAME.db.passwd
 echo $CDB_DB_PASSWORD > $passwordFile
 chmod 600 $passwordFile
 
+if [ "$3" == "1" ]; then
+    exit 0
+fi
+
 # populate db
 cd $CURRENT_DIR && cd $CDB_DB_SCRIPTS_DIR
 CDB_DB_TABLES="\
-    setting_type \
     user_info \
     user_group \
     user_user_group \
+    setting_type \
+    user_group_setting \
     user_setting \
     entity_info \
-    source \
-    property_type_category \
-    property_type_handler \
-    property_type \
-    allowed_property_value \
-    property_value \
-    property_value_history \
-    location_type \
-    location \
-    location_link \
-    resource_type_category \
-    resource_type \
-    connector_type_category \
-    connector_type \
-    component_type_category \
-    component_type \
-    resource_type \
+    role_type \
+    user_role \
+    list \
+    user_list \
+    user_group_list \
+    attachment \
     log_topic \
     log \
-    attachment \
     log_attachment \
-    component \
-    component_source \
-    component_property \
-    component_connector \
-    component_resource \
-    component_log \
-    component_instance \
-    component_instance_property \
-    component_instance_log \
-    component_instance_location_history \
-    component_connector \
-    assembly_component \
-    assembly_component_connection \
-    design \
-    design_property \
-    design_link \
-    design_log \
-    design_element \
-    design_element_property \
-    design_element_link \
-    design_element_log \
-    design_element_connection \
+    log_level \
+    system_log \
+    domain_handler \
+    domain \
+    item \
+    item_element \
+    item_element_log \
+    item_element_list \
+    item_category \
+    item_item_category \
+    item_type \
+    item_item_type \
+    item_category_type \
+    item_project \
+    item_item_project \
+    entity_type \
+    item_entity_type \
+    allowed_child_entity_type \
+    source \
+    item_source \
+    resource_type_category \
+    resource_type \
+    connector_type \
+    connector \
+    item_connector \
+    item_resource \
+    relationship_type_handler \
+    relationship_type \
+    item_element_relationship \
+    item_element_relationship_history \
+    property_type_handler \
+    property_type_category \
+    property_type \
+    allowed_property_value \
+    allowed_entity_type \
+    allowed_domain_handler \
+    allowed_domain_handler_entity_type \
+    property_value \
+    property_metadata \
+    property_value_history \
+    item_connector_property \
+    item_element_relationship_property \
+    item_element_property \
+    connector_property \
 "
 for dbTable in $CDB_DB_TABLES; do
     dbFile=populate_$dbTable.sql

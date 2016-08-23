@@ -1,16 +1,13 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -30,25 +27,29 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Source entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "source")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Source.findAll", query = "SELECT s FROM Source s ORDER BY s.name"),
+    @NamedQuery(name = "Source.findAll", query = "SELECT s FROM Source s"),
     @NamedQuery(name = "Source.findById", query = "SELECT s FROM Source s WHERE s.id = :id"),
     @NamedQuery(name = "Source.findByName", query = "SELECT s FROM Source s WHERE s.name = :name"),
-    @NamedQuery(name = "Source.findByDescription", query = "SELECT s FROM Source s WHERE s.description = :description")})
-public class Source extends CdbEntity {
+    @NamedQuery(name = "Source.findByDescription", query = "SELECT s FROM Source s WHERE s.description = :description"),
+    @NamedQuery(name = "Source.findByContactInfo", query = "SELECT s FROM Source s WHERE s.contactInfo = :contactInfo"),
+    @NamedQuery(name = "Source.findByUrl", query = "SELECT s FROM Source s WHERE s.url = :url")})
+public class Source extends CdbEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(max = 64)
+    @Size(min = 1, max = 64)
     private String name;
     @Size(max = 256)
     private String description;
@@ -57,8 +58,8 @@ public class Source extends CdbEntity {
     private String contactInfo;
     @Size(max = 256)
     private String url;
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "source")
-    private List<ComponentSource> componentSourceList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
+    private List<ItemSource> itemSourceList;
 
     private transient String targetUrl;
     private transient String displayUrl;
@@ -75,7 +76,6 @@ public class Source extends CdbEntity {
         this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -112,6 +112,21 @@ public class Source extends CdbEntity {
         return url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+        this.targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
+        this.displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
+    }
+
+    @XmlTransient
+    public List<ItemSource> getItemSourceList() {
+        return itemSourceList;
+    }
+
+    public void setItemSourceList(List<ItemSource> itemSourceList) {
+        this.itemSourceList = itemSourceList;
+    }
+
     public String getTargetUrl() {
         if (targetUrl == null && url != null) {
             targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
@@ -125,20 +140,13 @@ public class Source extends CdbEntity {
         }
         return displayUrl;
     }
-
-    public void setUrl(String url) {
-        this.url = url;
-        this.targetUrl = HttpLinkUtility.prepareHttpLinkTargetValue(url);
-        this.displayUrl = HttpLinkUtility.prepareHttpLinkDisplayValue(url);
-    }
-
-    @XmlTransient
-    public List<ComponentSource> getComponentSourceList() {
-        return componentSourceList;
-    }
-
-    public void setComponentSourceList(List<ComponentSource> componentSourceList) {
-        this.componentSourceList = componentSourceList;
+    
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
     }
 
     @Override
@@ -155,19 +163,15 @@ public class Source extends CdbEntity {
             return false;
         }
         Source other = (Source) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return name;
+        return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
     }
 
-    @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, name);
-        searchResult.doesValueContainPattern("name", name, searchPattern);
-        searchResult.doesValueContainPattern("description", description, searchPattern);
-        return searchResult;
-    }
 }

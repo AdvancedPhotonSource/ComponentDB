@@ -9,13 +9,15 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,20 +36,19 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class SearchController implements Serializable {
 
+    private final String SETTING_CONTROLLER_NAME = "settingController";
+
     /* 
      * Controller specific settings
      */
     private static final String CaseInsensitiveSettingTypeKey = "Search.CaseInsensitive";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Search.Display.NumberOfItemsPerPage";
-    private static final String DisplayAssemblyComponentsSettingTypeKey = "Search.Display.AssemblyComponents";
-    private static final String DisplayComponentsSettingTypeKey = "Search.Display.Components";
-    private static final String DisplayComponentInstancesSettingTypeKey = "Search.Display.ComponentInstances";
-    private static final String DisplayComponentTypesSettingTypeKey = "Search.Display.ComponentTypes";
-    private static final String DisplayComponentTypeCategoriesSettingTypeKey = "Search.Display.ComponentTypeCategories";
-    private static final String DisplayDesignsSettingTypeKey = "Search.Display.Designs";
-    private static final String DisplayDesignElementsSettingTypeKey = "Search.Display.DesignElements";
-    private static final String DisplayLocationsSettingTypeKey = "Search.Display.Locations";
-    private static final String DisplayLocationTypesSettingTypeKey = "Search.Display.LocationTypes";
+    private static final String DisplayItemTypesSettingTypeKey = "Search.Display.ItemTypes";
+    private static final String DisplayItemCategoriesSettingTypeKey = "Search.Display.ItemCategories";
+    private static final String DisplayItemElementsSettingTypeKey = "Search.Display.ItemElements";
+    private static final String DisplayLocationsSettingTypeKey = "Search.Display.ItemDomainLocation";
+    private static final String DisplayCatalogItemsSettingTypeKey = "Search.Display.ItemDomainCatalog";
+    private static final String DisplayInventoryItemsSettingTypeKey = "Search.Display.ItemDomainInventory";
     private static final String DisplayPropertyTypesSettingTypeKey = "Search.Display.PropertyTypes";
     private static final String DisplayPropertyTypeCategoriesSettingTypeKey = "Search.Display.PropertyTypeCategories";
     private static final String DisplaySourcesSettingTypeKey = "Search.Display.Sources";
@@ -55,7 +56,7 @@ public class SearchController implements Serializable {
     private static final String DisplayUserGroupsSettingTypeKey = "Search.Display.UserGroups";
 
     @EJB
-    private SettingTypeDbFacade settingTypeFacade;
+    private SettingTypeFacade settingTypeFacade;
 
     private static final Logger logger = Logger.getLogger(SearchController.class.getName());
     private String searchString = null;
@@ -63,27 +64,27 @@ public class SearchController implements Serializable {
 
     protected Integer displayNumberOfItemsPerPage = null;
 
-    protected Boolean displayAssemblyComponents = null;
-    protected Boolean displayComponents = null;
-    protected Boolean displayComponentInstances = null;
-    protected Boolean displayComponentTypes = null;
-    protected Boolean displayComponentTypeCategories = null;
-    protected Boolean displayDesigns = null;
-    protected Boolean displayDesignElements = null;
-    protected Boolean displayLocations = null;
-    protected Boolean displayLocationTypes = null;
+    protected Boolean displayCatalogItems = null;
+    protected Boolean displayInventoryItems = null;
+    protected Boolean displayLocationItems = null;
+    protected Boolean displayItemTypes = null;
+    protected Boolean displayItemCategories = null;
+    protected Boolean displayItemElements = null;
     protected Boolean displayPropertyTypes = null;
     protected Boolean displayPropertyTypeCategories = null;
     protected Boolean displaySources = null;
     protected Boolean displayUsers = null;
     protected Boolean displayUserGroups = null;
-    
-    private Boolean performSearch = false; 
+
+    private Boolean performSearch = false;
 
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
 
     private Boolean settingsInitializedFromDefaults = false;
+
+    private SettingController settingController = null;
+    protected Date settingsTimestamp = null;
 
     /**
      * Constructor.
@@ -98,12 +99,12 @@ public class SearchController implements Serializable {
 
     public void search() {
         if (searchString != null && !searchString.isEmpty()) {
-            performSearch = true; 
+            performSearch = true;
             updateSettings();
-        } 
+        }
     }
-    
-    public void completeSearch(){
+
+    public void completeSearch() {
         if (searchString == null || searchString.isEmpty()) {
             SessionUtility.addWarningMessage("Warning", "Search string is empty.");
         } else {
@@ -112,16 +113,16 @@ public class SearchController implements Serializable {
                 FacesContext.getCurrentInstance().getExternalContext().redirect("search");
             } catch (IOException ex) {
                 logger.debug(ex);
-            } 
+            }
         }
     }
 
     public boolean isDisplayResults() {
         return (searchString != null && !searchString.isEmpty()) && !performSearch;
     }
-    
+
     public boolean isDisplayLoadingScreen() {
-        return performSearch; 
+        return performSearch;
     }
 
     public boolean isPerformSearch() {
@@ -149,21 +150,38 @@ public class SearchController implements Serializable {
         return settingTypeMap;
     }
 
-    public void updateSettings() {
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        boolean settingsUpdated = false;
-        if (sessionUser != null) {
-            List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-            if (userSettingList != null && !userSettingList.isEmpty()) {
-                updateSettingsFromSessionUser(sessionUser);
-                settingsUpdated = true;
+    /**
+     * Update controller session settings based on session user and settings
+     * modification date.
+     *
+     * @return true if some settings have been loaded.
+     */
+    public boolean updateSettings() {
+        try {
+            if (settingController == null) {
+                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
             }
+
+            SettingEntity settingEntity = settingController.getCurrentSettingEntity();
+            if (settingEntity != null) {
+                if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    logger.debug("Updating settings for search from session (settings timestamp: " + settingEntity.getSettingsModificationDate() + ")");
+                    updateSettingsFromSessionSettingEntity(settingEntity);
+                    settingsTimestamp = new Date();
+                    return true;
+                }
+            } else if (settingEntity == null) {
+                if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+                    settingsTimestamp = new Date();
+                    return true;
+                }
+            }
+        } catch (Exception ex) {
+            logger.error(ex);
         }
 
-        if (!settingsUpdated && !settingsInitializedFromDefaults) {
-            updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
-            settingsInitializedFromDefaults = true;
-        }
+        return false;
     }
 
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -173,15 +191,12 @@ public class SearchController implements Serializable {
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         caseInsensitive = Boolean.parseBoolean(settingTypeMap.get(CaseInsensitiveSettingTypeKey).getDefaultValue());
-        displayAssemblyComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayAssemblyComponentsSettingTypeKey).getDefaultValue());
-        displayComponents = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentsSettingTypeKey).getDefaultValue());
-        displayComponentInstances = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstancesSettingTypeKey).getDefaultValue());
-        displayComponentTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypesSettingTypeKey).getDefaultValue());
-        displayComponentTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeCategoriesSettingTypeKey).getDefaultValue());
-        displayDesigns = Boolean.parseBoolean(settingTypeMap.get(DisplayDesignsSettingTypeKey).getDefaultValue());
-        displayDesignElements = Boolean.parseBoolean(settingTypeMap.get(DisplayDesignElementsSettingTypeKey).getDefaultValue());
-        displayLocations = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationsSettingTypeKey).getDefaultValue());
-        displayLocationTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationTypesSettingTypeKey).getDefaultValue());
+        displayCatalogItems = Boolean.parseBoolean(settingTypeMap.get(DisplayCatalogItemsSettingTypeKey).getDefaultValue());
+        displayInventoryItems = Boolean.parseBoolean(settingTypeMap.get(DisplayInventoryItemsSettingTypeKey).getDefaultValue());
+        displayItemTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemTypesSettingTypeKey).getDefaultValue());
+        displayItemCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayItemCategoriesSettingTypeKey).getDefaultValue());
+        displayItemElements = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementsSettingTypeKey).getDefaultValue());
+        displayLocationItems = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationsSettingTypeKey).getDefaultValue());
         displayPropertyTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypesSettingTypeKey).getDefaultValue());
         displayPropertyTypeCategories = Boolean.parseBoolean(settingTypeMap.get(DisplayPropertyTypeCategoriesSettingTypeKey).getDefaultValue());
         displaySources = Boolean.parseBoolean(settingTypeMap.get(DisplaySourcesSettingTypeKey).getDefaultValue());
@@ -189,59 +204,58 @@ public class SearchController implements Serializable {
         displayUserGroups = Boolean.parseBoolean(settingTypeMap.get(DisplayUserGroupsSettingTypeKey).getDefaultValue());
     }
 
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        caseInsensitive = sessionUser.getUserSettingValueAsBoolean(CaseInsensitiveSettingTypeKey, caseInsensitive);
-        displayAssemblyComponents = sessionUser.getUserSettingValueAsBoolean(DisplayAssemblyComponentsSettingTypeKey, displayAssemblyComponents);
-        displayComponents = sessionUser.getUserSettingValueAsBoolean(DisplayComponentsSettingTypeKey, displayComponents);
-        displayComponentInstances = sessionUser.getUserSettingValueAsBoolean(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
-        displayComponentTypes = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
-        displayComponentTypeCategories = sessionUser.getUserSettingValueAsBoolean(DisplayComponentTypeCategoriesSettingTypeKey, displayComponentTypeCategories);
-        displayDesigns = sessionUser.getUserSettingValueAsBoolean(DisplayDesignsSettingTypeKey, displayDesigns);
-        displayDesignElements = sessionUser.getUserSettingValueAsBoolean(DisplayDesignElementsSettingTypeKey, displayDesignElements);
-        displayLocations = sessionUser.getUserSettingValueAsBoolean(DisplayLocationsSettingTypeKey, displayLocations);
-        displayLocationTypes = sessionUser.getUserSettingValueAsBoolean(DisplayLocationTypesSettingTypeKey, displayLocationTypes);
-        displayPropertyTypes = sessionUser.getUserSettingValueAsBoolean(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
-        displayPropertyTypeCategories = sessionUser.getUserSettingValueAsBoolean(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
-        displaySources = sessionUser.getUserSettingValueAsBoolean(DisplaySourcesSettingTypeKey, displaySources);
-        displayUsers = sessionUser.getUserSettingValueAsBoolean(DisplayUsersSettingTypeKey, displayUsers);
-        displayUserGroups = sessionUser.getUserSettingValueAsBoolean(DisplayUserGroupsSettingTypeKey, displayUserGroups);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        caseInsensitive = settingEntity.getSettingValueAsBoolean(CaseInsensitiveSettingTypeKey, caseInsensitive);
+        displayCatalogItems = settingEntity.getSettingValueAsBoolean(DisplayCatalogItemsSettingTypeKey, displayCatalogItems);
+        displayInventoryItems = settingEntity.getSettingValueAsBoolean(DisplayInventoryItemsSettingTypeKey, displayInventoryItems);
+        displayItemTypes = settingEntity.getSettingValueAsBoolean(DisplayItemTypesSettingTypeKey, displayItemTypes);
+        displayItemCategories = settingEntity.getSettingValueAsBoolean(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
+        displayItemElements = settingEntity.getSettingValueAsBoolean(DisplayItemElementsSettingTypeKey, displayItemElements);
+        displayLocationItems = settingEntity.getSettingValueAsBoolean(DisplayLocationsSettingTypeKey, displayLocationItems);
+        displayPropertyTypes = settingEntity.getSettingValueAsBoolean(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
+        displayPropertyTypeCategories = settingEntity.getSettingValueAsBoolean(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
+        displaySources = settingEntity.getSettingValueAsBoolean(DisplaySourcesSettingTypeKey, displaySources);
+        displayUsers = settingEntity.getSettingValueAsBoolean(DisplayUsersSettingTypeKey, displayUsers);
+        displayUserGroups = settingEntity.getSettingValueAsBoolean(DisplayUserGroupsSettingTypeKey, displayUserGroups);
 
     }
 
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(CaseInsensitiveSettingTypeKey, caseInsensitive);
-        sessionUser.setUserSettingValue(DisplayAssemblyComponentsSettingTypeKey, displayAssemblyComponents);
-        sessionUser.setUserSettingValue(DisplayComponentsSettingTypeKey, displayComponents);
-        sessionUser.setUserSettingValue(DisplayComponentInstancesSettingTypeKey, displayComponentInstances);
-        sessionUser.setUserSettingValue(DisplayComponentTypesSettingTypeKey, displayComponentTypes);
-        sessionUser.setUserSettingValue(DisplayComponentTypeCategoriesSettingTypeKey, displayComponentTypeCategories);
-        sessionUser.setUserSettingValue(DisplayDesignsSettingTypeKey, displayDesigns);
-        sessionUser.setUserSettingValue(DisplayDesignElementsSettingTypeKey, displayDesignElements);
-        sessionUser.setUserSettingValue(DisplayLocationsSettingTypeKey, displayLocations);
-        sessionUser.setUserSettingValue(DisplayLocationTypesSettingTypeKey, displayLocationTypes);
-        sessionUser.setUserSettingValue(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
-        sessionUser.setUserSettingValue(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
-        sessionUser.setUserSettingValue(DisplaySourcesSettingTypeKey, displaySources);
-        sessionUser.setUserSettingValue(DisplayUsersSettingTypeKey, displayUsers);
-        sessionUser.setUserSettingValue(DisplayUserGroupsSettingTypeKey, displayUserGroups);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(CaseInsensitiveSettingTypeKey, caseInsensitive);
+        settingEntity.setSettingValue(DisplayInventoryItemsSettingTypeKey, displayCatalogItems);
+        settingEntity.setSettingValue(DisplayCatalogItemsSettingTypeKey, displayInventoryItems);
+        settingEntity.setSettingValue(DisplayItemTypesSettingTypeKey, displayItemTypes);
+        settingEntity.setSettingValue(DisplayItemCategoriesSettingTypeKey, displayItemCategories);
+        settingEntity.setSettingValue(DisplayItemElementsSettingTypeKey, displayItemElements);
+        settingEntity.setSettingValue(DisplayLocationsSettingTypeKey, displayLocationItems);
+        settingEntity.setSettingValue(DisplayPropertyTypesSettingTypeKey, displayPropertyTypes);
+        settingEntity.setSettingValue(DisplayPropertyTypeCategoriesSettingTypeKey, displayPropertyTypeCategories);
+        settingEntity.setSettingValue(DisplaySourcesSettingTypeKey, displaySources);
+        settingEntity.setSettingValue(DisplayUsersSettingTypeKey, displayUsers);
+        settingEntity.setSettingValue(DisplayUserGroupsSettingTypeKey, displayUserGroups);
     }
 
-    public void saveSearchSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+    public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
         logger.debug("Saving settings");
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
-            logger.debug("Updating search settings for session user");
-            saveSettingsForSessionUser(sessionUser);
+        if (settingController == null) {
+            settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
+        }
+
+        SettingEntity settingEntity = settingController.getCurrentSettingEntity();
+
+        if (settingEntity != null) {
+            logger.debug("Updating search settings for setting entity");
+            saveSettingsForSessionSettingEntity(settingEntity);
         }
     }
 
@@ -275,78 +289,54 @@ public class SearchController implements Serializable {
         this.displayNumberOfItemsPerPage = displayNumberOfItemsPerPage;
     }
 
-    public Boolean getDisplayAssemblyComponents() {
-        return displayAssemblyComponents;
+    public Boolean getDisplayCatalogItems() {
+        return displayCatalogItems;
     }
 
-    public void setDisplayAssemblyComponents(Boolean displayAssemblyComponents) {
-        this.displayAssemblyComponents = displayAssemblyComponents;
+    public void setDisplayCatalogItems(Boolean displayCatalogItems) {
+        this.displayCatalogItems = displayCatalogItems;
     }
 
-    public Boolean getDisplayComponents() {
-        return displayComponents;
+    public Boolean getDisplayInventoryItems() {
+        return displayInventoryItems;
     }
 
-    public void setDisplayComponents(Boolean displayComponents) {
-        this.displayComponents = displayComponents;
+    public void setDisplayInventoryItems(Boolean displayInventoryItems) {
+        this.displayInventoryItems = displayInventoryItems;
     }
 
-    public Boolean getDisplayComponentInstances() {
-        return displayComponentInstances;
+    public Boolean getDisplayLocationItems() {
+        return displayLocationItems;
     }
 
-    public void setDisplayComponentInstances(Boolean displayComponentInstances) {
-        this.displayComponentInstances = displayComponentInstances;
+    public void setDisplayLocationItems(Boolean displayLocationItems) {
+        this.displayLocationItems = displayLocationItems;
     }
 
-    public Boolean getDisplayComponentTypes() {
-        return displayComponentTypes;
+    public Boolean getDisplayItemTypes() {
+        return displayItemTypes;
     }
 
-    public void setDisplayComponentTypes(Boolean displayComponentTypes) {
-        this.displayComponentTypes = displayComponentTypes;
+    public void setDisplayItemTypes(Boolean displayItemTypes) {
+        this.displayItemTypes = displayItemTypes;
     }
 
-    public Boolean getDisplayComponentTypeCategories() {
-        return displayComponentTypeCategories;
+    public Boolean getDisplayItemCategories() {
+        return displayItemCategories;
     }
 
-    public void setDisplayComponentTypeCategories(Boolean displayComponentTypeCategories) {
-        this.displayComponentTypeCategories = displayComponentTypeCategories;
+    public void setDisplayItemCategories(Boolean displayItemCategories) {
+        this.displayItemCategories = displayItemCategories;
     }
 
-    public Boolean getDisplayDesigns() {
-        return displayDesigns;
+    public Boolean getDisplayItemElements() {
+        return displayItemElements;
     }
 
-    public void setDisplayDesigns(Boolean displayDesigns) {
-        this.displayDesigns = displayDesigns;
+    public void setDisplayItemElements(Boolean displayItemElements) {
+        this.displayItemElements = displayItemElements;
     }
-
-    public Boolean getDisplayDesignElements() {
-        return displayDesignElements;
-    }
-
-    public void setDisplayDesignElements(Boolean displayDesignElements) {
-        this.displayDesignElements = displayDesignElements;
-    }
-
-    public Boolean getDisplayLocations() {
-        return displayLocations;
-    }
-
-    public void setDisplayLocations(Boolean displayLocations) {
-        this.displayLocations = displayLocations;
-    }
-
-    public Boolean getDisplayLocationTypes() {
-        return displayLocationTypes;
-    }
-
-    public void setDisplayLocationTypes(Boolean displayLocationTypes) {
-        this.displayLocationTypes = displayLocationTypes;
-    }
-
+    
     public Boolean getDisplayPropertyTypes() {
         return displayPropertyTypes;
     }

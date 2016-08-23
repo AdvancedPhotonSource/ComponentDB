@@ -1,9 +1,0 @@
-poi-3.10.jar:           primefaces data exporter
-itext-2.1.7.jar:        primefaces data exporter
-log4j-1.2.17.jar:       log4j
-bcprov-jdk14-1.38.jar:  required for itext 2.1.7 (we use custom PDF exporter)
-bctsp-jdk14-1.38.jar:   required for itext 2.1.7 (we use custom PDF exporter)
-bcmail-jdk14-1.38.jar:  required for itext 2.1.7 (we use custom PDF exporter)
-primefaces-5.0.jar:     primefaces
-omnifaces-2.0.jar:      url rewrite utilities
-mysql-connector-java-5.1.23-bin.jar:    mysql driver

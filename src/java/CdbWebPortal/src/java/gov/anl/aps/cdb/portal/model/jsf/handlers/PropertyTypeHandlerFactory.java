@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/model/jsf/handlers/PropertyTypeHandlerFactory.java $
+ *   $Date: 2015-11-24 12:23:19 -0600 (Tue, 24 Nov 2015) $
+ *   $Revision: 837 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
@@ -34,7 +34,6 @@ public class PropertyTypeHandlerFactory {
         hMap.put(CurrencyPropertyTypeHandler.HANDLER_NAME, new CurrencyPropertyTypeHandler());
         hMap.put(DatePropertyTypeHandler.HANDLER_NAME, new DatePropertyTypeHandler());
         hMap.put(BooleanPropertyTypeHandler.HANDLER_NAME, new BooleanPropertyTypeHandler());
-        hMap.put(ComponentDesignPropertyTypeHandler.HANDLER_NAME, new ComponentDesignPropertyTypeHandler()); 
         hMap.put(TravelerTemplatePropertyTypeHandler.HANDLER_NAME, new TravelerTemplatePropertyTypeHandler()); 
         hMap.put(TravelerInstancePropertyTypeHandler.HANDLER_NAME, new TravelerInstancePropertyTypeHandler()); 
         return hMap;

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
+    <p:panelGrid columns="3">
+        <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
+
+        <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
+
+        <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
+        
+        <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemProject.xhtml"/>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
+        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml"/>
+        
+        <ui:include src="componentInventoryItemLocationDropdown.xhtml" />
+        <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+            <ui:param name="helpFragmentText"
+                      value="Select current location for this item." />
+        </ui:include>
+    </p:panelGrid>
+
+    <p:panel header="Additional Attributes" collapsed="true" toggleable="true"
+             binding="#{facesUtility.autoCollapsePanel}">
+        <p:panelGrid columns="3">            
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier1.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+                <ui:param name="helpFragmentText"
+                          value="A unique identifier assigned to an item by the vendor." />
+            </ui:include>
+
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemDescription.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemDescription.xhtml" />
+
+            <ui:include src="componentInventoryItemLocationDetails.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+                <ui:param name="helpFragmentText"
+                          value="Add additonal details to the current location of the item." />
+            </ui:include>
+        </p:panelGrid>
+
+
+    </p:panel> 
+    <p:panel header="Permissions" 
+             collapsed="true" 
+             toggleable="true"
+             binding="#{facesUtility.autoCollapsePanel}">
+        <p:outputPanel id="permissionsEditPanelUnlock#{viewName}" 
+                       rendered="#{!billOfMaterialItem.partItem or !itemDomainInventoryController.applyPermissionToAllNewPartsForCurrent}">
+
+            <ui:param name="renderedPermissionsEditPanelApplyAll"
+                      value="#{!billOfMaterialItem.partItem and itemDomainInventoryController.currentHasPartsToDisplay}"
+                      />
+
+            <p:panelGrid columns="3">
+                <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml">
+                    <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
+                    <ui:param name="renderHelpFragments" value="#{true}" />
+                </ui:include>
+
+                <p:outputLabel for="applyPermissionToAllParts#{viewName}"
+                               rendered="#{renderedPermissionsEditPanelApplyAll}"
+                               value="Apply to new parts"/>
+                <p:column rendered="#{renderedPermissionsEditPanelApplyAll}">
+                    <p:selectBooleanButton id="applyPermissionToAllParts#{viewName}"
+                                           offLabel="No"
+                                           onLabel="Yes"
+                                           value="#{billOfMaterialItem.applyPermissionToAllNewParts}"
+                                           onchange="updateApplyPermissionToAllParts#{viewName}()"/> 
+                    <p:remoteCommand name="updateApplyPermissionToAllParts#{viewName}"
+                                     update="applyPermissionToAllParts#{viewName}" />
+                </p:column>
+                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+                    <ui:param name="helpFragmentText"
+                              value="Apply Selected Permissions to all new parts created for this assembly." />
+                    <ui:param name="rendered" value="#{renderedPermissionsEditPanelApplyAll}"/>
+                </ui:include>
+
+            </p:panelGrid>
+            <p:panelGrid columns="2" rendered="#{renderedPermissionsEditPanelApplyAll}">
+
+            </p:panelGrid>
+        </p:outputPanel>
+        <p:outputPanel id="permissionsEditPanelLock#{viewName}" 
+                       rendered="#{billOfMaterialItem.partItem and itemDomainInventoryController.applyPermissionToAllNewPartsForCurrent}">
+            <div>
+                <h:outputText value="Permissions will be applied from the topmost parent of assembly."/>          
+                <br/>
+                <h:outputText value="To unlock the permission settings. Edit permissions on topmost assembly." />
+            </div>
+        </p:outputPanel>
+    </p:panel>
+
+</ui:composition>
+
+

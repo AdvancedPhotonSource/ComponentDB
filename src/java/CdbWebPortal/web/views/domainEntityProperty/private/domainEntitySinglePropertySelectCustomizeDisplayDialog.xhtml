@@ -5,24 +5,22 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
-
-    <p:dialog id="#{entityTypeName}SinglePropertySelectCustomizeDisplayDialog" 
-              widgetVar="#{entityTypeName}SinglePropertySelectCustomizeDisplayDialogWidget" 
-              header="Customize Selection Display" 
-              styleClass="dialog">
-        <div class="dialog">
-            <ui:include src="../../propertyType/private/propertyTypeSelectCustomizePanelGrid.xhtml"/>
-            <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
-                                 update="#{entityTypeName}SinglePropertySelectDialog"
-                                 onclick="PF('#{entityTypeName}SinglePropertySelectCustomizeDisplayDialogWidget').hide()"
-                                 oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-            </f:facet>
-        </div>
-    </p:dialog>
-
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+    
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="savable" value="#{false}" />
+        <ui:param name="customizeDisplayUpdateTarget" value="#{entityTypeName}SinglePropertySelectDialog" />
+        <ui:param name="customizeDisplayEntityTypeName" value="#{entityTypeName}SingleProperty" />
+        <ui:param name="customizeDisplayOnComplete" value="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()" />
+        <ui:param name="entityController" value="#{propertyTypeController}" />
+        <ui:param name="viewName" value="Select" />
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogConent">
+        <ui:include src="../../propertyType/private/propertyTypeSelectCustomizePanelGrid.xhtml"/>
+    </ui:define>
+    
 </ui:composition>
 
 

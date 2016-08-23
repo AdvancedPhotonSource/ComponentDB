@@ -28,6 +28,25 @@ class LogDbApi(CdbDbApi):
         dbLogs = self.logHandler.getLogs(session)
         return self.toCdbObjectList(dbLogs)
 
+    @CdbDbApi.executeTransaction
+    def addLogTopic(self, name, description, **kwargs):
+        session = kwargs['session']
+        dbLogTopic = self.logHandler.addLogTopic(session, name, description)
+        return dbLogTopic.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getLogTopics(self, **kwargs):
+        session = kwargs['session']
+        dbLogTopics = self.logHandler.getLogTopics(session)
+        return self.toCdbObjectList(dbLogTopics)
+
+    @CdbDbApi.executeTransaction
+    def addLogAttachment(self, logId, attachmentName, attachmentTag, attachmentDescription, **kwargs):
+        session = kwargs['session']
+        dbLogAttachment = self.logHandler.addLogAttachment(session, logId, attachmentName, attachmentTag, attachmentDescription)
+        return dbLogAttachment.getCdbObject()
+
+
 
 #######################################################################
 # Testing.
@@ -36,6 +55,8 @@ if __name__ == '__main__':
 
     print api.getLogAttachments()
     print api.getLogs()
+
+    print api.addLogAttachment(1, 'hello world', 'hi', 'desc')
 
 
 

@@ -9,22 +9,18 @@ from cdb.common.exceptions.invalidArgument import InvalidArgument
 from cdb.common.db.entities.propertyType import PropertyType
 from cdb.common.db.entities.allowedPropertyValue import AllowedPropertyValue
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
+from cdb.common.db.impl.propertyTypeCategoryHandler import PropertyTypeCategoryHandler
+from cdb.common.db.impl.propertyTypeHandlerHandler import PropertyTypeHandlerHandler
 
 class PropertyTypeHandler(CdbDbEntityHandler):
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
+        self.propertyTypeCategoryHandler = PropertyTypeCategoryHandler()
+        self.propertyTypeHandlerHandler = PropertyTypeHandlerHandler()
 
     def getPropertyTypes(self, session):
-        dbPropertyTypes = session.query(PropertyType).all()
-        return dbPropertyTypes
-
-    def findPropertyTypeById(self, session, id):
-        try:
-            dbPropertyType = session.query(PropertyType).filter(PropertyType.id==id).one()
-            return dbPropertyType
-        except NoResultFound, ex:
-            raise ObjectNotFound('Property type id %s does not exist.' % (id))
+        return self._getAllDbObjects(session, PropertyType)
 
     def getPropertyTypesByHandlerId(self, session, propertyTypeHandlerId):
         try:
@@ -34,24 +30,60 @@ class PropertyTypeHandler(CdbDbEntityHandler):
             raise ObjectNotFound("Property types for handler id %s could not be found" % (propertyTypeHandlerId))
 
     def getPropertyTypeById(self, session, id):
-        try:
-            dbPropertyType = session.query(PropertyType).filter(PropertyType.id==id).one()
-            dbPropertyType.allowedPropertyValueList = self.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
-            return dbPropertyType
-        except NoResultFound, ex:
-            raise ObjectNotFound('Property type id %s does not exist.' % (id))
+        return self._findDbObjById(session, PropertyType, id)
 
     def getPropertyTypeByName(self, session, name):
-        try:
-            dbPropertyType = session.query(PropertyType).filter(PropertyType.name==name).one()
-            dbPropertyType.allowedPropertyValueList = self.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
-            return dbPropertyType
-        except NoResultFound, ex:
-            raise ObjectNotFound('Property type name %s does not exist.' % (name))
+        return self._findDbObjByName(session, PropertyType, name)
 
     def getAllowedPropertyTypeValuesById(self, session, propertyTypeId):
         dbAllowedPropertyTypeValues = session.query(AllowedPropertyValue).filter(AllowedPropertyValue.property_type_id==propertyTypeId).all()
         return dbAllowedPropertyTypeValues
+
+    def addPropertyType(self, session, propertyTypeName, description, propertyTypeCategoryName, propertyTypeHandlerName,
+                        defaultValue, defaultUnits, isUserWriteable, isDynamic, isInternal, isActive):
+        self._prepareAddUniqueNameObj(session, PropertyType, propertyTypeName)
+        entityDisplayName = self._getEntityDisplayName(PropertyType)
+
+        dbPropertyType = PropertyType(name=propertyTypeName)
+        dbPropertyType.description = description
+        dbPropertyType.default_value = defaultValue
+        dbPropertyType.default_units = defaultUnits
+        dbPropertyType.is_user_writeable = isUserWriteable
+        dbPropertyType.is_dynamic = isDynamic
+        dbPropertyType.is_internal = isInternal
+        dbPropertyType.is_active = isActive
+
+        if propertyTypeCategoryName:
+            dbPropertyTypeCategory = self.propertyTypeCategoryHandler.getPropertyTypeCategoryByName(session, propertyTypeCategoryName)
+            dbPropertyType.propertyTypeCategory = dbPropertyTypeCategory
+        if propertyTypeHandlerName:
+            dbPropertyTypeHandler = self.propertyTypeHandlerHandler.getPropertyTypeHandlerByName(session, propertyTypeHandlerName)
+            dbPropertyType.propertyTypeHandler = dbPropertyTypeHandler
+
+        session.add(dbPropertyType)
+        session.flush()
+
+        self.logger.debug('Inserted %s id %s' % (entityDisplayName, dbPropertyType.id))
+        return dbPropertyType
+
+    def addAllowedPropertyValue(self, session, propertyTypeName, value, units, description, sortOrder):
+        entityDisplayName = self._getEntityDisplayName(AllowedPropertyValue)
+
+        dbPropertyType = self.getPropertyTypeByName(session, propertyTypeName)
+
+        dbAllowedPropertyValue = AllowedPropertyValue()
+        dbAllowedPropertyValue.propertyType = dbPropertyType
+        dbAllowedPropertyValue.value = value
+        dbAllowedPropertyValue.units = units
+        dbAllowedPropertyValue.description = description
+        dbAllowedPropertyValue.sort_order = sortOrder
+
+        session.add(dbAllowedPropertyValue)
+        session.flush()
+
+        self.logger.debug('Inserted %s id: %s value: %s' % (entityDisplayName, dbAllowedPropertyValue.id, value))
+
+        return dbAllowedPropertyValue
 
     @classmethod
     def checkPropertyValueIsAllowed(cls, propertyValue, dbAllowedPropertyValueList):

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="itemCreateWizardTemplateBase.xhtml">
+
+    <!--
+        Please define entityController
+    -->
+
+    <ui:define name="derivedFromItemWizardTab">
+        <p:tab id="derivedFromItemSelectionTab"
+               rendered="#{entityController.entityDisplayDerivedFromItem}"
+               title="#{entityController.derivedFromItemTitle}">
+            <p:panel header="Select Catalog Item" styleClass="createWizardPanel">
+                <ui:include src="../itemSelectDataTable.xhtml">
+                    <ui:param name="selectionController" value="#{entityController.itemDerivedFromDomainController}" />         
+                    <ui:param name="selectionTarget" value="#{entityController.currentDerivedFromItem}" />
+                </ui:include>
+            </p:panel>
+        </p:tab>
+    </ui:define>
+
+    <ui:define name="basicInformationTab">
+        <p:tab id="basicItemInformationTab"
+               title="Basic Information">
+            <p:panel header="Item Details" styleClass="createWizardPanel">
+                <p:panelGrid columns="3">
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml">
+                        <ui:param name="additionalValue" value="*"/> 
+                    </ui:include>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemName.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemName}">
+                        <ui:insert name="nameHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemQrId.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemQrId.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayQrId}">
+                        <ui:insert name="qrIdHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
+                        </ui:insert> 
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemIdentifier1.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemIdentifier1}">
+                        <ui:insert name="itemIdentifier1HelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemIdentifier1.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemIdentifier2}">
+                        <ui:insert name="itemIdentifier2HelpFragment" >
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemDescription.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemDescription.xhtml"/>
+                    <p:outputPanel>
+                        <ui:insert name="descriptionHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemDescription.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:insert name="additionalBasicInfo" />
+                </p:panelGrid>
+            </p:panel>
+        </p:tab>
+    </ui:define>
+
+    <ui:define name="classificationTab">
+        <p:tab id="itemClassificationTab"
+               title="Classification" rendered="#{entityController.isRenderClassificationCreateWizardTab()}">
+            <p:panel header="Item Classification" styleClass="createWizardPanel">
+                <div class="sectionText">
+                    Set the classification information about the item.
+                </div>
+                <p/>
+                <p:panelGrid columns="3">
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemProject.xhtml">
+                        <ui:param name="additionalValue"
+                                  value="#{entityController.isItemProjectRequired() ? '*' : ''}" />
+                    </ui:include>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemProject.xhtml">
+                        <ui:param name="required" value="#{false}" />
+                    </ui:include>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemProject}">
+                        <ui:insert name="itemItemProjectHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+                    
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemEntityType.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemEntityType.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemEntityTypes}">
+                        <ui:insert name="itemEntityTypeHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemEntityType.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemCategory.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemCategory.xhtml"/>    
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemCategory}">
+                        <ui:insert name="itemItemCategoryHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemCategory.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemType.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemType.xhtml"/>
+                    <p:outputPanel rendered="#{entityController.entityTypeEditable}">
+                        <ui:insert name="itemItemTypeHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemType.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>                                        
+                </p:panelGrid>
+            </p:panel>
+        </p:tab>
+    </ui:define>
+
+    <ui:define name="permissionsTab">
+        <p:tab id="itemPermissionTab"
+               title="Permissions">
+            <p:panel header="Item Permissions" styleClass="createWizardPanel">
+                <div class="sectionText">
+                    Please set all of the item permissions.
+                </div>
+                <p/>
+                <p:panelGrid columns="3">
+                    <ui:include src="../../../entityInfo/private/entityInfoEditObject.xhtml">
+                        <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
+                        <ui:param name="renderHelpFragments" value="#{true}" />
+                    </ui:include>
+                </p:panelGrid>
+            </p:panel>
+        </p:tab>
+    </ui:define>
+
+    <ui:define name="reviewItemTab">
+        <p:tab id="reviewItemTab" 
+               title="Review Item">
+            <p:panel header="Item Overview" styleClass="createWizardPanel">
+                <div class="sectionText">
+                    Please review all of the entered information before saving.
+                </div>
+                <p/>
+                <ui:insert name="itemOverviewPanelGrid">
+                    <ui:include src="../itemCreatePanelGrid.xhtml">
+                        <ui:param name="viewName" value="Overview" />
+                    </ui:include>
+                </ui:insert>
+                <ui:insert name="itemCreateActionButtons"/>
+            </p:panel>                                                                
+        </p:tab>
+    </ui:define>
+
+
+
+
+
+</ui:composition>

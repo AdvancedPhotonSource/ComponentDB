@@ -1,17 +1,8 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
-import gov.anl.aps.cdb.portal.model.db.beans.UserGroupDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
@@ -27,12 +18,9 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
-/**
- * Controller class for user groups.
- */
 @Named("userGroupController")
 @SessionScoped
-public class UserGroupController extends CdbEntityController<UserGroup, UserGroupDbFacade> implements Serializable {
+public class UserGroupController extends CdbEntityController<UserGroup, UserGroupFacade>implements Serializable {
 
     /*
      * Controller specific settings
@@ -46,13 +34,13 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     private static final Logger logger = Logger.getLogger(UserGroupController.class.getName());
 
     @EJB
-    private UserGroupDbFacade userGroupFacade;
+    private UserGroupFacade userGroupFacade;
 
     public UserGroupController() {
     }
 
     @Override
-    protected UserGroupDbFacade getEntityDbFacade() {
+    protected UserGroupFacade getEntityDbFacade() {
         return userGroupFacade;
     }
 
@@ -60,15 +48,15 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     protected UserGroup createEntityInstance() {
         return new UserGroup();
     }
+    
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "Registered User Group";
+    }
 
     @Override
     public String getEntityTypeName() {
         return "userGroup";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "user group";
     }
 
     @Override
@@ -80,32 +68,15 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     }
 
     @Override
+    public List<UserGroup> getAvailableItems() {
+        return super.getAvailableItems();
+    }
+    
+    @Override
     public UserGroup findById(Integer id) {
         return userGroupFacade.findById(id);
     }
 
-    @Override
-    public List<UserGroup> getAvailableItems() {
-        return super.getAvailableItems();
-    }
-
-    @Override
-    public void prepareEntityInsert(UserGroup userGroup) throws ObjectAlreadyExists {
-        UserGroup existingUserGroup = userGroupFacade.findByName(userGroup.getName());
-        if (existingUserGroup != null) {
-            throw new ObjectAlreadyExists("User group " + userGroup.getName() + " already exists.");
-        }
-        logger.debug("Inserting new user group " + userGroup.getName());
-    }
-
-    @Override
-    public void prepareEntityUpdate(UserGroup userGroup) throws ObjectAlreadyExists {
-        UserGroup existingUserGroup = userGroupFacade.findByName(userGroup.getName());
-        if (existingUserGroup != null && !existingUserGroup.getId().equals(userGroup.getId())) {
-            throw new ObjectAlreadyExists("User group " + userGroup.getName() + " already exists.");
-        }
-        logger.debug("Updating user group " + userGroup.getName());
-    }
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -122,31 +93,31 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     /**

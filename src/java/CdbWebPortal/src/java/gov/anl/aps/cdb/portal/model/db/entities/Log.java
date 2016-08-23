@@ -1,20 +1,15 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -36,7 +31,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Log entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "log")
@@ -44,9 +40,12 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Log.findAll", query = "SELECT l FROM Log l"),
     @NamedQuery(name = "Log.findById", query = "SELECT l FROM Log l WHERE l.id = :id"),
-    @NamedQuery(name = "Log.findByEnteredOnDateTime", query = "SELECT l FROM Log l WHERE l.enteredOnDateTime = :enteredOnDateTime")})
-public class Log extends CdbEntity {
+    @NamedQuery(name = "Log.findByEnteredOnDateTime", query = "SELECT l FROM Log l WHERE l.enteredOnDateTime = :enteredOnDateTime"),
+    @NamedQuery(name = "Log.findByEffectiveFromDateTime", query = "SELECT l FROM Log l WHERE l.effectiveFromDateTime = :effectiveFromDateTime"),
+    @NamedQuery(name = "Log.findByEffectiveToDateTime", query = "SELECT l FROM Log l WHERE l.effectiveToDateTime = :effectiveToDateTime")})
+public class Log extends CdbEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -61,26 +60,31 @@ public class Log extends CdbEntity {
     @Column(name = "entered_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date enteredOnDateTime;
-    @ManyToMany(mappedBy = "logList")
-    private List<ComponentInstance> componentInstanceList;
-    @ManyToMany(mappedBy = "logList")
-    private List<Component> componentList;
-    @ManyToMany(mappedBy = "logList")
-    private List<DesignElement> designElementList;
-    @ManyToMany(mappedBy = "logList")
-    private List<Design> designList;
-    @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private UserInfo enteredByUser;
+    @Column(name = "effective_from_date_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date effectiveFromDateTime;
+    @Column(name = "effective_to_date_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date effectiveToDateTime;
     @JoinTable(name = "log_attachment", joinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "attachment_id", referencedColumnName = "id")})
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     private List<Attachment> attachmentList;
+    @JoinTable(name = "system_log", joinColumns = {
+        @JoinColumn(name = "log_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "log_level_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<LogLevel> logLevelList;
+    @ManyToMany(mappedBy = "logList")
+    private List<ItemElement> itemElementList;
+    @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private UserInfo enteredByUser;
     @JoinColumn(name = "log_topic_id", referencedColumnName = "id")
     @ManyToOne
     private LogTopic logTopic;
-
+    
     private static transient SimpleDateFormat shortDisplayDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
 
     public Log() {
@@ -96,7 +100,6 @@ public class Log extends CdbEntity {
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -120,49 +123,37 @@ public class Log extends CdbEntity {
     public void setEnteredOnDateTime(Date enteredOnDateTime) {
         this.enteredOnDateTime = enteredOnDateTime;
     }
-
-    @XmlTransient
-    public List<ComponentInstance> getComponentInstanceList() {
-        return componentInstanceList;
-    }
-
-    public void setComponentInstanceList(List<ComponentInstance> componentInstanceList) {
-        this.componentInstanceList = componentInstanceList;
-    }
-
-    @XmlTransient
-    public List<Component> getComponentList() {
-        return componentList;
-    }
-
-    public void setComponentList(List<Component> componentList) {
-        this.componentList = componentList;
-    }
-
-    @XmlTransient
-    public List<DesignElement> getDesignElementList() {
-        return designElementList;
-    }
-
-    public void setDesignElementList(List<DesignElement> designElementList) {
-        this.designElementList = designElementList;
-    }
-
-    @XmlTransient
-    public List<Design> getDesignList() {
-        return designList;
-    }
-
-    public void setDesignList(List<Design> designList) {
-        this.designList = designList;
-    }
-
+    
     public UserInfo getEnteredByUser() {
-        return enteredByUser;
+        return this.enteredByUser; 
+    }
+    
+    public void setEnteredByUser(UserInfo userInfo) {
+        this.enteredByUser = userInfo; 
     }
 
-    public void setEnteredByUser(UserInfo enteredByUser) {
-        this.enteredByUser = enteredByUser;
+    public LogTopic getLogTopic() {
+        return logTopic;
+    }
+
+    public void setLogTopic(LogTopic logTopic) {
+        this.logTopic = logTopic;
+    }
+
+    public Date getEffectiveFromDateTime() {
+        return effectiveFromDateTime;
+    }
+
+    public void setEffectiveFromDateTime(Date effectiveFromDateTime) {
+        this.effectiveFromDateTime = effectiveFromDateTime;
+    }
+
+    public Date getEffectiveToDateTime() {
+        return effectiveToDateTime;
+    }
+
+    public void setEffectiveToDateTime(Date effectiveToDateTime) {
+        this.effectiveToDateTime = effectiveToDateTime;
     }
 
     @XmlTransient
@@ -174,44 +165,40 @@ public class Log extends CdbEntity {
         this.attachmentList = attachmentList;
     }
 
-    public LogTopic getLogTopic() {
+    @XmlTransient
+    public List<LogLevel> getLogLevelList() {
+        return logLevelList;
+    }
+
+    public void setLogLevelList(List<LogLevel> logLevelList) {
+        this.logLevelList = logLevelList;
+    }
+
+    @XmlTransient
+    public List<ItemElement> getItemElementList() {
+        return itemElementList;
+    }
+
+    public void setItemElementList(List<ItemElement> itemElementList) {
+        this.itemElementList = itemElementList;
+    }
+
+    public UserInfo getEnteredByUserId() {
+        return enteredByUser;
+    }
+
+    public void setEnteredByUserId(UserInfo enteredByUserId) {
+        this.enteredByUser = enteredByUserId;
+    }
+
+    public LogTopic getLogTopicId() {
         return logTopic;
     }
 
-    public void setLogTopic(LogTopic logTopic) {
-        this.logTopic = logTopic;
+    public void setLogTopicId(LogTopic logTopicId) {
+        this.logTopic = logTopicId;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    public boolean equalsByText(Log other) {
-        if (other != null) {
-            return ObjectUtility.equals(this.text, other.text);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof Log)) {
-            return false;
-        }
-        Log other = (Log) object;
-        if (this.id == null && other.id == null) {
-            return equalsByText(other);
-        }
-
-        if (this.id == null || other.id == null) {
-            return false;
-        }
-        return this.id.equals(other.id);
-    }
-
+    
     public String getShortDisplayEnteredOnDateTime() {
         if (enteredOnDateTime == null) {
             return null;
@@ -221,8 +208,28 @@ public class Log extends CdbEntity {
     }
 
     @Override
-    public String toString() {
-        return text;
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Log)) {
+            return false;
+        }
+        Log other = (Log) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "gov.anl.aps.cdb.portal.model.db.entities.Log[ id=" + id + " ]";
+    }
+    
 }

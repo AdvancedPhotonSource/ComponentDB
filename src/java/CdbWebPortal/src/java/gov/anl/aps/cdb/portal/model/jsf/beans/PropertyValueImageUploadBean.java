@@ -10,13 +10,15 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.common.utilities.ImageUtility;
 import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeDbFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
@@ -106,8 +108,8 @@ public class PropertyValueImageUploadBean implements Serializable {
             SessionUtility.addErrorMessage("Error", ex.toString());
         }
     }
-    
-     public void upload(PropertyValue propertyValue) {
+
+    public void upload(PropertyValue propertyValue) {
         upload(propertyValue, null);
     }
 
@@ -122,11 +124,11 @@ public class PropertyValueImageUploadBean implements Serializable {
     public List<PropertyType> getImageHandlerPropertyTypes() {
         if (imageHandlerPropertyTypes == null) {
             try {
-                PropertyTypeDbFacade propertyTypeDbFacade = (PropertyTypeDbFacade) new InitialContext().lookup("java:module/PropertyTypeDbFacade");
-                PropertyTypeHandlerDbFacade propertyTypeHandlerDbFacade = (PropertyTypeHandlerDbFacade) new InitialContext().lookup("java:module/PropertyTypeHandlerDbFacade");
+                PropertyTypeFacade propertyTypeFacade = (PropertyTypeFacade) new InitialContext().lookup("java:module/PropertyTypeFacade");
+                PropertyTypeHandlerFacade propertyTypeHandlerDbFacade = (PropertyTypeHandlerFacade) new InitialContext().lookup("java:module/PropertyTypeHandlerFacade");
 
                 PropertyTypeHandler imagePropertyTypeHandler = propertyTypeHandlerDbFacade.findByName(IMAGE_PROPERTY_TYPE_NAME);
-                imageHandlerPropertyTypes = propertyTypeDbFacade.findByPropertyTypeHandler(imagePropertyTypeHandler);
+                imageHandlerPropertyTypes = propertyTypeFacade.findByPropertyTypeHandler(imagePropertyTypeHandler);
             } catch (NamingException ex) {
                 logger.debug(ex);
             }
@@ -174,20 +176,22 @@ public class PropertyValueImageUploadBean implements Serializable {
     }
 
     /**
-     * Called when user is done uploading multiple images. 
-     * Checks to make sure all downloads have completed before saving.
+     * Called when user is done uploading multiple images. Checks to make sure
+     * all downloads have completed before saving.
      *
      * @throws InterruptedException
+     * @throws gov.anl.aps.cdb.common.exceptions.CdbException
      */
-    public void done() throws InterruptedException {
+    public void done() throws InterruptedException, CdbException {
         while (true) {
             if (uploadHashList.isEmpty()) {
                 if (cdbEntityController != null) {
-                    if (cdbEntityController instanceof CdbDomainEntityController) {
-                        cdbEntityController.update();
-                        return;
-                    }
+                    cdbEntityController.update();
+                    return;
+                } else {
+                    throw new CdbException("Controller not set to update the gallery."); 
                 }
+
             }
 
             // List is not empty, wait and check again... 

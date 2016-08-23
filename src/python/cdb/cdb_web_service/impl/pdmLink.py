@@ -26,7 +26,6 @@ from cdb.common.objects.pdmLinkDrawing import PdmLinkDrawing
 from cdb.common.objects.pdmLinkDrawingRevision import PdmLinkDrawingRevision
 from cdb.common.objects.pdmLinkSearchResult import PdmLinkSearchResult
 from cdb.common.objects.pdmLinkComponent import PdmLinkComponent
-from cdb.common.db.api.componentDbApi import ComponentDbApi
 from cdb.common.objects.image import Image
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.sslUtility import SslUtility
@@ -57,7 +56,6 @@ class PdmLink:
         self.windchillWs = None
         self.windchillWebparts = None
         self.icmsConnection = None
-        self.componentDbApi = None
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
         self.versionIndex = None
@@ -103,16 +101,6 @@ class PdmLink:
 
         # initialize icmsClass
         self.icmsConnection = Icms(self.ICMS_USER, self.ICMS_PASS, self.icmsUrl)
-
-    def __createComponentDbApi(self):
-        """
-        Initialize db API for components
-        """
-        if(self.componentDbApi != None):
-            return
-
-        # initialize db api
-        self.componentDbApi = ComponentDbApi()
 
     def __isDrawingListEmpty(self, drawingList):
         if drawingList is not None:
@@ -430,12 +418,13 @@ class PdmLink:
         componentInfo['drawingNumber'] = drawingNumber
         componentInfo['pdmPropertyValues'] = pdmPropertyValues
 
+        '''
         # Generate component type suggestions
         self.__createComponentDbApi()
 
         # Get a list of available types
         componentTypes = self.componentDbApi.getComponentTypes()
-
+        '''
         # Get drawing details for keywords
         if drawingDetails is None:
             drawingDetails = self.__getDrawingDetailsWithoutSSL(ufid)
@@ -461,7 +450,7 @@ class PdmLink:
             componentInfo['name'] = drawingDetails['title5']
         else:
             componentInfo['name'] = pdmComponentModel
-
+        '''
         # Key is id of a component type and value is commonality of a component type based on keywords.
         stats = {}
         suggestedTypeList = []
@@ -489,6 +478,7 @@ class PdmLink:
                     continue
 
         componentInfo['suggestedComponentTypes'] = suggestedTypeList
+        '''
 
         return PdmLinkComponent(componentInfo)
 
@@ -719,78 +709,6 @@ class PdmLink:
         """
         return self.__generateComponentInfo(drawingNumber)
 
-    def createComponent(self, drawingNumber, createdByUserId, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName):
-        """
-        Uses the generateComponentInfo to gather information required to create a component.
-        Uses default componentTypeid if componentTypeId or componentTypeName is not provided
-        Sets properties for all related PDMLink drawings
-        Sets wbs property if possible and value is allowed.
-
-        :param drawingNumber: (str) Pdm Link drawing number
-        :param createdByUserId: (int)User id of user that is creating the component
-        :param componentTypeId: (int) id of the type of component is being added
-        :param description: (str) description of the component
-        :param ownerUserId: (int) User id of user that owns the component
-        :param ownerGroupId: (int) Group id of group that owns the component
-        :param isGroupWriteable: (boolean) Could group modify the component
-        :param componentTypeName: (str) user could provide component type name instead of id which will be searched for.
-        :return: ComponentObject with the resulting component after it has been added
-        :raises ObjectNotFound: if a drawing cannot be found, if a component type name provided cannot be found
-        :raises InvalidArguments: if a drawing number is not complete
-        :raises InvalidRequest: if required parameters aren't provided
-        """
-        # use default values for adding properties
-        def addProperty(componentId, propertyId, propertyValue):
-            self.componentDbApi.addComponentPropertyByTypeId(componentId, propertyId, tag='',
-                                                                     value=propertyValue, units=None, description=None,
-                                                                     enteredByUserId=createdByUserId, isDynamic=False,
-                                                                     isUserWriteable=False)
-
-        if (componentTypeId is None or componentTypeId == '' ) and (componentTypeName is None or componentTypeName == ''):
-            raise InvalidRequest('componentTypeId or componentTypeName must be provided to create a component.')
-
-        # Throws invalidArguments if user does not provide complete drawingNumber
-        # Throws InvalidRequest if no number is provided
-        componentInfo = self.__generateComponentInfo(drawingNumber)
-
-        # Check if description was entered
-        if description is None:
-            description = componentInfo['cdbDescription']
-
-        # It is already created in the above function
-        self.__createComponentDbApi()
-
-        # Figure component type id if one was provided textually or use default
-        if componentTypeId is None and componentTypeName is not None:
-            # Raises ObjectNotFound
-            componentTypeId = self.componentDbApi.getComponentTypeByName(componentTypeName)['id']
-        if componentTypeId is None:
-            componentTypeId = componentInfo['suggestedComponentTypes'][0]['id']
-
-        # Add the new component
-        newComponent = self.componentDbApi.addComponent(componentInfo['name'], componentInfo['modelNumber'], componentTypeId, createdByUserId, ownerUserId,
-                                                        ownerGroupId, isGroupWriteable, description)
-
-        componentId = newComponent['id']
-
-        # Add PDMLink properties
-        # Get id of pdmLink property
-        pdmPropertyTypeId = self.componentDbApi.getPropertyTypeByName(PdmLinkComponent.PROPERTY_TYPE_PDM_NAME)['id']
-        pdmPropertyValues = componentInfo['pdmPropertyValues']
-        for pdmPropertyValue in pdmPropertyValues:
-            addProperty(componentId, pdmPropertyTypeId, pdmPropertyValue)
-
-        # Attempt to add wbs description
-        wbsDescription = componentInfo['wbsDescription']
-        if wbsDescription is not None:
-            wbsPropertyTypeId = self.componentDbApi.getPropertyTypeByName(PdmLinkComponent.PROPERTY_TYPE_WBS_NAME)['id']
-            try:
-                addProperty(componentId, wbsPropertyTypeId, wbsDescription)
-            except InvalidArgument as invalidArgsEx:
-                self.logger.debug('Could not add WBS information for drawing: %s' % str(invalidArgsEx.getErrorMessage()))
-
-        return self.componentDbApi.getComponentById(componentId)
-
     def getRelatedDrawingSearchResults(self, drawingNumberBase):
         """
         Searched PDMLink for drawings related to each other. For example a DRW and PRT for the same part.
@@ -841,6 +759,8 @@ if __name__ == '__main__':
     oid = results[0]['oid']
     ufid = results[0]['ufid']
     print pdmLink.completeDrawingInformation(ufid, oid)
+
+    print pdmLink.generateComponentInfo('D14100201-113160.asm')
 
     # Getting a drawing from PDMLink
     getDrawingFromPDMLink('D14100201-113160.asm')

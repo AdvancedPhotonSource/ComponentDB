@@ -1,20 +1,11 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryDbFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -27,14 +18,11 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
-/**
- * Controller class for property type categories.
- */
 @Named("propertyTypeCategoryController")
 @SessionScoped
-public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategory, PropertyTypeCategoryDbFacade> implements Serializable {
+public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade> implements Serializable {
 
-    /*
+     /*
      * Controller specific settings
      */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
@@ -46,13 +34,13 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     private static final Logger logger = Logger.getLogger(PropertyTypeCategoryController.class.getName());
 
     @EJB
-    private PropertyTypeCategoryDbFacade propertyTypeCategoryFacade;
+    private PropertyTypeCategoryFacade propertyTypeCategoryFacade;
 
     public PropertyTypeCategoryController() {
     }
 
     @Override
-    protected PropertyTypeCategoryDbFacade getEntityDbFacade() {
+    protected PropertyTypeCategoryFacade getEntityDbFacade() {
         return propertyTypeCategoryFacade;
     }
 
@@ -69,7 +57,7 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "property type category";
+        return "Property Type Category";
     }
 
     @Override
@@ -123,31 +111,31 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByName = sessionUser.getUserSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        sessionUser.setUserSettingValue(FilterByNameSettingTypeKey, filterByName);
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
     }
 
     /**
@@ -196,5 +184,6 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
         }
 
     }
+
 
 }

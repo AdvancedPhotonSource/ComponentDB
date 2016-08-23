@@ -2,27 +2,23 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/LoginController.java $
+ *   $Date: 2015-04-17 12:25:03 -0500 (Fri, 17 Apr 2015) $
+ *   $Revision: 594 $
+ *   $Author: sveseli $
  */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.UserInfoDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.common.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -42,9 +38,7 @@ public class LoginController implements Serializable {
     private static final int SessionTimeoutDecreaseInSeconds = 10;
 
     @EJB
-    private UserInfoDbFacade userFacade;
-    @EJB
-    private SettingTypeDbFacade settingTypeFacade;
+    private UserInfoFacade userFacade;
 
     private String username = null;
     private String password = null;
@@ -52,6 +46,9 @@ public class LoginController implements Serializable {
     private boolean loggedInAsUser = false;
     private UserInfo user = null;
     private Integer sessionTimeoutInMiliseconds = null;
+    
+    private SettingController settingController = null; 
+    private final String SETTING_CONTROLLER_NAME = "settingController"; 
 
     private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
@@ -139,9 +136,11 @@ public class LoginController implements Serializable {
         }
 
         if (validCredentials) {
-            if (!user.hasUserSettings()) {
-                setSessionUserSettingsFromSettingTypeDefaults(user);
+            if (settingController == null) {
+                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME); 
             }
+            settingController.loadSessionUser(user);
+            
             SessionUtility.setUser(user);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
@@ -162,19 +161,6 @@ public class LoginController implements Serializable {
 
     }
 
-    private void setSessionUserSettingsFromSettingTypeDefaults(UserInfo sessionUser) {
-        List<SettingType> settingTypeList = settingTypeFacade.findAll();
-        List<UserSetting> userSettingList = new ArrayList<>();
-        for (SettingType settingType : settingTypeList) {
-            UserSetting userSetting = new UserSetting();
-            userSetting.setSettingType(settingType);
-            userSetting.setUser(sessionUser);
-            userSetting.setValue(settingType.getDefaultValue());
-            userSettingList.add(userSetting);
-        }
-        sessionUser.setUserSettingList(userSettingList);
-    }
-
     public String getLandingPage() {
         String landingPage = SessionUtility.getCurrentViewId();
         if (landingPage.contains("login")) {
@@ -192,6 +178,7 @@ public class LoginController implements Serializable {
         loggedInAsAdmin = false;
         loggedInAsUser = true;
         SessionUtility.setRole(CdbRole.USER);
+        settingController.resetSessionVariables();
         return getLandingPage();
     }
 
@@ -259,7 +246,7 @@ public class LoginController implements Serializable {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.invalidateSession();
         resetLoginInfo();
-        return "/views/home?faces-redirect=true";
+        return "/index?faces-redirect=true";
     }
 
     public void sessionIdleListener() {

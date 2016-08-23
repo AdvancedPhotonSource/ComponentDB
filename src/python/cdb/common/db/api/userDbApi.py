@@ -19,6 +19,12 @@ class UserDbApi(CdbDbApi):
         return self.toCdbObjectList(dbUserGroups)
 
     @CdbDbApi.executeQuery
+    def getUserGroupByName(self, name, **kwargs):
+        session = kwargs['session']
+        dbUserGroup = self.userGroupHandler.getUserGroupByName(session, name)
+        return dbUserGroup.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getUsers(self, **kwargs):
         session = kwargs['session']
         dbUsers = self.userInfoHandler.getUserInfos(session)
@@ -52,6 +58,12 @@ class UserDbApi(CdbDbApi):
     def addUserToGroup(self, username, groupName, **kwargs):
         session = kwargs['session']
         dbUserUserGroup = self.userInfoHandler.addUserToGroup(session, username, groupName)
+        return dbUserUserGroup.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addGroup(self, name, description, **kwargs):
+        session = kwargs['session']
+        dbUserUserGroup = self.userGroupHandler.addGroup(session, name, description)
         return dbUserUserGroup.getCdbObject()
 
 #######################################################################

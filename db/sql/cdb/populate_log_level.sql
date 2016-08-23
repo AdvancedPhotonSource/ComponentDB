@@ -1,0 +1,4 @@
+LOCK TABLES `log_level` WRITE;
+/*!40000 ALTER TABLE `log_level` DISABLE KEYS */;
+/*!40000 ALTER TABLE `log_level` ENABLE KEYS */;
+UNLOCK TABLES;

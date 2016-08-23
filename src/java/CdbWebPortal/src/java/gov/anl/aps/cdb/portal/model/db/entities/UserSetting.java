@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +20,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * User setting entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "user_setting")
@@ -32,20 +30,21 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserSetting.findAll", query = "SELECT u FROM UserSetting u"),
     @NamedQuery(name = "UserSetting.findById", query = "SELECT u FROM UserSetting u WHERE u.id = :id"),
     @NamedQuery(name = "UserSetting.findByValue", query = "SELECT u FROM UserSetting u WHERE u.value = :value")})
-public class UserSetting extends CdbEntity {
+public class UserSetting extends EntitySetting implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     @Size(max = 64)
     private String value;
-    @JoinColumn(name = "setting_type_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private SettingType settingType;
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UserInfo user;
+    @JoinColumn(name = "setting_type_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private SettingType settingType;
 
     public UserSetting() {
     }
@@ -63,20 +62,14 @@ public class UserSetting extends CdbEntity {
         this.id = id;
     }
 
+    @Override
     public String getValue() {
         return value;
     }
 
+    @Override
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public SettingType getSettingType() {
-        return settingType;
-    }
-
-    public void setSettingType(SettingType settingType) {
-        this.settingType = settingType;
     }
 
     public UserInfo getUser() {
@@ -87,6 +80,15 @@ public class UserSetting extends CdbEntity {
         this.user = user;
     }
 
+    @Override
+    public SettingType getSettingType() {
+        return settingType;
+    }
+
+    public void setSettingType(SettingType settingType) {
+        this.settingType = settingType;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -101,12 +103,15 @@ public class UserSetting extends CdbEntity {
             return false;
         }
         UserSetting other = (UserSetting) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "UserSetting[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.UserSetting[ id=" + id + " ]";
     }
-
+    
 }

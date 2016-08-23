@@ -12,8 +12,8 @@
               widgetVar="#{entityTypeName}EntityInfoViewDialogWidget"
               header="More Information"
               resizable="false"
-              styleClass="dialog">
-        <div class="dialog">
+              styleClass="viewTransparentBackgroundDialog">
+        <div>
 
             <p:panelGrid columns="2">
                 <ui:param name="domainEntityObject" value="#{entityController.current}" />
@@ -26,7 +26,7 @@
                 </ui:include>
             </p:panelGrid>
 
-            <f:facet name="footer" class="dialog">
+            <f:facet name="footer">
                 <p:commandButton value="Close" alt="Close" 
                                  oncomplete="PF('#{entityTypeName}EntityInfoViewDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>

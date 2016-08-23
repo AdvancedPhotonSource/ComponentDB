@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column id="entityType#{viewName}"
+              rendered="#{entityController.entityDisplayItemEntityTypes}">
+        <p:outputPanel rendered="#{entityController.entityTypeEditable}">
+            <p:selectCheckboxMenu id="entityTypeSelectCB#{viewName}"
+                                  label="#{itemObject.editEntityTypeString}"                              
+                                  value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
+                                  onHide="entityTypeSelectCBUpdate#{viewName}()"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{entityController.domainHandlerAllowedEnityTypes}" /> 
+            </p:selectCheckboxMenu>
+            <h:outputText value="#{itemObject.entityTypeString}"
+                          rendered="#{entityController.entityTypeEditable == false}" />
+            <p:remoteCommand name="entityTypeSelectCBUpdate#{viewName}"
+                             update="entityTypeSelectCB#{viewName}" />
+        </p:outputPanel>
+        <p:outputPanel rendered="#{!entityController.entityTypeEditable}">
+            <h:outputText value="#{itemObject.entityTypeString}" />
+        </p:outputPanel>
+    </p:column>
+
+
+</ui:composition>

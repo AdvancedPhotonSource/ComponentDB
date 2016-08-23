@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"        
+                template="itemPanelGridTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="panelGridStyle" value="editEntityDetails" />
+
+    <ui:define name="itemNameValue">
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemName.xhtml" />
+    </ui:define>
+
+    <ui:define name="itemQrIdValue">
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemQrId.xhtml" />       
+    </ui:define>
+
+    <ui:define name="itemItemIdentifier1Value">
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" />
+    </ui:define>
+
+    <ui:define name="itemItemIdentifier2Value">        
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />        
+    </ui:define>
+    
+    <ui:define name="itemItemProjectValue">
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemProject.xhtml" />
+    </ui:define>
+    
+    <ui:define name="itemEntityTypeValue" >
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemEntityType.xhtml" />                
+    </ui:define>
+
+    <ui:define name="itemDescriptionValue" >        
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemDescription.xhtml" />        
+    </ui:define>        
+
+    <ui:define name="itemItemTypeValue">
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemType.xhtml"/>       
+    </ui:define>
+
+    <ui:define name="itemItemCategoryValue" >
+        <ui:include src="../templateDefaults/itemFieldEditValues/itemItemCategory.xhtml" />        
+    </ui:define>
+
+    <ui:define name="entityInfoObject">
+        <ui:include src="../../../entityInfo/private/entityInfoEditObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{itemObject.entityInfo}"/>
+            <ui:param name="renderHelpFragments" value="#{false}" />
+        </ui:include>
+    </ui:define>
+
+</ui:composition>

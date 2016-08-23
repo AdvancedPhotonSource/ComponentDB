@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/utilities/StorageUtility.java $
+ *   $Date: 2016-04-01 13:48:42 -0500 (Fri, 01 Apr 2016) $
+ *   $Revision: 1290 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.portal.utilities;
 

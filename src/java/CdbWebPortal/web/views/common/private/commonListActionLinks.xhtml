@@ -6,7 +6,11 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
-
+    <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+    
+    <ui:param name="renderEntityCloneWithRemoteCommand" 
+              value="#{entityCloneRemoteCommandName != null ? true : false}" />
+    
     <div>
         <p:commandLink id="#{entityTypeName}ListViewLink" 
                        action="#{entityController.prepareView(entityObject)}" 
@@ -23,15 +27,32 @@
         </p:commandLink>
         <p:commandLink id="#{entityTypeName}ListCloneLink" 
                        action="#{entityController.prepareClone(entityObject)}" 
-                       rendered="#{isEntityCloneable}" 
+                       rendered="#{!renderEntityCloneWithRemoteCommand and isEntityCloneable}" 
                        styleClass="ui-icon ui-icon-copy" 
                        title="Clone">
         </p:commandLink>
         <p:tooltip for="#{entityTypeName}ListCloneLink" value="Clone #{entityController.displayEntityTypeName}."/>            
+        
+        <p:commandLink id="#{entityTypeName}ListCloneRemoteCommandLink" 
+                       oncomplete="#{entityCloneRemoteCommandName}()"
+                       rendered="#{renderEntityCloneWithRemoteCommand and isEntityCloneable}" 
+                       styleClass="ui-icon ui-icon-copy" 
+                       title="Clone">
+            <f:setPropertyActionListener value="#{entityObject}"
+                                         target="#{entityCloneItemToCloneTargetValue}" />
+        </p:commandLink>
+        <p:tooltip for="#{entityTypeName}ListCloneRemoteCommandLink" value="Clone #{entityController.displayEntityTypeName}."/>            
 
         <p:commandLink id="#{entityTypeName}ListDeleteLink" oncomplete="PF('#{entityTypeName}DestroyDialogWidget').show()" rendered="#{isEntityWriteable}" styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
             <f:setPropertyActionListener target="#{entityController.current}" value="#{entityObject}"/>
             <p:tooltip for="#{entityTypeName}ListDeleteLink" value="Delete #{entityController.displayEntityTypeName}."/>
+        </p:commandLink>
+        
+        <p:commandLink id="#{entityTypeName}toggleFavoritesLink" styleClass="#{currentFavoritesIconStyle}"
+                       rendered="#{renderFavorites}"
+                       actionListener="#{entityController[toggleFavoritesAction](toggleFavoritesParameter)}"
+                       update="@this">            
+            <p:tooltip for="#{entityTypeName}toggleFavoritesLink" value="Add/Remove Favorite #{displayEntityTypeName}" />
         </p:commandLink>
     </div>
 

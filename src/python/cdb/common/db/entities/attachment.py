@@ -6,6 +6,8 @@ from cdb.common.objects import attachment
 
 class Attachment(CdbDbEntity):
 
+    entityDisplayName = 'attachment'
+
     cdbObjectClass = attachment.Attachment
 
     def __init__(self, **kwargs):

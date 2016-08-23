@@ -13,95 +13,16 @@
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-    <filter>
-        <filter-name>DmNoCacheFilter</filter-name>
-        <filter-class>gov.anl.aps.cdb.portal.utilities.DmNoCacheFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>DmNoCacheFilter</filter-name>
-        <servlet-name>Faces Servlet</servlet-name>
-    </filter-mapping>
     <session-config>
         <session-timeout>
             60
         </session-timeout>
     </session-config>
-    
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
-    
     <context-param>
         <param-name>org.omnifaces.FACES_VIEWS_SCAN_PATHS</param-name>
         <param-value>/*.xhtml</param-value>
     </context-param>
-    
-    <error-page>
-        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
-        <location>/index.xhtml</location>
-    </error-page>
-    
-    <error-page>
-        <exception-type>com.sun.faces.context.FacesFileNotFoundException</exception-type>
-        <location>/views/error/pageNotFound.xhtml</location>
-    </error-page>
-
-    <error-page>
-        <error-code>401</error-code>
-        <location>/views/error/accessDenied.xhtml</location>
-    </error-page>
-
-    <error-page>
-        <error-code>403</error-code>
-        <location>/views/error/accessDenied.xhtml</location>
-    </error-page>
-
-    <error-page>
-        <error-code>404</error-code>
-        <location>/views/error/pageNotFound.xhtml</location>
-    </error-page>
-
-    <security-constraint>
-        <display-name>Restrict Private Files</display-name>
-        <web-resource-collection>
-            <web-resource-name>Restricted Files</web-resource-name>
-            <url-pattern>/templates/*</url-pattern>
-            <url-pattern>/views/allowedPropertyValue/private/*</url-pattern>
-            <url-pattern>/views/assemblyComponent/private/*</url-pattern>
-            <url-pattern>/views/common/private/*</url-pattern>
-            <url-pattern>/views/component/private/*</url-pattern>
-            <url-pattern>/views/componentInstance/private/*</url-pattern>
-            <url-pattern>/views/componentInstanceLocationHistory/private/*</url-pattern>
-            <url-pattern>/views/componentInstanceLog/private/*</url-pattern>
-            <url-pattern>/views/componentInstanceProperty/private/*</url-pattern>
-            <url-pattern>/views/componentLog/private/*</url-pattern>
-            <url-pattern>/views/componentProperty/private/*</url-pattern>
-            <url-pattern>/views/componentSource/private/*</url-pattern>
-            <url-pattern>/views/componentType/private/*</url-pattern>
-            <url-pattern>/views/componentTypeCategory/private/*</url-pattern>
-            <url-pattern>/views/componentTypePropertyType/private/*</url-pattern>
-            <url-pattern>/views/design/private/*</url-pattern>
-            <url-pattern>/views/designElement/private/*</url-pattern>
-            <url-pattern>/views/designElementLog/private/*</url-pattern>
-            <url-pattern>/views/desingElementProperty/private/*</url-pattern>
-            <url-pattern>/views/designLog/private/*</url-pattern>
-            <url-pattern>/views/designProperty/private/*</url-pattern>
-            <url-pattern>/views/entityInfo/private/*</url-pattern>
-            <url-pattern>/views/error/private/*</url-pattern>
-            <url-pattern>/views/location/private/*</url-pattern>
-            <url-pattern>/views/locationType/private/*</url-pattern>
-            <url-pattern>/views/log/private/*</url-pattern>
-            <url-pattern>/views/pdmLinkDrawing/private/*</url-pattern>
-            <url-pattern>/views/propertyType/private/*</url-pattern>
-            <url-pattern>/views/propertyTypeCategory/private/*</url-pattern>
-            <url-pattern>/views/propertyValue/private/*</url-pattern>
-            <url-pattern>/views/propertyValueHistory/private/*</url-pattern>
-            <url-pattern>/views/search/private/*</url-pattern>
-            <url-pattern>/views/source/private/*</url-pattern>
-            <url-pattern>/views/userGroup/private/*</url-pattern>
-            <url-pattern>/views/userInfo/private/*</url-pattern>
-            <url-pattern>/views/userSetting/private/*</url-pattern>
-        </web-resource-collection>
-        <auth-constraint/>
-    </security-constraint>
 </web-app>

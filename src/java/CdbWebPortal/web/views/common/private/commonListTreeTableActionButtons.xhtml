@@ -11,9 +11,10 @@
     <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
     
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}ListTreeTableAddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
-            <p:tooltip for="#{entityTypeName}ListTreeTableAddButton" value="Add new #{entityController.displayEntityTypeName}."/>
-        </p:commandButton>
+        <ui:include src="reusedParts/listAddButton.xhtml">
+            <ui:param name="viewName" value="TreeTable" />
+        </ui:include>
+        
         <p:commandButton id="#{entityTypeName}ListTreeTableCustomizeDisplayButton" oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
             <p:tooltip for="#{entityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>

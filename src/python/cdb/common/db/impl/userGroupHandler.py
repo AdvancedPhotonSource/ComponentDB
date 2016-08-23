@@ -39,3 +39,25 @@ class UserGroupHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('User group id %s does not exist.' % (id))
 
+    def getUserGroupByName(self, session, name):
+        self.logger.debug('Retrieving user group name %s' % name)
+        return self.findUserGroupByName(session, name)
+
+    def addGroup(self, session, groupName, description):
+        self.logger.debug('Adding group %s' % groupName)
+        try:
+            dbGroupInfo = session.query(UserGroup).filter(UserGroup.name==groupName).one()
+            raise ObjectAlreadyExists('Group %s already exists.' % (groupName))
+        except NoResultFound, ex:
+            # ok
+            pass
+
+        # Create group
+        dbGroupInfo = UserGroup(name=groupName)
+        if description:
+            dbGroupInfo.description = description
+
+        session.add(dbGroupInfo)
+        session.flush()
+        self.logger.debug('Inserted group id %s' % dbGroupInfo.id)
+        return dbGroupInfo

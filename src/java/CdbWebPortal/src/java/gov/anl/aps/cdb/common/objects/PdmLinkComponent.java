@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/common/objects/PdmLinkComponent.java $
+ *   $Date: 2015-08-28 14:32:32 -0500 (Fri, 28 Aug 2015) $
+ *   $Revision: 744 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.common.objects;
 

@@ -4,24 +4,19 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
-
-    <p:dialog id="propertyValueHistoryListCustomizeDisplayDialog" 
-              widgetVar="propertyValueHistoryListCustomizeDisplayDialogWidget" 
-              header="Customize List Display" 
-              styleClass="dialog">
-        <div class="dialog">
-            <ui:include src="propertyValueHistoryListCustomizePanelGrid.xhtml"/>
-            <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
-                                 update="propertyValueHistoryListDialog"
-                                 onclick="PF('propertyValueHistoryListCustomizeDisplayDialogWidget').hide()"
-                                 oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-            </f:facet>
-        </div>
-    </p:dialog>
-
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+    
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="entityController" value="#{propertyValueHistoryController}" />
+        <ui:param name="customizeDisplayOnComplete"  value="PF('propertyValueHistoryListDialogWidget').show()" />
+        <ui:param name="customizeDisplayUpdateTarget" value="propertyValueHistoryListDialog" />
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogConent">
+        <ui:include src="propertyValueHistoryListCustomizePanelGrid.xhtml"/>
+    </ui:define>
+    
 </ui:composition>
 
 

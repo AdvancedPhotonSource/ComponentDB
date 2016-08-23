@@ -1,19 +1,11 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
@@ -34,13 +26,10 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-/**
- * Controller class for property values.
- */
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueDbFacade> implements Serializable {
-
+public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade>implements Serializable {
+    
     /*
      * Controller specific settings
      */
@@ -83,21 +72,17 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     private String filterByValue = null;
     private String filterByUnits = null;
 
-    private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
-
     @EJB
-    private PropertyValueDbFacade propertyValueFacade;
-
-    private DataTable designPropertyValueListDataTable = null;
-    private DataTable componentPropertyValueListDataTable = null;
-    private DataTable componentInstancePropertyValueListDataTable = null;
+    private gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade propertyValueFacade;
+    
+    private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
 
     public PropertyValueController() {
         super();
     }
-
+    
     @Override
-    protected PropertyValueDbFacade getEntityDbFacade() {
+    protected PropertyValueFacade getEntityDbFacade() {
         return propertyValueFacade;
     }
 
@@ -109,6 +94,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     @Override
     public String getEntityTypeName() {
         return "propertyValue";
+    }
+
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "Property Value";
     }
 
     @Override
@@ -155,32 +145,32 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
-        displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayIsDynamic = sessionUser.getUserSettingValueAsBoolean(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
-        displayIsUserWriteable = sessionUser.getUserSettingValueAsBoolean(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayTag = sessionUser.getUserSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
-        displayTypeCategory = sessionUser.getUserSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
-        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displayEnteredByUser = settingEntity.getSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        displayEnteredOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayIsDynamic = settingEntity.getSettingValueAsBoolean(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
+        displayIsUserWriteable = settingEntity.getSettingValueAsBoolean(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayTag = settingEntity.getSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
+        displayTypeCategory = settingEntity.getSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+        displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
 
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
-        filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-        filterByIsDynamic = sessionUser.getUserSettingValueAsString(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
-        filterByIsUserWriteable = sessionUser.getUserSettingValueAsString(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
-        filterByTag = sessionUser.getUserSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
-        filterByType = sessionUser.getUserSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
-        filterByTypeCategory = sessionUser.getUserSettingValueAsString(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
-        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
-        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterByEnteredByUser = settingEntity.getSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        filterByEnteredOnDateTime = settingEntity.getSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByIsDynamic = settingEntity.getSettingValueAsString(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
+        filterByIsUserWriteable = settingEntity.getSettingValueAsString(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
+        filterByTag = settingEntity.getSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
+        filterByType = settingEntity.getSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
+        filterByTypeCategory = settingEntity.getSettingValueAsString(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+        filterByUnits = settingEntity.getSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = settingEntity.getSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
     }
 
     @Override
@@ -202,32 +192,32 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
-        sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        sessionUser.setUserSettingValue(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
-        sessionUser.setUserSettingValue(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
-        sessionUser.setUserSettingValue(DisplayTagSettingTypeKey, displayTag);
-        sessionUser.setUserSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
-        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        settingEntity.setSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        settingEntity.setSettingValue(DisplayIsDynamicSettingTypeKey, displayIsDynamic);
+        settingEntity.setSettingValue(DisplayIsUserWriteableSettingTypeKey, displayIsUserWriteable);
+        settingEntity.setSettingValue(DisplayTagSettingTypeKey, displayTag);
+        settingEntity.setSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
+        settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
 
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
-        sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-        sessionUser.setUserSettingValue(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
-        sessionUser.setUserSettingValue(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
-        sessionUser.setUserSettingValue(FilterByTagSettingTypeKey, filterByTag);
-        sessionUser.setUserSettingValue(FilterByTypeSettingTypeKey, filterByType);
-        sessionUser.setUserSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
-        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
-        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        settingEntity.setSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        settingEntity.setSettingValue(FilterByIsDynamicSettingTypeKey, filterByIsDynamic);
+        settingEntity.setSettingValue(FilterByIsUserWriteableSettingTypeKey, filterByIsUserWriteable);
+        settingEntity.setSettingValue(FilterByTagSettingTypeKey, filterByTag);
+        settingEntity.setSettingValue(FilterByTypeSettingTypeKey, filterByType);
+        settingEntity.setSettingValue(FilterByTypeCategorySettingTypeKey, filterByTypeCategory);
+        settingEntity.setSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        settingEntity.setSettingValue(FilterByValueSettingTypeKey, filterByValue);
 
     }
 
@@ -331,53 +321,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     
     public String getScaledImagePath(PropertyValue propertyValue) {
         return StorageUtility.getPropertyValueImagePath(propertyValue.getValue(), CdbPropertyValue.SCALED_IMAGE_EXTENSION); 
-    }
-    
-    /**
-     * Converter class for property value objects.
-     */
-    @FacesConverter(forClass = PropertyValue.class)
-    public static class PropertyValueControllerConverter implements Converter {
-
-        @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            try {
-                if (value == null || value.length() == 0) {
-                    return null;
-                }
-                PropertyValueController controller = (PropertyValueController) facesContext.getApplication().getELResolver().
-                        getValue(facesContext.getELContext(), null, "propertyValueController");
-                return controller.getEntity(getIntegerKey(value));
-            } catch (Exception ex) {
-                // we cannot get entity from a given key
-                logger.warn("Value " + value + " cannot be converted to property value object.");
-                return null;
-            }
-        }
-
-        Integer getIntegerKey(String value) {
-            return Integer.valueOf(value);
-        }
-
-        String getStringKey(Integer value) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(value);
-            return sb.toString();
-        }
-
-        @Override
-        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null) {
-                return null;
-            }
-            if (object instanceof PropertyValue) {
-                PropertyValue o = (PropertyValue) object;
-                return getStringKey(o.getId());
-            } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyValue.class.getName());
-            }
-        }
-
     }
 
     public Boolean getDisplayEnteredByUser() {
@@ -508,41 +451,55 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         this.filterByUnits = filterByUnits;
     }
 
-    public DataTable getDesignPropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            designPropertyValueListDataTable = new DataTable();
-        }
-        return designPropertyValueListDataTable;
-    }
-
-    public void setDesignPropertyValueListDataTable(DataTable designPropertyValueListDataTable) {
-        this.designPropertyValueListDataTable = designPropertyValueListDataTable;
-    }
-
-    public DataTable getComponentPropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentPropertyValueListDataTable = new DataTable();
-        }
-        return componentPropertyValueListDataTable;
-    }
-
-    public void setComponentPropertyValueListDataTable(DataTable componentPropertyValueListDataTable) {
-        this.componentPropertyValueListDataTable = componentPropertyValueListDataTable;
-    }
-
-    public DataTable getComponentInstancePropertyValueListDataTable() {
-        if (userSettingsChanged() || shouldResetListDataModel()) {
-            componentInstancePropertyValueListDataTable = new DataTable();
-        }
-        return componentInstancePropertyValueListDataTable;
-    }
-
-    public void setComponentInstancePropertyValueListDataTable(DataTable componentInstancePropertyValueListDataTable) {
-        this.componentInstancePropertyValueListDataTable = componentInstancePropertyValueListDataTable;
-    }
-    
     public boolean isPropertyValueViewable(PropertyValue propertyValue) {
         return GalleryUtility.viewableFileName(propertyValue.getValue()); 
+    }
+    
+    /**
+     * Converter class for property value objects.
+     */
+    @FacesConverter(forClass = PropertyValue.class)
+    public static class PropertyValueControllerConverter implements Converter {
+
+        @Override
+        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+            try {
+                if (value == null || value.length() == 0) {
+                    return null;
+                }
+                PropertyValueController controller = (PropertyValueController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "propertyValueController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + " cannot be converted to property value object.");
+                return null;
+            }
+        }
+
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
+        }
+
+        String getStringKey(Integer value) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(value);
+            return sb.toString();
+        }
+
+        @Override
+        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+            if (object == null) {
+                return null;
+            }
+            if (object instanceof PropertyValue) {
+                PropertyValue o = (PropertyValue) object;
+                return getStringKey(o.getId());
+            } else {
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyValue.class.getName());
+            }
+        }
+
     }
 
 }

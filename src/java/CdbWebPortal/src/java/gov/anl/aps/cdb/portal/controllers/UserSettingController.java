@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
-import gov.anl.aps.cdb.portal.model.db.beans.UserSettingDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,20 +18,16 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-/**
- * User setting controller.
- */
 @Named("userSettingController")
 @SessionScoped
-public class UserSettingController extends CdbEntityController<UserSetting, UserSettingDbFacade> implements Serializable {
-
-    /*
+public class UserSettingController extends CdbEntityController<UserSetting, UserSettingFacade>implements Serializable {
+     /*
      * Controller specific settings
      */
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserSetting.List.Display.NumberOfItemsPerPage";
 
     @EJB
-    private UserSettingDbFacade userSettingFacade;
+    private UserSettingFacade userSettingFacade;
     private static final Logger logger = Logger.getLogger(UserSettingController.class.getName());
 
     // These do not correspond to setting types.
@@ -51,7 +38,7 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     }
 
     @Override
-    protected UserSettingDbFacade getEntityDbFacade() {
+    protected UserSettingFacade getEntityDbFacade() {
         return userSettingFacade;
     }
 
@@ -97,8 +84,8 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
     @Override
@@ -114,12 +101,12 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
     }
 
     @Override
@@ -191,5 +178,4 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
         }
 
     }
-
 }

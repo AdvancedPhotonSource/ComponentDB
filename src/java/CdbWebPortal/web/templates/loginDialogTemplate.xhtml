@@ -7,21 +7,20 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <h:form id="loginForm">
-        <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialogWidget">
-            <h:panelGrid styleClass="loginInput">
-                <div class="dialog">
-                    <div>
-                        <p:inputText id="username" value="#{loginController.username}" title="Username"/>
-                        <p:watermark for="username" value="Username"/>
-                        <p:password id="password" value="#{loginController.password}" title="Password"/>
-                        <p:watermark for="password" value="Password"/>
-                    </div>
-
-                    <f:facet name="footer">
-                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
-                    </f:facet>
-                </div>
+        <p:dialog id="loginDialog" 
+                  styleClass="viewTransparentBackgroundDialog" 
+                  header="Login" widgetVar="loginDialogWidget"
+                  resizable="false">
+            <h:panelGrid styleClass="loginInput" columns="2">
+                <p:inputText id="username" value="#{loginController.username}" title="Username"/>
+                <p:watermark for="username" value="Username"/>
+                <p:password id="password" value="#{loginController.password}" title="Password"/>
+                <p:watermark for="password" value="Password"/>
             </h:panelGrid>
+
+            <f:facet name="footer">
+                <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
+            </f:facet>
         </p:dialog>
     </h:form>
 </ui:composition>

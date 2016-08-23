@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -27,7 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Setting type entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "setting_type")
@@ -38,8 +36,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "SettingType.findByName", query = "SELECT s FROM SettingType s WHERE s.name = :name"),
     @NamedQuery(name = "SettingType.findByDescription", query = "SELECT s FROM SettingType s WHERE s.description = :description"),
     @NamedQuery(name = "SettingType.findByDefaultValue", query = "SELECT s FROM SettingType s WHERE s.defaultValue = :defaultValue")})
-public class SettingType extends CdbEntity {
+public class SettingType implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -55,6 +54,8 @@ public class SettingType extends CdbEntity {
     private String defaultValue;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "settingType")
     private List<UserSetting> userSettingList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "settingType")
+    private List<UserGroupSetting> userGroupSettingList;
 
     public SettingType() {
     }
@@ -68,7 +69,6 @@ public class SettingType extends CdbEntity {
         this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -110,6 +110,15 @@ public class SettingType extends CdbEntity {
         this.userSettingList = userSettingList;
     }
 
+    @XmlTransient
+    public List<UserGroupSetting> getUserGroupSettingList() {
+        return userGroupSettingList;
+    }
+
+    public void setUserGroupSettingList(List<UserGroupSetting> userGroupSettingList) {
+        this.userGroupSettingList = userGroupSettingList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -124,12 +133,15 @@ public class SettingType extends CdbEntity {
             return false;
         }
         SettingType other = (SettingType) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "SettingType[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.SettingType[ id=" + id + " ]";
     }
-
+    
 }

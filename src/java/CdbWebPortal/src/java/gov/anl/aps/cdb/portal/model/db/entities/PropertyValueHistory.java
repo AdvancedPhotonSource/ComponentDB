@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -28,7 +25,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Property value history entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "property_value_history")
@@ -40,9 +38,12 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PropertyValueHistory.findByValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.value = :value"),
     @NamedQuery(name = "PropertyValueHistory.findByUnits", query = "SELECT p FROM PropertyValueHistory p WHERE p.units = :units"),
     @NamedQuery(name = "PropertyValueHistory.findByDescription", query = "SELECT p FROM PropertyValueHistory p WHERE p.description = :description"),
-    @NamedQuery(name = "PropertyValueHistory.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValueHistory p WHERE p.enteredOnDateTime = :enteredOnDateTime")})
-public class PropertyValueHistory extends CdbEntity {
+    @NamedQuery(name = "PropertyValueHistory.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValueHistory p WHERE p.enteredOnDateTime = :enteredOnDateTime"),
+    @NamedQuery(name = "PropertyValueHistory.findByDisplayValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.displayValue = :displayValue"),
+    @NamedQuery(name = "PropertyValueHistory.findByTargetValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.targetValue = :targetValue")})
+public class PropertyValueHistory extends CdbEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -51,12 +52,6 @@ public class PropertyValueHistory extends CdbEntity {
     private String tag;
     @Size(max = 256)
     private String value;
-    @Size(max = 256)
-    @Column(name = "display_value")
-    private String displayValue;
-    @Size(max = 256)
-    @Column(name = "target_value")
-    private String targetValue;
     @Size(max = 16)
     private String units;
     @Size(max = 256)
@@ -66,12 +61,19 @@ public class PropertyValueHistory extends CdbEntity {
     @Column(name = "entered_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date enteredOnDateTime;
+    @Size(max = 256)
+    @Column(name = "display_value")
+    private String displayValue;
+    @Size(max = 256)
+    @Column(name = "target_value")
+    private String targetValue;
+    @JoinColumn(name = "property_value_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private PropertyValue propertyValue;
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UserInfo enteredByUser;
-    @JoinColumn(name = "property_value_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private PropertyValue propertyValue; 
+    
     private transient String infoActionCommand; 
 
     public PropertyValueHistory() {
@@ -86,7 +88,6 @@ public class PropertyValueHistory extends CdbEntity {
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -135,32 +136,12 @@ public class PropertyValueHistory extends CdbEntity {
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
-    public UserInfo getEnteredByUser() {
-        return enteredByUser;
-    }
-
-    public void setEnteredByUser(UserInfo enteredByUser) {
-        this.enteredByUser = enteredByUser;
-    }
-
-    public PropertyValue getPropertyValue() {
-        return propertyValue;
-    }
-
-    public void setPropertyValue(PropertyValue propertyValue) {
-        this.propertyValue = propertyValue;
-    }
-
     public String getDisplayValue() {
         return displayValue;
     }
 
     public void setDisplayValue(String displayValue) {
         this.displayValue = displayValue;
-    }
-
-    public void setDisplayValueToValue() {
-        displayValue = value;
     }
 
     public String getTargetValue() {
@@ -171,8 +152,30 @@ public class PropertyValueHistory extends CdbEntity {
         this.targetValue = targetValue;
     }
 
-    public void setTargetValueToValue() {
-        targetValue = value;
+    public PropertyValue getPropertyValue() {
+        return propertyValue;
+    }
+
+    public void setPropertyValue(PropertyValue propertyValue) {
+        this.propertyValue = propertyValue;
+    }
+
+    public UserInfo getEnteredByUser() {
+        return enteredByUser;
+    }
+
+    public void setEnteredByUser(UserInfo enteredByUser) {
+        this.enteredByUser = enteredByUser;
+    }
+    
+    public void updateFromPropertyValue(PropertyValue propertyValue) {
+        this.propertyValue = propertyValue;
+        this.tag = propertyValue.getTag();
+        this.value = propertyValue.getValue();
+        this.units = propertyValue.getUnits();
+        this.description = propertyValue.getDescription();
+        this.enteredByUser = propertyValue.getEnteredByUser();
+        this.enteredOnDateTime = propertyValue.getEnteredOnDateTime();
     }
 
     public String getInfoActionCommand() {
@@ -181,6 +184,14 @@ public class PropertyValueHistory extends CdbEntity {
 
     public void setInfoActionCommand(String infoActionCommand) {
         this.infoActionCommand = infoActionCommand;
+    }
+    
+    public void setDisplayValueToValue() {
+        this.displayValue = value;
+    }
+    
+    public void setTargetValueToValue() { 
+        this.targetValue = value; 
     }
 
     @Override
@@ -197,25 +208,15 @@ public class PropertyValueHistory extends CdbEntity {
             return false;
         }
         PropertyValueHistory other = (PropertyValueHistory) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        if (units != null && !units.isEmpty()) {
-            return value + " [" + units + "]";
-        } else {
-            return value;
-        }
+        return "gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory[ id=" + id + " ]";
     }
-
-    public void updateFromPropertyValue(PropertyValue propertyValue) {
-        this.propertyValue = propertyValue;
-        this.tag = propertyValue.getTag();
-        this.value = propertyValue.getValue();
-        this.units = propertyValue.getUnits();
-        this.description = propertyValue.getDescription();
-        this.enteredByUser = propertyValue.getEnteredByUser();
-        this.enteredOnDateTime = propertyValue.getEnteredOnDateTime();
-    }
+    
 }

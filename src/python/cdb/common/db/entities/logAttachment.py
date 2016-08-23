@@ -6,6 +6,8 @@ from cdb.common.objects import logAttachment
 
 class LogAttachment(CdbDbEntity):
 
+    entityDisplayName = 'log attachment'
+
     cdbObjectClass = logAttachment.LogAttachment
 
     def __init__(self, **kwargs):

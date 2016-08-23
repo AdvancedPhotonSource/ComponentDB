@@ -1,16 +1,7 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.beans.LogTopicDbFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
+import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 
 import java.io.Serializable;
 import java.util.List;
@@ -23,24 +14,21 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
-/**
- * Log topic controller class.
- */
 @Named("logTopicController")
 @SessionScoped
-public class LogTopicController extends CdbEntityController<LogTopic, LogTopicDbFacade> implements Serializable {
+public class LogTopicController extends CdbEntityController<LogTopic, LogTopicFacade> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(LogTopicController.class.getName());
 
     @EJB
-    private LogTopicDbFacade logTopicFacade;
+    private LogTopicFacade logTopicFacade;
 
     public LogTopicController() {
         super();
     }
 
     @Override
-    protected LogTopicDbFacade getEntityDbFacade() {
+    protected LogTopicFacade getEntityDbFacade() {
         return logTopicFacade;
     }
 

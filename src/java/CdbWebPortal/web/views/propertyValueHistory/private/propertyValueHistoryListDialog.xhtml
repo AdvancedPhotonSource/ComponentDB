@@ -10,22 +10,21 @@
               widgetVar="propertyValueHistoryListDialogWidget" 
               header="Property Value History: #{propertyValueHistoryController.selectedPropertyValueTypeName}" 
               dynamic="true"
-              styleClass="dialog">
-        <div class="dialog">
+              styleClass="viewTransparentBackgroundDialog">
+        <div>
 
             <ui:include src="../../common/private/commonDialogListActionButtons.xhtml">
                 <ui:param name="entityController" value="#{propertyValueHistoryController}"/>
             </ui:include>
 
             <ui:include src="propertyValueHistoryListDataTable.xhtml"/>
-            
-            <f:facet name="footer" class="dialog">
-                <p:commandButton id="propertyValueHistoryDoneButton" value="Done" alt="Done" 
-                                 oncomplete="PF('propertyValueHistoryListDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-                <p:tooltip for="propertyValueHistoryDoneButton" value="Close property value history display."/>
-            </f:facet>
         </div>
+        <f:facet name="footer" class="dialog">
+            <p:commandButton id="propertyValueHistoryDoneButton" value="Done" alt="Done" 
+                             oncomplete="PF('propertyValueHistoryListDialogWidget').hide()" 
+                             icon="ui-icon-arrowreturnthick-1-w"/>
+            <p:tooltip for="propertyValueHistoryDoneButton" value="Close property value history display."/>
+        </f:facet>
     </p:dialog>
 
 </ui:composition>

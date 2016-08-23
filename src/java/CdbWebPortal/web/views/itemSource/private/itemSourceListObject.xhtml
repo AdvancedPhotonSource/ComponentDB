@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
+
+    <p:column sortBy="#{itemSourceObject.id}" headerText="Id"
+              filterBy="#{itemSourceObject.id}"
+              rendered="#{itemSourceController.displayId}"
+              filterable="#{filterable}">
+        <h:outputText value="#{itemSourceObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{itemSourceObject.source.name}" 
+              filterBy="#{itemSourceObject.source.name}" 
+              filterable="#{filterable}"
+              headerText="Name">
+        <h:outputLink value="../source/view.xhtml?id=#{itemSourceObject.source.id}&amp;breadcrumb=#{breadcrumb}" title="View design details">
+            <h:outputText value="#{itemSourceObject.source.name}"/>
+        </h:outputLink>  
+    </p:column>
+
+    <p:column sortBy="#{itemSourceObject.partNumber}" 
+              filterBy="#{itemSourceObject.partNumber}" 
+              filterable="#{filterable}"
+              headerText="Part Number"
+              rendered="#{itemSourceController.displayPartNumber}">
+        <h:outputText value="#{itemSourceObject.partNumber}"/>
+    </p:column>
+
+    <p:column sortBy="#{itemSourceObject.cost}" 
+              filterBy="#{itemSourceObject.cost}" headerText="Cost [$]"
+              filterable="#{filterable}"
+              rendered="#{itemSourceController.displayCost}">
+        <h:outputText value="#{itemSourceObject.cost}"/>
+    </p:column>
+
+    <p:column sortBy="#{itemSourceObject.description}" 
+              filterBy="#{itemSourceObject.description}" 
+              filterable="#{filterable}"
+              headerText="Description"
+              rendered="#{itemSourceController.displayDescription}">
+        <h:outputText value="#{itemSourceObject.description}"/>
+    </p:column>    
+
+    <p:column sortBy="#{itemSourceObject.contactInfo}" headerText="Contact Info"
+              filterBy="#{itemSourceObject.contactInfo}" 
+              filterable="#{filterable}"
+              rendered="#{itemSourceController.displayContactInfo}">
+        <h:outputText value="#{itemSourceObject.contactInfo}"/>
+    </p:column>    
+
+    <p:column sortBy="#{itemSourceObject.url}" 
+              filterBy="#{itemSourceObject.url}" 
+              filterable="#{filterable}"
+              headerText="URL"
+              rendered="#{itemSourceController.displayUrl}">
+        <h:outputLink value="#{itemSourceObject.targetUrl}" target="_page_#{itemSourceObject.url}">
+            <h:outputText value="#{itemSourceObject.displayUrl}"/>
+        </h:outputLink>
+    </p:column>         
+
+    <p:column sortBy="#{itemSourceObject.isManufacturer}" 
+              headerText="Manufacturer"
+              rendered="#{itemSourceController.displayIsManufacturer}">
+        <f:attribute name="exportValue" value="#{itemSourceObject.isManufacturer}"/>
+        <div class="dataTableCheckbox">
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{itemSourceObject.isManufacturer}"/>
+        </div>
+    </p:column>   
+
+    <p:column sortBy="#{itemSourceObject.isVendor}" headerText="Vendor"
+              rendered="#{itemSourceController.displayIsVendor}">
+        <f:attribute name="exportValue" value="#{itemSourceObject.isVendor}"/>
+        <div class="dataTableCheckbox">
+            <h:outputText value="" styleClass="ui-icon ui-icon-check"
+                          rendered="#{itemSourceObject.isVendor}"/>
+        </div>
+    </p:column> 
+
+</ui:composition>
+
+

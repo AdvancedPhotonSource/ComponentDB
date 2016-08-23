@@ -4,34 +4,18 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+    
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayEntityTypeName" value="propertyValueGalleria" />
+    </ui:define>
 
-    <p:dialog id="propertyValueGalleriaListCustomizeDisplayDialog" 
-              widgetVar="propertyValueGalleriaListCustomizeDisplayDialogWidget" 
-              header="Customize Display" 
-              styleClass="dialog">
-        <div class="dialog">
-
-            <p:panelGrid columns="2">
-                <p:selectBooleanCheckbox id="displayPropertyValueViewableDocumentsBoolean" value="#{entityController.displayGalleryViewableDocuments}"/>  
-                <h:outputLabel for="displayPropertyValueViewableDocumentsBoolean" value="Display Viewable Documents" styleClass="dialogDataLabel"/>
-            </p:panelGrid>
-
-            <f:facet name="footer" class="dialog">
-                <p:commandButton value="Done" alt="Done" 
-                                 action="#{entityController.customizeListDisplay()}"
-                                 update="propertyValueGalleriaListCustomizeDisplayDialog #{entityTypeName}PropertyImageGalleria"
-                                 oncomplete="PF('propertyValueGalleriaListCustomizeDisplayDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
-                <p:commandButton value="Save" alt="Save"
-                                 action="#{userInfoController.saveSettingListForSessionUser()}"
-                                 actionListener="#{componentController.saveListSettingsForSessionUserSetCurrentActionListener}"
-                                 oncomplete="PF('propertyValueGalleriaListCustomizeDisplayDialogWidget').hide()" 
-                                 update="propertyValueGalleriaListCustomizeDisplayDialog #{entityTypeName}PropertyImageGalleria"
-                                 rendered="#{loginController.loggedIn}"
-                                 icon="ui-icon-check"/>
-            </f:facet>
-        </div>
-    </p:dialog>
+    <ui:define name="customizeDisplayDialogConent">
+        <p:panelGrid columns="2">
+            <p:selectBooleanCheckbox id="displayPropertyValueViewableDocumentsBoolean" value="#{entityController.displayGalleryViewableDocuments}"/>  
+            <h:outputLabel for="displayPropertyValueViewableDocumentsBoolean" value="Display Viewable Documents" styleClass="dialogDataLabel"/>
+        </p:panelGrid>
+    </ui:define>
 
 </ui:composition>

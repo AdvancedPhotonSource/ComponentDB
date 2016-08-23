@@ -59,7 +59,7 @@
                         </ui:include>  
                     </p:panelGrid>
                 </p:tab>
-                
+
                 <p:tab title="Row Expansion">
                     <p:panelGrid columns="2">
                         <p:selectBooleanCheckbox id="displayRowExpansion" value="#{entityController.displayRowExpansion}"/>  
@@ -96,7 +96,7 @@
                                  oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
                                  icon="ui-icon-arrowreturnthick-1-w"/>
                 <p:commandButton value="Save" alt="Save"
-                                 action="#{userInfoController.saveSettingListForSessionUser()}"
+                                 action="#{settingController.saveSettingListForSettingEntity()}"
                                  actionListener="#{entityController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').hide()" 
                                  update="@form"

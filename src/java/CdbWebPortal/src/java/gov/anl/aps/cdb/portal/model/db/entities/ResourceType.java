@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -18,8 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -31,7 +26,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Resource type entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "resource_type")
@@ -44,8 +40,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ResourceType.findByHandlerName", query = "SELECT r FROM ResourceType r WHERE r.handlerName = :handlerName"),
     @NamedQuery(name = "ResourceType.findByDefaultValue", query = "SELECT r FROM ResourceType r WHERE r.defaultValue = :defaultValue"),
     @NamedQuery(name = "ResourceType.findByDefaultUnits", query = "SELECT r FROM ResourceType r WHERE r.defaultUnits = :defaultUnits")})
-public class ResourceType extends CdbEntity {
+public class ResourceType implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -62,23 +59,20 @@ public class ResourceType extends CdbEntity {
     @Size(max = 64)
     @Column(name = "default_value")
     private String defaultValue;
-    @Size(max = 16)
+    @Size(max = 32)
     @Column(name = "default_units")
     private String defaultUnits;
-    @JoinTable(name = "component_type_resource_type", joinColumns = {
-        @JoinColumn(name = "resource_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "component_type_id", referencedColumnName = "id")})
-    @ManyToMany
-    private List<ComponentType> componentTypeList;
-    @OneToMany(mappedBy = "resourceTypeId")
-    private List<DesignElementConnection> designElementConnectionList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceTypeId")
-    private List<ComponentResource> componentResourceList;
-    @JoinColumn(name = "resource_type_category_id", referencedColumnName = "id")
+    @JoinColumn(name = "resource_type_category", referencedColumnName = "id")
     @ManyToOne
-    private ResourceTypeCategory resourceTypeCategoryId;
+    private ResourceTypeCategory resourceTypeCategory;
     @OneToMany(mappedBy = "resourceType")
-    private List<ConnectorType> connectorTypeList;
+    private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
+    @OneToMany(mappedBy = "resourceType")
+    private List<Connector> connectorList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "resourceType")
+    private List<ItemResource> itemResourceList;
+    @OneToMany(mappedBy = "resourceType")
+    private List<ItemElementRelationship> itemElementRelationshipList;
 
     public ResourceType() {
     }
@@ -92,7 +86,6 @@ public class ResourceType extends CdbEntity {
         this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -141,48 +134,48 @@ public class ResourceType extends CdbEntity {
         this.defaultUnits = defaultUnits;
     }
 
-    @XmlTransient
-    public List<ComponentType> getComponentTypeList() {
-        return componentTypeList;
+    public ResourceTypeCategory getResourceTypeCategory() {
+        return resourceTypeCategory;
     }
 
-    public void setComponentTypeList(List<ComponentType> componentTypeList) {
-        this.componentTypeList = componentTypeList;
-    }
-
-    @XmlTransient
-    public List<DesignElementConnection> getDesignElementConnectionList() {
-        return designElementConnectionList;
-    }
-
-    public void setDesignElementConnectionList(List<DesignElementConnection> designElementConnectionList) {
-        this.designElementConnectionList = designElementConnectionList;
+    public void setResourceTypeCategory(ResourceTypeCategory resourceTypeCategory) {
+        this.resourceTypeCategory = resourceTypeCategory;
     }
 
     @XmlTransient
-    public List<ComponentResource> getComponentResourceList() {
-        return componentResourceList;
+    public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
+        return itemElementRelationshipHistoryList;
     }
 
-    public void setComponentResourceList(List<ComponentResource> componentResourceList) {
-        this.componentResourceList = componentResourceList;
-    }
-
-    public ResourceTypeCategory getResourceTypeCategoryId() {
-        return resourceTypeCategoryId;
-    }
-
-    public void setResourceTypeCategoryId(ResourceTypeCategory resourceTypeCategoryId) {
-        this.resourceTypeCategoryId = resourceTypeCategoryId;
+    public void setItemElementRelationshipHistoryList(List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList) {
+        this.itemElementRelationshipHistoryList = itemElementRelationshipHistoryList;
     }
 
     @XmlTransient
-    public List<ConnectorType> getConnectorTypeList() {
-        return connectorTypeList;
+    public List<Connector> getConnectorList() {
+        return connectorList;
     }
 
-    public void setConnectorTypeList(List<ConnectorType> connectorTypeList) {
-        this.connectorTypeList = connectorTypeList;
+    public void setConnectorList(List<Connector> connectorList) {
+        this.connectorList = connectorList;
+    }
+
+    @XmlTransient
+    public List<ItemResource> getItemResourceList() {
+        return itemResourceList;
+    }
+
+    public void setItemResourceList(List<ItemResource> itemResourceList) {
+        this.itemResourceList = itemResourceList;
+    }
+
+    @XmlTransient
+    public List<ItemElementRelationship> getItemElementRelationshipList() {
+        return itemElementRelationshipList;
+    }
+
+    public void setItemElementRelationshipList(List<ItemElementRelationship> itemElementRelationshipList) {
+        this.itemElementRelationshipList = itemElementRelationshipList;
     }
 
     @Override
@@ -199,12 +192,15 @@ public class ResourceType extends CdbEntity {
             return false;
         }
         ResourceType other = (ResourceType) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "ResourceType[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.ResourceType[ id=" + id + " ]";
     }
-
+    
 }

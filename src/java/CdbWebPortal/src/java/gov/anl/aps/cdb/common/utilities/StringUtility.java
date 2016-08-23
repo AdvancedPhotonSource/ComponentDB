@@ -2,12 +2,14 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/common/utilities/StringUtility.java $
+ *   $Date: 2015-04-16 10:32:53 -0500 (Thu, 16 Apr 2015) $
+ *   $Revision: 589 $
+ *   $Author: sveseli $
  */
 package gov.anl.aps.cdb.common.utilities;
+
+import java.util.List;
 
 /**
  * String utility class.
@@ -31,6 +33,30 @@ public class StringUtility {
             return false;
         }
         return cs1.equals(cs2);
+    }
+
+    /**
+     * 
+     * @param cdbEntityList
+     * @return 
+     */
+    public static String getStringifyCdbList(List<?> cdbEntityList) {
+        String stringRep = "";        
+        if (cdbEntityList != null) {
+            for (Object entity : cdbEntityList) {
+                if (cdbEntityList.indexOf(entity) == cdbEntityList.size() - 1) {                   
+                    stringRep += entity.toString();
+                } else {
+                    stringRep += entity.toString() + " | ";
+                }
+            };
+        }
+        
+        if (stringRep.isEmpty()) {
+            stringRep = "-";
+        }
+
+        return stringRep;
     }
 
     /**

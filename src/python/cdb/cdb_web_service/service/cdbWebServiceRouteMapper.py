@@ -12,8 +12,6 @@ from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
 from loginRouteDescriptor import LoginRouteDescriptor
 from userRouteDescriptor import UserRouteDescriptor
-from componentRouteDescriptor import ComponentRouteDescriptor
-from designRouteDescriptor import DesignRouteDescriptor
 from pdmLinkRouteDescriptor import PDMLinkRouteDescriptor
 
 class CdbWebServiceRouteMapper:
@@ -26,7 +24,7 @@ class CdbWebServiceRouteMapper:
         logger.debug('Using context root: %s' % contextRoot)
 
         # Get routes.
-        routes = LoginRouteDescriptor.getRoutes() + UserRouteDescriptor.getRoutes() + ComponentRouteDescriptor.getRoutes() + DesignRouteDescriptor.getRoutes()
+        routes = LoginRouteDescriptor.getRoutes() + UserRouteDescriptor.getRoutes()
         routes += PDMLinkRouteDescriptor.getRoutes()
 
         # Add routes to dispatcher. 

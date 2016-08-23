@@ -1,14 +1,11 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -25,7 +22,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Log topic entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "log_topic")
@@ -35,8 +33,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LogTopic.findById", query = "SELECT l FROM LogTopic l WHERE l.id = :id"),
     @NamedQuery(name = "LogTopic.findByName", query = "SELECT l FROM LogTopic l WHERE l.name = :name"),
     @NamedQuery(name = "LogTopic.findByDescription", query = "SELECT l FROM LogTopic l WHERE l.description = :description")})
-public class LogTopic extends CdbEntity {
+public class LogTopic extends CdbEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -62,7 +61,6 @@ public class LogTopic extends CdbEntity {
         this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -110,12 +108,15 @@ public class LogTopic extends CdbEntity {
             return false;
         }
         LogTopic other = (LogTopic) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return name;
+        return "gov.anl.aps.cdb.portal.model.db.entities.LogTopic[ id=" + id + " ]";
     }
-
+    
 }

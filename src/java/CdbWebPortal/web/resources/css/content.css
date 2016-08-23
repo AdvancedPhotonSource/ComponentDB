@@ -1,14 +1,14 @@
 @import url("portal.css");
 
+.defaultBackground {
+    background-color: #f2f4f7;
+}
+
 html, body {
     background-color: #f2f4f7;
 }
 
 #bottom {
-    background-color: #f2f4f7;
-}
-
-.activeMenuItem, .activeMenuItem .ui-menuitem-text  {
     background-color: #f2f4f7;
 }
 

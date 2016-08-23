@@ -1,18 +1,13 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import java.util.Date;
-import java.util.HashMap;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -28,7 +23,6 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -36,13 +30,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * User info entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "user_info")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "UserInfo.findAll", query = "SELECT u FROM UserInfo u ORDER BY u.lastName"),
+    @NamedQuery(name = "UserInfo.findAll", query = "SELECT u FROM UserInfo u"),
     @NamedQuery(name = "UserInfo.findById", query = "SELECT u FROM UserInfo u WHERE u.id = :id"),
     @NamedQuery(name = "UserInfo.findByUsername", query = "SELECT u FROM UserInfo u WHERE u.username = :username"),
     @NamedQuery(name = "UserInfo.findByFirstName", query = "SELECT u FROM UserInfo u WHERE u.firstName = :firstName"),
@@ -51,8 +46,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserInfo.findByEmail", query = "SELECT u FROM UserInfo u WHERE u.email = :email"),
     @NamedQuery(name = "UserInfo.findByPassword", query = "SELECT u FROM UserInfo u WHERE u.password = :password"),
     @NamedQuery(name = "UserInfo.findByDescription", query = "SELECT u FROM UserInfo u WHERE u.description = :description")})
-public class UserInfo extends CdbEntity {
+public class UserInfo extends SettingEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -81,36 +77,40 @@ public class UserInfo extends CdbEntity {
     private String password;
     @Size(max = 256)
     private String description;
+    @JoinTable(name = "user_list", joinColumns = {
+        @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "list_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<ListTbl> listList;
     @JoinTable(name = "user_user_group", joinColumns = {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
-    @OrderBy("id DESC")
     @ManyToMany
     private List<UserGroup> userGroupList;
-    @OneToMany(mappedBy = "obsoletedByUser")
-    private List<EntityInfo> entityInfoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUser")
-    private List<EntityInfo> entityInfoList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
-    private List<EntityInfo> entityInfoList2;
-    @OneToMany(mappedBy = "ownerUser")
-    private List<EntityInfo> entityInfoList3;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private List<UserSetting> userSettingList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
-    private List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<Log> logList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<PropertyValue> propertyValueList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
+    private List<UserRole> userRoleList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<UserSetting> userSettingList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<PropertyValueHistory> propertyValueHistoryList;
-
-    private transient HashMap<String, UserSetting> userSettingMap = null;
-    private transient Date userSettingsModificationDate = null;
+    @OneToMany(mappedBy = "ownerUser")
+    private List<EntityInfo> entityInfoList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
+    private List<EntityInfo> entityInfoList1;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUser")
+    private List<EntityInfo> entityInfoList2;
+    @OneToMany(mappedBy = "obsoletedByUser")
+    private List<EntityInfo> entityInfoList3;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
+    private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
+            
     private transient String fullNameForSelection = null;
     private transient String userGroupListString = null; 
-
+    
     public UserInfo() {
     }
 
@@ -125,7 +125,6 @@ public class UserInfo extends CdbEntity {
         this.lastName = lastName;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -190,11 +189,6 @@ public class UserInfo extends CdbEntity {
         this.description = description;
     }
 
-    @XmlTransient
-    public List<UserGroup> getUserGroupList() {
-        return userGroupList;
-    }
-
     public String getUserGroupListString() {
         return userGroupListString;
     }
@@ -203,8 +197,67 @@ public class UserInfo extends CdbEntity {
         this.userGroupListString = userGroupListString;
     }
 
+    @XmlTransient
+    public List<ListTbl> getListList() {
+        return listList;
+    }
+
+    public void setListList(List<ListTbl> listList) {
+        this.listList = listList;
+    }
+
+    @XmlTransient
+    public List<UserGroup> getUserGroupList() {
+        return userGroupList;
+    }
+
     public void setUserGroupList(List<UserGroup> userGroupList) {
         this.userGroupList = userGroupList;
+    }
+
+    @XmlTransient
+    public List<Log> getLogList() {
+        return logList;
+    }
+
+    public void setLogList(List<Log> logList) {
+        this.logList = logList;
+    }
+
+    @XmlTransient
+    public List<PropertyValue> getPropertyValueList() {
+        return propertyValueList;
+    }
+
+    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
+        this.propertyValueList = propertyValueList;
+    }
+
+    @XmlTransient
+    public List<UserRole> getUserRoleList() {
+        return userRoleList;
+    }
+
+    public void setUserRoleList(List<UserRole> userRoleList) {
+        this.userRoleList = userRoleList;
+    }
+
+    @XmlTransient
+    public List<UserSetting> getUserSettingList() {
+        return userSettingList;
+    }
+
+    public void setUserSettingList(List<UserSetting> userSettingList) {
+        this.userSettingList = userSettingList;
+    }
+
+    @XmlTransient
+    public List<PropertyValueHistory> getPropertyValueHistoryList() {
+        return propertyValueHistoryList;
+    }
+
+    public void setPropertyValueHistoryList(List<PropertyValueHistory> propertyValueHistoryList) {
+        this.propertyValueHistoryList = propertyValueHistoryList;
     }
 
     @XmlTransient
@@ -244,200 +297,14 @@ public class UserInfo extends CdbEntity {
     }
 
     @XmlTransient
-    public List<UserSetting> getUserSettingList() {
-        return userSettingList;
+    public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
+        return itemElementRelationshipHistoryList;
     }
 
-    public void setUserSettingList(List<UserSetting> userSettingList) {
-        this.userSettingList = userSettingList;
-
-        // Store settings into map for easy access
-        createUserSettingMap();
+    public void setItemElementRelationshipHistoryList(List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList) {
+        this.itemElementRelationshipHistoryList = itemElementRelationshipHistoryList;
     }
-
-    private void createUserSettingMap() {
-        userSettingMap = new HashMap<>();
-        for (UserSetting setting : userSettingList) {
-            userSettingMap.put(setting.getSettingType().getName(), setting);
-        }
-        updateSettingsModificationDate();
-    }
-
-    public UserSetting getUserSetting(String name) {
-        if (userSettingMap == null) {
-            createUserSettingMap();
-        }
-        return userSettingMap.get(name);
-    }
-
-    public void setUserSetting(String name, UserSetting userSetting) {
-        if (userSettingMap == null) {
-            createUserSettingMap();
-        }
-        UserSetting oldUserSetting = userSettingMap.get(name);
-        if (oldUserSetting != null) {
-            oldUserSetting.setValue(userSetting.getValue());
-        } else {
-            userSettingMap.put(name, userSetting);
-        }
-        userSettingsModificationDate = new Date();
-    }
-
-    public void setUserSettingValue(String name, Object value) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting != null && value != null) {
-            userSetting.setValue(value.toString());
-        } else if (userSetting != null) {
-            userSetting.setValue("");
-        }
-    }
-
-    public String getUserSettingValueAsString(String name, String defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        return userSetting.getValue();
-    }
-
-    public Boolean getUserSettingValueAsBoolean(String name, Boolean defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        String settingValue = userSetting.getValue();
-        if (settingValue == null || settingValue.isEmpty()) {
-            return false;
-        }
-        return Boolean.parseBoolean(settingValue);
-    }
-
-    public Integer getUserSettingValueAsInteger(String name, Integer defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        String settingValue = userSetting.getValue();
-        if (settingValue == null || settingValue.isEmpty()) {
-            return null;
-        }
-        return Integer.parseInt(settingValue);
-    }
-
-    public Float getUserSettingValueAsFloat(String name, Float defaultValue) {
-        UserSetting userSetting = getUserSetting(name);
-        if (userSetting == null) {
-            return defaultValue;
-        }
-        String settingValue = userSetting.getValue();
-        if (settingValue == null || settingValue.isEmpty()) {
-            return null;
-        }
-        return Float.parseFloat(settingValue);
-    }
-
-    public void updateSettingsModificationDate() {
-        userSettingsModificationDate = new Date();
-    }
-
-    public Date getUserSettingsModificationDate() {
-        if (userSettingsModificationDate == null) {
-            updateSettingsModificationDate();
-        }
-        return userSettingsModificationDate;
-    }
-
-    public boolean areUserSettingsModifiedAfterDate(Date date) {
-        return date == null || userSettingsModificationDate == null || userSettingsModificationDate.after(date);
-    }
-
-    public boolean hasUserSettings() {
-        return userSettingList != null && !userSettingList.isEmpty();
-    }
-
-    public boolean equalsByUsername(UserInfo other) {
-        if (other != null) {
-            return ObjectUtility.equals(this.username, other.username);
-        }
-        return false;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        if (!(object instanceof UserInfo)) {
-            return false;
-        }
-        UserInfo other = (UserInfo) object;
-        if (this.id == null && other.id == null) {
-            return equalsByUsername(other);
-        }
-
-        if (this.id == null || other.id == null) {
-            return false;
-        }
-        return this.id.equals(other.id);
-    }
-
-    @Override
-    public String toString() {
-        return username;
-    }
-
-    @XmlTransient
-    public List<ComponentInstanceLocationHistory> getComponentInstanceLocationHistoryList() {
-        return componentInstanceLocationHistoryList;
-    }
-
-    public void setComponentInstanceLocationHistoryList(List<ComponentInstanceLocationHistory> componentInstanceLocationHistoryList) {
-        this.componentInstanceLocationHistoryList = componentInstanceLocationHistoryList;
-    }
-
-    @XmlTransient
-    public List<Log> getLogList() {
-        return logList;
-    }
-
-    public void setLogList(List<Log> logList) {
-        this.logList = logList;
-    }
-
-    @XmlTransient
-    public List<PropertyValue> getPropertyValueList() {
-        return propertyValueList;
-    }
-
-    public void setPropertyValueList(List<PropertyValue> propertyValueList) {
-        this.propertyValueList = propertyValueList;
-    }
-
-    @XmlTransient
-    public List<PropertyValueHistory> getPropertyValueHistoryList() {
-        return propertyValueHistoryList;
-    }
-
-    public void setPropertyValueHistoryList(List<PropertyValueHistory> propertyValueHistoryList) {
-        this.propertyValueHistoryList = propertyValueHistoryList;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, username);
-        searchResult.doesValueContainPattern("username", username, searchPattern);
-        searchResult.doesValueContainPattern("firstName", firstName, searchPattern);
-        searchResult.doesValueContainPattern("middleName", middleName, searchPattern);
-        searchResult.doesValueContainPattern("lastName", lastName, searchPattern);
-        searchResult.doesValueContainPattern("email", email, searchPattern);
-        searchResult.doesValueContainPattern("description", description, searchPattern);
-        return searchResult;
-    }
-
+        
     public String getFullNameForSelection() {
         if (fullNameForSelection != null) {
             return fullNameForSelection;
@@ -457,4 +324,64 @@ public class UserInfo extends CdbEntity {
         return fullNameForSelection;
     }
 
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, username);
+        searchResult.doesValueContainPattern("username", username, searchPattern);
+        searchResult.doesValueContainPattern("firstName", firstName, searchPattern);
+        searchResult.doesValueContainPattern("middleName", middleName, searchPattern);
+        searchResult.doesValueContainPattern("lastName", lastName, searchPattern);
+        searchResult.doesValueContainPattern("email", email, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (id != null ? id.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof UserInfo)) {
+            return false;
+        }
+        UserInfo other = (UserInfo) object;
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "gov.anl.aps.cdb.portal.model.db.entities.UserInfo[ id=" + id + " ]";
+    }
+
+    @Override
+    public List<EntitySetting> getSettingList() {
+        return (List<EntitySetting>)(List<?>) getUserSettingList(); 
+    }
+
+    @Override
+    public void populateDefaultSettingList(List<SettingType> settingTypeList) {
+        List<UserSetting> settingList = new ArrayList<>();
+        for (SettingType settingType : settingTypeList) {
+            UserSetting userSetting = new UserSetting();
+            userSetting.setSettingType(settingType);
+            userSetting.setUser(this);
+            userSetting.setValue(settingType.getDefaultValue());
+            settingList.add(userSetting);
+        }
+        setUserSettingList(settingList);
+    }
+
+    @Override
+    public List<ListTbl> getItemElementLists() {
+        return getListList(); 
+    }
+    
 }

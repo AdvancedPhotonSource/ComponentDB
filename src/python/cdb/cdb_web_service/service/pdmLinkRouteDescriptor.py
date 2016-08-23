@@ -6,7 +6,6 @@
 
 from cdb.common.utility.configurationManager import ConfigurationManager
 from pdmLinkController import PdmLinkController
-from pdmLinkSessionController import PdmLinkSessionController
 
 
 class PDMLinkRouteDescriptor:
@@ -17,7 +16,6 @@ class PDMLinkRouteDescriptor:
 
         # Static instances shared between different routes
         pdmLinkController = PdmLinkController()
-        pdmLinkSessionController = PdmLinkSessionController()
 
         # Define routes.
         routes = [
@@ -92,15 +90,6 @@ class PDMLinkRouteDescriptor:
                 'controller': pdmLinkController,
                 'action': 'generateComponentInfo',
                 'method': ['GET']
-            },
-
-            # Create a component from PdmLink drawing info
-            {
-                'name': 'createComponent',
-                'path': '%s/pdmLink/createComponent/:(drawingNumber)' % contextRoot,
-                'controller': pdmLinkSessionController,
-                'action': 'createComponent',
-                'method': ['POST']
             }
 
         ]

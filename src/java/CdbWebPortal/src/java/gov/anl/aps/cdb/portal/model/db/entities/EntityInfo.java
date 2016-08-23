@@ -1,17 +1,12 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,16 +18,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Entity info entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "entity_info")
@@ -66,29 +61,25 @@ public class EntityInfo implements Serializable {
     @Column(name = "obsoleted_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date obsoletedOnDateTime;
-    @JoinColumn(name = "obsoleted_by_user_id", referencedColumnName = "id")
-    @ManyToOne
-    private UserInfo obsoletedByUser;
-    @JoinColumn(name = "last_modified_by_user_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private UserInfo lastModifiedByUser;
-    @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private UserInfo createdByUser;
-    @JoinColumn(name = "owner_user_group_id", referencedColumnName = "id")
-    @ManyToOne
-    private UserGroup ownerUserGroup;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
+    private ItemElement itemElement;
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
     private UserInfo ownerUser;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
-    private List<Component> componentList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
-    private List<ComponentInstance> componentInstanceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
-    private List<DesignElement> designElementList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entityInfo")
-    private List<Design> designList;
+    @JoinColumn(name = "owner_user_group_id", referencedColumnName = "id")
+    @ManyToOne
+    private UserGroup ownerUserGroup;
+    @JoinColumn(name = "created_by_user_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private UserInfo createdByUser;
+    @JoinColumn(name = "last_modified_by_user_id", referencedColumnName = "id")
+    @ManyToOne(optional = false)
+    private UserInfo lastModifiedByUser;
+    @JoinColumn(name = "obsoleted_by_user_id", referencedColumnName = "id")
+    @ManyToOne
+    private UserInfo obsoletedByUser;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
+    private ListTbl list;
 
     public EntityInfo() {
     }
@@ -143,43 +134,12 @@ public class EntityInfo implements Serializable {
         this.obsoletedOnDateTime = obsoletedOnDateTime;
     }
 
-    public UserInfo getObsoletedByUser() {
-        return obsoletedByUser;
+    public ItemElement getItemElement() {
+        return itemElement;
     }
 
-    public void setObsoletedByUser(UserInfo obsoletedByUser) {
-        this.obsoletedByUser = obsoletedByUser;
-    }
-
-    public UserInfo getLastModifiedByUser() {
-        return lastModifiedByUser;
-    }
-
-    public void setLastModifiedByUser(UserInfo lastModifiedByUser) {
-        this.lastModifiedByUser = lastModifiedByUser;
-    }
-
-    public UserInfo getCreatedByUser() {
-        return createdByUser;
-    }
-
-    public void setCreatedByUser(UserInfo createdByUser) {
-        this.createdByUser = createdByUser;
-    }
-
-    public UserGroup getOwnerUserGroup() {
-        return ownerUserGroup;
-    }
-
-    public void setOwnerUserGroup(UserGroup ownerUserGroup) {
-        this.ownerUserGroup = ownerUserGroup;
-    }
-    
-    public String getUserInfoDisplayName(UserInfo userInfo) {
-        if (userInfo != null) {
-            return "(" + userInfo.getUsername() + ") " + userInfo.getFullNameForSelection();
-        }
-        return ""; 
+    public void setItemElement(ItemElement itemElement) {
+        this.itemElement = itemElement;
     }
 
     public UserInfo getOwnerUser() {
@@ -188,6 +148,13 @@ public class EntityInfo implements Serializable {
 
     public void setOwnerUser(UserInfo ownerUser) {
         this.ownerUser = ownerUser;
+    }
+    
+    public String getUserInfoDisplayName(UserInfo userInfo) {
+        if (userInfo != null) {
+            return "(" + userInfo.getUsername() + ") " + userInfo.getFullNameForSelection();
+        }
+        return ""; 
     }
     
     public String getOwnerUserDisplayName() {
@@ -216,40 +183,44 @@ public class EntityInfo implements Serializable {
         return ownerUserGroup.getName(); 
     }
 
-    @XmlTransient
-    public List<Component> getComponentList() {
-        return componentList;
+    public UserGroup getOwnerUserGroup() {
+        return ownerUserGroup;
     }
 
-    public void setComponentList(List<Component> componentList) {
-        this.componentList = componentList;
+    public void setOwnerUserGroup(UserGroup ownerUserGroupId) {
+        this.ownerUserGroup = ownerUserGroupId;
     }
 
-    @XmlTransient
-    public List<ComponentInstance> getComponentInstanceList() {
-        return componentInstanceList;
+    public UserInfo getCreatedByUser() {
+        return createdByUser;
     }
 
-    public void setComponentInstanceList(List<ComponentInstance> componentInstanceList) {
-        this.componentInstanceList = componentInstanceList;
+    public void setCreatedByUser(UserInfo createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
-    @XmlTransient
-    public List<DesignElement> getDesignElementList() {
-        return designElementList;
+    public UserInfo getLastModifiedByUser() {
+        return lastModifiedByUser;
     }
 
-    public void setDesignElementList(List<DesignElement> designElementList) {
-        this.designElementList = designElementList;
+    public void setLastModifiedByUser(UserInfo lastModifiedByUser) {
+        this.lastModifiedByUser = lastModifiedByUser;
     }
 
-    @XmlTransient
-    public List<Design> getDesignList() {
-        return designList;
+    public UserInfo getObsoletedByUser() {
+        return obsoletedByUser;
     }
 
-    public void setDesignList(List<Design> designList) {
-        this.designList = designList;
+    public void setObsoletedByUser(UserInfo obsoletedByUser) {
+        this.obsoletedByUser = obsoletedByUser;
+    }
+    
+    public ListTbl getList() {
+        return list;
+    }
+
+    public void setList(ListTbl list) {
+        this.list = list;
     }
 
     @Override
@@ -266,12 +237,15 @@ public class EntityInfo implements Serializable {
             return false;
         }
         EntityInfo other = (EntityInfo) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "EntityInfo[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.EntityInfo[ id=" + id + " ]";
     }
-
+    
 }

@@ -1,25 +1,17 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -30,7 +22,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Connector type entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "connector_type")
@@ -40,8 +33,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorType.findById", query = "SELECT c FROM ConnectorType c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorType.findByName", query = "SELECT c FROM ConnectorType c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorType.findByDescription", query = "SELECT c FROM ConnectorType c WHERE c.description = :description")})
-public class ConnectorType extends CdbEntity {
+public class ConnectorType implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -52,19 +46,8 @@ public class ConnectorType extends CdbEntity {
     private String name;
     @Size(max = 256)
     private String description;
-    @JoinTable(name = "connector_type_property_type", joinColumns = {
-        @JoinColumn(name = "connector_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "property_type_id", referencedColumnName = "id")})
-    @ManyToMany
-    private List<PropertyType> propertyTypeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "connectorType")
-    private List<ComponentConnector> componentConnectorList;
-    @JoinColumn(name = "resource_type_id", referencedColumnName = "id")
-    @ManyToOne
-    private ResourceType resourceType;
-    @JoinColumn(name = "connector_type_category_id", referencedColumnName = "id")
-    @ManyToOne
-    private ConnectorTypeCategory connectorTypeCategory;
+    @OneToMany(mappedBy = "connectorType")
+    private List<Connector> connectorList;
 
     public ConnectorType() {
     }
@@ -78,7 +61,6 @@ public class ConnectorType extends CdbEntity {
         this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -104,37 +86,12 @@ public class ConnectorType extends CdbEntity {
     }
 
     @XmlTransient
-    public List<PropertyType> getPropertyTypeList() {
-        return propertyTypeList;
+    public List<Connector> getConnectorList() {
+        return connectorList;
     }
 
-    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
-        this.propertyTypeList = propertyTypeList;
-    }
-
-    @XmlTransient
-    public List<ComponentConnector> getComponentConnectorList() {
-        return componentConnectorList;
-    }
-
-    public void setComponentConnectorList(List<ComponentConnector> componentConnectorList) {
-        this.componentConnectorList = componentConnectorList;
-    }
-
-    public ResourceType getResourceType() {
-        return resourceType;
-    }
-
-    public void setResourceType(ResourceType resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    public ConnectorTypeCategory getConnectorTypeCategory() {
-        return connectorTypeCategory;
-    }
-
-    public void setConnectorTypeCategory(ConnectorTypeCategory connectorTypeCategory) {
-        this.connectorTypeCategory = connectorTypeCategory;
+    public void setConnectorList(List<Connector> connectorList) {
+        this.connectorList = connectorList;
     }
 
     @Override
@@ -151,12 +108,15 @@ public class ConnectorType extends CdbEntity {
             return false;
         }
         ConnectorType other = (ConnectorType) object;
-        return (this.id != null || other.id == null) && (this.id == null || this.id.equals(other.id));
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public String toString() {
-        return "ConnectorType[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.ConnectorType[ id=" + id + " ]";
     }
-
+    
 }

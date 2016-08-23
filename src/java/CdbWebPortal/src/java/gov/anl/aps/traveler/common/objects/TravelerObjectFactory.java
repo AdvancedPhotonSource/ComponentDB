@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/traveler/common/objects/TravelerObjectFactory.java $
+ *   $Date: 2015-11-24 11:30:39 -0600 (Tue, 24 Nov 2015) $
+ *   $Revision: 833 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.traveler.common.objects;
 

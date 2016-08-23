@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -26,10 +27,14 @@
                 <div>
                     <div id="topRight" class="topRightContent">
                         <ui:insert name="topRight">
-                            <h:outputText value="Username: #{loginController.displayUsername()}"/>
+                            <p:outputLabel value="Username: #{loginController.displayUsername()}"/>
                             <br/>
 
-                            <h:outputText value="Role: #{loginController.displayRole()}"/>
+                            <p:outputLabel value="Role: #{loginController.displayRole()}"/>
+                            <br/>
+                            <h:form>
+                                <ui:include src="../views/settings/private/settingsViewAsLabelDialog.xhtml" />
+                            </h:form>
 
                         </ui:insert>
                     </div>
@@ -100,7 +105,7 @@
                 </ui:insert>
             </div>
         </ui:fragment>
-        
+
         <ui:include src="loginDialogTemplate.xhtml"/>
         <ui:include src="../views/common/private/commonLoadingDialog.xhtml"/>
 

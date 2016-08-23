@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/controllers/CdbEntityController.java $
+ *   $Date: 2016-04-19 15:02:15 -0500 (Tue, 19 Apr 2016) $
+ *   $Revision: 1317 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.portal.controllers;
 
@@ -13,16 +13,15 @@ import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityDbFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LogTopicDbFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
@@ -33,6 +32,7 @@ import gov.anl.aps.cdb.portal.view.jsf.components.CdbExcelExporter;
 import gov.anl.aps.cdb.portal.view.jsf.components.CdbPdfExporter;
 import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import java.io.IOException;
 
 import java.io.Serializable;
@@ -64,14 +64,16 @@ import org.primefaces.component.export.Exporter;
  * @param <EntityType> CDB entity type
  * @param <FacadeType> CDB DB facade type
  */
-public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityDbFacade<EntityType>> implements Serializable {
+public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>> implements Serializable {
+
+    private final String SETTING_CONTROLLER_NAME = "settingController";
 
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
 
     @EJB
-    private SettingTypeDbFacade settingTypeFacade;
+    private SettingTypeFacade settingTypeFacade;
     @EJB
-    private LogTopicDbFacade logTopicFacade;
+    private LogTopicFacade logTopicFacade;
 
     protected EntityType current = null;
 
@@ -83,7 +85,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected Date settingsTimestamp = null;
     protected List<SettingType> settingTypeList;
     protected Map<String, SettingType> settingTypeMap;
-    protected boolean settingsInitializedFromDefaults = false;
 
     protected DataModel selectDataModel = null;
     protected DataTable selectDataTable = null;
@@ -142,6 +143,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private String searchString = null;
     private boolean caseInsensitive = true;
     private LinkedList<SearchResult> searchResultList;
+
+    private SettingController settingController = null;
 
     /**
      * Default constructor.
@@ -321,7 +324,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return entity instance
      */
     public EntityType findById(Integer id) {
-        return null;
+        return getEntityDbFacade().find(id);
+    }
+
+    /**
+     * New current is being set, reset related variables.
+     */
+    protected void resetVariablesForCurrent() {
+
     }
 
     /**
@@ -330,6 +340,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @param current entity instance
      */
     public void setCurrent(EntityType current) {
+        resetVariablesForCurrent();
         this.current = current;
     }
 
@@ -524,7 +535,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public EntityType getSelected() {
         if (current == null) {
-            current = createEntityInstance();
+            setCurrent(createEntityInstance());
         }
         return current;
     }
@@ -538,29 +549,58 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         updateSettings();
     }
 
+    public void loadSettings(SettingEntity settingEntity) {
+        logger.debug("Updating settings for " + getEntityTypeName() + " from session (settings timestamp: " + settingEntity.getSettingsModificationDate() + ")");
+        updateSettingsFromSessionSettingEntity(settingEntity);
+        settingsTimestamp = new Date();
+    }
+
+    public SettingController getSettingController() {
+        if (settingController == null) {
+            settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
+        }
+
+        return settingController;
+    }
+
+    /**
+     * Override this function if a derived controller needs to process when new
+     * settings are present.
+     */
+    public void settingsAreReloaded() {
+        resetListDataModel();
+    }
+
     /**
      * Update controller session settings based on session user and settings
      * modification date.
+     *
+     * @return true if some settings have been loaded.
      */
-    public void updateSettings() {
+    public boolean updateSettings() {
         try {
-            UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-            boolean settingsUpdated = false;
-            if (sessionUser != null) {
-                List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-                if (userSettingList != null && !userSettingList.isEmpty() && sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                    updateSettingsFromSessionUser(sessionUser);
-                    settingsUpdated = true;
-                }
-            }
+            settingController = getSettingController();
 
-            if (!settingsUpdated && !settingsInitializedFromDefaults) {
-                settingsInitializedFromDefaults = true;
-                updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+            SettingEntity settingEntity = settingController.getCurrentSettingEntity();
+            if (settingEntity != null) {
+                if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    settingsAreReloaded();
+                    loadSettings(settingEntity);
+                    return true;
+                }
+            } else if (settingEntity == null) {
+                if (settingController.SettingsRequireLoading(settingsTimestamp)) {
+                    settingsAreReloaded();
+                    updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
+                    settingsTimestamp = new Date();
+                    return true;
+                }
             }
         } catch (Exception ex) {
             logger.error(ex);
         }
+
+        return false;
     }
 
     /**
@@ -604,20 +644,20 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * This method should be overridden in any derived controller class that has
      * its own settings.
      *
-     * @param sessionUser current session user
+     * @param settingEntity current session setting entity
      */
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
     }
 
     /**
-     * Save controller session settings for the current user.
+     * Save controller session settings for the current setting entity.
      *
      * This method should be overridden in any derived controller class that has
      * its own settings.
      *
-     * @param sessionUser current session user
+     * @param settingEntity current session setting entity
      */
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
     }
 
     /**
@@ -625,22 +665,25 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      *
      * @param actionEvent event
      */
-    public void saveListSettingsForSessionUserActionListener(ActionEvent actionEvent) {
+    public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
         logger.debug("Saving settings");
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
+        settingController = getSettingController();
+
+        SettingEntity settingEntity = settingController.getCurrentSettingEntity();
+
+        if (settingEntity != null) {
             logger.debug("Updating list settings for session user");
-            saveSettingsForSessionUser(sessionUser);
+            saveSettingsForSessionSettingEntity(settingEntity);
             resetListDataModel();
             settingsTimestamp = new Date();
         }
     }
-    
-    public void saveListSettingsForSessionUserSetCurrentActionListener(ActionEvent actionEvent) {
-        EntityType currentEntity = this.current; 
-        saveListSettingsForSessionUserActionListener(actionEvent);
+
+    public void saveListSettingsForSessionSettingEntitySetCurrentActionListener(ActionEvent actionEvent) {
+        EntityType currentEntity = this.current;
+        saveListSettingsForSessionSettingEntityActionListener(actionEvent);
         if (current == null) {
-            this.current = currentEntity; 
+            this.current = currentEntity;
         }
     }
 
@@ -778,49 +821,23 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         String loadView = breadcrumbViewParam;
         if (loadView == null) {
             loadView = prepareList();
-        } else {
-            if (breadcrumbObjectIdViewParam != null) {
-                Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
-                loadView = breadcrumbViewParam + "?faces-redirect=true&id=" + entityId;
-            }
+        } else if (breadcrumbObjectIdViewParam != null) {
+            Integer entityId = Integer.parseInt(breadcrumbObjectIdViewParam);
+            loadView = breadcrumbViewParam + "?faces-redirect=true&id=" + entityId;
         }
         breadcrumbViewParam = null;
         breadcrumbObjectIdViewParam = null;
         return loadView;
     }
-    
+
     public void processPreRender() {
-        userSettingsChanged();  
+        updateSettings();
     }
-    
+
     public void processPreRenderList() {
-        if(userSettingsChanged()) {
+        if (updateSettings()) {
             resetListDataModel();
         }
-    }
-
-    /**
-     * Check if user settings changed or not.
-     *
-     * @return true if user just logged in or modified settings, false otherwise
-     */
-    public boolean userSettingsChanged() {
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser == null) {
-            return false;
-        }
-
-        if (settingsTimestamp == null || sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-            loadUserSettings(sessionUser);
-            return true;
-        }
-        return false;
-    }
-     
-    public void loadUserSettings(UserInfo sessionUser){ 
-        logger.debug("Updating settings for " + getEntityTypeName() +" from session user (settings timestamp: " + sessionUser.getUserSettingsModificationDate() + ")");
-        updateSettingsFromSessionUser(sessionUser);
-        settingsTimestamp = new Date();
     }
 
     /**
@@ -874,31 +891,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * Update session view settings based on settings modification timestamp.
-     */
-    public void updateViewSettings() {
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        boolean settingsUpdated = false;
-        if (sessionUser != null) {
-            List<UserSetting> userSettingList = sessionUser.getUserSettingList();
-            if (sessionUser.areUserSettingsModifiedAfterDate(settingsTimestamp)) {
-                if (userSettingList != null && !userSettingList.isEmpty()) {
-                    loadUserSettings(sessionUser); 
-                    settingsUpdated = true;
-                }
-            } else { 
-                // Settings have been previously loaded, no need to override with defaults. 
-                return; 
-            }
-        }
-
-        if (!settingsUpdated && !settingsInitializedFromDefaults) {
-            settingsInitializedFromDefaults = true;
-            updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
-        }
-    }
-
-    /**
      * Listener for saving user session settings.
      *
      * @param actionEvent event
@@ -907,7 +899,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Saving settings for session user");
-            saveSettingsForSessionUser(sessionUser);
+            saveSettingsForSessionSettingEntity(sessionUser);
             settingsTimestamp = new Date();
         }
     }
@@ -918,6 +910,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return URL for the current view
      */
     public String customizeViewDisplay() {
+        return getUrlForCurrentView(); 
+    }
+    
+    /**
+     * Gets a redirection string for the current view. 
+     * 
+     * @return redirection string for the current view 
+     */
+    protected String getUrlForCurrentView(){
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
@@ -955,7 +956,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String prepareView(EntityType entity) {
         logger.debug("Preparing view");
         current = entity;
-        updateViewSettings();
+        updateSettings();
         prepareEntityView(entity);
         return view();
     }
@@ -975,7 +976,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return URL to create page in the entity folder
      */
     public String prepareCreate() {
-        current = createEntityInstance();
+        setCurrent(createEntityInstance());
         return "create?faces-redirect=true";
     }
 
@@ -1004,7 +1005,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public String prepareClone(EntityType entity) {
         current = cloneEntityInstance(entity);
-        return "/views/" + getEntityTypeName() + "/create?faces-redirect=true";
+        return getEntityApplicationViewPath() + "/" + getCloneCreatePageName() + "?faces-redirect=true";
+    }
+
+    protected String getCloneCreatePageName() {
+        return "create";
+    }
+
+    protected String getEntityApplicationViewPath() {
+        return "/views/" + getEntityTypeName();
     }
 
     /**
@@ -1031,7 +1040,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetSelectDataModel();
-            current = newEntity;
+            // Best to reload the entity after creation to ensure all connections are updated and initalized. 
+            Object newEntityId = newEntity.getId();
+            current = findById((Integer) newEntityId); 
             return view();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -1104,21 +1115,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
     }
-    
+
     public void reloadCurrent() {
-        current = getEntityDbFacade().find(current.getId()); 
+        current = getEntityDbFacade().find(current.getId());
     }
-    
-    public String inlineUpdate(){
+
+    public String inlineUpdate() {
         String updateResult = update();
-        
+
         // An error occured, reload the page with correct information. 
         if (updateResult == null) {
             reloadCurrent();
-            return view(); 
+            return view();
         }
-        
-        return null; 
+
+        return null;
     }
 
     /**
@@ -1184,7 +1195,22 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         current = entity;
         destroy();
     }
-
+    
+    /**
+     * Executes destroy but does not return redirection string.
+     * 
+     * @return redirection to current view when successful. 
+     */
+    public String destroyInCurrentView() {
+        String result = destroy();       
+        
+        if (result != null) {
+            return getUrlForCurrentView();
+        }
+        
+        return null; 
+    }
+    
     /**
      * Remove current (selected) entity instance from the database and reset
      * list variables and data model.
@@ -1224,12 +1250,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     /**
      * Create data model from list of all available entity instances.
-     *
-     * @return created list data model
      */
-    public DataModel createListDataModel() {
+    public void createListDataModel() {
         listDataModel = new ListDataModel(getEntityDbFacade().findAll());
-        return listDataModel;
+    }
+
+    public void setListDataModel(ListDataModel listDataModel) {
+        this.listDataModel = listDataModel;
     }
 
     /**
@@ -1372,13 +1399,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void setFilteredItems(List<EntityType> filteredItems) {
         this.filteredObjectList = filteredItems;
     }
-    
-    public EntityType getSelectedObjectAndResetDataModel(){
-        EntityType entity = getSelectedObject(); 
+
+    public EntityType getSelectedObjectAndResetDataModel() {
+        EntityType entity = getSelectedObject();
         selectedObject = null;
         resetSelectDataModel();
         return entity;
-        
+
     }
 
     public EntityType getSelectedObject() {
@@ -1408,7 +1435,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         listDataTable = null;
         listDataModelReset = true;
         filteredObjectList = null;
-        current = null;
         // Flush cache 
         //getFacade().flush();
     }
@@ -1537,9 +1563,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public LinkedList<SearchResult> getSearchResultList() {
         return searchResultList;
     }
-    
-    public boolean getDisplaySearchResultList(){
-        return searchResultList != null && !searchResultList.isEmpty(); 
+
+    public boolean getDisplaySearchResultList() {
+        return searchResultList != null && !searchResultList.isEmpty();
     }
 
     public boolean searchHasResults() {
@@ -1739,7 +1765,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser != null) {
             logger.debug("Updating display list settings for " + this.getEntityTypeName() + "Entity");
-            sessionUser.setUserSettingValue(getDisplayListPageHelpFragmentSettingTypeKey(), displayListPageHelpFragment);
+            sessionUser.setSettingValue(getDisplayListPageHelpFragmentSettingTypeKey(), displayListPageHelpFragment);
             settingsTimestamp = new Date();
             SessionUtility.addInfoMessage("Saved", "Saved setting for displaying help info for " + this.getEntityTypeName() + " entity.");
         } else {
@@ -1748,13 +1774,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             logger.error(error);
         }
     }
-    
-    public Boolean getDisplayLoadPropertyValuesButton(){
-        return false; 
+
+    public Boolean getDisplayLoadPropertyValuesButton() {
+        return false;
     }
-    
-    public Boolean getDisplayUpdateSortOrderButton(){
-        return false; 
+
+    public Boolean getDisplayUpdateSortOrderButton() {
+        return false;
     }
 
     /**
@@ -1945,13 +1971,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.settingsTimestamp = settingsTimestamp;
     }
 
-    public void exportListDataTableAsPdf(String filename) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        Exporter exporter = new CdbPdfExporter();
-        exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
-        context.responseComplete();
-    }
-
     public static void exportDataTableAsPdf(String dataTableId, String filename) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
@@ -1960,25 +1979,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         context.responseComplete();
     }
 
-    public void exportListDataTableAsXls(String filename) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        Exporter exporter = new CdbExcelExporter();
-        exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
-        context.responseComplete();
-    }
-
     public static void exportDataTableAsXls(String dataTableId, String filename) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
         Exporter exporter = new CdbExcelExporter();
         exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
-        context.responseComplete();
-    }
-
-    public void exportListDataTableAsCsv(String filename) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        Exporter exporter = new CdbCsvExporter();
-        exporter.export(context, listDataTable, filename, false, false, "UTF-8", null, null);
         context.responseComplete();
     }
 

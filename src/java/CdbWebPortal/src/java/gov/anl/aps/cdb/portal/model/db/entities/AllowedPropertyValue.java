@@ -1,15 +1,11 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,7 +21,8 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * Allowed property value entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "allowed_property_value")
@@ -38,8 +35,9 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "AllowedPropertyValue.findByDescription", query = "SELECT a FROM AllowedPropertyValue a WHERE a.description = :description"),
     @NamedQuery(name = "AllowedPropertyValue.findBySortOrder", query = "SELECT a FROM AllowedPropertyValue a WHERE a.sortOrder = :sortOrder"),
     @NamedQuery(name = "AllowedPropertyValue.findAllByPropertyTypeId", query = "SELECT a FROM AllowedPropertyValue a WHERE a.propertyType.id = :propertyTypeId")})
-public class AllowedPropertyValue extends CdbEntity {
+public class AllowedPropertyValue extends CdbEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -64,7 +62,6 @@ public class AllowedPropertyValue extends CdbEntity {
         this.id = id;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -120,40 +117,22 @@ public class AllowedPropertyValue extends CdbEntity {
         return hash;
     }
 
-    public boolean equalsByPropertyTypeAndValue(AllowedPropertyValue other) {
-        if (other == null) {
-            return false;
-        }
-
-        if (!ObjectUtility.equals(this.propertyType, other.propertyType)) {
-            return false;
-        }
-
-        return ObjectUtility.equals(this.value, other.value);
-    }
-
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof AllowedPropertyValue)) {
             return false;
         }
         AllowedPropertyValue other = (AllowedPropertyValue) object;
-        if (this.id == null && other.id == null) {
-            return equalsByPropertyTypeAndValue(other);
-        }
-
-        if (this.id == null || other.id == null) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        return this.id.equals(other.id);
+        return true;
     }
 
     @Override
     public String toString() {
-        if (units != null && !units.isEmpty()) {
-            return value + " [" + units + "]";
-        }
-        return value;
+        return "gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue[ id=" + id + " ]";
     }
-
+    
 }

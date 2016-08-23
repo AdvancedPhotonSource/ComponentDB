@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="simpleEntityPanelGridTemplateBase.xhtml">
+    
+    <ui:define name="simpleEntityIdLabel" > 
+        <h:outputLabel for="id" 
+                       rendered="#{simpleEntityObject.id != null}"
+                       value="Id" 
+                       styleClass="entityDataLabel"/>
+        
+    </ui:define>
+    <ui:define name="simpleEntityIdValue" >
+        <h:outputText id="id"
+                      rendered="#{simpleEntityObject.id != null}"
+                      value="#{simpleEntityObject.id}" 
+                      title="Id" 
+                      styleClass="entityDataText"/>
+    </ui:define>
+
+    <ui:define name="simpleEntityNameLabel">
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+    </ui:define>
+    
+    <ui:define name="simpleEntityDescriptionLabel">
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+    </ui:define>
+
+</ui:composition>

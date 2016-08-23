@@ -38,6 +38,3 @@ class PdmLinkControllerImpl(CdbObjectManager):
 
     def generateComponentInfo(self, drawingNumber):
         return self.pdmLink.generateComponentInfo(drawingNumber)
-
-    def createComponent(self, drawingNumber, createdByUserId, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName):
-        return self.pdmLink.createComponent(drawingNumber, createdByUserId, componentTypeId, description, ownerUserId, ownerGroupId, isGroupWriteable, componentTypeName)

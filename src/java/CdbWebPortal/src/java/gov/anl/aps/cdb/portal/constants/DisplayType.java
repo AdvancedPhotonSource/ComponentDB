@@ -2,10 +2,10 @@
  * Copyright (c) 2014-2015, Argonne National Laboratory.
  *
  * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ *   $HeadURL: https://svn.aps.anl.gov/cdb/trunk/src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/constants/DisplayType.java $
+ *   $Date: 2015-09-08 13:15:53 -0500 (Tue, 08 Sep 2015) $
+ *   $Revision: 774 $
+ *   $Author: djarosz $
  */
 package gov.anl.aps.cdb.portal.constants;
 

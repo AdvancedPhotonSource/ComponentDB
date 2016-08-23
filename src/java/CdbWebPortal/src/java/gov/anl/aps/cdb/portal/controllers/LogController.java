@@ -1,18 +1,9 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.beans.LogDbFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,12 +18,9 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-/**
- * Log controller class.
- */
 @Named("logController")
 @SessionScoped
-public class LogController extends CdbEntityController<Log, LogDbFacade> implements Serializable {
+public class LogController extends CdbEntityController<Log, LogFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -61,14 +49,14 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     private static final Logger logger = Logger.getLogger(LogController.class.getName());
 
     @EJB
-    private LogDbFacade logFacade;
+    private LogFacade logFacade;
 
     public LogController() {
         super();
     }
 
     @Override
-    protected LogDbFacade getEntityDbFacade() {
+    protected LogFacade getEntityDbFacade() {
         return logFacade;
     }
 
@@ -115,22 +103,22 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        displayAttachments = sessionUser.getUserSettingValueAsBoolean(DisplayAttachmentsSettingTypeKey, displayAttachments);
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayEnteredByUser = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
-        displayEnteredOnDateTime = sessionUser.getUserSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        displayTopic = sessionUser.getUserSettingValueAsBoolean(DisplayTopicSettingTypeKey, displayTopic);
+        displayAttachments = settingEntity.getSettingValueAsBoolean(DisplayAttachmentsSettingTypeKey, displayAttachments);
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayEnteredByUser = settingEntity.getSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        displayEnteredOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        displayTopic = settingEntity.getSettingValueAsBoolean(DisplayTopicSettingTypeKey, displayTopic);
 
-        filterByEnteredByUser = sessionUser.getUserSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
-        filterByEnteredOnDateTime = sessionUser.getUserSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-        filterByText = sessionUser.getUserSettingValueAsString(FilterByTextSettingTypeKey, filterByText);
-        filterByTopic = sessionUser.getUserSettingValueAsString(FilterByTopicSettingTypeKey, filterByTopic);
+        filterByEnteredByUser = settingEntity.getSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        filterByEnteredOnDateTime = settingEntity.getSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        filterByText = settingEntity.getSettingValueAsString(FilterByTextSettingTypeKey, filterByText);
+        filterByTopic = settingEntity.getSettingValueAsString(FilterByTopicSettingTypeKey, filterByTopic);
     }
 
     @Override
@@ -147,22 +135,22 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayAttachmentsSettingTypeKey, displayAttachments);
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
-        sessionUser.setUserSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        sessionUser.setUserSettingValue(DisplayTopicSettingTypeKey, displayTopic);
+        settingEntity.setSettingValue(DisplayAttachmentsSettingTypeKey, displayAttachments);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
+        settingEntity.setSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        settingEntity.setSettingValue(DisplayTopicSettingTypeKey, displayTopic);
 
-        sessionUser.setUserSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
-        sessionUser.setUserSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
-        sessionUser.setUserSettingValue(FilterByTextSettingTypeKey, filterByText);
-        sessionUser.setUserSettingValue(FilterByTopicSettingTypeKey, filterByTopic);
+        settingEntity.setSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
+        settingEntity.setSettingValue(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
+        settingEntity.setSettingValue(FilterByTextSettingTypeKey, filterByText);
+        settingEntity.setSettingValue(FilterByTopicSettingTypeKey, filterByTopic);
     }
 
     @Override
@@ -284,5 +272,5 @@ public class LogController extends CdbEntityController<Log, LogDbFacade> impleme
     public void setFilterByTopic(String filterByTopic) {
         this.filterByTopic = filterByTopic;
     }
-    
+
 }

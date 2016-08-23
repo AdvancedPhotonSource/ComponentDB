@@ -1,16 +1,12 @@
 /*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -28,25 +24,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
- * Property type category entity class.
+ *
+ * @author djarosz
  */
 @Entity
 @Table(name = "property_type_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PropertyTypeCategory.findAll", query = "SELECT p FROM PropertyTypeCategory p ORDER BY p.name"),
+    @NamedQuery(name = "PropertyTypeCategory.findAll", query = "SELECT p FROM PropertyTypeCategory p"),
     @NamedQuery(name = "PropertyTypeCategory.findById", query = "SELECT p FROM PropertyTypeCategory p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyTypeCategory.findByName", query = "SELECT p FROM PropertyTypeCategory p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyTypeCategory.findByDescription", query = "SELECT p FROM PropertyTypeCategory p WHERE p.description = :description")})
-public class PropertyTypeCategory extends CdbEntity {
+public class PropertyTypeCategory extends CdbEntity implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
     @NotNull
-    @Size(max = 64)
+    @Size(min = 1, max = 64)
     private String name;
     @Size(max = 256)
     private String description;
@@ -65,7 +63,6 @@ public class PropertyTypeCategory extends CdbEntity {
         this.name = name;
     }
 
-    @Override
     public Integer getId() {
         return id;
     }
@@ -98,6 +95,14 @@ public class PropertyTypeCategory extends CdbEntity {
     public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
         this.propertyTypeList = propertyTypeList;
     }
+    
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult searchResult = new SearchResult(id, name);
+        searchResult.doesValueContainPattern("name", name, searchPattern);
+        searchResult.doesValueContainPattern("description", description, searchPattern);
+        return searchResult;
+    }
 
     @Override
     public int hashCode() {
@@ -106,39 +111,22 @@ public class PropertyTypeCategory extends CdbEntity {
         return hash;
     }
 
-    public boolean equalsByName(PropertyTypeCategory other) {
-        if (other == null) {
-            return false;
-        }
-        return ObjectUtility.equals(this.name, other.name);
-    }
-
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof PropertyTypeCategory)) {
             return false;
         }
         PropertyTypeCategory other = (PropertyTypeCategory) object;
-        if (this.id == null && other.id == null) {
-            return equalsByName(other);
-        }
-
-        if (this.id == null || other.id == null) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        return this.id.equals(other.id);
+        return true;
     }
 
     @Override
     public String toString() {
         return name;
     }
-
-    @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, name);
-        searchResult.doesValueContainPattern("name", name, searchPattern);
-        searchResult.doesValueContainPattern("description", description, searchPattern);
-        return searchResult;
-    }
+    
 }

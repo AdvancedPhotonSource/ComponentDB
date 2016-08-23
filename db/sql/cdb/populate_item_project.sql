@@ -1,0 +1,7 @@
+LOCK TABLES `item_project` WRITE;
+/*!40000 ALTER TABLE `item_project` DISABLE KEYS */;
+INSERT INTO `item_project` VALUES
+(1,'APS-U',NULL),
+(2,'APS-OPS',NULL);
+/*!40000 ALTER TABLE `item_project` ENABLE KEYS */;
+UNLOCK TABLES;

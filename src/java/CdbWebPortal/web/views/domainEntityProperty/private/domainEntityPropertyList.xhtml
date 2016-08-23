@@ -3,10 +3,15 @@
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
-    
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entityObject" value="#{entityController.selected}" />
+
+    <!-- Useful when dialogs need to be placed outside the module and when dialogs are reused -->
+    <!-- Used for inventory items (show proprties for self and catalog item) -->
+    <ui:param name="loadPropertyListDialogs" value="#{loadPropertyListDialogs != null ? loadPropertyListDialogs : true}" />
     
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
@@ -15,13 +20,9 @@
         <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
         <ui:param name="onCompleteAddButtonCommand" value="show#{entityTypeName}SinglePropertySelectDialogWidget()" />
     </ui:include>    
-    
+
     <ui:include src="domainEntityPropertyListDataTable.xhtml"/>
 
-    <ui:include src="domainEntityPropertyListCustomizeDisplayDialog.xhtml">
-        <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
-    </ui:include>
-    
     <p:remoteCommand name="show#{entityTypeName}SinglePropertySelectDialogWidget"
                      action="#{entityController.removeCurrentEditPropertyValue()}"
                      oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()"
@@ -31,12 +32,11 @@
     <ui:include src="domainEntitySinglePropertySelectDialog.xhtml" />
     <ui:include src="domainEntitySinglePropertySelectCustomizeDisplayDialog.xhtml" />
     <ui:include src="domainEntitySinglePropertyEditDialog.xhtml" />
-    
-    <ui:include src="domainEntityPropertyInfoActionDialogs.xhtml" />
-        
-    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
-   
-    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
+
+
+    <ui:include src="#{loadPropertyListDialogs
+                       ? 'domainEntityPropertyListDialogs.xhtml'
+                       : '../../common/private/commonEmptyPage.xhtml' }"/>
 
 </ui:composition>
 

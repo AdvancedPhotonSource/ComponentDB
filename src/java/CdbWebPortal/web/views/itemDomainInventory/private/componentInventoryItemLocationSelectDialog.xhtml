@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <ui:include src="../../item/private/itemSelectDialog.xhtml">
+        <ui:param name="entityTypeName" value="#{itemDomainLocationController.entityTypeName}" />
+        <ui:param name="selectionController" value="#{itemDomainLocationController}" />
+        <ui:param name="selectionTarget" value="#{itemObject.location}" />
+    </ui:include>
+
+</ui:composition>
+
+

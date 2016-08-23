@@ -1,19 +1,9 @@
-/*
- * Copyright (c) 2014-2015, Argonne National Laboratory.
- *
- * SVN Information:
- *   $HeadURL$
- *   $Date$
- *   $Revision$
- *   $Author$
- */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
-import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueDbFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +19,9 @@ import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-/**
- * Controller class for allowed property values.
- */
 @Named("allowedPropertyValueController")
 @SessionScoped
-public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueDbFacade> implements Serializable {
+public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -50,7 +37,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     private static final String FilterByValueSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Value";
 
     @EJB
-    private AllowedPropertyValueDbFacade allowedPropertyValueFacade;
+    private AllowedPropertyValueFacade allowedPropertyValueFacade;
     private static final Logger logger = Logger.getLogger(AllowedPropertyValueController.class.getName());
 
     private Boolean displayUnits = null;
@@ -64,7 +51,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     @Override
-    protected AllowedPropertyValueDbFacade getEntityDbFacade() {
+    protected AllowedPropertyValueFacade getEntityDbFacade() {
         return allowedPropertyValueFacade;
     }
 
@@ -146,19 +133,19 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     @Override
-    public void updateSettingsFromSessionUser(UserInfo sessionUser) {
-        displayNumberOfItemsPerPage = sessionUser.getUserSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = sessionUser.getUserSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        displaySortOrder = sessionUser.getUserSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        displayUnits = sessionUser.getUserSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
-        displayDescription = sessionUser.getUserSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
+        displaySortOrder = settingEntity.getSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
 
-        filterByDescription = sessionUser.getUserSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterBySortOrder = sessionUser.getUserSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        filterByUnits = sessionUser.getUserSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
-        filterByValue = sessionUser.getUserSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
+        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
+        filterBySortOrder = settingEntity.getSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        filterByUnits = settingEntity.getSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
+        filterByValue = settingEntity.getSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
     }
 
     @Override
@@ -175,21 +162,21 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     @Override
-    public void saveSettingsForSessionUser(UserInfo sessionUser) {
-        if (sessionUser == null) {
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
             return;
         }
 
-        sessionUser.setUserSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        sessionUser.setUserSettingValue(DisplayIdSettingTypeKey, displayId);
-        sessionUser.setUserSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        sessionUser.setUserSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        sessionUser.setUserSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
+        settingEntity.setSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
+        settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
 
-        sessionUser.setUserSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        sessionUser.setUserSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        sessionUser.setUserSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
-        sessionUser.setUserSettingValue(FilterByValueSettingTypeKey, filterByValue);
+        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+        settingEntity.setSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
+        settingEntity.setSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
+        settingEntity.setSettingValue(FilterByValueSettingTypeKey, filterByValue);
     }
 
     @Override

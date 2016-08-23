@@ -8,12 +8,9 @@ package gov.anl.aps.cdb.portal.model.jsf.beans;
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
-import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
+
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.model.db.entities.Component;
-import gov.anl.aps.cdb.portal.model.db.entities.ComponentInstance;
-import gov.anl.aps.cdb.portal.model.db.entities.Design;
-import gov.anl.aps.cdb.portal.model.db.entities.DesignElement;
+
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.TravelerTemplatePropertyTypeHandler;
@@ -181,7 +178,7 @@ public class TravelerBean implements Serializable {
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
-     */
+     
     public void createTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
 
@@ -203,6 +200,7 @@ public class TravelerBean implements Serializable {
             }
         }
     }
+    * */
 
     /**
      * Links to an existing traveler template. 
@@ -210,7 +208,7 @@ public class TravelerBean implements Serializable {
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
-     */
+     
     public void linkTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
@@ -219,7 +217,7 @@ public class TravelerBean implements Serializable {
                 RequestContext.getCurrentInstance().execute(onSuccessCommand);
             }
         }
-    }
+    }*/
 
     /**
      * Removes the id associated with template property. 
@@ -353,7 +351,7 @@ public class TravelerBean implements Serializable {
      * Determines all entities that need to have (traveler templates)/forms loaded
      * 
      * @param entityController controller for the entity currently being edited by the user. 
-     */
+     
     public void loadEntityAvailableTemplateList(CdbEntityController entityController) {
         if (checkPropertyValue()) {
             availableTemplates = new ArrayList<>();
@@ -390,7 +388,7 @@ public class TravelerBean implements Serializable {
                 //TODO Add Desgin Instance
             }
         }
-    }
+    }*/
 
     /**
      * Check all property values for templates and call function that add each one. 
@@ -432,7 +430,7 @@ public class TravelerBean implements Serializable {
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion
-     */
+     
     public void createTravelerInstance(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
@@ -466,7 +464,7 @@ public class TravelerBean implements Serializable {
 
             }
         }
-    }
+    }*/
     
     /**
      * Load information about the traveler instance property currently loaded. 

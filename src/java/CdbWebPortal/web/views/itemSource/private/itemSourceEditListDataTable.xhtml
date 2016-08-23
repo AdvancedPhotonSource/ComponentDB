@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="itemSourceEditListDataTable" 
+                 widgetVar="itemSourceEditListDataTableWidget"
+                 var="itemSourceObject" 
+                 value="#{itemObject.itemSourceList}" 
+                 rows="#{itemSourceController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 editable="true"
+                 emptyMessage="No item sources found."
+                 rowStyleClass="#{itemSourceObject.id != null ? '' : 'newItemInRow'}">
+
+        <p:column sortBy="#{itemSourceObject.id}" headerText="Id"
+                  rendered="#{itemSourceController.displayId}">
+            <h:outputText value="#{itemSourceObject.id}"/>
+        </p:column>
+
+        <p:column sortBy="#{itemSourceObject.source.name}" headerText="Name">
+            <p:selectOneMenu id="source" value="#{itemSourceObject.source}" required="true" 
+                             styleClass="cellSelect">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems var="source" value="#{sourceController.availableSourcesSortedByName}" itemLabel="#{source.name}" itemValue="#{source}"/>
+            </p:selectOneMenu>
+            <p:tooltip for="source" value="Select source name."/>
+        </p:column>
+
+        <p:column sortBy="#{itemSourceObject.partNumber}" headerText="Part Number"
+                  rendered="#{itemSourceController.displayPartNumber}">
+            <h:inputText id="partNumber" value="#{itemSourceObject.partNumber}" styleClass="cellInput"/>
+            <p:tooltip for="partNumber" value="Part number is optional."/>
+        </p:column>
+
+        <p:column sortBy="#{itemSourceObject.cost}" headerText="Cost [$]"
+                  rendered="#{itemSourceController.displayCost}">
+            <h:inputText id="cost" value="#{itemSourceObject.cost}" styleClass="cellInput"/>
+            <p:tooltip for="cost" value="Cost is optional."/>
+        </p:column>
+
+        <p:column sortBy="#{itemSourceObject.description}" headerText="Description"
+                  rendered="#{itemSourceController.displayDescription}">
+            <h:inputText id="description" value="#{itemSourceObject.description}" styleClass="longCellInput"/>
+            <p:tooltip for="description" value="Description is optional."/>
+        </p:column>
+
+        <p:column sortBy="#{itemSourceObject.contactInfo}" headerText="Contact Info"
+                  rendered="#{itemSourceController.displayContactInfo}">
+            <h:inputText id="contactInfo" value="#{itemSourceObject.contactInfo}" styleClass="cellInput"/>
+            <p:tooltip for="contactInfo" value="Enter contact info."/>
+        </p:column>    
+
+        <p:column sortBy="#{itemSourceObject.url}" headerText="URL"
+                  rendered="#{itemSourceController.displayUrl}">
+            <h:inputText id="url" value="#{itemSourceObject.url}" styleClass="cellInput"/>
+            <p:tooltip for="url" value="Enter item source URL."/>
+        </p:column>         
+
+        <p:column sortBy="#{itemSourceObject.isManufacturer}" headerText="Manufacturer"
+                  rendered="#{itemSourceController.displayIsManufacturer}">
+            <div class="dataTableCheckbox">
+                <p:selectBooleanCheckbox id="isManufacturer" value="#{itemSourceObject.isManufacturer}"/>
+                <p:tooltip for="isManufacturer" value="Check this box if item source is a manufacturer."/>
+            </div>
+        </p:column>   
+
+        <p:column sortBy="#{itemSourceObject.isVendor}" headerText="Vendor"
+                  rendered="#{itemSourceController.displayIsVendor}">
+            <div class="dataTableCheckbox">
+                <p:selectBooleanCheckbox id="isVendor" value="#{itemSourceObject.isVendor}"/>
+                <p:tooltip for="isVendor" value="Check this box if item source is a vendor."/>
+            </div>
+        </p:column>  
+
+        <p:column headerText="Actions" exportable="false">
+            <div class="actionLink">
+                <p:commandLink action="#{itemSourceController.destroy(itemSourceObject)}"
+                               actionListener="#{entityController.deleteSource(itemSourceObject)}" 
+                               styleClass="ui-icon ui-icon-trash" title="Delete" 
+                               update="itemSourceEditListDataTable"
+                               immediate="true"/>
+            </div>
+        </p:column>
+    </p:dataTable>
+</ui:composition>
+
+
