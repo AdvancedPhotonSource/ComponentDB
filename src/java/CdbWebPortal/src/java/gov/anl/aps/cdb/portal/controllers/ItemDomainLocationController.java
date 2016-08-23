@@ -167,5 +167,10 @@ public class ItemDomainLocationController extends ItemController {
     public boolean getEntityDisplayItemEntityTypes() {
         return false; 
     }
+
+    @Override
+    public String getDerivedDomainName() {
+        return null;
+    }
     
 }

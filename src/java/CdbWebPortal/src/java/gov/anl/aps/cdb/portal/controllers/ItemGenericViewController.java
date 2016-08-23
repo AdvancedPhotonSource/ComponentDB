@@ -187,5 +187,10 @@ public class ItemGenericViewController extends ItemController {
     public boolean getEntityDisplayItemEntityTypes() {
         return true;
     }
+
+    @Override
+    public String getDerivedDomainName() {
+        return null;
+    }
     
 }
