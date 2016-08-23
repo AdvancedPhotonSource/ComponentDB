@@ -7,10 +7,12 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="breadcrumb" value="#{itemSourceController.currentViewId}"/>
+    <ui:param name="itemSourceDataList" value="#{itemObject.itemSourceList}" />
+    
     <p:dataTable id="itemSourceListDataTable" 
                  widgetVar="itemSourceListWidget"
                  var="itemSourceObject" 
-                 value="#{itemObject.itemSourceList}" 
+                 value="#{itemSourceDataList}" 
                  filteredValue="#{itemSourceController.filteredObjectList}"
                  rows="#{itemSourceController.displayNumberOfItemsPerPage}"
                  paginator="true" 
@@ -18,62 +20,10 @@
                  paginatorAlwaysVisible="false"
                  emptyMessage="No item sources found.">
 
-        <p:column sortBy="#{itemSourceObject.id}" headerText="Id"
-                  rendered="#{itemSourceController.displayId}">
-            <h:outputText value="#{itemSourceObject.id}"/>
-        </p:column>
-
-        <p:column sortBy="#{itemSourceObject.source.name}" headerText="Name">
-            <h:outputLink value="../source/view.xhtml?id=#{itemSourceObject.source.id}&amp;breadcrumb=#{breadcrumb}" title="View design details">
-                <h:outputText value="#{itemSourceObject.source.name}"/>
-            </h:outputLink>  
-        </p:column>
-
-        <p:column sortBy="#{itemSourceObject.partNumber}" headerText="Part Number"
-                  rendered="#{itemSourceController.displayPartNumber}">
-            <h:outputText value="#{itemSourceObject.partNumber}"/>
-        </p:column>
-
-        <p:column sortBy="#{itemSourceObject.cost}" headerText="Cost [$]"
-                  rendered="#{itemSourceController.displayCost}">
-            <h:outputText value="#{itemSourceObject.cost}"/>
-        </p:column>
-
-        <p:column sortBy="#{itemSourceObject.description}" headerText="Description"
-                  rendered="#{itemSourceController.displayDescription}">
-            <h:outputText value="#{itemSourceObject.description}"/>
-        </p:column>    
-
-        <p:column sortBy="#{itemSourceObject.contactInfo}" headerText="Contact Info"
-                  rendered="#{itemSourceController.displayContactInfo}">
-            <h:outputText value="#{itemSourceObject.contactInfo}"/>
-        </p:column>    
-
-        <p:column sortBy="#{itemSourceObject.url}" headerText="URL"
-                  rendered="#{itemSourceController.displayUrl}">
-            <h:outputLink value="#{itemSourceObject.targetUrl}" target="_page_#{itemSourceObject.url}">
-                <h:outputText value="#{itemSourceObject.displayUrl}"/>
-            </h:outputLink>
-        </p:column>         
-
-        <p:column sortBy="#{itemSourceObject.isManufacturer}" headerText="Manufacturer"
-                  rendered="#{itemSourceController.displayIsManufacturer}">
-            <f:attribute name="exportValue" value="#{itemSourceObject.isManufacturer}"/>
-            <div class="dataTableCheckbox">
-                <h:outputText value="" styleClass="ui-icon ui-icon-check" 
-                              rendered="#{itemSourceObject.isManufacturer}"/>
-            </div>
-        </p:column>   
-
-        <p:column sortBy="#{itemSourceObject.isVendor}" headerText="Vendor"
-                  rendered="#{itemSourceController.displayIsVendor}">
-            <f:attribute name="exportValue" value="#{itemSourceObject.isVendor}"/>
-            <div class="dataTableCheckbox">
-                <h:outputText value="" styleClass="ui-icon ui-icon-check"
-                              rendered="#{itemSourceObject.isVendor}"/>
-            </div>
-        </p:column> 
-
+        <ui:include src="itemSourceListObject.xhtml" >
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemSourceDataList, 10)}" />
+        </ui:include>
+        
     </p:dataTable>
 
 </ui:composition>
