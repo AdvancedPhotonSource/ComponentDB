@@ -6,14 +6,15 @@
                 xmlns:p="http://primefaces.org/ui">
     <p:column id="name#{viewName}"
               rendered="#{entityController.entityDisplayItemName}">
-        <h:inputText value="#{itemObject.name}"                  
+        <h:inputText id="nameInputText#{viewName}" value="#{itemObject.name}"                  
                      title="#{entityController.nameTitle}" 
                      styleClass="entityDataEmphasizedText"
-                     required="#{required}"
-                     requiredMessage="#{requiredMessage}"
+                     required="true"
+                     requiredMessage="#{entityController.nameTitle} is required"
                      onkeyup="updateName#{viewName}()"/>
         <p:remoteCommand name="updateName#{viewName}"
                          update="name#{viewName}" />
+        <p:message for="nameInputText#{viewName}" />
     </p:column>
 
 
