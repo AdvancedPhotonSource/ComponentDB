@@ -8,11 +8,14 @@
 
     <ui:param name="panelGridStyle" value="editEntityDetails" />
 
+    <ui:define name="simpleEntityNameLabel">
+        <h:outputLabel for="name" value="Name*" styleClass="entityDataEmphasizedLabel"/>
+    </ui:define>
     <ui:define name="simpleEntityNameValue">
         <p:column>
             <h:inputText id="name" value="#{simpleEntityObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
             <p:message for="name"/> 
-            <p:tooltip for="name" value="Category name is required."/>
+            <p:tooltip for="name" value="#{displayEntityTypeName} name is required."/>
         </p:column>
     </ui:define>
 
@@ -20,7 +23,7 @@
         <p:column>
             <h:inputText id="description" value="#{simpleEntityObject.description}" title="Description" styleClass="entityDataText"/>
             <p:message for="description"/> 
-            <p:tooltip for="description" value="Category description is optional."/>
+            <p:tooltip for="description" value="#{displayEntityTypeName} description is optional."/>
         </p:column>
     </ui:define>        
 
