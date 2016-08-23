@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "property_type")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PropertyType.findAll", query = "SELECT p FROM PropertyType p"),
+    @NamedQuery(name = "PropertyType.findAll", query = "SELECT p FROM PropertyType p ORDER BY p.name"),
     @NamedQuery(name = "PropertyType.findById", query = "SELECT p FROM PropertyType p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyType.findByName", query = "SELECT p FROM PropertyType p WHERE p.name = :name"),
     @NamedQuery(name = "PropertyType.findByDescription", query = "SELECT p FROM PropertyType p WHERE p.description = :description"),

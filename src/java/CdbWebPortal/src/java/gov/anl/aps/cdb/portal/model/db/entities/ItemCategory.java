@@ -21,6 +21,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -35,11 +36,11 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "item_category")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "ItemCategory.findAll", query = "SELECT i FROM ItemCategory i"),
+    @NamedQuery(name = "ItemCategory.findAll", query = "SELECT i FROM ItemCategory i ORDER BY i.name ASC"),
     @NamedQuery(name = "ItemCategory.findById", query = "SELECT i FROM ItemCategory i WHERE i.id = :id"),
     @NamedQuery(name = "ItemCategory.findByName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name"),
     @NamedQuery(name = "ItemCategory.findByDescription", query = "SELECT i FROM ItemCategory i WHERE i.description = :description"),
-    @NamedQuery(name = "ItemCategory.findByDomainHandlerName", query = "SELECT i FROM ItemCategory i WHERE i.domainHandler.name = :domainHandlerName")})
+    @NamedQuery(name = "ItemCategory.findByDomainHandlerName", query = "SELECT i FROM ItemCategory i WHERE i.domainHandler.name = :domainHandlerName ORDER BY i.name ASC")})
 public class ItemCategory extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,8 +53,8 @@ public class ItemCategory extends CdbEntity implements Serializable {
     @Size(min = 1, max = 64)
     private String name;
     @Size(max = 256)
-    private String description;
-    @ManyToMany(mappedBy = "itemCategoryList")
+    private String description;    
+    @ManyToMany(mappedBy = "itemCategoryList")    
     private List<Item> itemList;
     @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
     @ManyToOne
@@ -62,6 +63,7 @@ public class ItemCategory extends CdbEntity implements Serializable {
         @JoinColumn(name = "item_category_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
+    @OrderBy("name ASC")
     private List<ItemType> itemTypeList;
      
     private transient String itemTypeString = null; 
