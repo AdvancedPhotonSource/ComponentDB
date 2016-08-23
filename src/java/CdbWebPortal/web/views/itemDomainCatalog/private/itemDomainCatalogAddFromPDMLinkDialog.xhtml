@@ -33,7 +33,7 @@
                     <p:outputPanel styleClass="borderAbove"
                                    rendered="#{pdmLinkDrawingBean.drawing != null}">
                         <p/>
-                        <p:commandButton value="Add Shown Drawing to Catalog"
+                        <p:commandButton value="Add Drawing to Catalog"
                                          action="#{pdmLinkDrawingBean.createCatalogItemFromDrawingNumber('createdCatalogItemFromPDMLinkDrawing()')}"/>
                         <p:remoteCommand name="createdCatalogItemFromPDMLinkDrawing"
                                          action="simpleCreate"/>
