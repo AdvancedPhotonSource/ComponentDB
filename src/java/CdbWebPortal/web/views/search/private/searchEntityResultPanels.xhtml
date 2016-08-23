@@ -4,7 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:panel header="#{itemDomainCatalogController.displayEntityTypeName}"
+    <p:panel header="#{itemDomainCatalogController.displayEntityTypeName}s"
              rendered="#{searchController.displayCatalogItems}"
              collapsed="#{!itemDomainCatalogController.displaySearchResultList}"
              toggleable="true">
@@ -13,7 +13,7 @@
         </ui:include>
     </p:panel>
 
-    <p:panel header="#{itemDomainInventoryController.displayEntityTypeName}"
+    <p:panel header="#{itemDomainInventoryController.displayEntityTypeName}s"
              rendered="#{searchController.displayInventoryItems}"
              collapsed="#{!itemDomainInventoryController.displaySearchResultList}"
              toggleable="true">
@@ -29,7 +29,7 @@
         <ui:include src="../../itemElement/private/itemElementSearchDataTable.xhtml"/>
     </p:panel>
 
-    <p:panel header="#{itemDomainLocationController.displayEntityTypeName}"
+    <p:panel header="#{itemDomainLocationController.displayEntityTypeName}s"
              rendered="#{searchController.displayLocationItems}"
              collapsed="#{!itemDomainLocationController.displaySearchResultList}"
              toggleable="true">
