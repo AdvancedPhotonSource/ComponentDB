@@ -960,3 +960,15 @@ h2 {
     align-items: center;
     justify-content: center;
 }
+
+.cdbWizard .ui-wizard-step-titles .ui-state-default {
+    background: #eaf1fa;
+}
+
+.cdbWizard .ui-wizard-step-titles .ui-state-highlight {
+    background: #84afe1;
+}
+
+.cdbWizard .ui-state-highlight .ui-menuitem-link {
+    color: white;
+}
