@@ -6,7 +6,8 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column id="entityType#{viewName}">
+    <p:column id="entityType#{viewName}"
+              rendered="#{entityController.entityDisplayItemEntityTypes}">
         <p:outputPanel rendered="#{entityController.entityTypeEditable}">
             <p:selectCheckboxMenu id="entityTypeSelectCB#{viewName}"
                                   label="#{itemObject.editEntityTypeString}"                              
