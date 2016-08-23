@@ -1,6 +1,0 @@
-LOCK TABLES `design` WRITE;
-/*!40000 ALTER TABLE `design` DISABLE KEYS */;
-INSERT INTO `design` VALUES
-(1,'test','',4);
-/*!40000 ALTER TABLE `design` ENABLE KEYS */;
-UNLOCK TABLES;
