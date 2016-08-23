@@ -7,10 +7,12 @@
 
     <ui:param name="breadcrumb" value="#{itemElementController.currentViewId}"/>
     <ui:param name="breadcrumbObjectId" value="#{itemObject.id}"/>  
+    <ui:param name="itemElementDataList" value="#{itemObject.itemElementDisplayList}" />
+    <ui:param name="itemElementListFilterable" value="#{facesUtility.displayFiltersForList(itemElementDataList, 10)}" />
 
     <p:dataTable id="#{childEntityTypeName}ListDataTable"
                  widgetVar="#{childEntityTypeName}ListDataTableWidget"
-                 value="#{itemObject.itemElementDisplayList}"
+                 value="#{itemElementDataList}"
                  var="itemElementObject"
                  filteredValue="#{itemElementController.filteredObjectList}"
                  rows="#{itemElementController.displayNumberOfItemsPerPage}"
@@ -26,16 +28,20 @@
             <p:rowToggler rendered="#{itemElementController.displayRowExpansion and itemElementController.displayFlatTableView}"/>
         </p:column>
         
-        <ui:include src="itemElementListObject.xhtml" />
+        <ui:include src="itemElementListObject.xhtml" >
+            <ui:param name="filterable" value="#{itemElementListFilterable}"/>
+        </ui:include>
 
         <ui:include src="../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
             <ui:param name="entityController" value="#{itemElementController}" />
             <ui:param name="cdbDomainEntityObject" value="#{itemElementObject}" />
+            <ui:param name="filterable" value="#{itemElementListFilterable}"/>
         </ui:include>
 
         <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
             <ui:param name="entityController" value="#{itemElementController}"/>
             <ui:param name="entityInfoObject" value="#{itemElementObject.entityInfo}"/>
+            <ui:param name="filterable" value="#{itemElementListFilterable}"/>
         </ui:include>
 
         <ui:include src="itemElementListObjectActions.xhtml" />
