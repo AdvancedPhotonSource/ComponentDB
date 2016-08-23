@@ -15,13 +15,15 @@
     <ui:param name="propertyTypeId5" value="#{entityController.displayPropertyTypeId5}"/>
     <ui:param name="propertyTypeName5" value="#{entityController.getDisplayPropertyTypeName(propertyTypeId5)}"/>
     
+    <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
+    
     <ui:include src="#{propertyValueColumn}">
         <ui:param name="propertyTypeName" value="#{propertyTypeName1}" />
         <ui:param name="propertyValueInformation" value="#{cdbDomainEntityObject.getPropertyValueInformation(propertyTypeId1)}"/>
         <ui:param name="propertyValueFilterBy" value="#{cdbDomainEntityObject.propertyValue1}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue1}" />
         <ui:param name="propertyValueRendered" value="#{propertyTypeId1 != null}" /> 
-        <ui:param name="propertyValueFilterable" value="#{entityController.filterablePropertyValue1}" />
+        <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue1}" />
     </ui:include>
 
     <ui:include src="#{propertyValueColumn}">
@@ -30,7 +32,7 @@
         <ui:param name="propertyValueFilterBy" value="#{cdbDomainEntityObject.propertyValue2}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue2}" />
         <ui:param name="propertyValueRendered" value="#{propertyTypeId2 != null}" />   
-        <ui:param name="propertyValueFilterable" value="#{entityController.filterablePropertyValue2}" />
+        <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue2}" />
     </ui:include>
 
     <ui:include src="#{propertyValueColumn}">
@@ -39,7 +41,7 @@
         <ui:param name="propertyValueFilterBy" value="#{cdbDomainEntityObject.propertyValue3}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue3}" />
         <ui:param name="propertyValueRendered" value="#{propertyTypeId3 != null}" /> 
-        <ui:param name="propertyValueFilterable" value="#{entityController.filterablePropertyValue3}" />
+        <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue3}" />
     </ui:include>
 
     <ui:include src="#{propertyValueColumn}">
@@ -48,7 +50,7 @@
         <ui:param name="propertyValueFilterBy" value="#{cdbDomainEntityObject.propertyValue4}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue4}" />
         <ui:param name="propertyValueRendered" value="#{propertyTypeId4 != null}" />  
-        <ui:param name="propertyValueFilterable" value="#{entityController.filterablePropertyValue4}" />
+        <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue4}" />
     </ui:include>
 
     <ui:include src="#{propertyValueColumn}">
@@ -57,7 +59,7 @@
         <ui:param name="propertyValueFilterBy" value="#{cdbDomainEntityObject.propertyValue5}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue5}" />
         <ui:param name="propertyValueRendered" value="#{propertyTypeId5 != null}" />   
-        <ui:param name="propertyValueFilterable" value="#{entityController.filterablePropertyValue5}" />
+        <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue5}" />
     </ui:include>
 
 </ui:composition>
