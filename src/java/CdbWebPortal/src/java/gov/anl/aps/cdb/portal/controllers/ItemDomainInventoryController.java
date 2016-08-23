@@ -34,6 +34,8 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.MenuModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -300,6 +302,50 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
+    protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
+        switch (step) {
+            case basicInformation:
+                return null;
+            case classification:
+                return null;
+            case permissions:
+                return null;
+            case reviewSave:
+                return null;
+            default:
+                break;
+        }
+
+        return super.getCreateItemWizardMenuItemValue(step);
+    }
+
+    @Override
+    protected String getCreateItemWizardMenuItemCustomValue(String stepName) {
+        if (stepName.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
+            return "Bill of Materials";
+        }
+
+        return super.getCreateItemWizardMenuItemCustomValue(stepName);
+    }
+
+    @Override
+    public MenuModel getCreateItemWizardStepsMenuModel() {
+        if (createItemWizardStepsMenuModel == null) {
+            // Create all of the standard menu items.
+            super.getCreateItemWizardStepsMenuModel();
+
+            DefaultMenuItem menuItem;
+            String menuItemDisplayValue = getCreateItemWizardMenuItemCustomValue(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
+            menuItem = createMenuItemForCreateWizardSteps(menuItemDisplayValue, ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
+
+            createItemWizardStepsMenuModel.addElement(menuItem);
+
+        }
+
+        return createItemWizardStepsMenuModel;
+    }
+
+    @Override
     public String getNextStepForCreateItemWizard(FlowEvent event) {
         if (getCurrent().getDerivedFromItem() == null) {
             SessionUtility.addWarningMessage("No Catalog Item Selected", "Please select a catalog item.");
@@ -310,15 +356,6 @@ public class ItemDomainInventoryController extends ItemController {
 
         if (nsEvent.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
             prepareBillOfMaterialsForCurrentItem();
-        }
-
-        if (nsEvent.equals(ItemCreateWizardSteps.reviewSave.getValue())) {
-            try {
-                addItemElementsFromBillOfMaterials(getCurrent());
-            } catch (CdbException ex) {
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-                return event.getOldStep();
-            }
         }
 
         return super.getNextStepForCreateItemWizard(event);
@@ -463,57 +500,59 @@ public class ItemDomainInventoryController extends ItemController {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
 
-        for (InventoryBillOfMaterialItem bomItem : bomItems) {
-            // Check if current catalog item element already has an item element defined. 
-            ItemElement catalogItemElement = bomItem.getCatalogItemElement();
-            ItemElement currentInventoryItemElement = null;
-            for (ItemElement inventoryItemElement : item.getFullItemElementList()) {
-                if (inventoryItemElement.getDerivedFromItemElement() == catalogItemElement) {
-                    currentInventoryItemElement = inventoryItemElement;
-                    logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);
-                    break;
-                }
-            }
-
-            if (currentInventoryItemElement == null) {
-                currentInventoryItemElement = new ItemElement();
-                currentInventoryItemElement.init(item, bomItem.getCatalogItemElement());
-                item.getFullItemElementList().add(currentInventoryItemElement);
-                logger.debug("Creating instance adding element " + currentInventoryItemElement + " to item " + item);
-            }
-
-            // User has specified to create a new item for this bill of materials item. 
-            String currentBomState = bomItem.getState();
-            if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())
-                    || currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
-                if (bomItem.getInventoryItem() == null) {
-
-                    String actionWord = "defined";
-                    if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
-                        actionWord = "selected";
-                    }
-
-                    throw new CdbException("An item for: " + bomItem.getCatalogItemElement().getName() + " is not " + actionWord + ".");
-                }
-
-                Item inventoryItem = bomItem.getInventoryItem();
-
-                // No need to do that for existing items. 
-                if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
-                    addItemElementsFromBillOfMaterials(inventoryItem);
-                    currentInventoryItemElement.setContainedItem(inventoryItem);
-
-                } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
-                    if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
-                        currentInventoryItemElement.setContainedItem(itemFacade.find(inventoryItem.getId()));
+        if (bomItems != null) {
+            for (InventoryBillOfMaterialItem bomItem : bomItems) {
+                // Check if current catalog item element already has an item element defined. 
+                ItemElement catalogItemElement = bomItem.getCatalogItemElement();
+                ItemElement currentInventoryItemElement = null;
+                for (ItemElement inventoryItemElement : item.getFullItemElementList()) {
+                    if (inventoryItemElement.getDerivedFromItemElement() == catalogItemElement) {
+                        currentInventoryItemElement = inventoryItemElement;
+                        logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);
+                        break;
                     }
                 }
-            } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
-                currentInventoryItemElement.setContainedItem(null);
-            }
 
-            // Use permissions defined in parent of the item for the item element. 
-            updateItemElementPermissionsToItem(currentInventoryItemElement, bomItem.getParentItemInstance());
+                if (currentInventoryItemElement == null) {
+                    currentInventoryItemElement = new ItemElement();
+                    currentInventoryItemElement.init(item, bomItem.getCatalogItemElement());
+                    item.getFullItemElementList().add(currentInventoryItemElement);
+                    logger.debug("Creating instance adding element " + currentInventoryItemElement + " to item " + item);
+                }
+
+                // User has specified to create a new item for this bill of materials item. 
+                String currentBomState = bomItem.getState();
+                if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())
+                        || currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
+                    if (bomItem.getInventoryItem() == null) {
+
+                        String actionWord = "defined";
+                        if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
+                            actionWord = "selected";
+                        }
+
+                        throw new CdbException("An item for: " + bomItem.getCatalogItemElement().getName() + " is not " + actionWord + ".");
+                    }
+
+                    Item inventoryItem = bomItem.getInventoryItem();
+
+                    // No need to do that for existing items. 
+                    if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
+                        addItemElementsFromBillOfMaterials(inventoryItem);
+                        currentInventoryItemElement.setContainedItem(inventoryItem);
+
+                    } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
+                        if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
+                            currentInventoryItemElement.setContainedItem(itemFacade.find(inventoryItem.getId()));
+                        }
+                    }
+                } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
+                    currentInventoryItemElement.setContainedItem(null);
+                }
+
+                // Use permissions defined in parent of the item for the item element. 
+                updateItemElementPermissionsToItem(currentInventoryItemElement, bomItem.getParentItemInstance());
+            }
         }
 
     }
@@ -752,17 +791,17 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
         // Item elements should match the assembly. User has no control over that.
-        return false; 
-    } 
+        return false;
+    }
 
     @Override
     public String prepareCloneForItemToClone() {
         // Item elements should match the assembly. User has no control over that.
-        cloneCreateItemElementPlaceholders = true; 
-        newItemsToAdd = null; 
-        
-        return super.prepareCloneForItemToClone(); 
-    }    
+        cloneCreateItemElementPlaceholders = true;
+        newItemsToAdd = null;
+
+        return super.prepareCloneForItemToClone();
+    }
 
     /**
      * Counts new items that will be added for a certain catalog item.
@@ -874,7 +913,7 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public Boolean getDisplayItemIdentifier1() {
         return displaySerialNumber;
-    } 
+    }
 
     @Override
     public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
@@ -934,8 +973,8 @@ public class ItemDomainInventoryController extends ItemController {
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
-        displayItemEntityTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemEntityTypeSettingTypeKey).getDefaultValue());
-                
+        //displayItemEntityTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemEntityTypeSettingTypeKey).getDefaultValue());
+
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
         loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
 
@@ -999,7 +1038,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displaySerialNumber = settingEntity.getSettingValueAsBoolean(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
-        displayItemEntityTypes = settingEntity.getSettingValueAsBoolean(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
+        //displayItemEntityTypes = settingEntity.getSettingValueAsBoolean(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
 
         displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         loadRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
@@ -1084,7 +1123,7 @@ public class ItemDomainInventoryController extends ItemController {
         settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         settingEntity.setSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
         settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
-        settingEntity.setSettingValue(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
+        //settingEntity.setSettingValue(DisplayItemEntityTypeSettingTypeKey, displayItemEntityTypes);
 
         settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         settingEntity.setSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
@@ -1282,15 +1321,20 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     public boolean isAllowedSetDerivedFromItemForCurrentItem() {
         if (getCurrent() != null) {
-            return !getCurrent().isIsCloned(); 
+            return !getCurrent().isIsCloned();
         }
-        
+
         return false;
     }
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
-        return true; 
+        return false;
+    }
+
+    @Override
+    public String getDerivedDomainName() {
+        return null;
     }
 
 }
