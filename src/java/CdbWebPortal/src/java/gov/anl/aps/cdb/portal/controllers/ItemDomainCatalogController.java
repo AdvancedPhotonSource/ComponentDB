@@ -59,10 +59,10 @@ public class ItemDomainCatalogController extends ItemController {
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainCatalog.List.Display.PropertyTypeId5";
     private static final String DisplayTypeSettingTypeKey = "ItemDomainCatalog.List.Display.Type";
     private static final String DisplayRowExpansionSettingTypeKey = "ItemDomainCatalog.List.Display.RowExpansion";
-    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainCatalog.List.Display.AlternateName"; 
-    private static final String DisplayItemProjectSettingTypeKey = "ItemDomainCatalog.List.Display.Project"; 
-    private static final String DisplayItemSourcesSettingTypeKey = "ItemDomainCatalog.List.Display.Sources"; 
-    private static final String DisplayItemEntityTypesSettingTypeKey = "ItemDomainCatalog.List.Display.EntityTypes"; 
+    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainCatalog.List.Display.AlternateName";
+    private static final String DisplayItemProjectSettingTypeKey = "ItemDomainCatalog.List.Display.Project";
+    private static final String DisplayItemSourcesSettingTypeKey = "ItemDomainCatalog.List.Display.Sources";
+    private static final String DisplayItemEntityTypesSettingTypeKey = "ItemDomainCatalog.List.Display.EntityTypes";
     private static final String DisplayComponentInstanceRowExpansionSettingTypeKey = "ItemDomainCatalog.List.Display.ComponentInstance.RowExpansion";
     private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ItemDomainCatalog.List.Load.RowExpansionPropertyValue";
     private static final String LoadComponentInstanceRowExpansionPropertyValueSettingTypeKey = "ItemDomainCatalog.List.Load.ComponentInstance.RowExpansionPropertyValue";
@@ -85,7 +85,7 @@ public class ItemDomainCatalogController extends ItemController {
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCatalog.List.AutoLoad.FilterBy.Properties";
 
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCatalog.Help.ListPage.Display.Fragment";
-    
+
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainCatalog.List.Scope.Display";
 
     private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
@@ -97,7 +97,7 @@ public class ItemDomainCatalogController extends ItemController {
     private DomainFacade domainFacade;
 
     private Boolean displayModelNumber = null;
-    private Boolean displayAlternateName = null; 
+    private Boolean displayAlternateName = null;
 
     private String filterByType = null;
     private String filterByCategory = null;
@@ -128,28 +128,28 @@ public class ItemDomainCatalogController extends ItemController {
     public String getDisplayEntityTypeName() {
         return "Catalog Item";
     }
-    
+
     @Override
     public String getItemItemTypeTitle() {
         return "Function";
     }
-    
+
     @Override
     public String getItemItemCategoryTitle() {
         return "Technical System";
     }
-    
+
     public boolean isCurrentItemElementListEditable() {
         Item item = getCurrent();
         if (item != null) {
-            return item.getDerivedFromItemList().isEmpty(); 
+            return item.getDerivedFromItemList().isEmpty();
         }
-        return false; 
+        return false;
     }
 
     @Override
     public boolean isItemHasSimpleListView() {
-        return true; 
+        return true;
     }
 
     public Boolean getLoadComponentInstanceRowExpansionPropertyValues() {
@@ -178,9 +178,11 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     private void checkEntityTypeSpecified(Item item) throws CdbException {
-        List<EntityType> entityTypeList = item.getEntityTypeList();
-        if (entityTypeList == null || entityTypeList.isEmpty()) {
-            throw new CdbException("At least one entity type must be specified for a catalog item.");
+        if (getEntityDisplayItemEntityTypes()) {
+            List<EntityType> entityTypeList = item.getEntityTypeList();
+            if (entityTypeList == null || entityTypeList.isEmpty()) {
+                throw new CdbException("At least one entity type must be specified for a catalog item.");
+            }
         }
     }
 
@@ -245,11 +247,11 @@ public class ItemDomainCatalogController extends ItemController {
     @Override
     public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
         this.displayModelNumber = displayItemIdentifier1;
-    } 
+    }
 
     @Override
     public Boolean getDisplayItemIdentifier2() {
-        return this.displayAlternateName; 
+        return this.displayAlternateName;
     }
 
     @Override
@@ -281,7 +283,7 @@ public class ItemDomainCatalogController extends ItemController {
         displayAlternateName = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateNameSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
         displayItemSources = Boolean.parseBoolean(settingTypeMap.get(DisplayItemSourcesSettingTypeKey).getDefaultValue());
-        displayItemEntityTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemEntityTypesSettingTypeKey).getDefaultValue()); 
+        //displayItemEntityTypes = Boolean.parseBoolean(settingTypeMap.get(DisplayItemEntityTypesSettingTypeKey).getDefaultValue()); 
 
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
         displayComponentInstanceRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentInstanceRowExpansionSettingTypeKey).getDefaultValue());
@@ -314,7 +316,7 @@ public class ItemDomainCatalogController extends ItemController {
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
 
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
-        
+
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
 
         resetDomainEntityPropertyTypeIdIndexMappings();
@@ -344,7 +346,7 @@ public class ItemDomainCatalogController extends ItemController {
         displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
         displayItemSources = settingEntity.getSettingValueAsBoolean(DisplayItemSourcesSettingTypeKey, displayItemSources);
-        displayItemEntityTypes = settingEntity.getSettingValueAsBoolean(DisplayItemEntityTypesSettingTypeKey, displayItemEntityTypes);
+        //displayItemEntityTypes = settingEntity.getSettingValueAsBoolean(DisplayItemEntityTypesSettingTypeKey, displayItemEntityTypes);
 
         displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         displayComponentInstanceRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayComponentInstanceRowExpansionSettingTypeKey, displayComponentInstanceRowExpansion);
@@ -377,8 +379,8 @@ public class ItemDomainCatalogController extends ItemController {
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-        
-        displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope); 
+
+        displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -422,7 +424,7 @@ public class ItemDomainCatalogController extends ItemController {
         settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
         settingEntity.setSettingValue(DisplayItemSourcesSettingTypeKey, displayItemSources);
-        settingEntity.setSettingValue(DisplayItemEntityTypesSettingTypeKey, displayItemEntityTypes);
+        //settingEntity.setSettingValue(DisplayItemEntityTypesSettingTypeKey, displayItemEntityTypes);
 
         settingEntity.setSettingValue(DisplayTypeSettingTypeKey, displayItemType);
         settingEntity.setSettingValue(DisplayCategorySettingTypeKey, displayItemCategory);
@@ -459,7 +461,7 @@ public class ItemDomainCatalogController extends ItemController {
         settingEntity.setSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-        
+
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
 
     }
@@ -473,7 +475,7 @@ public class ItemDomainCatalogController extends ItemController {
     public boolean getEntityDisplayItemIdentifier2() {
         return true;
     }
-    
+
     @Override
     public boolean getEntityDisplayItemSources() {
         return true;
@@ -516,7 +518,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public String getItemsDerivedFromItemTitle() {
-        return "Physical Instances";
+        return "Inventory";
     }
 
     @Override
@@ -586,7 +588,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemProject() {
-        return true; 
+        return true;
     }
 
     @Override
@@ -596,7 +598,12 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
-        return true;
+        return false;
+    }
+
+    @Override
+    public String getDerivedDomainName() {
+        return DERIVED_DOMAIN_NAME;
     }
 
 }
