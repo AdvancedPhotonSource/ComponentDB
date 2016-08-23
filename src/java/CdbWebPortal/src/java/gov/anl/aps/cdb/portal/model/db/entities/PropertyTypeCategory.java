@@ -126,7 +126,7 @@ public class PropertyTypeCategory extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory[ id=" + id + " ]";
+        return name;
     }
     
 }
