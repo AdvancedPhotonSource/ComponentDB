@@ -29,7 +29,9 @@
                title="Basic Information">
             <p:panel header="Item Details" styleClass="createWizardPanel">
                 <p:panelGrid columns="3">
-                    <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml"/>
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml">
+                        <ui:param name="additionalValue" value="*"/> 
+                    </ui:include>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemName.xhtml"/>
                     <p:outputPanel rendered="#{entityController.entityDisplayItemName}">
                         <ui:insert name="nameHelpFragment">
@@ -84,9 +86,22 @@
                 </div>
                 <p/>
                 <p:panelGrid columns="3">
+                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemProject.xhtml">
+                        <ui:param name="additionalValue"
+                                  value="#{entityController.isItemProjectRequired() ? '*' : ''}" />
+                    </ui:include>
+                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemProject.xhtml">
+                        <ui:param name="required" value="#{false}" />
+                    </ui:include>
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemProject}">
+                        <ui:insert name="itemItemProjectHelpFragment">
+                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml" />
+                        </ui:insert>
+                    </p:outputPanel>
+                    
                     <ui:include src="../templateDefaults/itemFieldLabels/itemEntityType.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemEntityType.xhtml"/>
-                    <p:outputPanel rendered="#{entityController.entityDisplayItemIdentifier2}">
+                    <p:outputPanel rendered="#{entityController.entityDisplayItemEntityTypes}">
                         <ui:insert name="itemEntityTypeHelpFragment">
                             <ui:include src="../templateDefaults/itemFieldHelpFragments/itemEntityType.xhtml" />
                         </ui:insert>
@@ -106,15 +121,7 @@
                         <ui:insert name="itemItemTypeHelpFragment">
                             <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemType.xhtml" />
                         </ui:insert>
-                    </p:outputPanel>
-                    
-                    <ui:include src="../templateDefaults/itemFieldLabels/itemItemProject.xhtml"/>
-                    <ui:include src="../templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
-                    <p:outputPanel rendered="#{entityController.entityDisplayItemProject}">
-                        <ui:insert name="itemItemProjectHelpFragment">
-                            <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml" />
-                        </ui:insert>
-                    </p:outputPanel>
+                    </p:outputPanel>                                        
                 </p:panelGrid>
             </p:panel>
         </p:tab>
