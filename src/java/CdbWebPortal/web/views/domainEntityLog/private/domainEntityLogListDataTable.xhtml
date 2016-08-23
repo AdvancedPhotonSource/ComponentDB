@@ -8,11 +8,12 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
     <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion' and viewMode != 'inViewRowExpansion'}" />
+    <ui:param name="logDataList" value="#{entityObject.logList}" />
 
     <p:dataTable id="#{entityTypeName}LogListDataTable"
                  widgetVar="#{entityTypeName}LogListDataTableWidget" 
                  var="logObject"
-                 value="#{entityObject.logList}" 
+                 value="#{logDataList}" 
                  rows="#{logController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
@@ -22,7 +23,9 @@
 
         <p:ajax event="rowEdit" listener="#{entityController.logObjectEditRowEvent(event)}" />
 
-        <ui:include src="../../log/private/logListObject.xhtml"/>
+        <ui:include src="../../log/private/logListObject.xhtml">
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(logDataList, 10)}"/>
+        </ui:include>
 
         <p:column headerText="Actions" rendered="#{renderActionColumn and isEntityWriteable}">
             <p:rowEditor />
