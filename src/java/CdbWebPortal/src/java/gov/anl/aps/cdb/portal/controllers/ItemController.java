@@ -38,6 +38,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +54,10 @@ import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.menu.DefaultMenuItem;
+import org.primefaces.model.menu.DefaultMenuModel;
+import org.primefaces.model.menu.MenuElement;
+import org.primefaces.model.menu.MenuModel;
 
 public abstract class ItemController extends CdbDomainEntityController<Item, ItemFacade> implements Serializable {
 
@@ -88,7 +93,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
-    protected Boolean displayItemEntityTypes = null; 
+    protected Boolean displayItemEntityTypes = null;
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected List<String> displayListDataModelScopeSelectionList = null;
@@ -151,24 +156,32 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Item itemToClone;
 
     protected enum ItemCreateWizardSteps {
-        derivedFromItemSelection("derivedFromItemSelectionTab"),
-        basicInformation("basicItemInformationTab"),
-        classification("itemClassificationTab"),
-        permissions("itemPermissionTab"),
-        reviewSave("reviewItemTab");
+        derivedFromItemSelection("derivedFromItemSelectionTab", "Derived From Item"),
+        basicInformation("basicItemInformationTab", "Basic Information"),
+        classification("itemClassificationTab", "Classification"),
+        permissions("itemPermissionTab", "Permissions"),
+        reviewSave("reviewItemTab", "Review");
 
-        private String value;
+        private final String value;
+        private final String displayValue;
 
-        private ItemCreateWizardSteps(String value) {
+        private ItemCreateWizardSteps(String value, String displayValue) {
             this.value = value;
+            this.displayValue = displayValue;
         }
 
         public String getValue() {
             return value;
         }
+
+        public String getDisplayValue() {
+            return displayValue;
+        }
     };
 
     private String currentWizardStep;
+    protected MenuModel createItemWizardStepsMenuModel = null;
+    protected Integer currentWizardStepIndex = null;
 
     public ItemController() {
     }
@@ -271,7 +284,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getItemIdentifier2Title();
 
     public abstract boolean getEntityDisplayItemProject();
-    
+
     public abstract boolean getEntityDisplayItemEntityTypes();
 
     public abstract String getItemsDerivedFromItemTitle();
@@ -283,6 +296,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getDomainHandlerName();
 
     public abstract String getItemDerivedFromDomainHandlerName();
+    
+    public abstract String getDerivedDomainName();
 
     public String getNameTitle() {
         return "Name";
@@ -302,8 +317,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public boolean isItemHasSimpleListView() {
         return false;
-    }
-
+    } 
+    
     public String getListViewSelected() {
         if (listViewSelected == null) {
             if (isItemHasSimpleListView()) {
@@ -396,6 +411,18 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         }
                     }
                 }
+            }
+
+            if (itemCategoryList.size() > 1) {
+                // Alphabetical sort order needs to be re-applied. 
+                Comparator<ItemType> itemTypesAlphabeticalComperitor;
+                itemTypesAlphabeticalComperitor = new Comparator<ItemType>() {
+                    @Override
+                    public int compare(ItemType o1, ItemType o2) {
+                        return o1.getName().compareTo(o2.getName());
+                    }
+                };
+                avaiableItemTypes.sort(itemTypesAlphabeticalComperitor);
             }
         }
 
@@ -628,7 +655,18 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public ItemController findDomainController(String domainHandlerName) {
-        return (ItemController) SessionUtility.findBean("itemDomain" + domainHandlerName + "Controller");
+        if (domainHandlerName != null) {
+            return (ItemController) SessionUtility.findBean(getDomainControllerName(domainHandlerName));
+        }
+        return null;
+    }
+
+    private String getDomainControllerName() {
+        return getDomainControllerName(getDefaultDomainName());
+    }
+
+    private String getDomainControllerName(String domainHandlerName) {
+        return "itemDomain" + domainHandlerName + "Controller";
     }
 
     public List<Domain> getAvailableDomains() {
@@ -968,6 +1006,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public ItemController getItemDerivedFromDomainController() {
         return findDomainController(getItemDerivedFromDomainHandlerName());
     }
+    
+    public ItemController getDerivedDomainController() {
+        return findDomainController(getDerivedDomainName());
+    }
 
     public Boolean isItemExistInDb(Item item) {
         Item dbItem = null;
@@ -978,19 +1020,127 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return dbItem != null;
     }
 
+    /**
+     * Method to be overridden by child controllers to control wizard steps in
+     * menu.
+     *
+     * @param step
+     * @return
+     */
+    protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
+        if (step.getValue().equals(ItemCreateWizardSteps.derivedFromItemSelection.getValue())) {
+            if (getEntityDisplayDerivedFromItem()) {
+                return getDerivedFromItemTitle();
+            } else {
+                return null;
+            }
+        }
+
+        return step.getDisplayValue();
+    }
+
+    public MenuModel getCreateItemWizardStepsMenuModel() {
+        if (createItemWizardStepsMenuModel == null) {
+            createItemWizardStepsMenuModel = new DefaultMenuModel();
+            for (ItemCreateWizardSteps step : ItemCreateWizardSteps.values()) {
+                String menuItemValue = getCreateItemWizardMenuItemValue(step);
+
+                if (menuItemValue != null) {
+                    DefaultMenuItem menuItem;
+                    menuItem = createMenuItemForCreateWizardSteps(menuItemValue, step.getValue());
+                    createItemWizardStepsMenuModel.addElement(menuItem);
+                }
+            }
+        }
+
+        return createItemWizardStepsMenuModel;
+    }
+
+    protected DefaultMenuItem createMenuItemForCreateWizardSteps(String displayValue, String stepValue) {
+        DefaultMenuItem menuElement = new DefaultMenuItem(displayValue);
+        String menuElementCommand = "#{";
+        menuElementCommand += getDomainControllerName();
+        menuElementCommand += ".updateCurrentWizardStep('" + stepValue + "')";
+        menuElementCommand += "}";
+        menuElement.setCommand(menuElementCommand);
+        return menuElement;
+    }
+
+    private ItemCreateWizardSteps getStepForValue(String value) {
+        for (ItemCreateWizardSteps step : ItemCreateWizardSteps.values()) {
+            if (step.getValue().equals(value)) {
+                return step;
+            }
+        }
+
+        return null;
+    }
+
+    protected String getCreateItemWizardMenuItemCustomValue(String stepName) {
+        return null;
+    }
+
+    private void updateCurrentWizardStepIndex(String currentStep) {
+        if (createItemWizardStepsMenuModel != null) {
+            ItemCreateWizardSteps step = getStepForValue(currentStep);
+            String menuItemValue = null;
+            if (step != null) {
+                menuItemValue = getCreateItemWizardMenuItemValue(step);
+            } else {
+                // Step is null, this may be a custom step spefic to derived controller.
+                menuItemValue = getCreateItemWizardMenuItemCustomValue(currentStep);
+            }
+            if (menuItemValue != null) {
+                for (MenuElement menuElement : createItemWizardStepsMenuModel.getElements()) {
+                    DefaultMenuItem menuItem = (DefaultMenuItem) menuElement;
+                    if (menuItem.getValue().equals(menuItemValue)) {
+                        currentWizardStepIndex = createItemWizardStepsMenuModel.getElements().indexOf(menuElement);
+                        break;
+                    }
+
+                }
+            }
+        }
+    }
+
+    public int getCurrentWizardStepIndex() {
+        if (currentWizardStepIndex == null) {
+            currentWizardStepIndex = 0;
+        }
+
+        return currentWizardStepIndex;
+    }
+
+    public String getCurrentWizardStep() {
+        if (currentWizardStep == null) {
+            currentWizardStep = getFirstCreateWizardStep();
+        }
+
+        return currentWizardStep;
+    }
+
+    public String updateCurrentWizardStep(String currentWizardStep) {
+        this.currentWizardStep = currentWizardStep;
+        updateCurrentWizardStepIndex(currentWizardStep);
+
+        return SessionUtility.getCurrentViewId() + "?faces-redirect=true";
+    }
+
+    public void setCurrentWizardStep(String currentWizardStep) {
+        this.currentWizardStep = currentWizardStep;
+    }
+
     public String createItemWizardFlowListener(FlowEvent event) {
         String prevStep = event.getOldStep();
         String nextStep = getNextStepForCreateItemWizard(event);
 
         currentWizardStep = nextStep;
+
         if (prevStep.equals(currentWizardStep) == false) {
-            RequestContext.getCurrentInstance().execute("updateWizardButtonsOutputPanel()");
+            updateCurrentWizardStepIndex(nextStep);
+            RequestContext.getCurrentInstance().execute("updateWizardButtons()");
         }
         return nextStep;
-    }
-
-    public void resetCurrentWizardStep() {
-        currentWizardStep = null;
     }
 
     public boolean isCreateWizardOnLastStep() {
@@ -1020,10 +1170,17 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void resetCreateItemWizardVariables() {
         // Reset any variables for the wizard.
         currentWizardStep = null;
+        currentWizardStepIndex = null;
     }
 
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
         getCurrent().setDerivedFromItem(derivedFromItem);
+    }
+
+    protected void checkItemProject(Item item) throws CdbException {
+        if (item.getItemProjectList() == null || item.getItemProjectList().isEmpty()) {
+            throw new CdbException("Project for item " + itemDomainToString(item) + " must be specified.");
+        }
     }
 
     public String getNextStepForCreateItemWizard(FlowEvent event) {
@@ -1038,6 +1195,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             } catch (CdbException ex) {
                 SessionUtility.addWarningMessage("Requirement Not Met", ex.getErrorMessage());
                 return ItemCreateWizardSteps.basicInformation.getValue();
+            }
+        } else if (finishedStep.equals(ItemCreateWizardSteps.classification.getValue())) {
+            if (isItemProjectRequired()) {
+                try {
+                    checkItemProject(getCurrent());
+                } catch (CdbException ex) {
+                    SessionUtility.addWarningMessage("Requirement Not Met", ex.getErrorMessage());
+                    return finishedStep;
+                }
             }
         }
 
@@ -1233,7 +1399,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
         return clonedItem;
     }
-    
+
     public Item completeClone(Item clonedItem, Integer cloningFromItemId) {
         Item cloningFrom = findById(cloningFromItemId);
 
@@ -1246,11 +1412,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (cloneCreateItemElementPlaceholders) {
             clonedItem = cloneCreateItemElementPlaceholders(clonedItem, cloningFrom);
         }
-        
+
         cloneProperties = false;
         cloneSources = false;
-        cloneCreateItemElementPlaceholders = false;         
-        
+        cloneCreateItemElementPlaceholders = false;
+
         return clonedItem;
     }
 
@@ -1258,40 +1424,40 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (itemToClone != null) {
             return !itemToClone.getItemElementDisplayList().isEmpty();
         }
-        return false; 
+        return false;
     }
-    
+
     public boolean isShowCloneSourcesOption() {
         if (itemToClone != null) {
             return itemToClone.getItemSourceList() != null && !itemToClone.getItemSourceList().isEmpty();
         }
-        return false; 
+        return false;
     }
-    
+
     public boolean isShowClonePropertiesOption() {
         if (itemToClone != null) {
             return itemToClone.getPropertyValueList() != null && !itemToClone.getPropertyValueList().isEmpty();
         }
-        return false; 
+        return false;
     }
-    
+
     public boolean isNoCloneOptionsAvailable() {
-        return !isShowCloneCreateItemElementsPlaceholdersOption() 
+        return !isShowCloneCreateItemElementsPlaceholdersOption()
                 && !isShowClonePropertiesOption()
-                && !isShowCloneSourcesOption(); 
+                && !isShowCloneSourcesOption();
     }
-    
+
     public String prepareCloneForItemToClone() {
         Item item = itemToClone;
         itemToClone = null;
-        return prepareClone(item); 
-    } 
-    
+        return prepareClone(item);
+    }
+
     public String checkNoOptionsPrepareCloneForItemToClone() {
         if (isNoCloneOptionsAvailable()) {
-            return prepareCloneForItemToClone(); 
+            return prepareCloneForItemToClone();
         }
-        
+
         return "";
     }
 
@@ -1480,6 +1646,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         this.displayQrId = displayQrId;
     }
 
+    public Boolean isItemProjectRequired() {
+        return getEntityDisplayItemProject();
+    }
+
     public Boolean getDisplayItemProject() {
         if (displayItemProject == null) {
             displayItemProject = getEntityDisplayItemProject();
@@ -1493,7 +1663,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public Boolean getDisplayItemEntityTypes() {
         if (displayItemEntityTypes == null) {
-            displayItemEntityTypes = getEntityDisplayItemEntityTypes(); 
+            displayItemEntityTypes = getEntityDisplayItemEntityTypes();
         }
         return displayItemEntityTypes;
     }
@@ -1794,18 +1964,34 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return domain.getName();
     }
-    
+
     public void checkCurrentItem() throws CdbException {
+        checkCurrentItem(false);
+    }
+
+    public void checkCurrentItem(boolean skipProjects) throws CdbException {
         if (getCurrent() != null) {
-            checkItem(getCurrent());
+            checkItem(getCurrent(), skipProjects);
+        } else {
+            throw new CdbException("Current item does not exist.");
         }
     }
 
     protected void checkItem(Item item) throws CdbException {
+        checkItem(item, false);
+    }
+
+    protected void checkItem(Item item, boolean skipProjects) throws CdbException {
         Domain itemDomain = item.getDomain();
 
         if (itemDomain == null) {
             throw new CdbException("No domain has been specified for " + itemDomainToString(item));
+        }
+
+        if (skipProjects == false) {
+            if (isItemProjectRequired()) {
+                checkItemProject(item);
+            }
         }
 
         checkItemUniqueness(item);
@@ -1821,9 +2007,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected String itemDomainToString(Item item) {
         return item.toString();
     }
-    
+
     public boolean isAllowedSetDerivedFromItemForCurrentItem() {
-        return getEntityDisplayDerivedFromItem(); 
+        return getEntityDisplayDerivedFromItem();
     }
 
     protected void checkItemUniqueness(Item item) throws CdbException {
