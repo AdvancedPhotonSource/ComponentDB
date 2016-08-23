@@ -324,7 +324,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return entity instance
      */
     public EntityType findById(Integer id) {
-        return null;
+        return getEntityDbFacade().find(id);
     }
 
     /**
@@ -910,6 +910,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return URL for the current view
      */
     public String customizeViewDisplay() {
+        return getUrlForCurrentView(); 
+    }
+    
+    /**
+     * Gets a redirection string for the current view. 
+     * 
+     * @return redirection string for the current view 
+     */
+    protected String getUrlForCurrentView(){
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
@@ -1031,7 +1040,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             resetListDataModel();
             resetSelectDataModel();
-            current = newEntity;
+            // Best to reload the entity after creation to ensure all connections are updated and initalized. 
+            Object newEntityId = newEntity.getId();
+            current = findById((Integer) newEntityId); 
             return view();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -1184,7 +1195,22 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         current = entity;
         destroy();
     }
-
+    
+    /**
+     * Executes destroy but does not return redirection string.
+     * 
+     * @return redirection to current view when successful. 
+     */
+    public String destroyInCurrentView() {
+        String result = destroy();       
+        
+        if (result != null) {
+            return getUrlForCurrentView();
+        }
+        
+        return null; 
+    }
+    
     /**
      * Remove current (selected) entity instance from the database and reset
      * list variables and data model.
