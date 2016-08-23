@@ -184,10 +184,14 @@ public class ItemFacade extends CdbEntityFacade<Item> {
     }
 
     public List<Item> findByFilterViewAttributes(ItemProject itemProject,
-            List<ItemCategory> itemCategoryList, ItemType itemType) {
+            List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {
         String queryString = QUERY_STRING_START;
 
         List<String> queryParameters = new ArrayList<>();
+        
+        if (itemDomainName != null) {          
+            queryParameters.add("i.domain.name = '" + itemDomainName +"'");
+        }
 
         if (itemProject != null) {
             queryString += "JOIN i.itemProjectList ipl ";
@@ -213,7 +217,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             queryString += " JOIN i.itemTypeList itl ";
             queryParameters.add("itl.id = " + itemType.getId());
         }
-
+                
         if (!queryParameters.isEmpty()) {
 
             queryString += "WHERE ";
@@ -228,7 +232,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
 
             return (List<Item>) em.createQuery(queryString).getResultList();
         }
-
+            
         return null;
     }
 

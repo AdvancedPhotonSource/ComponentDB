@@ -296,7 +296,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getDomainHandlerName();
 
     public abstract String getItemDerivedFromDomainHandlerName();
-    
+
     public abstract String getDerivedDomainName();
 
     public String getNameTitle() {
@@ -317,8 +317,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public boolean isItemHasSimpleListView() {
         return false;
-    } 
-    
+    }
+
     public String getListViewSelected() {
         if (listViewSelected == null) {
             if (isItemHasSimpleListView()) {
@@ -516,8 +516,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public ListDataModel getFilterViewListDataModel() {
         if (filterViewListDataModelLoaded == false) {
-            List<Item> filterViewItemList = itemFacade.findByFilterViewAttributes(filterViewSelectedItemProject,
-                    filterViewItemCategorySelectionList, filterViewSelectedItemType);
+            List<Item> filterViewItemList = null;
+            if (filterViewSelectedItemProject != null
+                    || filterViewItemCategorySelectionList != null
+                    || filterViewSelectedItemType != null) {
+                filterViewItemList = itemFacade.findByFilterViewAttributes(filterViewSelectedItemProject,
+                        filterViewItemCategorySelectionList, filterViewSelectedItemType, getDomainHandlerName());
+            }
 
             filterViewListDataModel = new ListDataModel(filterViewItemList);
             filterViewListDataModelLoaded = true;
@@ -1006,7 +1011,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public ItemController getItemDerivedFromDomainController() {
         return findDomainController(getItemDerivedFromDomainHandlerName());
     }
-    
+
     public ItemController getDerivedDomainController() {
         return findDomainController(getDerivedDomainName());
     }
