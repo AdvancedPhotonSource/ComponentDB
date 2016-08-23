@@ -8,11 +8,15 @@
     <p:column id="itemProject#{viewName}"
               rendered="#{entityController.entityDisplayItemProject}">
         
+        <ui:param name="required" value="#{required != null ? required : entityController.isItemProjectRequired()}"/>
+        
         <p:selectCheckboxMenu id="itemProjectSelectCB#{viewName}" 
                               label="#{itemObject.editItemProjectString}"
                               onHide="itemProjectSelectCBUpdate#{viewName}()"
                               value="#{itemObject.itemProjectList}" 
                               converter="itemProjectConverter"
+                              required="#{required}"
+                              requiredMessage="Please specify a project for this item."
                               filter="true" filterMatchMode="contains" >
             <f:selectItems value="#{itemProjectController.availableItems}" /> 
 
@@ -20,6 +24,7 @@
                              update="itemProjectSelectCB#{viewName}" />
 
         </p:selectCheckboxMenu>
+        <p:message for="itemProjectSelectCB#{viewName}" />
     </p:column>
 
 
