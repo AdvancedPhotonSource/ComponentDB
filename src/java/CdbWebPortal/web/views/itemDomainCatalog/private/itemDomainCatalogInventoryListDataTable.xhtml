@@ -6,7 +6,10 @@
 
     <ui:param name="entityController" value="#{childEntityController}" />
     <ui:param name="itemListDataTableValue" value="#{itemObject.derivedFromItemList}" />
-    <ui:param name="filterable" value="#{false}" />
+    <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemListDataTableValue, 10)}" />
+    
+    <ui:param name="isEntityCloneable" value="#{false}" />
+    <ui:param name="isEntityWriteable" value="#{false}" />
     
     <ui:define name="propertyValueColumns"/>
     
