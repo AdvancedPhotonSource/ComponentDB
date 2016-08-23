@@ -62,4 +62,10 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
         return null; 
     }
     
+    @Override
+    public List<PropertyType> findAll() {
+        return (List<PropertyType>) em.createNamedQuery("PropertyType.findAll")
+                .getResultList();
+    }
+    
 }
