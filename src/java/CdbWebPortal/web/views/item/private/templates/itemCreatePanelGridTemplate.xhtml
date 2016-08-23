@@ -10,7 +10,7 @@
             <p:outputPanel rendered="#{itemDomainInventoryController.allowedSetDerivedFromItemForCurrentItem}">
                 <ui:include src="../templateDefaults/itemFieldEditValues/itemDerivedFromItem.xhtml" />
             </p:outputPanel>
-            
+
             <p:outputPanel rendered="#{!itemDomainInventoryController.allowedSetDerivedFromItemForCurrentItem}">
                 <ui:include src="../templateDefaults/itemFieldViewValues/itemDerivedFromItem.xhtml">
                     <ui:param name="viewName" value="nonEditable" />
@@ -19,8 +19,21 @@
         </p:outputPanel>
     </ui:define>
 
+    <ui:define name="itemNameLabel">
+        <ui:include src="../templateDefaults/itemFieldLabels/itemName.xhtml" >
+            <ui:param name="additionalValue" value="*"/>
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="itemItemProjectLabel">
+        <ui:include src="../templateDefaults/itemFieldLabels/itemItemProject.xhtml">
+            <ui:param name="additionalValue"
+                      value="#{entityController.isItemProjectRequired() ? '*' : ''}" />
+        </ui:include>
+    </ui:define>
+
     <ui:define name="templateUseAdditionPanelGridContent">
-        
+
     </ui:define>
 
 </ui:composition>
