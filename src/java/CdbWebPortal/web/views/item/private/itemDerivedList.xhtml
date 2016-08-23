@@ -4,7 +4,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <ui:param name="derivedController" value="#{derivedController != null ? derivedController : entityController}" />
+    <ui:param name="derivedController" value="#{derivedController != null ? derivedController : entityController.derivedDomainController}" />
     
     <ui:param name="childEntityTypeName" value="#{derivedController.entityTypeName}" />
     <ui:param name="childEntityController" value="#{derivedController}"/>
@@ -17,7 +17,7 @@
     <ui:include src="itemDerivedListDataTable.xhtml"/>
 
     <ui:include src="itemDerivedListCustomizeDisplayDialog.xhtml"/>
-
+    
 </ui:composition>
 
 
