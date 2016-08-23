@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
+import java.util.List;
 import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ViewScoped;
@@ -66,6 +67,14 @@ public class FacesUtility {
         return null;
     }
     
+    public boolean displayFiltersForList(List<Object> dataList, int countRows) {
+        if (dataList != null) {
+            return dataList.size() > countRows; 
+        }
+
+        return false; 
+    }
+    
     public boolean displayFilters(DataModel dataModel, int countRows) {
         if (dataModel != null) {
             return dataModel.getRowCount() > countRows; 
@@ -73,5 +82,5 @@ public class FacesUtility {
 
         return false; 
     }
-
+      
 }
