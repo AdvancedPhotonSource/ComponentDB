@@ -252,7 +252,7 @@ public class PdmLinkDrawingBean implements Serializable {
             }
             
             try {
-                itemController.checkCurrentItem();
+                itemController.checkCurrentItem(true);
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("PDMLink drawing exists", 
                         "An item with model number of " + pdmLinkComponent.getModelNumber() + " already exists.");
