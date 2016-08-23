@@ -5,7 +5,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <h:outputLabel for="name#{viewName}" 
-                   value="#{entityController.nameTitle}" 
+                   value="#{entityController.nameTitle}#{additionalValue}" 
                    rendered="#{entityController.entityDisplayItemName}"
                    styleClass="entityDataEmphasizedLabel"/>
 
