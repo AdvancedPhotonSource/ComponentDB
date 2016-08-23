@@ -3,18 +3,22 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="itemMemberDataList" value="#{entityController.parentItemList}" />
 
     <p:dataTable id="designMemberListDataTable" 
                  widgetVar="designMemberListDataTableWidget" 
                  var="parentItemObject" 
-                 value="#{entityController.parentItemList}" 
+                 value="#{itemMemberDataList}" 
                  rows="#{itemMemberViewController.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  reflow="true"
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No items found.">
 
-        <ui:include src="itemMemberListObject.xhtml"/>
+        <ui:include src="itemMemberListObject.xhtml">
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemMemberDataList, 10)}"/>
+        </ui:include>
     </p:dataTable>
 
 </ui:composition>

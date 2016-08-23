@@ -4,19 +4,30 @@
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="filterable" value="#{filterable != null ? filterable : false}"/>
 
     <p:column sortBy="#{parentItemObject.id}" headerText="Id"
               rendered="#{itemMemberViewController.displayId}">
         <h:outputText value="#{parentItemObject.id}"/>
     </p:column>
 
-    <p:column sortBy="#{parentItemObject.name}" headerText="Part Of">
+    <ui:param name="currentPartIdentifier" value="#{currentItemController.getItemMembmershipPartIdentifier(parentItemObject)}"/> 
+    
+    <p:column sortBy="#{currentPartIdentifier}"
+              filterBy="#{currentPartIdentifier}"
+              filterMatchMode="contains"
+              filterable="#{filterable}"
+              headerText="Part Of">
         <h:outputLink value="../item/view.xhtml?id=#{parentItemObject.id}" title="View design details">
-            <h:outputText value="#{currentItemController.getItemMembmershipPartIdentifier(parentItemObject)}"/>
+            <h:outputText value="#{currentPartIdentifier}"/>
         </h:outputLink>         
     </p:column>
 
     <p:column sortBy="#{parentItemObject.description}" headerText="Description"
+              filterBy="#{parentItemObject.description}" 
+              filterMatchMode="contains"
+              filterable="#{filterable}"
               rendered="#{itemMemberViewController.displayDescription}">
         <h:outputText value="#{parentItemObject.description}"/>
     </p:column>
