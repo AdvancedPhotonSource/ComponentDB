@@ -20,8 +20,7 @@
                          />
         <p:selectOneMenu rendered="#{entityInfoObject != null}" 
                          value="#{entityInfoObject.ownerUser}" 
-                         styleClass="entityDataText"
-                         converter="userInfoConverter">
+                         styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
         </p:selectOneMenu>
