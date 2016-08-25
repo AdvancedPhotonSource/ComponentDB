@@ -111,15 +111,6 @@ footer {
     background: #6da5d8;
 }
 
-.activeMenuItem {
-    background: #76bff0 !important;
-    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
-}
-
 .menuContent {
     position: relative;
     vertical-align: central;
@@ -152,23 +143,6 @@ footer {
     vertical-align: central;
     text-align: center;
     background-color: #6da5d8;
-}
-
-.mainMenuBarItemImportant {
-    margin-top: 1px;
-    margin-right: 5px;
-    padding: 6px !important;
-    border-radius: 6px;
-    background: #acd6f2;
-    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
-}
-
-.mainMenuBarItemImportant .ui-menuitem-text {
-    color: #5e5e5e; 
 }
 
 .menuBarSupportingItems {
@@ -648,14 +622,56 @@ h2 {
     border: none;    
 }
 
-.mainMenuBar .ui-menu, .mainMenuBar .ui-menuitem, .mainMenuBar .ui-menu .ui-menu-child {
-    background: #6da5d8;
-    color: white;
-    margin-top: 0px;
+.mainMenuBar .ui-menu, .mainMenuBar, .mainMenuBar .ui-menu .ui-menu-child {
+    background: #6da5d8;    
 }
 
-.ui-menuitem-text {
-    color: white;
+.mainMenuBar .ui-menu .ui-menu-child {
+    padding-right: 10px;
+    padding-top: 10px;
+}
+
+.mainMenuBar .ui-menu .ui-menu-child .ui-menuitem {
+    padding-bottom: 5px
+}
+
+.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {    
+    background: #acd6f2;
+    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
+}
+
+.mainMenuBar .activeSubMenuParentItem .ui-submenu-link {
+    background: #76bff0 !important;
+    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+}
+ 
+.mainMenuBar .activeMenuItem {
+    background: #76bff0 !important;
+    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+}
+
+.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link:hover {    
+    background: #d2e9f9;
+}
+
+.mainMenuBar .ui-menu .ui-menuitem {    
+    padding-left: 5px;
+}
+
+.mainMenuBar .ui-menuitem-text {
+    color: #5e5e5e; 
     font-weight: bold;
 }
 
