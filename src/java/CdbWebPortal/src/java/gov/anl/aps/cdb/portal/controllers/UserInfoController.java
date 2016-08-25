@@ -471,7 +471,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     /**
      * Converter class for user info objects.
      */
-    @FacesConverter(forClass = UserInfo.class)
+    @FacesConverter(value = "userInfoConverter", forClass = UserInfo.class)
     public static class UserInfoControllerConverter implements Converter {
 
         @Override
