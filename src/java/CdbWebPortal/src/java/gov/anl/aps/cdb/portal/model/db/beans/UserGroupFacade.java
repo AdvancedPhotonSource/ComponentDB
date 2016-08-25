@@ -41,6 +41,12 @@ public class UserGroupFacade extends CdbEntityFacade<UserGroup> {
         return null;
     }
     
+    @Override
+    public List<UserGroup> findAll() {
+        return (List<UserGroup>) em.createNamedQuery("UserGroup.findAll")
+                .getResultList();
+    }
+    
     public List<UserGroup> findUserGroupsWithSettings() {
         try {
             return (List<UserGroup>) em.createNamedQuery("UserGroup.findGroupsWithSettings")

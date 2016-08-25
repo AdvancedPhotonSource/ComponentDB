@@ -22,6 +22,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(name = "user_group")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "UserGroup.findAll", query = "SELECT u FROM UserGroup u"),
+    @NamedQuery(name = "UserGroup.findAll", query = "SELECT u FROM UserGroup u ORDER BY u.name ASC"),
     @NamedQuery(name = "UserGroup.findById", query = "SELECT u FROM UserGroup u WHERE u.id = :id"),
     @NamedQuery(name = "UserGroup.findByName", query = "SELECT u FROM UserGroup u WHERE u.name = :name"),
     @NamedQuery(name = "UserGroup.findByDescription", query = "SELECT u FROM UserGroup u WHERE u.description = :description"),
@@ -56,6 +57,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     @Size(max = 256)
     private String description;
     @ManyToMany(mappedBy = "userGroupList")
+    @OrderBy("lastName ASC")
     private List<UserInfo> userInfoList;
     @JoinTable(name = "user_group_list", joinColumns = {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")}, inverseJoinColumns = {
