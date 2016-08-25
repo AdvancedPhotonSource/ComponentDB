@@ -82,9 +82,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @EJB
     private ListFacade listFacade;
-    
+
     @EJB
-    private UserInfoFacade userInfoFacade; 
+    private UserInfoFacade userInfoFacade;
 
     protected final String FAVORITES_LIST_NAME = "Favorites";
 
@@ -133,25 +133,25 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected String listViewSelected;
 
     protected List<ItemCategory> filterViewItemCategorySelectionList = null;
-    
+
     // Geenerated based on the currently selected item category. 
     protected List<ItemType> filterViewItemTypeList = null;
-    
+
     protected List<UserGroup> filterViewUserGroupSelectionList = null;
-    
+
     // Generated based on the currently selected user group. 
     protected List<UserInfo> filterViewUserInfoList = null;
 
     protected ItemType filterViewSelectedItemType = null;
-    
-    protected UserInfo filterViewSelectedUserInfo = null; 
+
+    protected UserInfo filterViewSelectedUserInfo = null;
 
     protected boolean filterViewCategoryTypeListDataModelLoaded = false;
-    
-    protected boolean filterViewOwnerListDataModelLoaded = false; 
+
+    protected boolean filterViewOwnerListDataModelLoaded = false;
 
     protected ListDataModel filterViewCategoryTypeDataModel = null;
-    
+
     protected ListDataModel filterViewOwnerListDataModel = null;
 
     protected ItemProject filterViewSelectedItemProject = null;
@@ -466,20 +466,29 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public List<UserInfo> getFilterViewUserInfoList() {
         if (filterViewUserInfoList == null) {
-            if (filterViewUserGroupSelectionList == null 
+            if (filterViewUserGroupSelectionList == null
                     || filterViewUserGroupSelectionList.isEmpty()) {
-                filterViewUserInfoList = userInfoFacade.findAll(); 
+                filterViewUserInfoList = userInfoFacade.findAll();
             } else {
                 filterViewUserInfoList = new ArrayList<>();
-                for (UserGroup userGroup: filterViewUserGroupSelectionList) {
+                for (UserGroup userGroup : filterViewUserGroupSelectionList) {
                     for (UserInfo userInfo : userGroup.getUserInfoList()) {
                         if (!filterViewUserInfoList.contains(userInfo)) {
                             filterViewUserInfoList.add(userInfo);
                         }
                     }
                 }
-                
-                // TODO add aphabetical sort
+                if (filterViewUserGroupSelectionList.size() > 1) {
+                    // Alphabetical sort order needs to be re-applied. 
+                    Comparator<UserInfo> userInfoAlphabeticalComperitor;
+                    userInfoAlphabeticalComperitor = new Comparator<UserInfo>() {
+                        @Override
+                        public int compare(UserInfo o1, UserInfo o2) {
+                            return o1.toString().compareTo(o2.toString());
+                        }
+                    };
+                    filterViewUserInfoList.sort(userInfoAlphabeticalComperitor);
+                }
             }
         }
         return filterViewUserInfoList;
@@ -487,9 +496,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setFilterViewUserGroupSelectionList(List<UserGroup> filterViewUserGroupSelectionList) {
         // List is different.
-        if (isListDifferent((List<Object>)(Object)this.filterViewUserGroupSelectionList
-                , (List<Object>)(Object)filterViewUserGroupSelectionList)) {
-            filterViewUserInfoList = null; 
+        if (isListDifferent((List<Object>) (Object) this.filterViewUserGroupSelectionList, (List<Object>) (Object) filterViewUserGroupSelectionList)) {
+            filterViewUserInfoList = null;
             this.filterViewUserGroupSelectionList = filterViewUserGroupSelectionList;
             this.filterViewOwnerListDataModelLoaded = false;
             // Verify validity of current selection. 
@@ -501,10 +509,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return filterViewItemCategorySelectionList;
     }
 
-    public void setFilterViewItemCategorySelection(List<ItemCategory> filterViewItemCategorySelectionList) {        
+    public void setFilterViewItemCategorySelection(List<ItemCategory> filterViewItemCategorySelectionList) {
         // List is diferent.
-        if (isListDifferent((List<Object>)(Object)this.filterViewItemCategorySelectionList
-                , (List<Object>)(Object)filterViewItemCategorySelectionList)) {
+        if (isListDifferent((List<Object>) (Object) this.filterViewItemCategorySelectionList, (List<Object>) (Object) filterViewItemCategorySelectionList)) {
             this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
             filterViewItemTypeList = null;
             filterViewCategoryTypeListDataModelLoaded = false;
@@ -512,7 +519,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             setFilterViewSelectedItemType(filterViewSelectedItemType);
         }
     }
-       
+
     public ItemType getFilterViewSelectedItemType() {
         return filterViewSelectedItemType;
     }
@@ -531,31 +538,31 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
     }
 
-    public UserInfo getFilterViewSelectedUserInfo() {        
+    public UserInfo getFilterViewSelectedUserInfo() {
         return filterViewSelectedUserInfo;
     }
 
     public void setFilterViewSelectedUserInfo(UserInfo filterViewSelectedUserInfo) {
         if (filterViewSelectedUserInfo == null) {
-          this.filterViewSelectedUserInfo = filterViewSelectedUserInfo; 
-          this.filterViewOwnerListDataModelLoaded = false;
-        } else if (getFilterViewUserInfoList().contains(filterViewSelectedUserInfo)){
+            this.filterViewSelectedUserInfo = filterViewSelectedUserInfo;
+            this.filterViewOwnerListDataModelLoaded = false;
+        } else if (getFilterViewUserInfoList().contains(filterViewSelectedUserInfo)) {
             this.filterViewSelectedUserInfo = filterViewSelectedUserInfo;
             this.filterViewOwnerListDataModelLoaded = false;
         } else if (!getFilterViewUserInfoList().contains(filterViewSelectedUserInfo)) {
-            this.filterViewSelectedUserInfo = null; 
+            this.filterViewSelectedUserInfo = null;
             this.filterViewOwnerListDataModelLoaded = false;
-        } 
-    } 
+        }
+    }
 
     public boolean isFilterViewItemTypeSelectOneDisabled() {
         return getFilterViewItemTypeList().isEmpty();
     }
-    
+
     public boolean isFilterViewUserInfoSelectOneDisabled() {
         return getFilterViewUserInfoList().isEmpty();
-    } 
-    
+    }
+
     public ItemProject getFilterViewSelectedItemProject() {
         return filterViewSelectedItemProject;
     }
@@ -567,7 +574,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         this.filterViewSelectedItemProject = filterViewSelectedItemProject;
     }
-    
+
     public List<ItemType> getFilterViewItemTypeList() {
         if (filterViewItemTypeList == null) {
             filterViewItemTypeList = new ArrayList<>();
@@ -599,18 +606,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (filterViewOwnerListDataModelLoaded == false) {
             List<Item> filterViewItemList = null;
             if (filterViewSelectedItemProject != null
-                    || filterViewSelectedUserInfo != null 
+                    || filterViewSelectedUserInfo != null
                     || filterViewUserGroupSelectionList != null) {
-                filterViewItemList = itemFacade.findByFilterViewOwnerAttributes(filterViewSelectedItemProject
-                        , filterViewUserGroupSelectionList
-                        , filterViewSelectedUserInfo
-                        , getDomainHandlerName());
+                filterViewItemList = itemFacade.findByFilterViewOwnerAttributes(filterViewSelectedItemProject, filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDomainHandlerName());
             }
-            
+
             filterViewOwnerListDataModel = new ListDataModel(filterViewItemList);
             filterViewOwnerListDataModelLoaded = true;
-         }
-        
+        }
+
         return filterViewOwnerListDataModel;
     }
 
@@ -619,71 +623,54 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      * is that data table will stop attempting to fetch number of rows after
      * interaction with paginator.
      *
-     * @return number of rows to display in data table.     
-    public int getFilterViewDataTableRowCount() {
-        if (filterViewDataTableRowCount == -1) {
-            ListDataModel filterDataModel = getFilterViewListDataModel();
-
-            int filterDataModelRowCount = filterDataModel.getRowCount();
-
-            int lastBestNumRows = 0;
-            if (filterDataModelRowCount != -1) {
-
-                Double lastBestResult = null;
-                for (int i = FILTER_VIEW_MAX_ROWS; i > FILTER_VIEW_MIN_ROWS; i--) {
-                    if (lastBestResult == null) {
-                        lastBestResult = (i * 1.0) / (filterDataModelRowCount * 1.0);
-                        lastBestNumRows = i;
-                    } else {
-                        double currentResult = (i * 1.0) / (filterDataModelRowCount * 1.0);
-                        double resultDecimal = currentResult - Math.floor(currentResult);
-                        if (resultDecimal != 0) {
-                            double lastDecimal = lastBestResult - Math.floor(lastBestResult);
-                            if (currentResult > lastDecimal) {
-                                lastBestResult = currentResult;
-                                lastBestNumRows = i;
-                            }
-                        } else {
-                            // Whole number reached. 
-                            lastBestResult = currentResult;
-                        }
-
-                    }
-
-                    // Optimal result reached... whole number returned. 
-                    if (lastBestResult % 1 == 0) {
-                        lastBestNumRows = i;
-                        break;
-                    }
-                }
-            }
-
-            filterViewDataTableRowCount = lastBestNumRows;
-        }
-
-        return filterViewDataTableRowCount;
-
-    }
-    */
-    
+     * @return number of rows to display in data table. public int
+     * getFilterViewDataTableRowCount() { if (filterViewDataTableRowCount == -1)
+     * { ListDataModel filterDataModel = getFilterViewListDataModel();
+     *
+     * int filterDataModelRowCount = filterDataModel.getRowCount();
+     *
+     * int lastBestNumRows = 0; if (filterDataModelRowCount != -1) {
+     *
+     * Double lastBestResult = null; for (int i = FILTER_VIEW_MAX_ROWS; i >
+     * FILTER_VIEW_MIN_ROWS; i--) { if (lastBestResult == null) { lastBestResult
+     * = (i * 1.0) / (filterDataModelRowCount * 1.0); lastBestNumRows = i; }
+     * else { double currentResult = (i * 1.0) / (filterDataModelRowCount *
+     * 1.0); double resultDecimal = currentResult - Math.floor(currentResult);
+     * if (resultDecimal != 0) { double lastDecimal = lastBestResult -
+     * Math.floor(lastBestResult); if (currentResult > lastDecimal) {
+     * lastBestResult = currentResult; lastBestNumRows = i; } } else { // Whole
+     * number reached. lastBestResult = currentResult; }
+     *
+     * }
+     *
+     * // Optimal result reached... whole number returned. if (lastBestResult %
+     * 1 == 0) { lastBestNumRows = i; break; } } }
+     *
+     * filterViewDataTableRowCount = lastBestNumRows; }
+     *
+     * return filterViewDataTableRowCount;
+     *
+     * }
+     */
     /**
-     * Compares if two lists are different. 
+     * Compares if two lists are different.
+     *
      * @param originalList
      * @param listToCompare
-     * @return 
+     * @return
      */
     private boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
         Boolean listIsDifferent = true;
-        if (originalList == null 
+        if (originalList == null
                 || listToCompare.size() == originalList.size()) {
             List<Object> test = new ArrayList<>(listToCompare);
             if (originalList != null) {
                 test.removeAll(originalList);
             }
-            
-            listIsDifferent = !test.isEmpty(); 
+
+            listIsDifferent = !test.isEmpty();
         }
-        return listIsDifferent; 
+        return listIsDifferent;
     }
 
     public ListDataModel getDomainListDataModel() {
