@@ -183,8 +183,22 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         return null;
     }
 
-    public List<Item> findByFilterViewAttributes(ItemProject itemProject,
-            List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {
+    public List<Item> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,
+            List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {        
+        return findByFilterViewAttributes(itemProject, itemCategoryList, itemType, itemDomainName, null, null);        
+    }
+    
+    public List<Item> findByFilterViewOwnerAttributes(ItemProject itemProject, 
+            List<UserGroup> ownerUserGroupList, UserInfo ownerUserName, String itemDomainName) {
+        return findByFilterViewAttributes(itemProject, null, null, itemDomainName, ownerUserGroupList, ownerUserName); 
+    }
+    
+    private List<Item> findByFilterViewAttributes(ItemProject itemProject,
+            List<ItemCategory> itemCategoryList, 
+            ItemType itemType, 
+            String itemDomainName,
+            List<UserGroup> ownerUserGroupList,
+            UserInfo ownerUserName) {
         String queryString = QUERY_STRING_START;
 
         List<String> queryParameters = new ArrayList<>();
@@ -216,6 +230,27 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         if (itemType != null) {
             queryString += " JOIN i.itemTypeList itl ";
             queryParameters.add("itl.id = " + itemType.getId());
+        }
+        
+        if (ownerUserGroupList != null || ownerUserName != null) {
+            queryString += " JOIN i.fullItemElementList fiel ";
+            queryParameters.add("fiel.name is NULL and fiel.derivedFromItemElement is null");
+            if (ownerUserGroupList != null && !ownerUserGroupList.isEmpty()) {
+                String queryParameter = "(";
+                for (UserGroup userGroup: ownerUserGroupList) {
+                    if (ownerUserGroupList.indexOf(userGroup) != 0) {
+                        queryParameter += " OR ";
+                    }
+                    queryParameter += "fiel.entityInfo.ownerUserGroup.name = '" + userGroup.getName() + "'";
+                }
+                queryParameter += ")";
+                queryParameters.add(queryParameter); 
+            }
+            
+            if (ownerUserName != null) {
+                String queryParameter = "fiel.entityInfo.ownerUser.username = '" + ownerUserName.getUsername() + "'";
+                queryParameters.add(queryParameter); 
+            }
         }
                 
         if (!queryParameters.isEmpty()) {
