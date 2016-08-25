@@ -466,7 +466,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public List<UserInfo> getFilterViewUserInfoList() {
         if (filterViewUserInfoList == null) {
-            if (filterViewUserGroupSelectionList == null
+            if (filterViewSelectedItemProject == null && 
+                    (filterViewUserGroupSelectionList == null
+                    || filterViewUserGroupSelectionList.isEmpty())) {
+                filterViewUserInfoList = new ArrayList<>(); 
+            }
+            else if (filterViewUserGroupSelectionList == null
                     || filterViewUserGroupSelectionList.isEmpty()) {
                 filterViewUserInfoList = userInfoFacade.findAll();
             } else {
@@ -571,6 +576,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {
             filterViewCategoryTypeListDataModelLoaded = false;
             filterViewOwnerListDataModelLoaded = false;
+            filterViewUserInfoList = null; 
         }
         this.filterViewSelectedItemProject = filterViewSelectedItemProject;
     }
