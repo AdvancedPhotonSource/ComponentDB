@@ -3,75 +3,34 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="itemListFilterViewTemplateBase.xhtml">
 
-    <p:panelGrid>
-        <p:row>
-            <p:column styleClass="topAlignedDataCell contentSeperatorBorder">
-                <p:panelGrid>
-                    <p:row>
-                        <p:column >
-                            Choose a Project
-                            <p:selectOneRadio id="customRadio" 
-                                              layout="grid" 
-                                              columns="1"
-                                              converter="itemProjectConverter"
-                                              value="#{entityController.filterViewSelectedItemProject}"
-                                              onchange="updateForm()">
-                                <f:selectItems value="#{itemProjectController.availableItems}"
-                                               var="itemProject"
-                                               itemLabel="#{itemProject.name}"
-                                               itemValue="#{itemProject}"/>
-                            </p:selectOneRadio>
-                        </p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column>
-                            Choose a #{entityController.itemItemCategoryTitle}
-                            <p:selectManyMenu id="filterViewItemCategorySelection"
-                                              value="#{entityController.filterViewItemCategorySelection}"
-                                              converter="itemCategoryConverter"
-                                              styleClass="wideListBox"
-                                              onchange="updateForm()">
-                                <f:selectItems value="#{entityController.domainItemCategoryList}"
-                                               var="itemCategory"
-                                               itemLabel="#{itemCategory.name}"
-                                               itemValue="#{itemCategory}"/>
-                            </p:selectManyMenu>    
-                        </p:column>
-                    </p:row>
-                    <p:row>
-                        <p:column>
-                            #{entityController.itemItemTypeTitle}s
-                            <p:selectOneListbox id="filterViewItemType"
-                                                onchange="updateForm()"
-                                                converter="itemTypeConverter"
-                                                value="#{entityController.filterViewSelectedItemType}"
-                                                disabled="#{entityController.filterViewItemTypeSelectOneDisabled}"
-                                                styleClass="wideListBox">
-                                <f:selectItem itemLabel="All" />
-                                <f:selectItems value="#{entityController.filterViewItemTypeList}"
-                                               var="itemType"
-                                               itemLabel="#{itemType.name}"
-                                               itemValue="#{itemType}"/>
-                            </p:selectOneListbox>
-                        </p:column>
-                    </p:row>
-                </p:panelGrid>
-            </p:column>
-            <p:column styleClass="topAlignedDataCell filterViewDataTableColumn">
-                <p:dataTable value="#{entityController.filterViewListDataModel}"
-                             var="itemListObject"
-                             paginator="true"
-                             rows="#{entityController.filterViewDataTableRowCount}"                                        
-                             >
-                    <ui:insert name="itemFilterViewListObject">
-                        <ui:include src="../itemListFilterViewObject.xhtml" />
-                    </ui:insert>
-                </p:dataTable>
-            </p:column>
-        </p:row>
+    <ui:define name="firstFilter">
+        Choose a Project
+        <p:selectOneRadio id="customRadio" 
+                          layout="grid" 
+                          columns="1"
+                          converter="itemProjectConverter"
+                          value="#{entityController.filterViewSelectedItemProject}"
+                          onchange="updateForm()">
+            <f:selectItems value="#{itemProjectController.availableItems}"
+                           var="itemProject"
+                           itemLabel="#{itemProject.name}"
+                           itemValue="#{itemProject}"/>
+        </p:selectOneRadio>
+    </ui:define>
 
-
-    </p:panelGrid>
+    <ui:define name="resultsDataTable">
+        <p:dataTable value="#{filterViewListDataModel}"
+                     var="itemListObject"
+                     paginator="true"
+                     rows="15"                                        
+                     >
+            <ui:insert name="itemFilterViewListObject">
+                <ui:include src="../itemListFilterViewObject.xhtml" />
+            </ui:insert>
+        </p:dataTable>
+    </ui:define>
+    
 </ui:composition>
