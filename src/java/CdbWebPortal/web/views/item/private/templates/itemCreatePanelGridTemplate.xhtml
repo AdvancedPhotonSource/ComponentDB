@@ -7,11 +7,11 @@
 
     <ui:define name="itemDerivedFromItemValue">
         <p:outputPanel rendered="#{entityController.entityDisplayDerivedFromItem}">
-            <p:outputPanel rendered="#{itemDomainInventoryController.allowedSetDerivedFromItemForCurrentItem}">
+            <p:outputPanel rendered="#{entityController.allowedSetDerivedFromItemForCurrentItem}">
                 <ui:include src="../templateDefaults/itemFieldEditValues/itemDerivedFromItem.xhtml" />
             </p:outputPanel>
 
-            <p:outputPanel rendered="#{!itemDomainInventoryController.allowedSetDerivedFromItemForCurrentItem}">
+            <p:outputPanel rendered="#{!entityController.allowedSetDerivedFromItemForCurrentItem}">
                 <ui:include src="../templateDefaults/itemFieldViewValues/itemDerivedFromItem.xhtml">
                     <ui:param name="viewName" value="nonEditable" />
                 </ui:include>

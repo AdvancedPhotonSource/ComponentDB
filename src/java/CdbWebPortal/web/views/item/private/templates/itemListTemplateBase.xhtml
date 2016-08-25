@@ -50,11 +50,11 @@
             </p:outputPanel>
 
             <ui:remove>
-                <p:outputPanel rendered="#{itemDomainCatalogController.itemHasSimpleListView}">
+                <p:outputPanel rendered="#{entityController.itemHasSimpleListView}">
                     <div style="text-align: center">
                         <br/>
                         <br/>
-                        <p:selectOneButton value="#{itemDomainCatalogController.listViewSelected}"
+                        <p:selectOneButton value="#{entityController.listViewSelected}"
                                            onchange="updateForm()">
                             <f:selectItem itemLabel="Simple View" itemValue="simpleView" />
                             <f:selectItem itemLabel="Advanced View" itemValue="advancedView" />

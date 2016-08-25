@@ -11,7 +11,7 @@
                         value="#{itemObject.derivedFromItem}"                         
                         var="selectDerivedFromItemObject"
                         converter="itemConverter" 
-                        completeMethod="#{itemDomainCatalogController.completeItem}" 
+                        completeMethod="#{entityController.completeItem}" 
                         itemLabel="#{selectDerivedFromItemObject.name}"
                         itemValue="#{selectDerivedFromItemObject}"
                         forceSelection="true"
@@ -22,7 +22,7 @@
         </p:autoComplete>
         <ui:remove>
             <p:commandButton id="derivedFromItemSelectButton#{viewName}" 
-                             oncomplete="PF('#{itemDomainCatalogController.entityTypeName}ItemSelectDialogWidget').show()"
+                             oncomplete="PF('#{entityController.entityTypeName}ItemSelectDialogWidget').show()"
                              alt="Select Location"
                              immediate="true"
                              styleClass="selectButtonForAutocomplete"

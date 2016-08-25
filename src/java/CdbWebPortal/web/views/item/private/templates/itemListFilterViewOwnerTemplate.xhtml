@@ -33,7 +33,7 @@
                             disabled="#{entityController.filterViewUserInfoSelectOneDisabled}"
                             styleClass="wideListBox">
             <f:selectItem itemLabel="All" />
-            <f:selectItems value="#{itemDomainCatalogController.filterViewUserInfoList}"
+            <f:selectItems value="#{entityController.filterViewUserInfoList}"
                            var="userInfo"
                            itemLabel="#{userInfo.fullNameForSelection}"
                            itemValue="#{userInfo}"/>
