@@ -5,13 +5,14 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from datetime import datetime
 
-from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
-from cdb.common.exceptions.invalidArgument import InvalidArgument
 from cdb.common.db.entities.attachment import Attachment
 from cdb.common.db.entities.logAttachment import LogAttachment
 from cdb.common.db.entities.log import Log
 from cdb.common.db.entities.logTopic import LogTopic
+from cdb.common.db.entities.logLevel import LogLevel
+from cdb.common.db.entities.systemLog import SystemLog
+from cdb.common.db.entities.itemElementLog import ItemElementLog
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 
 
@@ -31,13 +32,16 @@ class LogHandler(CdbDbEntityHandler):
         dbAttachments = session.query(Attachment).all()
         return dbAttachments
 
+    def getLogLevelByName(self, session, logLevelName):
+        return self._findDbObjByName(session, LogLevel, logLevelName)
+
     def getLogAttachments(self, session):
         dbLogAttachments = session.query(LogAttachment).all()
         return dbLogAttachments
 
     def addLog(self, session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None):
         if not enteredOnDateTime:
-            enteredOnDateTime = datetime.datetime.now()
+            enteredOnDateTime = datetime.now()
 
         dbLog = Log(text=text)
         dbLog.entered_on_date_time = enteredOnDateTime
@@ -56,6 +60,36 @@ class LogHandler(CdbDbEntityHandler):
 
         self.logger.debug('Added Log id %s' % dbLog.id)
         return dbLog
+
+    def addSystemLog(self, session, logEntry, logLevelName):
+        logLevel = self.getLogLevelByName(session, logLevelName)
+
+        dbSystemLog = SystemLog()
+        dbSystemLog.log = logEntry
+        dbSystemLog.logLevel = logLevel
+
+        session.add(dbSystemLog)
+        session.flush()
+
+        self.logger.debug('Added System Log of log level %s to log id %s' % (logLevelName, logEntry.id))
+        return dbSystemLog
+
+    def getLogEntriesForItemElementId(self, session, itemElementId, logLevelName = None):
+        entityDisplayName = self._getEntityDisplayName(Log)
+
+        try:
+            query = session.query(Log).join(ItemElementLog)
+
+            if logLevelName is not None:
+                query = query.join(SystemLog).join(LogLevel).filter(LogLevel.name == logLevelName)
+
+            query = query.filter(ItemElementLog.item_element_id == itemElementId)
+
+            dbLogs = query.all()
+            return dbLogs
+        except NoResultFound, ex:
+            raise ObjectNotFound('No %s with item element id: %s found.'
+                                 % (entityDisplayName, itemElementId))
 
     def addLogTopic(self, session, logTopicName, description):
         return self._addSimpleNameDescriptionTable(session, LogTopic, logTopicName, description)
