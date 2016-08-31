@@ -9,6 +9,8 @@ from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.db.entities.propertyValue import PropertyValue
 from cdb.common.db.entities.propertyValueHistory import PropertyValueHistory
+from cdb.common.db.entities.itemElementProperty import ItemElementProperty
+from cdb.common.db.entities.propertyType import PropertyType
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from userInfoHandler import UserInfoHandler
 from propertyTypeHandler import PropertyTypeHandler
@@ -112,6 +114,22 @@ class PropertyValueHandler(CdbDbEntityHandler):
         session.add(dbPropertyValue)
         session.flush()
         return dbPropertyValue
+
+    def getPropertyValueListForItemElementId(self, session, itemElementId, propertyTypeName = None):
+        entityDisplayName = self._getEntityDisplayName(PropertyValue)
+        try:
+            query = session.query(PropertyValue)\
+                .join(ItemElementProperty)
+
+            if propertyTypeName is not None:
+                query = query.join(PropertyType).filter(PropertyType.name == propertyTypeName)
+
+            query = query.filter(ItemElementProperty.item_element_id == itemElementId)
+
+            dbPropertyValues = query.all()
+            return dbPropertyValues
+        except NoResultFound, ex:
+            raise ObjectNotFound('No %s for item with id %s found.' % (entityDisplayName, id))
 
     def createUnverifiedPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId):
         enteredOnDateTime = datetime.datetime.now()
