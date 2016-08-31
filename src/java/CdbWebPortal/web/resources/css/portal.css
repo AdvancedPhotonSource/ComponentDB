@@ -988,3 +988,7 @@ h2 {
 .cdbWizard .ui-state-highlight .ui-menuitem-link {
     color: white;
 }
+
+.logWarningRow {
+   background: #ff8080; 
+}
