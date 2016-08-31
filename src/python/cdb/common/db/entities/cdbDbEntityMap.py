@@ -2,18 +2,20 @@
 
 from cdb.common.db.entities.allowedPropertyValue import AllowedPropertyValue
 from cdb.common.db.entities.entityInfo import EntityInfo
-from cdb.common.db.entities.itemProject import ItemProject
 from cdb.common.db.entities.propertyTypeCategory import PropertyTypeCategory 
 from cdb.common.db.entities.propertyTypeHandler import PropertyTypeHandler
 from cdb.common.db.entities.propertyType import PropertyType
 from cdb.common.db.entities.propertyValue import PropertyValue
 from cdb.common.db.entities.propertyValueHistory import PropertyValueHistory
+from cdb.common.db.entities.propertyMetadata import PropertyMetadata
 from cdb.common.db.entities.userGroup import UserGroup
 from cdb.common.db.entities.userInfo import UserInfo
 from cdb.common.db.entities.userUserGroup import UserUserGroup
 from cdb.common.db.entities.attachment import Attachment
 from cdb.common.db.entities.logAttachment import LogAttachment
 from cdb.common.db.entities.log import Log
+from cdb.common.db.entities.logLevel import LogLevel
+from cdb.common.db.entities.systemLog import SystemLog
 from cdb.common.db.entities.entityType import EntityType
 from cdb.common.db.entities.domainHandler import DomainHandler
 from cdb.common.db.entities.domain import Domain
@@ -54,6 +56,11 @@ CDB_DB_ENTITY_MAP = {
         'logTopic' :  { 'parentEntity' : LogTopic, 'lazy' : False },
     }),
     'log_topic' : (LogTopic, {} ),
+    'log_level' : (LogLevel, {} ),
+    'system_log' : (SystemLog, {
+        'log' : { 'parentEntity' : Log, 'lazy' : False },
+        'logLevel' : { 'parentEntity' : LogLevel, 'lazy' : False },
+    }),
     'allowed_property_value' : (AllowedPropertyValue, {
         'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : True }, 
     }),
@@ -74,10 +81,12 @@ CDB_DB_ENTITY_MAP = {
         'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : False }, 
         'enteredByUserInfo' : { 'parentEntity' : UserInfo, 'lazy' : False },
         'propertyValueHistory' : { 'parentEntity' : PropertyValueHistory, 'lazy' : False },
+        'propertyMetadata' : { 'parentEntity' : PropertyMetadata, 'lazy' : False },
     }),
     'property_value_history' : (PropertyValueHistory, {
         'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
     }),
+    'property_metadata' : (PropertyMetadata, {}),
     'user_info' : (UserInfo, {}), 
     'user_group' : (UserGroup, {}),
     'user_user_group' : (UserUserGroup, {
