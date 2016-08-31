@@ -19,7 +19,8 @@
                  paginatorAlwaysVisible="false"
                  reflow="true"
                  emptyMessage="No #{entityTypeDisplayName} log entries found."
-                 editable="true">
+                 editable="true"
+                 rowStyleClass="#{logController.getLogRowStyle(logObject)}">
 
         <p:ajax event="rowEdit" listener="#{entityController.logObjectEditRowEvent(event)}" />
 

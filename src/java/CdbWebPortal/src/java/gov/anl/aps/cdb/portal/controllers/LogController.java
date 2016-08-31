@@ -2,6 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 
@@ -45,6 +46,8 @@ public class LogController extends CdbEntityController<Log, LogFacade> implement
     private String filterByEnteredOnDateTime = null;
     private String filterByText = null;
     private String filterByTopic = null;
+    
+    private final String SPARES_WARNING_LOG_LEVEL_NAME = "Spares Warning";
 
     private static final Logger logger = Logger.getLogger(LogController.class.getName());
 
@@ -82,7 +85,20 @@ public class LogController extends CdbEntityController<Log, LogFacade> implement
     public List<Log> getAvailableItems() {
         return super.getAvailableItems();
     }
-
+    
+    public String getLogRowStyle(Log log) {
+        if (log.getLogLevelList() == null || log.getLogLevelList().isEmpty()){
+            return "";
+        }
+        
+        for (LogLevel logLevel : log.getLogLevelList()) {
+            if (logLevel.getName().equals(SPARES_WARNING_LOG_LEVEL_NAME)) {
+                return "logWarningRow"; 
+            }
+        }
+        
+        return ""; 
+    }
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
