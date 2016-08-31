@@ -3,6 +3,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -142,11 +143,14 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     }
 
     @Override
-    public void prepareEntityInsert(UserInfo userInfo) throws ObjectAlreadyExists {
-        UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
+    public void prepareEntityInsert(UserInfo userInfo) throws ObjectAlreadyExists, CdbException {
+        UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());       
         if (existingUser != null) {
             throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
         }
+        
+        validateUserInformation(userInfo);
+        
         logger.debug("Inserting new user " + userInfo.getUsername());
         if (passwordEntry != null && !passwordEntry.isEmpty()) {
             String cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(passwordEntry);
@@ -158,6 +162,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     @Override
     public void prepareEntityUpdate(UserInfo userInfo) throws CdbException {
         prepareSaveUserRoleList();
+        validateUserInformation(userInfo);
         
         UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
         if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
@@ -175,6 +180,16 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
             String cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(passwordEntry);
             userInfo.setPassword(cryptedPassword);
             logger.debug("Updated crypted password: " + cryptedPassword);
+        }
+    }
+    
+    private void validateUserInformation(UserInfo userInfo) throws CdbException {
+        String email = userInfo.getEmail(); 
+        if (email != null && !email.isEmpty()) {
+            // validate email
+            if (!StringUtility.isEmailAddressValid(email)) {
+                throw new CdbException("Invalid email address was entered");
+            }
         }
     }
     
