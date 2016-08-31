@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -102,13 +103,13 @@ public class PropertyValue extends CdbEntity implements Serializable {
     private List<PropertyValueHistory> propertyValueHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyMetadata> propertyMetadataList;
-    
+
     public static final transient SimpleDateFormat InputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-    
+
     private transient Boolean booleanValue;
     private transient Date dateValue;
-    
-    private transient String infoActionCommand; 
+
+    private transient String infoActionCommand;
     private transient boolean handlerInfoSet;
 
     public PropertyValue() {
@@ -274,7 +275,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setPropertyMetadataList(List<PropertyMetadata> propertyMetadataList) {
         this.propertyMetadataList = propertyMetadataList;
     }
-    
+
     public boolean equalsByValueAndUnits(PropertyValue other) {
         if (other != null) {
             return (ObjectUtility.equals(this.value, other.value)
@@ -333,15 +334,60 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setHandlerInfoSet(boolean handlerInfoSet) {
         this.handlerInfoSet = handlerInfoSet;
     }
-    
+
     public void setDisplayValueToValue() {
         this.displayValue = value;
     }
-    
+
     public void setTargetValueToValue() {
         this.targetValue = value;
     }
+
+    public void setPropertyMetadataValue(String key, String value) {
+        if (propertyMetadataList == null) {
+            propertyMetadataList = new ArrayList<>();
+        }
+
+        PropertyMetadata propertyMetadata = getPropertyMetadataForKey(key);
+
+        if (propertyMetadata != null) {
+            propertyMetadata.setMetadataValue(value);
+        } else {
+            // Not found; needs to be created. 
+            propertyMetadata = new PropertyMetadata();
+            propertyMetadata.setMetadataKey(key);
+            propertyMetadata.setMetadataValue(value);
+            propertyMetadata.setPropertyValue(this);
+            propertyMetadataList.add(propertyMetadata);
+        }
+    }
+
+    public String getPropertyMetadataValueForKey(String key) {
+        PropertyMetadata propertyMetadata = getPropertyMetadataForKey(key);
+        if (propertyMetadata != null) {
+            return propertyMetadata.getMetadataValue();
+        }
+        return null;
+    }
     
+    public void removePropertyMetadataKey(String key) {
+        PropertyMetadata propertyMetadata = getPropertyMetadataForKey(key);
+        if (propertyMetadata != null) {
+            propertyMetadataList.remove(propertyMetadata); 
+        }
+    }
+
+    private PropertyMetadata getPropertyMetadataForKey(String key) {
+        if (propertyMetadataList != null) {
+            for (PropertyMetadata propertyMetadata : propertyMetadataList) {
+                if (propertyMetadata.getMetadataKey().equals(key)) {
+                    return propertyMetadata;
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public PropertyValue clone() throws CloneNotSupportedException {
         PropertyValue cloned = (PropertyValue) super.clone();
@@ -349,7 +395,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
         cloned.enteredByUser = null;
         cloned.enteredOnDateTime = null;
         cloned.itemElementList = null;
-        cloned.itemElementRelationshipList = null; 
+        cloned.itemElementRelationshipList = null;
         cloned.itemConnectorList = null;
         cloned.connectorList = null;
         cloned.propertyValueHistoryList = null;
@@ -358,7 +404,6 @@ public class PropertyValue extends CdbEntity implements Serializable {
         return cloned;
     }
 
-    
     public PropertyValue copyAndSetUserInfoAndDate(UserInfo enteredByUser, Date enteredOnDateTime) {
         PropertyValue copied = null;
         try {
@@ -395,5 +440,5 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.PropertyValue[ id=" + id + " ]";
     }
-    
+
 }
