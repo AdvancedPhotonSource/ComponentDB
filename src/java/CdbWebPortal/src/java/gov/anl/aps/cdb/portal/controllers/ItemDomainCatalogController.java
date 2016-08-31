@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
@@ -225,6 +226,10 @@ public class ItemDomainCatalogController extends ItemController {
         }
 
         return item;
+    }
+    
+    public boolean getDisplayInventorySparesConfigurationColumn() {
+        return SparePartsBean.isItemContainSparePartConfiguration(getCurrent()); 
     }
 
     public void setLoadComponentInstanceRowExpansionPropertyValues(Boolean loadComponentInstanceRowExpansionPropertyValues) {
