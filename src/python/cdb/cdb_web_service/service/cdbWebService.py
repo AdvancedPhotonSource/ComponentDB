@@ -6,18 +6,18 @@
 
 ####################################################################
 
-from cdb.common.service.cdbRestWebServiceBase import CdbRestWebServiceBase
+from cdb.common.service.cdbWebServiceBase import CdbWebServiceBase
 from cdb.common.utility.cdbModuleManager import CdbModuleManager
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.impl.authorizationManager import AuthorizationManager
-from cdbWebServiceRouteMapper import CdbWebServiceRouteMapper
+from cdb.cdb_web_service.service.cdbWebServiceRouteMapper import CdbWebServiceRouteMapper
 
 ####################################################################
 
-class CdbWebService(CdbRestWebServiceBase):
+class CdbWebService(CdbWebServiceBase):
  
     def __init__(self):
-        CdbRestWebServiceBase.__init__(self, CdbWebServiceRouteMapper)
+        CdbWebServiceBase.__init__(self, CdbWebServiceRouteMapper)
 
     def initCdbModules(self):
         self.logger.debug('Initializing cdb modules')
