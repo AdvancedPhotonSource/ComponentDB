@@ -157,6 +157,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         if (tag != null) {
             propertyValue.setTag(tag);
         }
+        
+        cdbDomainEntity.resetPropertyValueDisplayList(); 
 
         return propertyValue;
     }
@@ -201,6 +203,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
             if (currentEditPropertyValue.getId() == null) {
                 // Never saved so it should be removed from the property value list
                 cdbDomainEntity.getPropertyValueList().remove(currentEditPropertyValue);
+                cdbDomainEntity.resetPropertyValueDisplayList();
             } else {
                 // Update the current Edit value pointer to db info.
                 PropertyValue originalValue = propertyValueDbFacade.find(currentEditPropertyValue.getId());
@@ -527,7 +530,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public Boolean getDisplayPropertyList() {
         EntityType cdbDomainEntity = getCurrent();
         if (cdbDomainEntity != null) {
-            List<PropertyValue> propertyValueList = cdbDomainEntity.getPropertyValueList();
+            List<PropertyValue> propertyValueList = cdbDomainEntity.getPropertyValueDisplayList();
             return propertyValueList != null && !propertyValueList.isEmpty();
         }
         return false;
