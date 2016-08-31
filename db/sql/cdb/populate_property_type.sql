@@ -89,6 +89,8 @@ INSERT INTO `property_type` VALUES
 (86,'RSS Verified','',10,11,'','',0,0,0,1),
 (87,'RSS Sequence Number','',10,NULL,'','',0,0,0,1),
 (88,'Design Element Row Color','',8,NULL,'','',0,0,0,1),
-(89,'MOM Group','',3,NULL,'','',0,0,0,1);
+(89,'MOM Group','',3,NULL,'','',0,0,0,1),
+(90,'Spare Parts Configuration','',3,NULL,'','',0,0,1,1),
+(91,'Spare Part Indication','',3,NULL,'','',0,0,1,1);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;
