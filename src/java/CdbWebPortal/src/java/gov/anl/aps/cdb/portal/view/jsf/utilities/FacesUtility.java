@@ -6,12 +6,9 @@
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
 import java.util.List;
-import java.util.Map;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.bean.ViewScoped;
 import javax.faces.model.DataModel;
 import javax.inject.Named;
-import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.panel.Panel;
 import org.primefaces.component.selectonemenu.SelectOneMenu;
 import org.primefaces.component.wizard.Wizard;
