@@ -79,6 +79,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     @Override
     protected PropertyType createEntityInstance() {
         PropertyType propertyType = new PropertyType();
+        propertyType.setIsInternal(false);
+        propertyType.setIsActive(true);
+        propertyType.setIsUserWriteable(false);
+        propertyType.setIsDynamic(false);
         return propertyType;
     }
 
