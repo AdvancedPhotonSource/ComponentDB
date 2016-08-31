@@ -16,10 +16,11 @@ from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.cdbModuleManager import CdbModuleManager
 from cdb.common.exceptions.configurationError import ConfigurationError
+from cdb.cdb_web_service.tasks.cdbBackgroundTaskManager import CdbBackgroundTaskManager
 
 ####################################################################
 
-class CdbRestWebServiceBase:
+class CdbWebServiceBase:
 
     DEFAULT_N_SERVER_REQUEST_THREADS = 10
     DEFAULT_SERVER_SOCKET_TIMEOUT = 30
@@ -44,6 +45,7 @@ class CdbRestWebServiceBase:
         self.options = None
         self.args = None
         self.logger = None
+        self.backgroundTaskManager = None
 
     def prepareOptions(self):
         from optparse import OptionParser
@@ -72,9 +74,9 @@ class CdbRestWebServiceBase:
         p.add_option('-k', '--ssl-key', 
             dest='sslKeyFile', default=None, 
             help='SSL key path. SSL operation requires both --ssl-key and --ssl-cert. Client SSL certificate verification also requires --ssl-ca-cert.')
-        p.add_option('', '--n-server-threads', 
-            dest='nServerThreads', default=CdbRestWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS,
-            help='Number of service request handler threads (defaut: %s).' % CdbRestWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS)
+        p.add_option('', '--n-server-threads',
+                     dest='nServerThreads', default=CdbWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS,
+                     help='Number of service request handler threads (defaut: %s).' % CdbWebServiceBase.DEFAULT_N_SERVER_REQUEST_THREADS)
         return p
 
     def initCdbModules(self):
@@ -100,7 +102,7 @@ class CdbRestWebServiceBase:
             self.logger.debug('Modifying signal: %s' % signal)
             oldSignalHandler = handlers[signal]
             self.logger.debug('Old signal handler: %s' % oldSignalHandler)
-            signalHandler = CdbRestWebServiceBase.SignalHandler(signal, oldSignalHandler)
+            signalHandler = CdbWebServiceBase.SignalHandler(signal, oldSignalHandler)
             self.logger.debug('Setting signal handler to: %s' % signalHandler.signalHandler)
             handlers[signal] = signalHandler.signalHandler
             pluginsSignalHandler.subscribe()
@@ -136,7 +138,7 @@ class CdbRestWebServiceBase:
         if not os.path.exists(configFile):
             raise ConfigurationError('Configuration file %s does not exist.' % configFile)
         # Read file and set config options
-        self.configurationManager.setOptionsFromConfigFile(CdbRestWebServiceBase.CONFIG_SECTION_NAME, CdbRestWebServiceBase.CONFIG_OPTION_NAME_LIST, configFile)
+        self.configurationManager.setOptionsFromConfigFile(CdbWebServiceBase.CONFIG_SECTION_NAME, CdbWebServiceBase.CONFIG_OPTION_NAME_LIST, configFile)
 
     def readCommandLineOptions(self):
         # This method should be called after reading config file
@@ -186,6 +188,9 @@ class CdbRestWebServiceBase:
             self.logger.info('Using host %s' % self.configurationManager.getServiceHost())
             self.logger.info('Using port %s' % self.configurationManager.getServicePort())
             self.logger.debug('Using %s request handler threads' % self.options.nServerThreads)
+
+            # Set up scheduled tasks performed web service.
+            self.backgroundTaskManager = CdbBackgroundTaskManager()
         except Exception, ex:
             if self.logger is not None:
                 self.logger.exception(ex)
@@ -227,7 +232,7 @@ class CdbRestWebServiceBase:
         #server.ssl_module = 'pyopenssl'
 
         # Increase timeout to prevent early SSL connection terminations
-        server.socket_timeout = CdbRestWebServiceBase.DEFAULT_SERVER_SOCKET_TIMEOUT
+        server.socket_timeout = CdbWebServiceBase.DEFAULT_SERVER_SOCKET_TIMEOUT
         
         # Setup the signal handler to stop the application while running.
         if hasattr(engine, 'signal_handler'):
@@ -242,6 +247,9 @@ class CdbRestWebServiceBase:
         try:
             self.logger.debug('Starting engine')
             engine.start()
+
+            self.logger.debug('Starting background task')
+            self.backgroundTaskManager.start()
 
             # Prepare cdb services.
             # Doing this before engine starts may cause issues with existing timers.
