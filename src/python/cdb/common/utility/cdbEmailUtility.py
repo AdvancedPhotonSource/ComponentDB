@@ -1,5 +1,6 @@
 import smtplib
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 class CdbEmailUtility:
@@ -27,11 +28,30 @@ class CdbEmailUtility:
         return '[CDB] %s Notification' % nameOfNotification
 
     def __prepareEmailMessage(self, message, email):
-        message = MIMEText(message)
-        message['From'] = self.senderEmail
-        message['To'] = email
-        return message
+    	htmlMessage = """
+	<html>
+	  <head></head>
+	  <body>
+	    <p>%s</p>
+	    <br/>
+	    <br/>
+	    <p>
+	      ---------------------------------------------------- <br/>
+	      Please do not reply to this email
+	    </p>
+	  </body>
+	</html>
+	""" % message
+
+        htmlPart = MIMEText(htmlMessage, 'html')
+	plainPart = MIMEText(message, 'plain')
+	emailMessage = MIMEMultipart('alternative')
+	emailMessage.attach(plainPart)
+	emailMessage.attach(htmlPart)
+	emailMessage['From'] = self.senderEmail
+        emailMessage['To'] = email
+        return emailMessage
 
 if __name__ == '__main__':
     emailUtility = CdbEmailUtility()
-    emailUtility.sendEmailNotification('djarosz@aps.anl.gov', 'Spare Part', 'Item quantity went down to 2 items')
+    emailUtility.sendEmailNotification('djarosz@aps.anl.gov', 'Test', 'This is a test notification from CDB.')
