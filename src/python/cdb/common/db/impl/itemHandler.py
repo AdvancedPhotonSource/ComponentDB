@@ -14,6 +14,9 @@ from cdb.common.db.entities.itemElement import ItemElement
 from cdb.common.db.entities.itemEntityType import ItemEntityType
 from cdb.common.db.entities.itemSource import ItemSource
 from cdb.common.db.entities.itemCategory import ItemCategory
+from cdb.common.db.entities.propertyValue import PropertyValue
+from cdb.common.db.entities.propertyType import PropertyType
+from cdb.common.db.entities.domain import Domain
 from cdb.common.db.entities.itemType import ItemType
 from cdb.common.db.entities.itemItemCategory import ItemItemCategory
 from cdb.common.db.entities.itemItemType import ItemItemType
@@ -26,10 +29,10 @@ from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from cdb.common.db.impl.domainHandler import DomainHandler
 from cdb.common.db.impl.sourceHandler import SourceHandler
 from cdb.common.db.impl.logHandler import LogHandler
-from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
 from cdb.common.db.impl.relationshipTypeHandler import RelationshipTypeHandler
 from cdb.common.db.impl.resourceTypeHandler import ResourceTypeHandler
 from cdb.common.db.impl.userInfoHandler import UserInfoHandler
+from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
 
 
 class ItemHandler(CdbDbEntityHandler):
@@ -215,10 +218,40 @@ class ItemHandler(CdbDbEntityHandler):
     def getSelfElementByItemId(self, session, itemId):
         entityDisplayName = self._getEntityDisplayName(ItemElement)
         try:
-            dbItemElement = session.query(ItemElement).filter(ItemElement.parent_item_id==itemId).filter(ItemElement.name==None).one()
+            dbItemElement = session.query(ItemElement)\
+                .filter(ItemElement.parent_item_id==itemId)\
+                .filter(ItemElement.name==None)\
+                .filter(ItemElement.derived_from_item_element_id==None).one()
             return dbItemElement
         except NoResultFound, ex:
             raise ObjectNotFound('No %s with id %s exists.' % (entityDisplayName, id))
+
+    def getItemsWithPropertyTypeName(self, session, propertyTypeName, itemDomainName = None, itemDerivedFromItemId = None, propertyValueMatch = None):
+        entityDisplayName = self._getEntityDisplayName(Item)
+        try:
+            query = session.query(Item)\
+                .join(ItemElement.parentItem)\
+                .join(ItemElementProperty)\
+                .join(PropertyValue)\
+                .join(PropertyType)\
+                .filter(PropertyType.name == propertyTypeName)
+
+            if itemDerivedFromItemId is not None:
+                query = query.filter(Item.derived_from_item_id == itemDerivedFromItemId)
+
+            if propertyValueMatch is not None:
+                query = query.filter(PropertyValue.value == propertyValueMatch)
+
+            if itemDomainName is not None:
+                query = query.filter(Domain.name == itemDomainName)
+
+            dbItems = query.all()
+            return dbItems
+
+        except NoResultFound, ex:
+            raise ObjectNotFound("No %ss with property type %s found."  % (entityDisplayName, propertyTypeName))
+
+
 
     def addItemEntityType(self, session, itemId, entityTypeName, item=None):
         dbItemEntityType = ItemEntityType()
@@ -338,9 +371,12 @@ class ItemHandler(CdbDbEntityHandler):
         self.logger.debug('Added type %s for item id %s' % (itemTypeName, itemId))
         return dbItemItemType
 
-    def addItemElementLog(self, session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None):
+    def addItemElementLog(self, session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, systemLogLevelName = None):
         dbItemElement = self.getItemElementById(session, itemElementId)
         dbLog = self.logHandler.addLog(session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
+
+        if systemLogLevelName is not None:
+            self.logHandler.addSystemLog(session, dbLog, systemLogLevelName)
 
         dbItemElementLog = ItemElementLog()
         dbItemElementLog.itemElement = dbItemElement
