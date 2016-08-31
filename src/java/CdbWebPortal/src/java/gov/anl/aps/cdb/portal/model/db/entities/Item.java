@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -185,6 +186,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
     private transient InventoryBillOfMaterialItem containedInBOM;
 
+    private transient Boolean sparePartIndicator = null;
+    private transient SparePartsBean sparePartsBean = null;
+    private final transient String SPARE_PARTS_BEAN_NAME = "sparePartsBean";
+
     private transient ItemController itemDomainController = null;
 
     private transient final String ITEM_CONTROLLER_NAME_BASE = "itemDomain";
@@ -211,27 +216,27 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public Item clone() throws CloneNotSupportedException {
-        Item clonedItem = new Item(); 
+        Item clonedItem = new Item();
         clonedItem.isCloned = true;
-        
+
         clonedItem.setDomain(this.getDomain());
-        clonedItem.entityTypeList = this.getEntityTypeList(); 
+        clonedItem.entityTypeList = this.getEntityTypeList();
         clonedItem.setItemCategoryList(this.getItemCategoryList());
         clonedItem.setItemTypeList(this.getItemTypeList());
-        clonedItem.setDerivedFromItem(this.getDerivedFromItem());    
+        clonedItem.setDerivedFromItem(this.getDerivedFromItem());
         clonedItem.setItemProjectList(this.getItemProjectList());
-                       
+
         clonedItem.setId(null);
         clonedItem.setName("(Cloned) " + this.getName());
         clonedItem.setItemIdentifier1(this.getItemIdentifier1());
         clonedItem.setItemIdentifier2(this.getItemIdentifier2());
-      
+
         ItemElement newSelfElement = new ItemElement();
         ItemElement oldSelfElement = this.getSelfElement();
 
         newSelfElement.init(clonedItem);
         newSelfElement.setDescription(oldSelfElement.getDescription());
-        
+
         clonedItem.setFullItemElementList(new ArrayList<>());
         clonedItem.resetItemElementDisplayList();
         clonedItem.resetSelfElement();
@@ -245,10 +250,10 @@ public class Item extends CdbDomainEntity implements Serializable {
         clonedItem.setLogList(null);
         clonedItem.setDerivedFromItemList(null);
         clonedItem.setItemElementMemberList(null);
-        
+
         clonedItem = getItemDomainController().completeClone(clonedItem, this.getId());
 
-        return clonedItem; 
+        return clonedItem;
     }
 
     public ItemController getItemDomainController() {
@@ -562,9 +567,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
     }
-    
+
     public void resetSelfElement() {
-        selfItemElement = null; 
+        selfItemElement = null;
     }
 
     public void updateDynamicProperties(UserInfo enteredByUser, Date enteredOnDateTime) {
@@ -759,6 +764,30 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @Override
+    public List<PropertyValue> getPropertyValueDisplayList() {
+        if (propertyValueDisplayList == null) {
+            if (getPropertyValueList() != null) {
+                propertyValueDisplayList = new ArrayList<>(getPropertyValueList());
+                List<PropertyValue> internalPropertyValues = getInternalPropertyValues();
+                propertyValueDisplayList.removeAll(internalPropertyValues);
+            } else {
+                propertyValueDisplayList = new ArrayList<>();
+            }
+        }
+        return propertyValueDisplayList;
+    }
+
+    private List<PropertyValue> getInternalPropertyValues() {
+        List<PropertyValue> internalPropertyValues = new ArrayList<>();
+        for (PropertyValue propertyValue : getPropertyValueList()) {
+            if (propertyValue.getPropertyType().getIsInternal()) {
+                internalPropertyValues.add(propertyValue);
+            }
+        }
+        return internalPropertyValues;
+    }
+
+    @Override
     public void setImagePropertyList(List<PropertyValue> imageList) {
         this.getSelfElement().setImagePropertyList(imageList);
     }
@@ -828,6 +857,25 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setIsCloned(boolean isCloned) {
         this.isCloned = isCloned;
+    }
+
+    public Boolean getSparePartIndicator() {
+        if (sparePartIndicator == null) {
+            sparePartIndicator = getSparePartsBean().getSparePartsIndication(this);
+        }
+        return sparePartIndicator;
+    }
+
+    public void setSparePartIndicator(Boolean sparePartIndicator) {
+        this.sparePartIndicator = sparePartIndicator;
+        getSparePartsBean().setSparePartsIndication(this);
+    }
+
+    public SparePartsBean getSparePartsBean() {
+        if (sparePartsBean == null) {
+            sparePartsBean = (SparePartsBean) SessionUtility.findBean(SPARE_PARTS_BEAN_NAME);
+        }
+        return sparePartsBean;
     }
 
     @Override
