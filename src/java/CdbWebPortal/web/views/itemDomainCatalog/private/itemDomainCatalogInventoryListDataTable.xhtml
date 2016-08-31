@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../item/private/templates/itemListDataTableTemplate.xhtml">
+                template="../../item/private/templates/itemListDataTableTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityController" value="#{childEntityController}" />
     <ui:param name="itemListDataTableValue" value="#{itemObject.derivedFromItemList}" />
@@ -14,6 +15,16 @@
     <ui:define name="propertyValueColumns"/>
     
     <ui:define name="domainEntityListExtraColumns">
+        <p:column headerText="Spare"
+                  rendered="#{itemDomainCatalogController.displayInventorySparesConfigurationColumn and loginController.loggedIn}"
+                  >
+            
+            <p:selectBooleanButton id="inventorySpareBooleanButton" offLabel="No" onLabel="Yes" 
+                                   onchange="updateInventorySpareBooleanButton#{itemListObject.viewUUID}()"
+                                   value="#{itemListObject.sparePartIndicator}"/>
+            <p:remoteCommand name="updateInventorySpareBooleanButton#{itemListObject.viewUUID}"
+                             update="@parent" />
+        </p:column>
         <ui:include src="../../itemDomainInventory/private/componentInventoryListLocationObject.xhtml"/>
     </ui:define>
 

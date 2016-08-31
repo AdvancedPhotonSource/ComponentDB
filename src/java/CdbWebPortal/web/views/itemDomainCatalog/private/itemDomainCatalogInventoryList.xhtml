@@ -8,7 +8,7 @@
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}" />
     
 
-    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+    <ui:include src="itemDomainCatalogInventoryChildListActionButtons.xhtml">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
         <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
