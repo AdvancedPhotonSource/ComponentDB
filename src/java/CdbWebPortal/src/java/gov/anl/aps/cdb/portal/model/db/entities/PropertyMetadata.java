@@ -112,11 +112,21 @@ public class PropertyMetadata implements Serializable {
         if (!(object instanceof PropertyMetadata)) {
             return false;
         }
+        
         PropertyMetadata other = (PropertyMetadata) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
+        
+        if (this.propertyValue == null) {
+            // Comparison cannot be made. 
+            return false; 
         }
-        return true;
+               
+        if (this.propertyValue.equals(other.getPropertyValue())) {
+            if (this.metadataKey.equals(other.metadataKey)) {
+                return true; 
+            }
+        }
+        
+        return false;
     }
 
     @Override
