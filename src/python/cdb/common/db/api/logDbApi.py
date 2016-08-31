@@ -46,6 +46,13 @@ class LogDbApi(CdbDbApi):
         dbLogAttachment = self.logHandler.addLogAttachment(session, logId, attachmentName, attachmentTag, attachmentDescription)
         return dbLogAttachment.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getLogEntriesForItemElementId(self, itemElementId, logLevelName = None, **kwargs):
+        session = kwargs['session']
+        dbLogs = self.logHandler.getLogEntriesForItemElementId(session, itemElementId, logLevelName)
+        return self.toCdbObjectList(dbLogs)
+
+
 
 
 #######################################################################

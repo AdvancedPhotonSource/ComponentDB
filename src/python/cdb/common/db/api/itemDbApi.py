@@ -190,9 +190,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, **kwargs):
+    def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, systemLogLevelName = None, **kwargs):
         session = kwargs['session']
-        dbItemElementLog = self.itemHandler.addItemElementLog(session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
+        dbItemElementLog = self.itemHandler.addItemElementLog(session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime, systemLogLevelName)
         return dbItemElementLog.getCdbObject()
 
     @CdbDbApi.executeTransaction
@@ -217,6 +217,12 @@ class ItemDbApi(CdbDbApi):
                                                                                 relationshipDetails, resourceTypeName,
                                                                                 label, description)
         return  dbItemElementRelationship.toCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getItemsWithPropertyType(self, propertyTypeName, itemDomainName = None, itemDerivedFromItemId = None, propertyValueMatch = None, **kwargs):
+        session = kwargs['session']
+        dbItems = self.itemHandler.getItemsWithPropertyTypeName(session, propertyTypeName, itemDomainName, itemDerivedFromItemId, propertyValueMatch)
+        return self.toCdbObjectList(dbItems)
 
 
 #######################################################################

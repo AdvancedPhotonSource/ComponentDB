@@ -80,6 +80,12 @@ class PropertyDbApi(CdbDbApi):
         dbAllowedPropertyValue = self.propertyTypeHandler.addAllowedPropertyValue(session, propertyTypeName, value, units, description, sortOrder)
         return dbAllowedPropertyValue.toCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getPropertyValueListForItemElementId(self, itemElementId, propertyTypeName = None, **kwargs):
+        session = kwargs['session']
+        dbPropertyValues = self.propertyValueHandler.getPropertyValueListForItemElementId(session, itemElementId, propertyTypeName)
+        return self.toCdbObjectList(dbPropertyValues)
+
 #######################################################################
 # Testing.
 if __name__ == '__main__':
