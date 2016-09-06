@@ -10,9 +10,11 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -50,7 +52,7 @@ public class SparePartsBean implements Serializable {
     private PropertyValue sparePartsConfigurationPropertyValue = null;
 
     @EJB
-    private PropertyValueFacade propertyValueFacade;
+    private PropertyMetadataFacade propertyMetadataFacade;
 
     private enum EmailOptions {
         ownerEmail("Owner Email"),
@@ -126,7 +128,10 @@ public class SparePartsBean implements Serializable {
      * @return
      */
     public static boolean isItemContainSparePartConfiguration(Item item) {
-        return getSparePartsConfigrationPropertyValue(item) != null;
+        if (item != null) {
+            return getSparePartsConfigrationPropertyValue(item) != null;
+        }
+        return false; 
     }
 
     private void prepareSavePartsConfiurgationForItem(Item item) throws CdbException {
@@ -138,7 +143,14 @@ public class SparePartsBean implements Serializable {
             throw new CdbException("A minimum value must be specified.");
         }
         if (selectedEmailOption.equals(EmailOptions.ownerEmail.getDisplayValue())) {
-            sparePartsConfigurationPropertyValue.removePropertyMetadataKey(SPARE_PARTS_EMAIL_KEY);
+            PropertyMetadata emailMetadata;
+            emailMetadata = sparePartsConfigurationPropertyValue
+                    .getPropertyMetadataForKey(SPARE_PARTS_EMAIL_KEY);
+            if (emailMetadata != null) {
+                propertyMetadataFacade.remove(emailMetadata);
+                sparePartsConfigurationPropertyValue.removePropertyMetadataKey(SPARE_PARTS_EMAIL_KEY);
+            }
+            
         } else if (selectedEmailOption.equals(EmailOptions.noNotification.getDisplayValue())) {
             sparePartsConfigurationPropertyValue.setPropertyMetadataValue(SPARE_PARTS_EMAIL_KEY, NO_EMAIL_VALUE);
         } else {
@@ -262,7 +274,7 @@ public class SparePartsBean implements Serializable {
             this.selectedEmailOption = selectedEmailOption;
             if (selectedEmailOption.equals(EmailOptions.customEmail.getDisplayValue())) {
                 String emailValue = getSparePartsNotificationEmail();
-                if (emailValue.equals(NO_EMAIL_VALUE)) {
+                if (emailValue != null && emailValue.equals(NO_EMAIL_VALUE)) {
                     setSparePartsNotificationEmail("");
                 }
             }
