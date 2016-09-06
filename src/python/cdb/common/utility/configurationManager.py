@@ -35,11 +35,19 @@ DEFAULT_CDB_CHERRYPY_LOG_LEVEL = 'ERROR'
 DEFAULT_CDB_CHERRYPY_LOG_FILE = '%s/var/log/cherrypy.error'     # requires install dir
 DEFAULT_CDB_CHERRYPY_ACCESS_FILE = '%s/var/log/cherrypy.access' # requires install dir
 
+DEFAULT_CDB_EMAIL_MODE = 'development'
+DEFAULT_CDB_EMAIL_SMTP_SERVER = 'localhost'
+DEFAULT_CDB_EMAIL_SENDER_EMAIL = 'cdb@aps.anl.gov'
+DEFAULT_CDB_EMAIL_ADMIN_NOTIFICATION_EMAIL = None
+DEFAULT_CDB_EMAIL_SUBJECT_START = '[CDB]'
+
 DEFAULT_CDB_SERVICE_PORT = 10232           # 10CDB
 DEFAULT_CDB_SERVICE_HOST = '127.0.0.1'
 DEFAULT_CDB_SERVICE_PROTOCOL = cdbServiceConstants.CDB_SERVICE_PROTOCOL_HTTP
 DEFAULT_CDB_SERVICE_USERNAME = ''
 DEFAULT_CDB_SERVICE_PASSWORD = ''
+
+DEFAULT_CDB_PORTAL_WEB_ADDRESS = 'http://localhost:8080/cdb'
 
 DEFAULT_CDB_DB = 'mysql'
 DEFAULT_CDB_DB_HOST = '127.0.0.1'
@@ -61,6 +69,7 @@ DEFAULT_CDB_REQUIRE_SESSION_CREDENTIALS = False
 DEFAULT_CDB_SSL_CA_CERT_FILE = None
 DEFAULT_CDB_SSL_CERT_FILE = None
 DEFAULT_CDB_SSL_KEY_FILE = None
+
 
 class ConfigurationManager(UserDict.UserDict):
     """ 
@@ -115,6 +124,14 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultCherrypyLogLevel'] = DEFAULT_CDB_CHERRYPY_LOG_LEVEL
         self['defaultCherrypyLogFile'] = DEFAULT_CDB_CHERRYPY_LOG_FILE % self.getInstallDir()
         self['defaultCherrypyAccessFile'] = DEFAULT_CDB_CHERRYPY_ACCESS_FILE % self.getInstallDir()
+
+        self['defaultEmailMode'] = DEFAULT_CDB_EMAIL_MODE
+        self['defaultEmailSmtpServer'] = DEFAULT_CDB_EMAIL_SMTP_SERVER
+        self['defaultEmailSenderEmail'] = DEFAULT_CDB_EMAIL_SENDER_EMAIL
+        self['defaultEmailAdminNotificationEmail'] = DEFAULT_CDB_EMAIL_ADMIN_NOTIFICATION_EMAIL
+        self['defaultEmailSubjectStart'] = DEFAULT_CDB_EMAIL_SUBJECT_START
+
+        self['defaultPortalWebAddress'] = DEFAULT_CDB_PORTAL_WEB_ADDRESS
 
         self['defaultServicePort'] = DEFAULT_CDB_SERVICE_PORT
         self['defaultServiceHost'] = DEFAULT_CDB_SERVICE_HOST
@@ -424,6 +441,78 @@ class ConfigurationManager(UserDict.UserDict):
 
     def hasCherrypyAccessFile(self):
         return self.has_key('cherrypyAccessFile')
+
+    def getDefaultEmailMode(self):
+        return self['defaultEmailMode']
+
+    def setEmailMode(self, emailMode):
+        self['emailMode'] = emailMode
+
+    def getEmailMode(self, default='__cdb_default__'):
+        return self.__getKeyValue('emailMode', default)
+
+    def hasEmailMode(self):
+        return self.has_key('emailMode')
+
+    def getDefaultEmailSmtpServer(self):
+        return self['defaultEmailSmtpServer']
+
+    def setEmailSmtpServer(self, emailSmtpServer):
+        self['emailSmtpServer'] = emailSmtpServer
+
+    def getEmailSmtpServer(self, default='__cdb_default__'):
+        return self.__getKeyValue('emailSmtpServer', default)
+
+    def hasEmailSmtpServer(self):
+        return self.has_key('emailSmtpServer')
+
+    def getDefaultEmailSenderEmail(self):
+        return self['defaultEmailSenderEmail']
+
+    def setEmailSenderEmail(self, emailSenderEmail):
+        self['emailSenderEmail'] = emailSenderEmail
+
+    def getEmailSenderEmail(self, default='__cdb_default__'):
+        return self.__getKeyValue('emailSenderEmail', default)
+
+    def hasEmailSenderEmail(self):
+        return self.has_key('emailSenderEmail')
+    
+    def getDefaultEmailAdminNotificationEmail(self):
+        return self['defaultEmailAdminNotificationEmail']
+
+    def setEmailAdminNotificationEmail(self, emailAdminNotificationEmail):
+        self['emailAdminNotificationEmail'] = emailAdminNotificationEmail
+
+    def getEmailAdminNotificationEmail(self, default='__cdb_default__'):
+        return self.__getKeyValue('emailAdminNotificationEmail', default)
+
+    def hasEmailAdminNotificationEmail(self):
+        return self.has_key('emailAdminNotificationEmail')
+
+    def getDefaultEmailSubject(self):
+        return self['defaultEmailSubjectStart']
+
+    def setEmailSubject(self, emailSubject):
+        self['emailSubjectStart'] = emailSubject
+
+    def getEmailSubject(self, default='__cdb_default__'):
+        return self.__getKeyValue('emailSubjectStart', default)
+
+    def hasEmailSubject(self):
+        return self.has_key('emailSubjectStart')
+
+    def getDefaultPortalWebAddress(self):
+        return self['defaultPortalWebAddress']
+
+    def setPortalWebAddress(self, emailSubject):
+        self['portalWebAddress'] = emailSubject
+
+    def getPortalWebAddress(self, default='__cdb_default__'):
+        return self.__getKeyValue('portalWebAddress', default)
+
+    def hasPortalWebAddress(self):
+        return self.has_key('portalWebAddress')
 
     def isDbAvailable(self):
         if os.access(self.getDbPasswordFile(), os.R_OK):
