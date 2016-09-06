@@ -1,7 +1,11 @@
+from collections import OrderedDict
 from cdb.common.db.api.itemDbApi import ItemDbApi
 from cdb.common.db.api.userDbApi import UserDbApi
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.db.api.logDbApi import LogDbApi
+from cdb.common.utility.cdbEmailUtility import CdbEmailUtility
+from cdb.common.utility.cdbPortalUrlUtility import CdbPortalUrlUtility
+from cdb.common.utility.loggingManager import LoggingManager
 
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.exceptions.cdbException import CdbException
@@ -9,20 +13,24 @@ from cdb.common.exceptions.cdbException import CdbException
 
 class SparePartsTask:
 
-    SPARE_PARTS_INDICATOR_PROPERTY_TYPE_NAME = "Spare Part Indication"
-    SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME = "Spare Parts Configuration"
+    SPARE_PARTS_INDICATOR_PROPERTY_TYPE_NAME = 'Spare Part Indication'
+    SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME = 'Spare Parts Configuration'
     SPARE_PARTS_CONFIGURATION_MIN_KEY = 'minQuantity'
     SPARE_PARTS_CONFIGURATION_EMAIL_KEY = 'email'
     SPARE_PARTS_CONFIGURATION_NOEMAIL_VALUE = 'None'
-    SPARE_PARTS_WARNING_LOG_LEVEL = "Spares Warning"
+    SPARE_PARTS_WARNING_LOG_LEVEL = 'Spares Warning'
     CDB_SYSTEM_ACCOUNT_USERNAME = 'cdb'
-    CATALOG_DOMAIN_NAME = "Catalog"
+    CATALOG_DOMAIN_NAME = 'Catalog'
+    SPARE_PARTS_EMAIL_NOTIFICATION_NAME = 'Spare Parts'
 
     def __init__(self):
         self.itemDbApi = ItemDbApi()
         self.userDbApi = UserDbApi()
         self.propertyDbApi = PropertyDbApi()
         self.logDbApi = LogDbApi()
+        self.emailUtility = CdbEmailUtility.getInstance()
+        self.cdbPortalUrlUtility = CdbPortalUrlUtility.getInstance()
+        self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
     def getPropertyMetadataDict(self, propertyValue):
         propertyMetadataList = propertyValue.data['propertyMetadata']
@@ -49,17 +57,19 @@ class SparePartsTask:
 
     def addSparePartsWarningLogEntryToItem(self, itemElementId, message):
         systemAccountUserId = self.getSystemAccountUserId()
-        self.itemDbApi.addItemElementLog(itemElementId, message, systemAccountUserId, None, None, None, None, self.SPARE_PARTS_WARNING_LOG_LEVEL)
+        self.itemDbApi.addItemElementLog(itemElementId, message, systemAccountUserId, None,
+                                         None, None, None, self.SPARE_PARTS_WARNING_LOG_LEVEL)
 
     @staticmethod
     def generateSparesMessage(minSpares, currentSpares):
         if currentSpares == 1:
-            sparesWord = "spare"
+            plural = ''
         else:
-            sparesWord = "spares"
-        return "Item has %s %s & requires %s" % (currentSpares, sparesWord, minSpares)
+            plural = 's'
+        return "Item has %s spare part%s & requires %s" % (currentSpares, plural, minSpares)
 
     def checkSpares(self):
+        self.logger.debug('Checking status of spare parts.')
         catalogItemsWithSparePartsConfiguration = self.itemDbApi.getItemsWithPropertyType(
                 self.SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME, itemDomainName=self.CATALOG_DOMAIN_NAME)
 
@@ -93,9 +103,6 @@ class SparePartsTask:
                 # Use owner user email.
                 email = self.getOwnerUserEmail(catalogItemId)
 
-            if email is not None:
-                email = 'djarosz@aps.anl.gov'
-
             sparePartsList = self.itemDbApi.getItemsWithPropertyType(self.SPARE_PARTS_INDICATOR_PROPERTY_TYPE_NAME,
                                                                      itemDerivedFromItemId=catalogItemId,
                                                                      propertyValueMatch='true')
@@ -115,8 +122,26 @@ class SparePartsTask:
 
                 if validNotification:
                     self.addSparePartsWarningLogEntryToItem(catalogSelfElementId, sparesMessage)
-
                     if email is not None:
-                        print email
+                        itemUrl = self.cdbPortalUrlUtility.getItemUrlAddress(catalogItemId)
+                        catalogItemName = catalogItem.data['name']
+                        catalogItemModel = catalogItem.data['item_identifier1']
+                        catalogItemAlternateName = catalogItem.data['item_identifier2']
+                        itemDictValue = '<a href=%s>%s</a>' % (itemUrl, catalogItemName)
+
+                        # Create an ordered dict for the table emailed to user.
+                        informationDict = OrderedDict()
+                        informationDict['Name'] = itemDictValue
+                        informationDict['Model'] = catalogItemModel
+                        informationDict['Alternate Name'] = catalogItemAlternateName
+                        informationDict['Spares On Hand'] = spares
+                        informationDict['Minimum Spares Required '] = minSpares
+
+                        emailTable = CdbEmailUtility.generateSimpleHtmlTableMessage(informationDict)
+
+                        emailMessage = '%s <br/><br/> %s' % (sparesMessage, emailTable)
+
+                        self.emailUtility.sendEmailNotification(email, self.SPARE_PARTS_EMAIL_NOTIFICATION_NAME,
+                                                                emailMessage)
 
 
