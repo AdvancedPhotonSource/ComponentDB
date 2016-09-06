@@ -113,6 +113,7 @@ INSERT INTO `user_user_group` VALUES
 (63,6),
 (63,18),
 (64,6),
-(64,18);
+(64,18),
+(67,19);
 /*!40000 ALTER TABLE `user_user_group` ENABLE KEYS */;
 UNLOCK TABLES;

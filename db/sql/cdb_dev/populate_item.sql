@@ -973,6 +973,12 @@ INSERT INTO `item` VALUES
 (970,2,'P4-30 Integral Shutter',NULL,NULL,NULL,NULL),
 (971,2,'23-ID',NULL,NULL,NULL,NULL),
 (972,2,'Canted Undulator Front End (Windowless)',NULL,NULL,NULL,NULL),
-(973,2,'Pat\'s Placeholder',NULL,NULL,NULL,NULL);
+(973,2,'Pat\'s Placeholder',NULL,NULL,NULL,NULL),
+(974,3,'Unit: 1',961,NULL,NULL,NULL),
+(975,3,'Unit: 1',962,NULL,NULL,NULL),
+(976,3,'Unit: 1',963,'','',NULL),
+(977,3,'Unit: 2',941,'','',NULL),
+(979,2,'- Placeholder Item',NULL,NULL,NULL,NULL),
+(980,2,'iocrtfbdaq',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

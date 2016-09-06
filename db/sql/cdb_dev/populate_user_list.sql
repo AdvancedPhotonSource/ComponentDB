@@ -1,4 +1,6 @@
 LOCK TABLES `user_list` WRITE;
 /*!40000 ALTER TABLE `user_list` DISABLE KEYS */;
+INSERT INTO `user_list` VALUES
+(3,1);
 /*!40000 ALTER TABLE `user_list` ENABLE KEYS */;
 UNLOCK TABLES;

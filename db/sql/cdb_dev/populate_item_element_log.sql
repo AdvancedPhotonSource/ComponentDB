@@ -95,6 +95,7 @@ INSERT INTO `item_element_log` VALUES
 (1225,92),
 (1225,93),
 (1290,94),
-(1520,95);
+(1520,95),
+(1620,96);
 /*!40000 ALTER TABLE `item_element_log` ENABLE KEYS */;
 UNLOCK TABLES;
