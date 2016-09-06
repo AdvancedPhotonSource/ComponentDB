@@ -116,6 +116,10 @@ public class ItemDomainCatalogController extends ItemController {
     private Boolean loadComponentInstanceRowExpansionPropertyValues = null;
     private Boolean displayComponentInstanceRowExpansion = null;
 
+    private List<Item> inventorySparesList = null;
+    private List<Item> inventoryNonSparesList = null;
+    private Boolean displayInventorySpares = null; 
+
     public ItemDomainCatalogController() {
         super();
     }
@@ -227,9 +231,64 @@ public class ItemDomainCatalogController extends ItemController {
 
         return item;
     }
+
+    @Override
+    protected void resetVariablesForCurrent() {
+        super.resetVariablesForCurrent();
+        inventoryNonSparesList = null;
+        inventorySparesList = null;
+        displayInventorySpares = null; 
+    }
+
+    public List<Item> getInventorySparesList() {
+        if (inventorySparesList == null) {
+            Item currentItem = getCurrent();
+            if (current != null) {
+                inventorySparesList = new ArrayList<>();
+                for (Item inventoryItem : currentItem.getDerivedFromItemList()) {
+                    if (inventoryItem.getSparePartIndicator()) {
+                        inventorySparesList.add(inventoryItem);
+                    }
+                }
+            }
+        }
+        return inventorySparesList;
+    }
+
+    public List<Item> getInventoryNonSparesList() {
+        if (inventoryNonSparesList == null) {
+            Item currentItem = getCurrent();
+            if (currentItem != null) {
+                List<Item> spareItems = getInventorySparesList();
+                List<Item> allInventoryItems = getCurrent().getDerivedFromItemList();
+                inventoryNonSparesList = new ArrayList<>(allInventoryItems);
+                inventoryNonSparesList.removeAll(spareItems); 
+            }
+        }
+        return inventoryNonSparesList;
+    }
     
-    public boolean getDisplayInventorySparesConfigurationColumn() {
-        return SparePartsBean.isItemContainSparePartConfiguration(getCurrent()); 
+    public int getInventorySparesCount() {
+        List<Item> sparesList = getInventorySparesList();
+        if (sparesList != null) {
+            return sparesList.size();
+        }
+        return 0; 
+    }
+    
+    public int getInventoryNonSparesCount() {
+        List<Item> nonSparesList = getInventoryNonSparesList();
+        if (nonSparesList != null) {
+            return nonSparesList.size();
+        }
+        return 0; 
+    }
+
+    public Boolean getDisplayInventorySpares() {
+        if (displayInventorySpares == null) {
+         displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
+        }
+        return displayInventorySpares;
     }
 
     public void setLoadComponentInstanceRowExpansionPropertyValues(Boolean loadComponentInstanceRowExpansionPropertyValues) {
