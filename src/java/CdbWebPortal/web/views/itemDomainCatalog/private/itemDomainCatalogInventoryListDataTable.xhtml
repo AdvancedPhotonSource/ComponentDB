@@ -6,7 +6,9 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityController" value="#{childEntityController}" />
-    <ui:param name="itemListDataTableValue" value="#{itemObject.derivedFromItemList}" />
+    <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
+                                                     ? itemListDataTableValue 
+                                                     : itemObject.derivedFromItemList}" />
     <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemListDataTableValue, 10)}" />
     
     <ui:param name="isEntityCloneable" value="#{false}" />
@@ -16,12 +18,19 @@
     
     <ui:define name="domainEntityListExtraColumns">
         <p:column headerText="Spare"
-                  rendered="#{itemDomainCatalogController.displayInventorySparesConfigurationColumn and loginController.loggedIn}"
-                  >
+                  rendered="#{displaySpareColumn}">
+            
+            <ui:param name="inventoryItemWriteable" 
+                      value="#{loginController.isEntityWriteable(itemListObject.entityInfo)}"/>
             
             <p:selectBooleanButton id="inventorySpareBooleanButton" offLabel="No" onLabel="Yes" 
                                    onchange="updateInventorySpareBooleanButton#{itemListObject.viewUUID}()"
-                                   value="#{itemListObject.sparePartIndicator}"/>
+                                   value="#{itemListObject.sparePartIndicator}"
+                                   disabled="#{!inventoryItemWriteable}">
+                <p:tooltip for="inventorySpareBooleanButton"
+                           value="You must have edit permissions for inventory item to change spare status"                           
+                           rendered="#{!inventoryItemWriteable}"/>
+            </p:selectBooleanButton>
             <p:remoteCommand name="updateInventorySpareBooleanButton#{itemListObject.viewUUID}"
                              update="@parent" />
         </p:column>
