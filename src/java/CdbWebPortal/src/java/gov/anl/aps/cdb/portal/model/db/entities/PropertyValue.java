@@ -377,7 +377,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
         }
     }
 
-    private PropertyMetadata getPropertyMetadataForKey(String key) {
+    public PropertyMetadata getPropertyMetadataForKey(String key) {
         if (propertyMetadataList != null) {
             for (PropertyMetadata propertyMetadata : propertyMetadataList) {
                 if (propertyMetadata.getMetadataKey().equals(key)) {
