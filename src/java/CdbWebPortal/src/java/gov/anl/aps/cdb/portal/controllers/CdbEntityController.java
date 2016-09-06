@@ -969,6 +969,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String view() {
         return "view?faces-redirect=true";
     }
+    
+    /**
+     * Return entity view page with query parameters of id.
+     * 
+     *  @return URL to view page in the entity folder with id query paramter.
+     */
+    public String viewForCurrentEntity() {
+        return "view?id=" + current.getId() + "&faces-redirect=true";
+    }
 
     /**
      * Return entity create page.
@@ -1102,8 +1111,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetListDataModel();
             resetSelectDataModel();
             resetLogText();
-            current = updatedEntity;
-            return view();
+            setCurrent(updatedEntity);
+            return viewForCurrentEntity();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
             return null;
