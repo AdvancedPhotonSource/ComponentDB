@@ -19,8 +19,8 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
 
-    <p:dataTable id="#{entityTypeName}ListDataTable" 
-                 widgetVar="#{entityTypeName}ListDataTableWidget"
+    <p:dataTable id="#{entityTypeName}ListDataTable#{viewName}" 
+                 widgetVar="#{entityTypeName}ListDataTable#{viewName}Widget"
                  var="itemListObject" 
                  value="#{itemListDataTableValue}" 
                  filteredValue="#{entityController.filteredObjectList}"
