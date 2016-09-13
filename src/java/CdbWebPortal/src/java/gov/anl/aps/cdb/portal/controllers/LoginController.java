@@ -166,7 +166,7 @@ public class LoginController implements Serializable {
         if (landingPage.contains("login")) {
             landingPage = SessionUtility.popViewFromStack();
             if (landingPage == null) {
-                landingPage = "/views/home";
+                landingPage = "/views/index";
             }
         }
         landingPage += "?faces-redirect=true";
@@ -232,7 +232,7 @@ public class LoginController implements Serializable {
 
     public void handleInvalidSessionRequest() {
         SessionUtility.addWarningMessage("Warning", "Invalid session request");
-        SessionUtility.navigateTo("/views/home?faces-redirect=true");
+        SessionUtility.navigateTo("/views/index?faces-redirect=true");
     }
 
     /**
@@ -261,7 +261,6 @@ public class LoginController implements Serializable {
         if (isLoggedIn()) {
             resetLoginInfo();
         }
-        SessionUtility.navigateTo("/views/home?faces-redirect=true");
     }
 
     public int getSessionTimeoutInMiliseconds() {
@@ -273,5 +272,5 @@ public class LoginController implements Serializable {
         }
         // logger.debug("Idle timeout in miliseconds: " + sessionTimeoutInMiliseconds);
         return sessionTimeoutInMiliseconds;
-    }
+    }   
 }

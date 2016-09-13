@@ -54,6 +54,7 @@ import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -97,7 +98,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
-    protected Boolean displayItemEntityTypes = null;
+    protected Boolean displayItemEntityTypes = null;    
+    
+    protected Boolean displayItemListTreeView = null; 
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected List<String> displayListDataModelScopeSelectionList = null;
@@ -119,6 +122,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private List<Item> selectedItems;
 
     private List<Item> selectItemElementItemCandidateList;
+    
+    protected DataModel itemsWithNoParentsListDataModel = null; 
+    protected TreeNode itemsWithNoParentsRootNode = null; 
 
     private Domain selectionDomain;
 
@@ -127,7 +133,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private EntityType listEntityType;
 
     protected DataModel allowedChildItemSelectDataModel = null;
-
+    
     protected List<ItemCategory> domainItemCategoryList = null;
 
     protected String listViewSelected;
@@ -301,7 +307,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract boolean getEntityDisplayItemProject();
 
     public abstract boolean getEntityDisplayItemEntityTypes();
-
+    
     public abstract String getItemsDerivedFromItemTitle();
 
     public abstract String getDerivedFromItemTitle();
@@ -835,11 +841,45 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             setListDataModel(getDomainListDataModel());
         }
     }
+    
+    public List<Item> getItemsWithoutParents() {
+        return itemFacade.findByDomainWithoutParents(getDefaultDomainName());         
+    }
+
+    public DataModel getItemsWithNoParentsListDataModel() {
+        if (itemsWithNoParentsListDataModel == null) {
+            itemsWithNoParentsListDataModel = new ListDataModel(getItemsWithoutParents());
+        }
+        return itemsWithNoParentsListDataModel;
+    }
+
+    public TreeNode getItemsWithNoParentsRootNode() {
+        if (itemsWithNoParentsRootNode == null) {
+            List<Item> itemsWitNoParentsList = getItemsWithoutParents(); 
+            itemsWithNoParentsRootNode = new DefaultTreeNode(null, null); 
+            
+            for (Item item: itemsWitNoParentsList) {
+                TreeNode itemRootTreeNode; 
+                try {
+                    itemRootTreeNode = ItemElementUtility.createItemRoot(item); 
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                    itemsWithNoParentsRootNode = null; 
+                    return null; 
+                }                
+                itemsWithNoParentsRootNode.getChildren().add(itemRootTreeNode); 
+            }
+        }
+        
+        return itemsWithNoParentsRootNode;
+    }
 
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
         scopedListDataModel = null;
+        itemsWithNoParentsListDataModel = null; 
+        itemsWithNoParentsRootNode = null;
     }
 
     public DataModel getScopedListDataModel() {
@@ -1855,6 +1895,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public void setDisplayDerivedFromItem(Boolean displayDerivedFromItem) {
         this.displayDerivedFromItem = displayDerivedFromItem;
+    }
+
+    public Boolean getDisplayItemListTreeView() {
+        return displayItemListTreeView;
+    }
+
+    public void setDisplayItemListTreeView(Boolean displayItemListTreeView) {
+        this.displayItemListTreeView = displayItemListTreeView;
     }
 
     public String getDisplayListDataModelScope() {

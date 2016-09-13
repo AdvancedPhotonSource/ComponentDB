@@ -1051,7 +1051,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetSelectDataModel();
             // Best to reload the entity after creation to ensure all connections are updated and initalized. 
             Object newEntityId = newEntity.getId();
-            current = findById((Integer) newEntityId); 
+            current = findById((Integer) newEntityId);           
             return view();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());

@@ -2,6 +2,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
@@ -20,7 +21,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +51,6 @@ import org.primefaces.model.menu.MenuModel;
 public class ItemDomainInventoryController extends ItemController {
 
     private final String DOMAIN_TYPE_NAME = "Inventory";
-    private final String LOCATION_RELATIONSHIP_TYPE_NAME = "Location";
     private final String DEFAULT_DOMAIN_NAME = "Inventory";
     private final String DOMAIN_HANDLER_NAME = "Inventory";
     private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog";
@@ -177,7 +176,9 @@ public class ItemDomainInventoryController extends ItemController {
     private ItemElementRelationship findItemLocationRelationship(Item item) {
         // Support items that have not yet been saved to db. 
         if (item.getSelfElement().getId() != null) {
-            return itemElementRelationshipFacade.findItemElementRelationshipByNameAndItemElementId(LOCATION_RELATIONSHIP_TYPE_NAME, item.getSelfElement().getId());
+            return itemElementRelationshipFacade
+                    .findItemElementRelationshipByNameAndItemElementId(ItemElementRelationshipTypeNames.itemLocation.getValue(),
+                            item.getSelfElement().getId());
         } else {
             return null;
         }
@@ -215,53 +216,129 @@ public class ItemDomainInventoryController extends ItemController {
         return inventoryItem.getLocation();
     }
 
-    public void setItemLocationInfo(Item inventoryItem) {
-        TreeNode locationTree = inventoryItem.getLocationTree();
+    public void updateLocationForItem(Item item, Item locationItem, String onSuccess) {
+        if (item.equals(locationItem)) {
+            SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
+            return;
+        }
 
-        if (locationTree == null) {
-            locationTree = new DefaultTreeNode("Root", null);
-            List<String> locationHierarchyStringList = new LinkedList<>();
-
-            ItemElementRelationship itemElementRelationship;
-            itemElementRelationship = findItemLocationRelationship(inventoryItem);
-
-            if (itemElementRelationship != null) {
-                ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
-                if (locationSelfItemElement != null) {
-                    inventoryItem.setLocation(locationSelfItemElement.getParentItem());
+        if (locationItem != null) {
+            if (isInventoryDomainItem(locationItem)) {
+                Item itemToCheck = item;
+                if (item.getId() == null) {
+                    // new item is part of currents assembly. 
+                    itemToCheck = getCurrent();
+                    if (itemToCheck.equals(locationItem)) {
+                        SessionUtility.addErrorMessage("Error", "Cannot use parent of assembly as a location.");
+                        return;
+                    }
+                } else {
+                    // Existent item.
+                    // Check that current item is not placed in its own herarchy. 
+                    List<Item> locationHierarchyList = ItemDomainLocationController.generateLocationHierarchyList(locationItem);
+                    if (locationHierarchyList != null) {
+                        if (locationHierarchyList.contains(item)) {
+                            SessionUtility.addErrorMessage("Error", "Item is part of the the desired location heriarchy.");
+                            return;
+                        }
+                    }
                 }
-                inventoryItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
 
-                while (locationSelfItemElement != null) {
-                    Item locationParentItem = locationSelfItemElement.getParentItem();
-                    String locationName = locationParentItem.getName();
-                    locationHierarchyStringList.add(0, locationName);
-                    List<ItemElement> memberList = locationParentItem.getItemElementMemberList();
-                    if (memberList.size() > 0) {
-                        locationSelfItemElement = memberList.get(0);
-                    } else {
-                        locationSelfItemElement = null;
+                // Check if item is part of assembly. 
+                if (isItemInAssemblyTree(itemToCheck, locationItem)) {
+                    SessionUtility.addErrorMessage("Error", "Item is already part of this assembly, cannot use selected location.");
+                    return;
+                }
+
+            }
+        }
+
+        item.setLocation(locationItem);
+        updateLocationTreeForItem(item);
+        RequestContext.getCurrentInstance().execute(onSuccess);
+
+    }
+
+    private boolean isItemInAssemblyTree(Item currentItem, Item itemToLookFor) {
+        return isItemInAssemblyTree(currentItem, itemToLookFor, true, true);
+    }
+
+    private boolean isItemInAssemblyTree(Item currentItem, Item itemToLookFor, boolean isNeedToMoveDown, boolean isNeedToMoveUp) {
+        if (isNeedToMoveUp) {
+            // Move up the assembly tree
+            List<ItemElement> itemElementMembershipList = currentItem.getItemElementMemberList();
+            if (itemElementMembershipList != null) {
+                for (ItemElement itemElement : itemElementMembershipList) {
+                    Item parentItem = itemElement.getParentItem();
+                    if (parentItem != null) {
+                        if (parentItem.equals(itemToLookFor)) {
+                            return true;
+                        }
+                        if (isItemInAssemblyTree(parentItem, itemToLookFor, false, true)) {
+                            return true;
+                        }
                     }
                 }
             }
-
-            TreeNode prevNode = null;
-            for (String locationName : locationHierarchyStringList) {
-                if (prevNode == null) {
-                    // Add first node 
-                    prevNode = new DefaultTreeNode(locationName, locationTree);
-                } else {
-                    TreeNode newNode = new DefaultTreeNode(locationName, prevNode);
-                    prevNode = newNode;
+        }
+        if (isNeedToMoveDown) {
+            // Move down the assembly tree
+            List<ItemElement> itemElementList = currentItem.getItemElementDisplayList();
+            if (itemElementList != null) {
+                for (ItemElement itemElement : itemElementList) {
+                    Item containedItem = itemElement.getContainedItem();
+                    if (containedItem != null) {
+                        if (containedItem.equals(itemToLookFor)) {
+                            return true;
+                        }
+                        if (isItemInAssemblyTree(containedItem, itemToLookFor, true, false)) {
+                            return true;
+                        }
+                    }
                 }
             }
-            inventoryItem.setLocationTree(locationTree);
+        }
+
+        return false;
+    }
+
+    public boolean isInventoryDomainItem(Item item) {
+        return item.getDomain().getName().equals(getDefaultDomainName());
+    }
+
+    public void updateLocationTreeForItem(Item item) {
+        if (item != null) {
+            Item location = item.getLocation();
+            item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
+        }
+    }
+
+    public void setItemLocationInfo(Item inventoryItem) {
+        if (inventoryItem.getOriginalLocationLoaded() == false) {
+            TreeNode locationTree = inventoryItem.getLocationTree();
+
+            if (locationTree == null) {
+                ItemElementRelationship itemElementRelationship;
+                itemElementRelationship = findItemLocationRelationship(inventoryItem);
+
+                if (itemElementRelationship != null) {
+                    ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
+                    if (locationSelfItemElement != null) {
+                        Item locationItem = locationSelfItemElement.getParentItem();
+                        inventoryItem.setLocation(locationItem);
+                        locationTree = ItemDomainLocationController.generateLocationNodeTreeBranch(locationItem);
+                        inventoryItem.setLocationTree(locationTree);
+                    }
+                    inventoryItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
+                }
+            }
+            inventoryItem.setOriginalLocationLoaded(true);
         }
 
     }
 
     private RelationshipType getLocationRelationshipType() {
-        return relationshipTypeFacade.findByName(LOCATION_RELATIONSHIP_TYPE_NAME);
+        return relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemLocation.getValue());
     }
 
     @Override
@@ -363,12 +440,20 @@ public class ItemDomainInventoryController extends ItemController {
 
     public void prepareBillOfMaterialsForCurrentItem() {
         // Prepare bill of materials if not yet done so. 
+        newItemsToAdd = new ArrayList<>();
         InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
         InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
     }
 
     @Override
+    public String prepareView(Item item) {
+        resetBOMSupportVariables();
+        return super.prepareView(item); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public String prepareEdit(Item inventoryItem) {
+        resetBOMSupportVariables();
         setCurrent(inventoryItem);
         return super.prepareEdit(inventoryItem);
     }
@@ -400,6 +485,7 @@ public class ItemDomainInventoryController extends ItemController {
         }
         super.setCurrentDerivedFromItem(derivedFromItem);
         resetBOMSupportVariables();
+        newItemsToAdd = new ArrayList<>();
 
         // Add current item to list
         newItemsToAdd.add(getCurrent());
@@ -411,7 +497,7 @@ public class ItemDomainInventoryController extends ItemController {
             getCurrent().setInventoryDomainBillOfMaterialList(null);
             getCurrent().setContainedInBOM(null);
         }
-        newItemsToAdd = new ArrayList<>();
+        newItemsToAdd = null;
         currentItemBOMListTree = null;
         selectedItemBOMTreeNode = null;
 
@@ -698,10 +784,9 @@ public class ItemDomainInventoryController extends ItemController {
         }
 
         super.prepareEntityInsert(item);
+        checkNewItemsToAdd();
 
         if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
-            checkNewItemsToAdd();
-
             // Clear new item elements for new items. In case a previous insert failed. 
             for (Item itemToAdd : newItemsToAdd) {
                 if (isItemExistInDb(itemToAdd) == false) {
@@ -728,13 +813,13 @@ public class ItemDomainInventoryController extends ItemController {
                 if (item != newItem) {
                     checkItem(newItem);
                 }
+                updateItemLocation(newItem);
             }
             // Cross check the nonadded items. 
             checkUniquenessBetweenNewItemsToAdd();
         } else {
             checkItem(item);
         }
-
         updateItemLocation(item);
     }
 
@@ -821,7 +906,6 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public void prepareEntityUpdate(Item item) throws CdbException {
-        updateItemLocation(item);
         super.prepareEntityUpdate(item);
         checkNewItemsToAdd();
 
@@ -891,6 +975,9 @@ public class ItemDomainInventoryController extends ItemController {
 
             if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
                 itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
+            } else {
+                // No location is set. 
+                itemElementRelationshipList.get(locationIndex).setSecondItemElement(null);
             }
             itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
         }
