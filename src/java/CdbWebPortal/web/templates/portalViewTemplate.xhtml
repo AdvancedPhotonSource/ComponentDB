@@ -6,22 +6,31 @@
       xmlns:p="http://primefaces.org/ui"
       xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:insert name="pathContextRootParam">
+        <ui:param name="pathContextRoot" value="#{pathContextRoot != null ? pathContextRoot : '../..' }" />
+    </ui:insert>
+
+    <ui:insert name="bodyStyleParam"> 
+        <ui:param name="bodyStyle" value="#{bodyStyle != null ? bodyStyle : ''}" />
+    </ui:insert>
+
+
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <ui:insert name="templateCss">
-            <link href="../../resources/css/portal.css" rel="stylesheet" type="text/css"/>
+            <link href="#{pathContextRoot}/resources/css/portal.css" rel="stylesheet" type="text/css"/>
         </ui:insert>
-        <link rel="icon" type="image/png" href="../../resources/images/anl.ico"/>
+        <link rel="icon" type="image/png" href="#{pathContextRoot}/resources/images/anl.ico"/>
         <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>
     </h:head>
 
-    <h:body>
+    <h:body class="#{bodyStyle}">
 
         <div id="contentContainer">
             <div id="top" class="topContent">
                 <div id="topLeft" class="topLeftContent">
                     <ui:insert name="topLeft">
-                        <h:graphicImage alt="ANL Logo" url="../../resources/images/AnlLogo167x75.png"/>
+                        <h:graphicImage alt="ANL Logo" url="#{pathContextRoot}/resources/images/AnlLogo167x75.png"/>
                     </ui:insert>
                 </div>
                 <div>
@@ -93,10 +102,26 @@
                     <h:form prependId="false">
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
-                                       onidle="handleSessionTimeout();">
+                                       onidle="displaySessionTimeout()">
+                            <p:remoteCommand name="displaySessionTimeout"
+                                             oncomplete="PF('sessionTimeoutDialogWidget').show()"/>
                             <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
                                     immediate="true" async="true"/> 
                         </p:idleMonitor>
+
+                        <p:dialog widgetVar="sessionTimeoutDialogWidget"
+                                  modal="true"
+                                  resizable="false"
+                                  closable="false"
+                                  header="Session Expired"
+                                  draggable="false"
+                                  styleClass="viewTransparentBackgroundDialog">
+                            <p:outputLabel value="Your session has expired due to inactivity." />
+                            <f:facet name="footer">
+                                <p:commandButton value="Go back to home" 
+                                                 onclick="handleSessionTimeout('#{pathContextRoot}');" />
+                            </f:facet>
+                        </p:dialog>                       
                         <h:outputScript library="javascript" name="sessionTimeout.js"/>
                     </h:form>
                     <footer>

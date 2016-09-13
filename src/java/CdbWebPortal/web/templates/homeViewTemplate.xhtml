@@ -1,107 +1,16 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:ui="http://java.sun.com/jsf/facelets">
 
-    <h:head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <link href="../resources/css/portal.css" rel="stylesheet" type="text/css" />
-        <link rel="icon" type="image/png" href="../resources/images/anl.ico" />
-        <title>#{resources.CdbPortalTitle}</title>
-    </h:head>
-
-    <h:body class="apsStorageRingBackground">
-
-        <div id="contentContainer">
-            <div id="top" class="topContent">
-                <div id="topLeft" class="topLeftContent">
-                    <ui:insert name="topLeft">
-                        <h:graphicImage alt="ANL Logo" url="../resources/images/AnlLogo167x75.png"/>
-                    </ui:insert>
-                </div>
-                <div>
-                    <div id="topRight" class="topRightContent">
-                        <ui:insert name="topRight">
-                            <h:outputText value="Username: #{loginController.displayUsername()}"/>
-                            <br/>
-
-                            <h:outputText value="Role: #{loginController.displayRole()}"/>
-
-                        </ui:insert>
-                    </div>
-                    <div id="topCenter" class="topCenterContent">
-                        <ui:insert name="topCenter">
-                            <h1 class="title">#{resources.CdbPortalTitle}</h1>
-                        </ui:insert>
-                    </div>
-                </div>
-            </div>
-
-            <ui:fragment>
-                <div id="menu" class="menuContent">
-                    <div id="menuLeft" class="menuLeftContent">
-                        <ui:insert name="menuLeft">
-                            <p:menubar/>
-                        </ui:insert>
-                    </div>
-                    <div>
-                        <div id="menuRight" class="menuRightContent">
-                            <ui:insert name="menuRight">
-                            </ui:insert>
-                        </div>
-                        <div id="menuCenter" class="menuCenterContent">
-                            <ui:insert name="menuCenter">
-                                <h:form prependId="false">
-                                    <ui:include src="portalViewMenubarTemplate.xhtml"/>
-                                </h:form>
-                            </ui:insert>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="middle" class="middleContent">
-                    <div id="middleLeft" class="middleLeftContent">
-                        <ui:insert name="middleLeft">
-                        </ui:insert>
-                    </div>
-                    <div>
-                        <div id="middleRight" class="middleRightContent">
-                            <ui:insert name="middleRight">
-                            </ui:insert>
-                        </div>
-                        <div id="middleCenter" class="middleCenterContent">
-                            <ui:insert name="middleCenter">
-                            </ui:insert>
-                        </div>
-                    </div>
-                </div>
-            </ui:fragment>
-        </div>
-
-        <ui:fragment>
-            <div id="bottom" class="bottomContent">
-                <ui:insert name="bottom">
-                    <h:form prependId="false">
-                        <p:growl id="messages" showDetail="true" autoUpdate="true"/>
-                        <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
-                                       onidle="handleSessionTimeout();"
-                                       rendered="#{loginController.loggedIn}">
-                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
-                                    immediate="true" async="true"/> 
-                        </p:idleMonitor>
-                        <h:outputScript library="javascript" name="sessionTimeout.js"/>
-                    </h:form>
-                    <footer>
-                        <h:outputText value="Copyright &#169; #{resources.CdbCopyrightNotice}"/>   
-                    </footer>
-                </ui:insert>
-            </div>
-        </ui:fragment>
-
-        <ui:include src="loginDialogTemplate.xhtml"/>
-
-    </h:body>
+    
+    <ui:composition template="portalViewTemplate.xhtml">
+        <ui:define name="pathContextRootParam">
+            <ui:param name="pathContextRoot" value=".." />
+        </ui:define>        
+        <ui:define name="bodyStyleParam">
+            <ui:param name="bodyStyle" value="apsStorageRingBackground" />
+        </ui:define>
+    </ui:composition>
 
 </html>
