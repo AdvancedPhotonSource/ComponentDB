@@ -24,7 +24,10 @@
         <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml"/>
         
-        <ui:include src="componentInventoryItemLocationDropdown.xhtml" />
+        <ui:include src="componentInventoryItemLocationSelection.xhtml" >
+            <ui:param name="dialogViewName" value="BOMEdit"/>
+        </ui:include>
+        
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
             <ui:param name="helpFragmentText"
                       value="Select current location for this item." />
