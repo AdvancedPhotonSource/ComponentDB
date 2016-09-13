@@ -58,7 +58,7 @@ public class ItemDomainLocationController extends ItemController {
 
     public TreeNode getLocationsWithInventoryItemsRootNode() {
         if (locationsWithInventoryItemsRootNode == null) {
-            // Location with inventory items is now the same pointer as items with no parents... 
+            // Location with inventory items is now the same pointer as items with no parents...
             locationsWithInventoryItemsRootNode = super.getItemsWithNoParentsRootNode();
             // New tree must be generated for items with no parents
             itemsWithNoParentsRootNode = null;
