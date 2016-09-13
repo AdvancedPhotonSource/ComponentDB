@@ -6,6 +6,8 @@
                 template="itemBrowseTemplate.xhtml"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:define name="pageTitle">: Browse By #{entityController.itemItemTypeTitle}</ui:define>
 
     <ui:define name="filterView">
         <ui:insert name="itemCategoryTypeFilterView">
