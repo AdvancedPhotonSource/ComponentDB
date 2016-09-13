@@ -37,6 +37,13 @@
             </p:panel>
         </p:tab>
     </ui:define>
+    
+    <ui:define name="additonalCreateItemContent">
+        <ui:include src="private/componentInventoryItemLocationSelectDialog.xhtml">
+            <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
+            <ui:param name="viewName" value="BOMEdit"/>
+        </ui:include>
+    </ui:define>
 
 </ui:composition>
 
