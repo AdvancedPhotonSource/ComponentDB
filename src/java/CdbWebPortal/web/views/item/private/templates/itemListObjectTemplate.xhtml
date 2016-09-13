@@ -139,15 +139,7 @@
     </ui:define>
 
     <ui:define name="itemTypeColumn"> 
-        <p:column sortBy="#{itemListObject.itemTypeString}"
-                  headerText="#{entityController.itemItemTypeTitle}" 
-                  filterBy="#{itemListObject.itemTypeString}"
-                  filterable="#{filterable}"
-                  sortable="#{sortable}"
-                  rendered="#{itemListRenderItemType}"
-                  >
-            <ui:insert name="itemTypeColumnObject" />
-        </p:column>
+        <ui:include src="../templateDefaults/itemListObjectColumns/itemItemType.xhtml" />
     </ui:define>
 
     <ui:define name="itemCategoryColumn" > 
