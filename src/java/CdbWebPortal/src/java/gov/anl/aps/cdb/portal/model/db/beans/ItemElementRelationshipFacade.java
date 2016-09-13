@@ -5,9 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
