@@ -123,6 +123,17 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
+    
+    public List<Item> findByDomainWithoutParents(String domainName) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findByDomainNameWithNoParents")
+                    .setParameter("domainName", domainName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<Item> findByDomainOrderByQrId(String domainName) {
         try {
@@ -264,6 +275,9 @@ public class ItemFacade extends CdbEntityFacade<Item> {
                     queryString += "AND " + queryParameter + " ";
                 }
             }
+            
+            
+            queryString += "ORDER BY i.name ASC";
 
             return (List<Item>) em.createQuery(queryString).getResultList();
         }
