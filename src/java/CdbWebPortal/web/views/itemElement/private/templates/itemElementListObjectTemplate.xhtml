@@ -37,17 +37,6 @@
         </p:column>
     </ui:define>
 
-    <ui:define name="containedItemTypeColumn">
-        <p:column headerText="Item Type"
-                  filterBy="#{itemElementObject.containedItem.itemType}"
-                  sortBy="#{itemElementObject.containedItem.itemType}"
-                  sortable="#{sortable}"
-                  filterable="#{filterable}">
-            <h:outputText value="#{itemElementObject.containedItem.itemType}" />
-        </p:column>
-    </ui:define>
-
-
     <ui:define name="descriptionColumn" > 
         <p:column sortBy="#{itemElementObject.description}" headerText="Description" 
                   filterBy="#{itemElementObject.description}" filterMatchMode="contains"
