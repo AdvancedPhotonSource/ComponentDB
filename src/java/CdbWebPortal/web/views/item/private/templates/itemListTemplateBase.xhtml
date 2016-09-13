@@ -30,22 +30,34 @@
 
                 <ui:insert name="helpFragment"/>
 
-                <p:outputPanel>
-                    <ui:insert name="listActionButtons" />
+                <p:outputPanel rendered="#{!entityController.displayItemListTreeView}">
+                    <p:outputPanel>
+                        <ui:insert name="listActionButtons" />
+                    </p:outputPanel>
+                    
+                    <h:panelGroup>
+                        <ui:insert name="listDataTable" />
+                    </h:panelGroup>
                 </p:outputPanel>
-
-                <h:panelGroup>
-                    <ui:insert name="listDataTable" />
-                </h:panelGroup>
+                
+                <p:outputPanel rendered="#{entityController.displayItemListTreeView}">
+                    <p:outputPanel>
+                        <ui:insert name="treeListActionButtons" />
+                    </p:outputPanel>
+                    
+                    <h:panelGroup>
+                        <ui:insert name="listTreeTable" />
+                    </h:panelGroup>
+                </p:outputPanel>
 
                 <ui:insert name="itemDestroyDialog" />
 
                 <ui:insert name="customizeDisplayDialog"/>
 
                 <ui:insert name="infoActionDialogs" />
-                
+
                 <ui:insert name="itemCloneDialog" />
-                
+
                 <ui:insert name="domainSpecificAddionalDialogs"/>
             </p:outputPanel>
 

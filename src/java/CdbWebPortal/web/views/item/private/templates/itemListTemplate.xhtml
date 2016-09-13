@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="itemListTemplateBase.xhtml">
+                template="itemListTemplateBase.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <!--
         Please define the following variables: 
@@ -19,6 +20,14 @@
 
     <ui:define name="listDataTable">
         <ui:include src="../itemListDataTable.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="treeListActionButtons">
+        <ui:include src="../../../common/private/commonListTreeTableActionButtons.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="listTreeTable">
+        <ui:include src="../itemListTreeTable.xhtml"/>
     </ui:define>
 
     <ui:define name="itemDestroyDialog">
