@@ -145,7 +145,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     protected List<UserGroup> filterViewUserGroupSelectionList = null;
 
-    // Generated based on the currently selected user group. 
+    // Generated based on the currently selected user group.  
     protected List<UserInfo> filterViewUserInfoList = null;
 
     protected ItemType filterViewSelectedItemType = null;
