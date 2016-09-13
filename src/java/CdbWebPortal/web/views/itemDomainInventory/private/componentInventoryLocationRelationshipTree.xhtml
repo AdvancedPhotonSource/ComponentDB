@@ -7,10 +7,8 @@
     <p:outputPanel>
         <p:tree styleClass="transparent-tree"
                 value="#{itemDomainInventoryController.getLocationRelationshipTree(itemObject)}" 
-                var="locationNode" animate="true">
-            <p:treeNode>
-                <h:outputText value="#{locationNode}" />
-            </p:treeNode>
+                var="node" animate="true">
+            <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
         </p:tree>
     </p:outputPanel>
 
