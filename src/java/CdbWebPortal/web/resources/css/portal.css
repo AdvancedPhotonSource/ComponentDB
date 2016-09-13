@@ -842,6 +842,27 @@ h2 {
     background-color: rgba(230, 245, 255, 0.85);
 }
 
+.viewTransparentBackground .ui-tooltip-text {
+    background: none;
+}
+
+.viewTransparentBackground.ui-tooltip.ui-tooltip-right {
+    padding: 0 0;
+}
+
+.viewTransparentBackground.ui-tooltip.ui-tooltip-left {
+    padding: 0 0;
+}
+
+.viewTransparentBackground .ui-tooltip-arrow {
+    border: none;
+}
+
+/* BUG FIX: sometimes not the correct arrow shows up for tooltip.*/
+.ui-tooltip-arrow {
+    border: none;
+}
+
 .viewColors h1 {
     color: #4E80B6; 
 }
@@ -937,8 +958,13 @@ h2 {
 .viewTransparentBackgroundDialog .ui-panelgrid td,
 .viewTransparentBackgroundDialog .ui-accordion .ui-accordion-content,
 .viewTransparentBackgroundDialog .ui-dialog-footer,
-.viewTransparentBackgroundDialog .ui-panel {
+.viewTransparentBackgroundDialog .ui-panel,
+.viewTransparentBackgroundDialog .ui-scrollpanel {
     background: transparent !important;
+}
+
+.viewTransparentBackgroundDialog .ui-scrollpanel {
+    text-align: left;
 }
 
 .favoriteOff {
