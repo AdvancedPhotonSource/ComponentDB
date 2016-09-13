@@ -174,7 +174,7 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     private ItemElementRelationship findItemLocationRelationship(Item item) {
-        // Support items that have not yet been saved to db. 
+        // Support items that have not yet been saved to db.
         if (item.getSelfElement().getId() != null) {
             return itemElementRelationshipFacade
                     .findItemElementRelationshipByNameAndItemElementId(ItemElementRelationshipTypeNames.itemLocation.getValue(),
