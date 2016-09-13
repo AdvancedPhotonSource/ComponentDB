@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -66,6 +67,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.qrId = :qrId"),
     @NamedQuery(name = "Item.findByDomainName",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName"),
+    @NamedQuery(name = "Item.findByDomainNameWithNoParents",
+            query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName"),
     @NamedQuery(name = "Item.findByDomainNameOrderByQrId",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
@@ -169,11 +172,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemSourceString = null;
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
-    private transient TreeNode locationTree = null;
     private transient String itemType = null;
 
+    private transient TreeNode locationTree = null;
     private transient String locationDetails = null;
     private transient Item location;
+    // Needed to determine whenever location was removed in edit process. 
+    private transient Boolean originalLocationLoaded = false; 
 
     private transient boolean isCloned = false;
 
@@ -193,7 +198,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient ItemController itemDomainController = null;
 
     private transient final String ITEM_CONTROLLER_NAME_BASE = "itemDomain";
-
+    
     public Item() {
     }
 
@@ -622,22 +627,6 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.domain = domain;
     }
 
-    public String getItemType() {
-        if (itemType == null) {
-            String entityTypeString = null;
-            for (EntityType entityType : getEntityTypeDisplayList()) {
-                if (entityTypeString == null) {
-                    entityTypeString = entityType.getName();
-                } else {
-                    entityTypeString += ", " + entityType.getName();
-                }
-            }
-
-            itemType = entityTypeString + " | " + domain.getName();
-        }
-        return itemType;
-    }
-
     public void setItemType(String itemType) {
         this.itemType = itemType;
     }
@@ -710,6 +699,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setLocationTree(TreeNode locationTree) {
         this.locationTree = locationTree;
+    }
+
+    public Boolean getOriginalLocationLoaded() {
+        return originalLocationLoaded;
+    }
+
+    public void setOriginalLocationLoaded(Boolean originalLocationLoaded) {
+        this.originalLocationLoaded = originalLocationLoaded;
     }
 
     public String getLocationDetails() {
