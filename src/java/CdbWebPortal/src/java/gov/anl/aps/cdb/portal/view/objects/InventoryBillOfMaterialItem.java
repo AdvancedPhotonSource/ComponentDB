@@ -116,8 +116,10 @@ public class InventoryBillOfMaterialItem {
             if (inventoryItem.getName() == null || inventoryItem.getName().isEmpty()) {
                 this.loadItemDomainInventoryController();
                 int newItemCount = itemDomainInventoryController.getNewItemCount(getCatalogItem());
-                // Remove this item from the count. 
-                newItemCount -= 1;
+                if (newItemCount > 0) {
+                    // Remove this item from the count. 
+                    newItemCount -= 1;
+                }
                 // Add one for user readability. No use of 0 for first item. 
                 inventoryItem.setName("Unit: " + (getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1) + "");
             }
