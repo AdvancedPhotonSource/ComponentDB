@@ -8,7 +8,7 @@
 
     <h:outputLabel for="location#{viewName}" value="Location" styleClass="entityDataEmphasizedLabel"/>
     <p:column id="location#{viewName}">
-        <p:panelGrid columns="2" styleClass="locationEditOptionsPanelGrid">            
+        <p:panelGrid columns="2" styleClass="noCellPaddingPanelGrid">            
             <p:column>
                 <p:commandButton id="locationSelectButton#{viewName}" 
                                  action="#{itemDomainLocationController.resetListDataModelAndSetSelectionLocatinTreeNodeByItem(itemObject.location)}"
