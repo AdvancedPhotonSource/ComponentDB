@@ -8,9 +8,9 @@
 
 
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
-    
+
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{itemDomainLocationController.resetListDataModel()}"/>
+        <f:viewAction action="#{itemDomainLocationController.resetListDataModel}" />
     </f:metadata>
 
     <ui:define name="templateCss">
@@ -21,7 +21,7 @@
 
     <ui:define name="middleCenter">
         <p:treeTable value="#{itemDomainLocationController.locationsWithInventoryItemAssemblyRootNode}"
-                     var="itemListObject"
+                     var="itemListObject"                     
                      resizableColumns="true"
                      liveResize="true">
             <ui:include src="private/itemDomainInventoryBrowseLocationObject.xhtml"/> 
