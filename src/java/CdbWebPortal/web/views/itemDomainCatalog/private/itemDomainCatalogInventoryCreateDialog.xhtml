@@ -32,12 +32,19 @@
                              onstart="PF('addInventoryItemDialogWidget').hide()" />           
         </f:facet>
     </p:dialog>
-    
+
+    <ui:include src="../../itemDomainInventory/private/componentInventoryItemLocationSelectDialog.xhtml">
+        <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
+        <ui:param name="viewName" value="BOMEdit"/>
+        <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
+        <ui:param name="entityController" value="#{itemDomainInventoryController}" />
+    </ui:include>
+
     <p:remoteCommand name="prepareAddInventoryItem"
                      onstart="PF('loadingDialog').show()"
                      action="#{itemDomainInventoryController.prepareAddItemDerivedFromItem(entityController.current)}"
                      oncomplete="PF('loadingDialog').hide();
-                                 PF('addInventoryItemDialogWidget').show();" 
+                     PF('addInventoryItemDialogWidget').show();" 
                      update="@form"
                      />
 
