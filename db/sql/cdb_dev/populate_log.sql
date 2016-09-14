@@ -96,6 +96,10 @@ INSERT INTO `log` VALUES
 (93,'Leak Check','2016-07-29 08:04:18',53,NULL,NULL,NULL),
 (94,'Cloned from DMM Vacuum Assembly Old','2016-07-18 09:31:51',2,NULL,NULL,NULL),
 (95,'','2016-03-24 10:49:46',62,NULL,NULL,NULL),
-(96,'Trying to add some examples','2016-08-30 13:33:24',3,NULL,NULL,NULL);
+(96,'Trying to add some examples','2016-08-30 13:33:24',3,NULL,NULL,NULL),
+(97,'Item has 0 spare parts & requires 2','2016-09-06 13:55:17',1,NULL,NULL,NULL),
+(98,'Item has 1 spare part & requires 2','2016-09-06 13:57:05',1,NULL,NULL,NULL),
+(99,'Item has 0 spare parts & requires 4','2016-09-06 14:58:12',1,NULL,NULL,NULL),
+(100,'Item has 1 spare part & requires 2','2016-09-07 13:58:18',1,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;

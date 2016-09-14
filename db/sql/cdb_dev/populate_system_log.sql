@@ -1,4 +1,9 @@
 LOCK TABLES `system_log` WRITE;
 /*!40000 ALTER TABLE `system_log` DISABLE KEYS */;
+INSERT INTO `system_log` VALUES
+(97,1),
+(98,1),
+(99,1),
+(100,1);
 /*!40000 ALTER TABLE `system_log` ENABLE KEYS */;
 UNLOCK TABLES;

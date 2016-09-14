@@ -661,7 +661,10 @@ INSERT INTO `item_element_property` VALUES
 (1515,658),
 (1515,659),
 (1515,660),
+(1515,930),
 (1516,661),
+(1516,928),
+(1517,929),
 (1518,662),
 (1518,663),
 (1521,664),
@@ -919,6 +922,9 @@ INSERT INTO `item_element_property` VALUES
 (1584,916),
 (1585,917),
 (1586,918),
-(1587,919);
+(1587,919),
+(1621,920),
+(1622,921),
+(1623,923);
 /*!40000 ALTER TABLE `item_element_property` ENABLE KEYS */;
 UNLOCK TABLES;

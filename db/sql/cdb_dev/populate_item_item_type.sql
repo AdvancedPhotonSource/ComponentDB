@@ -729,11 +729,9 @@ INSERT INTO `item_item_type` VALUES
 (949,106),
 (950,130),
 (952,45),
-(954,131),
 (957,106),
 (958,86),
 (960,132),
-(979,132),
 (980,65);
 /*!40000 ALTER TABLE `item_item_type` ENABLE KEYS */;
 UNLOCK TABLES;

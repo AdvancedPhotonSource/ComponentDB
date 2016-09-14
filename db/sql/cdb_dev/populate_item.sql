@@ -978,7 +978,13 @@ INSERT INTO `item` VALUES
 (975,3,'Unit: 1',962,NULL,NULL,NULL),
 (976,3,'Unit: 1',963,'','',NULL),
 (977,3,'Unit: 2',941,'','',NULL),
-(979,2,'- Placeholder Item',NULL,NULL,NULL,NULL),
-(980,2,'iocrtfbdaq',NULL,NULL,NULL,NULL);
+(980,2,'iocrtfbdaq',NULL,NULL,NULL,NULL),
+(981,2,'Test Component',NULL,NULL,NULL,NULL),
+(982,3,'Unit: 1',981,NULL,NULL,NULL),
+(983,3,'Unit: 2',981,NULL,NULL,NULL),
+(984,3,'Unit: 3',981,NULL,NULL,NULL),
+(985,3,'Unit: 0',879,'','',NULL),
+(986,3,'Unit: 2',610,'','',NULL),
+(987,3,'Unit: 1',880,'','',NULL);
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;

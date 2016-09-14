@@ -572,8 +572,13 @@ INSERT INTO `item_item_project` VALUES
 (975,2),
 (976,2),
 (977,2),
-(979,1),
-(979,2),
-(980,1);
+(980,1),
+(981,2),
+(982,2),
+(983,2),
+(984,2),
+(985,1),
+(986,1),
+(987,1);
 /*!40000 ALTER TABLE `item_item_project` ENABLE KEYS */;
 UNLOCK TABLES;
