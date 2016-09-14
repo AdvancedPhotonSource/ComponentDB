@@ -1018,3 +1018,7 @@ h2 {
 .logWarningRow {
    background: #ff8080; 
 }
+
+.noCellPaddingPanelGrid .ui-panelgrid-cell {
+    padding: 0px; 
+}
