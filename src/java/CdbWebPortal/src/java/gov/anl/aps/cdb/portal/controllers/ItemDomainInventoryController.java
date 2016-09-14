@@ -103,6 +103,7 @@ public class ItemDomainInventoryController extends ItemController {
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainInventory.Help.ListPage.Display.Fragment";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainInventory.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainInventory.List.Scope.Display";
+    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainInventory.List.Scope.Display.PropertyTypeId"; 
 
     private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
 
@@ -1110,6 +1111,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
 
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
+        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue()); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -1175,6 +1177,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
+        displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
 
         resetDomainEntityPropertyTypeIdIndexMappings();
 
@@ -1259,6 +1262,7 @@ public class ItemDomainInventoryController extends ItemController {
         settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
+        settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
 
     }
 

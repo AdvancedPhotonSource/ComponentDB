@@ -88,6 +88,7 @@ public class ItemDomainCatalogController extends ItemController {
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCatalog.Help.ListPage.Display.Fragment";
 
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainCatalog.List.Scope.Display";
+    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainCatalog.List.Scope.Display.PropertyTypeId"; 
 
     private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
 
@@ -382,6 +383,7 @@ public class ItemDomainCatalogController extends ItemController {
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
 
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
+        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue()); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -445,6 +447,7 @@ public class ItemDomainCatalogController extends ItemController {
         displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
+        displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -527,6 +530,7 @@ public class ItemDomainCatalogController extends ItemController {
         settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
 
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
+        settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
 
     }
 

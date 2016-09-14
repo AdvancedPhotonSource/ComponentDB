@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
@@ -27,6 +28,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -98,11 +100,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayDerivedFromItem = null;
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
-    protected Boolean displayItemEntityTypes = null;    
-    
-    protected Boolean displayItemListTreeView = null; 
+    protected Boolean displayItemEntityTypes = null;
+
+    protected Boolean displayItemListTreeView = null;
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
+    protected Integer displayListDataModelScopePropertyTypeId = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
     protected DataModel scopedListDataModel = null;
 
@@ -122,9 +125,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private List<Item> selectedItems;
 
     private List<Item> selectItemElementItemCandidateList;
-    
-    protected DataModel itemsWithNoParentsListDataModel = null; 
-    protected TreeNode itemsWithNoParentsRootNode = null; 
+
+    protected DataModel itemsWithNoParentsListDataModel = null;
+    protected TreeNode itemsWithNoParentsRootNode = null;
 
     private Domain selectionDomain;
 
@@ -133,7 +136,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private EntityType listEntityType;
 
     protected DataModel allowedChildItemSelectDataModel = null;
-    
+
     protected List<ItemCategory> domainItemCategoryList = null;
 
     protected String listViewSelected;
@@ -307,7 +310,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract boolean getEntityDisplayItemProject();
 
     public abstract boolean getEntityDisplayItemEntityTypes();
-    
+
     public abstract String getItemsDerivedFromItemTitle();
 
     public abstract String getDerivedFromItemTitle();
@@ -472,12 +475,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public List<UserInfo> getFilterViewUserInfoList() {
         if (filterViewUserInfoList == null) {
-            if (filterViewSelectedItemProject == null && 
-                    (filterViewUserGroupSelectionList == null
+            if (filterViewSelectedItemProject == null
+                    && (filterViewUserGroupSelectionList == null
                     || filterViewUserGroupSelectionList.isEmpty())) {
-                filterViewUserInfoList = new ArrayList<>(); 
-            }
-            else if (filterViewUserGroupSelectionList == null
+                filterViewUserInfoList = new ArrayList<>();
+            } else if (filterViewUserGroupSelectionList == null
                     || filterViewUserGroupSelectionList.isEmpty()) {
                 filterViewUserInfoList = userInfoFacade.findAll();
             } else {
@@ -582,7 +584,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {
             filterViewCategoryTypeListDataModelLoaded = false;
             filterViewOwnerListDataModelLoaded = false;
-            filterViewUserInfoList = null; 
+            filterViewUserInfoList = null;
         }
         this.filterViewSelectedItemProject = filterViewSelectedItemProject;
     }
@@ -841,9 +843,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             setListDataModel(getDomainListDataModel());
         }
     }
-    
+
     public List<Item> getItemsWithoutParents() {
-        return itemFacade.findByDomainWithoutParents(getDefaultDomainName());         
+        return itemFacade.findByDomainWithoutParents(getDefaultDomainName());
     }
 
     public DataModel getItemsWithNoParentsListDataModel() {
@@ -855,22 +857,22 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public TreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
-            List<Item> itemsWitNoParentsList = getItemsWithoutParents(); 
-            itemsWithNoParentsRootNode = new DefaultTreeNode(null, null); 
-            
-            for (Item item: itemsWitNoParentsList) {
-                TreeNode itemRootTreeNode; 
+            List<Item> itemsWitNoParentsList = getItemsWithoutParents();
+            itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
+
+            for (Item item : itemsWitNoParentsList) {
+                TreeNode itemRootTreeNode;
                 try {
-                    itemRootTreeNode = ItemElementUtility.createItemRoot(item); 
+                    itemRootTreeNode = ItemElementUtility.createItemRoot(item);
                 } catch (CdbException ex) {
                     SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-                    itemsWithNoParentsRootNode = null; 
-                    return null; 
-                }                
-                itemsWithNoParentsRootNode.getChildren().add(itemRootTreeNode); 
+                    itemsWithNoParentsRootNode = null;
+                    return null;
+                }
+                itemsWithNoParentsRootNode.getChildren().add(itemRootTreeNode);
             }
         }
-        
+
         return itemsWithNoParentsRootNode;
     }
 
@@ -878,8 +880,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public void resetListDataModel() {
         super.resetListDataModel();
         scopedListDataModel = null;
-        itemsWithNoParentsListDataModel = null; 
+        itemsWithNoParentsListDataModel = null;
         itemsWithNoParentsRootNode = null;
+        displayListDataModelScopeSelectionList = null; 
     }
 
     public DataModel getScopedListDataModel() {
@@ -887,38 +890,49 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showAll.getValue())) {
             return getListDataModel();
         } else if (scopedListDataModel == null) {
-            // Determine if currently viewed as group or user. 
-            SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
-            // All the remaining options require a setting entity loaded. 
-            if (settingEntity == null) {
-                return getListDataModel();
-            }
-
-            // Show only favorites
-            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                List<Item> itemList = itemFacade.getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
-                scopedListDataModel = new ListDataModel(itemList);
-            } else if (settingEntity instanceof UserInfo) {
-                // Show owned by user
-                if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
-                    List<Item> itemList = itemFacade.getItemListOwnedByUser(getDefaultDomainName(), (UserInfo) settingEntity);
-                    scopedListDataModel = new ListDataModel(itemList);
-                } // show owned by user and favorites 
-                else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
-                    List<Item> itemList = itemFacade
-                            .getItemListContainedInListOrOwnedByUser(getDefaultDomainName(), getFavoritesList(), (UserInfo) settingEntity);
+            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                if (displayListDataModelScopePropertyTypeId == null) {
+                    return null; 
+                } else {
+                    List<Item> itemList = itemFacade.getItemListWithPropertyType(
+                            getDefaultDomainName(), 
+                            getDisplayListDataModelScopePropertyTypeId());
                     scopedListDataModel = new ListDataModel(itemList);
                 }
-            } else if (settingEntity instanceof UserGroup) {
-                // Show owned by group
-                if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
-                    List<Item> itemList = itemFacade.getItemListOwnedByUserGroup(getDefaultDomainName(), (UserGroup) settingEntity);
+            } else {
+                // Determine if currently viewed as group or user. 
+                SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+                // All the remaining options require a setting entity loaded. 
+                if (settingEntity == null) {
+                    return getListDataModel();
+                }
+
+                // Show only favorites
+                if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
+                    List<Item> itemList = itemFacade.getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
                     scopedListDataModel = new ListDataModel(itemList);
-                } // show owned by group and favorites 
-                else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
-                    List<Item> itemList = itemFacade
-                            .getItemListContainedInListOrOwnedByGroup(getDefaultDomainName(), getFavoritesList(), (UserGroup) settingEntity);
-                    scopedListDataModel = new ListDataModel(itemList);
+                } else if (settingEntity instanceof UserInfo) {
+                    // Show owned by user
+                    if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
+                        List<Item> itemList = itemFacade.getItemListOwnedByUser(getDefaultDomainName(), (UserInfo) settingEntity);
+                        scopedListDataModel = new ListDataModel(itemList);
+                    } // show owned by user and favorites 
+                    else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
+                        List<Item> itemList = itemFacade
+                                .getItemListContainedInListOrOwnedByUser(getDefaultDomainName(), getFavoritesList(), (UserInfo) settingEntity);
+                        scopedListDataModel = new ListDataModel(itemList);
+                    }
+                } else if (settingEntity instanceof UserGroup) {
+                    // Show owned by group
+                    if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
+                        List<Item> itemList = itemFacade.getItemListOwnedByUserGroup(getDefaultDomainName(), (UserGroup) settingEntity);
+                        scopedListDataModel = new ListDataModel(itemList);
+                    } // show owned by group and favorites 
+                    else if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
+                        List<Item> itemList = itemFacade
+                                .getItemListContainedInListOrOwnedByGroup(getDefaultDomainName(), getFavoritesList(), (UserGroup) settingEntity);
+                        scopedListDataModel = new ListDataModel(itemList);
+                    }
                 }
             }
         }
@@ -1916,10 +1930,32 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         this.displayListDataModelScope = listDataModelMode;
     }
 
+    public boolean isDisplayListDataModelScopePropertyTypeSelection() {
+        if (displayListDataModelScope != null) {
+            return displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue());
+        }
+        return false;
+    }
+
+    public Integer getDisplayListDataModelScopePropertyTypeId() {
+        return displayListDataModelScopePropertyTypeId;
+    }
+
+    public void setDisplayListDataModelScopePropertyTypeId(Integer displayListDataModelScopePropertyTypeId) {
+        this.displayListDataModelScopePropertyTypeId = displayListDataModelScopePropertyTypeId;
+    }
+
     public List<String> getDisplayListDataScopeSelectionList() {
         if (displayListDataModelScopeSelectionList == null) {
             displayListDataModelScopeSelectionList = new ArrayList<>();
+            SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+            boolean settingEntityLoaded = (settingEntity != null);
             for (ItemDisplayListDataModelScope value : ItemDisplayListDataModelScope.values()) {
+                if (!settingEntityLoaded) {
+                    if (value.isSettingEntityRequired()) {
+                        continue;
+                    }
+                }
                 displayListDataModelScopeSelectionList.add(value.getValue());
             }
         }
