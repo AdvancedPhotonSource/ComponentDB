@@ -85,6 +85,7 @@ public class UserGroupSetting extends EntitySetting implements Serializable {
         return settingType;
     }
 
+    @Override
     public void setSettingType(SettingType settingType) {
         this.settingType = settingType;
     }
@@ -112,6 +113,12 @@ public class UserGroupSetting extends EntitySetting implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.UserGroupSetting[ id=" + id + " ]";
+    }
+
+    @Override
+    public void setSettingEntity(SettingEntity settingEntity) {
+        UserGroup setttingEntityUserGroup = (UserGroup) settingEntity;
+        setUserGroup(setttingEntityUserGroup);
     }
     
 }

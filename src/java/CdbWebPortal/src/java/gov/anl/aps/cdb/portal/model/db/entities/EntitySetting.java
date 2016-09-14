@@ -12,8 +12,12 @@ import java.io.Serializable;
  * @author djarosz
  */
 public abstract class EntitySetting extends CdbEntity {
-    
+       
     public abstract SettingType getSettingType(); 
+    
+    public abstract void setSettingType(SettingType settingType); 
+    
+    public abstract void setSettingEntity(SettingEntity settingEntity);
     
     public abstract String getValue(); 
     
