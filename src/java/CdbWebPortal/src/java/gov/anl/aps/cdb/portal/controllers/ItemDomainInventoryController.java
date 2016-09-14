@@ -786,7 +786,7 @@ public class ItemDomainInventoryController extends ItemController {
         super.prepareEntityInsert(item);
         checkNewItemsToAdd();
 
-        if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
+        if (newItemsToAdd != null) {
             // Clear new item elements for new items. In case a previous insert failed. 
             for (Item itemToAdd : newItemsToAdd) {
                 if (isItemExistInDb(itemToAdd) == false) {
@@ -799,10 +799,20 @@ public class ItemDomainInventoryController extends ItemController {
                 }
             }
 
+            clearItemElementsForItem(item);
             updatePermissionOnAllNewPartsIfNeeded();
-
             addItemElementsFromBillOfMaterials(item);
         }
+    }
+
+    private void clearItemElementsForItem(Item item) {
+        //Make sure newest version of display list is fetched.
+        //Item should be updated using addItemElementsFromBillOfMaterials.
+        ItemElement selfElement = item.getSelfElement();
+        item.getFullItemElementList().clear();
+        item.getFullItemElementList().add(selfElement);
+        //Make sure display list is updated to reflect changes. 
+        item.resetItemElementDisplayList();
     }
 
     private void checkNewItemsToAdd() throws CdbException {
@@ -900,6 +910,9 @@ public class ItemDomainInventoryController extends ItemController {
             if (item.getDerivedFromItem() == catalogItem) {
                 count++;
             }
+        }
+        if (getCurrent().getDerivedFromItem() == catalogItem) {
+            count ++; 
         }
         return count;
     }
