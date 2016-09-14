@@ -164,10 +164,8 @@ public class SettingController implements Serializable {
     // TODO add checks that determine if any additional settings need to be added. 
     private void populateSessionSettingEntityFromSettingTypeDefaults(SettingEntity settingEntity) {
         if (settingEntity != null) {
-            if (!settingEntity.hasSettings()) {
-                List<SettingType> settingTypeList = settingTypeFacade.findAll();
-                settingEntity.populateDefaultSettingList(settingTypeList);
-            }
+            List<SettingType> settingTypeList = settingTypeFacade.findAll();
+            settingEntity.populateDefaultSettingList(settingTypeList);
         }
     }
 
