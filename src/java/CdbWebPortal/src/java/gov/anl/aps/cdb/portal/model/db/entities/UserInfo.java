@@ -367,21 +367,18 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @Override
-    public void populateDefaultSettingList(List<SettingType> settingTypeList) {
-        List<UserSetting> settingList = new ArrayList<>();
-        for (SettingType settingType : settingTypeList) {
-            UserSetting userSetting = new UserSetting();
-            userSetting.setSettingType(settingType);
-            userSetting.setUser(this);
-            userSetting.setValue(settingType.getDefaultValue());
-            settingList.add(userSetting);
-        }
-        setUserSettingList(settingList);
+    public List<ListTbl> getItemElementLists() {
+        return getListList(); 
     }
 
     @Override
-    public List<ListTbl> getItemElementLists() {
-        return getListList(); 
+    public void setSettingList(List<EntitySetting> entitySettingList) {
+        setUserSettingList((List<UserSetting>)(List<?>)entitySettingList);
+    }
+
+    @Override
+    public EntitySetting createNewEntitySetting() {
+        return new UserSetting();
     }
     
 }

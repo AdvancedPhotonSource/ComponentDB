@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,44 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
 
     public abstract List<EntitySetting> getSettingList();
     
-    public abstract void populateDefaultSettingList(List<SettingType> settingTypeList);
+    public abstract void setSettingList(List<EntitySetting> entitySettingList); 
+        
+    public abstract EntitySetting createNewEntitySetting();
+    
+    public void populateDefaultSettingList(List<SettingType> settingTypeList) {
+        List<EntitySetting> settingList = getSettingList();         
+        if (settingList == null) {
+            settingList = new ArrayList(); 
+        }
+        
+        if (settingList.size() < settingTypeList.size()) {
+            boolean settingListUpdate = !settingList.isEmpty(); 
+            
+            for (SettingType settingType: settingTypeList) {
+                if (settingListUpdate) {
+                    if (isSettingTypeInEntitySettingList(settingList, settingType)) {
+                        continue;
+                    }
+                }
+                EntitySetting entitySetting = createNewEntitySetting(); 
+                entitySetting.setSettingEntity(this);
+                entitySetting.setSettingType(settingType);
+                entitySetting.setValue(settingType.getDefaultValue());
+                settingList.add(entitySetting);                                 
+            }
+            
+            setSettingList(settingList);
+        }
+    };
+    
+    private static boolean isSettingTypeInEntitySettingList(List<EntitySetting> entitySettingList, SettingType settingType) {
+        for (EntitySetting entitySetting : entitySettingList) {
+            if (entitySetting.getSettingType().equals(settingType)) {
+                return true;
+            }
+        }
+        return false; 
+    }
     
     public abstract List<ListTbl> getItemElementLists();
 

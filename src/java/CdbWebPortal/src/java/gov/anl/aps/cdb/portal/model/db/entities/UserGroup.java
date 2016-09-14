@@ -189,24 +189,20 @@ public class UserGroup extends SettingEntity implements Serializable {
     public List<EntitySetting> getSettingList() {
         return (List<EntitySetting>)(List<?>) getUserGroupSettingList(); 
     }
-    
-    @Override
-    public void populateDefaultSettingList(List<SettingType> settingTypeList) {
-        List<UserGroupSetting> settingList = new ArrayList<>();
-        for (SettingType settingType : settingTypeList) {
-            UserGroupSetting userGroupSetting = new UserGroupSetting();
-            userGroupSetting.setSettingType(settingType);
-            userGroupSetting.setUserGroup(this);
-            userGroupSetting.setValue(settingType.getDefaultValue());
-            settingList.add(userGroupSetting);
-        }
-
-        setUserGroupSettingList(settingList);
-    }
 
     @Override
     public List<ListTbl> getItemElementLists() {
         return getListList(); 
+    }
+
+    @Override
+    public void setSettingList(List<EntitySetting> entitySettingList) {
+        setUserGroupSettingList((List<UserGroupSetting>)(List<?>)entitySettingList);
+    }
+
+    @Override
+    public EntitySetting createNewEntitySetting() {
+        return new UserGroupSetting(); 
     }
     
 }
