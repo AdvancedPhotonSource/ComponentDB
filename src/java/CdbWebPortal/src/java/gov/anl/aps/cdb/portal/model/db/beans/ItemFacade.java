@@ -123,7 +123,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public List<Item> findByDomainWithoutParents(String domainName) {
         try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameWithNoParents")
@@ -195,27 +195,27 @@ public class ItemFacade extends CdbEntityFacade<Item> {
     }
 
     public List<Item> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,
-            List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {        
-        return findByFilterViewAttributes(itemProject, itemCategoryList, itemType, itemDomainName, null, null);        
+            List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {
+        return findByFilterViewAttributes(itemProject, itemCategoryList, itemType, itemDomainName, null, null);
     }
-    
-    public List<Item> findByFilterViewOwnerAttributes(ItemProject itemProject, 
+
+    public List<Item> findByFilterViewOwnerAttributes(ItemProject itemProject,
             List<UserGroup> ownerUserGroupList, UserInfo ownerUserName, String itemDomainName) {
-        return findByFilterViewAttributes(itemProject, null, null, itemDomainName, ownerUserGroupList, ownerUserName); 
+        return findByFilterViewAttributes(itemProject, null, null, itemDomainName, ownerUserGroupList, ownerUserName);
     }
-    
+
     private List<Item> findByFilterViewAttributes(ItemProject itemProject,
-            List<ItemCategory> itemCategoryList, 
-            ItemType itemType, 
+            List<ItemCategory> itemCategoryList,
+            ItemType itemType,
             String itemDomainName,
             List<UserGroup> ownerUserGroupList,
             UserInfo ownerUserName) {
         String queryString = QUERY_STRING_START;
 
         List<String> queryParameters = new ArrayList<>();
-        
-        if (itemDomainName != null) {          
-            queryParameters.add("i.domain.name = '" + itemDomainName +"'");
+
+        if (itemDomainName != null) {
+            queryParameters.add("i.domain.name = '" + itemDomainName + "'");
         }
 
         if (itemProject != null) {
@@ -242,28 +242,28 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             queryString += " JOIN i.itemTypeList itl ";
             queryParameters.add("itl.id = " + itemType.getId());
         }
-        
+
         if (ownerUserGroupList != null || ownerUserName != null) {
             queryString += " JOIN i.fullItemElementList fiel ";
             queryParameters.add("fiel.name is NULL and fiel.derivedFromItemElement is null");
             if (ownerUserGroupList != null && !ownerUserGroupList.isEmpty()) {
                 String queryParameter = "(";
-                for (UserGroup userGroup: ownerUserGroupList) {
+                for (UserGroup userGroup : ownerUserGroupList) {
                     if (ownerUserGroupList.indexOf(userGroup) != 0) {
                         queryParameter += " OR ";
                     }
                     queryParameter += "fiel.entityInfo.ownerUserGroup.name = '" + userGroup.getName() + "'";
                 }
                 queryParameter += ")";
-                queryParameters.add(queryParameter); 
+                queryParameters.add(queryParameter);
             }
-            
+
             if (ownerUserName != null) {
                 String queryParameter = "fiel.entityInfo.ownerUser.username = '" + ownerUserName.getUsername() + "'";
-                queryParameters.add(queryParameter); 
+                queryParameters.add(queryParameter);
             }
         }
-                
+
         if (!queryParameters.isEmpty()) {
 
             queryString += "WHERE ";
@@ -275,13 +275,12 @@ public class ItemFacade extends CdbEntityFacade<Item> {
                     queryString += "AND " + queryParameter + " ";
                 }
             }
-            
-            
+
             queryString += "ORDER BY i.name ASC";
 
             return (List<Item>) em.createQuery(queryString).getResultList();
         }
-            
+
         return null;
     }
 
@@ -348,6 +347,17 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         return null;
     }
 
+    public List<Item> getItemListWithPropertyType(String domainName, Integer propertyTypeId) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findItemsWithPropertyType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("propertyTypeId", propertyTypeId)
+                    .getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
     public List<Item> getItemListOwnedByUser(String domainName, UserInfo ownerUserInfo) {
         try {
             return (List<Item>) em.createNamedQuery("Item.findItemsOwnedByUserId")
@@ -357,7 +367,6 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         } catch (NoResultException ex) {
         }
         return null;
-
     }
 
     public List<Item> getItemListOwnedByUserGroup(String domainName, UserGroup ownerUserGroup) {
@@ -383,7 +392,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public List<Item> getItemListContainedInListOrOwnedByUser(String domainName, ListTbl list, UserInfo ownerUserInfo) {
         if (list != null) {
             try {
@@ -397,15 +406,15 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public List<Item> getItemListContainedInListOrOwnedByGroup(String domainName, ListTbl list, UserGroup ownerUserGroup) {
         if (list != null) {
             try {
                 Query namedQuery = em.createNamedQuery("Item.findItemsOwnedByUserGroupIdOrInList")
                         .setParameter("domainName", domainName)
                         .setParameter("ownerUserGroupId", ownerUserGroup.getId())
-                        .setParameter("list", list);                
-                
+                        .setParameter("list", list);
+
                 return (List<Item>) namedQuery.getResultList();
             } catch (NoResultException ex) {
             }

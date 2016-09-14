@@ -8,7 +8,6 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -18,8 +17,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -77,6 +74,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
+    @NamedQuery(name = "Item.findItemsWithPropertyType", 
+query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId "),
     @NamedQuery(name = "Item.findItemsOwnedByUserId",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
             + "WHERE i.domain.name = :domainName "
@@ -172,7 +171,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemSourceString = null;
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
-    private transient String itemType = null;
 
     private transient TreeNode locationTree = null;
     private transient String locationDetails = null;
@@ -625,10 +623,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setDomain(Domain domain) {
         itemDomainController = null;
         this.domain = domain;
-    }
-
-    public void setItemType(String itemType) {
-        this.itemType = itemType;
     }
 
     public Item getDerivedFromItem() {
