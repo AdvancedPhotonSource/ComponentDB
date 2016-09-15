@@ -858,7 +858,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setSparePartIndicator(Boolean sparePartIndicator) {
-        this.sparePartIndicator = sparePartIndicator;
+        this.sparePartIndicator = sparePartIndicator;        
+    }
+    
+    public void updateSparePartsIndication() {
         getSparePartsBean().setSparePartsIndication(this);
     }
 
