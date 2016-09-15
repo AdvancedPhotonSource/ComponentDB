@@ -11,21 +11,23 @@
         </ui:include>
     </p:outputPanel>
     
-    <p:accordionPanel rendered="#{showSparesSplitView}" dynamic="true"
-               styleClass="defaultBackground">
-        <p:tab title="All Items">           
-            <ui:include src="itemDomainCatalogInventoryListBasicView.xhtml">
-                <ui:param name="displaySpareColumn" value="#{showSparesSplitView}" />
-            </ui:include>
+    <p:accordionPanel id="sparesSplitViewAccordionPanel" 
+                      rendered="#{showSparesSplitView}" dynamic="true"
+                      styleClass="defaultBackground">
+        <ui:param name="displaySpareColumn" value="#{showSparesSplitView}" />
+        <ui:param name="updateTarget" value="@form:sparesSplitViewAccordionPanel" />
+        
+        <p:tab title="All Items">
+            <ui:include src="itemDomainCatalogInventoryListBasicView.xhtml"/>
         </p:tab>
-        <p:tab title="Non-spares: #{itemDomainCatalogController.inventoryNonSparesCount}">
-            <ui:include src="#{'itemDomainCatalogInventoryListDataTable.xhtml'}">
+        <p:tab title="In Use: #{itemDomainCatalogController.inventoryNonSparesCount}">
+            <ui:include src="itemDomainCatalogInventoryListDataTable.xhtml">
                 <ui:param name="viewName" value="NonSpares" />
                 <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.inventoryNonSparesList}" />
             </ui:include>
         </p:tab>
         <p:tab title="Spares: #{itemDomainCatalogController.inventorySparesCount}">
-            <ui:include src="#{'itemDomainCatalogInventoryListDataTable.xhtml'}">
+            <ui:include src="itemDomainCatalogInventoryListDataTable.xhtml">
                 <ui:param name="viewName" value="Spares" />
                 <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.inventorySparesList}" />
             </ui:include>
