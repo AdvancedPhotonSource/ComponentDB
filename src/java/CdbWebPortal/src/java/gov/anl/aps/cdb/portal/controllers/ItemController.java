@@ -36,6 +36,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -610,7 +611,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         filterViewItemCategorySelectionList, filterViewSelectedItemType, getDefaultDomainName());
             }
 
-            filterViewCategoryTypeDataModel = new ListDataModel(filterViewItemList);
+            filterViewCategoryTypeDataModel = createFilterViewListDataModel(filterViewItemList);
             filterViewCategoryTypeListDataModelLoaded = true;
         }
 
@@ -626,11 +627,37 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 filterViewItemList = itemFacade.findByFilterViewOwnerAttributes(filterViewSelectedItemProject, filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDomainHandlerName());
             }
 
-            filterViewOwnerListDataModel = new ListDataModel(filterViewItemList);
+            filterViewOwnerListDataModel = createFilterViewListDataModel(filterViewItemList);
             filterViewOwnerListDataModelLoaded = true;
         }
 
         return filterViewOwnerListDataModel;
+    }
+    
+    protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
+        Item item = fvio.getItemObject(); 
+        if (!item.getItemElementDisplayList().isEmpty()) {
+            try {
+                TreeNode rootTreeNode = ItemElementUtility.createItemRoot(item);
+                fvio.addFilterViewItemExpansion(rootTreeNode, "Assembly");
+            } catch (Exception ex) {
+                logger.error(ex); 
+            }
+        }        
+    }
+    
+    protected ListDataModel createFilterViewListDataModel(List<Item> itemList) {
+        if (itemList != null) {
+            List<FilterViewResultItem> filterViewItemObjectList = new ArrayList<>();
+            for (Item item : itemList) {
+                FilterViewResultItem fvio = new FilterViewResultItem(item);
+                prepareFilterViewResultItem(fvio);
+                filterViewItemObjectList.add(fvio);
+            }
+
+            return new ListDataModel(filterViewItemObjectList);
+        }
+        return null;
     }
 
     /**
