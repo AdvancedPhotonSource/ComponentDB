@@ -4,29 +4,19 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="../../templates/portalViewTemplate.xhtml">
+                template="../item/private/templates/itemBrowseTemplate.xhtml">
 
 
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
 
     <f:metadata>
         <f:viewAction action="#{itemDomainLocationController.resetListDataModel}" />
-    </f:metadata>
-
-    <ui:define name="templateCss">
-        <link href="../../resources/css/#{entityController.currentItemStyleName}.css" rel="stylesheet" type="text/css"/>
-    </ui:define>
+    </f:metadata>  
 
     <ui:define name="pageTitle">: Browse By Locations</ui:define>
-
-    <ui:define name="middleCenter">
-        <p:treeTable value="#{itemDomainLocationController.locationsWithInventoryItemAssemblyRootNode}"
-                     var="itemListObject"                     
-                     resizableColumns="true"
-                     liveResize="true">
-            <ui:include src="private/itemDomainInventoryBrowseLocationObject.xhtml"/> 
-        </p:treeTable>
-    </ui:define>
+    
+    <ui:define name="filterView">
+        <ui:include src="private/itemDomainInventoryLocationFilterView.xhtml"/>
+    </ui:define>   
+    
 </ui:composition>
-
-

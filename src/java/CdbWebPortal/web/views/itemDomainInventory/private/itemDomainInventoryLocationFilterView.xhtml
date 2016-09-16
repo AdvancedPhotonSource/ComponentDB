@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../item/private/templates/itemListFilterViewTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:define name="filterViewListDataModel">
+        <ui:param name="filterViewListDataModel" value="#{itemDomainInventoryController.filterViewLocationDataModel}" />
+    </ui:define>
+    
+    <ui:define name="secondFilter">
+        Choose a Location
+        <ui:repeat value="#{itemDomainLocationController.filterViewLocationSelectionList}" var="filterViewLocationSelection">
+            <p:selectOneListbox id="filterViewItemLocationSelection"
+                              converter="itemConverter"
+                              value="#{filterViewLocationSelection.itemSelection}"
+                              styleClass="wideListBox"
+                              onchange="updateForm()">
+                <f:selectItems value="#{filterViewLocationSelection.itemSelectionList}"
+                               var="locationItem"
+                               itemLabel="#{locationItem.name}"
+                               itemValue="#{locationItem}"/>
+            </p:selectOneListbox>
+        </ui:repeat>
+        
+    </ui:define>
+
+</ui:composition>
