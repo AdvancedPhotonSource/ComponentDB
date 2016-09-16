@@ -56,6 +56,7 @@ public class ItemDomainInventoryController extends ItemController {
     private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog";
 
     private final String ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP = "itemElementInstantiation";
+    private final String ITEM_DOMAIN_LOCATION_CONTROLLER_NAME = "itemDomainLocationController";
 
     /*
      * Controller specific settings
@@ -103,7 +104,7 @@ public class ItemDomainInventoryController extends ItemController {
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainInventory.Help.ListPage.Display.Fragment";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainInventory.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainInventory.List.Scope.Display";
-    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainInventory.List.Scope.Display.PropertyTypeId"; 
+    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainInventory.List.Scope.Display.PropertyTypeId";
 
     private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
 
@@ -125,6 +126,10 @@ public class ItemDomainInventoryController extends ItemController {
     private List<Item> newItemsToAdd = null;
     private TreeNode currentItemBOMListTree = null;
     private TreeNode selectedItemBOMTreeNode = null;
+
+    protected ListDataModel filterViewLocationDataModel = null;
+    protected Item filterViewLocationItemLoaded = null;
+    protected boolean filterViewLocationDataModelLoaded = false; 
 
     @EJB
     private ItemFacade itemFacade;
@@ -301,6 +306,72 @@ public class ItemDomainInventoryController extends ItemController {
         }
 
         return false;
+    } 
+
+    @Override
+    protected void filterViewItemProjectChanged() {
+        super.filterViewItemProjectChanged(); 
+        filterViewLocationDataModelLoaded = false;
+    }
+
+    public boolean isFilterViewLocationDataModelNeedReloading(Item newLocationItem) {
+        if (filterViewLocationDataModel == null) {
+            return true; 
+        }
+        if (filterViewLocationDataModelLoaded) {
+            return true;
+        }
+        if (filterViewLocationItemLoaded != null) {
+            if (!filterViewLocationItemLoaded.equals(newLocationItem)) {
+                return true; 
+            }
+        } else {
+            // last is null but new is not. 
+            if (newLocationItem != null) {
+                return true; 
+            }
+        }
+        return false; 
+    }
+
+    public void updateFilterViewLocationDataModelReloadStatus(Item lastLocationLoaded) {
+        filterViewLocationDataModelLoaded = true;
+        filterViewLocationItemLoaded = lastLocationLoaded;
+    }
+
+    public ListDataModel getFilterViewLocationDataModel() {
+        Item selection = getItemDomainLocationController().getFilterViewLocationLastSelection(); 
+        if (isFilterViewLocationDataModelNeedReloading(selection)) {
+            List<Item> itemList = new ArrayList<>(); 
+            if (selection != null) {
+                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
+                if (filterViewSelectedItemProject != null) {
+                    List<Item> itemsToRemove = new ArrayList<>();
+                    for (Item item : itemList) {
+                        if (item.getItemProjectList().contains(filterViewSelectedItemProject)) {
+                            continue; 
+                        }
+                        itemsToRemove.add(item);
+                    }
+                    itemList.removeAll(itemsToRemove);
+                }
+            } else if (filterViewSelectedItemProject != null) {
+                itemList = itemFacade.findByFilterViewItemProjectAttributes(filterViewSelectedItemProject, getDefaultDomainName());
+            }
+            filterViewLocationDataModel = new ListDataModel<>(itemList);
+        }
+        
+        return filterViewLocationDataModel;
+    }
+
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel();        
+    }    
+    
+    public ItemDomainLocationController getItemDomainLocationController() {
+        Object bean = SessionUtility.findBean(ITEM_DOMAIN_LOCATION_CONTROLLER_NAME);
+        return (ItemDomainLocationController) bean; 
     }
 
     public boolean isInventoryDomainItem(Item item) {
@@ -913,7 +984,7 @@ public class ItemDomainInventoryController extends ItemController {
             }
         }
         if (getCurrent().getDerivedFromItem() == catalogItem) {
-            count ++; 
+            count++;
         }
         return count;
     }
@@ -1111,7 +1182,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
 
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
-        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue()); 
+        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
