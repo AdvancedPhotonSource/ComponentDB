@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.ArrayList;
 import java.util.List;
@@ -358,11 +359,18 @@ public class ItemDomainInventoryController extends ItemController {
             } else if (filterViewSelectedItemProject != null) {
                 itemList = itemFacade.findByFilterViewItemProjectAttributes(filterViewSelectedItemProject, getDefaultDomainName());
             }
-            filterViewLocationDataModel = new ListDataModel<>(itemList);
+            filterViewLocationDataModel = createFilterViewListDataModel(itemList);
         }
         
         return filterViewLocationDataModel;
-    }
+    } 
+
+    @Override
+    protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
+        super.prepareFilterViewResultItem(fvio); 
+        Item inventoryItem = fvio.getItemObject();         
+        
+    }    
 
     @Override
     public void resetListDataModel() {
