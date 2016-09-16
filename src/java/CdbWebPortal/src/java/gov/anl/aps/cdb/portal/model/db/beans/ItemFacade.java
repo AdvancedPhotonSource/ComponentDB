@@ -203,6 +203,10 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             List<UserGroup> ownerUserGroupList, UserInfo ownerUserName, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, null, null, itemDomainName, ownerUserGroupList, ownerUserName);
     }
+    
+    public List<Item> findByFilterViewItemProjectAttributes(ItemProject itemProject, String itemDomainName) {
+        return findByFilterViewAttributes(itemProject, null, null, itemDomainName, null, null);
+    }
 
     private List<Item> findByFilterViewAttributes(ItemProject itemProject,
             List<ItemCategory> itemCategoryList,
