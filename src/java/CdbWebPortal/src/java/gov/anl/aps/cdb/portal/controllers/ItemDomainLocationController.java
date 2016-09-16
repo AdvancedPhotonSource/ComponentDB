@@ -14,6 +14,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
+import gov.anl.aps.cdb.portal.view.objects.FilterViewItemHierarchySelection;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -36,6 +38,8 @@ public class ItemDomainLocationController extends ItemController {
 
     private TreeNode selectedLocationTreeNode;
 
+    private FilterViewItemHierarchySelection filterViewLocationSelection = null;
+
     @EJB
     ItemFacade itemFacade;
 
@@ -54,6 +58,60 @@ public class ItemDomainLocationController extends ItemController {
         super.resetListDataModel();
         locationsWithInventoryItemsRootNode = null;
         locationsWithInventoryItemAssemblyRootNode = null;
+    }
+
+    public FilterViewItemHierarchySelection getFilterViewLocationSelection() {
+        if (filterViewLocationSelection == null) {
+            List<Item> locationTopLevel = getItemsWithoutParents();
+            filterViewLocationSelection = new FilterViewItemHierarchySelection(locationTopLevel);
+        }
+        return filterViewLocationSelection;
+    }
+
+    public List<FilterViewItemHierarchySelection> getFilterViewLocationSelectionList() {
+        return getFilterViewLocationSelection().getFilterViewSelectionHierarchyList();
+    }
+
+    public Item getFilterViewLocationLastSelection() {
+        return getFilterViewLocationSelection().getLowesetSelectionMade();
+    }
+
+    /**
+     * Get a list of items that are located somewhere down the hierarchy of another item. 
+     * 
+     * @param locationItem
+     * @return 
+     */
+    public static List<Item> getAllItemsLocatedInHierarchy(Item locationItem) {
+        List<Item> itemList = new ArrayList<>();         
+        return getAllItemsLocatedInHierarchy(itemList, locationItem);        
+    }
+
+    /**
+     * Recursive helper method for fetching items located somewhere down in the hierarchy of another item. 
+     * 
+     * @param itemList
+     * @param locationItem
+     * @return 
+     */
+    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, Item locationItem) {   
+        String relationshipToLocation = ItemElementRelationshipTypeNames.itemLocation.getValue();
+        boolean isLocationItemFirst = false; 
+        List<Item> itemsInLocation = ItemUtility.getItemsRelatedToItem(locationItem, relationshipToLocation, isLocationItemFirst); 
+        itemList.addAll(itemsInLocation); 
+        
+        List<ItemElement> itemElementList = locationItem.getItemElementDisplayList(); 
+        if (itemElementList != null) {
+            for (ItemElement itemElement : itemElementList) {
+                Item containedItem = itemElement.getContainedItem(); 
+                if (containedItem != null) {
+                    getAllItemsLocatedInHierarchy(itemList, containedItem);
+                }
+            }
+        }
+        
+        
+        return itemList;
     }
 
     public TreeNode getLocationsWithInventoryItemsRootNode() {
@@ -81,8 +139,11 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     private void addAssemblyTreeToLocationTree(TreeNode currentNode) throws CdbException {
-        for (TreeNode childNode : currentNode.getChildren()) {
-            addAssemblyTreeToLocationTree(childNode);
+        List<TreeNode> nodeChildren = currentNode.getChildren(); 
+        if (nodeChildren != null) {
+            for (TreeNode childNode : currentNode.getChildren()) {
+                addAssemblyTreeToLocationTree(childNode);
+            }
         }
 
         Object data = currentNode.getData();
@@ -150,21 +211,14 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     private void addLocationRelationshipsToParentTreeNode(Item item, TreeNode parentTreeNode) {
-        ItemElement selfElement = item.getSelfElement();
+        String locationRelationshipName = ItemElementRelationshipTypeNames.itemLocation.getValue();
+        boolean isItemFirst = false;
+        List<Item> itemList = ItemUtility.getItemsRelatedToItem(item, locationRelationshipName, isItemFirst);
 
-        // ItemElementRelationshipList1 is for when item is second (item located in secondItem). 
-        // location is secondItem. 
-        List<ItemElementRelationship> relationshipList = selfElement.getItemElementRelationshipList1();
-
-        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
-        for (ItemElementRelationship ier : relationshipList) {
-            if (ier.getRelationshipType().getName().equals(locationRelationshipTypeName)) {
-                ItemElement inventoryItemSelfElement = ier.getFirstItemElement();
-                Item inventoryItem = inventoryItemSelfElement.getParentItem();
-                TreeNode currentTreeNode = createNewTreeNode(inventoryItem, parentTreeNode);
-                // TODO handle circular location reference
-                addLocationRelationshipsToParentTreeNode(inventoryItem, currentTreeNode);
-            }
+        for (Item inventoryItem : itemList) {
+            TreeNode currentTreeNode = createNewTreeNode(inventoryItem, parentTreeNode);
+            // TODO handle circular location reference
+            addLocationRelationshipsToParentTreeNode(inventoryItem, currentTreeNode);
         }
     }
 
@@ -209,7 +263,7 @@ public class ItemDomainLocationController extends ItemController {
             selectedLocationTreeNode = null;
         }
     }
-    
+
     public static List<Item> generateLocationHierarchyList(Item lowestLocationItem) {
         if (lowestLocationItem != null) {
             List<Item> itemHerarchyList = new ArrayList<>();
@@ -244,9 +298,9 @@ public class ItemDomainLocationController extends ItemController {
                     }
                 }
             }
-            return itemHerarchyList; 
+            return itemHerarchyList;
         }
-        return null; 
+        return null;
     }
 
     /**
