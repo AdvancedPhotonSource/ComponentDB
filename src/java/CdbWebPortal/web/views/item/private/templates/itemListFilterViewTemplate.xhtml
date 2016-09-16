@@ -23,13 +23,31 @@
 
     <ui:define name="resultsDataTable">
         <p:dataTable value="#{filterViewListDataModel}"
-                     var="itemListObject"
+                     var="filterViewItemResultObject"
                      paginator="true"
-                     rows="15"                                        
-                     >
+                     rows="20">
+            <ui:param name="itemListObject" value="#{filterViewItemResultObject.itemObject}"/>
+            <p:column>
+                <p:rowToggler rendered="#{filterViewItemResultObject.displayExpansion}" />
+            </p:column>
             <ui:insert name="itemFilterViewListObject">
                 <ui:include src="../itemListFilterViewObject.xhtml" />
             </ui:insert>
+            <p:rowExpansion>
+                <ui:repeat value="#{filterViewItemResultObject.filterViewExpansionList}"
+                           var="resultExpansionObject">
+                    <p:treeTable value="#{resultExpansionObject.rootTreeNode}"
+                            var="itemTreeNode">
+                        <f:facet name="header">
+                            #{resultExpansionObject.headerTitle}
+                        </f:facet>
+                        <ui:include src="../itemListFilterViewObject.xhtml" >
+                            <ui:param name="itemListObject"
+                                      value="#{itemTreeNode}"/>
+                        </ui:include>
+                    </p:treeTable>
+                </ui:repeat>
+            </p:rowExpansion>
         </p:dataTable>
     </ui:define>
     
