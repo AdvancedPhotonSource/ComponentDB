@@ -15,7 +15,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
@@ -28,7 +27,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -154,7 +152,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected ItemType filterViewSelectedItemType = null;
 
     protected UserInfo filterViewSelectedUserInfo = null;
-
+    
     protected boolean filterViewCategoryTypeListDataModelLoaded = false;
 
     protected boolean filterViewOwnerListDataModelLoaded = false;
@@ -579,12 +577,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public ItemProject getFilterViewSelectedItemProject() {
         return filterViewSelectedItemProject;
     }
+    
+    protected void filterViewItemProjectChanged() {
+        filterViewCategoryTypeListDataModelLoaded = false;
+        filterViewOwnerListDataModelLoaded = false;
+    }
 
     public void setFilterViewSelectedItemProject(ItemProject filterViewSelectedItemProject) {
-        if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {
-            filterViewCategoryTypeListDataModelLoaded = false;
-            filterViewOwnerListDataModelLoaded = false;
-            filterViewUserInfoList = null;
+        if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {            
+            filterViewItemProjectChanged(); 
         }
         this.filterViewSelectedItemProject = filterViewSelectedItemProject;
     }
@@ -606,7 +607,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                     || filterViewItemCategorySelectionList != null
                     || filterViewSelectedItemType != null) {
                 filterViewItemList = itemFacade.findByFilterViewCategoryTypeAttributes(filterViewSelectedItemProject,
-                        filterViewItemCategorySelectionList, filterViewSelectedItemType, getDomainHandlerName());
+                        filterViewItemCategorySelectionList, filterViewSelectedItemType, getDefaultDomainName());
             }
 
             filterViewCategoryTypeDataModel = new ListDataModel(filterViewItemList);
