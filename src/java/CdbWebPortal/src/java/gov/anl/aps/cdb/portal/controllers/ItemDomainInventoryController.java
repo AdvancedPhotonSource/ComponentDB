@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -368,7 +369,14 @@ public class ItemDomainInventoryController extends ItemController {
     @Override
     protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
         super.prepareFilterViewResultItem(fvio); 
-        Item inventoryItem = fvio.getItemObject();         
+        Item inventoryItem = fvio.getItemObject();
+        
+        TreeNode rootTreeNode = ItemUtility.createNewTreeNode(inventoryItem, null);
+        ItemDomainLocationController.addLocationRelationshipsToParentTreeNode(inventoryItem, rootTreeNode);
+        if (rootTreeNode.getChildren().size() > 0) {
+            fvio.addFilterViewItemExpansion(rootTreeNode, "Location For");
+        }
+        
         
     }    
 
