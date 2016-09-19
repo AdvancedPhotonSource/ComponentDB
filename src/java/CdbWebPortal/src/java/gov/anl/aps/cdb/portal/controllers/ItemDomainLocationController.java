@@ -180,7 +180,7 @@ public class ItemDomainLocationController extends ItemController {
             ItemElementRelationship locationRelationship = findLocationItemElementRelationship(itemElementRelationshipList);
             if (locationRelationship == null || locationRelationship.getSecondItemElement() == null) {
                 // No location specified -- Valid for location assembly tree. 
-                TreeNode newAssemblyNode = createNewTreeNode(containedItem, assemblyNode);
+                TreeNode newAssemblyNode = ItemUtility.createNewTreeNode(containedItem, assemblyNode);
 
                 // Check if parent item is assembly.
                 addValidAssemblyItemsToInventoryItemNode(newAssemblyNode, containedItem);
@@ -210,22 +210,17 @@ public class ItemDomainLocationController extends ItemController {
         return null;
     }
 
-    private void addLocationRelationshipsToParentTreeNode(Item item, TreeNode parentTreeNode) {
+    public static void addLocationRelationshipsToParentTreeNode(Item item, TreeNode parentTreeNode) {
         String locationRelationshipName = ItemElementRelationshipTypeNames.itemLocation.getValue();
         boolean isItemFirst = false;
         List<Item> itemList = ItemUtility.getItemsRelatedToItem(item, locationRelationshipName, isItemFirst);
 
         for (Item inventoryItem : itemList) {
-            TreeNode currentTreeNode = createNewTreeNode(inventoryItem, parentTreeNode);
+            TreeNode currentTreeNode = ItemUtility.createNewTreeNode(inventoryItem, parentTreeNode);
             // TODO handle circular location reference
             addLocationRelationshipsToParentTreeNode(inventoryItem, currentTreeNode);
         }
-    }
-
-    private static TreeNode createNewTreeNode(Item item, TreeNode parentTreeNode) {
-        String treeNodeType = item.getDomain().getName();
-        return new DefaultTreeNode(treeNodeType, item, parentTreeNode);
-    }
+    }    
 
     public TreeNode getSelectedLocationTreeNode() {
         return selectedLocationTreeNode;
@@ -320,7 +315,7 @@ public class ItemDomainLocationController extends ItemController {
                 TreeNode prevNode = rootTreeNode;
 
                 for (Item item : itemHierarchyList) {
-                    prevNode = createNewTreeNode(item, prevNode);
+                    prevNode = ItemUtility.createNewTreeNode(item, prevNode);
                 }
 
                 return rootTreeNode;
