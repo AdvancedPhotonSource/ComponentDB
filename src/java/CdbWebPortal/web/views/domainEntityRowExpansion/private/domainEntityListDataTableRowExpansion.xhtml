@@ -3,25 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
-    
-    <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
-    <ui:param name="viewMode" value="#{viewMode != null ? viewMode : 'rowExpansion'}" />
-    <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : 
-                                                viewMode != 'rowExpansion' or entityController.loadRowExpansionPropertyValues}" />
-
-    <p:outputPanel styleClass="domainEntityRowExpansionDetails">
-        <p:accordionPanel activeIndex="" multiple="true">
-            <p:tab title="#{entityTypeDisplayName} Properties">
-                <ui:include src="../../domainEntityProperty/private/domainEntityPropertyListDataTable.xhtml"/>
-                <h:outputText value="* To view most accurate property values and access links, navigate to the #{entityTypeDisplayName} details page." 
-                              rendered="#{!loadPropertyValues}"/>
-            </p:tab>
-            <p:tab title="#{entityTypeDisplayName} Logs">
-                <ui:include src="../../domainEntityLog/private/domainEntityLogListDataTable.xhtml" />
-            </p:tab>
-        </p:accordionPanel>
-    </p:outputPanel>
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="template/domainEntityListDataTableRowExpansionTemplate.xhtml">            
 
 </ui:composition>
 
