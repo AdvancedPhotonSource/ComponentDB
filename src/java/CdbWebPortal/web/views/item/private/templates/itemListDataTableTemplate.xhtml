@@ -12,13 +12,12 @@
     
     <ui:define name="rowExpansion">
         <p:column rendered="#{entityController.displayRowExpansion}">
-            <p:rowToggler/>
+            <p:rowToggler rendered="#{entityController.isDisplayRowExpansionForItem(itemListObject)}"/>
         </p:column>
         <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
-            <ui:include src="../../../domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
-                <ui:param name="entityObject" value="#{itemListObject}" />
-                <ui:param name="entityController" value="#{entityController}" />
-            </ui:include>
+            <ui:insert name="itemRowExpansion">
+                <ui:include src="../itemListDataTableRowExpansion.xhtml"/>
+            </ui:insert>            
             <ui:insert name="itemRowExpansionExtras" />
         </p:rowExpansion>
     </ui:define>
