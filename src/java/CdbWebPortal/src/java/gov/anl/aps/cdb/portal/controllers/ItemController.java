@@ -639,7 +639,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         if (!item.getItemElementDisplayList().isEmpty()) {
             try {
                 TreeNode rootTreeNode = ItemElementUtility.createItemRoot(item);
-                fvio.addFilterViewItemExpansion(rootTreeNode, "Assembly");
+                fvio.addFilterViewItemExpansion(rootTreeNode, "Item Assembly");
             } catch (Exception ex) {
                 logger.error(ex); 
             }
