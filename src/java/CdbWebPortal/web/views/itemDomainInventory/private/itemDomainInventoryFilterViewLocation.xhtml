@@ -10,20 +10,30 @@
     <ui:define name="filterViewListDataModel">
         <ui:param name="filterViewListDataModel" value="#{itemDomainInventoryController.filterViewLocationDataModel}" />
     </ui:define>
+    
+    <ui:define name="itemFilterViewListObject">
+        <ui:include src="itemDomainInventoryFilterViewObject.xhtml" />
+    </ui:define>
+    
+    <ui:define name="itemFilterViewListTreeObject">
+        <ui:include src="itemDomainInventoryFilterViewTreeObject.xhtml"/>
+    </ui:define>
         
     <ui:define name="secondFilter">
         Choose a Location
         <ui:repeat value="#{itemDomainLocationController.filterViewLocationSelectionList}" var="filterViewLocationSelection">
-            <p:selectOneListbox id="filterViewItemLocationSelection"
-                              converter="itemConverter"
-                              value="#{filterViewLocationSelection.itemSelection}"
-                              styleClass="wideListBox"
-                              onchange="updateForm()">
-                <f:selectItems value="#{filterViewLocationSelection.itemSelectionList}"
-                               var="locationItem"
-                               itemLabel="#{locationItem.name}"
-                               itemValue="#{locationItem}"/>
-            </p:selectOneListbox>
+            <p:outputPanel styleClass="filterViewItemHierarchySelectionRepeatPanel" >
+                <p:selectOneListbox id="filterViewItemLocationSelection"
+                                  converter="itemConverter"
+                                  value="#{filterViewLocationSelection.itemSelection}"
+                                  styleClass="wideListBox"
+                                  onchange="updateForm()">
+                    <f:selectItems value="#{filterViewLocationSelection.itemSelectionList}"
+                                   var="locationItem"
+                                   itemLabel="#{locationItem.name}"
+                                   itemValue="#{locationItem}"/>
+                </p:selectOneListbox>
+            </p:outputPanel>
         </ui:repeat>
         
     </ui:define>
