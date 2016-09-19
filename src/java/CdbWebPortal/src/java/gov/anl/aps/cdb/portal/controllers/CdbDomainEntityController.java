@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -34,8 +33,6 @@ import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RowEditEvent;
 
-
-
 /**
  *
  * @author djarosz
@@ -45,21 +42,20 @@ import org.primefaces.event.RowEditEvent;
 public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>> extends CdbEntityController<EntityType, FacadeType> implements Serializable {
 
     private PropertyValue currentEditPropertyValue;
-    
+
     @EJB
     private PropertyValueFacade propertyValueDbFacade;
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
-    
-    
+
     protected Integer displayPropertyTypeId1 = null;
     protected Integer displayPropertyTypeId2 = null;
     protected Integer displayPropertyTypeId3 = null;
     protected Integer displayPropertyTypeId4 = null;
     protected Integer displayPropertyTypeId5 = null;
-        
-    protected Boolean displayRowExpansion = null; 
-    protected Boolean loadRowExpansionPropertyValues = null; 
+
+    protected Boolean displayRowExpansion = null;
+    protected Boolean loadRowExpansionPropertyValues = null;
     protected Boolean displayGalleryViewableDocuments = null;
 
     protected String filterByPropertyValue1 = null;
@@ -70,43 +66,43 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     protected String filterByItemIdentifier1 = null;
     protected String filterByItemIdentifier2 = null;
     protected Boolean filterByPropertiesAutoLoad = null;
-    
+
     protected List<Integer> loadedDisplayPropertyTypes = null;
-    
-    protected Log newLogEdit; 
+
+    protected Log newLogEdit;
 
     private static final Logger logger = Logger.getLogger(CdbDomainEntity.class.getName());
-    
+
     private static final String DisplayGalleryViewableDocumentsSettingTypeKey = "DomainEntity.Detail.Display.GalleryViewableDocuments";
-    
+
     private List<PropertyValue> filteredPropertyValueList;
-    
+
     protected Integer loadedDataTableHashCode = null;
-    
+
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         if (settingTypeMap == null) {
             return;
         }
-        
+
         logger.debug("Updating list settings from setting type defaults for: " + this.getEntityTypeName());
-        
+
         displayGalleryViewableDocuments = Boolean.parseBoolean(settingTypeMap.get(DisplayGalleryViewableDocumentsSettingTypeKey).getDefaultValue());
     }
-    
+
     @Override
     public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         if (settingEntity == null) {
             return;
         }
-        
+
         logger.debug("Updating list settings from session user for: " + this.getEntityTypeName());
-        
+
         displayGalleryViewableDocuments = settingEntity.getSettingValueAsBoolean(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
-        
-        prepareImageList(getCurrent()); 
+
+        prepareImageList(getCurrent());
     }
-    
+
     @Override
     public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         if (settingEntity == null) {
@@ -115,7 +111,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
         settingEntity.setSettingValue(DisplayGalleryViewableDocumentsSettingTypeKey, displayGalleryViewableDocuments);
     }
-    
+
     public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
         for (PropertyType propertyType : propertyTypeList) {
             preparePropertyTypeValueAdd(propertyType);
@@ -157,8 +153,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         if (tag != null) {
             propertyValue.setTag(tag);
         }
-        
-        cdbDomainEntity.resetPropertyValueDisplayList(); 
+
+        cdbDomainEntity.resetPropertyValueDisplayList();
 
         return propertyValue;
     }
@@ -188,7 +184,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         List<PropertyValue> cdbDomainEntityImageList = getImageList();
         return (cdbDomainEntityImageList != null && !cdbDomainEntityImageList.isEmpty());
     }
-    
+
     public PropertyValue getCurrentEditPropertyValue() {
         return currentEditPropertyValue;
     }
@@ -246,10 +242,10 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     @Override
     public void processPreRenderList() {
         super.processPreRenderList();
-        
-        loadPropertyTypeFilterIfNeeded(); 
+
+        loadPropertyTypeFilterIfNeeded();
     }
-    
+
     @Override
     public String customizeListDisplay() {
         resetDomainEntityPropertyTypeIdIndexMappings();
@@ -266,7 +262,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         ItemElement.setPropertyTypeIdIndex(4, displayPropertyTypeId4);
         ItemElement.setPropertyTypeIdIndex(5, displayPropertyTypeId5);
     }
-    
+
     @Override
     public DataModel getListDataModel() {
         DataModel cdbDomainEntityDataModel = super.getListDataModel();
@@ -280,32 +276,32 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
         return cdbDomainEntityDataModel;
     }
-    
+
     private void loadPropertyTypeFilterIfNeeded() {
-        getListDataModel(); 
+        getListDataModel();
     }
-    
+
     private void forceLoadPropertyTypeFilter() {
         if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
             loadedDisplayPropertyTypes = null;
             preparePropertyTypeFilter();
         }
     }
-    
+
     @Override
     public void saveListSettingsForSessionSettingEntityActionListener(ActionEvent actionEvent) {
         super.saveListSettingsForSessionSettingEntityActionListener(actionEvent);
 
-        forceLoadPropertyTypeFilter(); 
+        forceLoadPropertyTypeFilter();
     }
-    
+
     @Override
     public void saveListSettingsForSessionSettingEntitySetCurrentActionListener(ActionEvent actionEvent) {
         super.saveListSettingsForSessionSettingEntitySetCurrentActionListener(actionEvent);
 
-        forceLoadPropertyTypeFilter(); 
+        forceLoadPropertyTypeFilter();
     }
-    
+
     public void preparePropertyTypeFilter() {
 
         if (loadedDisplayPropertyTypes == null) {
@@ -324,10 +320,10 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public Boolean preparePropertyTypeFilter(Integer propertyTypeId) {
         if (propertyTypeId != null) {
-            DataModel<Item> cdbDomainEntityList = super.getListDataModel();
-            Iterator<Item> cdbDomainEntityIterator = cdbDomainEntityList.iterator();
+            DataModel<CdbDomainEntity> cdbDomainEntityList = super.getListDataModel();
+            Iterator<CdbDomainEntity> cdbDomainEntityIterator = cdbDomainEntityList.iterator();
             while (cdbDomainEntityIterator.hasNext()) {
-                Item cdbDomainEntity = cdbDomainEntityIterator.next();
+                CdbDomainEntity cdbDomainEntity = cdbDomainEntityIterator.next();
                 cdbDomainEntity.getPropertyValueInformation(propertyTypeId);
             }
             loadedDisplayPropertyTypes.add(propertyTypeId);
@@ -379,8 +375,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public Boolean getFilterablePropertyValue5() {
         return fetchFilterablePropertyValue(displayPropertyTypeId5);
     }
-    
-     public Boolean getFilterByPropertiesAutoLoad() {
+
+    public Boolean getFilterByPropertiesAutoLoad() {
         return filterByPropertiesAutoLoad;
     }
 
@@ -395,7 +391,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
             return !fetchFilterablePropertyValue(propertyTypeId);
         }
     }
-    
+
     @Override
     public Boolean getDisplayLoadPropertyValuesButton() {
         if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
@@ -408,7 +404,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
                 || checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId4)
                 || checkDisplayLoadPropertyValueButtonByProperty(displayPropertyTypeId5));
     }
-    
+
     public String getDisplayPropertyTypeName(Integer propertyTypeId) {
         if (propertyTypeId != null) {
 
@@ -478,6 +474,16 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         this.loadRowExpansionPropertyValues = loadRowExpansionPropertyValues;
     }
 
+    public boolean isDisplayRowExpansionLogs(CdbDomainEntity domainEntity) {
+        List<Log> itemLog = domainEntity.getLogList();
+        return itemLog != null && !itemLog.isEmpty();
+    }
+
+    public boolean isDisplayRowExpansionProperties(CdbDomainEntity domainEntity) {
+        List<PropertyValue> itemProperties = domainEntity.getPropertyValueDisplayList();
+        return itemProperties != null && !itemProperties.isEmpty();
+    }
+
     public String getFilterByPropertyValue1() {
         return filterByPropertyValue1;
     }
@@ -517,14 +523,14 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public void setFilterByPropertyValue5(String filterByPropertyValue5) {
         this.filterByPropertyValue5 = filterByPropertyValue5;
     }
-    
-        public Boolean getDisplayLogList() {
+
+    public Boolean getDisplayLogList() {
         EntityType cdbDomainEntity = getCurrent();
         if (cdbDomainEntity != null) {
             List<Log> logList = cdbDomainEntity.getLogList();
             return logList != null && !logList.isEmpty();
         }
-        return false; 
+        return false;
     }
 
     public Boolean getDisplayPropertyList() {
@@ -535,7 +541,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         }
         return false;
     }
-    
+
     public void logObjectEditRowEvent(RowEditEvent event) {
         this.saveLogList();
     }
@@ -547,20 +553,20 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public void setNewLogEdit(Log newLogEdit) {
         this.newLogEdit = newLogEdit;
     }
-    
+
     public void removeNewLog() {
         if (newLogEdit != null) {
-            EntityType cdbDomainEntity = this.current; 
+            EntityType cdbDomainEntity = this.current;
             cdbDomainEntity.getLogList().remove(newLogEdit);
             newLogEdit = null;
         }
     }
-    
+
     public void saveLogList() {
-        newLogEdit = null; 
+        newLogEdit = null;
         update();
     }
-    
+
     public void prepareAddLog(EntityType cdbDomainEntity) {
         Log logEntry = LogUtility.createLogEntry();
         setNewLogEdit(logEntry);
@@ -587,12 +593,12 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         cdbDomainEntityLogList.remove(cdbDomainEntityLog);
         updateOnRemoval();
     }
-    
+
     public List<PropertyValue> getFilteredPropertyValueList() {
         return filteredPropertyValueList;
     }
 
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
-    } 
+    }
 }
