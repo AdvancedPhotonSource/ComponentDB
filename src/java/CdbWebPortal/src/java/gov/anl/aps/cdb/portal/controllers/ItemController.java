@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -153,7 +154,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected ItemType filterViewSelectedItemType = null;
 
     protected UserInfo filterViewSelectedUserInfo = null;
-    
+
     protected boolean filterViewCategoryTypeListDataModelLoaded = false;
 
     protected boolean filterViewOwnerListDataModelLoaded = false;
@@ -578,15 +579,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public ItemProject getFilterViewSelectedItemProject() {
         return filterViewSelectedItemProject;
     }
-    
+
     protected void filterViewItemProjectChanged() {
         filterViewCategoryTypeListDataModelLoaded = false;
         filterViewOwnerListDataModelLoaded = false;
     }
 
     public void setFilterViewSelectedItemProject(ItemProject filterViewSelectedItemProject) {
-        if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {            
-            filterViewItemProjectChanged(); 
+        if (this.filterViewSelectedItemProject != filterViewSelectedItemProject) {
+            filterViewItemProjectChanged();
         }
         this.filterViewSelectedItemProject = filterViewSelectedItemProject;
     }
@@ -633,19 +634,19 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
         return filterViewOwnerListDataModel;
     }
-    
+
     protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
-        Item item = fvio.getItemObject(); 
+        Item item = fvio.getItemObject();
         if (!item.getItemElementDisplayList().isEmpty()) {
             try {
                 TreeNode rootTreeNode = ItemElementUtility.createItemRoot(item);
                 fvio.addFilterViewItemExpansion(rootTreeNode, "Item Assembly");
             } catch (Exception ex) {
-                logger.error(ex); 
+                logger.error(ex);
             }
-        }        
+        }
     }
-    
+
     protected ListDataModel createFilterViewListDataModel(List<Item> itemList) {
         if (itemList != null) {
             List<FilterViewResultItem> filterViewItemObjectList = new ArrayList<>();
@@ -910,7 +911,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         scopedListDataModel = null;
         itemsWithNoParentsListDataModel = null;
         itemsWithNoParentsRootNode = null;
-        displayListDataModelScopeSelectionList = null; 
+        displayListDataModelScopeSelectionList = null;
     }
 
     public DataModel getScopedListDataModel() {
@@ -920,10 +921,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         } else if (scopedListDataModel == null) {
             if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
                 if (displayListDataModelScopePropertyTypeId == null) {
-                    return null; 
+                    return null;
                 } else {
                     List<Item> itemList = itemFacade.getItemListWithPropertyType(
-                            getDefaultDomainName(), 
+                            getDefaultDomainName(),
                             getDisplayListDataModelScopePropertyTypeId());
                     scopedListDataModel = new ListDataModel(itemList);
                 }
@@ -1406,12 +1407,49 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return getItemDisplayString(item);
     }
 
+    public boolean isDisplayRowExpansionForItem(Item item) {
+        if (getDisplayRowExpansion()) {
+            return isDisplayRowExpansionLogs(item)
+                    || isDisplayRowExpansionProperties(item)
+                    || isDisplayRowExpansionAssembly(item);
+        }
+
+        return false;
+    }
+    
+    public boolean isDisplayRowExpansionAssembly(Item item) {
+        if (getEntityDisplayItemElements()) {
+            List<ItemElement> itemElementsList = item.getItemElementDisplayList();
+            return itemElementsList != null && !itemElementsList.isEmpty(); 
+        }
+        return false; 
+    }
+
+    @Override
+    public boolean isDisplayRowExpansionProperties(CdbDomainEntity item) {
+        if (getEntityDisplayItemProperties()) {
+            return super.isDisplayRowExpansionProperties(item); 
+        } 
+        return false; 
+    }
+
+    @Override
+    public boolean isDisplayRowExpansionLogs(CdbDomainEntity item) {
+        if (getEntityDisplayItemLogs()) {
+            return super.isDisplayRowExpansionLogs(item); 
+        }
+        return false; 
+    }
+
     public List<Item> getSelectItemElementItemCandidateList() {
         if (selectItemElementItemCandidateList == null) {
             logger.debug("Preparing Item element candiate list for user.");
             selectItemElementItemCandidateList = new ArrayList<>();
 
-            Item item = getCurrent();
+            selectItemElementItemCandidateList = getItemList();
+
+            /*Entity Type is not used any longer.. Element selection is based on same domain. 
+            Item item = getCurrent();            
             List<EntityType> entityTypeList = item.getEntityTypeList();
 
             List<EntityType> allowedChildEntityTypeList = new ArrayList<>();
@@ -1437,6 +1475,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                     }
                 }
             }
+             */
         }
 
         return selectItemElementItemCandidateList;
