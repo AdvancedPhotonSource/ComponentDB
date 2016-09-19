@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -196,6 +197,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient ItemController itemDomainController = null;
 
     private transient final String ITEM_CONTROLLER_NAME_BASE = "itemDomain";
+    
+    private transient TreeNode assemblyRootTreeNode = null; 
     
     public Item() {
     }
@@ -569,6 +572,16 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
+    }
+
+    public TreeNode getAssemblyRootTreeNode() throws CdbException{
+        if (assemblyRootTreeNode == null) {
+            if (getItemElementDisplayList().size() > 0) {
+                assemblyRootTreeNode = ItemElementUtility.createItemRoot(this);
+                
+            }
+        }        
+        return assemblyRootTreeNode;
     }
 
     public void resetSelfElement() {
