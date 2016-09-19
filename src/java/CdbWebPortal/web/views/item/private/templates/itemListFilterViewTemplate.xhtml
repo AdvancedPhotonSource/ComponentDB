@@ -33,22 +33,23 @@
             <ui:insert name="itemFilterViewListObject">
                 <ui:include src="../itemListFilterViewObject.xhtml" />
             </ui:insert>
-            <p:rowExpansion>
+            <p:rowExpansion styleClass="defaultBackground">
                 <ui:repeat value="#{filterViewItemResultObject.filterViewExpansionList}"
                            var="resultExpansionObject">
-                    <p:treeTable value="#{resultExpansionObject.rootTreeNode}"
-                            var="itemTreeNode">
-                        <f:facet name="header">
-                            #{resultExpansionObject.headerTitle}
-                        </f:facet>
-                        <ui:include src="../itemListFilterViewObject.xhtml" >
-                            <ui:param name="itemListObject"
-                                      value="#{itemTreeNode}"/>
-                        </ui:include>
-                    </p:treeTable>
+                    <p:panel header="#{resultExpansionObject.headerTitle}">
+                        <p:treeTable value="#{resultExpansionObject.rootTreeNode}"
+                                     var="itemTreeNode">                        
+                            <ui:insert name="itemFilterViewListTreeObject">
+                                <ui:include src="../itemListFilterViewObject.xhtml" >
+                                    <ui:param name="itemListObject"
+                                              value="#{itemTreeNode}"/>
+                                </ui:include>
+                            </ui:insert>
+                        </p:treeTable>
+                    </p:panel>
                 </ui:repeat>
             </p:rowExpansion>
         </p:dataTable>
     </ui:define>
-    
+
 </ui:composition>
