@@ -1022,3 +1022,7 @@ h2 {
 .noCellPaddingPanelGrid .ui-panelgrid-cell {
     padding: 0px; 
 }
+
+.filterViewItemHierarchySelectionRepeatPanel {
+    padding-bottom: 10px;
+}
