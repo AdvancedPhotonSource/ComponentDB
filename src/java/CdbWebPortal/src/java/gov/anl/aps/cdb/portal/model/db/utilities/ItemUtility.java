@@ -15,6 +15,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 /**
  * DB utility class for items.
@@ -32,6 +34,11 @@ public class ItemUtility {
             }
         }
         return filteredItemList;
+    }
+    
+    public static TreeNode createNewTreeNode(Item item, TreeNode parentTreeNode) {
+        String treeNodeType = item.getDomain().getName();
+        return new DefaultTreeNode(treeNodeType, item, parentTreeNode);
     }
     
     /**
