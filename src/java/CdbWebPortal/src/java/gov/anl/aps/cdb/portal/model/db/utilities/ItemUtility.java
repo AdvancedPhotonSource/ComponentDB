@@ -35,68 +35,80 @@ public class ItemUtility {
         }
         return filteredItemList;
     }
-    
+
     public static TreeNode createNewTreeNode(Item item, TreeNode parentTreeNode) {
         String treeNodeType = item.getDomain().getName();
         return new DefaultTreeNode(treeNodeType, item, parentTreeNode);
     }
-    
+
     /**
-     * Use item elements list to generate a list of items. 
-     * 
+     * Use item elements list to generate a list of items.
+     *
      * @param parentItem
-     * @return 
+     * @return
      */
     public static List<Item> getItemListFromElementsList(Item parentItem) {
-        List<Item> itemList = new ArrayList<>(); 
-        List<ItemElement> itemElementList = parentItem.getItemElementDisplayList(); 
+        List<Item> itemList = new ArrayList<>();
+        List<ItemElement> itemElementList = parentItem.getItemElementDisplayList();
         if (itemElementList != null) {
             for (ItemElement itemElement : itemElementList) {
-                Item item = itemElement.getContainedItem(); 
+                Item item = itemElement.getContainedItem();
                 if (item != null) {
                     itemList.add(item);
                 }
             }
-        }                
-        
-        return itemList; 
+        }
+
+        return itemList;
     }
-    
-    /** 
-     * Generate a list of items related to the item provided. 
-     * 
-     * 
+
+    /**
+     *
+     *
+     * @param item
+     * @param relationshipTypeName
+     * @param itemFirstInRelationship
+     * @return
+     */
+    public static List<ItemElementRelationship> getItemRelationshipList(Item item, String relationshipTypeName, boolean itemFirstInRelationship) {
+        ItemElement selfElement = item.getSelfElement();
+
+        if (itemFirstInRelationship) {
+            return selfElement.getItemElementRelationshipList();
+        } else {
+            return selfElement.getItemElementRelationshipList1();
+        }
+
+    }
+
+    /**
+     * Generate a list of items related to the item provided.
+     *
+     *
      * @param item item provided
      * @param relationshipTypeName relationship name to look for
-     * @param itemFirstInRelationship item provided is first item element or second item element. 
-     * @return list of items found. 
+     * @param itemFirstInRelationship item provided is first item element or
+     * second item element.
+     * @return list of items found.
      */
     public static List<Item> getItemsRelatedToItem(Item item, String relationshipTypeName, boolean itemFirstInRelationship) {
-        ItemElement selfElement = item.getSelfElement(); 
-        List<Item> itemList = new ArrayList<>(); 
-        
-        List<ItemElementRelationship> itemElementRelationshipList; 
-        if (itemFirstInRelationship) {
-            itemElementRelationshipList = selfElement.getItemElementRelationshipList(); 
-        } else {
-            itemElementRelationshipList = selfElement.getItemElementRelationshipList1(); 
-        }
-        
+        List<Item> itemList = new ArrayList<>();
+        List<ItemElementRelationship> itemElementRelationshipList;
+        itemElementRelationshipList = getItemRelationshipList(item, relationshipTypeName, itemFirstInRelationship);
+
         if (itemElementRelationshipList != null) {
             for (ItemElementRelationship ier : itemElementRelationshipList) {
-                if (ier.getRelationshipType().getName().equals(relationshipTypeName)) {
-                    ItemElement itemElement; 
-                    if (itemFirstInRelationship) {
-                        itemElement = ier.getSecondItemElement();
-                    } else {
-                        itemElement = ier.getFirstItemElement(); 
-                    }
-                    itemList.add(itemElement.getParentItem()); 
+                ItemElement itemElement;
+                if (itemFirstInRelationship) {
+                    itemElement = ier.getSecondItemElement();
+                } else {
+                    itemElement = ier.getFirstItemElement();
                 }
+                itemList.add(itemElement.getParentItem());
             }
         }
-        
-        return itemList; 
-    }   
-    
+
+        return itemList;
+    }
+
 }
