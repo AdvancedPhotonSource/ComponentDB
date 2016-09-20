@@ -14,15 +14,19 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementRelationshipUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -339,6 +343,22 @@ public class ItemDomainInventoryController extends ItemController {
     public void updateFilterViewLocationDataModelReloadStatus(Item lastLocationLoaded) {
         filterViewLocationDataModelLoaded = true;
         filterViewLocationItemLoaded = lastLocationLoaded;
+    }
+    
+    public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(Item item) {               
+        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue(); 
+        
+        List<ItemElementRelationship> locationRelationshipList = ItemUtility.getItemRelationshipList(item, locationRelationshipTypeName, true); 
+        
+        if (locationRelationshipList.size() > 1) {
+            SessionUtility.addErrorMessage("Error", "Item is part of two or more locations.");
+        } else {
+            if (locationRelationshipList.size() == 1) {
+                return locationRelationshipList.get(0).getItemElementRelationshipHistoryList(); 
+            }
+        }
+        
+        return null;        
     }
 
     public ListDataModel getFilterViewLocationDataModel() {
@@ -1081,6 +1101,20 @@ public class ItemDomainInventoryController extends ItemController {
                 itemElementRelationshipList.get(locationIndex).setSecondItemElement(null);
             }
             itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
+            
+            // Add Item Element relationship history record. 
+            ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex); 
+            ItemElementRelationshipHistory ierh;
+            ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
+                    ier, (UserInfo) SessionUtility.getUser(), new Date());
+            List<ItemElementRelationshipHistory> ierhList;
+            ierhList = item.getSelfElement().getItemElementRelationshipHistoryList(); 
+            if (ierhList == null) {
+                ierhList = new ArrayList<>(); 
+                item.getSelfElement().setItemElementRelationshipHistoryList(ierhList);
+            }
+            
+            ierhList.add(ierh);
         }
     }
 
