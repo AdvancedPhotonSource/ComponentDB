@@ -323,6 +323,10 @@ public class UserInfo extends SettingEntity implements Serializable {
         }
         return fullNameForSelection;
     }
+    
+    public String getDisplayName() {
+        return "(" + getUsername() + ") " + getFullNameForSelection();
+    }
 
     @Override
     public SearchResult search(Pattern searchPattern) {
