@@ -967,6 +967,10 @@ h2 {
     text-align: left;
 }
 
+.viewTransparentBackgroundDialog .ui-tree {
+    text-align: left;
+}
+
 .favoriteOff {
     display: inline-block;
     width: 16px;
