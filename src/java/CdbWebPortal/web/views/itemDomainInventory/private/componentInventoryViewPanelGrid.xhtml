@@ -11,18 +11,15 @@
     
     <ui:define name="additionalItemInformation">
         <p:column>
-            <h:outputLabel for="location" value="Location" styleClass="entityDataEmphasizedLabel"/>
-            <p:commandLink id="componentInstanceComponentPropertyValueHistoryListViewButton" 
+            <h:outputLabel value="Location" styleClass="entityDataEmphasizedLabel"/>
+            <p:commandLink id="itemDomainInventoryLocationHistoryListViewButton" 
                            onstart="PF('loadingDialog').show();"
                            oncomplete="PF('loadingDialog').hide();
-                           PF('componentInstanceLocationHistoryListDialogWidget').show()" 
+                           PF('itemDomainInventoryLocationHistoryDialogWidget').show()" 
                            styleClass="ui-icon ui-icon-history" 
                            title="View history."
                            update="@form">
-                <f:setPropertyActionListener target="#{componentInstanceLocationHistoryController.selectedComponentInstance}" 
-                                             value="#{domainEntityObject}" />
-
-                <p:tooltip for="componentInstanceComponentPropertyValueHistoryListViewButton" value="View location value history."/>
+                <p:tooltip for="itemDomainInventoryLocationHistoryListViewButton" value="View location value history."/>
             </p:commandLink>
         </p:column>
         <ui:include src="componentInventoryLocationRelationshipTree.xhtml">
