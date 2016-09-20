@@ -457,7 +457,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         Item item = getCurrent();
         if (item != null) {
             if (isDisabledItemItemType()) {
-                return "First Select Techincal System";
+                return "First Select Technical System";
             } else {
                 return item.getEditItemTypeString(getItemItemTypeTitle());
             }

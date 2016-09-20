@@ -28,7 +28,7 @@
             <p:tooltip for="itemElementObjectName" value="Enter name."/>
         </p:column>      
 
-        <p:column sortBy="#{itemElementObject.containedItem.name}" headerText="Comtained Item">
+        <p:column sortBy="#{itemElementObject.containedItem.name}" headerText="Contained Item">
             <p:autoComplete id="itemDropdown#{itemElementObject.viewUUID}" 
                             value="#{itemElementObject.containedItem}" 
                             var="selectItemObject"
