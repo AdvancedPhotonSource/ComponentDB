@@ -57,13 +57,7 @@ public class DomainHandler extends CdbEntity implements Serializable {
     @ManyToMany
     private List<DomainHandler> domainHandlerList;
     @OneToMany(mappedBy = "domainHandler")
-    private List<Domain> domainList;
-    @OneToMany(mappedBy = "domainHandler")
-    @OrderBy("name ASC")
-    private List<ItemType> itemTypeList;
-    @OneToMany(mappedBy = "domainHandler")
-    @OrderBy("name ASC")
-    private List<ItemCategory> itemCategoryList;
+    private List<Domain> domainList;    
     @ManyToMany(mappedBy = "domainHandlerList")
     private List<PropertyType> propertyTypeList;
 
@@ -137,11 +131,6 @@ public class DomainHandler extends CdbEntity implements Serializable {
 
     public void setDomainHandlerList(List<DomainHandler> domainHandlerList) {
         this.domainHandlerList = domainHandlerList;
-    }
-    
-    @XmlTransient
-    public List<ItemType> getItemTypeList() {
-        return itemTypeList;
     }
 
     @Override

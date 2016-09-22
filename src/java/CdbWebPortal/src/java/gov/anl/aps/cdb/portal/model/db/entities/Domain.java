@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -55,6 +56,12 @@ public class Domain extends CdbEntity implements Serializable {
     @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
     @ManyToOne
     private DomainHandler domainHandler;
+    @OneToMany(mappedBy = "domain")
+    @OrderBy("name ASC")
+    private List<ItemType> itemTypeList;
+    @OneToMany(mappedBy = "domain")
+    @OrderBy("name ASC")
+    private List<ItemCategory> itemCategoryList;
 
     public Domain() {
     }
@@ -99,6 +106,24 @@ public class Domain extends CdbEntity implements Serializable {
 
     public void setItemList(List<Item> itemList) {
         this.itemList = itemList;
+    }
+
+    @XmlTransient
+    public List<ItemType> getItemTypeList() {
+        return itemTypeList;
+    }
+
+    public void setItemTypeList(List<ItemType> itemTypeList) {
+        this.itemTypeList = itemTypeList;
+    }
+
+    @XmlTransient
+    public List<ItemCategory> getItemCategoryList() {
+        return itemCategoryList;
+    }
+
+    public void setItemCategoryList(List<ItemCategory> itemCategoryList) {
+        this.itemCategoryList = itemCategoryList;
     }
 
     public DomainHandler getDomainHandler() {
