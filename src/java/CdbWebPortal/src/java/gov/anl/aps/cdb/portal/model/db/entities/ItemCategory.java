@@ -40,8 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemCategory.findById", query = "SELECT i FROM ItemCategory i WHERE i.id = :id"),
     @NamedQuery(name = "ItemCategory.findByName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name"),
     @NamedQuery(name = "ItemCategory.findByDescription", query = "SELECT i FROM ItemCategory i WHERE i.description = :description"),
-    @NamedQuery(name = "ItemCategory.findByDomainHandlerName", query = "SELECT i FROM ItemCategory i WHERE i.domainHandler.name = :domainHandlerName ORDER BY i.name ASC")})
-public class ItemCategory extends CdbEntity implements Serializable {
+    @NamedQuery(name = "ItemCategory.findByDomainName", query = "SELECT i FROM ItemCategory i WHERE i.domain.name = :domainName ORDER BY i.name ASC")})
+public class ItemCategory extends ItemTypeCategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -53,20 +53,20 @@ public class ItemCategory extends CdbEntity implements Serializable {
     @Size(min = 1, max = 64)
     private String name;
     @Size(max = 256)
-    private String description;    
-    @ManyToMany(mappedBy = "itemCategoryList")    
+    private String description;
+    @ManyToMany(mappedBy = "itemCategoryList")
     private List<Item> itemList;
-    @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
+    @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne
-    private DomainHandler domainHandler;
-     @JoinTable(name = "item_category_type", joinColumns = {
+    private Domain domain;
+    @JoinTable(name = "item_category_type", joinColumns = {
         @JoinColumn(name = "item_category_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
     @OrderBy("name ASC")
     private List<ItemType> itemTypeList;
-     
-    private transient String itemTypeString = null; 
+
+    private transient String itemTypeString = null;
 
     public ItemCategory() {
     }
@@ -110,10 +110,10 @@ public class ItemCategory extends CdbEntity implements Serializable {
     }
 
     public void setItemTypeList(List<ItemType> itemTypeList) {
-        itemTypeString = null; 
+        itemTypeString = null;
         this.itemTypeList = itemTypeList;
     }
-    
+
     public String getItemTypeString() {
         if (itemTypeString == null) {
             itemTypeString = StringUtility.getStringifyCdbList(itemTypeList);
@@ -121,14 +121,13 @@ public class ItemCategory extends CdbEntity implements Serializable {
 
         return itemTypeString;
     }
-    
+
     public String getEditItemTypeString() {
-        itemTypeString = getItemTypeString(); 
-        if (itemTypeString.isEmpty()) {
-            return "Select Item Type";
-        }
-        else {
-            return itemTypeString; 
+        itemTypeString = getItemTypeString();
+        if (itemTypeString.equals("-")) {
+            return "Select Item " + getItemTypeTitle();
+        } else {
+            return itemTypeString;
         }
     }
 
@@ -142,24 +141,26 @@ public class ItemCategory extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
-    public DomainHandler getDomainHandler() {
-        return domainHandler;
+    @Override
+    public Domain getDomain() {
+        return domain;
     }
 
-    public void setDomainHandler(DomainHandler domainHandler) {
-        this.domainHandler = domainHandler;
+    @Override
+    public void setDomain(Domain domain) {
+        this.domain = domain;
     }
 
     @Override
     public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, name); 
-        
+        SearchResult searchResult = new SearchResult(id, name);
+
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
-        if (domainHandler != null) {
-            searchResult.doesValueContainPattern("domain handler name", domainHandler.getName(), searchPattern);
+        if (domain != null) {
+            searchResult.doesValueContainPattern("domain name", domain.getName(), searchPattern);
         }
-        
+
         return searchResult;
     }
 
@@ -187,5 +188,5 @@ public class ItemCategory extends CdbEntity implements Serializable {
     public String toString() {
         return name;
     }
-    
+
 }

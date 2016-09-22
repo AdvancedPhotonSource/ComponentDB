@@ -5,6 +5,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.List;
@@ -15,10 +16,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -36,8 +39,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemType.findAll", query = "SELECT i FROM ItemType i"),
     @NamedQuery(name = "ItemType.findById", query = "SELECT i FROM ItemType i WHERE i.id = :id"),
     @NamedQuery(name = "ItemType.findByName", query = "SELECT i FROM ItemType i WHERE i.name = :name"),
-    @NamedQuery(name = "ItemType.findByDescription", query = "SELECT i FROM ItemType i WHERE i.description = :description")})
-public class ItemType extends CdbEntity implements Serializable {
+    @NamedQuery(name = "ItemType.findByDescription", query = "SELECT i FROM ItemType i WHERE i.description = :description"),
+    @NamedQuery(name = "ItemType.findByDomainName", query = "SELECT i FROM ItemType i WHERE i.domain.name = :domainName ORDER BY i.name ASC")})
+public class ItemType extends ItemTypeCategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -52,9 +56,17 @@ public class ItemType extends CdbEntity implements Serializable {
     private String description;
     @ManyToMany(mappedBy = "itemTypeList")
     private List<Item> itemList;
-    @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
+    @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne
-    private DomainHandler domainHandler;
+    private Domain domain;
+    @JoinTable(name = "item_category_type", joinColumns = {
+        @JoinColumn(name = "item_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "item_category_id", referencedColumnName = "id")})
+    @ManyToMany
+    @OrderBy("name ASC")
+    private List<ItemCategory> itemCategoryList;
+
+    private transient String itemCategoryString = null;
 
     public ItemType() {
     }
@@ -102,24 +114,52 @@ public class ItemType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
-    public DomainHandler getDomainHandler() {
-        return domainHandler;
+    @Override
+    public Domain getDomain() {
+        return domain;
     }
 
-    public void setDomainHandler(DomainHandler domainHandler) {
-        this.domainHandler = domainHandler;
+    @Override
+    public void setDomain(Domain domain) {
+        this.domain = domain;
     }
-    
+
+    @XmlTransient
+    public List<ItemCategory> getItemCategoryList() {
+        return itemCategoryList;
+    }
+
+    public void setItemCategoryList(List<ItemCategory> itemCategoryList) {
+        itemCategoryString = null;
+        this.itemCategoryList = itemCategoryList;
+    }
+
+    public String getItemCategoryString() {
+        if (itemCategoryString == null) {
+            itemCategoryString = StringUtility.getStringifyCdbList(itemCategoryList);
+        }
+        return itemCategoryString;
+    }
+
+    public String getEditItemCategoryString() {
+        itemCategoryString = getItemCategoryString();
+        if (itemCategoryString.equals("-")) {
+            return "Select Item " + getItemCategoryTitle();
+        } else {
+            return itemCategoryString;
+        }
+    }        
+
     @Override
     public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, name); 
-        
+        SearchResult searchResult = new SearchResult(id, name);
+
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
-        if (domainHandler != null) {
-            searchResult.doesValueContainPattern("domain handler name", domainHandler.getName(), searchPattern);
+        if (domain != null) {
+            searchResult.doesValueContainPattern("domain name", domain.getName(), searchPattern);
         }
-        
+
         return searchResult;
     }
 
@@ -145,7 +185,7 @@ public class ItemType extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return name; 
+        return name;
     }
-    
+
 }
