@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -27,6 +28,12 @@ public class ItemTypeFacade extends CdbEntityFacade<ItemType> {
 
     public ItemTypeFacade() {
         super(ItemType.class);
+    }
+    
+    public List<ItemType> findByDomainName(String domainName) {
+        return (List<ItemType>) em.createNamedQuery("ItemType.findByDomainName")
+                .setParameter("domainName", domainName)
+                .getResultList(); 
     }
     
 }

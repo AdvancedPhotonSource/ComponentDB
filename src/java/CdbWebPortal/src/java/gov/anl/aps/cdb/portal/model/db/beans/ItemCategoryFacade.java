@@ -31,10 +31,10 @@ public class ItemCategoryFacade extends CdbEntityFacade<ItemCategory> {
         super(ItemCategory.class);
     }
     
-    public List<ItemCategory> findByDomainHandlerName(String domainHandlerName) {
+    public List<ItemCategory> findByDomainName(String domainName) {
         try {
-            return (List<ItemCategory>) em.createNamedQuery("ItemCategory.findByDomainHandlerName")
-                    .setParameter("domainHandlerName", domainHandlerName)
+            return (List<ItemCategory>) em.createNamedQuery("ItemCategory.findByDomainName")
+                    .setParameter("domainName", domainName)
                     .getResultList();
         } catch (NoResultException ex) {
 
