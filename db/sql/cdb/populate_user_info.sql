@@ -57,13 +57,14 @@ INSERT INTO `user_info` VALUES
 (54,'gmm','Greg','Markovich',NULL,'gmm@aps.anl.gov',NULL,NULL),
 (55,'bderiy','Boris','Deriy',NULL,'bderiy@aps.anl.gov',NULL,NULL),
 (56,'gas','Gary','Sprau',NULL,'gas@aps.anl.gov',NULL,NULL),
-(57,'jtoeller','Jeff','Toeller',NULL,'jtoeller@aps.anl.gov',NULL,NULL),
-(58,'berenc','Tim','Berenc',NULL,'berenc@aps.anl.gov',NULL,NULL),
-(59,'jox','Julie','Cross','Olmted','jox@anl.gov',NULL,NULL),
-(60,'denharto','Pat','Den Hartog',NULL,'denharto@aps.anl.gov',NULL,NULL),
-(61,'erdmann','Mark','Erdmann',NULL,'erdmann@aps.anl.gov',NULL,NULL),
-(62,'bechtold','Ralph','Bechtold','R','bechtold@aps.anl.gov',NULL,NULL),
-(63,'gagliano','Joseph','Gagliano',NULL,'gagliano@aps.anl.gov',NULL,NULL),
-(64,'martens','Mark','Martens',NULL,'martens@aps.anl.gov',NULL,NULL);
+(57,'zconway','Zachery','Conway',NULL,'zconway@anl.gov',NULL,NULL),
+(58,'jtoeller','Jeff','Toeller',NULL,'jtoeller@aps.anl.gov',NULL,NULL),
+(59,'berenc','Tim','Berenc',NULL,'berenc@aps.anl.gov',NULL,NULL),
+(60,'jox','Julie','Cross','Olmted','jox@anl.gov',NULL,NULL),
+(61,'denharto','Pat','Den Hartog',NULL,'denharto@aps.anl.gov',NULL,NULL),
+(62,'erdmann','Mark','Erdmann',NULL,'erdmann@aps.anl.gov',NULL,NULL),
+(63,'bechtold','Ralph','Bechtold','R','bechtold@aps.anl.gov',NULL,NULL),
+(64,'gagliano','Joseph','Gagliano',NULL,'gagliano@aps.anl.gov',NULL,NULL),
+(65,'martens','Mark','Martens',NULL,'martens@aps.anl.gov',NULL,NULL);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;

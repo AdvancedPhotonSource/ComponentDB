@@ -83,14 +83,15 @@ INSERT INTO `property_type` VALUES
 (80,'Traveler Template (Electronic)','Allows integration of traveler templates from traveler application.',2,13,'','',0,0,0,1),
 (81,'Traveler Instance (Electronic)','Allows integration of traveler instances from traveler application.',2,14,'','',0,0,0,1),
 (82,'CSI #','Record Argonne\'s CSI # of a component instance',4,NULL,'','',0,0,0,1),
-(83,'Documentation URI','Provides a link to any web address (URL)',4,3,'','',0,0,0,1),
-(84,'Document/Drawing (Upload)','',4,1,'','',0,0,0,1),
-(85,'Document/Drawing (ICMS)','',4,5,'','',0,0,0,1),
-(86,'RSS Verified','',10,11,'','',0,0,0,1),
-(87,'RSS Sequence Number','',10,NULL,'','',0,0,0,1),
-(88,'Item Element Row Color','',8,NULL,'','',0,0,0,1),
-(89,'MOM Group','',3,NULL,'','',0,0,0,1),
-(90,'Spare Parts Configuration','',3,NULL,'','',0,0,1,1),
-(91,'Spare Part Indication','',3,NULL,'','',0,0,1,1);
+(83,'Approval documents','',4,NULL,'','',0,0,0,1),
+(84,'Documentation URI','Provides a link to any web address (URL)',4,3,'','',0,0,0,1),
+(85,'Document/Drawing (Upload)','',4,1,'','',0,0,0,1),
+(86,'Document/Drawing (ICMS)','',4,5,'','',0,0,0,1),
+(87,'RSS Verified','',10,11,'','',0,0,0,1),
+(88,'RSS Sequence Number','',10,NULL,'','',0,0,0,1),
+(89,'Item Element Row Color','',8,NULL,'','',0,0,0,1),
+(90,'MOM Group','',3,NULL,'','',0,0,0,1),
+(91,'Spare Parts Configuration','',3,NULL,'','',0,0,1,1),
+(92,'Spare Part Indication','',3,NULL,'','',0,0,1,1);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;

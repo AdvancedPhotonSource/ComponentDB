@@ -22,6 +22,9 @@ INSERT INTO `log_attachment` VALUES
 (90,19),
 (91,20),
 (92,21),
-(93,22);
+(93,22),
+(97,23),
+(98,24),
+(98,25);
 /*!40000 ALTER TABLE `log_attachment` ENABLE KEYS */;
 UNLOCK TABLES;

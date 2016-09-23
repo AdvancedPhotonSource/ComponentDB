@@ -18,7 +18,6 @@ INSERT INTO `user_group` VALUES
 (15,'APSU_VAC_TECH','Group that owns component instances'),
 (16,'APSU_VAC','Those working on vacuum for APSU'),
 (17,'APS_BL',NULL),
-(18,'MOM','Mechanical Operations and Maintenance'),
-(19,'IS','Information Solutions');
+(18,'MOM','Mechanical Operations and Maintenance');
 /*!40000 ALTER TABLE `user_group` ENABLE KEYS */;
 UNLOCK TABLES;

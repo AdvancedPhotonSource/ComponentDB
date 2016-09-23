@@ -94,12 +94,11 @@ INSERT INTO `log` VALUES
 (91,'inspection','2016-06-02 08:15:09',53,NULL,NULL,NULL),
 (92,'Conductor inspection','2016-07-29 08:04:02',53,NULL,NULL,NULL),
 (93,'Leak Check','2016-07-29 08:04:18',53,NULL,NULL,NULL),
-(94,'Cloned from DMM Vacuum Assembly Old','2016-07-18 09:31:51',2,NULL,NULL,NULL),
-(95,'','2016-03-24 10:49:46',62,NULL,NULL,NULL),
-(96,'Trying to add some examples','2016-08-30 13:33:24',3,NULL,NULL,NULL),
-(97,'Item has 0 spare parts & requires 2','2016-09-06 13:55:17',1,NULL,NULL,NULL),
-(98,'Item has 1 spare part & requires 2','2016-09-06 13:57:05',1,NULL,NULL,NULL),
-(99,'Item has 0 spare parts & requires 4','2016-09-06 14:58:12',1,NULL,NULL,NULL),
-(100,'Item has 1 spare part & requires 2','2016-09-07 13:58:18',1,NULL,NULL,NULL);
+(94,'The regulator in this unit is modified to use an external DCCT for regulation.','2016-08-09 14:59:27',13,NULL,NULL,NULL),
+(95,'Installed RHEL 7  (several weeks ago)','2016-09-07 14:05:12',3,NULL,NULL,NULL),
+(96,'Cloned from DMM Vacuum Assembly Old','2016-07-18 09:31:51',2,NULL,NULL,NULL),
+(97,'TDR test results from CY','2016-08-26 10:30:46',8,NULL,NULL,NULL),
+(98,'Cleaning reports detailing the procedures and processes used to polish and clean the kicker parts prior to final assembly. (From Zack Conway)','2016-08-26 11:32:40',8,NULL,NULL,NULL),
+(99,'','2016-03-24 10:49:46',63,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `log` ENABLE KEYS */;
 UNLOCK TABLES;
