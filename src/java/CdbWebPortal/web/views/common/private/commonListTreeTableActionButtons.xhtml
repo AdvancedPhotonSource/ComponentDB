@@ -19,13 +19,11 @@
             <p:tooltip for="#{entityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
 
-        <p:button id="#{entityTypeName}ListTreeTableViewTypesButton" href="../#{entityTypeTypeName}/list.xhtml" rendered="#{entityController.entityHasTypes()}" alt="View Types" icon="ui-icon-info" styleClass="actionButtonRight">
-            <p:tooltip for="#{entityTypeName}ListTreeTableViewTypesButton" value="View types."/>
-        </p:button>
-
-        <p:button id="#{entityTypeName}ListTreeTableViewCategoriesButton" href="../#{entityTypeCategoryName}/list.xhtml" rendered="#{entityController.entityHasCategories()}" alt="View Categories" icon="ui-icon-info" styleClass="actionButtonRight">
-            <p:tooltip for="#{entityTypeName}ListTreeTableViewCategoriesButton" value="View categories."/>
-        </p:button>
+        <ui:insert name="listTypeCategoryActionButtons">
+            <ui:include src="reusedParts/listTypeCategoryActionButtons.xhtml">
+                <ui:param name="viewName" value="TreeTable" />
+            </ui:include>
+        </ui:insert>
 
         <p:button id="#{entityTypeName}ListTreeTableViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ListTreeTableViewGroupsButton" value="View groups."/>
