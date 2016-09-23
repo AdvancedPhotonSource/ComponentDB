@@ -18,10 +18,9 @@ import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
-
 @Named("itemTypeController")
 @SessionScoped
-public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFacade>implements Serializable {
+public class ItemTypeController extends ItemTypeCategoryController<ItemType, ItemTypeFacade> implements Serializable {
 
     /*
      * Controller specific settings
@@ -57,8 +56,9 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
     }
 
     @Override
-    protected ItemType createEntityInstance() {
+    public ItemType createItemTypeCategoryEntity() {
         ItemType itemType = new ItemType();
+        itemType.setDomain(getCurrentViewDomain());
         return itemType;
     }
 
@@ -68,8 +68,8 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
     }
 
     @Override
-    public String getDisplayEntityTypeName() {
-        return "Component Type";
+    public String getDefaultDisplayEntityTypeName() {
+        return "Item Type";
     }
 
     @Override
@@ -82,7 +82,7 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
 
     @Override
     public ItemType findById(Integer id) {
-        return itemTypeFacade.find(id); 
+        return itemTypeFacade.find(id);
     }
 
     @Override
@@ -193,6 +193,11 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
         update();
     }
 
+    @Override
+    public List<ItemType> getItemTypeCategoryEntityListByDomainName(String domainName) {
+        return itemTypeFacade.findByDomainName(domainName);
+    }
+
     /**
      * Converter class for component type objects.
      */
@@ -247,6 +252,5 @@ public class ItemTypeController extends CdbEntityController<ItemType, ItemTypeFa
     public void setSelectedItemType(ItemType selectedItemType) {
         this.selectedItemType = selectedItemType;
     }
-
 
 }
