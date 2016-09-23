@@ -409,11 +409,11 @@ CREATE TABLE `item_category` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `domain_handler_id` int(11) unsigned NOT NULL,
+  `domain_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_category_u1` (`name`, `domain_handler_id`),
-  KEY `item_category_k1` (`domain_handler_id`),
-  CONSTRAINT `item_category_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+  UNIQUE KEY `item_category_u1` (`name`, `domain_id`),
+  KEY `item_category_k1` (`domain_id`),
+  CONSTRAINT `item_category_fk1` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -425,11 +425,11 @@ CREATE TABLE `item_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `domain_handler_id` int(11) unsigned NOT NULL,
+  `domain_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_type_u1` (`name`, `domain_handler_id`),
-  KEY `item_type_k1` (`domain_handler_id`),
-  CONSTRAINT `item_type_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+  UNIQUE KEY `item_type_u1` (`name`, `domain_id`),
+  KEY `item_type_k1` (`domain_id`),
+  CONSTRAINT `item_type_fk1` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
