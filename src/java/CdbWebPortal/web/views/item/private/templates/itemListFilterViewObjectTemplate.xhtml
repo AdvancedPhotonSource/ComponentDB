@@ -2,7 +2,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="itemListViewObjectTemplate.xhtml">
+                template="itemListViewObjectTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="renderWheneverAvaiable" value="#{true}" />
     
@@ -17,5 +18,16 @@
     <ui:define name="derivedFromItemColumn" />
     
     <ui:define name="itemProjectColumn" />
+    
+    <ui:define name="addionalTemplateUseColumns" >
+        <p:column>
+            <ui:include src="../../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
+                <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
+                <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />
+                <ui:param name="toggleFavoritesParameter" value="#{itemListObject}" />
+                <ui:param name="currentFavoritesIconStyle" value="#{entityController.getItemFavoritesIconStyle(itemListObject)}" />
+            </ui:include>
+        </p:column>
+    </ui:define>
 
 </ui:composition>
