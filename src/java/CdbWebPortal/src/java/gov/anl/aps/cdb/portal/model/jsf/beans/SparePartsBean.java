@@ -6,13 +6,13 @@
 package gov.anl.aps.cdb.portal.model.jsf.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -26,11 +26,15 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 
 @Named("sparePartsBean")
 @SessionScoped
 public class SparePartsBean implements Serializable {
+    
+    protected static final String SPARE_PARTS_BEAN_NAME = "sparePartsBean"; 
+    private static final Logger logger = Logger.getLogger(SparePartsBean.class.getName());
 
     protected static final String SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME = "Spare Parts Configuration";
     protected static final String SPARE_PARTS_INDICATION_PROPERTY_TYPE_NAME = "Spare Part Indication";
@@ -43,7 +47,7 @@ public class SparePartsBean implements Serializable {
     protected final String NO_EMAIL_VALUE = "None";
 
     protected PropertyType sparePartsConfigurationPropertyType = null;
-    protected PropertyType sparePartIndicationPropertyType = null;
+    protected PropertyType sparePartIndicationPropertyType = null;    
     protected Item currentItem;
 
     protected String selectedEmailOption = null;
@@ -119,6 +123,28 @@ public class SparePartsBean implements Serializable {
         }
         return null;
     }
+    
+    public static int getSparePartsMinimumForItem(Item item) {
+        SparePartsBean sparePartsBean = (SparePartsBean) SessionUtility.findBean(SPARE_PARTS_BEAN_NAME); 
+        return sparePartsBean.getSparePartsMinimumForItemCached(item);        
+    }
+    
+    private int getSparePartsMinimumForItemCached(Item item) {
+        if (!ObjectUtility.equals(currentItem, item)) {
+            sparePartsConfigurationPropertyValue = getStoredSparePartsConfigrationPropertyValue(item);             
+        }
+        
+        if (sparePartsConfigurationPropertyValue != null) {
+            try {
+                return Integer.parseInt(getSparePartsMinimumValue());
+            } catch (NumberFormatException ex) {
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+                logger.error(ex);
+                return -1; 
+            }            
+        }
+        return -1;
+    }
 
     /**
      * Used by the catalog item controller to identify when a property value
@@ -129,7 +155,7 @@ public class SparePartsBean implements Serializable {
      */
     public static boolean isItemContainSparePartConfiguration(Item item) {
         if (item != null) {
-            return getSparePartsConfigrationPropertyValue(item) != null;
+            return getStoredSparePartsConfigrationPropertyValue(item) != null;
         }
         return false; 
     }
@@ -186,11 +212,11 @@ public class SparePartsBean implements Serializable {
 
     }
 
-    private static PropertyValue getSparePartsIndicationPropertyValue(Item item) {
+    private static PropertyValue getStoredSparePartsIndicationPropertyValue(Item item) {
         return getPropertyValueByType(item, SPARE_PARTS_INDICATION_PROPERTY_TYPE_NAME);
     }
 
-    private static PropertyValue getSparePartsConfigrationPropertyValue(Item item) {
+    private static PropertyValue getStoredSparePartsConfigrationPropertyValue(Item item) {
         return getPropertyValueByType(item, SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME);
     }
 
@@ -209,7 +235,7 @@ public class SparePartsBean implements Serializable {
 
     private PropertyValue prepareSparePartsConfigurationPropertyValue(Item item) throws CdbException {
         // Only one property type of spare parts can be added. 
-        PropertyValue propertyValue = getSparePartsConfigrationPropertyValue(item);
+        PropertyValue propertyValue = getStoredSparePartsConfigrationPropertyValue(item);
         if (propertyValue == null) {
             // Add property value
             List<PropertyValue> propertyValueList = item.getPropertyValueList();
@@ -323,7 +349,7 @@ public class SparePartsBean implements Serializable {
     }
 
     public boolean getSparePartsIndication(Item inventoryItem) {
-        PropertyValue propertyValue = getSparePartsIndicationPropertyValue(inventoryItem);
+        PropertyValue propertyValue = getStoredSparePartsIndicationPropertyValue(inventoryItem);
         if (propertyValue != null) {
             return Boolean.parseBoolean(propertyValue.getValue());
         }
@@ -332,7 +358,7 @@ public class SparePartsBean implements Serializable {
     }
 
     public void setSparePartsIndication(Item inventoryItem) {
-        PropertyValue spareIndicatorPropertyValue = getSparePartsIndicationPropertyValue(inventoryItem);
+        PropertyValue spareIndicatorPropertyValue = getStoredSparePartsIndicationPropertyValue(inventoryItem);
         boolean currentSpareValue = inventoryItem.getSparePartIndicator();
         
         if (spareIndicatorPropertyValue == null && currentSpareValue == false) {
@@ -365,7 +391,6 @@ public class SparePartsBean implements Serializable {
         }
         getItemDomainInventoryController().setCurrent(inventoryItem);
         getItemDomainInventoryController().update(); 
-
     }
 
     private void updateSparePartsIndicatorPropertyValue(PropertyValue propertyValue, boolean newValue) throws CdbException {
