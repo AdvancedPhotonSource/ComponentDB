@@ -10,5 +10,11 @@
     </f:metadata>
     
     <ui:param name="entityController" value="#{itemTypeController}"/>
+    
+    <ui:param name="simpleEntityListDataTableValue" value="#{itemTypeController.currentDomainListDataModel}" />
+    
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemTypeListDataTable.xhtml" />
+    </ui:define>
 
 </ui:composition>
