@@ -6,22 +6,24 @@
                 template="../../simpleEntity/private/templates/simpleEntityViewPanelGridTemplate.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">       
     
+    <ui:param name="itemCategoryHasTypes" value="#{simpleEntityObject.hasTypes}" />
+    
     <ui:define name="additionalSimpleEntityInformation">
-        <h:outputLabel for="domainHandler" 
-                       value="Domain Handler" 
+        <h:outputLabel for="domain" 
+                       value="Domain" 
                        styleClass="entityDataLabel"/>
         
-        <h:outputText id="domainHandler"
-                      value="#{simpleEntityObject.domainHandler.name}"/>
+        <h:outputText id="domain"
+                      value="#{simpleEntityObject.domain.name}"/>
         
         <h:outputLabel for="itemType" 
-                       value="Item Types" 
+                       rendered="#{itemCategoryHasTypes}"
+                       value="#{itemCategoryController.itemTypeTitle}" 
                        styleClass="entityDataLabel"/>
         
         <h:outputText id="itemType"
-                      value="#{simpleEntityObject.itemTypeString}"/>
-                
-                        
+                      rendered="#{itemCategoryHasTypes}"
+                      value="#{simpleEntityObject.itemTypeString}"/>                                        
     </ui:define>
 </ui:composition>
 
