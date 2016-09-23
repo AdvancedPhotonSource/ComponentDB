@@ -5,32 +5,28 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../simpleEntity/private/templates/simpleEntityEditPanelGridTemplate.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:p="http://primefaces.org/ui">       
+                xmlns:p="http://primefaces.org/ui">      
+    
+    <ui:param name="itemCategoryHasTypes" value="#{simpleEntityObject.hasTypes}" />
 
     <ui:define name="additionalSimpleEntityInformation">
-        <h:outputLabel for="domainHandler" 
-                       value="Domain Handler" 
-                       styleClass="entityDataLabel"/>
-
-        <p:selectOneMenu id="domainHandler" 
-                         value="#{simpleEntityObject.domainHandler}" 
-                         required="true" 
-                         styleClass="entityDataText">
-            <f:selectItems var="domainHandler" value="#{domainHandlerController.availableItems}" itemLabel="#{domainHandler.name}" itemValue="#{domainHandler}"/>
-        </p:selectOneMenu>
+        <ui:include src="../../itemTypeCategory/private/itemTypeCategoryEditPanelGridObject.xhtml">
+            <ui:param name="itemTypeCategoryController" value="#{itemCategoryController}" />
+        </ui:include>
 
         <h:outputLabel for="itemType" 
-                       value="Item Types" 
+                       rendered="#{itemCategoryHasTypes}"
+                       value="#{itemCategoryController.itemTypeTitle}" 
                        styleClass="entityDataLabel"/>
         
-        <p:column>            
-            <p:selectCheckboxMenu id="itemType"
+        <p:column rendered="#{itemCategoryHasTypes}">
+            <p:selectCheckboxMenu id="itemType"                                  
                                   label="#{simpleEntityObject.editItemTypeString}"                              
                                   value="#{simpleEntityObject.itemTypeList}" 
                                   onHide="updateItemType()"
                                   converter="itemTypeConverter"
                                   filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{simpleEntityObject.domainHandler.itemTypeList}" /> 
+                <f:selectItems value="#{simpleEntityObject.domain.itemTypeList}" /> 
 
             </p:selectCheckboxMenu>
             <p:remoteCommand name="updateItemType"
