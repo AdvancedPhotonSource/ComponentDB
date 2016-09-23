@@ -3,22 +3,24 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="../../common/private/commonListActionButtons.xhtml">
+                template="../../item/private/templates/itemListActionButtonsTemplate.xhtml">
     
     <ui:define name="listAddButton">
-        <p:splitButton id="#{entityTypeName}#{viewName}AddButton"
-                       rendered="#{displayAddButton}" 
-                       value="Add" 
-                       action="#{entityController.prepareCreate()}"
-                       alt="Add new #{entityTypeName}" 
-                       icon="ui-icon-plus">
-            <p:menuitem value="Add from PDMLink" styleClass="splitButtonMenuItem" 
-                        onclick="PF('itemDomainCatalogPDMLinkDrawingSearchDialogWidget').show()"
-                        icon="ui-icon-plus"/>
-        </p:splitButton>
+        <p:commandButton id="#{entityTypeName}#{viewName}AddButton"
+                         rendered="#{displayAddButton}" 
+                         value="Add" 
+                         action="#{entityController.prepareCreate()}"
+                         alt="Add new #{entityTypeName}" 
+                         icon="ui-icon-plus">            
+        </p:commandButton>
+
+        <p:commandButton value="Add from PDMLink"
+                         rendered="#{displayAddButton}" 
+                         onclick="PF('itemDomainCatalogPDMLinkDrawingSearchDialogWidget').show()"
+                         icon="ui-icon-plus"/>
     </ui:define>
 
-    
-    
+
+
 </ui:composition>
 
