@@ -7,20 +7,7 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">        
        
     <ui:define name="customItemIdentifierColumn">
-        <ui:param name="partNameString"
-                  value="#{itemDomainInventoryController.getItemDisplayString(itemListObject)}" />
-        <p:column headerText="Inventory Item"
-                  sortBy="#{partNameString}"
-                  filterBy="#{partNameString}" filterMatchMode="contains"                  
-                  filterable="#{filterable}"
-                  sortable="#{sortable}">
-            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-                <ui:param name="displayString"
-                          value="#{partNameString}" />
-                <ui:param name="itemObject"
-                          value="#{itemListObject}"/>
-            </ui:include>
-        </p:column>
+        <ui:include src="itemDomainInventoryListCustomIdentifierObject.xhtml" />
     </ui:define>
     
     <ui:define name="nameColumn"/>
