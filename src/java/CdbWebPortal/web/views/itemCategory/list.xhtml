@@ -11,5 +11,10 @@
     
     <ui:param name="entityController" value="#{itemCategoryController}"/>
     
+    <ui:param name="simpleEntityListDataTableValue" value="#{itemCategoryController.currentDomainListDataModel}" />
+    
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemCategoryListDataTable.xhtml"/>
+    </ui:define>
     
 </ui:composition>
