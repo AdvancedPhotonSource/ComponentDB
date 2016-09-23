@@ -291,6 +291,30 @@ public class ItemDomainCatalogController extends ItemController {
         return 0; 
     }
     
+    public void notifyUserIfMinimumSparesReachedForCurrent() {
+        int sparesMin = SparePartsBean.getSparePartsMinimumForItem(getCurrent());
+        if (sparesMin == -1) {
+            // Either an error occured or no spare parts configuration was found.
+            return; 
+        } else {
+            int sparesCount = getInventorySparesCount(); 
+            if (sparesCount < sparesMin) {
+                String sparesMessage;
+                sparesMessage = "You now have " + sparesCount; 
+                if (sparesCount == 1) {
+                    sparesMessage += " spare";
+                } else {
+                    sparesMessage += " spares";
+                }
+                
+                sparesMessage += " but require a minumum of " + sparesMin; 
+                
+                SessionUtility.addWarningMessage("Spares Warning", sparesMessage); 
+            }
+        }
+        
+    }
+    
     public int getInventoryNonSparesCount() {
         List<Item> nonSparesList = getInventoryNonSparesList();
         if (nonSparesList != null) {
