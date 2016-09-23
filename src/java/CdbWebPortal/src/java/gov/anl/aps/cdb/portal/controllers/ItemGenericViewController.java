@@ -23,7 +23,6 @@ import javax.inject.Named;
 @Named("itemGenericViewController")
 @SessionScoped
 public class ItemGenericViewController extends ItemController {
-    private final String DEFAULT_DOMAIN_NAME = "Item";
     
     @EJB
     private DomainFacade domainFacade; 
@@ -146,7 +145,7 @@ public class ItemGenericViewController extends ItemController {
 
     @Override
     public Domain getDefaultDomain() {
-        return domainFacade.findByName(DEFAULT_DOMAIN_NAME); 
+        return null;
     }
 
     @Override
