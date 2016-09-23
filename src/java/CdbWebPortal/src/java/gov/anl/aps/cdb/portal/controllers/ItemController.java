@@ -208,13 +208,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Integer currentWizardStepIndex = null;
 
     public ItemController() {
-    }
-
-    /**
-     *
-     * @return
-     */
-    public abstract Domain getDefaultDomain();
+    }   
 
     public abstract String getDefaultDomainName();
 
@@ -322,6 +316,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getItemDerivedFromDomainHandlerName();
 
     public abstract String getDerivedDomainName();
+    
+    public Domain getDefaultDomain() { 
+        return domainFacade.findByName(getDefaultDomainName()); 
+    }
 
     public String getNameTitle() {
         return "Name";
@@ -333,6 +331,16 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public String getItemItemCategoryTitle() {
         return "Category";
+    }
+
+    @Override
+    public String getEntityEntityTypeName() {
+        return getItemItemTypeTitle();
+    }
+
+    @Override
+    public String getEntityEntityCategoryName() {
+        return getItemItemCategoryTitle(); 
     }
 
     public List<Item> getItemList() {
@@ -368,7 +376,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public List<ItemCategory> getDomainItemCategoryList() {
         if (domainItemCategoryList == null) {
-            domainItemCategoryList = itemCategoryFacade.findByDomainHandlerName(this.getDomainHandlerName());
+            domainItemCategoryList = itemCategoryFacade.findByDomainName(this.getDefaultDomainName());
         }
         return domainItemCategoryList;
     }
@@ -791,19 +799,50 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return (ItemController) SessionUtility.findBean("itemGenericViewController");
     }
 
-    public ItemController findDomainController(String domainHandlerName) {
-        if (domainHandlerName != null) {
-            return (ItemController) SessionUtility.findBean(getDomainControllerName(domainHandlerName));
+    public static ItemController findDomainController(String domainName) {
+        if (domainName != null) {
+            return (ItemController) SessionUtility.findBean(getDomainControllerName(domainName));
         }
         return null;
+    }
+    
+    
+    public static String getItemItemTypeTitleForDomain(Domain domain) {
+        if (domain != null) {
+            ItemController itemController = findDomainController(domain.getName()); 
+            return itemController.getItemItemTypeTitle(); 
+        }
+        return null; 
+    }
+    
+    public static String getItemItemCategoryTitleForDomain(Domain domain) {
+        if (domain != null) {
+            ItemController itemController = findDomainController(domain.getName()); 
+            return itemController.getItemItemCategoryTitle(); 
+        }
+        return null; 
+    }
+     
+    public static boolean getItemHasItemTypesForDomain(Domain domain) {
+        if (domain != null) {
+            return findDomainController(domain.getName()).entityHasTypes(); 
+        }
+        return false; 
+    }
+    
+    public static boolean getItemHasItemCategoriesForDomain(Domain domain) {
+        if (domain != null) {
+            return findDomainController(domain.getName()).entityHasCategories(); 
+        }
+        return false; 
     }
 
     private String getDomainControllerName() {
         return getDomainControllerName(getDefaultDomainName());
     }
 
-    private String getDomainControllerName(String domainHandlerName) {
-        return "itemDomain" + domainHandlerName + "Controller";
+    private static String getDomainControllerName(String domainName) {
+        return "itemDomain" + domainName + "Controller";
     }
 
     public List<Domain> getAvailableDomains() {
