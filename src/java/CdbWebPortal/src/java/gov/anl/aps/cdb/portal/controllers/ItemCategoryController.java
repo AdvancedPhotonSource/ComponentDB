@@ -6,6 +6,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -18,7 +19,7 @@ import org.apache.log4j.Logger;
 
 @Named("itemCategoryController")
 @SessionScoped
-public class ItemCategoryController extends CdbEntityController<ItemCategory, ItemCategoryFacade> implements Serializable {
+public class ItemCategoryController extends ItemTypeCategoryController<ItemCategory, ItemCategoryFacade> implements Serializable {
 
     @EJB
     ItemCategoryFacade itemCategoryFacade; 
@@ -41,21 +42,10 @@ public class ItemCategoryController extends CdbEntityController<ItemCategory, It
     protected ItemCategoryFacade getEntityDbFacade() {
         return itemCategoryFacade; 
     }       
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Item Category"; 
-    }
-
+    
     @Override
     public ItemCategory findById(Integer id) {
         return itemCategoryFacade.find(id); 
-    }
-
-    @Override
-    protected ItemCategory createEntityInstance() {
-        ItemCategory itemCategory = new ItemCategory();
-        return itemCategory; 
     }
 
     @Override
@@ -112,6 +102,22 @@ public class ItemCategoryController extends CdbEntityController<ItemCategory, It
 
         settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
         settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+    }
+
+    @Override
+    public List<ItemCategory> getItemTypeCategoryEntityListByDomainName(String domainName) {
+        return itemCategoryFacade.findByDomainName(domainName);
+    }
+
+    @Override
+    public ItemCategory createItemTypeCategoryEntity() {
+        ItemCategory itemCategory = new ItemCategory();
+        return itemCategory; 
+    }
+
+    @Override
+    public String getDefaultDisplayEntityTypeName() {
+        return "Item Category";
     }
     
     /**
