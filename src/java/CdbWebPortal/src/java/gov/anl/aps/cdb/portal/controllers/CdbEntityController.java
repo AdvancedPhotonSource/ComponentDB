@@ -1588,6 +1588,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public boolean entityHasTypes() {
         return getEntityTypeTypeName() != null;
     }
+    
+    public String getEntityEntityCategoryName() {
+        return "Category";
+    }
+    
+    public String getEntityEntityTypeName() {
+        return "Type";
+    }    
 
     public boolean entityHasGroups() {
         return getEntityTypeGroupName() != null;
