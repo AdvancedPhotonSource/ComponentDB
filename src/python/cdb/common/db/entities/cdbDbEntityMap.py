@@ -108,10 +108,10 @@ CDB_DB_ENTITY_MAP = {
     }),
     'source' : (Source, {}),
     'item_category' : (ItemCategory, {
-        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
+        'domain' : { 'parentEntity' : Domain, 'lazy' : False},
     }),
     'item_type' : (ItemType, {
-        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
+        'domain' : { 'parentEntity' : Domain, 'lazy' : False},
     }),
     'item_project' : (ItemProject, {}),
     'item' : (Item, {

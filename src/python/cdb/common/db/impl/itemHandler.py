@@ -68,12 +68,12 @@ class ItemHandler(CdbDbEntityHandler):
             raise ObjectNotFound('No %s with item id: %s found.'
                                  % (entityDisplayName, itemId))
 
-    def addItemCategory(self, session, itemCategoryName, description, domainHandlerName):
+    def addItemCategory(self, session, itemCategoryName, description, domainName):
         entityDisplayName = self._getEntityDisplayName(ItemCategory)
 
         self.logger.debug('Adding %s %s' % (entityDisplayName, itemCategoryName))
 
-        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, domainHandlerName)
+        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, domainName)
 
         try:
             self.getItemCategoryByName(session, itemCategoryName, dbDomainHandler.id)
@@ -103,12 +103,12 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemProjects = session.query(ItemProject).all()
         return dbItemProjects
 
-    def addItemType(self, session, itemTypeName, description, domainHandlerName):
+    def addItemType(self, session, itemTypeName, description, domainName):
         entityDisplayName = self._getEntityDisplayName(ItemType)
 
         self.logger.debug('Adding %s %s' % (entityDisplayName, itemTypeName))
 
-        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, domainHandlerName)
+        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, domainName)
 
         try:
             self.getItemTypeByName(session, itemTypeName, dbDomainHandler.id)
@@ -324,9 +324,9 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemItemCategory(self, session, itemId, itemCategoryName):
         dbItem = self.getItemById(session, itemId)
-        domainHandlerId = dbItem.domain.domain_handler_id
+        domainId = dbItem.domain.domain_id
 
-        dbCategory = self.getItemCategoryByName(session, itemCategoryName, domainHandlerId)
+        dbCategory = self.getItemCategoryByName(session, itemCategoryName, domainId)
 
         dbItemItemCategory = ItemItemCategory()
         dbItemItemCategory.item = dbItem
@@ -357,9 +357,9 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemItemType(self, session, itemId, itemTypeName):
         dbItem = self.getItemById(session, itemId)
-        domainHandlerId = dbItem.domain.domain_handler_id
+        domainId = dbItem.domain.domain_id
 
-        dbType = self.getItemTypeByName(session, itemTypeName, domainHandlerId)
+        dbType = self.getItemTypeByName(session, itemTypeName, domainId)
 
         dbItemItemType = ItemItemType()
         dbItemItemType.item = dbItem

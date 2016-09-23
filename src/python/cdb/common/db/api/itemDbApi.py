@@ -136,9 +136,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemSource.getCdbObject()
     
     @CdbDbApi.executeTransaction
-    def addItemCategory(self, name, description, domainHandlerName, **kwargs):
+    def addItemCategory(self, name, description, domainName, **kwargs):
         session = kwargs['session']
-        dbItemCategory = self.itemHandler.addItemCategory(session, name, description, domainHandlerName)
+        dbItemCategory = self.itemHandler.addItemCategory(session, name, description, domainName)
         return dbItemCategory.getCdbObject()
 
     @CdbDbApi.executeTransaction
@@ -160,9 +160,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemCategory.getCdbObject()
     
     @CdbDbApi.executeTransaction
-    def addItemType(self, name, description, domainHandlerName, **kwargs):
+    def addItemType(self, name, description, domainName, **kwargs):
         session = kwargs['session']
-        dbItemType = self.itemHandler.addItemType(session, name, description, domainHandlerName)
+        dbItemType = self.itemHandler.addItemType(session, name, description, domainName)
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeQuery
