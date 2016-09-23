@@ -9,7 +9,7 @@
     <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null 
                                                      ? itemListDataTableValue 
                                                      : itemObject.derivedFromItemList}" />
-    <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemListDataTableValue, 10)}" />
+    <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemListDataTableValue, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
     
     <ui:param name="updateTarget" value="#{updateTarget != null ? updateTarget : '@form'}" />
     

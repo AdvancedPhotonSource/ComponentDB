@@ -23,7 +23,7 @@
                  emptyMessage="No #{entityTypeDisplayName} properties found.">
 
         <ui:include src="../../propertyValue/private/propertyValueListObject.xhtml">
-            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(propertyValueDataList, 10)}" />
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(propertyValueDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
         </ui:include>
 
         <p:column headerText="Actions" exportable="false" rendered="#{renderActionColumn}">

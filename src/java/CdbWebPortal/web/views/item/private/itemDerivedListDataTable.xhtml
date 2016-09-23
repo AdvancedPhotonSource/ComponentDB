@@ -6,7 +6,7 @@
 
     <ui:param name="entityController" value="#{derivedController}" />
     <ui:param name="itemListDataTableValue" value="#{domainEntityObject.derivedFromItemList}" />
-    <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemListDataTableValue, 10)}" />
+    <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemListDataTableValue, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
     
     <ui:param name="isEntityCloneable" value="#{false}" />
     <ui:param name="isEntityWriteable" value="#{false}" />

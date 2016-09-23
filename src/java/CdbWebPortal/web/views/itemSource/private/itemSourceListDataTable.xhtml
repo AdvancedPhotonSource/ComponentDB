@@ -21,7 +21,7 @@
                  emptyMessage="No item sources found.">
 
         <ui:include src="itemSourceListObject.xhtml" >
-            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemSourceDataList, 10)}" />
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemSourceDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
         </ui:include>
         
     </p:dataTable>

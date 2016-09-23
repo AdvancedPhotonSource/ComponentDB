@@ -17,7 +17,7 @@
                  emptyMessage="No items found.">
 
         <ui:include src="itemMemberListObject.xhtml">
-            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemMemberDataList, 10)}"/>
+            <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(itemMemberDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}"/>
         </ui:include>
     </p:dataTable>
 

@@ -8,7 +8,7 @@
     <ui:param name="breadcrumb" value="#{itemElementController.currentViewId}"/>
     <ui:param name="breadcrumbObjectId" value="#{itemObject.id}"/>  
     <ui:param name="itemElementDataList" value="#{itemObject.itemElementDisplayList}" />
-    <ui:param name="itemElementListFilterable" value="#{facesUtility.displayFiltersForList(itemElementDataList, 10)}" />
+    <ui:param name="itemElementListFilterable" value="#{facesUtility.displayFiltersForList(itemElementDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
 
     <p:dataTable id="#{childEntityTypeName}ListDataTable"
                  widgetVar="#{childEntityTypeName}ListDataTableWidget"
