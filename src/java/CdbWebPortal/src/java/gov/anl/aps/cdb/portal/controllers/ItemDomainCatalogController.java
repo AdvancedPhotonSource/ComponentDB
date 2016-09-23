@@ -644,11 +644,6 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     @Override
-    public Domain getDefaultDomain() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Domain getDerivedDomain() {
         return domainFacade.findByName(DERIVED_DOMAIN_NAME);
     }

@@ -1509,11 +1509,6 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
-    public Domain getDefaultDomain() {
-        return domainFacade.findByName(DEFAULT_DOMAIN_NAME);
-    }
-
-    @Override
     public String getDomainHandlerName() {
         return DOMAIN_HANDLER_NAME;
     }

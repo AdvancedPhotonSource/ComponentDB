@@ -363,11 +363,6 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     @Override
-    public Domain getDefaultDomain() {
-        return domainFacade.findByName(DOMAIN_TYPE_NAME);
-    }
-
-    @Override
     public boolean getEntityDisplayItemIdentifier1() {
         return false;
     }
