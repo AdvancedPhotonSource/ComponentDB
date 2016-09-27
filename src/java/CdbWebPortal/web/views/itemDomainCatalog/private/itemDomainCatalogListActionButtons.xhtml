@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="../../item/private/templates/itemListActionButtonsTemplate.xhtml">
+                template="../../item/private/templates/itemListActionButtonsTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
     
     <ui:define name="listAddButton">
         <p:commandButton id="#{entityTypeName}#{viewName}AddButton"
@@ -17,10 +18,12 @@
         <p:commandButton value="Add from PDMLink"
                          rendered="#{displayAddButton}" 
                          onclick="PF('itemDomainCatalogPDMLinkDrawingSearchDialogWidget').show()"
-                         icon="ui-icon-plus"/>
+                         icon="ui-icon-plus"/>                      
+    </ui:define>    
+    
+    <ui:define name="additonalListButtons">
+        <ui:include src="../../item/private/templateDefaults/customizeDisplayAddons/itemListDataTableDisplayModeSelectionDialogButton.xhtml"/>        
     </ui:define>
-
-
 
 </ui:composition>
 
