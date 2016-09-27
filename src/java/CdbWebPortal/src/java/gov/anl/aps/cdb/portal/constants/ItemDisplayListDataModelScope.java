@@ -7,10 +7,10 @@ package gov.anl.aps.cdb.portal.constants;
 
 public enum ItemDisplayListDataModelScope {
     showAll("All", false),
-    showOwned("Show Owned", true),
-    showFavorites("Show Favorites", true),
-    showOwnedPlusFavorites("Show Owned & Favorites", true),
-    showItemsWithPropertyType("Show Items with Property", false);
+    showOwned("Owned", true),
+    showFavorites("Favorites", true),
+    showOwnedPlusFavorites("Owned & Favorites", true),
+    showItemsWithPropertyType("Items with Property", false);
 
     private String value;
     private boolean settingEntityRequired; 
