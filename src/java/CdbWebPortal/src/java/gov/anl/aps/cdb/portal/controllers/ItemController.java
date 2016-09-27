@@ -208,7 +208,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Integer currentWizardStepIndex = null;
 
     public ItemController() {
-    }   
+    }
 
     public abstract String getDefaultDomainName();
 
@@ -316,9 +316,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public abstract String getItemDerivedFromDomainHandlerName();
 
     public abstract String getDerivedDomainName();
-    
-    public Domain getDefaultDomain() { 
-        return domainFacade.findByName(getDefaultDomainName()); 
+
+    public Domain getDefaultDomain() {
+        return domainFacade.findByName(getDefaultDomainName());
     }
 
     public String getNameTitle() {
@@ -340,7 +340,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @Override
     public String getEntityEntityCategoryName() {
-        return getItemItemCategoryTitle(); 
+        return getItemItemCategoryTitle();
     }
 
     public List<Item> getItemList() {
@@ -805,36 +805,35 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return null;
     }
-    
-    
+
     public static String getItemItemTypeTitleForDomain(Domain domain) {
         if (domain != null) {
-            ItemController itemController = findDomainController(domain.getName()); 
-            return itemController.getItemItemTypeTitle(); 
+            ItemController itemController = findDomainController(domain.getName());
+            return itemController.getItemItemTypeTitle();
         }
-        return null; 
+        return null;
     }
-    
+
     public static String getItemItemCategoryTitleForDomain(Domain domain) {
         if (domain != null) {
-            ItemController itemController = findDomainController(domain.getName()); 
-            return itemController.getItemItemCategoryTitle(); 
+            ItemController itemController = findDomainController(domain.getName());
+            return itemController.getItemItemCategoryTitle();
         }
-        return null; 
+        return null;
     }
-     
+
     public static boolean getItemHasItemTypesForDomain(Domain domain) {
         if (domain != null) {
-            return findDomainController(domain.getName()).entityHasTypes(); 
+            return findDomainController(domain.getName()).entityHasTypes();
         }
-        return false; 
+        return false;
     }
-    
+
     public static boolean getItemHasItemCategoriesForDomain(Domain domain) {
         if (domain != null) {
-            return findDomainController(domain.getName()).entityHasCategories(); 
+            return findDomainController(domain.getName()).entityHasCategories();
         }
-        return false; 
+        return false;
     }
 
     private String getDomainControllerName() {
@@ -1008,6 +1007,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             //Nothing was populated into the list data model. 
             scopedListDataModel = new ListDataModel<>();
         }
+        
+        loadPropertyTypeFilterIfNeeded(scopedListDataModel);
 
         return scopedListDataModel;
     }
@@ -1455,29 +1456,29 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
         return false;
     }
-    
+
     public boolean isDisplayRowExpansionAssembly(Item item) {
         if (getEntityDisplayItemElements()) {
             List<ItemElement> itemElementsList = item.getItemElementDisplayList();
-            return itemElementsList != null && !itemElementsList.isEmpty(); 
+            return itemElementsList != null && !itemElementsList.isEmpty();
         }
-        return false; 
+        return false;
     }
 
     @Override
     public boolean isDisplayRowExpansionProperties(CdbDomainEntity item) {
         if (getEntityDisplayItemProperties()) {
-            return super.isDisplayRowExpansionProperties(item); 
-        } 
-        return false; 
+            return super.isDisplayRowExpansionProperties(item);
+        }
+        return false;
     }
 
     @Override
     public boolean isDisplayRowExpansionLogs(CdbDomainEntity item) {
         if (getEntityDisplayItemLogs()) {
-            return super.isDisplayRowExpansionLogs(item); 
+            return super.isDisplayRowExpansionLogs(item);
         }
-        return false; 
+        return false;
     }
 
     public List<Item> getSelectItemElementItemCandidateList() {
@@ -2025,6 +2026,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         this.displayItemListTreeView = displayItemListTreeView;
     }
 
+    public String getDisplayListDataModelScopeDisplayString() {
+        if (getDisplayListDataModelScope() != null) {
+            if (getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                return getDisplayListDataModelScope() + " '" + getDisplayPropertyTypeName(getDisplayListDataModelScopePropertyTypeId()) + "'";
+            }
+        }
+        return getDisplayListDataModelScope();
+    }
+
     public String getDisplayListDataModelScope() {
         return displayListDataModelScope;
     }
@@ -2048,7 +2058,33 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public void setDisplayListDataModelScopePropertyTypeId(Integer displayListDataModelScopePropertyTypeId) {
+        if (!Objects.equals(this.displayListDataModelScopePropertyTypeId, displayListDataModelScopePropertyTypeId)) {
+            resetListDataModel();
+        }
         this.displayListDataModelScopePropertyTypeId = displayListDataModelScopePropertyTypeId;
+    }
+
+    public boolean isDisplayListDataModelScopePropertyFilterable() {
+        return fetchFilterablePropertyValue(displayListDataModelScopePropertyTypeId);
+    }
+
+    @Override
+    public void preparePropertyTypeFilterForAllShownPropertyTypes() {
+        super.preparePropertyTypeFilterForAllShownPropertyTypes();
+
+        if (isDisplayListDataModelScopePropertyTypeSelection()) {
+            preparePropertyTypeFilter(displayListDataModelScopePropertyTypeId);
+        }
+    }
+
+    @Override
+    public Boolean getDisplayLoadPropertyValuesButton() {
+        if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
+            return false;
+        }
+
+        return super.getDisplayLoadPropertyValuesButton()
+                || checkDisplayLoadPropertyValueButtonByProperty(displayListDataModelScopePropertyTypeId);
     }
 
     public List<String> getDisplayListDataScopeSelectionList() {
