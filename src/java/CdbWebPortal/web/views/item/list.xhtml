@@ -10,7 +10,7 @@
     <ui:param name="pageRendered" value="#{loginController.loggedInAsAdmin}" />
     
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{itemGenericViewController.processPreRenderList()}"/>
+        <f:viewAction action="#{itemGenericViewController.processPreRenderList()}" />
     </f:metadata>
     
     
