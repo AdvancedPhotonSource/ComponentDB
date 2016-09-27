@@ -29,6 +29,7 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.RowEditEvent;
@@ -77,7 +78,9 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     private List<PropertyValue> filteredPropertyValueList;
 
-    protected Integer loadedDataTableHashCode = null;
+    protected Integer propertyLoadedDataTableHashCode = null;
+    
+    protected DataModel propertyTypeLoadDomainEntityListDataModel = null; 
 
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -240,13 +243,6 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
 
     @Override
-    public void processPreRenderList() {
-        super.processPreRenderList();
-
-        loadPropertyTypeFilterIfNeeded();
-    }
-
-    @Override
     public String customizeListDisplay() {
         resetDomainEntityPropertyTypeIdIndexMappings();
         if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
@@ -266,19 +262,28 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     @Override
     public DataModel getListDataModel() {
         DataModel cdbDomainEntityDataModel = super.getListDataModel();
-
-        if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
-            if (loadedDataTableHashCode == null || cdbDomainEntityDataModel.hashCode() != loadedDataTableHashCode) {
-                loadedDisplayPropertyTypes = null;
-                preparePropertyTypeFilter();
-            }
-        }
-
+        
+        loadPropertyTypeFilterIfNeeded(listDataModel);
+    
         return cdbDomainEntityDataModel;
     }
+    
+    private int getPropertyTypeDataModelHashCode() {
+        return propertyTypeLoadDomainEntityListDataModel.hashCode();
+    }
 
-    private void loadPropertyTypeFilterIfNeeded() {
-        getListDataModel();
+    protected void loadPropertyTypeFilterIfNeeded(DataModel listDataModelToLoad) {
+        if (listDataModelToLoad != null) {
+            propertyTypeLoadDomainEntityListDataModel = listDataModelToLoad; 
+            
+            if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
+                if (propertyLoadedDataTableHashCode == null || getPropertyTypeDataModelHashCode() != propertyLoadedDataTableHashCode) {
+                    loadedDisplayPropertyTypes = null;                    
+                    preparePropertyTypeFilter();
+                }
+            }
+        }
+        
     }
 
     private void forceLoadPropertyTypeFilter() {
@@ -301,26 +306,29 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
         forceLoadPropertyTypeFilter();
     }
+    
+    protected void preparePropertyTypeFilterForAllShownPropertyTypes() {
+        preparePropertyTypeFilter(displayPropertyTypeId1);
+        preparePropertyTypeFilter(displayPropertyTypeId2);
+        preparePropertyTypeFilter(displayPropertyTypeId3);
+        preparePropertyTypeFilter(displayPropertyTypeId4);
+        preparePropertyTypeFilter(displayPropertyTypeId5);
+    }
 
     public void preparePropertyTypeFilter() {
 
         if (loadedDisplayPropertyTypes == null) {
             loadedDisplayPropertyTypes = new ArrayList<>();
         }
+        
+        preparePropertyTypeFilterForAllShownPropertyTypes(); 
 
-        preparePropertyTypeFilter(displayPropertyTypeId1);
-        preparePropertyTypeFilter(displayPropertyTypeId2);
-        preparePropertyTypeFilter(displayPropertyTypeId3);
-        preparePropertyTypeFilter(displayPropertyTypeId4);
-        preparePropertyTypeFilter(displayPropertyTypeId5);
-
-        loadedDataTableHashCode = super.getListDataModel().hashCode();
-
+        propertyLoadedDataTableHashCode = getPropertyTypeDataModelHashCode();
     }
 
     public Boolean preparePropertyTypeFilter(Integer propertyTypeId) {
         if (propertyTypeId != null) {
-            DataModel<CdbDomainEntity> cdbDomainEntityList = super.getListDataModel();
+            DataModel<CdbDomainEntity> cdbDomainEntityList = propertyTypeLoadDomainEntityListDataModel;
             Iterator<CdbDomainEntity> cdbDomainEntityIterator = cdbDomainEntityList.iterator();
             while (cdbDomainEntityIterator.hasNext()) {
                 CdbDomainEntity cdbDomainEntity = cdbDomainEntityIterator.next();
@@ -332,15 +340,17 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         return false;
     }
 
-    private Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
-        if (loadedDisplayPropertyTypes != null) {
-            if (loadedDataTableHashCode != null && super.getListDataModel().hashCode() != loadedDataTableHashCode) {
-                loadedDisplayPropertyTypes = null;
-                return false;
-            }
-            for (Integer loadedPropertyTypeId : loadedDisplayPropertyTypes) {
-                if (Objects.equals(propertyTypeId, loadedPropertyTypeId)) {
-                    return true;
+    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
+        if (propertyTypeId != null) {
+            if (loadedDisplayPropertyTypes != null) {
+                if (propertyLoadedDataTableHashCode != null && getPropertyTypeDataModelHashCode() != propertyLoadedDataTableHashCode) {
+                    loadedDisplayPropertyTypes = null;
+                    return false;
+                }
+                for (Integer loadedPropertyTypeId : loadedDisplayPropertyTypes) {
+                    if (Objects.equals(propertyTypeId, loadedPropertyTypeId)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -384,7 +394,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         this.filterByPropertiesAutoLoad = filterByPropertiesAutoLoad;
     }
 
-    private Boolean checkDisplayLoadPropertyValueButtonByProperty(Integer propertyTypeId) {
+    protected Boolean checkDisplayLoadPropertyValueButtonByProperty(Integer propertyTypeId) {
         if (propertyTypeId == null) {
             return false;
         } else {
