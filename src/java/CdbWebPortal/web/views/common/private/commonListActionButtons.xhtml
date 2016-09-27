@@ -20,6 +20,8 @@
         <ui:insert name="listAddButton">
             <ui:include src="reusedParts/listAddButton.xhtml" />
         </ui:insert>
+        
+        <ui:insert name="additonalListButtons"/>
 
         <p:commandButton id="#{entityTypeName}LoadPropertyValuesButton" 
                          rendered="#{displayLoadPropertiesFilterValuesButton}" 
