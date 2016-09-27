@@ -8,7 +8,7 @@
     <ui:param name="entityController" value="#{itemDomainLocationController}" />
     
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{itemDomainLocationController.processPreRenderList()}"/>
+        <f:viewAction action="#{itemDomainLocationController.processPreRenderList()}"/>
     </f:metadata>
     
 </ui:composition>

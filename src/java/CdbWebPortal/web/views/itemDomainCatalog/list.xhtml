@@ -9,7 +9,7 @@
     <ui:param name="entityController" value="#{itemDomainCatalogController}" />
     
     <f:metadata>
-        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processPreRenderList()}"/>
+        <f:viewAction action="#{itemDomainCatalogController.processPreRenderList()}" />
     </f:metadata>
     
     <ui:define name="listActionButtons">
