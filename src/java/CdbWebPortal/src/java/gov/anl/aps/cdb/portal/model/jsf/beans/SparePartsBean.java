@@ -60,7 +60,7 @@ public class SparePartsBean implements Serializable {
 
     private enum EmailOptions {
         ownerEmail("Owner Email"),
-        customEmail("Custom Email"),
+        customEmail("Specified Email"),
         noNotification("None");
 
         private final String displayValue;
