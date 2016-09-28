@@ -525,12 +525,16 @@ h1 {
     background-size: auto 100%;
 }
 
+.pageTitle {
+    padding-bottom: 27px;
+}
+
 .pageTitle h1 {
     font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
     font-size:  20px;
     font-weight: bold;
-    margin: 0px;
-    padding-bottom: 40px;
+    margin: 0px;    
+    padding-bottom: 5px;
     color: #4e80b6;
     vertical-align: middle;
     text-align: left;
@@ -1029,4 +1033,25 @@ h2 {
 
 .filterViewItemHierarchySelectionRepeatPanel {
     padding-bottom: 10px;
+}
+
+.plainPanelGrid, 
+.plainPanelGrid .ui-panelgrid-cell,
+.plainPanelGrid .ui-widget-content {
+    background: transparent !important;; 
+    padding: 0px;
+}
+
+.expandingInputText.ui-state-focus {
+    width: 250px;
+}
+
+.expandingInputText {
+    width: 60px;
+    transition-duration: 0.5s;
+    transition-property: width; 
+}
+
+.menuBarInputText {
+    height: 20px;
 }
