@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -21,6 +20,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -32,6 +32,8 @@ public class ItemDomainLocationController extends ItemController {
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
     private final String DOMAIN_HANDLER_NAME = "Location";
 
+    private static final Logger logger = Logger.getLogger(ItemDomainLocationController.class.getName());
+    
     private TreeNode locationsWithInventoryItemsRootNode;
 
     private TreeNode locationsWithInventoryItemAssemblyRootNode;
@@ -77,40 +79,41 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     /**
-     * Get a list of items that are located somewhere down the hierarchy of another item. 
-     * 
+     * Get a list of items that are located somewhere down the hierarchy of
+     * another item.
+     *
      * @param locationItem
-     * @return 
+     * @return
      */
     public static List<Item> getAllItemsLocatedInHierarchy(Item locationItem) {
-        List<Item> itemList = new ArrayList<>();         
-        return getAllItemsLocatedInHierarchy(itemList, locationItem);        
+        List<Item> itemList = new ArrayList<>();
+        return getAllItemsLocatedInHierarchy(itemList, locationItem);
     }
 
     /**
-     * Recursive helper method for fetching items located somewhere down in the hierarchy of another item. 
-     * 
+     * Recursive helper method for fetching items located somewhere down in the
+     * hierarchy of another item.
+     *
      * @param itemList
      * @param locationItem
-     * @return 
+     * @return
      */
-    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, Item locationItem) {   
+    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, Item locationItem) {
         String relationshipToLocation = ItemElementRelationshipTypeNames.itemLocation.getValue();
-        boolean isLocationItemFirst = false; 
-        List<Item> itemsInLocation = ItemUtility.getItemsRelatedToItem(locationItem, relationshipToLocation, isLocationItemFirst); 
-        itemList.addAll(itemsInLocation); 
-        
-        List<ItemElement> itemElementList = locationItem.getItemElementDisplayList(); 
+        boolean isLocationItemFirst = false;
+        List<Item> itemsInLocation = ItemUtility.getItemsRelatedToItem(locationItem, relationshipToLocation, isLocationItemFirst);
+        itemList.addAll(itemsInLocation);
+
+        List<ItemElement> itemElementList = locationItem.getItemElementDisplayList();
         if (itemElementList != null) {
             for (ItemElement itemElement : itemElementList) {
-                Item containedItem = itemElement.getContainedItem(); 
+                Item containedItem = itemElement.getContainedItem();
                 if (containedItem != null) {
                     getAllItemsLocatedInHierarchy(itemList, containedItem);
                 }
             }
         }
-        
-        
+
         return itemList;
     }
 
@@ -139,7 +142,7 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     private void addAssemblyTreeToLocationTree(TreeNode currentNode) throws CdbException {
-        List<TreeNode> nodeChildren = currentNode.getChildren(); 
+        List<TreeNode> nodeChildren = currentNode.getChildren();
         if (nodeChildren != null) {
             for (TreeNode childNode : currentNode.getChildren()) {
                 addAssemblyTreeToLocationTree(childNode);
@@ -220,7 +223,7 @@ public class ItemDomainLocationController extends ItemController {
             // TODO handle circular location reference
             addLocationRelationshipsToParentTreeNode(inventoryItem, currentTreeNode);
         }
-    }    
+    }
 
     public TreeNode getSelectedLocationTreeNode() {
         return selectedLocationTreeNode;
@@ -270,14 +273,28 @@ public class ItemDomainLocationController extends ItemController {
             // Check if item is linked using location relationship
             currentLowestLocationSelfElement = currentLowestItem.getSelfElement();
             List<ItemElementRelationship> relationshipList = currentLowestLocationSelfElement.getItemElementRelationshipList();
+            
+            // Keep track of iterated items to avoid a circular reference 
+            List<ItemElement> locationElementList = new ArrayList<>();
+            locationElementList.add(currentLowestLocationSelfElement); 
             while (relationshipList != null && !relationshipList.isEmpty()) {
                 relationshipList = currentLowestLocationSelfElement.getItemElementRelationshipList();
                 ItemElementRelationship locationRelationship = findLocationItemElementRelationship(relationshipList);
-                if (locationRelationship != null) {
+                if (locationRelationship != null) {                    
                     currentLowestLocationSelfElement = locationRelationship.getSecondItemElement();
-                    itemHerarchyList.add(0, currentLowestLocationSelfElement.getParentItem());
+                    if (locationElementList.contains(currentLowestLocationSelfElement)) {
+                        logger.warn("Circular reference occured in location relationship check. "
+                                + "For lowest location item: " + lowestLocationItem.toString());
+                        break;
+                    } else {
+                        locationElementList.add(currentLowestLocationSelfElement); 
+                    }                                        
+                    itemHerarchyList.add(0, currentLowestLocationSelfElement.getParentItem());                    
                 }
             }
+            
+            // No longer needed
+            locationElementList = null; 
 
             // Use the location herarchy relationship to complete the tree. 
             currentLowestItem = currentLowestLocationSelfElement.getParentItem();
@@ -319,6 +336,26 @@ public class ItemDomainLocationController extends ItemController {
                 }
 
                 return rootTreeNode;
+            }
+        }
+
+        return null;
+    }
+
+    public static String generateLocatonHierarchyString(Item lowestLocationItem) {
+        if (lowestLocationItem != null) {
+            List<Item> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
+
+            if (itemHierarchyList != null) {
+                String result = "";
+                for (Item item : itemHierarchyList) {
+                    result += item.getName();
+                    // Still more items to load.
+                    if (itemHierarchyList.indexOf(item) != itemHierarchyList.size() - 1) {
+                        result += " -> ";
+                    }
+                }
+                return result;
             }
         }
 
