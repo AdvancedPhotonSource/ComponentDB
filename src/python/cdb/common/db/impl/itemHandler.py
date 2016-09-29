@@ -407,13 +407,19 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemElementRelationship(self, session, firstItemElementId, secondItemElementId, firstItemConnectorId, secondItemConnectorId,
                                    linkItemElementId, relationshipTypeName, relationshipDetails, resourceTypeName, label, description ):
+        if firstItemElementId is None:
+            raise InvalidArgument("First item element Id must be specified for a item element relationship")
+
         firstItemElement = self.getItemElementById(session, firstItemElementId)
-        secondItemElement = self.getItemElementById(session, secondItemElementId)
-        relationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, relationshipTypeName)
 
         dbItemElementRelationship = ItemElementRelationship()
         dbItemElementRelationship.firstItemElement = firstItemElement
-        dbItemElementRelationship.secondItemElement = secondItemElement
+
+        if secondItemElementId is not None:
+            secondItemElement = self.getItemElementById(session, secondItemElementId)
+            dbItemElementRelationship.secondItemElement = secondItemElement
+
+        relationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, relationshipTypeName)
         dbItemElementRelationship.relationshipType = relationshipType
         dbItemElementRelationship.relationship_details = relationshipDetails
         dbItemElementRelationship.label = label
