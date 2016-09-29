@@ -73,11 +73,11 @@ class ItemHandler(CdbDbEntityHandler):
 
         self.logger.debug('Adding %s %s' % (entityDisplayName, itemCategoryName))
 
-        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, domainName)
+        dbDomain = self.domainHandler.findDomainByName(session, domainName)
 
         try:
-            self.getItemCategoryByName(session, itemCategoryName, dbDomainHandler.id)
-            raise ObjectAlreadyExists('%s %s for domain %s already exists.' % (entityDisplayName, itemCategoryName, dbDomainHandler.name))
+            self.getItemCategoryByName(session, itemCategoryName, dbDomain.id)
+            raise ObjectAlreadyExists('%s %s for domain %s already exists.' % (entityDisplayName, itemCategoryName, dbDomain.name))
         except ObjectNotFound, ex:
             # ok
             pass
@@ -87,7 +87,7 @@ class ItemHandler(CdbDbEntityHandler):
         if description:
             dbItemCategory.description = description
 
-        dbItemCategory.domainHandler = dbDomainHandler
+        dbItemCategory.domain = dbDomain
 
         session.add(dbItemCategory)
         session.flush()
@@ -108,11 +108,11 @@ class ItemHandler(CdbDbEntityHandler):
 
         self.logger.debug('Adding %s %s' % (entityDisplayName, itemTypeName))
 
-        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, domainName)
+        dbDomain = self.domainHandler.findDomainByName(session, domainName)
 
         try:
-            self.getItemTypeByName(session, itemTypeName, dbDomainHandler.id)
-            raise ObjectAlreadyExists('%s %s for domain %s already exists.' % (entityDisplayName, itemTypeName, dbDomainHandler.name))
+            self.getItemTypeByName(session, itemTypeName, dbDomain.id)
+            raise ObjectAlreadyExists('%s %s for domain %s already exists.' % (entityDisplayName, itemTypeName, dbDomain.name))
         except ObjectNotFound, ex:
             # ok
             pass
@@ -122,7 +122,7 @@ class ItemHandler(CdbDbEntityHandler):
         if description:
             dbItemType.description = description
 
-        dbItemType.domainHandler = dbDomainHandler
+        dbItemType.domain = dbDomain
 
         session.add(dbItemType)
         session.flush()
@@ -130,30 +130,30 @@ class ItemHandler(CdbDbEntityHandler):
         self.logger.debug('Inserted %s id %s' % (entityDisplayName, dbItemType.id))
         return dbItemType
 
-    def getItemCategoryByName(self, session, name, domainHandlerId):
+    def getItemCategoryByName(self, session, name, domainId):
         entityDisplayName = self._getEntityDisplayName(ItemCategory)
 
         try:
             dbItem = session.query(ItemCategory).filter(ItemCategory.name==name)\
-                .filter(ItemCategory.domain_handler_id==domainHandlerId).one()
+                .filter(ItemCategory.domain_id == domainId).one()
             return dbItem
         except NoResultFound, ex:
-            raise ObjectNotFound('No %s with name: %s, domain handler id: %s exists.'
-                                 % (entityDisplayName, name, domainHandlerId))
+            raise ObjectNotFound('No %s with name: %s, domain id: %s exists.'
+                                 % (entityDisplayName, name, domainId))
 
     def getItemProjectByName(self, session, itemProjectName):
         return self._findDbObjByName(session, ItemProject, itemProjectName)
 
-    def getItemTypeByName(self, session, name, domainHandlerId):
+    def getItemTypeByName(self, session, name, domainId):
         entityDisplayName = self._getEntityDisplayName(ItemType)
 
         try:
             dbItem = session.query(ItemType).filter(ItemType.name==name)\
-                .filter(ItemType.domain_handler_id==domainHandlerId).one()
+                .filter(ItemType.domain_id == domainId).one()
             return dbItem
         except NoResultFound, ex:
-            raise ObjectNotFound('No %s with name: %s, domain handler id: %s exists.'
-                                 % (entityDisplayName, name, domainHandlerId))
+            raise ObjectNotFound('No %s with name: %s, domain id: %s exists.'
+                                 % (entityDisplayName, name, domainId))
 
     def getItemConnectorById(self, session, id):
         return self._findDbObjById(session, ItemConnector, id)
@@ -324,7 +324,7 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemItemCategory(self, session, itemId, itemCategoryName):
         dbItem = self.getItemById(session, itemId)
-        domainId = dbItem.domain.domain_id
+        domainId = dbItem.domain.id
 
         dbCategory = self.getItemCategoryByName(session, itemCategoryName, domainId)
 
@@ -357,7 +357,7 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemItemType(self, session, itemId, itemTypeName):
         dbItem = self.getItemById(session, itemId)
-        domainId = dbItem.domain.domain_id
+        domainId = dbItem.domain.id
 
         dbType = self.getItemTypeByName(session, itemTypeName, domainId)
 
