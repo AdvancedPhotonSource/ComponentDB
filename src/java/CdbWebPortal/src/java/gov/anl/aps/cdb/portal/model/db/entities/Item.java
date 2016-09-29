@@ -176,6 +176,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient TreeNode locationTree = null;
     private transient String locationDetails = null;
     private transient Item location;
+    private transient String locationString;
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false; 
 
@@ -730,6 +731,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setLocation(Item location) {
         this.location = location;
+    }
+
+    public String getLocationString() {
+        return locationString;
+    }
+
+    public void setLocationString(String locationString) {
+        this.locationString = locationString;
     }
 
     @XmlTransient
