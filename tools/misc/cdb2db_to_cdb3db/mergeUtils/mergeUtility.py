@@ -794,7 +794,7 @@ class MergeUtility():
 
                 itemElementRelationship = self.itemDbApi.addItemElementRelationship(selfItemElementId, locationSelfItemElementId, None, None, None,
                                                           self.locationRelationshipTypeName, locationDetails, None, None, None)
-            elif locationDetails is not None:
+            elif locationDetails is not None and locationDetails != '':
                 itemElementRelationship = self.itemDbApi.addItemElementRelationship(selfItemElementId, None, None, None, None,
                                                           self.locationRelationshipTypeName, locationDetails, None, None, None)
 
@@ -806,7 +806,6 @@ class MergeUtility():
             if itemElementRelationship is None:
                 itemElementRelationship = self.itemDbApi.addItemElementRelationship(selfItemElementId, None, None, None, None,
                                                           self.locationRelationshipTypeName, None, None, None, None)
-                pass
             for locationHistory in componentInstanceLocationHistory:
                 locationHistoryData = locationHistory.toCdbObject().data
                 itemElementRelationshipId = itemElementRelationship.data['id']

@@ -59,6 +59,6 @@ mergeUtility.populateItemsUsingLocations()
 mergeUtility.populateCatalogInventoryItems(populateTypesAndCategoriesAsNeeded, defaultProject)
 
 mergeUtility.backupTempDb()
-if typeOfMerge== typesOfMerge.finish or typeOfMerge == typesOfMerge.full:
+if typeOfMerge == typesOfMerge.finish or typeOfMerge == typesOfMerge.full:
     mergeUtility.destroyTempDb()
 mergeUtility.printSummaryInfo()
