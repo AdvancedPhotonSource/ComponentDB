@@ -6,10 +6,13 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <p:column headerText="Location"
-              rendered="#{itemDomainInventoryController.displayLocation}">
-        <ui:include src="componentInventoryLocationRelationshipTree.xhtml">
-            <ui:param name="itemObject" value="#{itemListObject}" />
-        </ui:include>
+              rendered="#{itemDomainInventoryController.displayLocation}"
+              filterBy="#{itemListObject.locationString}"
+              sortBy="#{itemListObject.locationString}"
+              filterMatchMode="contains"
+              filterable="#{filterable}"
+              >
+        <h:outputText value="#{itemListObject.locationString}" />        
     </p:column>
 
     <ui:param name="locationDetails" value="#{itemDomainInventoryController.getLocationRelationshipDetails(itemListObject)}" />
