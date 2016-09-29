@@ -352,7 +352,7 @@ public class ItemDomainLocationController extends ItemController {
                     result += item.getName();
                     // Still more items to load.
                     if (itemHierarchyList.indexOf(item) != itemHierarchyList.size() - 1) {
-                        result += " -> ";
+                        result += " ➜ ";
                     }
                 }
                 return result;
