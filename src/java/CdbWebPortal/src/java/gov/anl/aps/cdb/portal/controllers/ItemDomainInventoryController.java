@@ -8,7 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -55,12 +55,12 @@ import org.primefaces.model.menu.MenuModel;
 @Named("itemDomainInventoryController")
 @SessionScoped
 public class ItemDomainInventoryController extends ItemController {
-
+    
     private final String DOMAIN_TYPE_NAME = "Inventory";
     private final String DEFAULT_DOMAIN_NAME = "Inventory";
     private final String DOMAIN_HANDLER_NAME = "Inventory";
     private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog";
-
+    
     private final String ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP = "itemElementInstantiation";
     private final String ITEM_DOMAIN_LOCATION_CONTROLLER_NAME = "itemDomainLocationController";
 
@@ -111,80 +111,80 @@ public class ItemDomainInventoryController extends ItemController {
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainInventory.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainInventory.List.Scope.Display";
     private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainInventory.List.Scope.Display.PropertyTypeId";
-
+    
     private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
-
+    
     private Boolean displayLocationDetails = null;
     private Boolean displayLocation = null;
     private Boolean displaySerialNumber = null;
-
+    
     private String filterByComponent = null;
     private String filterByLocation = null;
     private String filterByLocationDetails = null;
     private String filterBySerialNumber = null;
     private String filterByTag = null;
-
+    
     private Integer qrIdViewParam = null;
-
+    
     private List<PropertyValue> filteredPropertyValueList = null;
 
     //Variables used for creation of new inventory item. 
     private List<Item> newItemsToAdd = null;
     private TreeNode currentItemBOMListTree = null;
     private TreeNode selectedItemBOMTreeNode = null;
-
+    
     protected ListDataModel filterViewLocationDataModel = null;
     protected Item filterViewLocationItemLoaded = null;
-    protected boolean filterViewLocationDataModelLoaded = false; 
-
+    protected boolean filterViewLocationDataModelLoaded = false;
+    
     @EJB
     private ItemFacade itemFacade;
-
+    
     @EJB
     private DomainFacade domainFacade;
-
+    
     @EJB
     private DomainHandlerFacade domainHandlerFacade;
-
+    
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
-
+    
     @EJB
     private RelationshipTypeFacade relationshipTypeFacade;
-
+    
     public ItemDomainInventoryController() {
         super();
         displayDerivedFromItem = false;
     }
-
+    
     public Boolean getDisplayLocationDetails() {
         return displayLocationDetails;
     }
-
+    
     public void setDisplayLocationDetails(Boolean displayLocationDetails) {
         this.displayLocationDetails = displayLocationDetails;
     }
-
+    
     public Boolean getDisplayLocation() {
         return displayLocation;
     }
-
+    
     public void setDisplayLocation(Boolean displayLocation) {
         this.displayLocation = displayLocation;
     }
-
+    
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         return DisplayListPageHelpFragmentSettingTypeKey;
     }
-
+    
     public TreeNode getLocationRelationshipTree(Item inventoryItem) {
         if (inventoryItem.getLocationTree() == null) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationTree();
     }
-
+    
     private ItemElementRelationship findItemLocationRelationship(Item item) {
         // Support items that have not yet been saved to db.
         if (item.getSelfElement().getId() != null) {
@@ -195,45 +195,45 @@ public class ItemDomainInventoryController extends ItemController {
             return null;
         }
     }
-
+    
     @Override
     public ListDataModel getDomainListDataModel(EntityType entityType) {
         List<Item> itemList = itemFacade.findByDomainAndDerivedEntityTypeOrderByQrId(getDefaultDomainName(), entityType.getName());
         return new ListDataModel(itemList);
     }
-
+    
     @Override
     public ListDataModel getDomainListDataModel() {
         List<Item> itemList = itemFacade.findByDomainOrderByQrId(getDefaultDomainName());
         return new ListDataModel(itemList);
     }
-
+    
     @Override
     public List<EntityType> getFilterableEntityTypes() {
         return domainHandlerFacade.findByName(DERIVED_ITEM_DOMAIN_HANDLER_NAME).getAllowedEntityTypeList();
     }
-
+    
     public String getLocationRelationshipDetails(Item inventoryItem) {
         if (inventoryItem.getLocationDetails() == null) {
             setItemLocationInfo(inventoryItem);
         }
-
+        
         return inventoryItem.getLocationDetails();
     }
-
+    
     public Item getLocation(Item inventoryItem) {
         if (inventoryItem.getLocation() == null) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocation();
     }
-
+    
     public void updateLocationForItem(Item item, Item locationItem, String onSuccess) {
         if (item.equals(locationItem)) {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
         }
-
+        
         if (locationItem != null) {
             if (isInventoryDomainItem(locationItem)) {
                 Item itemToCheck = item;
@@ -261,20 +261,20 @@ public class ItemDomainInventoryController extends ItemController {
                     SessionUtility.addErrorMessage("Error", "Item is already part of this assembly, cannot use selected location.");
                     return;
                 }
-
+                
             }
         }
-
+        
         item.setLocation(locationItem);
         updateLocationTreeForItem(item);
         RequestContext.getCurrentInstance().execute(onSuccess);
-
+        
     }
-
+    
     private boolean isItemInAssemblyTree(Item currentItem, Item itemToLookFor) {
         return isItemInAssemblyTree(currentItem, itemToLookFor, true, true);
     }
-
+    
     private boolean isItemInAssemblyTree(Item currentItem, Item itemToLookFor, boolean isNeedToMoveDown, boolean isNeedToMoveUp) {
         if (isNeedToMoveUp) {
             // Move up the assembly tree
@@ -310,68 +310,64 @@ public class ItemDomainInventoryController extends ItemController {
                 }
             }
         }
-
+        
         return false;
-    } 
-
+    }
+    
     @Override
     protected void filterViewItemProjectChanged() {
-        super.filterViewItemProjectChanged(); 
+        super.filterViewItemProjectChanged();
         filterViewLocationDataModelLoaded = false;
     }
-
+    
     public boolean isFilterViewLocationDataModelNeedReloading(Item newLocationItem) {
         if (filterViewLocationDataModel == null) {
-            return true; 
+            return true;
         }
         if (filterViewLocationDataModelLoaded) {
             return true;
         }
         if (filterViewLocationItemLoaded != null) {
             if (!filterViewLocationItemLoaded.equals(newLocationItem)) {
-                return true; 
+                return true;
             }
-        } else {
-            // last is null but new is not. 
-            if (newLocationItem != null) {
-                return true; 
+        } else // last is null but new is not. 
+         if (newLocationItem != null) {
+                return true;
             }
-        }
-        return false; 
+        return false;
     }
-
+    
     public void updateFilterViewLocationDataModelReloadStatus(Item lastLocationLoaded) {
         filterViewLocationDataModelLoaded = true;
         filterViewLocationItemLoaded = lastLocationLoaded;
     }
     
-    public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(Item item) {               
-        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue(); 
+    public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(Item item) {
+        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
         
-        List<ItemElementRelationship> locationRelationshipList = ItemUtility.getItemRelationshipList(item, locationRelationshipTypeName, true); 
+        List<ItemElementRelationship> locationRelationshipList = ItemUtility.getItemRelationshipList(item, locationRelationshipTypeName, true);
         
         if (locationRelationshipList.size() > 1) {
             SessionUtility.addErrorMessage("Error", "Item is part of two or more locations.");
-        } else {
-            if (locationRelationshipList.size() == 1) {
-                return locationRelationshipList.get(0).getItemElementRelationshipHistoryList(); 
-            }
+        } else if (locationRelationshipList.size() == 1) {
+            return locationRelationshipList.get(0).getItemElementRelationshipHistoryList();
         }
         
-        return null;        
+        return null;
     }
-
+    
     public ListDataModel getFilterViewLocationDataModel() {
-        Item selection = getItemDomainLocationController().getFilterViewLocationLastSelection(); 
+        Item selection = getItemDomainLocationController().getFilterViewLocationLastSelection();
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
-            List<Item> itemList = new ArrayList<>(); 
+            List<Item> itemList = new ArrayList<>();
             if (selection != null) {
                 itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
                 if (filterViewSelectedItemProject != null) {
                     List<Item> itemsToRemove = new ArrayList<>();
                     for (Item item : itemList) {
                         if (item.getItemProjectList().contains(filterViewSelectedItemProject)) {
-                            continue; 
+                            continue;
                         }
                         itemsToRemove.add(item);
                     }
@@ -384,11 +380,11 @@ public class ItemDomainInventoryController extends ItemController {
         }
         
         return filterViewLocationDataModel;
-    } 
-
+    }
+    
     @Override
     protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
-        super.prepareFilterViewResultItem(fvio); 
+        super.prepareFilterViewResultItem(fvio);
         Item inventoryItem = fvio.getItemObject();
         
         TreeNode rootTreeNode = ItemUtility.createNewTreeNode(inventoryItem, null);
@@ -397,58 +393,100 @@ public class ItemDomainInventoryController extends ItemController {
             fvio.addFilterViewItemExpansion(rootTreeNode, "Location For");
         }
         
-        
-    }    
-
+    }
+    
     @Override
     public void resetListDataModel() {
-        super.resetListDataModel();        
-    }    
+        super.resetListDataModel();
+    }
     
     public ItemDomainLocationController getItemDomainLocationController() {
         Object bean = SessionUtility.findBean(ITEM_DOMAIN_LOCATION_CONTROLLER_NAME);
-        return (ItemDomainLocationController) bean; 
+        return (ItemDomainLocationController) bean;
     }
-
+    
     public boolean isInventoryDomainItem(Item item) {
         return item.getDomain().getName().equals(getDefaultDomainName());
     }
-
+    
+    /**
+     * Using the current location set in item, generate a location tree. 
+     * 
+     * @param item 
+     */
     public void updateLocationTreeForItem(Item item) {
         if (item != null) {
             Item location = item.getLocation();
             item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
         }
     }
-
+    
+    /**
+     * Load current item location information & set location string. 
+     * 
+     * @param inventoryItem 
+     */
+    public void loadLocationStringForItem(Item inventoryItem) {
+        setItemLocationInfo(inventoryItem, false, true); 
+    }
+    
     public void setItemLocationInfo(Item inventoryItem) {
+        setItemLocationInfo(inventoryItem, true, true);
+    }
+    
+    public void setItemLocationInfo(Item inventoryItem, boolean loadLocationTreeForItem, boolean loadLocationHierarchyString) {
         if (inventoryItem.getOriginalLocationLoaded() == false) {
-            TreeNode locationTree = inventoryItem.getLocationTree();
-
-            if (locationTree == null) {
+            Item itemLocationItem = inventoryItem.getLocation();
+            
+            if (itemLocationItem == null) {
                 ItemElementRelationship itemElementRelationship;
                 itemElementRelationship = findItemLocationRelationship(inventoryItem);
-
+                
                 if (itemElementRelationship != null) {
                     ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
                     if (locationSelfItemElement != null) {
                         Item locationItem = locationSelfItemElement.getParentItem();
                         inventoryItem.setLocation(locationItem);
-                        locationTree = ItemDomainLocationController.generateLocationNodeTreeBranch(locationItem);
-                        inventoryItem.setLocationTree(locationTree);
+                        if (loadLocationTreeForItem) {
+                            updateLocationTreeForItem(inventoryItem);
+                        }
+                        if (loadLocationHierarchyString) {
+                            inventoryItem.setLocationString(ItemDomainLocationController.generateLocatonHierarchyString(locationItem));
+                        }
                     }
                     inventoryItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
                 }
             }
             inventoryItem.setOriginalLocationLoaded(true);
         }
-
+        
     }
-
+    
     private RelationshipType getLocationRelationshipType() {
         return relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemLocation.getValue());
-    }
+    }        
 
+    @Override
+    protected boolean isPreProcessListDataModelIterateNeeded() {
+        boolean result = super.isPreProcessListDataModelIterateNeeded();
+        
+        if (!result) {
+           return displayLocation; 
+        }
+        
+        return result;
+    } 
+
+    @Override
+    protected void processPreProcessIteratedDomainEntity(CdbDomainEntity entity) {
+        super.processPreProcessIteratedDomainEntity(entity); 
+        
+        if (displayLocation) {
+            Item item = (Item) entity; 
+            loadLocationStringForItem(item);
+        }
+    }
+    
     @Override
     public String prepareCreate() {
         ItemController derivedItemController = getItemDerivedFromDomainController();
@@ -457,19 +495,19 @@ public class ItemDomainInventoryController extends ItemController {
             derivedItemController.clearListFilters();
             derivedItemController.setFilteredObjectList(null);
         }
-
+        
         String createResult = super.prepareCreate();
-
+        
         return createResult;
     }
-
+    
     public void createSaveFromDialog(String onSuccessCommand) {
         String result = create();
         if (result != null) {
             RequestContext.getCurrentInstance().execute(onSuccessCommand);
         }
     }
-
+    
     public void createCancelFromDialog() {
         if (getCurrent() != null) {
             Item catalogItem = getCurrent().getDerivedFromItem();
@@ -479,13 +517,13 @@ public class ItemDomainInventoryController extends ItemController {
             setCurrent(null);
         }
     }
-
+    
     @Override
     public void prepareAddItemDerivedFromItem(Item item) {
         super.prepareAddItemDerivedFromItem(item);
         prepareBillOfMaterialsForCurrentItem();
     }
-
+    
     @Override
     protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
         switch (step) {
@@ -500,91 +538,91 @@ public class ItemDomainInventoryController extends ItemController {
             default:
                 break;
         }
-
+        
         return super.getCreateItemWizardMenuItemValue(step);
     }
-
+    
     @Override
     protected String getCreateItemWizardMenuItemCustomValue(String stepName) {
         if (stepName.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
             return "Bill of Materials";
         }
-
+        
         return super.getCreateItemWizardMenuItemCustomValue(stepName);
     }
-
+    
     @Override
     public MenuModel getCreateItemWizardStepsMenuModel() {
         if (createItemWizardStepsMenuModel == null) {
             // Create all of the standard menu items.
             super.getCreateItemWizardStepsMenuModel();
-
+            
             DefaultMenuItem menuItem;
             String menuItemDisplayValue = getCreateItemWizardMenuItemCustomValue(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
             menuItem = createMenuItemForCreateWizardSteps(menuItemDisplayValue, ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
-
+            
             createItemWizardStepsMenuModel.addElement(menuItem);
-
+            
         }
-
+        
         return createItemWizardStepsMenuModel;
     }
-
+    
     @Override
     public String getNextStepForCreateItemWizard(FlowEvent event) {
         if (getCurrent().getDerivedFromItem() == null) {
             SessionUtility.addWarningMessage("No Catalog Item Selected", "Please select a catalog item.");
             return ItemCreateWizardSteps.derivedFromItemSelection.getValue();
         }
-
+        
         String nsEvent = event.getNewStep();
-
+        
         if (nsEvent.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
             prepareBillOfMaterialsForCurrentItem();
         }
-
+        
         return super.getNextStepForCreateItemWizard(event);
     }
-
+    
     public void prepareBillOfMaterialsForCurrentItem() {
         // Prepare bill of materials if not yet done so. 
         newItemsToAdd = new ArrayList<>();
         InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
         InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
     }
-
+    
     @Override
     public String prepareView(Item item) {
         resetBOMSupportVariables();
         return super.prepareView(item); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public String prepareEdit(Item inventoryItem) {
         resetBOMSupportVariables();
         setCurrent(inventoryItem);
         return super.prepareEdit(inventoryItem);
     }
-
+    
     public Boolean displayBOMEditButton() {
         if (current != null) {
             List<ItemElement> catalogItemElementDisplayList;
             catalogItemElementDisplayList = current.getDerivedFromItem().getItemElementDisplayList();
             return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
         }
-
+        
         return false;
     }
-
+    
     public String saveEditBOMList() {
         return this.update();
     }
-
+    
     public void prepareEditBOMForCurrent() {
         resetBOMSupportVariables();
         prepareBillOfMaterialsForCurrentItem();
     }
-
+    
     @Override
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
         if (getCurrent().getDerivedFromItem() == derivedFromItem) {
@@ -598,7 +636,7 @@ public class ItemDomainInventoryController extends ItemController {
         // Add current item to list
         newItemsToAdd.add(getCurrent());
     }
-
+    
     public void resetBOMSupportVariables() {
         // All variables will be genererated when needed. 
         if (getCurrent() != null) {
@@ -608,26 +646,26 @@ public class ItemDomainInventoryController extends ItemController {
         newItemsToAdd = null;
         currentItemBOMListTree = null;
         selectedItemBOMTreeNode = null;
-
+        
     }
-
+    
     @Override
     public String getLastCreateWizardStep() {
         return ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP;
     }
-
+    
     public TreeNode getCurrentItemBOMListTree() {
         if (currentItemBOMListTree == null) {
             currentItemBOMListTree = buildTreeNodeFromParentItem(getCurrent().getContainedInBOM());
         }
-
+        
         return currentItemBOMListTree;
     }
-
+    
     private TreeNode buildTreeNodeFromParentItem(InventoryBillOfMaterialItem startingBOM) {
         return buildTreeNodeFromParentItem(null, null, startingBOM);
     }
-
+    
     private TreeNode buildTreeNodeFromParentItem(TreeNode root, TreeNode parent, InventoryBillOfMaterialItem nextBOM) {
         // The tree needs to be created. 
         if (root == null) {
@@ -648,7 +686,7 @@ public class ItemDomainInventoryController extends ItemController {
         if (nextBOM.getInventoryItem() != null) {
             List<InventoryBillOfMaterialItem> nextItemBOMList;
             nextItemBOMList = nextBOM.getInventoryItem().getInventoryDomainBillOfMaterialList();
-
+            
             if (nextItemBOMList != null && nextItemBOMList.isEmpty() == false) {
                 for (InventoryBillOfMaterialItem iBOM : nextItemBOMList) {
                     TreeNode newNode = new DefaultTreeNode(iBOM, parent);
@@ -658,21 +696,21 @@ public class ItemDomainInventoryController extends ItemController {
                 }
             }
         }
-
+        
         return root;
-
+        
     }
-
+    
     public void addNewChildrenToCurrentSelection() {
         buildTreeNodeFromParentItem(currentItemBOMListTree,
                 selectedItemBOMTreeNode,
                 (InventoryBillOfMaterialItem) selectedItemBOMTreeNode.getData());
     }
-
+    
     public TreeNode getSelectedItemBOMTreeNode() {
         return selectedItemBOMTreeNode;
     }
-
+    
     public void setSelectedItemBOMTreeNode(TreeNode selectedItemBOMTreeNode) {
         if (selectedItemBOMTreeNode == null) {
             // Tree will set to null on every form update. 
@@ -685,15 +723,15 @@ public class ItemDomainInventoryController extends ItemController {
         // Clear Filters
         clearListFilters();
         filteredObjectList = null;
-
+        
         this.selectedItemBOMTreeNode = selectedItemBOMTreeNode;
-
+        
     }
-
+    
     public void addItemElementsFromBillOfMaterials(Item item) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
-
+        
         if (bomItems != null) {
             for (InventoryBillOfMaterialItem bomItem : bomItems) {
                 // Check if current catalog item element already has an item element defined. 
@@ -706,7 +744,7 @@ public class ItemDomainInventoryController extends ItemController {
                         break;
                     }
                 }
-
+                
                 if (currentInventoryItemElement == null) {
                     currentInventoryItemElement = new ItemElement();
                     currentInventoryItemElement.init(item, bomItem.getCatalogItemElement());
@@ -719,22 +757,22 @@ public class ItemDomainInventoryController extends ItemController {
                 if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())
                         || currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                     if (bomItem.getInventoryItem() == null) {
-
+                        
                         String actionWord = "defined";
                         if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                             actionWord = "selected";
                         }
-
+                        
                         throw new CdbException("An item for: " + bomItem.getCatalogItemElement().getName() + " is not " + actionWord + ".");
                     }
-
+                    
                     Item inventoryItem = bomItem.getInventoryItem();
 
                     // No need to do that for existing items. 
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                         addItemElementsFromBillOfMaterials(inventoryItem);
                         currentInventoryItemElement.setContainedItem(inventoryItem);
-
+                        
                     } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
                             currentInventoryItemElement.setContainedItem(itemFacade.find(inventoryItem.getId()));
@@ -748,38 +786,38 @@ public class ItemDomainInventoryController extends ItemController {
                 updateItemElementPermissionsToItem(currentInventoryItemElement, bomItem.getParentItemInstance());
             }
         }
-
+        
     }
-
+    
     public void updateItemElementPermissionsToItem(ItemElement itemElement, Item item) {
         EntityInfo entityInfo = item.getEntityInfo();
-
+        
         itemElement.getEntityInfo().setOwnerUser(entityInfo.getOwnerUser());
         itemElement.getEntityInfo().setOwnerUserGroup(entityInfo.getOwnerUserGroup());
         itemElement.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
     }
-
+    
     public boolean isRenderBomPlaceholder(InventoryBillOfMaterialItem billOfMaterialsItem) {
         if (billOfMaterialsItem != null) {
             return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.placeholder.getValue());
         }
         return false;
     }
-
+    
     public boolean isRenderBomExisting(InventoryBillOfMaterialItem billOfMaterialsItem) {
         if (billOfMaterialsItem != null) {
             return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.existingItem.getValue());
         }
         return false;
     }
-
+    
     public boolean isRenderBomEdit(InventoryBillOfMaterialItem billOfMaterialsItem) {
         if (billOfMaterialsItem != null) {
             return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.newItem.getValue());
         }
         return false;
     }
-
+    
     public boolean isRenderItemBom(Item item) {
         return item.getInventoryDomainBillOfMaterialList() != null
                 && item.getInventoryDomainBillOfMaterialList().isEmpty() == false;
@@ -796,25 +834,25 @@ public class ItemDomainInventoryController extends ItemController {
         }
         return isRenderItemBom(getCurrent());
     }
-
+    
     public void changeBillOfMaterialsState(InventoryBillOfMaterialItem bomItem, String previousState) {
         // Update type of selected tree node. 
         selectedItemBOMTreeNode.setType(bomItem.getState());
-
+        
         if (!previousState.equals(bomItem.getState())) {
             if (previousState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                 Item newItem = bomItem.getInventoryItem();
 
                 // The current item will not be defined. it has no children.                 
                 selectedItemBOMTreeNode.getChildren().clear();
-
+                
                 bomItem.setInventoryItem(null);
-
+                
                 if (newItem != null) {
                     for (int i = 0; i < newItemsToAdd.size(); i++) {
                         if (newItemsToAdd.get(i) == newItem) {
                             newItemsToAdd.remove(i);
-
+                            
                             break;
                         }
                     }
@@ -822,13 +860,13 @@ public class ItemDomainInventoryController extends ItemController {
             } else if (InventoryBillOfMaterialItemStates.newItem.getValue().equals(bomItem.getState())) {
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
                 Item catalogItem = catalogItemElement.getContainedItem();
-
+                
                 Item newInventoryItem = createEntityInstance();
                 newItemsToAdd.add(newInventoryItem);
-
+                
                 newInventoryItem.setDerivedFromItem(catalogItem);
                 InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(newInventoryItem, bomItem);
-
+                
                 bomItem.setInventoryItem(newInventoryItem);
 
                 // The tree needs to be updated.
@@ -836,7 +874,7 @@ public class ItemDomainInventoryController extends ItemController {
             }
         }
     }
-
+    
     public void updatePermissionOnAllNewPartsIfNeeded() {
         if (isApplyPermissionToAllNewPartsForCurrent()) {
             for (Item item : newItemsToAdd) {
@@ -844,11 +882,11 @@ public class ItemDomainInventoryController extends ItemController {
             }
         }
     }
-
+    
     public boolean isApplyPermissionToAllNewPartsForCurrent() {
         return getCurrent().getContainedInBOM().isApplyPermissionToAllNewParts();
     }
-
+    
     private void setPermissionsForItemToCurrentItem(Item item) {
         if (item != getCurrent()) {
             // Set the permissions to equal. 
@@ -858,11 +896,11 @@ public class ItemDomainInventoryController extends ItemController {
             item.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
         }
     }
-
+    
     public List<Item> getNewItemsToAdd() {
         return newItemsToAdd;
     }
-
+    
     @Override
     public String getItemElementContainedItemText(ItemElement instanceItemElement) {
         if (instanceItemElement.getContainedItem() == null) {
@@ -872,28 +910,28 @@ public class ItemDomainInventoryController extends ItemController {
                 return "Catalog item: " + instanceItemElement.getDerivedFromItemElement().getParentItem().getName() + " has no defined item.";
             }
         }
-
+        
         Item containedItem = instanceItemElement.getContainedItem();
-
+        
         return getItemDisplayString(containedItem);
     }
-
+    
     public boolean isCurrentHasPartsToDisplay() {
         if (getCurrent().getInventoryDomainBillOfMaterialList() != null) {
             return getCurrent().getInventoryDomainBillOfMaterialList().isEmpty() == false;
         }
         return false;
     }
-
+    
     @Override
     public void prepareEntityInsert(Item item) throws CdbException {
         if (item.getDerivedFromItem() == null) {
             throw new CdbException("Please specify " + getDerivedFromItemTitle());
         }
-
+        
         super.prepareEntityInsert(item);
         checkNewItemsToAdd();
-
+        
         if (newItemsToAdd != null) {
             // Clear new item elements for new items. In case a previous insert failed. 
             for (Item itemToAdd : newItemsToAdd) {
@@ -906,13 +944,13 @@ public class ItemDomainInventoryController extends ItemController {
                     item.resetItemElementDisplayList();
                 }
             }
-
+            
             clearItemElementsForItem(item);
             updatePermissionOnAllNewPartsIfNeeded();
             addItemElementsFromBillOfMaterials(item);
         }
     }
-
+    
     private void clearItemElementsForItem(Item item) {
         //Make sure newest version of display list is fetched.
         //Item should be updated using addItemElementsFromBillOfMaterials.
@@ -922,7 +960,7 @@ public class ItemDomainInventoryController extends ItemController {
         //Make sure display list is updated to reflect changes. 
         item.resetItemElementDisplayList();
     }
-
+    
     private void checkNewItemsToAdd() throws CdbException {
         Item item = getCurrent();
         if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
@@ -940,7 +978,7 @@ public class ItemDomainInventoryController extends ItemController {
         }
         updateItemLocation(item);
     }
-
+    
     @Override
     public String getItemDisplayString(Item item) {
         if (item != null && item.getDerivedFromItem() != null) {
@@ -951,17 +989,17 @@ public class ItemDomainInventoryController extends ItemController {
             if (tag != null && !tag.isEmpty()) {
                 result += "\n [" + tag + "]";
             }
-
+            
             return result;
         }
         return null;
     }
-
+    
     @Override
     public String getItemMembmershipPartIdentifier(Item item) {
         return getItemDisplayString(item);
     }
-
+    
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
         for (int i = 0; i < newItemsToAdd.size(); i++) {
             for (int j = newItemsToAdd.size() - 1; j > -1; j--) {
@@ -970,15 +1008,15 @@ public class ItemDomainInventoryController extends ItemController {
                 }
                 Item itemA = newItemsToAdd.get(i);
                 Item itemB = newItemsToAdd.get(j);
-
+                
                 String itemCompareString = itemA.getContainedInBOM().toString() + " and " + itemB.getContainedInBOM().toString();
-
+                
                 if (itemA.getQrId() != null && itemB.getQrId() != null) {
                     if (itemA.getQrId().equals(itemB.getQrId())) {
                         throw new CdbException(itemCompareString + " have QrId: " + itemA.getQrIdDisplay());
                     }
                 }
-
+                
                 if (itemA.getDerivedFromItem() == itemB.getDerivedFromItem()) {
                     if (itemA.getItemIdentifier1().equals(itemB.getItemIdentifier1())
                             && itemA.getName().equals(itemB.getName())) {
@@ -988,21 +1026,21 @@ public class ItemDomainInventoryController extends ItemController {
                 }
             }
         }
-
+        
     }
-
+    
     @Override
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
         // Item elements should match the assembly. User has no control over that.
         return false;
     }
-
+    
     @Override
     public String prepareCloneForItemToClone() {
         // Item elements should match the assembly. User has no control over that.
         cloneCreateItemElementPlaceholders = true;
         newItemsToAdd = null;
-
+        
         return super.prepareCloneForItemToClone();
     }
 
@@ -1024,20 +1062,20 @@ public class ItemDomainInventoryController extends ItemController {
         }
         return count;
     }
-
+    
     @Override
     public void prepareEntityUpdate(Item item) throws CdbException {
         super.prepareEntityUpdate(item);
         checkNewItemsToAdd();
-
+        
         addItemElementsFromBillOfMaterials(item);
     }
-
+    
     private void updateItemLocation(Item item) {
         // Determie updating of location relationship. 
         Item existingItem = null;
         ItemElementRelationship itemElementRelationship = null;
-
+        
         if (item.getId() != null) {
             existingItem = itemFacade.findById(item.getId());
             // Item is not new
@@ -1046,30 +1084,30 @@ public class ItemDomainInventoryController extends ItemController {
                 itemElementRelationship = findItemLocationRelationship(item);
             }
         }
-
+        
         Boolean newItemWithNewLocation = (existingItem == null
                 && (item.getLocation() != null || (item.getLocationDetails() != null && !item.getLocationDetails().isEmpty())));
-
+        
         Boolean locationDifferentOnCurrentItem = false;
-
+        
         if (existingItem != null) {
             // Empty String should be the same as null for comparison puposes. 
             String existingLocationDetails = existingItem.getLocationDetails();
             String newLocationDetails = item.getLocationDetails();
-
+            
             if (existingLocationDetails != null && existingLocationDetails.isEmpty()) {
                 existingLocationDetails = null;
             }
             if (newLocationDetails != null && newLocationDetails.isEmpty()) {
                 newLocationDetails = null;
             }
-
+            
             locationDifferentOnCurrentItem = ((!Objects.equals(existingItem.getLocation(), item.getLocation())
                     || !Objects.equals(existingLocationDetails, newLocationDetails)));
         }
-
+        
         if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
-
+            
             if (item.getLocation() != null) {
                 logger.debug("Updating location for Item " + item.toString()
                         + " to: " + item.getLocation().getName());
@@ -1077,7 +1115,7 @@ public class ItemDomainInventoryController extends ItemController {
                 logger.debug("Updating location details for Item " + item.toString()
                         + " to: " + item.getLocationDetails());
             }
-
+            
             if (itemElementRelationship == null) {
                 itemElementRelationship = new ItemElementRelationship();
                 itemElementRelationship.setRelationshipType(getLocationRelationshipType());
@@ -1089,11 +1127,11 @@ public class ItemDomainInventoryController extends ItemController {
                 }
                 itemElementRelationshipList.add(itemElementRelationship);
             }
-
+            
             List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
-
+            
             Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
-
+            
             if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
                 itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
             } else {
@@ -1101,29 +1139,29 @@ public class ItemDomainInventoryController extends ItemController {
                 itemElementRelationshipList.get(locationIndex).setSecondItemElement(null);
             }
             itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
-            
+
             // Add Item Element relationship history record. 
-            ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex); 
+            ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex);
             ItemElementRelationshipHistory ierh;
             ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
                     ier, (UserInfo) SessionUtility.getUser(), new Date());
             List<ItemElementRelationshipHistory> ierhList;
-            ierhList = item.getSelfElement().getItemElementRelationshipHistoryList(); 
+            ierhList = item.getSelfElement().getItemElementRelationshipHistoryList();
             if (ierhList == null) {
-                ierhList = new ArrayList<>(); 
+                ierhList = new ArrayList<>();
                 item.getSelfElement().setItemElementRelationshipHistoryList(ierhList);
             }
             
             ierhList.add(ierh);
         }
     }
-
+    
     @Override
     public void processEditRequestParams() {
         super.processEditRequestParams();
         setItemLocationInfo(getCurrent());
     }
-
+    
     @Override
     public String getCurrentEntityInstanceName() {
         if (getCurrent() != null) {
@@ -1131,58 +1169,58 @@ public class ItemDomainInventoryController extends ItemController {
         }
         return "";
     }
-
+    
     @Override
     public Boolean getDisplayItemIdentifier1() {
         return displaySerialNumber;
     }
-
+    
     @Override
     public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
         this.displaySerialNumber = displayItemIdentifier1;
     }
-
+    
     public Boolean getDisplaySerialNumber() {
         return displaySerialNumber;
     }
-
+    
     public void setDisplaySerialNumber(Boolean displaySerialNumber) {
         this.displaySerialNumber = displaySerialNumber;
     }
-
+    
     @Override
     public String getFilterByItemIdentifier1() {
         return filterBySerialNumber;
     }
-
+    
     @Override
     public void setFilterByItemIdentifier1(String filterByItemIdentifier1) {
         this.filterBySerialNumber = filterByItemIdentifier1;
     }
-
+    
     @Override
     public String getFilterByItemIdentifier2() {
         return filterByTag;
     }
-
+    
     @Override
     public void setFilterByItemIdentifier2(String filterByItemIdentifier2) {
         this.filterByTag = filterByItemIdentifier2;
     }
-
+    
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
         if (settingTypeMap == null) {
             return;
         }
-
+        
         logger.debug("Updating list settings from setting type defaults");
-
+        
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-
+        
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -1191,7 +1229,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
-
+        
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayItemProjectSettingTypeKey).getDefaultValue());
@@ -1199,53 +1237,53 @@ public class ItemDomainInventoryController extends ItemController {
 
         displayRowExpansion = Boolean.parseBoolean(settingTypeMap.get(DisplayRowExpansionSettingTypeKey).getDefaultValue());
         loadRowExpansionPropertyValues = Boolean.parseBoolean(settingTypeMap.get(LoadRowExpansionPropertyValueSettingTypeKey).getDefaultValue());
-
+        
         displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
         displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
         displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
         displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
         displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
-
+        
         filterByComponent = settingTypeMap.get(FilterByComponentSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
-
+        
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
         filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
         filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
         filterByCreatedOnDateTime = settingTypeMap.get(FilterByCreatedOnDateTimeSettingTypeKey).getDefaultValue();
         filterByLastModifiedByUser = settingTypeMap.get(FilterByLastModifiedByUserSettingTypeKey).getDefaultValue();
         filterByLastModifiedOnDateTime = settingTypeMap.get(FilterByLastModifiedOnDateTimeSettingTypeKey).getDefaultValue();
-
+        
         filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
         filterByLocationDetails = settingTypeMap.get(FilterByLocationDetailsSettingTypeKey).getDefaultValue();
         filterByQrId = settingTypeMap.get(FilterByQrIdSettingTypeKey).getDefaultValue();
         filterBySerialNumber = settingTypeMap.get(FilterBySerialNumberSettingTypeKey).getDefaultValue();
         filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
-
+        
         filterByPropertyValue1 = settingTypeMap.get(FilterByPropertyValue1SettingTypeKey).getDefaultValue();
         filterByPropertyValue2 = settingTypeMap.get(FilterByPropertyValue2SettingTypeKey).getDefaultValue();
         filterByPropertyValue3 = settingTypeMap.get(FilterByPropertyValue3SettingTypeKey).getDefaultValue();
         filterByPropertyValue4 = settingTypeMap.get(FilterByPropertyValue4SettingTypeKey).getDefaultValue();
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
-
+        
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
-
+        
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
         displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
-
+        
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
-
+    
     @Override
     public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
         if (settingEntity == null) {
             return;
         }
-
+        
         logger.debug("Updating list settings from session user");
-
+        
         displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
@@ -1255,7 +1293,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayCreatedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         displayLastModifiedByUser = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
-
+        
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
@@ -1265,45 +1303,45 @@ public class ItemDomainInventoryController extends ItemController {
 
         displayRowExpansion = settingEntity.getSettingValueAsBoolean(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         loadRowExpansionPropertyValues = settingEntity.getSettingValueAsBoolean(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
-
+        
         displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         displayPropertyTypeId3 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         displayPropertyTypeId4 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         displayPropertyTypeId5 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
-
+        
         filterByComponent = settingEntity.getSettingValueAsString(FilterByComponentSettingTypeKey, filterByComponent);
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-
+        
         filterByOwnerUser = settingEntity.getSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
         filterByOwnerGroup = settingEntity.getSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
         filterByCreatedByUser = settingEntity.getSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
         filterByCreatedOnDateTime = settingEntity.getSettingValueAsString(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         filterByLastModifiedByUser = settingEntity.getSettingValueAsString(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         filterByLastModifiedOnDateTime = settingEntity.getSettingValueAsString(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-
+        
         filterByLocation = settingEntity.getSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
         filterByLocationDetails = settingEntity.getSettingValueAsString(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
         filterByQrId = settingEntity.getSettingValueAsString(FilterByQrIdSettingTypeKey, filterByQrId);
         filterBySerialNumber = settingEntity.getSettingValueAsString(FilterBySerialNumberSettingTypeKey, filterBySerialNumber);
         filterByTag = settingEntity.getSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
-
+        
         filterByPropertyValue1 = settingEntity.getSettingValueAsString(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         filterByPropertyValue2 = settingEntity.getSettingValueAsString(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
         filterByPropertyValue3 = settingEntity.getSettingValueAsString(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         filterByPropertyValue4 = settingEntity.getSettingValueAsString(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         filterByPropertyValue5 = settingEntity.getSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
-
+        
         displayListPageHelpFragment = settingEntity.getSettingValueAsBoolean(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-
+        
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
-
+        
         resetDomainEntityPropertyTypeIdIndexMappings();
-
+        
     }
-
+    
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
         super.updateListSettingsFromListDataTable(dataTable);
@@ -1317,21 +1355,21 @@ public class ItemDomainInventoryController extends ItemController {
         filterByQrId = (String) filters.get("qrId");
         filterBySerialNumber = (String) filters.get("serialNumber");
         filterByTag = (String) filters.get("tag");
-
+        
         filterByPropertyValue1 = (String) filters.get("propertyValue1");
         filterByPropertyValue2 = (String) filters.get("propertyValue2");
         filterByPropertyValue3 = (String) filters.get("propertyValue3");
         filterByPropertyValue4 = (String) filters.get("propertyValue4");
         filterByPropertyValue5 = (String) filters.get("propertyValue5");
     }
-
+    
     @Override
     public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
         if (settingEntity == null) {
             return;
         }
-
+        
         settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
         settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
@@ -1341,7 +1379,7 @@ public class ItemDomainInventoryController extends ItemController {
         settingEntity.setSettingValue(DisplayCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
         settingEntity.setSettingValue(DisplayLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
         settingEntity.setSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
-
+        
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
@@ -1351,13 +1389,13 @@ public class ItemDomainInventoryController extends ItemController {
 
         settingEntity.setSettingValue(DisplayRowExpansionSettingTypeKey, displayRowExpansion);
         settingEntity.setSettingValue(LoadRowExpansionPropertyValueSettingTypeKey, loadRowExpansionPropertyValues);
-
+        
         settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
         settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
         settingEntity.setSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
         settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
-
+        
         settingEntity.setSettingValue(FilterByComponentSettingTypeKey, filterByComponent);
         settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         settingEntity.setSettingValue(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
@@ -1366,27 +1404,27 @@ public class ItemDomainInventoryController extends ItemController {
         settingEntity.setSettingValue(FilterByCreatedOnDateTimeSettingTypeKey, filterByCreatedOnDateTime);
         settingEntity.setSettingValue(FilterByLastModifiedByUserSettingTypeKey, filterByLastModifiedByUser);
         settingEntity.setSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
-
+        
         settingEntity.setSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
         settingEntity.setSettingValue(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
         settingEntity.setSettingValue(FilterByQrIdSettingTypeKey, filterByQrId);
         settingEntity.setSettingValue(FilterBySerialNumberSettingTypeKey, filterBySerialNumber);
         settingEntity.setSettingValue(FilterByTagSettingTypeKey, filterByTag);
-
+        
         settingEntity.setSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         settingEntity.setSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
         settingEntity.setSettingValue(FilterByPropertyValue3SettingTypeKey, filterByPropertyValue3);
         settingEntity.setSettingValue(FilterByPropertyValue4SettingTypeKey, filterByPropertyValue4);
         settingEntity.setSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
         settingEntity.setSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
-
+        
         settingEntity.setSettingValue(DisplayListPageHelpFragmentSettingTypeKey, displayListPageHelpFragment);
-
+        
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
-
+        
     }
-
+    
     @Override
     public void clearListFilters() {
         super.clearListFilters();
@@ -1402,159 +1440,159 @@ public class ItemDomainInventoryController extends ItemController {
         filterByPropertyValue4 = null;
         filterByPropertyValue5 = null;
     }
-
+    
     @Override
     public String getEntityTypeName() {
         return "componentInstance";
     }
-
+    
     @Override
     public String getDisplayEntityTypeName() {
         return "Inventory Item";
     }
-
+    
     @Override
     public boolean getEntityDisplayItemIdentifier1() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemIdentifier2() {
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemSources() {
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemName() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemType() {
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemCategory() {
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayQrId() {
         return true;
     }
-
+    
     @Override
     public String getItemIdentifier1Title() {
         return "Serial Number";
     }
-
+    
     @Override
     public String getNameTitle() {
         return "Tag";
     }
-
+    
     @Override
     public String getDerivedFromItemTitle() {
         return "Catalog Item";
     }
-
+    
     @Override
     public String getItemsDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public boolean getEntityDisplayItemGallery() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemLogs() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemProperties() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemElements() {
         return true;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemMemberships() {
         return true;
     }
-
+    
     @Override
     public String getStyleName() {
         return "inventory";
     }
-
+    
     @Override
     public String getDomainHandlerName() {
         return DOMAIN_HANDLER_NAME;
     }
-
+    
     @Override
     public String getDefaultDomainName() {
         return DOMAIN_TYPE_NAME;
     }
-
+    
     @Override
     public String getItemDerivedFromDomainHandlerName() {
         return DERIVED_ITEM_DOMAIN_HANDLER_NAME;
     }
-
+    
     @Override
     public String getItemIdentifier2Title() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     @Override
     public boolean getEntityDisplayItemProject() {
         return true;
     }
-
+    
     @Override
     public boolean entityCanBeCreatedByUsers() {
         return true;
     }
-
+    
     @Override
     public boolean isAllowedSetDerivedFromItemForCurrentItem() {
         if (getCurrent() != null) {
             return !getCurrent().isIsCloned();
         }
-
+        
         return false;
     }
-
+    
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return false;
     }
-
+    
     @Override
     public String getDerivedDomainName() {
         return null;
     }
-
+    
 }
