@@ -11,10 +11,6 @@
         <f:viewAction action="#{itemDomainInventoryController.processPreRenderList()}" />
     </f:metadata>
     
-    <ui:define name="listActionButtons">
-        <ui:include src="private/itemDomainInventoryListActionButtons.xhtml"/>
-    </ui:define>
-    
     <ui:define name="helpFragment">
         <ui:param name="listEntityTypePath" value="/#{itemDomainInventoryController.listEntityType.name}" />
         <ui:param name="entityTypeFinalPath" value="#{listEntityTypePath != '/' ? listEntityTypePath : ''}" />  
@@ -27,6 +23,10 @@
     
     <ui:define name="listDataTable">
         <ui:include src="private/itemDomainInventoryListDataTable.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="itemListPageEmphasizedContentBelowTitle">
+        <ui:include src="../item/private/templateDefaults/customizeDisplayAddons/itemListDataTableDisplayModeSelectionDialogButton.xhtml" />
     </ui:define>
     
 </ui:composition>

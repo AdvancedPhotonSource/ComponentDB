@@ -20,13 +20,14 @@
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
 
     <ui:define name="pageTitle">: #{entityController.entityListPageTitle}</ui:define>
-
+    
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}ListForm" rendered="#{pageRendered}">  
             <p:outputPanel>
                 <div class="pageTitle">
                     <h1>#{entityController.entityListPageTitle}</h1>
-                </div>
+                    <ui:insert name="itemListPageEmphasizedContentBelowTitle" />
+                </div>                
 
                 <ui:insert name="helpFragment"/>
 
