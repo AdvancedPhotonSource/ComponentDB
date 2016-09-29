@@ -42,8 +42,14 @@
 
                     <p/>
                     <div class="actionButton">
-                        <p:commandButton id="searchButton" update="@form" action="#{searchController.search()}" oncomplete="completeSearch()" value="Search" alt="Search" icon="ui-icon-search"/>
+                        <p:commandButton id="searchButton" onclick="performSearch()"  value="Search" alt="Search" icon="ui-icon-search"/>
                         <p:defaultCommand target="searchButton"/>
+                        
+                        <p:remoteCommand name="performSearch"
+                                         autoRun="#{searchController.performExternallyInitializedSearch}"
+                                         update="@form"
+                                         action="#{searchController.search()}"
+                                         oncomplete="completeSearch()" />
 
                         <p:remoteCommand name="completeSearch"
                                          action="#{searchController.completeSearch()}"
