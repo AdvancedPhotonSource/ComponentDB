@@ -77,6 +77,7 @@ public class SearchController implements Serializable {
     protected Boolean displayUserGroups = null;
 
     private Boolean performSearch = false;
+    private Boolean performExternallyInitializedSearch = false; 
 
     private List<SettingType> settingTypeList;
     private Map<String, SettingType> settingTypeMap;
@@ -96,11 +97,28 @@ public class SearchController implements Serializable {
     public void initialize() {
         updateSettings();
     }
+    
+    public String performInputBoxSearch() {
+        if (searchString == null || searchString.isEmpty()) {
+            SessionUtility.addWarningMessage("Warning", "Please specify a search entry.");
+            return null; 
+        }
+        performExternallyInitializedSearch = true; 
+        return "/views/search/search.xhtml?faces-redirect=true";
+    }
+    
+    public String getInputBoxSearchString() {
+        return ""; 
+    }
+    
+    public void setInputBoxSearchString(String searchString) {
+        this.searchString = searchString; 
+    }
 
     public void search() {
         if (searchString != null && !searchString.isEmpty()) {
             performSearch = true;
-            updateSettings();
+            performExternallyInitializedSearch = false; 
         }
     }
 
@@ -127,6 +145,10 @@ public class SearchController implements Serializable {
 
     public boolean isPerformSearch() {
         return performSearch;
+    }
+
+    public boolean isPerformExternallyInitializedSearch() {
+        return performExternallyInitializedSearch;
     }
 
     public String getCurrentViewId() {
