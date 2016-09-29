@@ -1007,8 +1007,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             //Nothing was populated into the list data model. 
             scopedListDataModel = new ListDataModel<>();
         }
-        
-        loadPropertyTypeFilterIfNeeded(scopedListDataModel);
+
+        loadPreProcessListDataModelIfNeeded(scopedListDataModel);
 
         return scopedListDataModel;
     }
@@ -2069,12 +2069,34 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     @Override
-    public void preparePropertyTypeFilterForAllShownPropertyTypes() {
-        super.preparePropertyTypeFilterForAllShownPropertyTypes();
+    protected void setPreProcessPropertyValueInformation(CdbDomainEntity entity) {
+        super.setPreProcessPropertyValueInformation(entity);
 
         if (isDisplayListDataModelScopePropertyTypeSelection()) {
-            preparePropertyTypeFilter(displayListDataModelScopePropertyTypeId);
+            loadPropertyValueInformation(displayListDataModelScopePropertyTypeId, entity);
         }
+    }
+
+    @Override
+    protected void updatePreProcessCurrentPropertyValueSettingsLoaded() {
+        super.updatePreProcessCurrentPropertyValueSettingsLoaded();
+
+        if (isDisplayListDataModelScopePropertyTypeSelection()) {
+            addPropertyTypeToLoadedDisplayPropertyTypes(displayListDataModelScopePropertyTypeId);
+        }
+    }
+
+    @Override
+    protected boolean isPreProcessPropertyValueInformationSettingsPresent() {
+        boolean result = super.isPreProcessPropertyValueInformationSettingsPresent();
+        
+        if (!result) {
+            if (isDisplayListDataModelScopePropertyTypeSelection()) {
+                return displayListDataModelScopePropertyTypeId != null;
+            }
+        }
+
+        return result;
     }
 
     @Override
