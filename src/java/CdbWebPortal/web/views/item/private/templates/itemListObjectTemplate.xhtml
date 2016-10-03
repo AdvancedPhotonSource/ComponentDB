@@ -146,7 +146,7 @@
         <p:column sortBy="#{itemListObject.itemCategoryString}"
                   headerText="#{entityController.itemItemCategoryTitle}" 
                   filterBy="#{itemListObject.itemCategoryString}"
-                  filterOptions="#{itemCategoryController.availableItemsForSelectOne}"
+                  filterOptions="#{entityController.domainItemCategoryListForSelectOne}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{itemListRenderItemCategory}"
