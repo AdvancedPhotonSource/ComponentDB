@@ -9,9 +9,15 @@ import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 
+import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.TravelerTemplatePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
@@ -178,15 +184,15 @@ public class TravelerBean implements Serializable {
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
-     
+     */
     public void createTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
 
             if (!travelerTemplateTitle.equals("") && travelerTemplateTitle != null) {
                 Form form;
                 try {
-
-                    form = travelerApi.createForm(travelerTemplateTitle, SessionUtility.getUser().toString(), "");
+                    UserInfo currentUser = (UserInfo) SessionUtility.getUser();
+                    form = travelerApi.createForm(travelerTemplateTitle, currentUser.getUsername(), "");
                     SessionUtility.addInfoMessage("Template Created", "Traveler Template '" + form.getId() + "' has been created");
                     propertyValue.setValue(form.getId());
                     entityController.savePropertyList();
@@ -200,7 +206,7 @@ public class TravelerBean implements Serializable {
             }
         }
     }
-    * */
+    
 
     /**
      * Links to an existing traveler template. 
@@ -208,7 +214,7 @@ public class TravelerBean implements Serializable {
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
-     
+     */
     public void linkTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
@@ -217,7 +223,7 @@ public class TravelerBean implements Serializable {
                 RequestContext.getCurrentInstance().execute(onSuccessCommand);
             }
         }
-    }*/
+    }
 
     /**
      * Removes the id associated with template property. 
@@ -315,7 +321,8 @@ public class TravelerBean implements Serializable {
     public boolean getCurrentTravelerConfigPermission() {
         if (currentTravelerInstance != null) {
             String travelerUser = currentTravelerInstance.getCreatedBy();
-            if (SessionUtility.getUser() != null && travelerUser.equals(SessionUtility.getUser().toString())) {
+            UserInfo currentUser = (UserInfo) SessionUtility.getUser();
+            if (currentUser != null && travelerUser.equals(currentUser.getUsername())) {
                 return true;
             }
         }
@@ -351,44 +358,26 @@ public class TravelerBean implements Serializable {
      * Determines all entities that need to have (traveler templates)/forms loaded
      * 
      * @param entityController controller for the entity currently being edited by the user. 
-     
+     */
     public void loadEntityAvailableTemplateList(CdbEntityController entityController) {
         if (checkPropertyValue()) {
-            availableTemplates = new ArrayList<>();
-            switch (entityController.getEntityTypeName()) {
-                case "component": {
-                    Component component = (Component) entityController.getSelected();
-                    loadPropertyTravelerTemplateList(component.getPropertyValueList(), availableTemplates);
-                    break;
+            availableTemplates = new ArrayList<>();            
+            if (entityController instanceof ItemController) {                
+                Item item = (Item) entityController.getCurrent(); 
+                loadPropertyTravelerTemplateList(item.getPropertyValueDisplayList(), availableTemplates);
+                if (item.getDerivedFromItem() != null) {
+                    loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueDisplayList(), availableTemplates);
                 }
-                case "componentInstance": {
-                    // Load forms from component instance
-                    ComponentInstance componentInstance = (ComponentInstance) entityController.getSelected();
-                    loadPropertyTravelerTemplateList(componentInstance.getPropertyValueList(), availableTemplates);
-                    // Load forms from parent component
-                    Component component = componentInstance.getComponent();
-                    loadPropertyTravelerTemplateList(component.getPropertyValueList(), availableTemplates);
-                    break;
-                }
-                case "design":
-                    Design design = (Design) entityController.getSelected();
-                    loadPropertyTravelerTemplateList(design.getPropertyValueList(), availableTemplates);
-                    break;
-                case "designElement":
-                    // Load Design element templates
-                    DesignElement designElement = (DesignElement) entityController.getSelected();
-                    loadPropertyTravelerTemplateList(designElement.getPropertyValueList(), availableTemplates);
-                    // Load Component templates
-                    Component component = designElement.getComponent();
-                    loadPropertyTravelerTemplateList(component.getPropertyValueList(), availableTemplates);
-                    // Load design templates 
-                    Design parentDesign = designElement.getParentDesign();
-                    loadPropertyTravelerTemplateList(parentDesign.getPropertyValueList(), availableTemplates);
-                    break;
-                //TODO Add Desgin Instance
-            }
+            } else if (entityController instanceof ItemElementController) {
+                ItemElement itemElement = (ItemElement) entityController.getCurrent(); 
+                loadPropertyTravelerTemplateList(itemElement.getPropertyValueDisplayList(), availableTemplates);
+                Item parentItem = itemElement.getParentItem();
+                Item containedItem = itemElement.getContainedItem();
+                loadPropertyTravelerTemplateList(parentItem.getPropertyValueDisplayList(), availableTemplates);
+                loadPropertyTravelerTemplateList(containedItem.getPropertyValueDisplayList(), availableTemplates);
+            }          
         }
-    }*/
+    }
 
     /**
      * Check all property values for templates and call function that add each one. 
@@ -426,21 +415,39 @@ public class TravelerBean implements Serializable {
     }
     
     /**
+     * Generates a name to be used in traveler application. 
+     * Allows the traveler application to request information from CDB. 
+     * 
+     * @param deviceObject Item or ItemElement that will get traveler instance property. 
+     * @return device name for traveler application. 
+     * @throws CdbException when non valid object was submitted for device name.
+     */
+    private String getDeviceName(Object deviceObject) throws CdbException {
+        if (deviceObject instanceof Item) {
+            return "item:" + ((Item) deviceObject).getId();
+        } else if (deviceObject instanceof ItemElement) {
+            return "itemElement:" + ((ItemElement) deviceObject).getId();
+        } else {
+            throw new CdbException("Device for traveler is not of valid CDB entity");
+        }
+    } 
+    
+    /**
      * Create a traveler instance based on the currently selected template and entered title. 
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion
-     
+     */
     public void createTravelerInstance(CdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
                 if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {
                     try {
-                        String device = entityController.getEntityTypeName();
-                        device += ":" + entityController.getSelected().getId();
+                        String device = getDeviceName(entityController.getCurrent());
+                        UserInfo currentUser = (UserInfo) SessionUtility.getUser();
                         Traveler travelerInstance = travelerApi.createTraveler(
                                 selectedTravelerInstanceTemplate.getId(),
-                                SessionUtility.getUser().toString(),
+                                currentUser.getUsername(),
                                 travelerInstanceTitle,
                                 device);
                         setCurrentTravelerInstance(travelerInstance);
@@ -464,7 +471,7 @@ public class TravelerBean implements Serializable {
 
             }
         }
-    }*/
+    }
     
     /**
      * Load information about the traveler instance property currently loaded. 
@@ -554,7 +561,8 @@ public class TravelerBean implements Serializable {
         
         Double status = getStatusKey(currentTravelerSelectedStatus); 
         
-        String userName = SessionUtility.getUser().toString();
+        UserInfo currentUser = (UserInfo) SessionUtility.getUser();
+        String userName = currentUser.getUsername();
         try { 
             Traveler travelerInstance = travelerApi.updateTraveler(travelerId, userName, travelerTitle, travelerDescription, currentTravelerDeadline, status);
             setCurrentTravelerInstance(travelerInstance);
