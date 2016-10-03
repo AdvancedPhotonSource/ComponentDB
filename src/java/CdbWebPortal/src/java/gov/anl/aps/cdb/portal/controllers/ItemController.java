@@ -380,6 +380,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
         return domainItemCategoryList;
     }
+    
+    public SelectItem[] getDomainItemCategoryListForSelectOne() {
+        return CollectionUtility.getSelectItems(getDomainItemCategoryList(), true);
+    }
 
     @Override
     protected void resetVariablesForCurrent() {
@@ -840,7 +844,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return getDomainControllerName(getDefaultDomainName());
     }
 
-    private static String getDomainControllerName(String domainName) {
+    protected static String getDomainControllerName(String domainName) {
         return "itemDomain" + domainName + "Controller";
     }
 
