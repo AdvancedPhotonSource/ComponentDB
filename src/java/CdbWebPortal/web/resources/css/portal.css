@@ -846,8 +846,10 @@ h2 {
     background-color: rgba(230, 245, 255, 0.85);
 }
 
+.viewTransparentBackground .ui-panelgrid tr td, 
+.viewTransparentBackground .ui-widget-content,
 .viewTransparentBackground .ui-tooltip-text {
-    background: none;
+    background: transparent;
 }
 
 .viewTransparentBackground.ui-tooltip.ui-tooltip-right {
