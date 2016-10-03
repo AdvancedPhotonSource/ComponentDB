@@ -112,10 +112,22 @@ class ItemDbApi(CdbDbApi):
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeQuery
+    def getItemById(self, itemId, **kwargs):
+        session = kwargs['session']
+        dbItem = self.itemHandler.getItemById(session, itemId)
+        return dbItem.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getItemElementsByItemId(self, itemId, **kwargs):
         session = kwargs['session']
         dbItemElements = self.itemHandler.getItemElementsByItemId(session, itemId)
         return self.toCdbObjectList(dbItemElements)
+
+    @CdbDbApi.executeQuery
+    def getItemElementById(self, itemElementId, **kwargs):
+        session = kwargs['session']
+        dbItemElement = self.itemHandler.getItemElementById(session, itemElementId)
+        return dbItemElement.getCdbObject()
 
     @CdbDbApi.executeTransaction
     def addSource(self, sourceName, description, contactInfo, url, **kwargs):
