@@ -9,45 +9,38 @@
     <p:dialog id="travelerInstancePropertyValueEditDialog" 
               widgetVar="travelerInstancePropertyValueEditDialogWidget" 
               header="Create Traveler Instance From Template" 
-              styleClass="dialog">
-        <div class="dialog">    
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+        <ui:include src="travelerTemplateDataTable.xhtml">
+            <ui:param name="travelerTemplateList" value="#{travelerBean.availableTemplates}" />
+            <ui:param name="travelerSelectedValue" value="#{travelerBean.selectedTravelerInstanceTemplate}" /> 
+            <ui:param name="rowSelectEvent" value="updateTravelerInstanceInputText();" />
+            <ui:param name="dataTableId" value="travelerInstanceDataTable" />
+        </ui:include>
+        <p:panelGrid styleClass="centeredContent">
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
+                </p:column>
+                <p:column>
+                    <p:inputText styleClass="entityDataText" 
+                                 value="#{travelerBean.travelerInstanceTitle}"
+                                 id="travelerInstanceTitleInputText"
+                                 binding="#{travelerBean.travelerInstanceTitleInputText}"
+                                 />
+                </p:column>
+            </p:row>          
+        </p:panelGrid>
 
-         
-
-            <ui:include src="travelerTemplateDataTable.xhtml">
-                <ui:param name="travelerTemplateList" value="#{travelerBean.availableTemplates}" />
-                <ui:param name="travelerSelectedValue" value="#{travelerBean.selectedTravelerInstanceTemplate}" /> 
-                <ui:param name="rowSelectEvent" value="updateTravelerInstanceInputText();" />
-                <ui:param name="dataTableId" value="travelerInstanceDataTable" />
-            </ui:include>
-            
-            <p:panelGrid>
-                <p:row>
-                    <p:column>
-                        <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
-                    </p:column>
-                    <p:column>
-                        <p:inputText styleClass="entityDataText" 
-                                     value="#{travelerBean.travelerInstanceTitle}"
-                                     id="travelerInstanceTitleInputText"
-                                     binding="#{travelerBean.travelerInstanceTitleInputText}"
-                                     />
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column colspan="2">
-                        <p:commandButton value="Create Traveler Instance Using Selection"
-                                         onstart="PF('loadingDialog').show();"
-                                         onerror="PF('loadingDialog').hide();"
-                                         oncomplete="PF('loadingDialog').hide();"
-                                         action="#{travelerBean.createTravelerInstance(
-                                                   entityController,
-                                                   'successTravelerInstancePropertyValueEditDialog();')}" >
-                        </p:commandButton>
-                    </p:column>
-                </p:row>
-            </p:panelGrid>
-        </div>
+        <f:facet name="footer">
+            <p:commandButton value="Create Traveler Instance Using Selection"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
+                             oncomplete="PF('loadingDialog').hide();"
+                             action="#{travelerBean.createTravelerInstance(
+                                       entityController,
+                                       'successTravelerInstancePropertyValueEditDialog();')}" />
+        </f:facet>
 
         <p:remoteCommand name="updateTravelerInstanceInputText"
                          onstart="PF('loadingDialog').show();"
