@@ -25,6 +25,10 @@ a:link:hover, a:visited:hover  {
     font-weight: bold;
 }
 
+.ui-menu-list a {
+    color: black;
+}
+
 #contentContainer {
     min-height: 95%;
     margin-bottom: 15px;
@@ -656,7 +660,7 @@ h2 {
     background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
     background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
 }
- 
+
 .mainMenuBar .activeMenuItem {
     background: #76bff0 !important;
     background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
@@ -1026,7 +1030,7 @@ h2 {
 }
 
 .logWarningRow {
-   background: #ffeb99; 
+    background: #ffeb99; 
 }
 
 .noCellPaddingPanelGrid .ui-panelgrid-cell {
@@ -1056,4 +1060,44 @@ h2 {
 
 .menuBarInputText {
     height: 20px;
+}
+
+.locationTieredMenuPickerContainer {
+    padding-right: .55em;
+}
+
+.locationTieredMenuPickerContainer .ui-menu {
+    width: 260px;
+    padding: .15em;
+}
+
+.locationTieredMenuPickerContainer .ui-menu a:hover {
+    color: black;
+    font-weight: normal;
+}
+
+.locationTieredMenuPickerContainer .ui-menu .ui-menuitem-text {
+    width: 90%;
+}
+
+.locationTieredMenuPickerContainer .ui-menu .ui-menuitem-link {
+    width: 98%;
+    padding: 0;
+}
+
+.locationTieredMenuPickerContainer .activeLocationMenuItem .ui-state-hover,
+.locationTieredMenuPickerContainer .ui-state-hover {
+    border:1px solid #7096ab;
+    background:#85b2cb linear-gradient(top,rgba(255,255,255,0.6),rgba(255,255,255,0));
+    background:#85b2cb -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.6)),to(rgba(255,255,255,0)));
+    background:#85b2cb -moz-linear-gradient(top,rgba(255,255,255,0.6),rgba(255,255,255,0));
+    font-weight:bold;
+    color:#313131;
+    -moz-box-shadow:0 0 5px #85b2cb;
+    -webkit-box-shadow:0 0 8px #85b2cb;
+    box-shadow:0 0 8px #85b2cb
+}
+
+.locationTieredMenuPickerContainer .activeLocationMenuItem {
+    background: #c2d1f0; 
 }
