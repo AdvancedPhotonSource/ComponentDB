@@ -38,6 +38,7 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.menu.DefaultMenuModel;
 
 /**
  *
@@ -177,6 +178,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String locationDetails = null;
     private transient Item location;
     private transient String locationString;
+    private transient DefaultMenuModel locationMenuModel; 
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false; 
 
@@ -707,6 +709,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setLocationTree(TreeNode locationTree) {
         this.locationTree = locationTree;
+    }
+
+    public DefaultMenuModel getLocationMenuModel() {
+        return locationMenuModel;
+    }
+
+    public void setLocationMenuModel(DefaultMenuModel locationMenuModel) {
+        this.locationMenuModel = locationMenuModel;
     }
 
     public Boolean getOriginalLocationLoaded() {
