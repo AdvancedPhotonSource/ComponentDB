@@ -8,21 +8,22 @@
 
     <h:outputLabel for="location#{viewName}" value="Location" styleClass="entityDataEmphasizedLabel"/>
     <p:column id="location#{viewName}">
-        <p:panelGrid columns="2" styleClass="noCellPaddingPanelGrid">            
-            <p:column>
-                <p:commandButton id="locationSelectButton#{viewName}" 
-                                 action="#{itemDomainLocationController.resetListDataModelAndSetSelectionLocatinTreeNodeByItem(itemObject.location)}"
-                                 onstart="PF('loadingDialog').show();"
-                                 update="#{entityTypeName}LocationItemSelectionDialog#{dialogViewName}"
-                                 oncomplete="PF('loadingDialog').hide();
-                                             PF('#{entityTypeName}LocationItemSelectionDialog#{dialogViewName}Widget').show()"
-                                 alt="Select Location"
-                                 immediate="true"
-                                 icon="ui-icon-search">
-                    <p:tooltip for="locationSelectButton#{viewName}" value="Search for location."/>
-                </p:commandButton>
-            </p:column>
-            <ui:include src="componentInventoryLocationRelationshipTree.xhtml"/>
+        <p:panelGrid columns="2" styleClass="noCellPaddingPanelGrid">      
+            <p:outputPanel styleClass="locationTieredMenuPickerContainer">
+                <p:tieredMenu model="#{itemDomainInventoryController.getItemLocataionDefaultMenuModel(itemObject)}"
+                              toggleEvent="hover"/>
+            </p:outputPanel>
+            <p:commandButton id="locationSelectButton#{viewName}" 
+                             action="#{itemDomainLocationController.resetListDataModelAndSetSelectionLocatinTreeNodeByItem(itemObject.location)}"
+                             onstart="PF('loadingDialog').show();"
+                             update="#{entityTypeName}LocationItemSelectionDialog#{dialogViewName}"
+                             oncomplete="PF('loadingDialog').hide();
+                             PF('#{entityTypeName}LocationItemSelectionDialog#{dialogViewName}Widget').show()"
+                             alt="Select Location"
+                             immediate="true"
+                             icon="ui-icon-search">
+                <p:tooltip for="locationSelectButton#{viewName}" value="Search for location."/>
+            </p:commandButton>                               
         </p:panelGrid>
     </p:column>
 
