@@ -25,6 +25,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -82,6 +83,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         @JoinColumn(name = "item_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
     @ManyToMany
+    @OrderBy("enteredOnDateTime DESC")
     private List<Log> logList;
     @JoinColumn(name = "parent_item_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
