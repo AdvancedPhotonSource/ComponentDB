@@ -10,7 +10,7 @@
         <ui:param name="filterViewListDataModel" value="#{entityController.filterViewCategoryTypeListDataModel}" />
     </ui:define>
 
-    <ui:define name="secondFilter">
+    <ui:define name="firstFilter">
         Choose a #{entityController.itemItemCategoryTitle}
         <p:selectManyMenu id="filterViewItemCategorySelection"
                           value="#{entityController.filterViewItemCategorySelection}"
@@ -24,7 +24,7 @@
         </p:selectManyMenu>
     </ui:define>
 
-    <ui:define name="thirdFilter">
+    <ui:define name="secondFilter">
         #{entityController.itemItemTypeTitle}s
         <p:selectOneListbox id="filterViewItemType"
                             onchange="updateForm()"

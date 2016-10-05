@@ -4,22 +4,7 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="itemListFilterViewTemplateBase.xhtml">
-
-    <ui:define name="firstFilter">
-        Choose a Project
-        <p:selectOneRadio id="customRadio" 
-                          layout="grid" 
-                          columns="1"
-                          converter="itemProjectConverter"
-                          value="#{entityController.filterViewSelectedItemProject}"
-                          onchange="updateForm()">
-            <f:selectItems value="#{itemProjectController.availableItems}"
-                           var="itemProject"
-                           itemLabel="#{itemProject.name}"
-                           itemValue="#{itemProject}"/>
-        </p:selectOneRadio>
-    </ui:define>
+                template="itemListFilterViewTemplateBase.xhtml">  
 
     <ui:define name="resultsDataTable">
         <p:dataTable value="#{filterViewListDataModel}"
