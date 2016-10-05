@@ -452,6 +452,13 @@ public class ItemDomainLocationController extends ItemController {
                 for (Item item : itemHierarchyList) {
                     prevNode = ItemUtility.createNewTreeNode(item, prevNode);
                 }
+                
+                // Allow for quick view full location. 
+                setExpandedSelectedOnAllChildren(rootTreeNode, true, false);
+                if (rootTreeNode.getChildCount() > 0) {
+                    rootTreeNode.getChildren().get(0).setExpanded(false);
+                }
+                
 
                 return rootTreeNode;
             }
@@ -488,7 +495,7 @@ public class ItemDomainLocationController extends ItemController {
         }
     }
 
-    private void setExpandedSelectedOnAllChildren(TreeNode node, Boolean expanded, Boolean selected) {
+    private static void setExpandedSelectedOnAllChildren(TreeNode node, Boolean expanded, Boolean selected) {
         if (expanded != null) {
             node.setExpanded(expanded);
         }
