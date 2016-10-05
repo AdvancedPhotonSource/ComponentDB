@@ -1,10 +1,15 @@
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -13,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.jboss.weld.util.collections.ArraySet;
 
 @Named("itemProjectController")
 @SessionScoped
@@ -22,6 +28,19 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     ItemProjectFacade itemProjectFacade; 
     
     private static final Logger logger = Logger.getLogger(ItemProjectController.class.getName());
+    
+    private static final String SystemItemProjectIdSettingTypeKey = "ItemProject.System.ItemProjectId";
+    
+    private Integer systemItemProjectId = null; 
+    
+    private Set<ItemController> itemProjectChangeListeners = null;  
+    
+    // Current item project is used to determine what project receives precedence on pages. 
+    private ItemProject currentItemProject = null; 
+    
+    public static ItemProjectController getInstance() {
+        return (ItemProjectController) SessionUtility.findBean("itemProjectController"); 
+    }
     
     public ItemProjectController() {
         super();
@@ -55,8 +74,85 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
         }
         return "";
     }
+    
+    public void addItemControllerProjectChangeListener(ItemController itemController) {
+        if (itemProjectChangeListeners == null) {
+            itemProjectChangeListeners = new ArraySet<>();
+        }
+        itemProjectChangeListeners.add(itemController); 
+        
+    }
 
-   
+    public ItemProject getCurrentItemProject() {
+        return currentItemProject;
+    }
+
+    public void setCurrentItemProject(ItemProject currentItemProject) {
+        if (!Objects.equals(this.currentItemProject, currentItemProject)) {
+            this.currentItemProject = currentItemProject;
+            if (currentItemProject != null) {
+                systemItemProjectId = currentItemProject.getId();
+            } else {
+                systemItemProjectId = null; 
+            }
+            notifyItemProjectChangeListeners();            
+        }
+    }
+    
+    private void notifyItemProjectChangeListeners() {
+        for (ItemController itemController : itemProjectChangeListeners) {
+            itemController.itemProjectChanged();
+        }
+    }
+    
+    public String getCurrentItemProjectLabel() {
+        if (currentItemProject != null) {
+            return currentItemProject.getName(); 
+        }
+        return "All"; 
+    }
+    
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        if (settingTypeMap == null) {
+            return;
+        }
+        
+        systemItemProjectId = parseSettingValueAsInteger(settingTypeMap.get(SystemItemProjectIdSettingTypeKey).getDefaultValue());
+        updateCurrentItemProjectFromSetting();
+    }
+    
+    @Override
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
+            return;
+        }
+        
+        systemItemProjectId = settingEntity.getSettingValueAsInteger(SystemItemProjectIdSettingTypeKey, systemItemProjectId);
+        updateCurrentItemProjectFromSetting();
+    }
+    
+    @Override
+    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+        if (settingEntity == null) {
+            return;
+        }
+        
+        settingEntity.setSettingValue(SystemItemProjectIdSettingTypeKey, systemItemProjectId);
+    }
+    
+    private void updateCurrentItemProjectFromSetting() {
+        if (systemItemProjectId == null) {
+            currentItemProject = null; 
+        } else {
+            if (currentItemProject != null) {
+                if (Objects.equals(currentItemProject.getId(), systemItemProjectId)) {
+                    return; 
+                }                
+            }
+            setCurrentItemProject(findById(systemItemProjectId)); 
+        }
+    }
     
     /**
      * Converter class for component project objects.
