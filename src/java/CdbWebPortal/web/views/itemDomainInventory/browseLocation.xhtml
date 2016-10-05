@@ -10,7 +10,8 @@
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
 
     <f:metadata>
-        <f:viewAction action="#{itemDomainLocationController.resetListDataModel}" />
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{itemDomainInventoryController.processPreRenderList()}" />
     </f:metadata>  
 
     <ui:define name="pageTitle">: Browse By Locations</ui:define>
