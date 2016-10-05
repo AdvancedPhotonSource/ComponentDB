@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -57,7 +58,6 @@ import org.primefaces.model.menu.MenuModel;
 @SessionScoped
 public class ItemDomainInventoryController extends ItemController {
 
-    private final String DOMAIN_TYPE_NAME = "Inventory";
     private final String DEFAULT_DOMAIN_NAME = "Inventory";
     private final String DOMAIN_HANDLER_NAME = "Inventory";
     private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog";
@@ -198,18 +198,13 @@ public class ItemDomainInventoryController extends ItemController {
             return null;
         }
     }
+    
+    // TODO add method with order by QR ID for item list with project. 
 
     @Override
-    public ListDataModel getDomainListDataModel(EntityType entityType) {
-        List<Item> itemList = itemFacade.findByDomainAndDerivedEntityTypeOrderByQrId(getDefaultDomainName(), entityType.getName());
-        return new ListDataModel(itemList);
-    }
-
-    @Override
-    public ListDataModel getDomainListDataModel() {
-        List<Item> itemList = itemFacade.findByDomainOrderByQrId(getDefaultDomainName());
-        return new ListDataModel(itemList);
-    }
+    public List<Item> getItemList() {
+        return itemFacade.findByDomainOrderByQrId(getDefaultDomainName()); 
+    }      
 
     @Override
     public List<EntityType> getFilterableEntityTypes() {
@@ -240,7 +235,7 @@ public class ItemDomainInventoryController extends ItemController {
                 DefaultMenuModel itemLocationMenuModel;
                 ItemDomainLocationController itemDomainLocationController;
                 itemDomainLocationController = ItemDomainLocationController.getInstance();
-                String inventoryControllerName = getDomainControllerName(DOMAIN_TYPE_NAME);
+                String inventoryControllerName = getDomainControllerName(DEFAULT_DOMAIN_NAME);
                 if (locationString == null || locationString.isEmpty()) {
                     locationString = "Select Location";
                 }
@@ -401,20 +396,21 @@ public class ItemDomainInventoryController extends ItemController {
         Item selection = getItemDomainLocationController().getFilterViewLocationLastSelection();
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
             List<Item> itemList = new ArrayList<>();
+            ItemProject currentItemProject = getCurrentItemProject();
             if (selection != null) {
-                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
-                if (filterViewSelectedItemProject != null) {
+                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));                
+                if (currentItemProject != null) {
                     List<Item> itemsToRemove = new ArrayList<>();
                     for (Item item : itemList) {
-                        if (item.getItemProjectList().contains(filterViewSelectedItemProject)) {
+                        if (item.getItemProjectList().contains(currentItemProject)) {
                             continue;
                         }
                         itemsToRemove.add(item);
                     }
                     itemList.removeAll(itemsToRemove);
                 }
-            } else if (filterViewSelectedItemProject != null) {
-                itemList = itemFacade.findByFilterViewItemProjectAttributes(filterViewSelectedItemProject, getDefaultDomainName());
+            } else if (currentItemProject != null) {
+                itemList = itemFacade.findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
             }
             filterViewLocationDataModel = createFilterViewListDataModel(itemList);
         }
@@ -1605,7 +1601,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String getDefaultDomainName() {
-        return DOMAIN_TYPE_NAME;
+        return DEFAULT_DOMAIN_NAME;
     }
 
     @Override
