@@ -10,6 +10,7 @@
     <ui:param name="pageRendered" value="#{loginController.loggedInAsAdmin}" />
     
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" 
                  listener="#{itemGenericViewController.processViewRequestParams}"/>
         <f:event type="preRenderComponent" 

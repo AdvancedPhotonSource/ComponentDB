@@ -6,6 +6,7 @@
                 template="../item/private/templates/itemCreateTemplate.xhtml">    
 
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processCreateRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:viewAction action="#{itemDomainCatalogController.resetCurrentWizardStep()}" rendered="#{facesContext.postBack}"/>

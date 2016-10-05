@@ -7,6 +7,7 @@
                 xmlns:p="http://primefaces.org/ui"
                 template="../../templates/contentViewTemplate.xhtml">
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{userInfoController.processViewRequestParams}"/>
     </f:metadata>
 

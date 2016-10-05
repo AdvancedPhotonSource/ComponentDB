@@ -8,6 +8,7 @@
                 template="../item/private/templates/itemCreateTemplate.xhtml">
 
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processCreateRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>

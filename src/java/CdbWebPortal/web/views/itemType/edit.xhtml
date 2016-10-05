@@ -6,6 +6,7 @@
                 template="../simpleEntity/private/templates/simpleEntityEditTemplate.xhtml">
 
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{itemTypeController.processEditRequestParams}"/>
     </f:metadata>
     

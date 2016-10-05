@@ -12,6 +12,7 @@
     <ui:define name="middleCenter">
         
         <f:metadata>
+            <f:viewAction action="#{settingController.updateGlobalSettings()}" />
             <f:event type="preRenderComponent" listener="#{propertyTypeController.processPreRenderList()}"/>
         </f:metadata>
 

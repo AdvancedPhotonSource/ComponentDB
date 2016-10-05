@@ -7,6 +7,7 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{searchController.updateSettings()}"/>
     </f:metadata>
 

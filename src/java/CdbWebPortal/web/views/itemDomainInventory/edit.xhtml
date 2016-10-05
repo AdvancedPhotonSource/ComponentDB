@@ -8,6 +8,7 @@
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
 
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processEditRequestParams()}"/>
         <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>

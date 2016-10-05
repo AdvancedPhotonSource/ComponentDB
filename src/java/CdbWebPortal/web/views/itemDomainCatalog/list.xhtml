@@ -9,6 +9,7 @@
     <ui:param name="entityController" value="#{itemDomainCatalogController}" />
     
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCatalogController.processPreRenderList()}" />
     </f:metadata>
     

@@ -8,6 +8,7 @@
     <ui:param name="entityController" value="#{itemDomainLocationController}" />
     
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainLocationController.processPreRenderList()}"/>
     </f:metadata>
     

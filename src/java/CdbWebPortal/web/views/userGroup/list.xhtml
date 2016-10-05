@@ -6,6 +6,7 @@
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
     
     <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" listener="#{userGroupController.processPreRenderList()}"/>
     </f:metadata>
     
