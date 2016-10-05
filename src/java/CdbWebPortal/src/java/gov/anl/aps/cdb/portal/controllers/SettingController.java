@@ -42,7 +42,7 @@ public class SettingController implements Serializable {
 
     @EJB
     private UserGroupFacade userGroupFacade;
-    
+
     private static final Logger logger = Logger.getLogger(SettingController.class.getName());
 
     private UserInfoController userInfoController = null;
@@ -53,8 +53,21 @@ public class SettingController implements Serializable {
     private Date settingsTimestamp = null;
     private List<UserGroup> availableUserGroupsForSelection = null;
 
+    private ItemProjectController itemProjectController = null;
+
     public SettingController() {
         settingsTimestamp = new Date();
+    }
+
+    /**
+     * This method should be executed on each page and loads global system
+     * settings.
+     */
+    public void updateGlobalSettings() {
+        if (itemProjectController == null) {
+            itemProjectController = ItemProjectController.getInstance();
+        }
+        itemProjectController.updateSettings();
     }
 
     public SettingEntity getCurrentSettingEntity() {
@@ -87,12 +100,12 @@ public class SettingController implements Serializable {
     public void saveSettingListForSettingEntity() {
         UserGroup sessionUserGroup = getUserGroupForSettingsView();
         if (sessionUserGroup != null) {
-            if(!isSessionUserHaveGroupWritePermission(sessionUserGroup)) {
-                SessionUtility.addErrorMessage("Cannot Save group settings", 
+            if (!isSessionUserHaveGroupWritePermission(sessionUserGroup)) {
+                SessionUtility.addErrorMessage("Cannot Save group settings",
                         "User does not have sufficient privilages to save to the current group settings.");
-                return; 
+                return;
             }
-            
+
             if (userGroupController == null) {
                 userGroupController = (UserGroupController) SessionUtility.findBean(USER_GROUP_CONTROLLER_NAME);
             }
@@ -121,7 +134,7 @@ public class SettingController implements Serializable {
             settingsTimestamp = null;
         }
     }
-    
+
     public UserGroup getUserGroupForSettingsView() {
         return userGroupForSettingsView;
     }
@@ -160,7 +173,7 @@ public class SettingController implements Serializable {
         resetSessionVariables();
         populateSessionSettingEntityFromSettingTypeDefaults(sessionUser);
     }
-        
+
     // TODO add checks that determine if any additional settings need to be added. 
     private void populateSessionSettingEntityFromSettingTypeDefaults(SettingEntity settingEntity) {
         if (settingEntity != null) {
@@ -256,9 +269,9 @@ public class SettingController implements Serializable {
 
         return newUserGroupList;
     }
-    
+
     public boolean isUserHaveUpdateFavoritesPermission() {
-        return isSessionUserHaveSettingsWritePermissions(); 
+        return isSessionUserHaveSettingsWritePermissions();
     }
 
     public boolean isSessionUserHaveGroupWritePermission(UserGroup userGroup) {
@@ -289,26 +302,27 @@ public class SettingController implements Serializable {
         if (sessionUser != null) {
             SettingEntity settingEntity = getCurrentSettingEntity();
             if (settingEntity instanceof UserInfo) {
-                return Objects.equals(sessionUser.getId(), ((UserInfo) settingEntity).getId()); 
+                return Objects.equals(sessionUser.getId(), ((UserInfo) settingEntity).getId());
             } else if (settingEntity instanceof UserGroup) {
-                return isSessionUserHaveGroupWritePermission((UserGroup)settingEntity);
+                return isSessionUserHaveGroupWritePermission((UserGroup) settingEntity);
             }
         }
-        return false; 
+        return false;
     }
-    
+
     public boolean isCurrentSettingEntityUserGroupEntity() {
         SettingEntity settingEntity = getCurrentSettingEntity();
         return (settingEntity instanceof UserGroup);
     }
-    
+
     /**
-     * Determines when settings could be displayed for editing even temporarly. 
-     * When group settings are selected option are shown only with sufficient privilages. 
-     * 
-     * @return boolean that specify if settings options should be displayed. 
+     * Determines when settings could be displayed for editing even temporarly.
+     * When group settings are selected option are shown only with sufficient
+     * privilages.
+     *
+     * @return boolean that specify if settings options should be displayed.
      */
-    public boolean isDisplayCurrentSettingOptions() {        
+    public boolean isDisplayCurrentSettingOptions() {
         if (isCurrentSettingEntityUserGroupEntity()) {
             SettingEntity settingEntity = getCurrentSettingEntity();
             return isSessionUserHaveGroupWritePermission((UserGroup) settingEntity);
