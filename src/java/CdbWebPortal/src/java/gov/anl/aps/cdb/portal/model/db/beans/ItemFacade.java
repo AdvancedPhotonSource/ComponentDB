@@ -123,6 +123,18 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
+    
+    public List<Item> findByDomainAndProject(String domainName, String projectName) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findByDomainNameAndProject")
+                    .setParameter("domainName", domainName)
+                    .setParameter("projectName", projectName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<Item> findByDomainWithoutParents(String domainName) {
         try {
@@ -356,6 +368,18 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             return (List<Item>) em.createNamedQuery("Item.findItemsWithPropertyType")
                     .setParameter("domainName", domainName)
                     .setParameter("propertyTypeId", propertyTypeId)
+                    .getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+    public List<Item> getItemsWithPropertyTypeAndProject(String domainName, Integer propertyTypeId, String projectName) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findItemsWithPropertyTypeAndProject")
+                    .setParameter("domainName", domainName)
+                    .setParameter("propertyTypeId", propertyTypeId)
+                    .setParameter("projectName", projectName)
                     .getResultList();
         } catch (NoResultException ex) {
         }
