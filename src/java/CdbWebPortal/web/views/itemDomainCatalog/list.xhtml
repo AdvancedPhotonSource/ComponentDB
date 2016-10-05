@@ -17,9 +17,7 @@
     </ui:define>
     
     <ui:define name="helpFragment">
-        <ui:param name="listEntityTypePath" value="/#{itemDomainCatalogController.listEntityType.name}" />
-        <ui:param name="entityTypeFinalPath" value="#{listEntityTypePath != '/' ? listEntityTypePath : ''}" />
-        <ui:include src="private/entityType#{entityTypeFinalPath}/listPageHelpFragment.xhtml" />
+        
     </ui:define>
     
     <ui:define name="customizeDisplayDialog">
