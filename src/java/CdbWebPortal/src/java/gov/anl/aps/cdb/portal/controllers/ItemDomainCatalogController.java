@@ -34,7 +34,6 @@ import org.primefaces.event.FlowEvent;
 @SessionScoped
 public class ItemDomainCatalogController extends ItemController {
 
-    private final String ENTITY_TYPE_NAME = "Component";
     private final String DOMAIN_TYPE_NAME = "Catalog";
     private final String DERIVED_DOMAIN_NAME = "Inventory";
     private final String DOMAIN_HANDLER_NAME = "Catalog";
@@ -88,7 +87,7 @@ public class ItemDomainCatalogController extends ItemController {
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCatalog.Help.ListPage.Display.Fragment";
 
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainCatalog.List.Scope.Display";
-    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainCatalog.List.Scope.Display.PropertyTypeId"; 
+    private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainCatalog.List.Scope.Display.PropertyTypeId";
 
     private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
 
@@ -119,7 +118,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     private List<Item> inventorySparesList = null;
     private List<Item> inventoryNonSparesList = null;
-    private Boolean displayInventorySpares = null; 
+    private Boolean displayInventorySpares = null;
 
     public ItemDomainCatalogController() {
         super();
@@ -164,12 +163,7 @@ public class ItemDomainCatalogController extends ItemController {
 
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
-        if (getListEntityType() == null) {
-            return null;
-        } else {
-            // TODO add setting for both entity types. 
-            return DisplayListPageHelpFragmentSettingTypeKey;
-        }
+        return DisplayListPageHelpFragmentSettingTypeKey;
     }
 
     @Override
@@ -214,37 +208,17 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     @Override
-    protected Item createEntityInstance() {
-        Item item = super.createEntityInstance();
-
-        // The user was on the list for the specific entity type when clickin add button. 
-        if (getListEntityType() != null) {
-            List<EntityType> itemEntityTypeList = item.getEntityTypeList();
-            if (itemEntityTypeList == null) {
-                itemEntityTypeList = new ArrayList<>();
-                try {
-                    item.setEntityTypeList(itemEntityTypeList);
-                } catch (Exception ex) {
-                }
-            }
-            item.getEntityTypeList().add(getListEntityType());
-        }
-
-        return item;
-    }
-
-    @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
         inventoryNonSparesList = null;
         inventorySparesList = null;
-        displayInventorySpares = null; 
+        displayInventorySpares = null;
     }
-    
+
     public void resetInventorySpares() {
         Item currentItem = getCurrent();
         if (currentItem != null) {
-            List<Item> inventoryItems = currentItem.getDerivedFromItemList(); 
+            List<Item> inventoryItems = currentItem.getDerivedFromItemList();
             if (inventoryItems != null) {
                 for (Item inventoryItem : inventoryItems) {
                     inventoryItem.setSparePartIndicator(null);
@@ -277,55 +251,55 @@ public class ItemDomainCatalogController extends ItemController {
                 List<Item> spareItems = getInventorySparesList();
                 List<Item> allInventoryItems = getCurrent().getDerivedFromItemList();
                 inventoryNonSparesList = new ArrayList<>(allInventoryItems);
-                inventoryNonSparesList.removeAll(spareItems); 
+                inventoryNonSparesList.removeAll(spareItems);
             }
         }
         return inventoryNonSparesList;
     }
-    
+
     public int getInventorySparesCount() {
         List<Item> sparesList = getInventorySparesList();
         if (sparesList != null) {
             return sparesList.size();
         }
-        return 0; 
+        return 0;
     }
-    
+
     public void notifyUserIfMinimumSparesReachedForCurrent() {
         int sparesMin = SparePartsBean.getSparePartsMinimumForItem(getCurrent());
         if (sparesMin == -1) {
             // Either an error occured or no spare parts configuration was found.
-            return; 
+            return;
         } else {
-            int sparesCount = getInventorySparesCount(); 
+            int sparesCount = getInventorySparesCount();
             if (sparesCount < sparesMin) {
                 String sparesMessage;
-                sparesMessage = "You now have " + sparesCount; 
+                sparesMessage = "You now have " + sparesCount;
                 if (sparesCount == 1) {
                     sparesMessage += " spare";
                 } else {
                     sparesMessage += " spares";
                 }
-                
-                sparesMessage += " but require a minumum of " + sparesMin; 
-                
-                SessionUtility.addWarningMessage("Spares Warning", sparesMessage); 
+
+                sparesMessage += " but require a minumum of " + sparesMin;
+
+                SessionUtility.addWarningMessage("Spares Warning", sparesMessage);
             }
         }
-        
+
     }
-    
+
     public int getInventoryNonSparesCount() {
         List<Item> nonSparesList = getInventoryNonSparesList();
         if (nonSparesList != null) {
             return nonSparesList.size();
         }
-        return 0; 
+        return 0;
     }
 
     public Boolean getDisplayInventorySpares() {
         if (displayInventorySpares == null) {
-         displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
+            displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
         }
         return displayInventorySpares;
     }
@@ -421,7 +395,7 @@ public class ItemDomainCatalogController extends ItemController {
         displayListPageHelpFragment = Boolean.parseBoolean(settingTypeMap.get(DisplayListPageHelpFragmentSettingTypeKey).getDefaultValue());
 
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
-        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue()); 
+        displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
