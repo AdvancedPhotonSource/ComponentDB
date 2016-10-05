@@ -26,7 +26,7 @@
         <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{entityController.followBreadcrumbOrPrepareList()}" 
                          rendered="#{renderReturn == null or renderReturn}" value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
             <p:tooltip for="#{entityTypeName}ViewDoneButton" value="Return to previous page."/>
-        </p:commandButton>`
+        </p:commandButton>
         <p:commandButton id="#{entityTypeName}ViewNoOp" style="visibility:hidden" value="NoOp"/>
         <p:defaultCommand target="#{entityTypeName}ViewNoOp"/>
     </div>
