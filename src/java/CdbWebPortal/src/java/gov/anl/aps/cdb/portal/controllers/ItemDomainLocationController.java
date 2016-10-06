@@ -86,6 +86,11 @@ public class ItemDomainLocationController extends ItemController {
         return getFilterViewLocationSelection().getLowesetSelectionMade();
     }
 
+    @Override
+    public boolean entityCanBeCreatedByUsers() {
+        return false;
+    }
+
     /**
      * Get a list of items that are located somewhere down the hierarchy of
      * another item.
