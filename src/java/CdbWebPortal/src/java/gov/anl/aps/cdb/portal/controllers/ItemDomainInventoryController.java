@@ -58,7 +58,7 @@ import org.primefaces.model.menu.MenuModel;
 @SessionScoped
 public class ItemDomainInventoryController extends ItemController {
 
-    private final String DEFAULT_DOMAIN_NAME = "Inventory";
+    private static final String DEFAULT_DOMAIN_NAME = "Inventory";
     private final String DOMAIN_HANDLER_NAME = "Inventory";
     private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog";
 
@@ -125,8 +125,6 @@ public class ItemDomainInventoryController extends ItemController {
     private String filterBySerialNumber = null;
     private String filterByTag = null;
 
-    private Integer qrIdViewParam = null;
-
     private List<PropertyValue> filteredPropertyValueList = null;
 
     //Variables used for creation of new inventory item. 
@@ -158,6 +156,10 @@ public class ItemDomainInventoryController extends ItemController {
     public ItemDomainInventoryController() {
         super();
         displayDerivedFromItem = false;
+    }
+    
+    public static ItemDomainInventoryController getInstance() {
+        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME); 
     }
 
     public Boolean getDisplayLocationDetails() {
@@ -197,9 +199,13 @@ public class ItemDomainInventoryController extends ItemController {
         } else {
             return null;
         }
+    }    
+
+    @Override
+    public List<Item> getItemListWithProject(ItemProject itemProject) {
+        String projectName = itemProject.getName();
+        return itemFacade.findByDomainAndProjectOrderByQrId(getDefaultDomainName(), projectName); 
     }
-    
-    // TODO add method with order by QR ID for item list with project. 
 
     @Override
     public List<Item> getItemList() {
@@ -655,8 +661,10 @@ public class ItemDomainInventoryController extends ItemController {
     public Boolean displayBOMEditButton() {
         if (current != null) {
             List<ItemElement> catalogItemElementDisplayList;
-            catalogItemElementDisplayList = current.getDerivedFromItem().getItemElementDisplayList();
-            return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
+            if (current.getDerivedFromItem() != null) {
+                catalogItemElementDisplayList = current.getDerivedFromItem().getItemElementDisplayList();
+                return catalogItemElementDisplayList != null && catalogItemElementDisplayList.isEmpty() == false;
+            }
         }
 
         return false;
