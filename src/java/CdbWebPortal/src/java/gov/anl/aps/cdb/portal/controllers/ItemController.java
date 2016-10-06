@@ -117,7 +117,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
 
-    private Integer qrIdViewParam = null;
+    protected Integer qrIdViewParam = null;
 
     private TreeNode itemElementListTreeTableRootNode = null;
 
@@ -771,13 +771,22 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return new ListDataModel(itemList);
     }
 
-    public String getDomainHandlerPath(DomainHandler domainHandler) {
-        return "/views/itemDomain" + domainHandler.getName();
+    public String getDomainPath(DomainHandler domainHandler) {
+        return "/views/" + getEntityViewsDirectory(domainHandler.getName());
+    }    
+
+    @Override
+    protected String getEntityViewsDirectory() {
+        return getEntityViewsDirectory(getDefaultDomainName()); 
+    }
+    
+    protected String getEntityViewsDirectory(String domainName) {
+        return "itemDomain" + domainName; 
     }
 
     @Override
     protected String getEntityApplicationViewPath() {
-        return getDomainHandlerPath(getItemDomainHandler());
+        return getDomainPath(getItemDomainHandler());
     }
 
     @Override
@@ -2179,6 +2188,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         } else {
             item.init();
         }
+        
+        if (qrIdViewParam != null) {
+            item.setQrId(qrIdViewParam);
+            qrIdViewParam = null; 
+        }
 
         return item;
     }
@@ -2215,14 +2229,20 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             paramValue = SessionUtility.getRequestParameterValue("qrId");
             if (paramValue != null) {
                 try {
-                    qrIdViewParam = Integer.parseInt(paramValue);
-                    Item item = findByQrId(qrIdViewParam);
-                    if (item == null) {
+                    Integer qrParam = Integer.parseInt(paramValue);
+                    Item item = findByQrId(qrParam);
+                    if (item == null) {                                                                        
                         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-                        if (sessionUser != null) {
-                            SessionUtility.navigateTo("/views/componentInstance/create.xhtml?faces-redirect=true");
+                        
+                        ItemDomainInventoryController inventoryController;
+                        inventoryController = ItemDomainInventoryController.getInstance();
+                        inventoryController.qrIdViewParam = qrParam;
+                        inventoryController.setCurrent(null);
+                        
+                        if (sessionUser != null) {                                                        
+                            SessionUtility.navigateTo("/views/itemDomainInventory/create.xhtml?faces-redirect=true");
                         } else {
-                            SessionUtility.pushViewOnStack("/views/componentInstance/create.xhtml");
+                            SessionUtility.pushViewOnStack("/views/itemDomainInventory/create.xhtml");
                             SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
                         }
                         return null;
@@ -2251,7 +2271,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         DomainHandler itemDomainHandler = item.getDomain().getDomainHandler();
         String desiredViewId;
         if (itemDomainHandler != null) {
-            desiredViewId = getDomainHandlerPath(itemDomainHandler) + "/view.xhtml";
+            desiredViewId = getDomainPath(itemDomainHandler) + "/view.xhtml";
         } else {
             desiredViewId = "/views/item/view.xhtml";
         }
