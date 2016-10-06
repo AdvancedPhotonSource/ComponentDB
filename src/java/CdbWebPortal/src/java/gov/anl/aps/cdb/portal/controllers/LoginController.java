@@ -166,7 +166,7 @@ public class LoginController implements Serializable {
         if (landingPage.contains("login")) {
             landingPage = SessionUtility.popViewFromStack();
             if (landingPage == null) {
-                landingPage = "/views/index";
+                landingPage = "/index";
             }
         }
         landingPage += "?faces-redirect=true";
