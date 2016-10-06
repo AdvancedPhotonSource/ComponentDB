@@ -7,7 +7,7 @@
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processCreateRequestParams}"/>
+        <f:viewAction action="#{itemDomainCatalogController.processCreateRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
 

@@ -9,7 +9,7 @@
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processCreateRequestParams}"/>
+        <f:viewAction action="#{itemDomainInventoryController.processCreateRequestParams}"/>
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
     </f:metadata>
 
@@ -17,12 +17,6 @@
 
     <ui:define name="additionalBasicInfo">
         <ui:include src="private/componentInventoryItemLocationEditPanelGrid.xhtml" />
-    </ui:define>
-
-    <ui:define name="itemOverviewPanelGrid">
-        <ui:include src="private/componentInventoryCreatePanelGrid.xhtml">
-            <ui:param name="viewName" value="Overview" />
-        </ui:include>
     </ui:define>
 
     <ui:define name="basicInformationTab"/>
