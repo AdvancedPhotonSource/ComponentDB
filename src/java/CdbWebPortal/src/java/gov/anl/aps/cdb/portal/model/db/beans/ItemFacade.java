@@ -157,6 +157,18 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
+    
+    public List<Item> findByDomainAndProjectOrderByQrId(String domainName, String projectName) {
+        try {
+            return (List<Item>) em.createNamedQuery("Item.findByDomainNameAndProjectOrderByQrId")
+                    .setParameter("domainName", domainName)
+                    .setParameter("projectName", projectName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<Item> findByName(String name) {
         try {

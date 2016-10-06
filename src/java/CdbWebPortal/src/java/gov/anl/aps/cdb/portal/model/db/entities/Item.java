@@ -72,6 +72,8 @@ import org.primefaces.model.menu.DefaultMenuModel;
             query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName"),
     @NamedQuery(name = "Item.findByDomainNameOrderByQrId",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
+    @NamedQuery(name = "Item.findByDomainNameAndProjectOrderByQrId",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
