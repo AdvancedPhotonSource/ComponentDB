@@ -464,7 +464,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         // Make sure user is logged in
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser == null) {
-            SessionUtility.pushViewOnStack("/views/" + getEntityTypeName() + "/edit.xhtml?id=" + idParam + "&faces-redirect=true");
+            SessionUtility.pushViewOnStack("/views/" + getEntityViewsDirectory() + "/edit.xhtml?id=" + idParam + "&faces-redirect=true");
             SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
             return null;
         } else {
@@ -500,18 +500,26 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
+     * Get a entity views directory name.
+     *
+     * @return String of the directory name in views directory.
+     */
+    protected String getEntityViewsDirectory() {
+        return getEntityTypeName();
+    }
+
+    /**
      * Create new entity instance based on request parameters.
      *
-     * @return new entity instance
      * @throws CdbException in case of invalid request parameter values
      */
-    public EntityType selectByCreateRequestParams() throws CdbException {
+    public void selectByCreateRequestParams() throws CdbException {
         setBreadcrumbRequestParams();
 
         // Make sure user is logged in
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionUser == null) {
-            SessionUtility.pushViewOnStack("/views/" + getEntityTypeName() + "/create.xhtml?faces-redirect=true");
+            SessionUtility.pushViewOnStack("/views/" + getEntityViewsDirectory() + "/create.xhtml?faces-redirect=true");
             SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
         } else {
             CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
@@ -520,11 +528,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
                 boolean userAuthorized = entityCanBeCreatedByUsers();
                 if (!userAuthorized) {
                     throw new AuthorizationError("User " + sessionUser.getUsername() + " is not authorized to create "
-                            + getDisplayEntityTypeName() + " objects.");
+                            + getDisplayEntityTypeName() + " entities.");
                 }
             }
+            // User authorized. 
+            EntityType entity = getCurrent();
+            if (entity == null || entity.getId() != null) {
+                // entity is not yet set, or current entity is already in db. 
+                prepareCreate();
+            }
+
         }
-        return null;
+
     }
 
     /**
@@ -910,15 +925,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @return URL for the current view
      */
     public String customizeViewDisplay() {
-        return getUrlForCurrentView(); 
+        return getUrlForCurrentView();
     }
-    
+
     /**
-     * Gets a redirection string for the current view. 
-     * 
-     * @return redirection string for the current view 
+     * Gets a redirection string for the current view.
+     *
+     * @return redirection string for the current view
      */
-    protected String getUrlForCurrentView(){
+    protected String getUrlForCurrentView() {
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
@@ -969,11 +984,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String view() {
         return "view?faces-redirect=true";
     }
-    
+
     /**
      * Return entity view page with query parameters of id.
-     * 
-     *  @return URL to view page in the entity folder with id query paramter.
+     *
+     * @return URL to view page in the entity folder with id query paramter.
      */
     public String viewForCurrentEntity() {
         return "view?id=" + current.getId() + "&faces-redirect=true";
@@ -1022,7 +1037,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     protected String getEntityApplicationViewPath() {
-        return "/views/" + getEntityTypeName();
+        return "/views/" + getEntityViewsDirectory();
     }
 
     /**
@@ -1051,7 +1066,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetSelectDataModel();
             // Best to reload the entity after creation to ensure all connections are updated and initalized. 
             Object newEntityId = newEntity.getId();
-            current = findById((Integer) newEntityId);           
+            current = findById((Integer) newEntityId);
             return view();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -1204,22 +1219,22 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         current = entity;
         destroy();
     }
-    
+
     /**
      * Executes destroy but does not return redirection string.
-     * 
-     * @return redirection to current view when successful. 
+     *
+     * @return redirection to current view when successful.
      */
     public String destroyInCurrentView() {
-        String result = destroy();       
-        
+        String result = destroy();
+
         if (result != null) {
             return getUrlForCurrentView();
         }
-        
-        return null; 
+
+        return null;
     }
-    
+
     /**
      * Remove current (selected) entity instance from the database and reset
      * list variables and data model.
@@ -1588,14 +1603,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public boolean entityHasTypes() {
         return getEntityTypeTypeName() != null;
     }
-    
+
     public String getEntityEntityCategoryName() {
         return "Category";
     }
-    
+
     public String getEntityEntityTypeName() {
         return "Type";
-    }    
+    }
 
     public boolean entityHasGroups() {
         return getEntityTypeGroupName() != null;
