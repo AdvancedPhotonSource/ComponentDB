@@ -24,7 +24,7 @@
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}ViewForm" rendered="#{pageRendered}">
             <div class="domainEntityLeftContent middleCenterLeftContent">
-                <ui:param name="itemObject" value="#{entityController.selected}"/>
+                <ui:param name="itemObject" value="#{entityController.current}"/>
                 <div class="pageTitle">
                     <h1><ui:insert name="pageTitle"/></h1>
                 </div>

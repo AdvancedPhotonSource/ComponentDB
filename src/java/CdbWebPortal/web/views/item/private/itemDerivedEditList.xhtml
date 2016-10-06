@@ -7,9 +7,9 @@
     <ui:param name="itemDerivedController" value="#{itemDerivedController != null ? itemDerivedController : entityController}" />
     <ui:param name="childEntityTypeName" value="#{itemDerivedController.entityTypeName}ItemDerived"/>
 
-    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
+    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.current.entityInfo)}"/>
     
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}">
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{loginController.isEntityWriteable(entityController.current.entityInfo)}">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemDerivedController}"/>
         <ui:param name="childEntityTypeName" value="#{childEntityTypeName}"/>
