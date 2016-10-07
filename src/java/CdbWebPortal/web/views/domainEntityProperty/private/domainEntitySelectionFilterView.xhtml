@@ -13,33 +13,13 @@
                 <p:panelGrid>
                     <p:row>
                         <p:column styleClass="leftAlignedText">
-                            Choose a Category
-                            <p:selectManyMenu id="filterViewItemCategorySelection"                                              
-                                              styleClass="wideListBox shortListBox"
-                                              converter="propertyTypeCategoryConverter"
-                                              value="#{propertyTypeController.fitlerViewSelectedPropertyTypeCategories}"
-                                              onchange="updatePropertyTypeFilterViewSelectionPanelGrid()">
-                                <f:selectItems value="#{propertyTypeCategoryController.availableItems}"
-                                               var="propertyTypeCategory"
-                                               itemLabel="#{propertyTypeCategory.name}"
-                                               itemValue="#{propertyTypeCategory}"/>
-                            </p:selectManyMenu>
+                            <ui:include src="../../propertyType/private/templateDefaults/propertyTypeFilterView/categorySelectManyMenu.xhtml">
+                                <ui:param name="additionalStyle" value="longListBox" />
+                                <ui:param name="onChange" value="updatePropertyTypeFilterViewSelectionPanelGrid()" />
+                            </ui:include>
                         </p:column>
                     </p:row>
-                    <p:row>
-                        <p:column styleClass="leftAlignedText">
-                            Choose a Handler
-                            <p:selectManyMenu id="filterViewItemCategorySelection2"
-                                              styleClass="wideListBox shortListBox"
-                                              converter="propertyTypeHandlerConverter"
-                                              value="#{propertyTypeController.fitlerViewSelectedPropertyTypeHandlers}"
-                                              onchange="updatePropertyTypeFilterViewSelectionPanelGrid()">
-                                <f:selectItems value="#{propertyTypeHandlerController.availableItems}"
-                                               var="propertyTypeHandler"
-                                               itemLabel="#{propertyTypeHandler.name}"
-                                               itemValue="#{propertyTypeHandler}"/>
-                            </p:selectManyMenu>
-                        </p:column>
+                    <p:row>                       
                     </p:row>
                     <p:row>
                         <p:column>
