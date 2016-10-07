@@ -15,67 +15,7 @@
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No property types found.">
 
-        <p:column sortBy="#{propertyTypeObject.id}" headerText="Id"
-                  filterBy="#{propertyTypeObject.id}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.filterById}"
-                  filterStyleClass="shortFilterBox"
-                  rendered="#{propertyTypeController.displayId}">
-            <h:outputText value="#{propertyTypeObject.id}"/>
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
-                  filterBy="#{propertyTypeObject.name}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.filterByName}"
-                  rendered="true">
-            <h:outputLink value="view.xhtml?id=#{propertyTypeObject.id}" title="View property type details">
-                <h:outputText value="#{propertyTypeObject.name}"/>
-            </h:outputLink>             
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.propertyTypeCategory.name}" headerText="Category" 
-                  filterBy="#{propertyTypeObject.propertyTypeCategory.name}" filterMatchMode="exact"
-                  filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
-                  filterValue="#{propertyTypeController.filterByCategory}"
-                  rendered="#{propertyTypeController.displayCategory}">
-            <h:outputText value="#{propertyTypeObject.propertyTypeCategory.name}"/>
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.defaultUnits}" headerText="Default Units" 
-                  filterBy="#{propertyTypeObject.defaultUnits}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.filterByDefaultUnits}"
-                  rendered="#{propertyTypeController.displayDefaultUnits}">
-            <h:outputText value="#{propertyTypeObject.defaultUnits}"/>
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.defaultValue}" headerText="Default Value" 
-                  filterBy="#{propertyTypeObject.defaultValue}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.filterByDefaultValue}"
-                  rendered="#{propertyTypeController.displayDefaultValue}">
-            <h:outputText value="#{propertyTypeObject.defaultValue}"/>
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.propertyTypeHandler.name}" headerText="Handler" 
-                  filterBy="#{propertyTypeObject.propertyTypeHandler.name}" filterMatchMode="exact"
-                  filterOptions="#{propertyTypeHandlerController.availableItemsForSelectOne}"
-                  filterValue="#{propertyTypeController.filterByHandler}"
-                  rendered="#{propertyTypeController.displayHandler}">
-            <h:outputText value="#{propertyTypeObject.propertyTypeHandler.name}"/>
-        </p:column>
-
-        <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
-                  filterBy="#{propertyTypeObject.description}" filterMatchMode="contains"
-                  filterValue="#{propertyTypeController.filterByDescription}"
-                  rendered="#{propertyTypeController.displayDescription}">
-            <h:outputText value="#{propertyTypeObject.description}"/>
-        </p:column>
-
-        <p:column headerText="Actions" exportable="false">
-            <ui:include src="../../common/private/commonListActionLinks.xhtml">
-                <ui:param name="entityController" value="#{propertyTypeController}"/>
-                <ui:param name="entityObject" value="#{propertyTypeObject}"/>
-                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
-            </ui:include>
-        </p:column>
+        <ui:include src="propertyTypeListObject.xhtml" />
     </p:dataTable>
 
 </ui:composition>
