@@ -78,6 +78,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     private DataModel filterViewDataModel;
 
     public PropertyTypeController() {
+        selectDisplayDescription = true;  
     }
 
     @Override
