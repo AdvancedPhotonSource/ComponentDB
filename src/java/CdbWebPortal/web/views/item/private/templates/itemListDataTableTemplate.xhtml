@@ -3,23 +3,14 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="itemListDataTableTemplateBase.xhtml"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:p="http://primefaces.org/ui">
     
     <ui:define name="itemColumns">
         <ui:include src="../itemListObject.xhtml" />
     </ui:define>
     
-    <ui:define name="rowExpansion">
-        <p:column rendered="#{entityController.displayRowExpansion}">
-            <p:rowToggler rendered="#{entityController.isDisplayRowExpansionForItem(itemListObject)}"/>
-        </p:column>
-        <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
-            <ui:insert name="itemRowExpansion">
-                <ui:include src="../itemListDataTableRowExpansion.xhtml"/>
-            </ui:insert>            
-            <ui:insert name="itemRowExpansionExtras" />
-        </p:rowExpansion>
+    <ui:define name="rowExpansionObject">
+        <ui:include src="../itemListDataTableRowExpansionObject.xhtml" />
     </ui:define>
     
     <ui:define name="propertyValueColumns">
