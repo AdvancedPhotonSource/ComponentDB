@@ -10,16 +10,11 @@
     <ui:param name="entityObject" value="#{itemListObject}"/>
 
     <ui:define name="additionalTabs">
-        <p:tab title="Assembly"
-               rendered="#{entityController.isDisplayRowExpansionAssembly(itemListObject)}">
-            <p:treeTable value="#{itemListObject.assemblyRootTreeNode}"
-                         var="itemTreeNode">
-                <ui:insert name="assemblyRowExpansionTreeObject">
-                    <ui:include src="../itemListObject.xhtml">
-                        <ui:param name="itemListObject" value="#{itemTreeNode}" />
-                    </ui:include>                        
-                </ui:insert>                
-            </p:treeTable>
-        </p:tab>
+        <ui:insert name="assemblyTab">
+            <ui:include src="../templateDefaults/itemListRowExpansion/itemAssemblyTab.xhtml" />
+        </ui:insert>
+        <ui:insert name="derivedFromItemTab">
+            <ui:include src="../templateDefaults/itemListRowExpansion/itemDerivedFromItemTab.xhtml" />
+        </ui:insert>
     </ui:define>
 </ui:composition>
