@@ -10,20 +10,14 @@
     <p:dialog id="#{entityTypeName}PropertySelectDialog" 
               widgetVar="#{entityTypeName}PropertySelectDialogWidget" 
               header="Select #{entityTypeDisplayName} Property Types" 
+              resizable="false"
               styleClass="viewTransparentBackgroundDialog">
-        <div>
-
-            <div class="actionButton">
-                <p:commandButton id="#{entityTypeName}PropertySelectCustomizeDisplay" 
-                                 onclick="PF('#{entityTypeName}PropertySelectDialogWidget').hide();
-                                         PF('#{entityTypeName}PropertySelectListCustomizeDisplayDialogWidget').show()"
-                                 alt="Customize selection view." 
-                                 icon="ui-icon-wrench" 
-                                 styleClass="actionButtonRight">
-                    <p:tooltip for="#{entityTypeName}PropertySelectCustomizeDisplay" value="Customize selection view."/>
-                </p:commandButton>
-            </div>
-            <ui:include src="domainEntityPropertySelectDataTable.xhtml"/>   
+        <div>         
+            <ui:include src="domainEntitySelectionFilterView.xhtml">
+                <ui:param name="propertySelectDataTableSelectionValue" value="#{propertyTypeController.selectedObjectList}" />
+                <ui:param name="propertySelectionMode" value="multiple" />
+            </ui:include>
+            
             <f:facet name="footer" class="dialog">
                 
                 <p:remoteCommand name="#{entityTypeName}PropertySelectionMade"
@@ -38,6 +32,8 @@
             </f:facet>
         </div>
     </p:dialog>
+    
+    <ui:include src="domainEntitySelectionFilterViewCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>
 

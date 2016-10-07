@@ -10,20 +10,15 @@
     <p:dialog id="#{entityTypeName}SinglePropertySelectDialog" 
               widgetVar="#{entityTypeName}SinglePropertySelectDialogWidget" 
               header="Select Property Type" 
+              resizable="false"
               styleClass="viewTransparentBackgroundDialog">
         <div>
 
-            <div class="actionButton">
-                <p:commandButton id="#{childEntityTypeName}SelectCustomizeDisplay" 
-                                 onclick="PF('#{entityTypeName}SinglePropertySelectDialogWidget').hide();
-                                          PF('#{entityTypeName}SinglePropertySelectListCustomizeDisplayDialogWidget').show()"
-                                 alt="Customize selection view." 
-                                 icon="ui-icon-wrench" 
-                                 styleClass="actionButtonRight">
-                    <p:tooltip for="#{childEntityTypeName}SelectCustomizeDisplay" value="Customize selection view."/>
-                </p:commandButton>
-            </div>
-            <ui:include src="domainEntitySinglePropertySelectDataTable.xhtml"/>
+            <ui:include src="domainEntitySelectionFilterView.xhtml" >
+                <ui:param name="propertySelectDataTableSelectionValue" value="#{propertyTypeController.selectedObject}" />
+                <ui:param name="propertySelectionMode" value="single" />
+                <ui:param name="viewName" value="Single"  />
+            </ui:include>
             
             <f:facet name="footer">
                 <ui:param name="onSuccessShowEntityEditDialog"
@@ -39,6 +34,10 @@
             </f:facet>
         </div>
     </p:dialog>
+    
+    <ui:include src="domainEntitySelectionFilterViewCustomizeDisplayDialog.xhtml">
+        <ui:param name="viewName" value="Single" />
+    </ui:include>
     
 </ui:composition>
 
