@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">]
+
+    <p:tab title="#{entityController.itemsDerivedFromItemTitle}"
+           rendered="#{entityController.isDisplayRowExpansionItemsDerivedFromItem(itemListObject)}">
+        <p:dataTable value="#{itemListObject.derivedFromItemList}"
+                     var="derivedFromItemObject">
+
+            <ui:param name="derivedDomainController" value="#{entityController.derivedDomainController}" /> 
+
+            <ui:include src="../../itemListDataTableRowExpansionDerivedFromItemsRowExpansionObject.xhtml">
+                <ui:param name="itemListObject" value="#{derivedFromItemObject}" />
+                <ui:param name="entityController" value="#{derivedDomainController}" />
+            </ui:include>
+
+            <ui:insert name="itemDerivedFromItemListObject">
+                <ui:include src="../../itemListObject.xhtml">
+                    <ui:param name="itemListObject" value="#{derivedFromItemObject}" />
+                    <ui:param name="entityController" value="#{derivedDomainController}" />                
+                </ui:include>
+            </ui:insert>
+        </p:dataTable>
+    </p:tab>
+</ui:composition>
