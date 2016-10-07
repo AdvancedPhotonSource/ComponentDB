@@ -141,7 +141,7 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     /**
      * Converter class for property type category objects.
      */
-    @FacesConverter(forClass = PropertyTypeCategory.class)
+    @FacesConverter(value = "propertyTypeCategoryConverter", forClass = PropertyTypeCategory.class)
     public static class PropertyCategoryControllerConverter implements Converter {
 
         @Override

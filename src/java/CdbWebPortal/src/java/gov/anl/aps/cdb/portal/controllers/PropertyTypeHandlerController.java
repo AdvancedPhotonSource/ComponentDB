@@ -133,7 +133,7 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
     /**
      * Converter class for property handler objects.
      */    
-    @FacesConverter(forClass = PropertyTypeHandler.class)
+    @FacesConverter(value = "propertyTypeHandlerConverter", forClass = PropertyTypeHandler.class)
     public static class PropertyHandlerControllerConverter implements Converter {
 
         @Override
