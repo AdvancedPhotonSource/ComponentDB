@@ -517,7 +517,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public boolean isDisabledItemItemType() {
-        return getAvailableItemTypesForCurrentItem().isEmpty();
+        List<ItemType> avaiableItemTypesForCurrentItem = getAvailableItemTypesForCurrentItem();
+        if (avaiableItemTypesForCurrentItem != null) {
+            return avaiableItemTypesForCurrentItem.isEmpty();
+        }
+        return true;
     }
 
     public List<UserGroup> getFilterViewUserGroupSelectionList() {
@@ -773,15 +777,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public String getDomainPath(DomainHandler domainHandler) {
         return "/views/" + getEntityViewsDirectory(domainHandler.getName());
-    }    
+    }
 
     @Override
     protected String getEntityViewsDirectory() {
-        return getEntityViewsDirectory(getDefaultDomainName()); 
+        return getEntityViewsDirectory(getDefaultDomainName());
     }
-    
+
     protected String getEntityViewsDirectory(String domainName) {
-        return "itemDomain" + domainName; 
+        return "itemDomain" + domainName;
     }
 
     @Override
@@ -1503,9 +1507,21 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public boolean isDisplayRowExpansionAssembly(Item item) {
-        if (getEntityDisplayItemElements()) {
-            List<ItemElement> itemElementsList = item.getItemElementDisplayList();
-            return itemElementsList != null && !itemElementsList.isEmpty();
+        if (item != null) {
+            if (getEntityDisplayItemElements()) {
+                List<ItemElement> itemElementsList = item.getItemElementDisplayList();
+                return itemElementsList != null && !itemElementsList.isEmpty();
+            }
+        }
+        return false;
+    }
+
+    public boolean isDisplayRowExpansionItemsDerivedFromItem(Item item) {
+        if (getEntityDisplayItemsDerivedFromItem()) {
+            List<Item> itemsDerivedFromItem = item.getDerivedFromItemList();
+            if (itemsDerivedFromItem != null) {
+                return !itemsDerivedFromItem.isEmpty();
+            }
         }
         return false;
     }
@@ -2188,10 +2204,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         } else {
             item.init();
         }
-        
+
         if (qrIdViewParam != null) {
             item.setQrId(qrIdViewParam);
-            qrIdViewParam = null; 
+            qrIdViewParam = null;
         }
 
         return item;
@@ -2231,15 +2247,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 try {
                     Integer qrParam = Integer.parseInt(paramValue);
                     Item item = findByQrId(qrParam);
-                    if (item == null) {                                                                        
+                    if (item == null) {
                         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-                        
+
                         ItemDomainInventoryController inventoryController;
                         inventoryController = ItemDomainInventoryController.getInstance();
                         inventoryController.qrIdViewParam = qrParam;
                         inventoryController.setCurrent(null);
-                        
-                        if (sessionUser != null) {                                                        
+
+                        if (sessionUser != null) {
                             SessionUtility.navigateTo("/views/itemDomainInventory/create.xhtml?faces-redirect=true");
                         } else {
                             SessionUtility.pushViewOnStack("/views/itemDomainInventory/create.xhtml");
