@@ -6,6 +6,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -28,6 +29,12 @@ public class PropertyTypeCategoryFacade extends CdbEntityFacade<PropertyTypeCate
 
     public PropertyTypeCategoryFacade() {
         super(PropertyTypeCategory.class);
+    }
+    
+    @Override
+    public List<PropertyTypeCategory> findAll() {
+        return (List<PropertyTypeCategory>) em.createNamedQuery("PropertyTypeCategory.findAll")
+                .getResultList();
     }
     
     public PropertyTypeCategory findByName(String name) {
