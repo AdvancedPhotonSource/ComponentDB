@@ -937,6 +937,14 @@ h2 {
     height: 150px;
 }
 
+.longListBox .ui-selectlistbox-listcontainer {
+    height: 320px !important; 
+}
+
+.longListBox {
+    height: 320px;
+}
+
 .topAlignedDataCell {
     vertical-align: top;
 }
