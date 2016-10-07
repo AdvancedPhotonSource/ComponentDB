@@ -5,12 +5,15 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -18,14 +21,15 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
+import javax.faces.model.DataModel;
+import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyTypeController")
 @SessionScoped
-public class PropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeFacade>implements Serializable {
+public class PropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeFacade> implements Serializable {
 
-    
     /*
      * Controller specific settings
      */
@@ -58,15 +62,20 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     private String filterByDefaultValue = null;
     private String filterByHandler = null;
 
-    private Boolean selectDisplayCategory = true;
+    private Boolean selectFilterViewDisplayCategory = null;
+    private Boolean selectFilterViewDisplayHandler = null;
     private Boolean selectDisplayDefaultUnits = true;
     private Boolean selectDisplayDefaultValue = true;
-    private Boolean selectDisplayHandler = true;
 
     private String selectFilterByCategory = null;
     private String selectFilterByDefaultUnits = null;
     private String selectFilterByDefaultValue = null;
     private String selectFilterByHandler = null;
+
+    private List<PropertyTypeCategory> fitlerViewSelectedPropertyTypeCategories = null;
+    private List<PropertyTypeHandler> fitlerViewSelectedPropertyTypeHandlers = null;
+
+    private DataModel filterViewDataModel;
 
     public PropertyTypeController() {
     }
@@ -275,53 +284,6 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         createSelectDataModel(selectPropertyTypeList);
     }
 
-    /**
-     * Converter class for property type objects.
-     */
-    @FacesConverter(forClass = PropertyType.class)
-    public static class PropertyTypeControllerConverter implements Converter {
-
-        @Override
-        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
-            if (value == null || value.length() == 0) {
-                return null;
-            }
-            try {
-                PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
-                        getValue(facesContext.getELContext(), null, "propertyTypeController");
-                return controller.getEntity(getIntegerKey(value));
-            } catch (Exception ex) {
-                // we cannot get entity from a given key
-                logger.warn("Value " + value + "cannot be converted to property type object.");
-                return null;
-            }
-        }
-
-        Integer getIntegerKey(String value) {
-            return Integer.valueOf(value);
-        }
-
-        String getStringKey(Integer value) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(value);
-            return sb.toString();
-        }
-
-        @Override
-        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
-            if (object == null) {
-                return null;
-            }
-            if (object instanceof PropertyType) {
-                PropertyType o = (PropertyType) object;
-                return getStringKey(o.getId());
-            } else {
-                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyType.class.getName());
-            }
-        }
-
-    }
-
     public Boolean getDisplayCategory() {
         return displayCategory;
     }
@@ -386,14 +348,6 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         this.filterByHandler = filterByHandler;
     }
 
-    public Boolean getSelectDisplayCategory() {
-        return selectDisplayCategory;
-    }
-
-    public void setSelectDisplayCategory(Boolean selectDisplayCategory) {
-        this.selectDisplayCategory = selectDisplayCategory;
-    }
-
     public Boolean getSelectDisplayDefaultUnits() {
         return selectDisplayDefaultUnits;
     }
@@ -408,14 +362,6 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     public void setSelectDisplayDefaultValue(Boolean selectDisplayDefaultValue) {
         this.selectDisplayDefaultValue = selectDisplayDefaultValue;
-    }
-
-    public Boolean getSelectDisplayHandler() {
-        return selectDisplayHandler;
-    }
-
-    public void setSelectDisplayHandler(Boolean selectDisplayHandler) {
-        this.selectDisplayHandler = selectDisplayHandler;
     }
 
     public String getSelectFilterByCategory() {
@@ -450,4 +396,114 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         this.selectFilterByHandler = selectFilterByHandler;
     }
 
+    public Boolean getSelectFilterViewDisplayCategory() {
+        if (selectFilterViewDisplayCategory == null) {
+            if (fitlerViewSelectedPropertyTypeCategories != null) {
+                int size = fitlerViewSelectedPropertyTypeCategories.size();
+                selectFilterViewDisplayCategory = size == 0 || size > 1;
+            } else {
+                selectFilterViewDisplayCategory = true;
+            }
+        }
+        return selectFilterViewDisplayCategory;
+    }
+
+    public Boolean getSelectFilterViewDisplayHandler() {
+        if (selectFilterViewDisplayHandler == null) {
+            if (fitlerViewSelectedPropertyTypeHandlers != null) {
+                int size = fitlerViewSelectedPropertyTypeHandlers.size();
+                selectFilterViewDisplayHandler = size == 0 || size > 1;
+            } else {
+                selectFilterViewDisplayHandler = true;
+            }
+        }
+        return selectFilterViewDisplayHandler;
+    }
+
+    public List<PropertyTypeCategory> getFitlerViewSelectedPropertyTypeCategories() {
+        return fitlerViewSelectedPropertyTypeCategories;
+    }
+
+    public void setFitlerViewSelectedPropertyTypeCategories(List<PropertyTypeCategory> fitlerViewSelectedPropertyTypeCategories) {
+        if (!Objects.equals(this.fitlerViewSelectedPropertyTypeCategories, fitlerViewSelectedPropertyTypeCategories)) {
+            this.fitlerViewSelectedPropertyTypeCategories = fitlerViewSelectedPropertyTypeCategories;
+            resetFilterViewDataModel();
+        }
+    }
+
+    public List<PropertyTypeHandler> getFitlerViewSelectedPropertyTypeHandlers() {
+        return fitlerViewSelectedPropertyTypeHandlers;
+    }
+
+    public void setFitlerViewSelectedPropertyTypeHandlers(List<PropertyTypeHandler> fitlerViewSelectedPropertyTypeHandlers) {
+        if (!Objects.equals(this.fitlerViewSelectedPropertyTypeHandlers, fitlerViewSelectedPropertyTypeHandlers)) {
+            this.fitlerViewSelectedPropertyTypeHandlers = fitlerViewSelectedPropertyTypeHandlers;
+            resetFilterViewDataModel();
+        }
+    }
+
+    public void resetFilterViewDataModel() {
+        filterViewDataModel = null;
+        selectFilterViewDisplayCategory = null;
+        selectFilterViewDisplayHandler = null;
+    }
+
+    public DataModel getFilterViewDataModel() {
+        if (filterViewDataModel == null) {
+            List<PropertyType> results;
+            results = propertyTypeFacade.findByFilterViewAttributes(fitlerViewSelectedPropertyTypeCategories, fitlerViewSelectedPropertyTypeHandlers);
+            if (results != null) {
+                filterViewDataModel = new ListDataModel(results);
+            }
+        }
+        return filterViewDataModel;
+
+    }
+
+    /**
+     * Converter class for property type objects.
+     */
+    @FacesConverter(forClass = PropertyType.class)
+    public static class PropertyTypeControllerConverter implements Converter {
+
+        @Override
+        public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+            if (value == null || value.length() == 0) {
+                return null;
+            }
+            try {
+                PropertyTypeController controller = (PropertyTypeController) facesContext.getApplication().getELResolver().
+                        getValue(facesContext.getELContext(), null, "propertyTypeController");
+                return controller.getEntity(getIntegerKey(value));
+            } catch (Exception ex) {
+                // we cannot get entity from a given key
+                logger.warn("Value " + value + "cannot be converted to property type object.");
+                return null;
+            }
+        }
+
+        Integer getIntegerKey(String value) {
+            return Integer.valueOf(value);
+        }
+
+        String getStringKey(Integer value) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(value);
+            return sb.toString();
+        }
+
+        @Override
+        public String getAsString(FacesContext facesContext, UIComponent component, Object object) {
+            if (object == null) {
+                return null;
+            }
+            if (object instanceof PropertyType) {
+                PropertyType o = (PropertyType) object;
+                return getStringKey(o.getId());
+            } else {
+                throw new IllegalArgumentException("object " + object + " is of type " + object.getClass().getName() + "; expected type: " + PropertyType.class.getName());
+            }
+        }
+
+    }
 }
