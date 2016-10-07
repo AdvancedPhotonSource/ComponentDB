@@ -929,6 +929,14 @@ h2 {
     width: 200px;
 }
 
+.shortListBox .ui-selectlistbox-listcontainer {
+    height: 150px !important; 
+}
+
+.shortListBox {
+    height: 150px;
+}
+
 .topAlignedDataCell {
     vertical-align: top;
 }
@@ -964,8 +972,9 @@ h2 {
     background-color: rgba(255, 180, 180, 0.93) !important;
 }
 
-.viewTransparentBackgroundDialog .ui-panelgrid tr, 
-.viewTransparentBackgroundDialog .ui-panelgrid td,
+.viewTransparentBackgroundDialog .ui-panelgrid .ui-panelgrid-cell, 
+.viewTransparentBackgroundDialog .ui-panelgrid>tbody>tr,
+.viewTransparentBackgroundDialog .ui-panelgrid>tbody>td,
 .viewTransparentBackgroundDialog .ui-accordion .ui-accordion-content,
 .viewTransparentBackgroundDialog .ui-dialog-footer,
 .viewTransparentBackgroundDialog .ui-panel,
