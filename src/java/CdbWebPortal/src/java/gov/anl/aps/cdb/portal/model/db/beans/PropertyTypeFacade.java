@@ -6,7 +6,9 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -22,6 +24,8 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
+    
+    private final String QUERY_STRING_START = "SELECT p FROM PropertyType p ";
 
     @Override
     protected EntityManager getEntityManager() {
@@ -66,6 +70,76 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
     public List<PropertyType> findAll() {
         return (List<PropertyType>) em.createNamedQuery("PropertyType.findAll")
                 .getResultList();
+    }
+    
+    /**
+     * Generates a query for a given category and handler list. 
+     * 
+     * @param propertyTypeCategoryList [Optional] will perform query using given attribute.
+     * @param propertyTypeHandlerList [Optional] will perform query using given attribute.
+     * 
+     * @return 
+     */
+    public List<PropertyType> findByFilterViewAttributes(
+            List<PropertyTypeCategory> propertyTypeCategoryList,
+            List<PropertyTypeHandler> propertyTypeHandlerList) {
+        String queryString = QUERY_STRING_START; 
+        String propertyTypeCategoryQueryString = null;
+        String propertyTypeHandlerQueryString = null;
+        
+        if (propertyTypeCategoryList != null) {
+            if (!propertyTypeCategoryList.isEmpty()) {
+                String propertyTypeCategoryRef = "p.propertyTypeCategory.name"; 
+                
+                propertyTypeCategoryQueryString = "("; 
+                
+                for (PropertyTypeCategory ptc : propertyTypeCategoryList) {
+                    if (propertyTypeCategoryList.indexOf(ptc) != 0) {
+                        propertyTypeCategoryQueryString += " OR "; 
+                    }
+                    propertyTypeCategoryQueryString += propertyTypeCategoryRef + " = '" + ptc.getName() + "'"; 
+                }
+                propertyTypeCategoryQueryString += ")";                 
+            }
+        }
+        
+        if (propertyTypeHandlerList != null) {
+            if(!propertyTypeHandlerList.isEmpty()) {
+                String propertyTypeHandlerRef = "p.propertyTypeHandler.name"; 
+                
+                propertyTypeHandlerQueryString = "(";
+                
+                for (PropertyTypeHandler pth : propertyTypeHandlerList) {
+                    if (propertyTypeHandlerList.indexOf(pth) != 0) {
+                        propertyTypeHandlerQueryString += " OR ";
+                    }
+                    propertyTypeHandlerQueryString += propertyTypeHandlerRef + " = '" + pth.getName() + "'";
+                }
+                
+                propertyTypeHandlerQueryString += ")"; 
+            }
+        }
+        
+        if (propertyTypeCategoryQueryString != null || propertyTypeHandlerQueryString != null) {
+            queryString += "WHERE "; 
+            if (propertyTypeCategoryQueryString != null) {
+                queryString += propertyTypeCategoryQueryString + " ";  
+            } 
+            if (propertyTypeHandlerQueryString != null) {
+                if (propertyTypeCategoryQueryString != null) {
+                    queryString += "AND "; 
+                }
+                queryString += propertyTypeHandlerQueryString;
+            }
+            
+            queryString += " ORDER BY p.name ASC"; 
+            
+            return (List<PropertyType>) em.createQuery(queryString).getResultList();
+        }
+        
+        
+        
+        return null;         
     }
     
 }
