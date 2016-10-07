@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <!-- propertySelectDataTableSelectionValue & propertySelectionMode must be specified --> 
+
+    <p:panelGrid id="propertyTypeFilterViewSelectionPanelGrid">
+        <p:row>
+            <p:column styleClass="topAlignedDataCell contentSeperatorBorder">
+                <p:panelGrid>
+                    <p:row>
+                        <p:column styleClass="leftAlignedText">
+                            Choose a Category
+                            <p:selectManyMenu id="filterViewItemCategorySelection"                                              
+                                              styleClass="wideListBox shortListBox"
+                                              converter="propertyTypeCategoryConverter"
+                                              value="#{propertyTypeController.fitlerViewSelectedPropertyTypeCategories}"
+                                              onchange="updatePropertyTypeFilterViewSelectionPanelGrid()">
+                                <f:selectItems value="#{propertyTypeCategoryController.availableItems}"
+                                               var="propertyTypeCategory"
+                                               itemLabel="#{propertyTypeCategory.name}"
+                                               itemValue="#{propertyTypeCategory}"/>
+                            </p:selectManyMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column styleClass="leftAlignedText">
+                            Choose a Handler
+                            <p:selectManyMenu id="filterViewItemCategorySelection2"
+                                              styleClass="wideListBox shortListBox"
+                                              converter="propertyTypeHandlerConverter"
+                                              value="#{propertyTypeController.fitlerViewSelectedPropertyTypeHandlers}"
+                                              onchange="updatePropertyTypeFilterViewSelectionPanelGrid()">
+                                <f:selectItems value="#{propertyTypeHandlerController.availableItems}"
+                                               var="propertyTypeHandler"
+                                               itemLabel="#{propertyTypeHandler.name}"
+                                               itemValue="#{propertyTypeHandler}"/>
+                            </p:selectManyMenu>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <ui:insert name="thirdFilter"/>                            
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:column>
+            <p:column styleClass="topAlignedDataCell filterViewDataTableColumn">
+                <ui:include src="domainEntitySelectionFilterViewListDataTable.xhtml" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>   
+    <p:remoteCommand name="updatePropertyTypeFilterViewSelectionPanelGrid"
+                     update="propertyTypeFilterViewSelectionPanelGrid" 
+                     onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('loadingDialog').hide()"/>
+
+</ui:composition>
+
+
