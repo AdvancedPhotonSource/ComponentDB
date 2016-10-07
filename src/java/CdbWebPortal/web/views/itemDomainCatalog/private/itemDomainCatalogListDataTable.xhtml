@@ -7,6 +7,10 @@
     
     <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.scopedListDataModel}" />
     
+    <ui:define name="rowExpansionObject">
+        <ui:include src="itemDomainCatalogListDataTableRowExpansionObject.xhtml" />
+    </ui:define>
+    
     <ui:remove>
         <ui:define name="itemRowExpansionExtras">
             <p:outputPanel styleClass="domainEntityRowExpansionDetails" rendered="#{itemDomainCatalogController.displayComponentInstanceRowExpansion}">
