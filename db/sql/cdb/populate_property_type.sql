@@ -89,7 +89,7 @@ INSERT INTO `property_type` VALUES
 (86,'RSS Sequence Number','',10,NULL,'','',0,0,0,1,1),
 (87,'Item Element Row Color','',8,NULL,'','',0,0,0,1,1),
 (88,'MOM Group','',3,NULL,'','',0,0,0,1,1),
-(89,'Spare Parts Configuration','',3,NULL,'','',0,0,1,1),
-(90,'Spare Part Indication','',3,NULL,'','',0,0,1,1);
+(89,'Spare Parts Configuration','',3,NULL,'','',0,0,1,1,1),
+(90,'Spare Part Indication','',3,NULL,'','',0,0,1,1,1);
 /*!40000 ALTER TABLE `property_type` ENABLE KEYS */;
 UNLOCK TABLES;
