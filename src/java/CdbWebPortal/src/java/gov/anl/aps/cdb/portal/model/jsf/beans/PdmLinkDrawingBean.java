@@ -237,7 +237,7 @@ public class PdmLinkDrawingBean implements Serializable {
             List<EntityType> entityTypeList = new ArrayList<>();
             
             // Assign component 
-            List<EntityType> allowedEntityTypeList = newCatalogItem.getDomain().getDomainHandler().getAllowedEntityTypeList();
+            List<EntityType> allowedEntityTypeList = newCatalogItem.getDomain().getAllowedEntityTypeList();
             for (EntityType entityType: allowedEntityTypeList) {
                 if (entityType.getName().equals(DEFAULT_ENTITY_TYPE_NAME_FOR_NEW_ITEMS)) {
                     entityTypeList.add(entityType); 
