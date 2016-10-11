@@ -625,11 +625,6 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     @Override
-    public String getDomainHandlerName() {
-        return DOMAIN_NAME;
-    }
-
-    @Override
     public String getEntityTypeName() {
         return "location";
     }
@@ -645,7 +640,7 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     @Override
-    public String getItemDerivedFromDomainHandlerName() {
+    public String getDefaultDomainDerivedFromDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -660,7 +655,7 @@ public class ItemDomainLocationController extends ItemController {
     }
 
     @Override
-    public String getDerivedDomainName() {
+    public String getDefaultDomainDerivedToDomainName() {
         return null;
     }
 

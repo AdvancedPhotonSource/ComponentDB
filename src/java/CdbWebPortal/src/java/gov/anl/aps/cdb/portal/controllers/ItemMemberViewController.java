@@ -196,11 +196,6 @@ public class ItemMemberViewController extends ItemController {
     public Domain getDefaultDomain() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    public String getDomainHandlerName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     @Override
     public List<Item> getItemList() {
@@ -213,7 +208,7 @@ public class ItemMemberViewController extends ItemController {
     }
 
     @Override
-    public String getItemDerivedFromDomainHandlerName() {
+    public String getDefaultDomainDerivedFromDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -228,7 +223,7 @@ public class ItemMemberViewController extends ItemController {
     }
 
     @Override
-    public String getDerivedDomainName() {
+    public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

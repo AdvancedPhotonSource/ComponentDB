@@ -149,11 +149,6 @@ public class ItemGenericViewController extends ItemController {
     }
 
     @Override
-    public String getDomainHandlerName() {
-        return null; 
-    }
-
-    @Override
     public List<Item> getItemList() {
         return itemFacade.findAll(); 
     }
@@ -173,7 +168,7 @@ public class ItemGenericViewController extends ItemController {
     }
 
     @Override
-    public String getItemDerivedFromDomainHandlerName() {
+    public String getDefaultDomainDerivedFromDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -188,7 +183,7 @@ public class ItemGenericViewController extends ItemController {
     }
 
     @Override
-    public String getDerivedDomainName() {
+    public String getDefaultDomainDerivedToDomainName() {
         return null;
     }
     

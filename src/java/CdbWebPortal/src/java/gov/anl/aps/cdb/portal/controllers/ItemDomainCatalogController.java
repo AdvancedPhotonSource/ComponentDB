@@ -37,7 +37,6 @@ public class ItemDomainCatalogController extends ItemController {
     
     private final String DOMAIN_TYPE_NAME = "Catalog";
     private final String DERIVED_DOMAIN_NAME = "Inventory";
-    private final String DOMAIN_HANDLER_NAME = "Catalog";
 
     /*
      * Controller specific settings
@@ -172,7 +171,7 @@ public class ItemDomainCatalogController extends ItemController {
         super.checkItem(item);
 
         //Check needed to make sure it is not attempting to save one of the instances.
-        if (getItemDomainHandler().getName().equals(item.getDomain().getDomainHandler().getName())) {
+        if (getDefaultDomainName().equals(item.getDomain().getName())) {
             // Verify that atleast one entity type is selected.
             checkEntityTypeSpecified(item);
         }
@@ -652,24 +651,14 @@ public class ItemDomainCatalogController extends ItemController {
     public String getStyleName() {
         return "catalog";
     }
-    
-    @Override
-    public Domain getDerivedDomain() {
-        return domainFacade.findByName(DERIVED_DOMAIN_NAME);
-    }
-    
-    @Override
-    public String getDomainHandlerName() {
-        return DOMAIN_HANDLER_NAME;
-    }
-    
+   
     @Override
     public String getDefaultDomainName() {
         return DOMAIN_TYPE_NAME;
     }
     
     @Override
-    public String getItemDerivedFromDomainHandlerName() {
+    public String getDefaultDomainDerivedFromDomainName() {
         return null;
     }
     
@@ -689,7 +678,7 @@ public class ItemDomainCatalogController extends ItemController {
     }
     
     @Override
-    public String getDerivedDomainName() {
+    public String getDefaultDomainDerivedToDomainName() {
         return DERIVED_DOMAIN_NAME;
     }
     
