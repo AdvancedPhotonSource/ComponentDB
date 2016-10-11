@@ -1079,6 +1079,10 @@ h2 {
     height: 20px;
 }
 
+.locationTreeEditPageContainer{
+    width: 275px;
+}
+
 .locationTieredMenuPickerContainer {
     padding-right: .55em;
 }
