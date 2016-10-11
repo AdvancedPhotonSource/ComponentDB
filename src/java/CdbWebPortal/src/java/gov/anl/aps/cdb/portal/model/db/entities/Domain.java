@@ -14,7 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -36,7 +37,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Domain.findAll", query = "SELECT d FROM Domain d"),
     @NamedQuery(name = "Domain.findById", query = "SELECT d FROM Domain d WHERE d.id = :id"),
     @NamedQuery(name = "Domain.findByName", query = "SELECT d FROM Domain d WHERE d.name = :name"),
-    @NamedQuery(name = "Domain.findByDomainHandlerName", query = "SELECT d FROM Domain d WHERE d.domainHandler.name = :domainHandlerName"),
     @NamedQuery(name = "Domain.findByDescription", query = "SELECT d FROM Domain d WHERE d.description = :description")})
 public class Domain extends CdbEntity implements Serializable {
 
@@ -53,15 +53,17 @@ public class Domain extends CdbEntity implements Serializable {
     private String description;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "domain")
     private List<Item> itemList;
-    @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")
-    @ManyToOne
-    private DomainHandler domainHandler;
     @OneToMany(mappedBy = "domain")
     @OrderBy("name ASC")
     private List<ItemType> itemTypeList;
     @OneToMany(mappedBy = "domain")
     @OrderBy("name ASC")
     private List<ItemCategory> itemCategoryList;
+    @JoinTable(name = "allowed_entity_type_domain", joinColumns = {
+        @JoinColumn(name = "domain_id", referencedColumnName = "id")}, inverseJoinColumns = {
+        @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
+    @ManyToMany
+    private List<EntityType> allowedEntityTypeList;
 
     public Domain() {
     }
@@ -126,12 +128,13 @@ public class Domain extends CdbEntity implements Serializable {
         this.itemCategoryList = itemCategoryList;
     }
 
-    public DomainHandler getDomainHandler() {
-        return domainHandler;
+    @XmlTransient
+    public List<EntityType> getAllowedEntityTypeList() {
+        return allowedEntityTypeList;
     }
 
-    public void setDomainHandler(DomainHandler domainHandler) {
-        this.domainHandler = domainHandler;
+    public void setAllowedEntityTypeList(List<EntityType> allowedEntityTypeList) {
+        this.allowedEntityTypeList = allowedEntityTypeList;
     }
 
     @Override
@@ -158,5 +161,5 @@ public class Domain extends CdbEntity implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.Domain[ id=" + id + " ]";
     }
-    
+
 }
