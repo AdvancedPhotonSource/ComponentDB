@@ -5,7 +5,9 @@
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column rendered="#{entityController.displayRowExpansion}">
+    <p:column rendered="#{entityController.displayRowExpansion}"
+              headerText="More Info"
+              width="15px;">
         <p:rowToggler rendered="#{entityController.isDisplayRowExpansionForItem(itemListObject)}"/>
     </p:column>
     <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
