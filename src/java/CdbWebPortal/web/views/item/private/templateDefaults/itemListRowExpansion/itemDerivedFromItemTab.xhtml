@@ -9,7 +9,7 @@
         <p:dataTable value="#{itemListObject.derivedFromItemList}"
                      var="derivedFromItemObject">
 
-            <ui:param name="derivedDomainController" value="#{entityController.derivedDomainController}" /> 
+            <ui:param name="derivedDomainController" value="#{entityController.defaultDomainDerivedToDomainController}" /> 
 
             <ui:include src="../../itemListDataTableRowExpansionDerivedFromItemsRowExpansionObject.xhtml">
                 <ui:param name="itemListObject" value="#{derivedFromItemObject}" />
