@@ -76,11 +76,11 @@ public class PropertyType extends CdbEntity implements Serializable {
     private Boolean isInternal;
     @Column(name = "is_active")
     private Boolean isActive;
-    @JoinTable(name = "allowed_domain_handler", joinColumns = {
+    @JoinTable(name = "allowed_property_domain", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
-        @JoinColumn(name = "domain_handler_id", referencedColumnName = "id")})
+        @JoinColumn(name = "domain_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<DomainHandler> domainHandlerList;
+    private List<Domain> domainList;
     @JoinTable(name = "allowed_entity_type", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
@@ -184,12 +184,12 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
-    public List<DomainHandler> getDomainHandlerList() {
-        return domainHandlerList;
+    public List<Domain> getDomainList() {
+        return domainList;
     }
 
-    public void setDomainHandlerList(List<DomainHandler> domainHandlerList) {
-        this.domainHandlerList = domainHandlerList;
+    public void setDomainList(List<Domain> domainList) {
+        this.domainList = domainList;
     }
     
     @XmlTransient
