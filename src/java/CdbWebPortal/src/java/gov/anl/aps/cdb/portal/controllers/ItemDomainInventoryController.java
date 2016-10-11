@@ -4,7 +4,6 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -59,8 +58,7 @@ import org.primefaces.model.menu.MenuModel;
 public class ItemDomainInventoryController extends ItemController {
 
     private static final String DEFAULT_DOMAIN_NAME = "Inventory";
-    private final String DOMAIN_HANDLER_NAME = "Inventory";
-    private final String DERIVED_ITEM_DOMAIN_HANDLER_NAME = "Catalog";
+    private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
 
     private final String ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP = "itemElementInstantiation";
     private final String ITEM_DOMAIN_LOCATION_CONTROLLER_NAME = "itemDomainLocationController";
@@ -135,18 +133,14 @@ public class ItemDomainInventoryController extends ItemController {
     protected ListDataModel filterViewLocationDataModel = null;
     protected Item filterViewLocationItemLoaded = null;
     protected boolean filterViewLocationDataModelLoaded = false;
-    
-    private Item lastInventoryItemRequestedLocationMenuModel = null; 
+
+    private Item lastInventoryItemRequestedLocationMenuModel = null;
 
     @EJB
     private ItemFacade itemFacade;
 
     @EJB
     private DomainFacade domainFacade;
-
-    @EJB
-    private DomainHandlerFacade domainHandlerFacade;
-
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
 
@@ -157,9 +151,9 @@ public class ItemDomainInventoryController extends ItemController {
         super();
         displayDerivedFromItem = false;
     }
-    
+
     public static ItemDomainInventoryController getInstance() {
-        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME); 
+        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
     }
 
     public Boolean getDisplayLocationDetails() {
@@ -199,22 +193,22 @@ public class ItemDomainInventoryController extends ItemController {
         } else {
             return null;
         }
-    }    
+    }
 
     @Override
     public List<Item> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
-        return itemFacade.findByDomainAndProjectOrderByQrId(getDefaultDomainName(), projectName); 
+        return itemFacade.findByDomainAndProjectOrderByQrId(getDefaultDomainName(), projectName);
     }
 
     @Override
     public List<Item> getItemList() {
-        return itemFacade.findByDomainOrderByQrId(getDefaultDomainName()); 
-    }      
+        return itemFacade.findByDomainOrderByQrId(getDefaultDomainName());
+    }
 
     @Override
     public List<EntityType> getFilterableEntityTypes() {
-        return domainHandlerFacade.findByName(DERIVED_ITEM_DOMAIN_HANDLER_NAME).getAllowedEntityTypeList();
+        return getDefaultDomainDerivedFromDomain().getAllowedEntityTypeList();
     }
 
     public String getLocationRelationshipDetails(Item inventoryItem) {
@@ -233,7 +227,7 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(Item item) {
-        lastInventoryItemRequestedLocationMenuModel = item; 
+        lastInventoryItemRequestedLocationMenuModel = item;
         if (item != null) {
             if (item.getLocationMenuModel() == null) {
                 setItemLocationInfo(item, false, true);
@@ -245,7 +239,7 @@ public class ItemDomainInventoryController extends ItemController {
                 if (locationString == null || locationString.isEmpty()) {
                     locationString = "Select Location";
                 }
-                Item lowestLocation = item.getLocation(); 
+                Item lowestLocation = item.getLocation();
 
                 itemLocationMenuModel = itemDomainLocationController.generateLocationMenuModel(locationString, inventoryControllerName, "updateLocationForLastRequestedMenuModel", lowestLocation);
                 item.setLocationMenuModel(itemLocationMenuModel);
@@ -305,7 +299,7 @@ public class ItemDomainInventoryController extends ItemController {
         updateLocationStringForItem(item);
         // To be updated. 
         item.setLocationMenuModel(null);
-        
+
         if (onSuccess != null) {
             RequestContext.getCurrentInstance().execute(onSuccess);
         }
@@ -373,9 +367,11 @@ public class ItemDomainInventoryController extends ItemController {
                 return true;
             }
         } else // last is null but new is not. 
-         if (newLocationItem != null) {
+        {
+            if (newLocationItem != null) {
                 return true;
             }
+        }
         return false;
     }
 
@@ -404,7 +400,7 @@ public class ItemDomainInventoryController extends ItemController {
             List<Item> itemList = new ArrayList<>();
             ItemProject currentItemProject = getCurrentItemProject();
             if (selection != null) {
-                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));                
+                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
                 if (currentItemProject != null) {
                     List<Item> itemsToRemove = new ArrayList<>();
                     for (Item item : itemList) {
@@ -462,17 +458,34 @@ public class ItemDomainInventoryController extends ItemController {
             item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
         }
     }
-    
+
     /**
-     * Using the current location set in item, generate a location string. 
-     * 
-     * @param item 
+     * Using the current location set in item, generate a location string.
+     *
+     * @param item
      */
     public void updateLocationStringForItem(Item item) {
         if (item != null) {
-            Item locationItem = item.getLocation(); 
+            Item locationItem = item.getLocation();
             item.setLocationString(ItemDomainLocationController.generateLocatonHierarchyString(locationItem));
         }
+    }
+
+    /**
+     * Gets a location string for an item and loads it if necessary. 
+     * 
+     * @param item
+     * @return 
+     */
+    public String getLocationStringForItem(Item item) {
+        if (item.getLocationString() == null) {
+            loadLocationStringForItem(item);
+            if (item.getLocationString() == null) {
+                // Avoid unecessary checks.
+                item.setLocationString("");
+            }
+        }
+        return item.getLocationString();
     }
 
     /**
@@ -543,7 +556,7 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String prepareCreate() {
-        ItemController derivedItemController = getItemDerivedFromDomainController();
+        ItemController derivedItemController = getDefaultDomainDerivedFromDomainController();
         if (derivedItemController != null) {
             derivedItemController.getSelectedObjectAndResetDataModel();
             derivedItemController.clearListFilters();
@@ -1603,18 +1616,13 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
-    public String getDomainHandlerName() {
-        return DOMAIN_HANDLER_NAME;
-    }
-
-    @Override
     public String getDefaultDomainName() {
         return DEFAULT_DOMAIN_NAME;
     }
 
     @Override
-    public String getItemDerivedFromDomainHandlerName() {
-        return DERIVED_ITEM_DOMAIN_HANDLER_NAME;
+    public String getDefaultDomainDerivedFromDomainName() {
+        return DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME;
     }
 
     @Override
@@ -1647,7 +1655,7 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     @Override
-    public String getDerivedDomainName() {
+    public String getDefaultDomainDerivedToDomainName() {
         return null;
     }
 
