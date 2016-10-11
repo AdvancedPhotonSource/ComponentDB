@@ -35,18 +35,6 @@ class ItemDbApi(CdbDbApi):
         dbEntityType = self.entityTypeHandler.addAllowedChildEntityType(session, parentEntityTypeName, childEntityTypeName)
         return dbEntityType.getCdbObject()
 
-    @CdbDbApi.executeTransaction
-    def addDomainHandler(self, name, description, **kwargs):
-        session = kwargs['session']
-        dbDomainHandler = self.domainHandler.addDomainHandler(session, name, description)
-        return dbDomainHandler.getCdbObject()
-
-    @CdbDbApi.executeQuery
-    def getDomainHandlerByName(self, name, **kwargs):
-        session = kwargs['session']
-        dbDomainHandler = self.domainHandler.findDomainHandlerByName(session, name)
-        return dbDomainHandler.getCdbObject()
-
     @CdbDbApi.executeQuery
     def getDomainByName(self, name, **kwargs):
         session = kwargs['session']
@@ -54,15 +42,15 @@ class ItemDbApi(CdbDbApi):
         return dbDomain.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addAllowedDomainHandlerEntityType(self, domainHandlerName, entityTypeName, **kwargs):
+    def addAllowedEntityTypeDomain(self, domainName, entityTypeName, **kwargs):
         session = kwargs['session']
-        dbDomainHandler = self.domainHandler.addAllowedEntityType(session, domainHandlerName, entityTypeName)
-        return dbDomainHandler.getCdbObject()
+        dbAllowedEntityTypeDomain = self.domainHandler.addAllowedEntityType(session, domainName, entityTypeName)
+        return dbAllowedEntityTypeDomain.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addDomain(self, name, description, domainHandlerName, **kwargs):
+    def addDomain(self, name, description, **kwargs):
         session = kwargs['session']
-        dbDomain = self.domainHandler.addDomain(session, name, description, domainHandlerName)
+        dbDomain = self.domainHandler.addDomain(session, name, description)
         return dbDomain.getCdbObject()
 
     @CdbDbApi.executeTransaction
@@ -184,9 +172,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemCategory.getCdbObject()
 
     @CdbDbApi.executeQuery
-    def getItemType(self, name, domainHandlerId, **kwargs):
+    def getItemType(self, name, domainName, **kwargs):
         session = kwargs['session']
-        dbItemType = self.itemHandler.getItemTypeByName(session, name, domainHandlerId)
+        dbItemType = self.itemHandler.getItemTypeByName(session, name, domainName)
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeTransaction
