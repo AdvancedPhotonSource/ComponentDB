@@ -80,9 +80,9 @@ import org.primefaces.model.menu.DefaultMenuModel;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
-    @NamedQuery(name = "Item.findItemsWithPropertyType", 
+    @NamedQuery(name = "Item.findItemsWithPropertyType",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId "),
-    @NamedQuery(name = "Item.findItemsWithPropertyTypeAndProject", 
+    @NamedQuery(name = "Item.findItemsWithPropertyTypeAndProject",
             query = "Select DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId AND ipl.name = :projectName"),
     @NamedQuery(name = "Item.findItemsOwnedByUserId",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
@@ -184,9 +184,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String locationDetails = null;
     private transient Item location;
     private transient String locationString;
-    private transient DefaultMenuModel locationMenuModel; 
+    private transient DefaultMenuModel locationMenuModel;
     // Needed to determine whenever location was removed in edit process. 
-    private transient Boolean originalLocationLoaded = false; 
+    private transient Boolean originalLocationLoaded = false;
 
     private transient boolean isCloned = false;
 
@@ -205,10 +205,8 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     private transient ItemController itemDomainController = null;
 
-    private transient final String ITEM_CONTROLLER_NAME_BASE = "itemDomain";
-    
-    private transient TreeNode assemblyRootTreeNode = null; 
-    
+    private transient TreeNode assemblyRootTreeNode = null;
+
     public Item() {
     }
 
@@ -274,9 +272,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     public ItemController getItemDomainController() {
         if (itemDomainController == null) {
             if (domain != null) {
-                String domainHandlerName = domain.getDomainHandler().getName();
-                String controllerName = ITEM_CONTROLLER_NAME_BASE + domainHandlerName + "Controller";
-                itemDomainController = (ItemController) SessionUtility.findBean(controllerName);
+                String domainName = domain.getName();
+                itemDomainController = ItemController.findDomainController(domainName);
             }
         }
 
@@ -453,17 +450,13 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setEntityTypeList(List<EntityType> entityTypeList) throws CdbException {
         if (domain != null) {
-            DomainHandler domainHandler = domain.getDomainHandler();
-            if (domainHandler != null) {
-                List<EntityType> allowedEntityTypeList = domainHandler.getAllowedEntityTypeList();
-                for (EntityType entityType : entityTypeList) {
-                    if (allowedEntityTypeList.contains(entityType) == false) {
-                        throw new CdbException(entityType.getName() + " is not in the domain hanlder allowed list for the item: " + toString());
-                    }
+            List<EntityType> allowedEntityTypeList = domain.getAllowedEntityTypeList();
+            for (EntityType entityType : entityTypeList) {
+                if (allowedEntityTypeList.contains(entityType) == false) {
+                    throw new CdbException(entityType.getName() + " is not in the domain hanlder allowed list for the item: " + toString());
                 }
-            } else {
-                throw new CdbException("Entity Type cannot be set: no domain handler has been defined for the item " + toString());
             }
+
         } else {
             throw new CdbException("Entity Type cannot be set: no domain has been defined for the item " + toString());
         }
@@ -583,13 +576,13 @@ public class Item extends CdbDomainEntity implements Serializable {
         itemElementDisplayList = null;
     }
 
-    public TreeNode getAssemblyRootTreeNode() throws CdbException{
+    public TreeNode getAssemblyRootTreeNode() throws CdbException {
         if (assemblyRootTreeNode == null) {
             if (getItemElementDisplayList().size() > 0) {
                 assemblyRootTreeNode = ItemElementUtility.createItemRoot(this);
-                
+
             }
-        }        
+        }
         return assemblyRootTreeNode;
     }
 
@@ -896,9 +889,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setSparePartIndicator(Boolean sparePartIndicator) {
-        this.sparePartIndicator = sparePartIndicator;        
+        this.sparePartIndicator = sparePartIndicator;
     }
-    
+
     public void updateSparePartsIndication() {
         getSparePartsBean().setSparePartsIndication(this);
     }
