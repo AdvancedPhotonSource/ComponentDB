@@ -185,7 +185,6 @@ CDB_DB_TABLES="\
     log_attachment \
     log_level \
     system_log \
-    domain_handler \
     domain \
     item \
     item_element \
@@ -195,7 +194,7 @@ CDB_DB_TABLES="\
     item_item_category \
     item_type \
     item_item_type \
-    item_category_type \
+    item_category_item_type \
     item_project \
     item_item_project \
     entity_type \
@@ -216,10 +215,12 @@ CDB_DB_TABLES="\
     property_type_handler \
     property_type_category \
     property_type \
+    property_type_metadata \
+    allowed_property_metadata_value \
     allowed_property_value \
     allowed_entity_type \
-    allowed_domain_handler \
-    allowed_domain_handler_entity_type \
+    allowed_property_domain \
+    allowed_entity_type_domain \
     property_value \
     property_metadata \
     property_value_history \
