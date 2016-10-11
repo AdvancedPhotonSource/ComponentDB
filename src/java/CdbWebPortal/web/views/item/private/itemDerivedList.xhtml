@@ -4,7 +4,7 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
     
-    <ui:param name="derivedController" value="#{derivedController != null ? derivedController : entityController.derivedDomainController}" />
+    <ui:param name="derivedController" value="#{derivedController != null ? derivedController : entityController.defaultDomainDerivedToDomainController}" />
     
     <ui:param name="childEntityTypeName" value="#{derivedController.entityTypeName}" />
     <ui:param name="childEntityController" value="#{derivedController}"/>
