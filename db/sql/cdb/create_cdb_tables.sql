@@ -293,19 +293,6 @@ CREATE TABLE `system_log` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `domain_handler`
---
-
-DROP TABLE IF EXISTS `domain_handler`;
-CREATE TABLE `domain_handler` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `description` varchar(256) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `domain_handler_u1` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-
---
 -- Table `domain`
 --
 
@@ -314,11 +301,8 @@ CREATE TABLE `domain` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
-  `domain_handler_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `domain_u1` (`name`),
-  KEY `domain_k1` (`domain_handler_id`),
-  CONSTRAINT `domain_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+  UNIQUE KEY `domain_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -433,18 +417,18 @@ CREATE TABLE `item_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `item_category_type`
+-- Table `item_category_item_type`
 --
 
-DROP TABLE IF EXISTS `item_category_type`;
-CREATE TABLE `item_category_type` (
+DROP TABLE IF EXISTS `item_category_item_type`;
+CREATE TABLE `item_category_item_type` (
   `item_category_id` int(11) unsigned NOT NULL,
   `item_type_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`item_type_id`, `item_category_id`),
-  KEY `item_category_type_k1` (`item_category_id`),
-  KEY `item_category_type_k2` (`item_type_id`),
-  CONSTRAINT `item_category_type_fk1` FOREIGN KEY (`item_category_id`) REFERENCES `item_category` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_category_type_fk2` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id`) ON UPDATE CASCADE
+  KEY `item_category_item_type_k1` (`item_category_id`),
+  KEY `item_category_item_type_k2` (`item_type_id`),
+  CONSTRAINT `item_category_item_type_fk1` FOREIGN KEY (`item_category_id`) REFERENCES `item_category` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_category_item_type_fk2` FOREIGN KEY (`item_type_id`) REFERENCES `item_type` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
@@ -780,7 +764,6 @@ CREATE TABLE `item_element_relationship_history` (
   `entered_on_date_time` datetime NOT NULL,
   `entered_by_user_id` int(11) unsigned NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `item_element_relationship_history_u1` (`first_item_element_id`, `second_item_element_id`, `link_item_element_id`),
   KEY `item_element_relationship_history_k1` (`item_element_relationship_id`),
   KEY `item_element_relationship_history_k2` (`first_item_element_id`),
   KEY `item_element_relationship_history_k3` (`first_item_connector_id`),
@@ -840,7 +823,8 @@ CREATE TABLE `property_type` (
   `is_user_writeable` bool NULL DEFAULT 0,
   `is_dynamic` bool NULL DEFAULT 0,
   `is_internal` bool NULL DEFAULT 0,
-  `is_active` bool NULL DEFAULT 0,
+  `is_active` bool NULL DEFAULT 1,
+  `is_metadata_dynamic` bool NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `property_type_u1` (`name`),
   KEY `property_type_k1` (`property_type_category_id`),
@@ -848,6 +832,37 @@ CREATE TABLE `property_type` (
   CONSTRAINT `property_type_fk1` FOREIGN KEY (`property_type_category_id`) REFERENCES `property_type_category` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
   CONSTRAINT `property_type_fk2` FOREIGN KEY (`property_type_handler_id`) REFERENCES `property_type_handler` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `property_type_metadata`
+--
+
+CREATE TABLE `property_type_metadata` (
+	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+    `property_type_id` int(11) unsigned NOT NULL,
+    `metadata_key` varchar(32) NOT NULL,
+    `description` varchar(256) DEFAULT NULL,
+	PRIMARY KEY (`id`),
+	UNIQUE KEY `property_type_metadata_u1` (`metadata_key`, `property_type_id`), 
+    KEY `property_type_metadata_k1` (`property_type_id`),
+    CONSTRAINT `property_type_metadata_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `allowed_property_metadata_value`
+--
+
+CREATE TABLE `allowed_property_metadata_value` (
+    `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `property_type_metadata_id` int(11) unsigned NOT NULL,
+    `metadata_value` varchar(64) NOT NULL, 
+    `description` varchar(256) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `allowed_property_metadata_value_u1` (`property_type_metadata_id`,`metadata_value`), 
+    KEY `allowed_property_metadata_value_k1` (`property_type_metadata_id`),
+    CONSTRAINT `allowed_property_metadata_value_fk1` FOREIGN KEY (`property_type_metadata_id`) REFERENCES `property_type_metadata` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
+)  ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=UTF8;
+
 
 --
 -- Table `allowed_property_value`
@@ -882,33 +897,33 @@ CREATE TABLE `allowed_entity_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `allowed_domain_handler`
+-- Table `allowed_property_domain`
 --
 
-DROP TABLE IF EXISTS `allowed_domain_handler`;
-CREATE TABLE `allowed_domain_handler` (
+DROP TABLE IF EXISTS `allowed_property_domain`;
+CREATE TABLE `allowed_property_domain` (
   `property_type_id` int(11) unsigned NOT NULL,
-  `domain_handler_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`property_type_id`, `domain_handler_id`),
-  KEY `allowed_domain_handler_k1` (`property_type_id`),
-  KEY `allowed_domain_handler_k2` (`domain_handler_id`),
-  CONSTRAINT `allowed_domain_handler_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `allowed_domain_handler_fk2` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE
+  `domain_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`property_type_id`, `domain_id`),
+  KEY `allowed_property_domain_k1` (`property_type_id`),
+  KEY `allowed_property_domain_k2` (`domain_id`),
+  CONSTRAINT `allowed_property_domain_fk1` FOREIGN KEY (`property_type_id`) REFERENCES `property_type` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_property_domain_fk2` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Table `allowed_domain_handler_entity_type`
+-- Table `allowed_entity_type_domain`
 --
 
-DROP TABLE IF EXISTS `allowed_domain_handler_entity_type`;
-CREATE TABLE `allowed_domain_handler_entity_type` (
-  `domain_handler_id` int(11) unsigned NOT NULL,
+DROP TABLE IF EXISTS `allowed_entity_type_domain`;
+CREATE TABLE `allowed_entity_type_domain` (
+  `domain_id` int(11) unsigned NOT NULL,
   `entity_type_id` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`domain_handler_id`, `entity_type_id`),
-  KEY `allowed_domain_handler_entity_type_k1` (`domain_handler_id`),
-  KEY `allowed_domain_handler_entity_type_k2` (`entity_type_id`),
-  CONSTRAINT `allowed_domain_handler_entity_type_fk1` FOREIGN KEY (`domain_handler_id`) REFERENCES `domain_handler` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `allowed_domain_handler_entity_type_fk2` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`) ON UPDATE CASCADE
+  PRIMARY KEY (`domain_id`, `entity_type_id`),
+  KEY `allowed_entity_type_domain_k1` (`domain_id`),
+  KEY `allowed_entity_type_domain_k2` (`entity_type_id`),
+  CONSTRAINT `allowed_entity_type_domain_fk1` FOREIGN KEY (`domain_id`) REFERENCES `domain` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `allowed_entity_type_domain_fk2` FOREIGN KEY (`entity_type_id`) REFERENCES `entity_type` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

@@ -1,6 +1,6 @@
-LOCK TABLES `item_category_type` WRITE;
-/*!40000 ALTER TABLE `item_category_type` DISABLE KEYS */;
-INSERT INTO `item_category_type` VALUES
+LOCK TABLES `item_category_item_type` WRITE;
+/*!40000 ALTER TABLE `item_category_item_type` DISABLE KEYS */;
+INSERT INTO `item_category_item_type` VALUES
 (4,4),
 (4,5),
 (4,6),
@@ -137,5 +137,5 @@ INSERT INTO `item_category_type` VALUES
 (1,128),
 (2,129),
 (3,129);
-/*!40000 ALTER TABLE `item_category_type` ENABLE KEYS */;
+/*!40000 ALTER TABLE `item_category_item_type` ENABLE KEYS */;
 UNLOCK TABLES;
