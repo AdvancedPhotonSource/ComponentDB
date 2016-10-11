@@ -2,7 +2,7 @@
 
 from cdbObject import CdbObject
 
-class AllowedDomainHandlerEntityType(CdbObject):
+class AllowedEntityTypeDomain(CdbObject):
 
     DEFAULT_KEY_LIST = [ ]
 
