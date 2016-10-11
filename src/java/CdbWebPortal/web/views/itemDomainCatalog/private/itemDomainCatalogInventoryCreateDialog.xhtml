@@ -15,6 +15,7 @@
         <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
             <ui:include src="../../itemDomainInventory/private/itemDomainInventoryBillOfMaterialsEditView.xhtml">
                 <ui:param name="entityController" value="#{itemDomainInventoryController}" />
+                <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
             </ui:include>
         </p:outputPanel>
         <f:facet name="footer" class="dialog">
@@ -36,7 +37,7 @@
     <ui:include src="../../itemDomainInventory/private/componentInventoryItemLocationSelectDialog.xhtml">
         <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
         <ui:param name="viewName" value="BOMEdit"/>
-        <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
+        <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewOutputPanel" />
         <ui:param name="entityController" value="#{itemDomainInventoryController}" />
     </ui:include>
 
