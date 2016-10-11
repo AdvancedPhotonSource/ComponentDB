@@ -72,13 +72,10 @@ class MergeUtility():
         self.componentEntityTypeName = None
         self.catalogDomainName = None
         self.catalogDomainId = None
-        self.catalogDomainHandlerName = None
         self.instanceDomainName = None
         self.locationEntityTypeName = None
         self.instanceEntityTypeName = None
         self.locationDomainName = None
-        self.locationDomainHandlerName = None
-        self.locationDomainHandlerId = None
         self.locationDomainId = None
         self.locationRelationshipTypeName = None
         self.designEntityTypeName = None
@@ -279,13 +276,13 @@ class MergeUtility():
     def populateCategories(self):
         self.__createCatalogDomain()
         for category in self.allCategories:
-            args = self.argsGenerator.getNameDescriptionArgs(category, self.catalogDomainHandlerName)
+            args = self.argsGenerator.getNameDescriptionArgs(category, self.catalogDomainName)
             self.itemDbApi.addItemCategory(*args)
 
     def populateTypes(self):
         self.__createCatalogDomain()
         for type in self.allTypes:
-            args = self.argsGenerator.getNameDescriptionArgs(type, self.catalogDomainHandlerName)
+            args = self.argsGenerator.getNameDescriptionArgs(type, self.catalogDomainName)
             self.itemDbApi.addItemType(*args)
 
     def populateLogTopics(self):
@@ -373,15 +370,9 @@ class MergeUtility():
         # Load Domain
         locationName = 'Location'
         if self.__isAddOnMode():
-            locationDomainHandler = self.itemDbApi.getDomainHandlerByName(locationName)
-        else:
-            locationDomainHandler = self.itemDbApi.addDomainHandler(locationName, 'Handler responsible for locations.')
-        self.locationDomainHandlerName = locationDomainHandler.data['name']
-        self.locationDomainHandlerId = locationDomainHandler.data['id']
-        if self.__isAddOnMode():
             locationDomain = self.itemDbApi.getDomainByName(locationName)
         else:
-            locationDomain = self.itemDbApi.addDomain(locationName, 'Location Domain', self.locationDomainHandlerName)
+            locationDomain = self.itemDbApi.addDomain(locationName, 'Item Domain for managing locations.')
         self.locationDomainName = locationDomain.data['name']
         self.locationDomainId = locationDomain.data['id']
 
@@ -390,14 +381,14 @@ class MergeUtility():
             skipLocationType = False
             if self.__isAddOnMode():
                 try:
-                    self.itemDbApi.getItemType(locationType.data['name'], self.locationDomainHandlerId)
+                    self.itemDbApi.getItemType(locationType.data['name'], self.locationDomainId)
                     skipLocationType = True
                 except ObjectNotFound as ex:
                     print ex.message
                     skipLocationType = False
 
             if not skipLocationType:
-                args = self.argsGenerator.getNameDescriptionArgs(locationType, self.locationDomainHandlerName)
+                args = self.argsGenerator.getNameDescriptionArgs(locationType, self.locationDomainName)
                 self.itemDbApi.addItemType(*args)
 
 
@@ -528,29 +519,19 @@ class MergeUtility():
                 self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.componentEntityTypeName)
                 self.itemDbApi.addAllowedChildEntityType(self.designEntityTypeName, self.designEntityTypeName)
 
-                # Add allowed entity type domain handler
-                self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.designEntityTypeName)
-                self.itemDbApi.addAllowedDomainHandlerEntityType(self.catalogDomainHandlerName, self.componentEntityTypeName)
+                # Add allowed entity type domain
+                self.itemDbApi.addAllowedEntityTypeDomain(self.catalogDomainName, self.designEntityTypeName)
+                self.itemDbApi.addAllowedEntityTypeDomain(self.catalogDomainName, self.componentEntityTypeName)
 
                 self.doneAllowedEntity = True
 
-    def __createCatalogDomainHandler(self):
-        if self.catalogDomainHandlerName is None:
-            catalogName = 'Catalog'
-            if self.__isAddOnMode():
-                catalogDomainHandler = self.itemDbApi.getDomainHandlerByName(catalogName)
-            else:
-                catalogDomainHandler = self.itemDbApi.addDomainHandler(catalogName, 'Handler responsible for items in a catalog type domain.')
-            self.catalogDomainHandlerName = catalogDomainHandler.data['name']
-
     def __createCatalogDomain(self):
         if self.catalogDomainName is None:
-            self.__createCatalogDomainHandler()
             catalogName = 'Catalog'
             if self.__isAddOnMode():
                 catalogDomain = self.itemDbApi.getDomainByName(catalogName)
             else:
-                catalogDomain = self.itemDbApi.addDomain(catalogName, 'Catalog Domain', self.catalogDomainHandlerName)
+                catalogDomain = self.itemDbApi.addDomain(catalogName, 'Item domain for managing catalog items.')
             self.catalogDomainName = catalogDomain.data['name']
             self.catalogDomainId = catalogDomain.data['id']
 
@@ -706,11 +687,11 @@ class MergeUtility():
                 categoryDescription = componentTypeCategory.data['description']
                 typeDescription = componentType.data['description']
                 try:
-                    self.itemDbApi.addItemType(typeName, typeDescription, self.catalogDomainHandlerName)
+                    self.itemDbApi.addItemType(typeName, typeDescription, self.catalogDomainName)
                 except:
                     pass
                 try:
-                    self.itemDbApi.addItemCategory(categoryName, categoryDescription, self.catalogDomainHandlerName)
+                    self.itemDbApi.addItemCategory(categoryName, categoryDescription, self.catalogDomainName)
                 except:
                     pass
         
@@ -731,14 +712,9 @@ class MergeUtility():
         if self.instanceDomainName is None:
             inventoryName = 'Inventory'
             if self.__isAddOnMode():
-                instanceDomainHandler = self.itemDbApi.getDomainHandlerByName(inventoryName)
-            else:
-                instanceDomainHandler = self.itemDbApi.addDomainHandler(inventoryName, 'Handler responsible for handling phyisical inventory of items.')
-            instanceDomainHandlerName = instanceDomainHandler.data['name']
-            if self.__isAddOnMode():
                 instanceDomain = self.itemDbApi.getDomainByName(inventoryName)
             else:
-                instanceDomain = self.itemDbApi.addDomain(inventoryName, 'Inventory Domain', instanceDomainHandlerName)
+                instanceDomain = self.itemDbApi.addDomain(inventoryName, 'Item domain for managing inventory items')
 
             self.instanceDomainName = instanceDomain.data['name']
 
@@ -798,31 +774,62 @@ class MergeUtility():
                 itemElementRelationship = self.itemDbApi.addItemElementRelationship(selfItemElementId, None, None, None, None,
                                                           self.locationRelationshipTypeName, locationDetails, None, None, None)
 
-            self.__addComponentInstanceLocationHistory(selfItemElementId, itemElementRelationship, componentInstance)
+            lastModifiedByUserName = entityInfoData['lastModifiedByUserInfo'].data['username']
+            lastModifiedOnDateTime = entityInfoData['lastModifiedOnDateTime']
+            self.__addComponentInstanceLocationHistory(selfItemElementId, itemElementRelationship, componentInstance, lastModifiedByUserName, lastModifiedOnDateTime)
 
-    def __addComponentInstanceLocationHistory(self, selfItemElementId, itemElementRelationship, legacyComponentInstance):
+    def __addComponentInstanceLocationHistory(self, selfItemElementId, itemElementRelationship, legacyComponentInstance, lastModifiedByUserName, lastModifiedOnDateTime):
         componentInstanceLocationHistory = legacyComponentInstance['componentInstanceLocationHistory']
-        if componentInstanceLocationHistory.__len__() != 0:
-            if itemElementRelationship is None:
-                itemElementRelationship = self.itemDbApi.addItemElementRelationship(selfItemElementId, None, None, None, None,
-                                                          self.locationRelationshipTypeName, None, None, None, None)
-            for locationHistory in componentInstanceLocationHistory:
-                locationHistoryData = locationHistory.toCdbObject().data
-                itemElementRelationshipId = itemElementRelationship.data['id']
 
-                locationItem = self.__findLocationItem(locationHistoryData['location'])
-                locationItemId = locationItem.data['id']
-                locationSelfItemElement = self.itemDbApi.getSelfElementByItemId(locationItemId)
-                locationSelfItemElementId = locationSelfItemElement.data['id']
+        if componentInstanceLocationHistory.__len__() == 0 and itemElementRelationship is None:
+            return
 
-                locationDetails = locationHistoryData['locationDetails']
+        currentLocationNeedsToBeAddedToHistory = True
 
-                enteredByUserName = locationHistoryData['userInfo'].data['username']
-                enteredByUserId = self.argsGenerator.getUserId(enteredByUserName)
-                enteredOnDateTime = locationHistoryData['enteredOnDateTime']
+        if itemElementRelationship is None:
+            itemElementRelationship = self.itemDbApi.addItemElementRelationship(selfItemElementId, None, None, None, None,
+                                                      self.locationRelationshipTypeName, None, None, None, None)
+            currentLocationNeedsToBeAddedToHistory = False
 
-                self.developerDbApi.addItemElementRelationshipHistory(itemElementRelationshipId, selfItemElementId, locationSelfItemElementId, None, None, None,locationDetails,
-                                                                      None,None,None, enteredByUserId, enteredOnDateTime)
+        itemElementRelationshipId = itemElementRelationship.data['id']
+        currentLocationSelfItemElementId = itemElementRelationship.data['second_item_element_id']
+        currentLocationDetails = itemElementRelationship.data['relationship_details']
+
+        if currentLocationDetails == "":
+            currentLocationDetails = None
+
+        for locationHistory in componentInstanceLocationHistory:
+            locationHistoryData = locationHistory.toCdbObject().data
+
+            locationItem = self.__findLocationItem(locationHistoryData['location'])
+            locationItemId = locationItem.data['id']
+            locationSelfItemElement = self.itemDbApi.getSelfElementByItemId(locationItemId)
+            locationSelfItemElementId = locationSelfItemElement.data['id']
+
+            locationDetails = locationHistoryData['locationDetails']
+            if locationDetails == "":
+                locationDetails = None
+
+            enteredByUserName = locationHistoryData['userInfo'].data['username']
+            enteredByUserId = self.argsGenerator.getUserId(enteredByUserName)
+            enteredOnDateTime = locationHistoryData['enteredOnDateTime']       \
+
+            # last item being added to history
+            if locationHistory == componentInstanceLocationHistory[-1]:
+                if locationSelfItemElementId == currentLocationSelfItemElementId:
+                    if currentLocationDetails == locationDetails:
+                        currentLocationNeedsToBeAddedToHistory = False
+
+            self.developerDbApi.addItemElementRelationshipHistory(itemElementRelationshipId, selfItemElementId, locationSelfItemElementId, None, None, None,locationDetails,
+                                                                  None,None,None, enteredByUserId, enteredOnDateTime)
+
+        # current location was not yet added to history
+        if currentLocationNeedsToBeAddedToHistory:
+            if itemElementRelationship is not None:
+                lastEnteredByUserId = self.argsGenerator.getUserId(lastModifiedByUserName)
+                self.developerDbApi.addItemElementRelationshipHistory(itemElementRelationshipId, selfItemElementId, currentLocationSelfItemElementId,
+                                                                      None, None, None, currentLocationDetails, None,None,None, lastEnteredByUserId, lastModifiedOnDateTime)
+
 
 
     def __populateDomainEntityLogsForItemElements(self, itemElementId, domainEntityLogs):
