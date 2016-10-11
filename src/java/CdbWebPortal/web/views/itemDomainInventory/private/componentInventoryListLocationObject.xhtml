@@ -12,7 +12,7 @@
               filterMatchMode="contains"
               filterable="#{filterable}"
               >
-        <h:outputText value="#{itemListObject.locationString}" />        
+        <h:outputText value="#{itemDomainInventoryController.getLocationStringForItem(itemListObject)}" />        
     </p:column>
 
     <ui:param name="locationDetails" value="#{itemDomainInventoryController.getLocationRelationshipDetails(itemListObject)}" />
