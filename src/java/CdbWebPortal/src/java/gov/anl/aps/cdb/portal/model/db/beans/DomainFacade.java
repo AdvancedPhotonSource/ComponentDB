@@ -41,11 +41,4 @@ public class DomainFacade extends CdbEntityFacade<Domain> {
         return null;
     }
 
-    public List<Domain> findByDomainHandlerName(String domainHandlerName) {
-        return (List<Domain>) em.createNamedQuery("Domain.findByDomainHandlerName")
-                .setParameter("domainHandlerName", domainHandlerName)
-                .getResultList();
-
-    }
-
 }
