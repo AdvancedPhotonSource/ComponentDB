@@ -8,7 +8,6 @@ import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemViews;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.DomainHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
@@ -18,7 +17,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
-import gov.anl.aps.cdb.portal.model.db.entities.DomainHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
@@ -75,9 +73,6 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private DomainFacade domainFacade;
 
     @EJB
-    private DomainHandlerFacade domainHandlerFacade;
-
-    @EJB
     private EntityTypeFacade entityTypeFacade;
 
     @EJB
@@ -130,8 +125,6 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected TreeNode itemsWithNoParentsRootNode = null;
 
     private Domain selectionDomain;
-
-    private DomainHandler itemDomainHandler;
 
     protected DataModel allowedChildItemSelectDataModel = null;
 
@@ -209,112 +202,175 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public ItemController() {
     }
 
+    /**
+     * Default domain of items managed by the controller. 
+     * 
+     * @return 
+     */
     public abstract String getDefaultDomainName();
 
     /**
-     *
+     * Does item identifier 1 need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemIdentifier1();
 
     /**
-     *
+     * Does item identifier 2 need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemIdentifier2();
 
     /**
-     *
+     * Does item name need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemName();
 
     /**
-     *
+     * Does item type need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemType();
 
     /**
-     *
+     * Does item category need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemCategory();
 
-    //TODO chagne to parent derived from item. 
+    /**
+     * Does item of default domain need to display item it derived from. 
+     * 
+     * @return 
+     */
     public abstract boolean getEntityDisplayDerivedFromItem();
 
     /**
-     *
+     * Does item qrId need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayQrId();
 
     /**
-     *
+     * Does item gallery need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemGallery();
 
     /**
-     *
+     * Do the item logs need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemLogs();
 
     /**
-     *
+     * Do the item sources need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemSources();
 
     /**
-     *
+     * Do the item properties need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemProperties();
 
     /**
-     *
+     * Do the item elements need to be displayed for the item in default domain. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemElements();
 
     /**
-     *
+     * Do the items derived from the item in default domain need to be displayed.
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemsDerivedFromItem();
 
     /**
-     *
+     * Does item membership in other items as elements of item in default domain need to be shown. 
+     * 
      * @return
      */
     public abstract boolean getEntityDisplayItemMemberships();
+    
+    /**
+     * Does the item project need to be displayed for items in default domain. 
+     * 
+     * @return 
+     */
+    public abstract boolean getEntityDisplayItemProject();
 
     /**
-     *
+     * Do the item entity types need to be displayed for item in default domain. 
+     * 
+     * @return 
+     */
+    public abstract boolean getEntityDisplayItemEntityTypes();
+
+    /**
+     * What does item identifier 1 represent for items in default domain. 
+     * 
      * @return
      */
     public abstract String getItemIdentifier1Title();
 
+    /**
+     * What does item identifier 2 represent for items in default domain. 
+     * 
+     * @return 
+     */
     public abstract String getItemIdentifier2Title();
 
-    public abstract boolean getEntityDisplayItemProject();
-
-    public abstract boolean getEntityDisplayItemEntityTypes();
-
+    /**
+     * What is the meaningful representation/title of items derived form item in default domain. 
+     * ex: inventory items for catalog item. 
+     * 
+     * @return 
+     */
     public abstract String getItemsDerivedFromItemTitle();
-
+    
+    /**
+     * What is the meaningful representation/title of item the item in default domain derived from. 
+     * ex: catalog item for inventory item. 
+     * 
+     * @return 
+     */
     public abstract String getDerivedFromItemTitle();
 
+    /**
+     * What is the name of the css style for items in default domain. 
+     * 
+     * @return 
+     */
     public abstract String getStyleName();
 
-    public abstract String getDomainHandlerName();
+    /**
+     * Get method for domain name for which the default domain items have derived from. 
+     * 
+     * @return 
+     */
+    public abstract String getDefaultDomainDerivedFromDomainName();
 
-    public abstract String getItemDerivedFromDomainHandlerName();
-
-    public abstract String getDerivedDomainName();
+    /**
+     * Get method for domain name for which the default domain items have derived to. 
+     * 
+     * @return 
+     */
+    public abstract String getDefaultDomainDerivedToDomainName();
 
     public Domain getDefaultDomain() {
         return domainFacade.findByName(getDefaultDomainName());
@@ -665,7 +721,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             if (getCurrentItemProject() != null
                     || filterViewSelectedUserInfo != null
                     || filterViewUserGroupSelectionList != null) {
-                filterViewItemList = itemFacade.findByFilterViewOwnerAttributes(getCurrentItemProject(), filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDomainHandlerName());
+                filterViewItemList = itemFacade.findByFilterViewOwnerAttributes(getCurrentItemProject(), filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDefaultDomainName());
             }
 
             filterViewOwnerListDataModel = createFilterViewListDataModel(filterViewItemList);
@@ -775,8 +831,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return new ListDataModel(itemList);
     }
 
-    public String getDomainPath(DomainHandler domainHandler) {
-        return "/views/" + getEntityViewsDirectory(domainHandler.getName());
+    public String getDomainPath(Domain domain) {
+        return "/views/" + getEntityViewsDirectory(domain.getName());
     }
 
     @Override
@@ -790,7 +846,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @Override
     protected String getEntityApplicationViewPath() {
-        return getDomainPath(getItemDomainHandler());
+        return getDomainPath(getDefaultDomain());
     }
 
     @Override
@@ -812,29 +868,23 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public String getEntityTypeCategoryName() {
         return "itemCategory";
     }
-
-    public Domain getDerivedDomain() {
-        return getDefaultDomain();
+    
+    public Domain getDefaultDomainDerivedFromDomain() {
+        return domainFacade.findByName(getDefaultDomainDerivedFromDomainName()); 
     }
 
-    public List<Domain> getItemElementItemSelectionDomainList() {
-        return domainFacade.findAll();
+    public Domain getDefaultDomainDerivedToDomain() {
+        return domainFacade.findByName(getDefaultDomainDerivedToDomainName());
     }
 
+    /**
+     * Default controller to perform selection of items. 
+     * One could be specified for the specific view page otherwise this one will be provided. 
+     * 
+     * @return 
+     */
     public final ItemController getSelectionController() {
-        if (selectionDomain == null) {
-            List<Domain> domainList = getItemElementItemSelectionDomainList();
-            if (domainList != null && domainList.size() > 0) {
-                selectionDomain = domainList.get(0);
-            }
-        }
-        if (selectionDomain != null) {
-            DomainHandler domainHandler = selectionDomain.getDomainHandler();
-            if (domainHandler != null) {
-                return findDomainController(selectionDomain.getDomainHandler().getName());
-            }
-        }
-        return (ItemController) SessionUtility.findBean("itemGenericViewController");
+        return this;
     }
 
     public static ItemController findDomainController(String domainName) {
@@ -881,36 +931,17 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected static String getDomainControllerName(String domainName) {
         return "itemDomain" + domainName + "Controller";
     }
-
-    public List<Domain> getAvailableDomains() {
-        String domainHandlerName = getDomainHandlerName();
-        if (domainHandlerName != null) {
-            return domainFacade.findByDomainHandlerName(domainHandlerName);
-        } else {
-            return domainFacade.findAll();
-        }
-    }
-
-    public DomainHandler getItemDomainHandler() {
-        if (itemDomainHandler == null) {
-            String domainHandlerName = getDomainHandlerName();
-            if (domainHandlerName != null) {
-                itemDomainHandler = domainHandlerFacade.findByName(domainHandlerName);
-            }
-        }
-        return itemDomainHandler;
-    }
-
-    public List<EntityType> getDomainHandlerAllowedEnityTypes() {
-        DomainHandler domainHandler = getItemDomainHandler();
-        if (domainHandler != null) {
-            return domainHandler.getAllowedEntityTypeList();
+    
+    public List<EntityType> getDomainAllowedEnityTypes() {
+        Domain domain = getDefaultDomain();
+        if (domain != null) {
+            return domain.getAllowedEntityTypeList();
         }
         return null;
     }
 
     public List<EntityType> getFilterableEntityTypes() {
-        return getDomainHandlerAllowedEnityTypes();
+        return getDomainAllowedEnityTypes();
     }
 
     public SelectItem[] getEntityTypesForDataTableFilterSelectOne() {
@@ -918,7 +949,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public boolean isEntityTypeEditable() {
-        List<EntityType> allowedEntityType = getDomainHandlerAllowedEnityTypes();
+        List<EntityType> allowedEntityType = getDomainAllowedEnityTypes();
         if (allowedEntityType != null && !allowedEntityType.isEmpty()) {
             return true;
         } else {
@@ -1154,7 +1185,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     private String getEntityTypeStyleName(String genEntityTypeName) {
-        return genEntityTypeName.toLowerCase() + getDomainHandlerName();
+        return genEntityTypeName.toLowerCase() + getDefaultDomainName();
     }
 
     public String getListStyleName() {
@@ -1275,12 +1306,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 && this.getEntityDisplayItemCategory();
     }
 
-    public ItemController getItemDerivedFromDomainController() {
-        return findDomainController(getItemDerivedFromDomainHandlerName());
+    public ItemController getDefaultDomainDerivedFromDomainController() {
+        return findDomainController(getDefaultDomainDerivedFromDomainName());
     }
 
-    public ItemController getDerivedDomainController() {
-        return findDomainController(getDerivedDomainName());
+    public ItemController getDefaultDomainDerivedToDomainController() {
+        return findDomainController(getDefaultDomainDerivedToDomainName());
     }
 
     public Boolean isItemExistInDb(Item item) {
@@ -1605,12 +1636,18 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
     }
 
+    /**
+     * Adds an item and sets the derived from item. 
+     * Meant to be called from the item domain controller of new item. 
+     * 
+     * @param derivedFromItem 
+     */
     public void prepareAddItemDerivedFromItem(Item derivedFromItem) {
         List<Item> itemDerivedFromItemList = derivedFromItem.getDerivedFromItemList();
 
         Item newItemDerivedFromItem = new Item();
 
-        newItemDerivedFromItem.init(getDerivedDomain());
+        newItemDerivedFromItem.init(getDefaultDomain());
 
         itemDerivedFromItemList.add(0, newItemDerivedFromItem);
 
@@ -2198,9 +2235,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Item createEntityInstance() {
         Item item = new Item();
 
-        DomainHandler domainHandler = getItemDomainHandler();
-        if (domainHandler != null && domainHandler.getDomainList().size() > 0) {
-            item.init(domainHandler.getDomainList().get(0));
+        Domain domain = getDefaultDomain();
+        if (domain != null) {
+            item.init(domain);
         } else {
             item.init();
         }
@@ -2284,10 +2321,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private Item performItemRedirection(Item item, String paramString, boolean forceRedirection) {
         String currentViewId = SessionUtility.getCurrentViewId();
 
-        DomainHandler itemDomainHandler = item.getDomain().getDomainHandler();
+        Domain itemDomain = item.getDomain();
         String desiredViewId;
-        if (itemDomainHandler != null) {
-            desiredViewId = getDomainPath(itemDomainHandler) + "/view.xhtml";
+        if (itemDomain != null) {
+            desiredViewId = getDomainPath(itemDomain) + "/view.xhtml";
         } else {
             desiredViewId = "/views/item/view.xhtml";
         }
@@ -2385,10 +2422,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     protected String getItemDomainName(Item item) {
-        Domain domain = item.getDomain();
-        if (domain.getDomainHandler() != null) {
-            return domain.getDomainHandler().getName();
-        }
+        Domain domain = item.getDomain();        
         return domain.getName();
     }
 
