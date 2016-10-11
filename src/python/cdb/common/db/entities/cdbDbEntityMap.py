@@ -17,7 +17,6 @@ from cdb.common.db.entities.log import Log
 from cdb.common.db.entities.logLevel import LogLevel
 from cdb.common.db.entities.systemLog import SystemLog
 from cdb.common.db.entities.entityType import EntityType
-from cdb.common.db.entities.domainHandler import DomainHandler
 from cdb.common.db.entities.domain import Domain
 from cdb.common.db.entities.item import Item
 from cdb.common.db.entities.itemElement import ItemElement
@@ -41,7 +40,7 @@ from cdb.common.db.entities.resourceType import ResourceType
 from cdb.common.db.entities.itemElementLog import ItemElementLog
 from cdb.common.db.entities.itemElementRelationshipHistory import ItemElementRelationshipHistory
 from cdb.common.db.entities.allowedChildEntityType import AllowedChildEntityType
-from cdb.common.db.entities.allowedDomainHandlerEntityType import AllowedDomainHandlerEntityType
+from cdb.common.db.entities.allowedEntityTypeDomain import AllowedEntityTypeDomain
 from cdb.common.db.entities.itemProject import ItemProject
 from cdb.common.db.entities.itemItemProject import ItemItemProject
 
@@ -98,14 +97,11 @@ CDB_DB_ENTITY_MAP = {
         'childEntityType' : { 'parentEntity' : EntityType, 'lazy' : False, 'foreignKeyColumns' : ['child_entity_type_id'] },
     }),
     'entity_type' : (EntityType, {}),
-    'domain_handler' : (DomainHandler, {}),
-    'allowed_domain_handler_entity_type' : (AllowedDomainHandlerEntityType, {
+    'allowed_entity_type_domain' : (AllowedEntityTypeDomain, {
         'entityType' : { 'parentEntity' : EntityType, 'lazy' : False },
-        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False },
+        'domain' : { 'parentEntity' : Domain, 'lazy' : False },
     }),
-    'domain' : (Domain, {
-        'domainHandler' : { 'parentEntity' : DomainHandler, 'lazy' : False},
-    }),
+    'domain' : (Domain, {}),
     'source' : (Source, {}),
     'item_category' : (ItemCategory, {
         'domain' : { 'parentEntity' : Domain, 'lazy' : False},
