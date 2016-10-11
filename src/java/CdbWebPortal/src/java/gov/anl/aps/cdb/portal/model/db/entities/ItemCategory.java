@@ -59,7 +59,7 @@ public class ItemCategory extends ItemTypeCategoryEntity implements Serializable
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne
     private Domain domain;
-    @JoinTable(name = "item_category_type", joinColumns = {
+    @JoinTable(name = "item_category_item_type", joinColumns = {
         @JoinColumn(name = "item_category_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
