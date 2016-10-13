@@ -3,7 +3,8 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="itemListObjectTemplateBase.xhtml">
+                template="itemListObjectTemplateBase.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <!-- Specify true whenever columns are fixed for a view; override unneeded columns. -->
     <ui:param name="renderWheneverAvaiable" value="#{renderWheneverAvaiable != null 
@@ -31,33 +32,51 @@
                                                             :entityController.displayItemIdentifier2}" />
 
     <ui:param name="itemListRenderItemType" value="#{renderWheneverAvaiable 
-                                                            ? entityController.entityDisplayItemType
-                                                            : entityController.displayItemType}" />
-    
+                                                     ? entityController.entityDisplayItemType
+                                                     : entityController.displayItemType}" />
+
     <ui:param name="itemListRenderItemCategory" value="#{renderWheneverAvaiable 
-                                                            ? entityController.entityDisplayItemCategory
-                                                            : entityController.displayItemCategory}" />
-    
+                                                         ? entityController.entityDisplayItemCategory
+                                                         : entityController.displayItemCategory}" />
+
     <ui:param name="itemListRenderItemSources" value="#{renderWheneverAvaiable 
-                                                            ? entityController.entityDisplayItemSources
-                                                            : entityController.displayItemSources}" />
-    
+                                                        ? entityController.entityDisplayItemSources
+                                                        : entityController.displayItemSources}" />
+
     <ui:param name="itemListRenderDerivedFromItem" value="#{renderWheneverAvaiable 
                                                             ? entityController.entityDisplayDerivedFromItem
                                                             : entityController.displayDerivedFromItem}" />
-    
+
     <ui:param name="itemListRenderDescription" value="#{renderWheneverAvaiable 
-                                                            ? true
-                                                            : entityController.displayDescription}" />
-    
+                                                        ? true
+                                                        : entityController.displayDescription}" />
+
     <ui:param name="itemListRenderItemProject" value="#{renderWheneverAvaiable 
-                                                            ? entityController.entityDisplayItemProject
-                                                            : entityController.displayItemProject}" />
-    
+                                                        ? entityController.entityDisplayItemProject
+                                                        : entityController.displayItemProject}" />
+
     <ui:param name="itemListRenderItemEntityTypes" value="#{renderWheneverAvaiable 
                                                             ? entityController.entityDisplayItemEntityTypes 
                                                             : entityController.displayItemEntityTypes}" />
-    
+    <ui:define name="thumbnail">
+        <p:column styleClass="narrowColumn" headerText="Primary Image" exportable="false">
+            <p:outputPanel rendered="#{itemDomainCatalogController.itemHasPrimaryImage(itemListObject)}" styleClass="centeredContent">
+                <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{entityController.getPrimaryImageThumbnailForItem(itemListObject)}"
+                                onclick="PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').hide();
+                                        PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').show()"/>
+                <p:dialog dynamic="true"
+                          header="#{entityController.getItemDisplayString(itemListObject)}"
+                          widgetVar="imagePreviewScaled#{itemListObject.viewUUID}DialogWidget"
+                          styleClass="viewTransparentBackgroundDialog"
+                          resizable="false">
+                    <ui:param name="imageName" value="#{entityController.getPrimaryImageValueForItem(itemListObject)}" />
+                    <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPathByValue(imageName)}" target="_page_#{imageName}">
+                        <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{propertyValueController.getScaledImagePathByValue(imageName)}" />
+                    </h:outputLink>
+                </p:dialog>
+            </p:outputPanel>
+        </p:column>
+    </ui:define>
 
     <ui:define name="idColumn">
         <p:column sortBy="#{itemListObject.id}" headerText="Id"
@@ -80,7 +99,7 @@
             <ui:insert name="nameColumnObject" />
         </p:column>
     </ui:define>
-    
+
     <ui:define name="itemProjectColumn">
         <p:column sortBy="#{itemListObject.itemProjectString}" headerText="Project"
                   filterBy="#{itemListObject.itemProjectString}"
@@ -89,7 +108,7 @@
                   rendered="#{itemListRenderItemProject}">
             <ui:insert name="itemProjectObject" />
         </p:column>
-                  
+
     </ui:define>
 
     <ui:define name="entityTypeColumn">
