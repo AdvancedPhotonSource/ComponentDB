@@ -26,6 +26,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -34,6 +36,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 
@@ -85,6 +88,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     private UserInfoFacade userInfoFacade;
 
     protected final String FAVORITES_LIST_NAME = "Favorites";
+
+    protected final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
@@ -203,172 +208,179 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     /**
-     * Default domain of items managed by the controller. 
-     * 
-     * @return 
+     * Default domain of items managed by the controller.
+     *
+     * @return
      */
     public abstract String getDefaultDomainName();
 
     /**
-     * Does item identifier 1 need to be displayed for the item in default domain. 
-     * 
+     * Does item identifier 1 need to be displayed for the item in default
+     * domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemIdentifier1();
 
     /**
-     * Does item identifier 2 need to be displayed for the item in default domain. 
-     * 
+     * Does item identifier 2 need to be displayed for the item in default
+     * domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemIdentifier2();
 
     /**
-     * Does item name need to be displayed for the item in default domain. 
-     * 
+     * Does item name need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemName();
 
     /**
-     * Does item type need to be displayed for the item in default domain. 
-     * 
+     * Does item type need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemType();
 
     /**
-     * Does item category need to be displayed for the item in default domain. 
-     * 
+     * Does item category need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemCategory();
 
     /**
-     * Does item of default domain need to display item it derived from. 
-     * 
-     * @return 
+     * Does item of default domain need to display item it derived from.
+     *
+     * @return
      */
     public abstract boolean getEntityDisplayDerivedFromItem();
 
     /**
-     * Does item qrId need to be displayed for the item in default domain. 
-     * 
+     * Does item qrId need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayQrId();
 
     /**
-     * Does item gallery need to be displayed for the item in default domain. 
-     * 
+     * Does item gallery need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemGallery();
 
     /**
-     * Do the item logs need to be displayed for the item in default domain. 
-     * 
+     * Do the item logs need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemLogs();
 
     /**
-     * Do the item sources need to be displayed for the item in default domain. 
-     * 
+     * Do the item sources need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemSources();
 
     /**
-     * Do the item properties need to be displayed for the item in default domain. 
-     * 
+     * Do the item properties need to be displayed for the item in default
+     * domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemProperties();
 
     /**
-     * Do the item elements need to be displayed for the item in default domain. 
-     * 
+     * Do the item elements need to be displayed for the item in default domain.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemElements();
 
     /**
-     * Do the items derived from the item in default domain need to be displayed.
-     * 
+     * Do the items derived from the item in default domain need to be
+     * displayed.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemsDerivedFromItem();
 
     /**
-     * Does item membership in other items as elements of item in default domain need to be shown. 
-     * 
+     * Does item membership in other items as elements of item in default domain
+     * need to be shown.
+     *
      * @return
      */
     public abstract boolean getEntityDisplayItemMemberships();
-    
+
     /**
-     * Does the item project need to be displayed for items in default domain. 
-     * 
-     * @return 
+     * Does the item project need to be displayed for items in default domain.
+     *
+     * @return
      */
     public abstract boolean getEntityDisplayItemProject();
 
     /**
-     * Do the item entity types need to be displayed for item in default domain. 
-     * 
-     * @return 
+     * Do the item entity types need to be displayed for item in default domain.
+     *
+     * @return
      */
     public abstract boolean getEntityDisplayItemEntityTypes();
 
     /**
-     * What does item identifier 1 represent for items in default domain. 
-     * 
+     * What does item identifier 1 represent for items in default domain.
+     *
      * @return
      */
     public abstract String getItemIdentifier1Title();
 
     /**
-     * What does item identifier 2 represent for items in default domain. 
-     * 
-     * @return 
+     * What does item identifier 2 represent for items in default domain.
+     *
+     * @return
      */
     public abstract String getItemIdentifier2Title();
 
     /**
-     * What is the meaningful representation/title of items derived form item in default domain. 
-     * ex: inventory items for catalog item. 
-     * 
-     * @return 
+     * What is the meaningful representation/title of items derived form item in
+     * default domain. ex: inventory items for catalog item.
+     *
+     * @return
      */
     public abstract String getItemsDerivedFromItemTitle();
-    
+
     /**
-     * What is the meaningful representation/title of item the item in default domain derived from. 
-     * ex: catalog item for inventory item. 
-     * 
-     * @return 
+     * What is the meaningful representation/title of item the item in default
+     * domain derived from. ex: catalog item for inventory item.
+     *
+     * @return
      */
     public abstract String getDerivedFromItemTitle();
 
     /**
-     * What is the name of the css style for items in default domain. 
-     * 
-     * @return 
+     * What is the name of the css style for items in default domain.
+     *
+     * @return
      */
     public abstract String getStyleName();
 
     /**
-     * Get method for domain name for which the default domain items have derived from. 
-     * 
-     * @return 
+     * Get method for domain name for which the default domain items have
+     * derived from.
+     *
+     * @return
      */
     public abstract String getDefaultDomainDerivedFromDomainName();
 
     /**
-     * Get method for domain name for which the default domain items have derived to. 
-     * 
-     * @return 
+     * Get method for domain name for which the default domain items have
+     * derived to.
+     *
+     * @return
      */
     public abstract String getDefaultDomainDerivedToDomainName();
 
@@ -430,6 +442,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     @Override
     public void processPreRenderList() {
         super.processPreRenderList();
+        filteredObjectList = null;
 
         // Check if itemProject registered. 
         if (itemProjectController == null) {
@@ -868,9 +881,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public String getEntityTypeCategoryName() {
         return "itemCategory";
     }
-    
+
     public Domain getDefaultDomainDerivedFromDomain() {
-        return domainFacade.findByName(getDefaultDomainDerivedFromDomainName()); 
+        return domainFacade.findByName(getDefaultDomainDerivedFromDomainName());
     }
 
     public Domain getDefaultDomainDerivedToDomain() {
@@ -878,10 +891,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     /**
-     * Default controller to perform selection of items. 
-     * One could be specified for the specific view page otherwise this one will be provided. 
-     * 
-     * @return 
+     * Default controller to perform selection of items. One could be specified
+     * for the specific view page otherwise this one will be provided.
+     *
+     * @return
      */
     public final ItemController getSelectionController() {
         return this;
@@ -931,7 +944,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected static String getDomainControllerName(String domainName) {
         return "itemDomain" + domainName + "Controller";
     }
-    
+
     public List<EntityType> getDomainAllowedEnityTypes() {
         Domain domain = getDefaultDomain();
         if (domain != null) {
@@ -1637,10 +1650,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     /**
-     * Adds an item and sets the derived from item. 
-     * Meant to be called from the item domain controller of new item. 
-     * 
-     * @param derivedFromItem 
+     * Adds an item and sets the derived from item. Meant to be called from the
+     * item domain controller of new item.
+     *
+     * @param derivedFromItem
      */
     public void prepareAddItemDerivedFromItem(Item derivedFromItem) {
         List<Item> itemDerivedFromItemList = derivedFromItem.getDerivedFromItemList();
@@ -2205,6 +2218,163 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     @Override
+    public List<PropertyValue> getImageList() {
+        // Place primary image at front. 
+        List<PropertyValue> imageList = super.getImageList();
+
+        if (imageList != null) {
+            PropertyValue propertyValue = getPrimaryImagePropertyValueForItem(getCurrent());
+
+            if (propertyValue != null) {
+                imageList.remove(propertyValue);
+                imageList.add(0, propertyValue);
+            }
+        }
+
+        return imageList;
+    }
+
+    public boolean isShowMakeImagePrimaryButton() {
+        if (LoginController.getInstance().isEntityWriteable(getCurrent().getEntityInfo())) {
+            // entity is writeable. 
+            return getPropertyValueListWithHandlerForImages(getCurrent()).size() > 1;
+        }
+
+        return false;
+    }
+
+    public void markImagePrimary(PropertyValue imagePropertyValue) {
+        String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
+        List<PropertyValue> imagePropertyValueList = getPropertyValueListWithHandler(getCurrent().getPropertyValueList(), imageHandlerName);
+
+        String currentValue = imagePropertyValue.getPropertyMetadataValueForKey(PRIMARY_IMAGE_PROPERTY_METADATA_KEY);
+        if (currentValue != null) {
+            if (currentValue.equals("true")) {
+                SessionUtility.addInfoMessage("Already Primary", "Selected Image is already primary.");
+                return;
+            }
+        }
+
+        boolean requestedPropertyFound = false;
+        for (PropertyValue propertyValue : imagePropertyValueList) {
+            if (propertyValue.equals(imagePropertyValue)) {
+                // will be updated. 
+                requestedPropertyFound = true;
+                continue;
+            }
+            propertyValue.setPropertyMetadataValue(PRIMARY_IMAGE_PROPERTY_METADATA_KEY, "false");
+        }
+
+        if (requestedPropertyFound) {
+            imagePropertyValue.setPropertyMetadataValue(PRIMARY_IMAGE_PROPERTY_METADATA_KEY, "true");
+            update();
+            // Should be regenerated. 
+            getCurrent().setPrimaryImageValue(null);
+            getCurrent().setImagePropertyList(null);
+        } else {
+            // Views should not allow this case to execute. 
+            SessionUtility.addErrorMessage("Error", "Requested property value was not found in current item. Please go to its detail view page.");
+        }
+
+    }
+
+    public String getPrimaryImageButtonIcon(Item item, PropertyValue propertyValue) {
+        String primaryImageValue = getPrimaryImageValueForItem(item);
+        if (propertyValue.getValue() != null) {
+            if (propertyValue.getValue().equals(primaryImageValue)) {
+                return "ui-icon-check";
+            }
+        }
+        return "ui-icon-close";
+    }
+
+    public boolean itemHasPrimaryImage(Item item) {
+        String value = getPrimaryImageValueForItem(item);
+        return !value.isEmpty();
+    }
+
+    public String getPrimaryImageThumbnailForItem(Item item) {
+        String value = getPrimaryImageValueForItem(item);
+        if (!value.isEmpty()) {
+            return PropertyValueController.getThumbnailImagePathByValue(value);
+        }
+        return value;
+    }
+
+    /**
+     * Get primary image value for an item. Checks if the value needs to be
+     * loaded.
+     *
+     * @param item - Item to get primary image value for.
+     * @return
+     */
+    public String getPrimaryImageValueForItem(Item item) {
+        if (item.getPrimaryImageValue() == null) {
+            loadItemPrimaryImageValueForItem(item);
+            if (item.getPrimaryImageValue() == null) {
+                item.setPrimaryImageValue("");
+            }
+        }
+        return item.getPrimaryImageValue();
+    }
+
+    /**
+     * Determines what is the primary image for a particular item and sets the
+     * value.
+     *
+     * @param item
+     */
+    private void loadItemPrimaryImageValueForItem(Item item) {
+        PropertyValue propertyValue = getPrimaryImagePropertyValueForItem(item);
+
+        if (propertyValue != null) {
+            item.setPrimaryImageValue(propertyValue.getValue());
+        } else {
+            item.setPrimaryImageValue(null);
+        }
+
+    }
+
+    private PropertyValue getPrimaryImagePropertyValueForItem(Item item) {
+        List<PropertyValue> imagePropertyValueList = getPropertyValueListWithHandlerForImages(item);
+        if (!imagePropertyValueList.isEmpty()) {
+            for (PropertyValue propertyValue : imagePropertyValueList) {
+                String value = propertyValue.getPropertyMetadataValueForKey(PRIMARY_IMAGE_PROPERTY_METADATA_KEY);
+
+                if (value != null) {
+                    if (value.equals("true")) {
+                        return propertyValue;
+                    }
+                }
+
+            }
+            return imagePropertyValueList.get(0);
+
+        }
+        return null;
+    }
+
+    private List<PropertyValue> getPropertyValueListWithHandlerForImages(Item item) {
+        String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
+        return getPropertyValueListWithHandler(item.getPropertyValueDisplayList(), imageHandlerName);
+    }
+
+    private List<PropertyValue> getPropertyValueListWithHandler(List<PropertyValue> propertyValueList, String handlerName) {
+        List<PropertyValue> resultingList = new ArrayList<>();
+        for (PropertyValue propertyValue : propertyValueList) {
+            PropertyType propertyType = propertyValue.getPropertyType();
+            if (propertyType != null) {
+                PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
+                if (propertyTypeHandler != null && propertyTypeHandler.getName().equals(handlerName)) {
+                    resultingList.add(propertyValue);
+                }
+            }
+        }
+
+        return resultingList;
+    }
+
+    @Override
     public Boolean getDisplayLoadPropertyValuesButton() {
         if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
             return false;
@@ -2422,7 +2592,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     protected String getItemDomainName(Item item) {
-        Domain domain = item.getDomain();        
+        Domain domain = item.getDomain();
         return domain.getName();
     }
 
