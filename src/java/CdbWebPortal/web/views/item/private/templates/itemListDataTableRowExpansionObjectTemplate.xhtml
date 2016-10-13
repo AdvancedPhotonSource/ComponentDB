@@ -7,7 +7,7 @@
 
     <p:column rendered="#{entityController.displayRowExpansion}"
               headerText="More Info"
-              width="15px;">
+              styleClass="narrowColumn">
         <p:rowToggler rendered="#{entityController.isDisplayRowExpansionForItem(itemListObject)}"/>
     </p:column>
     <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
