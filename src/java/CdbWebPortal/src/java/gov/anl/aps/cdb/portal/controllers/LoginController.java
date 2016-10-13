@@ -56,6 +56,10 @@ public class LoginController implements Serializable {
 
     public LoginController() {
     }
+    
+    public static LoginController getInstance() {
+        return (LoginController) SessionUtility.findBean("loginController");
+    }
 
     public String getPassword() {
         return password;
