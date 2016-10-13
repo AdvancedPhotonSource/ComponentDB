@@ -26,7 +26,7 @@
     </ui:define>
     
     <ui:define name="itemProperties">
-        <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
+        <ui:include src="../item/private/itemPropertyList.xhtml">
             <ui:param name="loadPropertyListDialogs" value="#{false}" />
         </ui:include>
     </ui:define>
@@ -49,12 +49,6 @@
         <ui:include src="../domainEntityProperty/private/domainEntityPropertyListDialogs.xhtml" />
         <ui:include src="private/itemDomainInventoryLocationHistoryDialog.xhtml" />
     </ui:define>
-    
-    <ui:remove>
-        <ui:include src="../componentInstanceLocationHistory/private/componentInstanceLocationHistoryListDialog.xhtml" />
-
-        <ui:include src="../componentInstanceLocationHistory/private/componentInstanceLocationHistoryListCustomizeDisplayDialog.xhtml" />
-    </ui:remove>
 
 </ui:composition>
 
