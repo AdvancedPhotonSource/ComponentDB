@@ -1,7 +1,7 @@
 LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
 INSERT INTO `user_info` VALUES
-(1,'cdb','CDB','System Account',NULL,'cdb@aps.anl.gov',NULL,NULL),
+(1,'cdb','CDB','System Account',NULL,'cdb@aps.anl.gov','7oeO$znNeAuEu/+7IOM1rJtgit6k+qCX2KmAk',NULL),
 (2,'bstill','Ben','Stillwell',NULL,'bstill@aps.anl.gov',NULL,NULL),
 (3,'nda','Ned','Arnold',NULL,'nda@aps.anl.gov',NULL,NULL),
 (4,'sveseli','Sinisa','Veseli',NULL,'sveseli@aps.anl.gov',NULL,NULL),

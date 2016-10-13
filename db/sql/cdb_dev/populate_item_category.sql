@@ -11,6 +11,7 @@ INSERT INTO `item_category` VALUES
 (8,'Mechanical/Beamlines',NULL,2),
 (9,'Mechanical/Insertion Devices',NULL,2),
 (10,'Lattice Elements',NULL,2),
-(11,'Other',NULL,2);
+(11,'Other',NULL,2),
+(12,'Generic Functions/Placeholders','',2);
 /*!40000 ALTER TABLE `item_category` ENABLE KEYS */;
 UNLOCK TABLES;
