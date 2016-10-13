@@ -283,6 +283,7 @@ INSERT INTO `setting_type` VALUES
 (18002,'UserGroup.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25'),
 (18003,'UserGroup.List.FilterBy.Description','Filter for user group description.',NULL),
 (18004,'UserGroup.List.FilterBy.Name','Filter for user group name.',NULL),
-(19000,'UserSetting.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25');
+(19000,'UserSetting.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25'),
+(20000,'ItemProject.System.ItemProjectId', 'Default item project to be used in the system', NULL);
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;
