@@ -28,8 +28,8 @@ import org.primefaces.component.datatable.DataTable;
 
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade>implements Serializable {
-    
+public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade> implements Serializable {
+
     /*
      * Controller specific settings
      */
@@ -74,13 +74,13 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     @EJB
     private gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade propertyValueFacade;
-    
+
     private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
 
     public PropertyValueController() {
         super();
     }
-    
+
     @Override
     protected PropertyValueFacade getEntityDbFacade() {
         return propertyValueFacade;
@@ -257,10 +257,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         propertyTypeHandler.resetOneTimeUseVariables();
         return displayType;
     }
-    
-    public String getPropertyEditPage(PropertyValue propertyValue){
+
+    public String getPropertyEditPage(PropertyValue propertyValue) {
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-        return propertyTypeHandler.getPropertyEditPage(); 
+        return propertyTypeHandler.getPropertyEditPage();
     }
 
     public DisplayType getPropertyValueDisplayType(PropertyValue propertyValue) {
@@ -302,25 +302,46 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public boolean displayDateValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.DATE);
     }
-    
-    public boolean displayTableRecordReference(PropertyValue propertyValue) { 
-        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.TABLE_RECORD_REFERENCE); 
-    }
-    
-    public boolean displayInfoActionValue(PropertyValue propertyValue) { 
-        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.INFO_ACTION); 
+
+    public boolean displayTableRecordReference(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.TABLE_RECORD_REFERENCE);
     }
 
-    public String getOriginalImageApplicationPath(PropertyValue propertyValue) {
-        return StorageUtility.getApplicationPropertyValueImagePath(propertyValue.getValue());   
+    public boolean displayInfoActionValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.INFO_ACTION);
     }
 
-    public String getThumbnailImagePath(PropertyValue propertyValue) {
-        return StorageUtility.getPropertyValueImagePath(propertyValue.getValue(), CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);   
+    public static String getOriginalImageApplicationPath(PropertyValue propertyValue) {
+        return getOriginalImageApplicationPathByValue(propertyValue.getValue());
     }
-    
-    public String getScaledImagePath(PropertyValue propertyValue) {
-        return StorageUtility.getPropertyValueImagePath(propertyValue.getValue(), CdbPropertyValue.SCALED_IMAGE_EXTENSION); 
+
+    public static String getOriginalImageApplicationPathByValue(String imageName) {
+        if (imageName != null) {
+            return StorageUtility.getApplicationPropertyValueImagePath(imageName);
+        }
+        return null;
+    }
+
+    public static String getThumbnailImagePath(PropertyValue propertyValue) {
+        return getThumbnailImagePathByValue(propertyValue.getValue());
+    }
+
+    public static String getThumbnailImagePathByValue(String imageName) {
+        if (imageName != null) {
+            return StorageUtility.getPropertyValueImagePath(imageName, CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);
+        }
+        return null;
+    }
+
+    public static String getScaledImagePath(PropertyValue propertyValue) {
+        return getScaledImagePathByValue(propertyValue.getValue());
+    }
+
+    public static String getScaledImagePathByValue(String imageName) {
+        if (imageName != null) {
+            return StorageUtility.getPropertyValueImagePath(imageName, CdbPropertyValue.SCALED_IMAGE_EXTENSION);
+        }
+        return null;
     }
 
     public Boolean getDisplayEnteredByUser() {
@@ -452,9 +473,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
 
     public boolean isPropertyValueViewable(PropertyValue propertyValue) {
-        return GalleryUtility.viewableFileName(propertyValue.getValue()); 
+        return GalleryUtility.viewableFileName(propertyValue.getValue());
     }
-    
+
     /**
      * Converter class for property value objects.
      */
