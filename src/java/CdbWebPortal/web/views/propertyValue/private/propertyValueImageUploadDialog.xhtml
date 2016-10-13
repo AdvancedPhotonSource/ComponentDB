@@ -9,8 +9,8 @@
     <p:dialog id="propertyValueImageUploadDialog" 
               widgetVar="propertyValueImageUploadDialogWidget" 
               header="Image Upload" 
-              styleClass="dialog">
-        <div class="dialog">
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false">
 
             <p:fileUpload fileUploadListener="#{propertyValueImageUploadBean.handleSingleFileUpload}"
                           fileLimit="1" 
@@ -23,7 +23,6 @@
                              actionListener="#{propertyValueImageUploadBean.upload(propertyValueController.current)}"
                              action="#{parentEntityController[saveAction]}" 
                              update="@form"/> 
-        </div>
 
     </p:dialog>
 

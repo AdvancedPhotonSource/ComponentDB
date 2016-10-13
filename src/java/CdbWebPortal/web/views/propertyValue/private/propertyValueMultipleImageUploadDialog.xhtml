@@ -9,10 +9,10 @@
     <p:dialog id="propertyValueMultipleImageUploadDialog" 
               widgetVar="propertyValueMultipleImageUploadDialogWidget" 
               header="Image Upload" 
-              styleClass="dialog"
+              styleClass="viewTransparentBackgroundDialog"
               modal="true"
-              closable="false">
-        <div class="dialog">
+              resizable="false"
+              closable="false">        
 
             <p:panelGrid columns="2" rendered="#{propertyValueImageUploadBean.showPropertyTypeSelectOneMenu()}">
                 <h:outputLabel value="Image Property Type: " />
@@ -44,7 +44,6 @@
                     <p:tooltip for="#{entityTypeName}PropertyValueImageUploadSubmitButton" value="Save uploaded images."/>
                 </p:commandButton>
             </f:facet>
-        </div>
 
     </p:dialog>
 
