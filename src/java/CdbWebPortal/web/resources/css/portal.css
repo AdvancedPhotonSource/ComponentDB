@@ -492,6 +492,10 @@ select {
     width: 300px;
 }
 
+.narrowColumn { 
+    width: 5px; 
+}
+
 .logTimestampColumn {
     width: 50px;
 }
