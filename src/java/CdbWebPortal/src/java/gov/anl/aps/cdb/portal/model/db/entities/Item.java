@@ -180,6 +180,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
 
+    private transient String primaryImageValue = null;
+
     private transient TreeNode locationTree = null;
     private transient String locationDetails = null;
     private transient Item location;
@@ -776,6 +778,21 @@ public class Item extends CdbDomainEntity implements Serializable {
         return getItemElementDisplayList().isEmpty();
     }
 
+    public String getPrimaryImageValue() {
+        return primaryImageValue;
+    }
+
+    public void setPrimaryImageValue(String primaryImageValue) {
+        this.primaryImageValue = primaryImageValue;
+    }
+
+    public List<PropertyValue> getPropertyValueInternalList() {
+        if (propertyValueInternalList == null) {
+            loadPropertyValueLists();
+        }
+        return propertyValueInternalList;
+    }
+
     @Override
     public List<PropertyValue> getPropertyValueList() {
         return this.getSelfElement().getPropertyValueList();
@@ -788,15 +805,19 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Override
     public List<PropertyValue> getPropertyValueDisplayList() {
         if (propertyValueDisplayList == null) {
-            if (getPropertyValueList() != null) {
-                propertyValueDisplayList = new ArrayList<>(getPropertyValueList());
-                List<PropertyValue> internalPropertyValues = getInternalPropertyValues();
-                propertyValueDisplayList.removeAll(internalPropertyValues);
-            } else {
-                propertyValueDisplayList = new ArrayList<>();
-            }
+            loadPropertyValueLists();
         }
         return propertyValueDisplayList;
+    }
+
+    private void loadPropertyValueLists() {
+        if (getPropertyValueList() != null) {
+            propertyValueDisplayList = new ArrayList<>(getPropertyValueList());
+            propertyValueInternalList = getInternalPropertyValues();
+            propertyValueDisplayList.removeAll(propertyValueInternalList);
+        } else {
+            propertyValueDisplayList = new ArrayList<>();
+        }
     }
 
     private List<PropertyValue> getInternalPropertyValues() {
