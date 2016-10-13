@@ -18,6 +18,12 @@
     
     <ui:define name="propertyValueColumns"/>
     
+    <ui:define name="assemblyRowExpansionTreeObject">
+        <ui:include src="../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
+            <ui:param name="itemListObject" value="#{itemTreeNode}" />
+        </ui:include>
+    </ui:define>
+    
     <ui:define name="domainEntityListExtraColumns">
         <p:column headerText="Spare"
                   rendered="#{displaySpareColumn}">
@@ -44,7 +50,6 @@
             <p:remoteCommand name="notifyUserIfSparesAreTooLow"
                              action="#{itemDomainCatalogController.notifyUserIfMinimumSparesReachedForCurrent()}" />
         </p:column>
-        <ui:include src="../../itemDomainInventory/private/componentInventoryListLocationObject.xhtml"/>
     </ui:define>
 
 
