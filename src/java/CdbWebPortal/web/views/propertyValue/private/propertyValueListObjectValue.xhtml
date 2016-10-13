@@ -8,6 +8,9 @@
 
     <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : true}" />
     <ui:param name="entityPropertyTypeName" value="#{entityTypeName}Property"/>
+    
+    <!-- make image primary button requires current item controller to be set -->
+    <ui:param name="showMakeImagePrimaryButton" value="#{showMakeImagePrimaryButton != null ? showMakeImagePrimaryButton : false}" />
 
     <p:outputPanel rendered="#{loadPropertyValues}">
         <h:outputText value="#{propertyValueObject.displayValue}"
@@ -17,6 +20,14 @@
                       rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}"/>
 
         <p:outputPanel rendered="#{propertyValueController.displayImageValue(propertyValueObject) or propertyValueController.displayDocumentValue(propertyValueObject)}">
+            <p:commandButton rendered="#{showMakeImagePrimaryButton and propertyValueController.displayImageValue(propertyValueObject)}" 
+                             id="makeImagePrimaryButton" 
+                             style="display: inline-block; float: left; padding-right: 5px;"
+                             icon="#{currentItemController.getPrimaryImageButtonIcon(itemObject, propertyValueObject)}"
+                             action="#{currentItemController.markImagePrimary(propertyValueObject)}"
+                             update="@form">
+                <p:tooltip for="makeImagePrimaryButton" value="Make image primary"/>
+            </p:commandButton>
             <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}" 
                           target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}">
                 <ui:param name="viewableValue" value="#{propertyValueController.isPropertyValueViewable(propertyValueObject)}" />
@@ -28,7 +39,7 @@
                 <p:outputPanel rendered="#{!viewableValue}">
                     <h:outputText value="#{propertyValueObject.value}" />
                 </p:outputPanel>
-            </h:outputLink>
+            </h:outputLink>            
         </p:outputPanel>
 
         <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
