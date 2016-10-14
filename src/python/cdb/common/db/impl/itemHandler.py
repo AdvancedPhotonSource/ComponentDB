@@ -275,7 +275,7 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemElements = session.query(ItemElement).filter(ItemElement.name==name).all()
         for element in dbItemElements:
             if element.parent_item_id == parentItemId and element.name == name:
-                raise ObjectAlreadyExists('Item with name %s already exists.' % name)
+                raise ObjectAlreadyExists('Item Element with name %s already exists.' % name)
 
         # Create entity info
         dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
