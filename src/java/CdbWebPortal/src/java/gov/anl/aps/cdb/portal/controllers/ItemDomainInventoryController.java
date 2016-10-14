@@ -174,7 +174,9 @@ public class ItemDomainInventoryController extends ItemController {
 
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
-        return DisplayListPageHelpFragmentSettingTypeKey;
+        // No help fragment yet exists for cdb 3.0 Inventory. 
+        return null;
+        //return DisplayListPageHelpFragmentSettingTypeKey;
     }
 
     public TreeNode getLocationRelationshipTree(Item inventoryItem) {
