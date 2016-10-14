@@ -163,7 +163,9 @@ public class ItemDomainCatalogController extends ItemController {
     
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
-        return DisplayListPageHelpFragmentSettingTypeKey;
+        // No help fragment yet exists for cdb 3.0 catalog
+        return null;
+        //return DisplayListPageHelpFragmentSettingTypeKey;
     }
     
     @Override
