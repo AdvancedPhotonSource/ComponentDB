@@ -106,6 +106,12 @@ class ItemDbApi(CdbDbApi):
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeQuery
+    def getItemByUniqueAttributes(self, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId, **kwargs):
+        session = kwargs['session']
+        dbItem = self.itemHandler.getItemByUniqueAttributes(session, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId)
+        return dbItem.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getItemElementsByItemId(self, itemId, **kwargs):
         session = kwargs['session']
         dbItemElements = self.itemHandler.getItemElementsByItemId(session, itemId)
