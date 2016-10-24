@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
+  
+    <h:outputText id="nodeValue#{viewName}" value="#{inventoryBOM.toString()}"/>
+    
+
+    <p:tooltip for="nodeValue#{viewName}" 
+               styleClass="viewTransparentBackground"
+               >
+        <ui:param name="treeNodeCatalogItem" value="#{inventoryBOM.getCatalogItem()}" />
+        <p:outputPanel rendered="#{treeNodeCatalogItem != null}"
+                       styleClass="transparentPanel">
+            <div class="viewColors">
+                <h1>
+                    Part Catalog Item Information
+                </h1>
+            </div>
+            <ui:include src="../../item/private/itemViewSimplePanelGrid.xhtml">
+                <ui:param name="viewName" value="treeNodeToolTip#{viewName}"/>
+                <ui:param name="itemObject" value="#{treeNodeCatalogItem}" />
+                <ui:param name="entityController" value="#{itemDomainCatalogController}" />
+                <ui:param name="panelGridStyle" value="catalogItemThumbnailInfoPanelGrid" />
+            </ui:include>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{treeNodeCatalogItem == null}">
+            <h1>No catalog item has been assigned to this part.</h1>
+        </p:outputPanel>
+    </p:tooltip>
+
+</ui:composition>
+
+

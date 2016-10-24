@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
+    <p:dataTable id="userSettingListDataTable" 
+                 widgetVar="userSettingListDataTableWidget"
+                 var="userSettingObject" 
+                 value="#{userInfoObject.userSettingList}" 
+                 filteredValue="#{userSettingController.filteredObjectList}"
+                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No user settings found.">
+
+        <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name"
+                  filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains"
+                  filterValue="#{userSettingController.filterBySettingType}">
+            <h:outputText value="#{userSettingObject.settingType.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{userSettingObject.value}" headerText="Value"
+                  filterBy="#{userSettingObject.value}" filterMatchMode="contains"
+                  filterValue="#{userSettingController.filterByValue}">
+            <h:outputText value="#{userSettingObject.value}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

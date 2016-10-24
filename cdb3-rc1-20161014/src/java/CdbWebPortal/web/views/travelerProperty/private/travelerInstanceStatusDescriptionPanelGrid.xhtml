@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:panelGrid>
+        <p:row>
+            <p:column>
+                <p:outputLabel value="Initialized" styleClass="entityDataLabel"/>
+            </p:column>
+            <p:column>
+                <p:outputLabel 
+                    value="Traveler instance has not yet been configured. It cannot be filled out." 
+                    styleClass="entityDataEmphasizedText" /> 
+            </p:column>
+        </p:row>
+
+        <p:row>
+            <p:column>
+                <p:outputLabel value="Active" styleClass="entityDataLabel"/>
+            </p:column>
+            <p:column>
+                <p:outputLabel 
+                    value="Traveler instance has been configured. It can be filled out." 
+                    styleClass="entityDataEmphasizedText" /> 
+            </p:column>
+        </p:row>
+
+        <p:row>
+            <p:column>
+                <p:outputLabel value="Submitted" styleClass="entityDataLabel"/>
+            </p:column>
+            <p:column>
+                <p:outputLabel 
+                    value="Traveler instance has been submitted. Completion needs approval." 
+                    styleClass="entityDataEmphasizedText" /> 
+            </p:column>
+        </p:row> 
+
+        <p:row>
+            <p:column>
+                <p:outputLabel value="Completed" styleClass="entityDataLabel"/>
+            </p:column>
+            <p:column>
+                <p:outputLabel 
+                    value="Traveler instance submission has been approved and it is now completed." 
+                    styleClass="entityDataEmphasizedText" /> 
+            </p:column>
+        </p:row> 
+
+        <p:row>
+            <p:column>
+                <p:outputLabel value="Frozen" styleClass="entityDataLabel"/>
+            </p:column>
+            <p:column>
+                <p:outputLabel 
+                    value="Work on traveler instance has been stopped temporarly." 
+                    styleClass="entityDataEmphasizedText" /> 
+            </p:column>
+        </p:row> 
+
+    </p:panelGrid>
+</ui:composition>
+

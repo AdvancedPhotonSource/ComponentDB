@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+        <p:inplace id="itemProject#{viewName}"
+                   rendered="#{entityController.entityDisplayItemProject}"
+                   editor="#{isEntityWriteable}" 
+                   toggleable="#{isEntityWriteable}" 
+                   styleClass="entityDataText" 
+                   label="#{itemObject.itemProjectString}"> 
+            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="cancel" oncomplete="reloadItemProject()"/>
+            <p:remoteCommand name="reloadItemProject"
+                             action="#{entityController.reloadCurrent()}"
+                             update="itemProject#{viewName}"
+                             />
+            <p:selectCheckboxMenu label="Select Projects" value="#{itemObject.itemProjectList}" converter="itemProjectConverter"
+                                  filter="true" filterMatchMode="contains" >
+                <f:selectItems value="#{itemProjectController.availableItems}" /> 
+
+            </p:selectCheckboxMenu>
+        </p:inplace>
+
+</ui:composition>

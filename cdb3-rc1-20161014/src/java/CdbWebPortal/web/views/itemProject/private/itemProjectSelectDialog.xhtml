@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayEntityTypeName" value="itemProject" />
+        <ui:param name="customizeDialogName" value="SelectionDialog" />
+        <ui:param name="entityController" value="#{itemProjectController}" />
+        <ui:param name="viewName" value="" /> 
+    </ui:define>
+    
+    
+    <ui:define name="customizeDisplayDialogConent">
+        <p:panelGrid columns="2">
+            <p:outputLabel value="Project"/>
+            <p:selectOneMenu converter="itemProjectConverter"
+                             value="#{itemProjectController.currentItemProject}" >
+                <f:selectItem noSelectionOption="true" itemLabel="All" />
+                <f:selectItems value="#{itemProjectController.availableItems}" var="itemProject"
+                               itemLabel="#{itemProject.name}" itemValue="#{itemProject}"/>
+            </p:selectOneMenu>
+        </p:panelGrid>
+    </ui:define>   
+                 
+    
+</ui:composition>

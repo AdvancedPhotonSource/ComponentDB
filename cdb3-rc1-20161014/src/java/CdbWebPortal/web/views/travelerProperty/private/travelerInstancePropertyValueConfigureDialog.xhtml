@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="travelerInstancePropertyValueConfigureDialog" 
+              widgetVar="travelerInstancePropertyValueConfigureDialogWidget" 
+              header="Configure Traveler Instance" 
+              styleClass="viewTransparentBackgroundDialog"
+              closable="false"
+              resizable="false"
+              focus="travelerStatusSelectOneButton">
+        <p:panelGrid columns="2" rendered="#{travelerBean.currentTravelerInstance != null}">
+
+            <p:outputLabel for="travelerTemplateConfigTitle" value="Title" styleClass="entityDataLabel"/>
+            <p:inplace id="travelerTemplateConfigTitle" editor="false" emptyLabel="-" styleClass="entityDataEmphasizedText">
+                <p:inputText value="#{travelerBean.currentTravelerEditTitle}" styleClass="entityDataEmphasizedText"/>
+            </p:inplace>
+
+
+            <p:outputLabel for="travelerTemplateConfigDescription" value="Description" styleClass="entityDataLabel"/>
+            <p:inputTextarea id="travelerTemplateConfigDescription"
+                             value="#{travelerBean.currentTravelerEditDescription}" 
+                             styleClass="entityDataEmphasizedText"/>
+
+
+            <p:outputLabel value="Deadline" styleClass="entityDataLabel"/>
+            <p:calendar value="#{travelerBean.currentTravelerDeadline}" />
+
+
+            <p:outputLabel value="Status" styleClass="entityDataLabel"/>
+            <p:selectOneButton value="#{travelerBean.currentTravelerSelectedStatus}" id="travelerStatusSelectOneButton"> 
+                <f:selectItems value="#{travelerBean.currentTravelerStatusOptions}"/>
+            </p:selectOneButton>
+
+        </p:panelGrid>
+
+        <p:tooltip id="travelerInstanceStatusConfigurePanelGridRowToolTip"
+                   for="travelerStatusSelectOneButton"
+                   styleClass="viewTransparentBackground">
+            <ui:include src="travelerInstanceStatusDescriptionPanelGrid.xhtml" />
+        </p:tooltip>
+        
+        <f:facet name="footer" class="dialog">
+            <p:commandButton value="Update Traveler"
+                             update="travelerInstancePropertyValueConfigureDialog" 
+                             action="#{travelerBean.updateTravelerInstanceConfiguration('successTravelerInstancePropertyValueConfigureDialog()')}"
+                             icon="ui-icon-check"/>
+            <p:commandButton value="Cancel" alt="Cancel" 
+                             action="#{travelerBean.resetUpdateTravelerInstanceConfiguration()}"
+                             oncomplete="successTravelerInstancePropertyValueConfigureDialog()" 
+                             icon="ui-icon-arrowreturnthick-1-w"/>
+        </f:facet>
+
+
+        <p:remoteCommand name="successTravelerInstancePropertyValueConfigureDialog"
+                         oncomplete="PF('travelerInstancePropertyValueConfigureDialogWidget').hide();
+                         updateTravelerInstancePropertyValueInfoDialog();" />
+
+        <p:remoteCommand name="updateTravelerInstancePropertyValueConfigureDialog" 
+                         update="travelerInstancePropertyValueConfigureDialog" 
+                         oncomplete="PF('travelerInstancePropertyValueConfigureDialogWidget').initPosition();
+                         PF('travelerInstancePropertyValueConfigureDialogWidget').show();"/>
+
+    </p:dialog>
+
+
+</ui:composition>
+

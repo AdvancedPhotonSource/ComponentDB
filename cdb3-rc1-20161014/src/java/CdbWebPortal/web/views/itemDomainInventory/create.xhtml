@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="../item/private/templates/itemCreateWizardTemplate.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{itemDomainInventoryController.processCreateRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
+    </f:metadata>
+
+    <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
+
+    <ui:define name="additionalBasicInfo">
+        <ui:include src="private/componentInventoryItemLocationEditPanelGrid.xhtml" />
+    </ui:define>
+
+    <ui:define name="basicInformationTab"/>
+    <ui:define name="permissionsTab"/>
+    <ui:define name="reviewItemTab" />
+
+    <ui:define name="additionalCreateWizardTabs">
+
+        <p:tab id="itemElementInstantiation"
+               title="Bill of Materials">
+            <p:panel styleClass="createWizardPanel">
+                <ui:include src="private/itemDomainInventoryBillOfMaterialsEditView.xhtml" />
+            </p:panel>
+        </p:tab>
+    </ui:define>
+    
+    <ui:define name="additonalCreateItemContent">
+        <ui:include src="private/componentInventoryItemLocationSelectDialog.xhtml">
+            <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
+            <ui:param name="viewName" value="BOMEdit"/>
+        </ui:include>
+    </ui:define>
+
+</ui:composition>
+
+

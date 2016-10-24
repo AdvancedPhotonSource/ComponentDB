@@ -1,0 +1,45 @@
+[WebService]
+serviceHost=0.0.0.0
+servicePort=10232
+sslCertFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.crt
+sslKeyFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.key
+sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
+
+[WebPortal]
+portalWebAddress=CDB_PORTAL_URL
+
+# modes: development & production
+#       development - Will only print out the email contents in log or send email to developer.
+#       developmentWithEmail - Will forward all emails to adminNotifiactionEmail.
+#       production - Will send emails as specified by users.
+[EmailUtility]
+emailMode=EMAIL_UTILITY_MODE
+emailSmtpServer=localhost
+emailSenderEmail=CDB_SENDER_EMAIL_ADDRESS
+emailAdminNotificationEmail=ADMIN_EMAIL_ADDRESS
+emailSubjectStart=EMAIL_SUBJECT_START
+
+[AuthorizationManager]
+adminGroupName=CDB_ADMIN
+principalRetriever=DbPrincipalRetriever()
+#principalRetriever=NoOpPrincipalRetriever()
+principalAuthenticator1=CryptedPasswordPrincipalAuthenticator()
+principalAuthenticator2=LdapPasswordPrincipalAuthenticator(serverUrl='ldaps://phoebusldap.aps.anl.gov:636', dnFormat='uid=%s,ou=people,o=aps.anl.gov,dc=aps,dc=anl,dc=gov')
+
+[DbManager]
+dbSchema=CDB_DB_NAME
+dbUser=CDB_DB_NAME
+dbPasswordFile=CDB_INSTALL_DIR/etc/CDB_DB_NAME.db.passwd
+
+# Available logger levels: debug, info, warn, error, critical
+[ConsoleLogging]
+handler=ConsoleLoggingHandler(sys.stdout,)
+level=debug
+format=%(asctime)s,%(msecs)003d %(levelname)s %(filename)s:%(lineno)d %(process)d:  %(message)s
+dateFormat=%Y/%m/%d %H:%M:%S
+
+[FileLogging]
+handler=TimedRotatingFileLoggingHandler('CDB_INSTALL_DIR/var/log/cdb-web-service.log')
+level=debug
+format=%(asctime)s,%(msecs)003d %(levelname)s %(filename)s:%(lineno)d %(process)d:  %(message)s
+dateFormat=%Y/%m/%d %H:%M:%S

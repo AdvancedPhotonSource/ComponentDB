@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../simpleEntity/private/templates/simpleEntityListTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:event type="preRenderComponent" listener="#{itemCategoryController.processPreRenderList()}"/>
+    </f:metadata>
+    
+    <ui:param name="entityController" value="#{itemCategoryController}"/>
+    
+    <ui:param name="simpleEntityListDataTableValue" value="#{itemCategoryController.currentDomainListDataModel}" />
+    
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemCategoryListDataTable.xhtml"/>
+    </ui:define>
+    
+</ui:composition>

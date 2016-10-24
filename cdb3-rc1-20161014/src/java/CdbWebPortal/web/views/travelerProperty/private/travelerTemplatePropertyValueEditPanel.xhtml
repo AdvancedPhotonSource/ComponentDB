@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:fragment>
+        <p:outputPanel id="travelerTemplatePropertyValueDataTableValueEditPanel#{propertyValueObject.id}">
+            
+            <ui:param name="actionForTravelerTemplate" value='#{propertyValueObject.value != "" ? "Edit" : "Add" }' />
+            
+            <p:commandButton value="#{actionForTravelerTemplate} Traveler Template" 
+                             onstart="showTravelerTemplatePropertyValueEditDialog();">
+                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
+                                             value="#{propertyValueObject}" />   
+            </p:commandButton>
+
+            <p:remoteCommand rendered="#{propertyValueObject.id != null}"
+                             name="updateTemplateProperyValueFieldUnlink#{propertyValueObject.id}"
+                             update="@parent" 
+                             oncomplete="showTravelerTemplatePropertyValueEditDialog();"/>
+            <p:remoteCommand rendered="#{propertyValueObject.id == null}"
+                             name="updateTemplateProperyValueFieldUnlink"
+                             update="@form" 
+                             oncomplete="showTravelerTemplatePropertyValueEditDialog();"/>
+            
+            <p:remoteCommand rendered="#{propertyValueObject.id != null}"
+                             name="updateTemplateProperyValueField#{propertyValueObject.id}"
+                             update="@parent" />
+            <p:remoteCommand rendered="#{propertyValueObject.id == null}"
+                             name="updateTemplateProperyValueField"
+                             update="@form"/>
+            
+            <p:remoteCommand name="showTravelerTemplatePropertyValueEditDialog"
+                             action="#{travelerBean.loadTravelerTemplateInformation()}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
+                             oncomplete="updateTravelerTemplatePropertyValueEditDialog(); 
+                             PF('loadingDialog').hide();"/>
+
+
+
+        </p:outputPanel>
+    </ui:fragment>
+</ui:composition>
+

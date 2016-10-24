@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:outputLabel for="ownerUser#{viewName}" value="Owner User" styleClass="entityDataLabel"/>
+    <p:column id="ownerUser#{viewName}">
+        <p:selectOneMenu id="ownerUserSOM#{viewName}" value="#{entityInfoObject.ownerUser}" styleClass="entityDataText" 
+                         onchange="updateOwnerUser#{viewName}()">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
+        </p:selectOneMenu>
+        <p:remoteCommand name="updateOwnerUser#{viewName}"
+                         update="ownerUser#{viewName}"/>
+
+        <p:message for="ownerUser#{viewName}"/>
+        <p:tooltip for="ownerUser#{viewName}" value="Owner user has the ability to modify this entity."/>
+    </p:column>
+
+    <p:outputPanel rendered="#{renderHelpFragments}">
+        <p class="triangle-isosceles left">
+            The owner of the item will have the ability to edit. 
+        </p>
+    </p:outputPanel>
+
+    <h:outputLabel for="ownerGroup#{viewName}" value="Owner Group" styleClass="entityDataLabel"/>
+    <p:column id="ownerGroup#{viewName}">
+        <p:selectOneMenu id="ownerGroupSOM#{viewName}" value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText"
+                         onchange="updateOwnerGroup#{viewName}()">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
+        </p:selectOneMenu>
+        <p:remoteCommand name="updateOwnerGroup#{viewName}"
+                         update="ownerGroup#{viewName}"/>        
+        
+        <p:message for="ownerGroup#{viewName}"/> 
+        <p:tooltip for="ownerGroup#{viewName}" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+    </p:column>
+    
+    <p:outputPanel rendered="#{renderHelpFragments}">
+        <p class="triangle-isosceles left">
+            The owner group is the assigned group to the item. If it is group write-able the group will be able to edit the item. 
+        </p>
+    </p:outputPanel>
+    
+    <h:outputLabel for="groupWriteable#{viewName}" value="Group Writeable" styleClass="entityDataLabel"/>
+    <p:column id="groupWriteable#{viewName}">
+        <p:selectBooleanButton id="groupWriteableSBB#{viewName}" 
+                               value="#{entityInfoObject.isGroupWriteable}" 
+                               styleClass="entityDataText" onLabel="Yes" offLabel="No"
+                               onchange="updateGroupWriteable#{viewName}()"/>        
+        <p:remoteCommand name="updateGroupWriteable#{viewName}"
+                         update="groupWriteable#{viewName}" />        
+        <p:message for="groupWriteable#{viewName}"/> 
+        <p:tooltip for="groupWriteable#{viewName}" value="This flag determines whether owner group members can modify this entity."/> 
+    </p:column>
+    
+    <p:outputPanel rendered="#{renderHelpFragments}">
+        <p class="triangle-isosceles left">
+            Should the assigned group have the ability to edit? 
+        </p>
+    </p:outputPanel>             
+    
+</ui:composition>
+
+

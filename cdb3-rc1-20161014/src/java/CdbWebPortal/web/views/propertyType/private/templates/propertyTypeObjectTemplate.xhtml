@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="propertyTypeObjectTemplateBase.xhtml">
+
+    <ui:define name="renderedColumnParams">
+        <ui:param name="renderIdColumn" value="#{renderIdColumn != null ? renderIdColumn : propertyTypeController.displayId}" />
+        <ui:param name="renderCategoryColumn" value="#{renderCategoryColumn != null ? renderCategoryColumn : propertyTypeController.displayCategory}" />
+        <ui:param name="renderDefaultUnitsColumn" value="#{renderDefaultUnitsColumn != null ? renderDefaultUnitsColumn : propertyTypeController.displayDefaultUnits}" />
+        <ui:param name="renderDefaultValueColumn" value="#{renderDefaultValueColumn != null ? renderDefaultValueColumn : propertyTypeController.displayDefaultValue}" />
+        <ui:param name="renderHandlerColumn" value="#{renderHandlerColumn != null ? renderHandlerColumn : propertyTypeController.displayHandler}" />
+        <ui:param name="renderDescriptionColumn" value="#{renderDescriptionColumn != null ? renderDescriptionColumn : propertyTypeController.displayDescription}" />
+    </ui:define>
+
+    <ui:define name="idColumn">        
+        <p:column sortBy="#{propertyTypeObject.id}" headerText="Id"
+                  filterBy="#{propertyTypeObject.id}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterById}"
+                  filterStyleClass="shortFilterBox"
+                  rendered="#{renderIdColumn}">
+            <h:outputText value="#{propertyTypeObject.id}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="nameColumn">
+        <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
+                  filterBy="#{propertyTypeObject.name}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByName}"
+                  rendered="true">
+            <ui:insert name="nameValue">
+                <h:outputLink value="view.xhtml?id=#{propertyTypeObject.id}" title="View property type details">
+                    <h:outputText value="#{propertyTypeObject.name}"/>
+                </h:outputLink>             
+            </ui:insert>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="categoryColumn">
+        <p:column sortBy="#{propertyTypeObject.propertyTypeCategory.name}" headerText="Category" 
+                  filterBy="#{propertyTypeObject.propertyTypeCategory.name}" filterMatchMode="exact"
+                  filterOptions="#{propertyTypeCategoryController.availableItemsForSelectOne}"
+                  filterValue="#{propertyTypeController.filterByCategory}"
+                  rendered="#{renderCategoryColumn}">
+            <h:outputText value="#{propertyTypeObject.propertyTypeCategory.name}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="defaultUnitsColumn">
+        <p:column sortBy="#{propertyTypeObject.defaultUnits}" headerText="Default Units" 
+                  filterBy="#{propertyTypeObject.defaultUnits}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByDefaultUnits}"
+                  rendered="#{renderDefaultUnitsColumn}">
+            <h:outputText value="#{propertyTypeObject.defaultUnits}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="defaultValueColumn">
+        <p:column sortBy="#{propertyTypeObject.defaultValue}" headerText="Default Value" 
+                  filterBy="#{propertyTypeObject.defaultValue}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByDefaultValue}"
+                  rendered="#{renderDefaultValueColumn}">
+            <h:outputText value="#{propertyTypeObject.defaultValue}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="handlerColumn">
+        <p:column sortBy="#{propertyTypeObject.propertyTypeHandler.name}" headerText="Handler" 
+                  filterBy="#{propertyTypeObject.propertyTypeHandler.name}" filterMatchMode="exact"
+                  filterOptions="#{propertyTypeHandlerController.availableItemsForSelectOne}"
+                  filterValue="#{propertyTypeController.filterByHandler}"
+                  rendered="#{renderHandlerColumn}">
+            <h:outputText value="#{propertyTypeObject.propertyTypeHandler.name}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="descriptionColumn">
+        <p:column sortBy="#{propertyTypeObject.description}" headerText="Description" 
+                  filterBy="#{propertyTypeObject.description}" filterMatchMode="contains"
+                  filterValue="#{propertyTypeController.filterByDescription}"
+                  rendered="#{renderDescriptionColumn}">
+            <h:outputText value="#{propertyTypeObject.description}"/>
+        </p:column>
+    </ui:define>
+
+    <ui:define name="actionsColumn">
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{propertyTypeController}"/>
+                <ui:param name="entityObject" value="#{propertyTypeObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </ui:define>
+
+</ui:composition>
+
+

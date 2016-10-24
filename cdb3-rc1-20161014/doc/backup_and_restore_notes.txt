@@ -1,0 +1,66 @@
+#
+# All commands relative to CDB_ROOT_DIR
+# Deployment files are in the etc directory, named using database name. 
+# For example:
+#   etc/cdb.deploy.conf describes deployment of "cdb" database/webapp
+#   etc/cdb_prd.deploy.conf describes deployment of "cdb_prd" database/webapp
+# 
+
+#
+# Backup DB (1st argument) and web app into specific backup directory (2nd argument)
+make backup
+# Alternatively run 
+#./sbin/cdb_backup_all.sh cdb backup/prd/cdb.all.20140507
+
+#
+
+#
+# Alternatively, one can backup only the db.
+# Backup DB (1st argument) into specific backup directory (2nd argument)
+# ./sbin/cdb_backup_db.sh cdb backup/prd/cdb.db.20140507
+#
+
+
+#
+# Using the make backup command will create a backup directory outside of distribution
+# 
+cd ../backup/cdb/20160120/
+# Compare the files to the distribution by running the loop below 
+# NOTE: the user setting and setting_type will stay as intended by developer 
+# user settings will be wiped using the comparison below. 
+for f in `ls -c1 *.sql | grep -v setting_type | grep -v user_setting | grep -v backup `; do echo $f; diff $f ../../../dist/db/sql/cdb_dev/$f; done | more
+
+# Merge the desired files back into the distribution db/sql/cdb directory. 
+
+# Once merge is complete 
+make db 
+
+
+#
+# Create new database (1st argument) as the clone of the original, using
+# scripts from the db backup dir (2nd argument)
+./sbin/cdb_create_db.sh cdb backup/prd/cdb.db.20140507
+#
+
+
+#
+# Configure webapp (this needs to be done only the first time particular db is
+# instantiated).
+#
+make configure-web-portal
+./sbin/cdb_configure_webapp.sh cdb
+
+# 
+# Build software. CdbWebPortal should be in src/java/CdbWebPortal/dist
+# directory
+#
+source setup.sh
+make clean
+make dist
+
+# 
+# Deploy webapp
+#
+make deploy-web-portal
+#./sbin/cdb_deploy_webapp.sh cdb
+

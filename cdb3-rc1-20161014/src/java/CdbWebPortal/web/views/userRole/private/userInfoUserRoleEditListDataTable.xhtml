@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
+    <p:dataTable id="userInfoUserRoleEditListDataTable" 
+                 widgetVar="userInfoUserRoleEditListDataTableWidget"
+                 var="userRoleObject" 
+                 value="#{userInfoObject.userRoleList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 rows="#{userRoleController.displayNumberOfItemsPerPage}"
+                 emptyMessage="No roles found."
+                 rowStyleClass="#{userRoleObject.userRolePK != null ? '' : 'newItemInRow'}">
+
+        <ui:param name="renderEdit" value="#{userRoleObject.userRolePK == null}" />
+        <p:column sortBy="#{userRoleObject.roleType.name}" headerText="Role">
+            <p:outputPanel rendered="#{renderEdit}">
+                <p:selectOneMenu value="#{userRoleObject.roleType}"
+                                 converter="roleTypeConverter"
+                                 var="roleType">
+                    <f:selectItems value="#{roleTypeController.availableItems}" 
+                                   var="roleTypeItem"
+                                   itemLabel="#{roleTypeItem.name}"/>
+                    <p:column>
+                        <b>#{roleType.name}</b> <br/>#{roleType.description}
+                    </p:column>
+                </p:selectOneMenu>
+            </p:outputPanel>
+            <p:outputPanel rendered="#{!renderEdit}">
+                <h:outputText value="#{userRoleObject.roleType.name}"/>
+            </p:outputPanel>           
+        </p:column>
+
+        <p:column sortBy="#{userRoleObject.userGroup.name}" headerText="User Group">     
+            <p:outputPanel rendered="#{renderEdit}">
+                <p:selectOneMenu value="#{userRoleObject.userGroup}"
+                                 converter="userGroupConverter"
+                                 var="userGroup">
+                    <f:selectItems value="#{userGroupController.availableItems}" 
+                                   var="userGroupItem"
+                                   itemLabel="#{userGroupItem.name}"/>
+                    <p:column>
+                        <p:outputPanel rendered="#{userGroup != null}" >
+                            <b>#{userGroup.name}</b> <br/>#{userGroup.description}
+                        </p:outputPanel>
+                        <p:outputPanel rendered="#{userGroup == null}" >
+                            No Selection
+                        </p:outputPanel>
+                    </p:column>
+                </p:selectOneMenu>
+            </p:outputPanel>
+            <p:outputPanel rendered="#{!renderEdit}">
+                <h:outputText value="#{userRoleObject.userGroup.name}"/>
+            </p:outputPanel>
+        </p:column>
+
+        <p:column headerText="actions">
+            <p:commandLink id="userInfoUserRoleDeleteButton" action="#{entityController.deleteUserRole(userRoleObject)}" 
+                           actionListener="#{userRoleController.destroy(userRoleObject)}"
+                           styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                <p:tooltip for="userInfoUserRoleDeleteButton" value="Delete user role."/>
+            </p:commandLink>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

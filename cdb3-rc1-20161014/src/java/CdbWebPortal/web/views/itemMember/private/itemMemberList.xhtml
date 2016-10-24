@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(entityObject.entityInfo)}"/>
+        <ui:param name="childEntityController" value="#{itemMemberViewController}"/>
+        <ui:param name="childEntityTypeName" value="designMember"/>
+    </ui:include>    
+    
+    <ui:include src="itemMemberListDataTable.xhtml" />
+    
+    <ui:include src="itemMemberListCustomizeDisplayDialog.xhtml" />
+
+</ui:composition>

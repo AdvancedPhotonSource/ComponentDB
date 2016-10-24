@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+   
+    <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
+
+    <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
+              rendered="#{propertyValueController.displayId}"
+              filterBy="#{propertyValueObject.id}"
+              filterable="#{filterable}">
+        <h:outputText value="#{propertyValueObject.id}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
+              filterBy="#{propertyValueObject.propertyType.name}"
+              filterable="#{filterable}"
+              >
+        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
+              filterBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueController.displayTypeCategory}">
+        <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
+              filterBy="#{propertyValueObject.tag}" 
+              filterable="#{filterable}"
+              rendered="#{propertyValueController.displayTag}">
+        <h:outputText value="#{propertyValueObject.tag}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
+              filterBy="#{propertyValueObject.value}"
+              filterable="#{filterable}">
+        <ui:include src="propertyValueListObjectValue.xhtml"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
+              filterBy="#{propertyValueObject.units}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueController.displayUnits}">
+        <h:outputText value="#{propertyValueObject.units}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
+              filterBy="#{propertyValueObject.description}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueController.displayDescription}">
+        <h:outputText value="#{propertyValueObject.description}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
+              filterBy="#{propertyValueObject.enteredByUser.username}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueController.displayEnteredByUser}">
+        <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
+              filterBy="#{propertyValueObject.enteredOnDateTime}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueController.displayEnteredOnDateTime}">
+        <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
+              rendered="#{propertyValueController.displayIsDynamic}">
+        <f:attribute name="exportValue" value="#{propertyValueObject.isDynamic}"/>
+        <div class="dataTableCheckbox">
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{propertyValueObject.isDynamic}"/>
+        </div>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User Writeable" 
+              rendered="#{propertyValueController.displayIsUserWriteable}">
+        <f:attribute name="exportValue" value="#{propertyValueObject.isUserWriteable}"/>
+        <div class="dataTableCheckbox">
+            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                          rendered="#{propertyValueObject.isUserWriteable}"/>
+        </div>
+    </p:column>
+
+</ui:composition>
+
+

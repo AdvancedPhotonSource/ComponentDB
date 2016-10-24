@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
+    <p:inplace id="ownerUser" 
+               editor="#{isEntityWriteable}" 
+               toggleable="#{isEntityWriteable}"
+               label="#{entityInfoObject.ownerUserDisplayName}"
+               styleClass="entityDataText">
+        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerUser()"/>
+        <p:remoteCommand name="reloadEntityInfoOwnerUser"
+                         action="#{entityController.reloadCurrent()}"
+                         update="ownerUser"
+                         />
+        <p:selectOneMenu rendered="#{entityInfoObject != null}" 
+                         value="#{entityInfoObject.ownerUser}" 
+                         styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
+        </p:selectOneMenu>
+        <p:message for="ownerUser"/>
+        <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>
+    </p:inplace>
+
+    <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
+    <p:inplace id="ownerGroup" 
+               editor="#{isEntityWriteable}" 
+               toggleable="#{isEntityWriteable}"
+               label="#{entityInfoObject.ownerGroupDisplayName}"
+               styleClass="entityDataText">
+        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerGroup()"/>
+        <p:remoteCommand name="reloadEntityInfoOwnerGroup"
+                         action="#{entityController.reloadCurrent()}"
+                         update="ownerGroup"
+                         />
+        <p:selectOneMenu  value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
+        </p:selectOneMenu>
+        <p:message for="ownerGroup"/> 
+        <p:tooltip for="ownerGroup" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+    </p:inplace>
+
+    <h:outputLabel for="createdBy" value="Created By" styleClass="entityDataLabel"/>
+    <h:outputText id="createdBy" value="#{entityInfoObject.createdByDisplayName}" title="Created By" styleClass="entityDataText"/>
+
+    <h:outputLabel for="createdOn" value="Created On" styleClass="entityDataLabel"/>
+    <h:outputText id="createdOn" value="#{entityInfoObject.createdOnDateTime}" title="Created On" styleClass="entityDataText"/>
+
+    <h:outputLabel for="modifiedBy" value="Modified By" styleClass="entityDataLabel"/>
+    <h:outputText id="modifiedBy" value="#{entityInfoObject.lastModifiedByDisplayName}" title="Modified By" styleClass="entityDataText"/>
+
+    <h:outputLabel for="modifiedOn" value="Modified On" styleClass="entityDataLabel"/>
+    <h:outputText id="modifiedOn" value="#{entityInfoObject.lastModifiedOnDateTime}" title="Modified On" styleClass="entityDataText"/>
+
+    <h:outputLabel for="obsoletedBy" value="Obsoleted By" rendered="#{entityInfoObject.obsoletedByUser != null}" styleClass="entityDataLabel"/>
+    <h:outputText id="obsoletedBy" value="#{entityInfoObject.obsoletedByDisplayName}" rendered="#{entityInfoObject.obsoletedByUser != null}" title="Obsoleted By" styleClass="entityDataText"/>
+
+    <h:outputLabel for="obsoletedOn" value="Obsoleted On" rendered="#{entityInfoObject.obsoletedByUser != null}" styleClass="entityDataLabel"/>
+    <h:outputText id="obsoletedOn" value="#{entityInfoObject.obsoletedOnDateTime}" rendered="#{entityInfoObject.obsoletedByUser != null}" title="Obsoleted On" styleClass="entityDataText"/>
+
+    <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
+    <p:inplace id="groupWriteable" 
+               editor="#{isEntityWriteable}" 
+               toggleable="#{isEntityWriteable}"
+               styleClass="entityDataText">
+        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:selectBooleanCheckbox value="#{entityInfoObject.isGroupWriteable}" styleClass="entityDataText"/>
+        <p:message for="groupWriteable"/> 
+        <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
+
+    </p:inplace>
+
+</ui:composition>
+
+
