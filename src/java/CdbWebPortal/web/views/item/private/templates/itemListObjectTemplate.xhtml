@@ -60,7 +60,8 @@
                                                             : entityController.displayItemEntityTypes}" />
     <ui:define name="thumbnail">
         <p:column styleClass="narrowColumn" headerText="Primary Image" exportable="false">
-            <p:outputPanel rendered="#{itemDomainCatalogController.itemHasPrimaryImage(itemListObject)}" styleClass="centeredContent">
+            <ui:param name="itemHasPrimaryImage" value="#{entityController.itemHasPrimaryImage(itemListObject)}"/>
+            <p:outputPanel rendered="#{itemHasPrimaryImage}" styleClass="centeredContent">
                 <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{entityController.getPrimaryImageThumbnailForItem(itemListObject)}"
                                 onclick="PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').hide();
                                         PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').show()"/>
@@ -74,6 +75,9 @@
                         <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{propertyValueController.getScaledImagePathByValue(imageName)}" />
                     </h:outputLink>
                 </p:dialog>
+            </p:outputPanel>
+            <p:outputPanel rendered="#{!itemHasPrimaryImage}">
+                .
             </p:outputPanel>
         </p:column>
     </ui:define>
