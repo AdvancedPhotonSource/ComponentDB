@@ -2289,10 +2289,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     }
 
     public boolean itemHasPrimaryImage(Item item) {
-        String value = getPrimaryImageValueForItem(item);
-        return !value.isEmpty();
+        if (item != null) {
+            String value = getPrimaryImageValueForItem(item);
+            return !value.isEmpty();
+        }
+        return false; 
     }
-
+    
     public String getPrimaryImageThumbnailForItem(Item item) {
         String value = getPrimaryImageValueForItem(item);
         if (!value.isEmpty()) {
