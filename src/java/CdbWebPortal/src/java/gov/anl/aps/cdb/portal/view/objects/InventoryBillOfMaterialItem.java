@@ -29,6 +29,8 @@ public class InventoryBillOfMaterialItem {
 
     // new item to be linked to placeholder (Item Element of instance).
     protected Item inventoryItem = null;
+    
+    protected Item prevInventoryItem = null;
 
     // a reference to the parent item instance which includes this as a bom item.
     protected Item parentItemInstance = null;
@@ -131,14 +133,45 @@ public class InventoryBillOfMaterialItem {
     }
 
     public void setState(String state) {
-        String prevState = this.state;
-
+        String prevState = this.state;  
+        
+        // Chache prev inventory item. 
+        if (prevState.equals(state) == false) {
+            if (state.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
+                prevInventoryItem = inventoryItem; 
+            }
+        }
+        
         this.state = state;
         this.loadItemDomainInventoryController();
-
         itemDomainInventoryController.changeBillOfMaterialsState(this, prevState);
+        
+        // Restore prev inventory item. 
+        if (prevState.equals(state) == false) {
+            if (prevState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
+                inventoryItem = prevInventoryItem; 
+            }
+        }
 
     }
+    
+    public String getStateSelection() {
+        if (!state.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
+            return InventoryBillOfMaterialItemStates.existingItem.getValue(); 
+        } else {
+            return state;
+        }
+    }
+    
+    public void setStateSelection(String state) {
+        if (!state.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
+            setState(state);
+            updateStateBasedOnCurrentInventoryItem();
+        } else {
+            setState(state);
+        }
+    }
+    
 
     public void loadItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
@@ -212,6 +245,21 @@ public class InventoryBillOfMaterialItem {
                 setDefaultValuesForInventoryItem();
             }
         }
+        updateStateBasedOnCurrentInventoryItem();
+    }
+    
+    private void updateStateBasedOnCurrentInventoryItem() {
+        if (inventoryItem == null) {
+            setState(InventoryBillOfMaterialItemStates.placeholder.toString()); 
+        } else {
+            loadItemDomainInventoryController();
+            if (itemDomainInventoryController.isItemExistInDb(inventoryItem)) {
+                setState(InventoryBillOfMaterialItemStates.existingItem.toString()); 
+            } else {
+                setState(InventoryBillOfMaterialItemStates.newItem.toString());
+            }
+            
+        }
     }
 
     public boolean isPartItem() {
@@ -247,6 +295,15 @@ public class InventoryBillOfMaterialItem {
 
         return existingInventoryItemSelectDataModel;
     }
+    
+    public int getExistingInventoryItemCountExistingItems() {
+        DataModel itemListDataModel = getExistingInventoryItemSelectDataModel(); 
+        if (itemListDataModel != null) {
+            return itemListDataModel.getRowCount(); 
+        }
+        
+        return 0;
+    }
 
     public void setExistingInventoryItemSelectDataModel(DataModel existingInventoryItemSelectDataModel) {
         this.existingInventoryItemSelectDataModel = existingInventoryItemSelectDataModel;
@@ -267,8 +324,10 @@ public class InventoryBillOfMaterialItem {
         if (inventoryItem != null) {
             // Tag
             if (inventoryItem.getName() != null && !inventoryItem.getName().isEmpty()) {
-                response += " - " + inventoryItem.getName();
+                response += " - [" + inventoryItem.getName() + "]"; 
             }
+        } else {
+            response += " - [ ]";
         }
 
         return response;
