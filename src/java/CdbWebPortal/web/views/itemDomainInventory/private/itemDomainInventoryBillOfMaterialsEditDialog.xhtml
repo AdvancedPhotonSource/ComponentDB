@@ -13,7 +13,9 @@
               modal="true"
               resizable="false">
         <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
-            <ui:include src="itemDomainInventoryBillOfMaterialsEditView.xhtml"/>
+            <ui:include src="itemDomainInventoryBillOfMaterialsEditView.xhtml">
+                <ui:param name="displayLocationSelectionTieredMenu" value="#{false}" />
+            </ui:include>
         </p:outputPanel>
         <f:facet name="footer">
             <p:commandButton  action="#{itemDomainInventoryController.saveEditBOMList()}"
