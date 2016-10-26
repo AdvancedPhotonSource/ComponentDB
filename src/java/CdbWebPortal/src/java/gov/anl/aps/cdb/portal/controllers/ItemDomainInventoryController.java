@@ -474,20 +474,23 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     /**
-     * Gets a location string for an item and loads it if necessary. 
-     * 
+     * Gets a location string for an item and loads it if necessary.
+     *
      * @param item
-     * @return 
+     * @return
      */
     public String getLocationStringForItem(Item item) {
-        if (item.getLocationString() == null) {
-            loadLocationStringForItem(item);
+        if (item != null) {
             if (item.getLocationString() == null) {
-                // Avoid unecessary checks.
-                item.setLocationString("");
+                loadLocationStringForItem(item);
+                if (item.getLocationString() == null) {
+                    // Avoid unecessary checks.
+                    item.setLocationString("");
+                }
             }
+            return item.getLocationString();
         }
-        return item.getLocationString();
+        return null;
     }
 
     /**
@@ -1048,20 +1051,50 @@ public class ItemDomainInventoryController extends ItemController {
             checkItem(item);
         }
         updateItemLocation(item);
+    }  
+    
+    public String getInventoryItemAssemblyRowExpansionDisplayString(ItemElement itemElement) {
+        if (itemElement != null) {
+            if (itemElement.getContainedItem() != null){
+                return getItemDisplayString(itemElement.getContainedItem());
+            }
+            
+            Item catalogItem = getCatalogItemForInventoryItemElement(itemElement); 
+            if (catalogItem != null) {
+                return catalogItem.getName() + "- [ ]";
+            } else {
+                return "Undefined Part: " + itemElement.getDerivedFromItemElement().getName(); 
+            }
+        }
+        return null;
+    }
+    
+    public Item getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
+        if (inventoryItemElement != null) {
+            ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement(); 
+            if (derivedFromItemElement.getContainedItem() != null) {
+                return derivedFromItemElement.getContainedItem(); 
+            }
+        }
+        return null;
     }
 
     @Override
     public String getItemDisplayString(Item item) {
-        if (item != null && item.getDerivedFromItem() != null) {
-            String result = item.getDerivedFromItem().getName();
+        if (item != null) {
+            if (item.getDerivedFromItem() != null) {
+                String result = item.getDerivedFromItem().getName();
 
-            //Tag to help user identify the item
-            String tag = item.getName();
-            if (tag != null && !tag.isEmpty()) {
-                result += "\n [" + tag + "]";
+                //Tag to help user identify the item
+                String tag = item.getName();
+                if (tag != null && !tag.isEmpty()) {
+                    result += " - [" + tag + "]";
+                }
+
+                return result;
+            } else {
+                return "No inventory item defied";
             }
-
-            return result;
         }
         return null;
     }
