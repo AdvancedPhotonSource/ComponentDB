@@ -4,10 +4,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../item/private/templates/itemListDataTableRowExpansionTemplate.xhtml">       
     
-    <ui:define name="assemblyRowExpansionTreeObject">
-        <ui:include src="itemDomainInventoryListObject.xhtml">
-            <ui:param name="itemListObject" value="#{itemTreeNode}"/>
-        </ui:include>
+    <ui:define name="assemblyTab">
+        <ui:include src="templateDefaults/itemDomainInventoryAssemblyTab.xhtml"/> 
     </ui:define>
     
 </ui:composition>
