@@ -208,6 +208,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient ItemController itemDomainController = null;
 
     private transient TreeNode assemblyRootTreeNode = null;
+    private transient TreeNode itemElementAssemblyRootTreeNode = null;
 
     public Item() {
     }
@@ -576,6 +577,15 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
+    }
+    
+    public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
+        if (itemElementAssemblyRootTreeNode == null) {
+            if (getItemElementDisplayList().size() > 0) {
+                itemElementAssemblyRootTreeNode = ItemElementUtility.createItemElementRoot(this); 
+            }
+        }
+        return itemElementAssemblyRootTreeNode;
     }
 
     public TreeNode getAssemblyRootTreeNode() throws CdbException {
