@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -176,6 +177,13 @@ public class ItemDomainCatalogController extends ItemController {
         if (getDefaultDomainName().equals(item.getDomain().getName())) {
             // Verify that atleast one entity type is selected.
             checkEntityTypeSpecified(item);
+        }
+        
+        // Item element name check occurs prior to this check. 
+        for (ItemElement itemElement : item.getItemElementDisplayList()) {
+            if (itemElement.getContainedItem() == null) {
+                throw new CdbException("No item specified for element: " + itemElement.getName());
+            }
         }
     }
     
