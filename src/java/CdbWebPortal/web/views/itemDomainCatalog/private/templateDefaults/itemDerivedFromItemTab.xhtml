@@ -5,13 +5,13 @@
     <ui:define name="itemDerivedFromItemListObject">
         <ui:include src="../../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
             <ui:param name="itemListObject" value="#{derivedFromItemObject}" />
-            <ui:param name="entityController" value="#{derivedDomainController}" />                
+            <ui:param name="entityController" value="#{derivedDomainController}" />
+            <ui:param name="filterable" value="#{false}" />
         </ui:include>
     </ui:define>
     
-    <ui:define name="assemblyRowExpansionTreeObject">
-        <ui:include src="../../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
-            <ui:param name="itemListObject" value="#{itemTreeNode}" />
+    <ui:define name="assemblyTab">
+        <ui:include src="../../../itemDomainInventory/private/templateDefaults/itemDomainInventoryAssemblyTab.xhtml">
             <ui:param name="entityController" value="#{derivedDomainController}" />
         </ui:include>
     </ui:define>
