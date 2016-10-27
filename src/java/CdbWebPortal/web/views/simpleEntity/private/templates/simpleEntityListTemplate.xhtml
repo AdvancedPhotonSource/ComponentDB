@@ -27,13 +27,13 @@
     <ui:define name="returnButton">
         <div class="actionButton">  
             <p:button 
-                id="propertyTypeCategoryDoneButton" 
+                id="#{entityTypeName}CategoryDoneButton" 
                 href="#{entityReturnPath}" 
                 rendered="#{entityReturnPath != null}"
                 value="Return" 
                 alt="Return" 
                 icon="ui-icon-arrowreturnthick-1-w">
-                <p:tooltip for="propertyTypeCategoryDoneButton" value="Return to property type list."/>
+                <p:tooltip for="#{entityTypeName}CategoryDoneButton" value="Return to list."/>
             </p:button>
         </div>
     </ui:define>
