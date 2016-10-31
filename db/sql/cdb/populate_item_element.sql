@@ -1396,7 +1396,7 @@ INSERT INTO `item_element` VALUES
 (1393,'DSC-to-DSC fast link',896,621,NULL,0,NULL,NULL,1393),
 (1394,'Double-sector controller IOC',896,619,NULL,0,NULL,NULL,1394),
 (1395,'Orbit feedback algorithm',896,620,NULL,0,NULL,NULL,1395),
-(1396,'Fast corrector setpoint link',896,NULL,NULL,0,NULL,NULL,1396),
+(1396,'Fast corrector setpoint link',896,621,NULL,0,NULL,NULL,1396),
 (1397,'Double-sector controller',896,895,NULL,0,NULL,NULL,1397),
 (1398,'VSM:A:GV1',897,402,NULL,0,NULL,NULL,1398),
 (1399,'VSM:B:GV1',897,404,NULL,0,NULL,NULL,1399),
