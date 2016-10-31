@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
@@ -71,6 +72,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @EJB
     private ItemElementFacade itemElementFacade;
+    
+    @EJB
+    private ItemTypeFacade itemTypeFacade; 
 
     @EJB
     private DomainFacade domainFacade;
@@ -503,25 +507,30 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
         Item currentItem = getCurrent();
         if (currentItem != null) {
-            List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
+            if (getEntityDisplayItemCategory()) {
+                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
 
-            if (lastKnownItemCategoryListForCurrentItem != null) {
-                if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
-                    availableItemTypesForCurrentItem = null;
-                } else {
-                    for (ItemCategory itemCategory : lastKnownItemCategoryListForCurrentItem) {
-                        if (itemCategoryList.contains(itemCategory) == false) {
-                            availableItemTypesForCurrentItem = null;
-                            break;
+                if (lastKnownItemCategoryListForCurrentItem != null) {
+                    if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
+                        availableItemTypesForCurrentItem = null;
+                    } else {
+                        for (ItemCategory itemCategory : lastKnownItemCategoryListForCurrentItem) {
+                            if (itemCategoryList.contains(itemCategory) == false) {
+                                availableItemTypesForCurrentItem = null;
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            lastKnownItemCategoryListForCurrentItem = itemCategoryList;
+                lastKnownItemCategoryListForCurrentItem = itemCategoryList;
 
-            if (availableItemTypesForCurrentItem == null) {
-                availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
-                updateItemTypeListBasedOnNewAvailableTypes(availableItemTypesForCurrentItem, currentItem);
+                if (availableItemTypesForCurrentItem == null) {
+                    availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
+                    updateItemTypeListBasedOnNewAvailableTypes(availableItemTypesForCurrentItem, currentItem);
+                }
+            } else {
+                // Item does not have item category to pick from
+                availableItemTypesForCurrentItem = itemTypeFacade.findByDomainName(getDefaultDomainName()); 
             }
         }
 
@@ -577,7 +586,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         Item item = getCurrent();
         if (item != null) {
             if (isDisabledItemItemType()) {
-                return "First Select Technical System";
+                return "First Select " + getItemItemCategoryTitle();
             } else {
                 return item.getEditItemTypeString(getItemItemTypeTitle());
             }
@@ -2293,7 +2302,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             String value = getPrimaryImageValueForItem(item);
             return !value.isEmpty();
         }
-        return false; 
+        return false;
     }
     
     public String getPrimaryImageThumbnailForItem(Item item) {
