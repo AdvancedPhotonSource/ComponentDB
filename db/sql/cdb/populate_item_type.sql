@@ -162,6 +162,7 @@ INSERT INTO `item_type` VALUES
 (159,'Slit','',2),
 (160,'Monochromator','',2),
 (161,'Mirror','',2),
-(162,'DSP','',2);
+(162,'DSP','',2),
+(163,'PS_CAB',NULL,1);
 /*!40000 ALTER TABLE `item_type` ENABLE KEYS */;
 UNLOCK TABLES;
