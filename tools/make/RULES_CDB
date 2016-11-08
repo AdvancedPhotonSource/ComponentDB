@@ -1,0 +1,18 @@
+# Copyright (c) UChicago Argonne, LLC. All rights reserved.
+# See LICENSE file.
+
+all:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d $(ARCH); done
+
+dist:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d $(ARCH); done
+
+clean:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
+
+distclean:
+	for d in $(SUBDIRS); do $(MAKE) -C $$d distclean; done
+	for d in $(SUBDIRS); do rm -f `find $$d -name 'RELEASE.local'`; done
+
+tidy: distclean
+
