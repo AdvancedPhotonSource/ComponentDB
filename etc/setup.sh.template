@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export CDB_ROOT_DIR=
+export CDB_SERVICE_PROTOCOL=
+export CDB_SERVICE_HOST=
+export CDB_SERVICE_PORT=
+
+setupFile=$CDB_ROOT_DIR/setup.sh
+if [ ! -f $setupFile ]; then
+    echo "Cannot find setup file: $setupFile"
+    exit 1
+fi
+source $setupFile > /dev/null
