@@ -1,0 +1,17 @@
+#!/usr/bin/env expect
+
+
+set timeout 1
+
+spawn ./asadmin --host localhost --port 4848 login
+
+# Enter admin user name [Enter to accept default]> [Just press Enter]
+# Enter admin password> [e.g. 'myAdminPwd']
+expect ">"
+send "\r"
+
+expect "admin password> "
+send "ADMIN_PASSWORD\r"
+
+interact
+
