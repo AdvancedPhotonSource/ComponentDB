@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:submenu label="Inventory" 
+               styleClass="mainMenuBarItemImportant">
+        <p:menuitem value="Full Inventory" 
+                    action="#{itemDomainInventoryController.prepareListForEntityType(null)}"
+                    styleClass="#{(itemDomainInventoryController.listEntityType == null) 
+                                  and 
+                                  (fn:startsWith(view.viewId, '/views/itemDomainInventory/')) 
+                                  ? 'activeMenuItem' : ''}"/>
+        <p:menuitem value="Component" 
+                    action="#{itemDomainInventoryController.prepareListForEntityType('Component')}"
+                    styleClass="#{(
+                                  (itemDomainInventoryController.listEntityType != null) and 
+                                  (itemDomainInventoryController.listEntityType.name == 'Component')
+                                  ) 
+                                  and 
+                                  (
+                                  fn:startsWith(view.viewId, '/views/itemDomainInventory/')
+                                  ) 
+                                  ? 'activeMenuItem' : ''}"
+                    />
+        <p:menuitem value="Design" 
+                    action="#{itemDomainInventoryController.prepareListForEntityType('Design')}"
+                    styleClass="#{(
+                                  (itemDomainInventoryController.listEntityType != null) and 
+                                  (itemDomainInventoryController.listEntityType.name == 'Design')
+                                  ) 
+                                  and 
+                                  (
+                                  fn:startsWith(view.viewId, '/views/itemDomainInventory/')
+                                  ) 
+                                  ? 'activeMenuItem' : ''}"/>
+    </p:submenu>
+
+
+
+</ui:composition>
+
+

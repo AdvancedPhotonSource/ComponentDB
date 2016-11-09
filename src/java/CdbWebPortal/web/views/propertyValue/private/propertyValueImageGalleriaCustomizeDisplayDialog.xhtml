@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
+    
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayEntityTypeName" value="propertyValueGalleria" />
+    </ui:define>
+
+    <ui:define name="customizeDisplayDialogConent">
+        <p:panelGrid columns="2">
+            <p:selectBooleanCheckbox id="displayPropertyValueViewableDocumentsBoolean" value="#{entityController.displayGalleryViewableDocuments}"/>  
+            <h:outputLabel for="displayPropertyValueViewableDocumentsBoolean" value="Display Viewable Documents" styleClass="dialogDataLabel"/>
+        </p:panelGrid>
+    </ui:define>
+
+</ui:composition>

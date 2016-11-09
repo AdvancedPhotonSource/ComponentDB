@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../itemDomainInventoryListObject.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+    <ui:param name="itemListObject" value="#{itemTreeNode.containedItem}"/>
+    <ui:param name="itemElementListObject" value="#{itemTreeNode}" />
+
+    <ui:param name="rowExpansionAssemblyTreeTableRowStyle" value="warningRow" />
+
+    <ui:param name="partNameString"
+              value="#{itemDomainInventoryController.getInventoryItemAssemblyRowExpansionDisplayString(itemElementListObject)}" />
+
+    <ui:define name="customItemIdentifierColumn">
+        <p:column headerText="Part Name"
+                  sortBy="#{itemElementListObject.name}">
+            <h:outputText value="#{itemElementListObject.name}" />
+        </p:column>
+        <p:column headerText="Inventory Item"
+                  sortBy="#{partNameString}"
+                  filterBy="#{partNameString}" filterMatchMode="contains"                  
+                  filterable="#{filterable}"
+                  sortable="#{sortable}">
+            <p:outputPanel rendered="#{itemListObject != null}" >
+
+                <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                    <ui:param name="displayString"
+                              value="#{partNameString}" />
+                    <ui:param name="itemObject"
+                              value="#{itemListObject}"/>
+                </ui:include>
+            </p:outputPanel>
+            <p:outputPanel rendered="#{itemListObject == null}" >
+                <h:outputText value="#{partNameString}" />                               
+            </p:outputPanel>
+        </p:column>
+    </ui:define>
+
+</ui:composition>
+
+

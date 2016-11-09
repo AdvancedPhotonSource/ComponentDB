@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+
+    <ui:param name="saveButtonText" value="#{saveButtonText != null ? saveButtonText : 'Save'}" /> 
+    <ui:param name="saveButtonRendered" value="#{saveButtonRendered != null ? saveButtonRendered : true}" /> 
+
+    <p:commandButton id="#{entityTypeName}CreateSaveButton" action="#{entityController.create()}" 
+                     value="#{saveButtonText}" alt="Save" icon="ui-icon-check" rendered="#{saveButtonRendered}"
+                     update="@form">
+        <p:tooltip for="#{entityTypeName}CreateSaveButton" value="Save new #{entityController.displayEntityTypeName}."/>
+    </p:commandButton>
+
+
+</ui:composition>

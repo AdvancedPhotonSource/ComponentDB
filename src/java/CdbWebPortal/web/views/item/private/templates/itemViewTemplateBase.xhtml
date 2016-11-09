@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../../templates/portalViewTemplate.xhtml">
+
+    <!--
+        use itemViewTemplate instead. 
+    -->
+
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
+
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.currentItemStyleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    
+    <ui:define name="pageTitle">: View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}</ui:define> 
+
+    <ui:define name="middleCenter">
+        <h:form id="#{entityTypeName}ViewForm" rendered="#{pageRendered}">
+            <div class="domainEntityLeftContent middleCenterLeftContent">
+                <ui:param name="itemObject" value="#{entityController.current}"/>
+                <div class="pageTitle">
+                    <h1><ui:insert name="pageTitle"/></h1>
+                </div>
+                
+                <!-- Included for easy code readability in use such as item element list. enityController is very generic-->
+                <ui:param name="currentItemController" value="#{entityController}" />
+                <ui:param name="domainEntityObject" value="#{itemObject}" />
+                <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
+
+                <ui:insert name="viewPanelGrid"/>
+
+                <p/>
+                <p/>
+
+                <ui:insert name="domainEntityInfoViewDialog"/>
+                <ui:insert name="commonViewActionButtons"/>
+                <ui:insert name="itemDestroyDialog"/>
+
+                <p/>
+
+                <p:panel header="Gallery" 
+                         rendered="#{entityController.entityDisplayItemGallery}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayImages}">
+                    <ui:insert name="itemGallery" />
+                </p:panel>
+
+                <p:panel header="Log Entries" 
+                         rendered="#{entityController.entityDisplayItemLogs}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayLogList}">
+                    <ui:insert name="itemLogs" />
+                </p:panel>
+
+                <ui:insert name="additionalLeftItemPanels"/>
+            </div>
+
+            <div class="domainEntityRightContent">
+                <p:panel header="Properties" 
+                         rendered="#{entityController.entityDisplayItemProperties}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayPropertyList}">
+                    <ui:insert name="itemProperties"/>
+                </p:panel>
+
+                <p:panel header="Elements"
+                         rendered="#{entityController.entityDisplayItemElements}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayItemElementList}">
+                    <ui:insert name="itemElements" />
+                </p:panel>
+                
+                <p:panel header="Sources" 
+                         rendered="#{entityController.entityDisplayItemSources}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayItemSourceList}">
+                    <ui:insert name="itemSources" />
+                </p:panel>
+                
+                <p:panel header="#{entityController.itemsDerivedFromItemTitle}" 
+                         rendered="#{entityController.entityDisplayItemsDerivedFromItem}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayDerivedFromItemList}">
+                    <ui:insert name="derivedFromItems" />
+                </p:panel>           
+
+                <p:panel header="Item Membership" 
+                         rendered="#{entityController.entityDisplayItemMemberships}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayItemMembership}">
+                    <ui:insert name="itemMemberships" />
+                </p:panel>
+                
+                <ui:insert name="additionalRightItemPanels"/>
+                
+                <ui:insert name="additionalViewItemContent"/>
+            </div>
+
+        </h:form>   
+    </ui:define>
+
+
+
+</ui:composition>

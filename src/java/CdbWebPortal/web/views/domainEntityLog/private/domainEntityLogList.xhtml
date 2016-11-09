@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entityObject" value="#{entityController.selected}" />
+    
+    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(entityObject.entityInfo)}"/>
+        <ui:param name="childEntityController" value="#{logController}"/>
+        <ui:param name="childEntityTypeName" value="#{entityTypeName}Log"/>
+        <ui:param name="displayListResetFiltersButton" value="true"/>
+        <ui:param name="onCompleteAddButtonCommand" value="prepare#{entityTypeName}LogAdd()" />
+    </ui:include>
+
+    <p:remoteCommand name="prepare#{entityTypeName}LogAdd"
+                     action="#{entityController.prepareAddLog(entityObject)}"
+                     update="#{entityTypeName}LogListDataTable #{entityTypeName}LogAddDialog"
+                     oncomplete="PF('#{entityTypeName}LogAddDialogWidget').show();"
+                     />
+    
+    <ui:include src="domainEntityLogListDataTable.xhtml"/>
+
+    <ui:include src="domainEntityLogListCustomizeDisplayDialog.xhtml"/>
+    
+    <ui:include src="domainEntiyLogAddDialog.xhtml" />
+
+</ui:composition>
+
+

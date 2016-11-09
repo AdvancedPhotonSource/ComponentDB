@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="simpleEntityListDataTableTemplateBase.xhtml">
+    
+    <!--
+    use simpleEntityListDataTableTemplate instead.
+    -->
+    
+    <ui:define name="simpleEntityColumns">
+        <ui:include src="../simpleEntityListObject.xhtml" />
+    </ui:define>
+    
+    <ui:define name="actionsColumn">
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityObject" value="#{simpleEntityListObject}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.loggedInAsAdmin}"/>
+            </ui:include>
+        </p:column>
+    </ui:define>
+
+</ui:composition>

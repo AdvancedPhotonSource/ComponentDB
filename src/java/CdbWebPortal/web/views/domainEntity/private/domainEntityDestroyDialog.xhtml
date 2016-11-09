@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+    <ui:param name="currentEntityInstnaceName" value="#{entityController.getCurrentEntityInstanceName()}" />
+
+    <p:confirmDialog id="#{entityTypeName}DestroyDialog" 
+                     widgetVar="#{entityTypeName}DestroyDialogWidget" 
+                     message="Destroy #{displayEntityTypeName}: #{currentEntityInstnaceName}?"
+                     header="Destroy #{displayEntityTypeName}" 
+                     severity="alert" 
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:commandButton value="Yes" 
+                         oncomplete="PF('#{entityTypeName}DestroyDialogWidget').hide()" 
+                         action="#{entityController.destroy()}" update="@form"/>
+        <p:commandButton value="No" onclick="PF('#{entityTypeName}DestroyDialogWidget').hide()" type="button" />
+    </p:confirmDialog>
+
+</ui:composition>

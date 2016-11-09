@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                template="../../../../templates/portalViewTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <!--
+        Use itemListTemplate instead. 
+    -->
+
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
+
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.listStyleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+
+    <ui:define name="pageTitle">: #{entityController.itemListPageTitle}</ui:define>
+
+    <ui:define name="middleCenter">
+        <h:form id="#{entityTypeName}Form" rendered="#{pageRendered}">  
+            <ui:insert name="filterView"/>
+
+            <p:remoteCommand name="updateForm"
+                             update="@form"
+                             onstart="PF('loadingDialog').show();"
+                             oncomplete="PF('loadingDialog').hide ();"/>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>

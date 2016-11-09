@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="itemDomainInventoryLocationHistoryDialog"
+              widgetVar="itemDomainInventoryLocationHistoryDialogWidget"
+              resizable="false"
+              header="Inventory Item Location History"
+              styleClass="viewTransparentBackgroundDialog"
+              dynamic="true">
+        <p:dataTable value="#{itemDomainInventoryController.getItemLocationRelationshipHistory(itemObject)}"
+                     var="itemElementLocationRelationshipHistoryObject"
+                     draggableColumns="true"
+                     rows="15">
+            <p:column headerText="Location">
+                
+                <p:outputPanel rendered="#{itemElementLocationRelationshipHistoryObject.secondItemElement != null}">
+                    <p:tree value="#{itemDomainLocationController.generateLocationNodeTreeBranch(itemElementLocationRelationshipHistoryObject.secondItemElement.parentItem)}"
+                            var="node"
+                            styleClass="transparent-tree">
+                        <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+                    </p:tree>
+                </p:outputPanel>
+            </p:column>
+            <p:column headerText="Location Details">
+                <h:outputText value="#{itemElementLocationRelationshipHistoryObject.relationshipDetails}" />
+            </p:column>
+            <p:column headerText="Entered On Date">
+                <h:outputText value="#{itemElementLocationRelationshipHistoryObject.enteredOnDateTime}" />
+            </p:column>            
+            <p:column headerText="Entered By">
+                <h:outputText value="#{itemElementLocationRelationshipHistoryObject.enteredByUser.displayName}"/>
+            </p:column>
+        </p:dataTable>
+
+        <f:facet name="footer">
+            <p:commandButton value="Done"                              
+                             oncomplete="PF('itemDomainInventoryLocationHistoryDialogWidget').hide();"                             
+                             icon="ui-icon-arrowreturn-1-w"/>
+        </f:facet>
+
+
+    </p:dialog>
+
+</ui:composition>
+
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="itemListFilterViewTemplate.xhtml">
+    
+    <ui:define name="filterViewListDataModel">
+        <ui:param name="filterViewListDataModel" value="#{entityController.filterViewCategoryTypeListDataModel}" />
+    </ui:define>
+
+    <ui:define name="firstFilter">
+        Choose a #{entityController.itemItemCategoryTitle}
+        <p:selectManyMenu id="filterViewItemCategorySelection"
+                          value="#{entityController.filterViewItemCategorySelection}"
+                          converter="itemCategoryConverter"
+                          styleClass="wideListBox"
+                          onchange="updateForm()">
+            <f:selectItems value="#{entityController.domainItemCategoryList}"
+                           var="itemCategory"
+                           itemLabel="#{itemCategory.name}"
+                           itemValue="#{itemCategory}"/>
+        </p:selectManyMenu>
+    </ui:define>
+
+    <ui:define name="secondFilter">
+        #{entityController.itemItemTypeTitle}s
+        <p:selectOneListbox id="filterViewItemType"
+                            onchange="updateForm()"
+                            converter="itemTypeConverter"
+                            value="#{entityController.filterViewSelectedItemType}"
+                            disabled="#{entityController.filterViewItemTypeSelectOneDisabled}"
+                            styleClass="wideListBox">
+            <f:selectItem itemLabel="All" />
+            <f:selectItems value="#{entityController.filterViewItemTypeList}"
+                           var="itemType"
+                           itemLabel="#{itemType.name}"
+                           itemValue="#{itemType}"/>
+        </p:selectOneListbox>
+    </ui:define>
+
+</ui:composition>

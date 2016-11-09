@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="itemListTemplateBase.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!--
+        Please define the following variables: 
+        - entityController 
+    -->
+
+    <ui:define name="itemListSimpleView">
+        <ui:include src="../itemListFilterView.xhtml" />
+    </ui:define>
+
+    <ui:define name="listActionButtons">
+        <ui:include src="../itemListActionButtons.xhtml"/>
+    </ui:define>
+
+    <ui:define name="listDataTable">
+        <ui:include src="../itemListDataTable.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="treeListActionButtons">
+        <ui:include src="../itemListTreeTableActionButtons.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="listTreeTable">
+        <ui:include src="../itemListTreeTable.xhtml"/>
+    </ui:define>
+
+    <ui:define name="itemDestroyDialog">
+        <ui:include src="../../../domainEntity/private/domainEntityDestroyDialog.xhtml"/>
+    </ui:define>
+
+    <ui:define name="customizeDisplayDialog">
+        <ui:include src="../itemListCustomizeDisplayDialog.xhtml" />
+    </ui:define>
+
+    <ui:define name="infoActionDialogs">    
+        <ui:include src="../../../domainEntityProperty/private/domainEntityPropertyInfoActionDialogs.xhtml" />
+    </ui:define>
+
+    <ui:define name="itemCloneDialog">
+        <ui:include src="../itemCloneOptionsDialog.xhtml" />
+    </ui:define>
+
+</ui:composition>

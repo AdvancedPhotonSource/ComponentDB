@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="portal.css" library="css" />
+        <link rel="icon" type="image/png" href="../../resources/images/anl.ico" />
+        <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>
+    </h:head>
+
+    <h:body>
+
+        <div id="contentContainer">
+            <div id="top" class="topContent">
+                <div id="topLeft" class="topLeftContent">
+                    <ui:insert name="topLeft">
+                        <h:graphicImage alt="ANL Logo" url="/resources/images/AnlLogo167x75.png"/>
+                    </ui:insert>
+                </div>
+                <div>
+                    <div id="topRight" class="topRightContent">
+                        <ui:insert name="topRight">
+                            <h:outputText value="Username: #{loginController.displayUsername()}"/>
+                            <br/>
+
+                            <h:outputText value="Role: #{loginController.displayRole()}"/>
+
+                        </ui:insert>
+                    </div>
+                    <div id="topCenter" class="topCenterContent">
+                        <ui:insert name="topCenter">
+                            <h1 class="title">#{resources.CdbPortalTitle}</h1>
+                        </ui:insert>
+                    </div>
+                </div>
+            </div>
+
+            <ui:fragment>
+                <div id="menu" class="menuContent">
+                    <div id="menuLeft" class="menuLeftContent">
+                        <ui:insert name="menuLeft">
+                            <p:menubar/>
+                        </ui:insert>
+                    </div>
+                    <div>
+                        <div id="menuRight" class="menuRightContent">
+                            <ui:insert name="menuRight">
+                            </ui:insert>
+                        </div>
+                        <div id="menuCenter" class="menuCenterContent">
+                            <ui:insert name="menuCenter">
+                                <h:form prependId="false">
+                                    <ui:include src="portalViewMenubarTemplate.xhtml"/>
+                                </h:form>
+                            </ui:insert>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="middle" class="middleContent">
+                    <div id="middleLeft" class="middleLeftContent">
+                        <ui:insert name="middleLeft">
+                        </ui:insert>
+                    </div>
+                    <div>
+                        <div id="middleRight" class="middleRightContent">
+                            <ui:insert name="middleRight">
+                            </ui:insert>
+                        </div>
+                        <div id="middleCenter" class="middleCenterContent">
+                            <ui:insert name="middleCenter">
+                            </ui:insert>
+                            <div class="actionButton">
+                                <p:button id="okButton" href="/index.xhtml" alt="OK" value="OK"/>
+                                <p:tooltip for="okButton" value="Return to home page"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ui:fragment>
+        </div>
+
+        <ui:fragment>
+            <div id="bottom" class="bottomContent">
+                <ui:insert name="bottom">
+                    <h:form prependId="false">
+                        <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+                        <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
+                                       onidle="handleSessionTimeout();">
+                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
+                                    immediate="true" async="true"/> 
+                        </p:idleMonitor>
+                        <h:outputScript library="javascript" name="sessionTimeout.js"/>
+                    </h:form>
+                    <footer>
+                        <h:outputText value="Copyright &#169; #{resources.CdbCopyrightNotice}"/>   
+                    </footer>
+                </ui:insert>
+            </div>
+        </ui:fragment>
+
+        <h:form id="loginForm">
+            <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialogWidget">
+                <h:panelGrid styleClass="loginInput">
+                    <p:inputText id="username" value="#{loginController.username}" title="Username"/>
+                    <p:watermark for="username" value="Username"/>
+                    <p:password id="password" value="#{loginController.password}" title="Password"/>
+                    <p:watermark for="password" value="Password"/>
+
+                    <f:facet name="footer">
+                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
+                    </f:facet>
+                </h:panelGrid>
+            </p:dialog>
+        </h:form>
+    </h:body>
+
+</html>

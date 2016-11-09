@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="#{childEntityTypeName}EditListCustomizeDisplayDialog"
+              widgetVar="#{childEntityTypeName}EditListCustomizeDisplayDialogWidget" 
+              header="Customize Display" 
+              styleClass="dialog">
+        <div class="dialog">
+            <p:panelGrid columns="2">
+                <p:inputText id="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="#{itemDerivedController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <h:outputLabel for="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayDescription" value="#{itemDerivedController.displayDescription}"/>  
+                <h:outputLabel for="itemDerivedFromItemDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+
+                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayId" value="#{itemDerivedController.displayId}"/>  
+                <h:outputLabel for="itemDerivedFromItemDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
+                <ui:remove>
+                    <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayLocationDetails" value="#{itemDerivedController.displayLocationDetails}"/>  
+                    <h:outputLabel for="itemDerivedFromItemDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
+                </ui:remove>
+                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayQrId" value="#{itemDerivedController.displayQrId}"/>  
+                <h:outputLabel for="itemDerivedFromItemDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
+                <ui:remove>
+                    <p:selectBooleanCheckbox id="itemDerivedFromItemDisplaySerialNumber" value="#{itemDerivedController.displaySerialNumber}"/>  
+                    <h:outputLabel for="itemDerivedFromItemDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>          
+                </ui:remove>
+            </p:panelGrid>
+
+            <f:facet name="footer" class="dialog">
+                <p:commandButton value="Done" alt="Done" 
+                                 action="#{itemDerivedController.customizeListDisplay()}"
+                                 update="#{childEntityTypeName}EditListDataTable"
+                                 oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').hide()" 
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                <p:commandButton value="Save" alt="Save"
+                                 action="#{userInfoController.saveSettingListForSessionUser()}"
+                                 actionListener="#{itemDerivedController.saveListSettingsForSessionUserActionListener}"
+                                 oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').hide()" 
+                                 update="#{childEntityTypeName}EditListDataTable"
+                                 rendered="#{loginController.loggedIn}"
+                                 icon="ui-icon-check"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+
+</ui:composition>

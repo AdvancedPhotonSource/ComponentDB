@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="sourceObject" value="#{sourceController.selected}"/>
+
+    <p:panelGrid columns="4">
+        <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
+        <h:inputText id="name" value="#{sourceObject.name}" title="Name" required="true" styleClass="entityDataEmphasizedText"/>
+        <p:message for="name"/> 
+        <p:tooltip for="name" value="Source name is required."/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:inputText id="description" value="#{sourceObject.description}" title="Description" styleClass="entityDataText"/>
+        <p:message for="description"/> 
+        <p:tooltip for="description" value="Source description is optional."/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{sourceObject.id}" title="Id" styleClass="entityDataText"/>
+        <p:message for="id"/>
+        <p:tooltip for="id" value="Source id cannot be modified."/>
+
+        <h:outputLabel for="contactInfo" value="Contact Info" styleClass="entityDataLabel"/>
+        <h:inputText id="contactInfo" value="#{sourceObject.contactInfo}" title="Description" styleClass="entityDataText"/>
+        <p:message for="contactInfo"/>  
+        <p:tooltip for="contactInfo" value="Enter source contact info."/>
+
+        <h:outputLabel for="url" value="URL" styleClass="entityDataLabel"/>
+        <h:inputText id="url" value="#{sourceObject.url}" title="URL" styleClass="entityDataText"/>
+        <p:message for="url"/>  
+        <p:tooltip for="url" value="Enter source url."/>          
+    </p:panelGrid>
+
+</ui:composition>
+
+

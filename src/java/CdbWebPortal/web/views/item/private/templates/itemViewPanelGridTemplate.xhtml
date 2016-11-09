@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="itemPanelGridTemplate.xhtml">
+
+    <ui:param name="panelGridStyle" value="viewEntityDetails" />
+
+    <ui:define name="itemNameValue">
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemName.xhtml"/>
+    </ui:define>
+
+    <ui:define name="itemQrIdValue">
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemQrId.xhtml"/>
+    </ui:define>
+
+    <ui:define name="itemItemIdentifier1Value">
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemIdentifier1.xhtml" />
+    </ui:define>
+
+    <ui:define name="itemItemIdentifier2Value">
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemIdentifier2.xhtml" />        
+    </ui:define>
+    
+    <ui:define name="itemItemProjectValue">
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemProject.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="itemEntityTypeValue" >
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemEntityType.xhtml" />
+    </ui:define>
+
+    <ui:define name="itemDescriptionValue" >
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemDescription.xhtml" />
+    </ui:define>        
+
+    <ui:define name="itemItemTypeValue">
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemType.xhtml"/>
+    </ui:define>
+
+    <ui:define name="itemItemCategoryValue" >
+        <ui:include src="../templateDefaults/itemFieldViewValues/itemItemCategory.xhtml"/>
+    </ui:define>
+
+    <ui:define name="additionPanelGridContent">
+        <p:remoteCommand name="inlineSaveEntity"
+                         action="#{entityController.inlineUpdate()}"
+                         />
+    </ui:define>
+
+</ui:composition>
