@@ -20,7 +20,7 @@ dev-config:
 	$(TOP)/sbin/cdb_prepare_dev_config.sh
 
 configuration:
-	$(TOP)/sbin/cdb_create_confiugration.sh
+	$(TOP)/sbin/cdb_create_configuration.sh
 
 support:
 	$(TOP)/sbin/cdb_install_support.sh
