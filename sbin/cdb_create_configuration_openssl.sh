@@ -39,16 +39,16 @@ read -p "Enter the organizational name [company]: " SSL_ORG_NAME
 read -p "Enter the secondary organizational name [company]: " SSL_SECONDARY_ORG_NAME
 read -p "Enter the organizational unit name [accounting]: " SSL_ORG_UNIT_NAME
 
-if [ -z SSL_ORG_NAME ]; then 
+if [ -z $SSL_ORG_NAME ]; then 
     SSL_ORG_NAME=company
 fi
 
-if [ -z SSL_SECONDARY_ORG_NAME ]; then 
+if [ -z $SSL_SECONDARY_ORG_NAME ]; then 
     SSL_SECONDARY_ORG_NAME=company
 fi
 
-if [ -z SSL_ORG_UNIT_NAME ]; then
-    SSL_ORG_UNIT_NAME=accounting
+if [ -z $SSL_ORG_UNIT_NAME ]; then
+    SSL_ORG_UNIT_NAME=accounting 
 fi
 
 cmd="cat $OPEN_SSL_TEMPLATE_FILE \
@@ -57,5 +57,5 @@ cmd="cat $OPEN_SSL_TEMPLATE_FILE \
     | sed 's?SSL_ORG_UNIT_NAME?$SSL_ORG_UNIT_NAME?g' \
     > $OPENSSL_CONFIG_FILE"
 
-eval $cmd | exit 1
+eval $cmd || exit 1
 
