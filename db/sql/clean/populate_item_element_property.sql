@@ -1,0 +1,9 @@
+--
+-- Copyright (c) UChicago Argonne, LLC. All rights reserved.
+-- See LICENSE file.
+--
+
+LOCK TABLES `item_element_property` WRITE;
+/*!40000 ALTER TABLE `item_element_property` DISABLE KEYS */;
+/*!40000 ALTER TABLE `item_element_property` ENABLE KEYS */;
+UNLOCK TABLES;
