@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Copyright (c) UChicago Argonne, LLC. All rights reserved.
+# See LICENSE file.
+
+# Run command
+
+if [ -z $CDB_ROOT_DIR ]; then
+    cd `dirname $0` && myDir=`pwd`
+    setupFile=$myDir/../setup.sh
+    if [ ! -f $setupFile ]; then
+        echo "Cannot find setup file: $setupFile"
+        exit 1
+    fi
+    source $setupFile > /dev/null
+fi
+
+$CDB_ROOT_DIR/src/python/cdb/cdb_web_service/cli/getUserCli.py $@
+
+
