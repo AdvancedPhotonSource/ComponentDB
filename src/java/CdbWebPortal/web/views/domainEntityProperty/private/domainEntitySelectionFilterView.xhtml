@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <!-- propertySelectDataTableSelectionValue & propertySelectionMode must be specified --> 
+
+    <p:panelGrid id="propertyTypeFilterViewSelectionPanelGrid">
+        <p:row>
+            <p:column styleClass="topAlignedDataCell contentSeperatorBorder">
+                <p:panelGrid>
+                    <p:row>
+                        <p:column styleClass="leftAlignedText">
+                            <ui:include src="../../propertyType/private/templateDefaults/propertyTypeFilterView/categorySelectManyMenu.xhtml">
+                                <ui:param name="additionalStyle" value="longListBox" />
+                                <ui:param name="onChange" value="updatePropertyTypeFilterViewSelectionPanelGrid()" />
+                            </ui:include>
+                        </p:column>
+                    </p:row>
+                    <p:row>                       
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <ui:insert name="thirdFilter"/>                            
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </p:column>
+            <p:column styleClass="topAlignedDataCell filterViewDataTableColumn">
+                <ui:include src="domainEntitySelectionFilterViewListDataTable.xhtml" />
+            </p:column>
+        </p:row>
+    </p:panelGrid>   
+    <p:remoteCommand name="updatePropertyTypeFilterViewSelectionPanelGrid"
+                     update="propertyTypeFilterViewSelectionPanelGrid" 
+                     onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('loadingDialog').hide()"/>
+
+</ui:composition>
+
+

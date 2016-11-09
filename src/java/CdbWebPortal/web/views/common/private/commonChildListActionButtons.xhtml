@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="childEntityTypeNames" value="#{childEntityTypeName}s"/>
+    <ui:param name="childEntityListDataTable" value="#{childEntityTypeName}ListDataTable"/>
+
+    <ui:param name="customizeDisplayChildEntityTypeName" value="#{customizeDisplayChildEntityTypeName != null 
+                                                                  ? customizeDisplayChildEntityTypeName 
+                                                                  :  childEntityTypeName}ListCustomizeDisplayDialogWidget" />
+
+              <div class="actionButton">
+
+            <ui:include src="reusedParts/childListAddButton.xhtml" />
+            <ui:include src="reusedParts/childListEditButton.xhtml" />
+            
+            <ui:insert name="additionalButtons" />
+
+            <p:commandButton id="#{childEntityTypeName}ListExportXlsButton" action="#{childEntityController.exportDataTableAsXls(childEntityListDataTable, childEntityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+                <p:tooltip for="#{childEntityTypeName}ListExportXlsButton" value="Export list to excel file."/>
+            </p:commandButton>  
+            <p:commandButton id="#{childEntityTypeName}ListExportPdfButton" action="#{childEntityController.exportDataTableAsPdf(childEntityListDataTable, childEntityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+                <p:tooltip for="#{childEntityTypeName}ListExportPdfButton" value="Export list to pdf file."/>
+            </p:commandButton>  
+            <p:commandButton id="#{childEntityTypeName}ListPrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+                <p:printer target="#{childEntityTypeName}ListDataTable"/>
+                <p:tooltip for="#{childEntityTypeName}ListPrintButton" value="Print list."/>
+            </p:commandButton> 
+            <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" oncomplete="PF('#{customizeDisplayChildEntityTypeName}').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+                <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
+            </p:commandButton>
+            <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" 
+                             alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight"
+                             rendered="#{displayListResetFiltersButton}">
+                <p:tooltip for="#{childEntityTypeName}ListResetFiltersButton" value="Reset filters."/>
+            </p:commandButton>
+
+            <p:commandButton id="#{childEntityTypeName}ListNoOp" style="visibility:hidden" value="NoOp"/>
+            <p:defaultCommand target="#{childEntityTypeName}ListNoOp"/>
+        </div>
+
+</ui:composition>

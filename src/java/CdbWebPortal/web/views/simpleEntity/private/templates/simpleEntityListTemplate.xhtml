@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="simpleEntityListTemplateBase.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <!-- REQUIRED: entityController -->
+    <!-- Defining entityReturnPath will render a return button. -->
+    
+    <ui:define name="listDataTable">
+        <ui:include src="../simpleEntityListDataTable.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="commonActionButtons">
+        <ui:include src="../../../common/private/commonListActionButtons.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="destoryDialog">
+        <ui:include src="../simpleEntityDestroyDialog.xhtml" />
+    </ui:define>
+    
+    <ui:define name="customizeDialog">
+        <ui:include src="../simpleEntityListCustomizeDisplayDialog.xhtml" />
+    </ui:define>
+    
+    <ui:define name="returnButton">
+        <div class="actionButton">  
+            <p:button 
+                id="#{entityTypeName}CategoryDoneButton" 
+                href="#{entityReturnPath}" 
+                rendered="#{entityReturnPath != null}"
+                value="Return" 
+                alt="Return" 
+                icon="ui-icon-arrowreturnthick-1-w">
+                <p:tooltip for="#{entityTypeName}CategoryDoneButton" value="Return to list."/>
+            </p:button>
+        </div>
+    </ui:define>
+    
+
+
+</ui:composition>

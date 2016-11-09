@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../../../templates/contentViewTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+
+    <ui:define name="pageTitle">: Create #{entityController.displayEntityTypeName}</ui:define>       
+    <ui:define name="middleCenter">
+
+        <h:form id="#{entityTypeName}AddForm" rendered="#{loginController.loggedInAsAdmin}">
+            <div class="pageTitle">
+                <h1>Add #{entityController.displayEntityTypeName}</h1>
+            </div>
+            
+            <ui:param name="simpleEntityObject" value="#{entityController.current}"/>
+            
+            <ui:insert name="createPanelGrid" />
+
+            <p/>
+            
+            <ui:insert name="commonActionButtons" />
+
+        </h:form>
+
+    </ui:define>
+
+
+
+    
+</ui:composition>
+
+

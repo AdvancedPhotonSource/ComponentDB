@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <div class="actionButton">
+        <p:commandButton id="#{childEntityTypeName}SelectCustomizeDisplay" 
+                         onclick="PF('#{entityTypeName}#{viewName}PropertySelectDialogWidget').hide();
+                                 PF('#{entityTypeName}#{viewName}PropertySelectListCustomizeDisplayDialogWidget').show()"
+                         alt="Customize selection view." 
+                         icon="ui-icon-wrench" 
+                         styleClass="actionButtonRight">
+            <p:tooltip for="#{childEntityTypeName}SelectCustomizeDisplay" value="Customize selection view."/>
+        </p:commandButton>
+    </div>
+    <p:dataTable id="#{entityTypeName}PropertySelectDataTable" 
+                 var="propertyTypeObject" 
+                 value="#{propertyTypeController.filterViewDataModel}" 
+                 selection="#{propertySelectDataTableSelectionValue}"             
+                 rowKey="#{propertyTypeObject.id}"
+                 selectionMode="#{propertySelectionMode}"
+                 binding="#{facesUtility.resetDataTable}"
+                 paginator="true"
+                 styleClass="leftAlignedText"
+                 paginatorAlwaysVisible="true"
+                 rows="#{resources.SelectDataTableNumberOfRows}"
+                 emptyMessage="No available property types found.">
+        <p:ajax event="rowDblselect" oncomplete="#{entityTypeName}propertySelectionMade()" />
+
+        <ui:include src="../../propertyType/private/propertyTypeFilterViewSelectObject.xhtml"/>
+    </p:dataTable>
+</ui:composition>

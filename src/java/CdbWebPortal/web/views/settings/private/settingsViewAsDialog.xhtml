@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog widgetVar="settingsViewAsDialog"
+              modal="true"
+              header="Change View for Current Session"
+              styleClass="viewTransparentBackgroundDialog"
+              dynamic="true"
+              resizable="false">
+        <p:panelGrid columns="2">
+            <h:outputText value="View: " /> 
+            <p:selectOneMenu id="groupSettingsViewSelection" 
+                             value="#{settingController.userGroupForSettingsView}"
+                             onchange="updateGroupSettingsViewSelection()"
+                             var="userGroup"
+                             converter="userGroupConverter">
+                <f:selectItem noSelectionOption="true" itemLabel="#{settingController.defaultSelectionLabel}"/>
+                <f:selectItems value="#{settingController.availableUserGroupsForSelection}"/>
+                <p:column>
+                    <p:outputPanel rendered="#{userGroup != null}">
+                        <p:outputLabel id="viewAsSettingsUserHasPermissions" 
+                                       styleClass="ui-icon ui-icon-unlocked"
+                                       rendered="#{settingController.isSessionUserHaveGroupWritePermission(userGroup)}"/>
+                        <p:outputLabel id="viewAsSettingsUserMemberOf" 
+                                       styleClass="ui-icon ui-icon-person"
+                                       rendered="#{settingController.isSessionUserMemeberOfGroup(userGroup)}"/>
+
+                        <b>#{userGroup.name}</b>
+                        <br/> #{userGroup.description}
+                    </p:outputPanel>
+                    <p:outputPanel rendered="#{userGroup == null}">
+                        <p:outputLabel styleClass="ui-icon ui-icon-home" />
+                        <p:outputLabel value="#{settingController.defaultSelectionLabel}"/>
+                    </p:outputPanel>
+                </p:column>
+            </p:selectOneMenu>
+        </p:panelGrid>
+
+        <p:remoteCommand name="updateGroupSettingsViewSelection"
+                         update="groupSettingsViewSelection" />
+    </p:dialog>
+
+
+</ui:composition>

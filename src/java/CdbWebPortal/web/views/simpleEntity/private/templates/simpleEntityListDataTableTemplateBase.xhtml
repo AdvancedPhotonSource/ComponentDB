@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <!--
+    use simpleEntityListDataTableTemplate instead.
+    -->
+
+    <ui:insert name="domainEntityListDataTableParameters">
+    </ui:insert>
+    
+    <ui:param name="simpleEntityListDataTableValue" value="#{simpleEntityListDataTableValue != null ? simpleEntityListDataTableValue : entityController.listDataModel}" />
+    
+    <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
+    <ui:param name="sortable" value="#{sortable != null ? sortable : true}" />
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+
+    <p:dataTable id="#{entityTypeName}ListDataTable" 
+                 widgetVar="#{entityTypeName}ListDataTableWidget"
+                 var="simpleEntityListObject" 
+                 value="#{simpleEntityListDataTableValue}" 
+                 filteredValue="#{entityController.filteredObjectList}"
+                 rows="#{entityController.displayNumberOfItemsPerPage}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false" 
+                 emptyMessage="No #{displayEntityTypeName}s found.">
+        
+        <ui:param name="simpleEntityListObject" value="#{simpleEntityListObject}" />
+        
+        <ui:insert name="simpleEntityColumns" />
+        
+        <ui:insert name="simpleEntityExtraColumns"/>
+        
+        <ui:insert name="actionsColumn" />
+
+    </p:dataTable>
+
+</ui:composition>

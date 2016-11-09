@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayItemCategories}"
+                     action="#{itemCategoryController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayItemTypes}"
+                     action="#{itemTypeController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayCatalogItems}"
+                     action="#{itemDomainCatalogController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayInventoryItems}"
+                     action="#{itemDomainInventoryController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayLocationItems}"
+                     action="#{itemDomainLocationController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayItemElements}"
+                     action="#{itemElementController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayPropertyTypes}"
+                     action="#{propertyTypeController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayPropertyTypeCategories}"
+                     action="#{propertyTypeCategoryController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displaySources}"
+                     action="#{sourceController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayUsers}"
+                     action="#{userInfoController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+    <p:remoteCommand autoRun="#{searchController.performSearch}"
+                     rendered="#{searchController.displayUserGroups}"
+                     action="#{userGroupController.performEntitySearch(searchString, caseInsensitive)}"
+                     />
+
+</ui:composition>

@@ -1,0 +1,23 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+@import url("portal.css");
+
+footer {
+    bottom: 10px;
+    left: 0;
+    position: fixed;
+    right: 0;
+    text-align: center; 
+    color: #4e80b6;
+}
+
+.login {
+    vertical-align: central;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    background: #f2f4f7;
+    padding: 100px;
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dataTable id="#{entityTypeName}PropertyEditListDataTable" 
+                 widgetVar="#{entityTypeName}PropertyEditListDataTableWidget"
+                 var="propertyValueObject" 
+                 value="#{entityObject.propertyValueDisplayList}" 
+                 filteredValue="#{propertyValueController.filteredObjectList}"
+                 rows="#{propertyValueController.displayNumberOfItemsPerPage}"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 editable="true"
+                 emptyMessage="No #{entityTypeDisplayName} properties found."
+                 rowStyleClass="#{propertyValueObject.id != null ? '' : 'newItemInRow'}">
+
+        <ui:include src="../../propertyValue/private/propertyValueEditObject.xhtml"/>
+
+        <p:column headerText="Actions" exportable="false">
+            <div class="actionLink">
+                <ui:param name="propertyTypeHandler" value="#{propertyValueController.getPropertyTypeHandler(propertyValueObject)}"/>
+                <ui:param name="displayEditActionButton" value="#{propertyTypeHandler.displayEditActionButton}"/>                
+                <ui:param name="editActionIcon" value="#{propertyTypeHandler.editActionIcon}"/>
+                <ui:param name="editActionOncomplete" value="#{propertyTypeHandler.editActionOncomplete}"/>
+                <ui:param name="editActionBean" value="#{propertyTypeHandler.editActionBean}"/>
+
+                <p:commandLink id="propertyValueHistoryListViewButton" 
+                               oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
+                               styleClass="ui-icon ui-icon-history" title="View history."
+                               update="@form">
+                    <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
+                                                 value="#{propertyValueObject}"/>
+                    <p:tooltip for="propertyValueHistoryListViewButton" value="View property value history."/>
+                </p:commandLink>
+
+                <p:commandLink id="propertyValueActionButton" 
+                               rendered="#{displayEditActionButton}" 
+                               oncomplete="#{editActionOncomplete}" 
+                               styleClass="ui-icon #{editActionIcon}"
+                               update="@form">
+                    <f:setPropertyActionListener value="#{propertyValueObject}" target="#{propertyValueController.current}"/>
+                    <p:tooltip for="propertyValueActionButton" value="Upload file."/>
+                </p:commandLink>
+
+                <p:commandLink id="propertyValueDeleteButton" action="#{entityController.deleteProperty(propertyValueObject)}" 
+                               actionListener="#{propertyValueController.destroy(propertyValueObject)}"
+                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                    <p:tooltip for="propertyValueDeleteButton" value="Delete property value."/>
+                </p:commandLink>
+            </div>
+        </p:column>
+
+    </p:dataTable>
+
+    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
+
+    <ui:include src="../../propertyValue/private/propertyValueImageUploadDialog.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="saveAction" value="savePropertyList"/>
+    </ui:include>
+
+    <ui:include src="../../propertyValue/private/propertyValueDocumentUploadDialog.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="saveAction" value="savePropertyList"/>
+    </ui:include>
+
+    <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
+    
+    <ui:include src="../../plugins/private/propertyEditListSupport.xhtml" />
+</ui:composition>
+
+

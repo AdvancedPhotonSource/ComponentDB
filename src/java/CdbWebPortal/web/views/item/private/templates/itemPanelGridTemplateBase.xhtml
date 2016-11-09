@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+
+    <!--
+        Please specify panelGridStyle
+    -->
+
+    <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
+
+        <ui:insert name="itemNameLabel" />
+        <ui:insert name="itemNameValue" />
+        
+        <ui:insert name="itemQrIdLabel" />
+        <ui:insert name="itemQrIdValue" />
+        
+        <ui:insert name="itemDerivedFromItemLabel" />
+        <ui:insert name="itemDerivedFromItemValue" />
+        
+        <ui:insert name="itemItemIdentifier1Label" />
+        <ui:insert name="itemItemIdentifier1Value" />
+        
+        <ui:insert name="itemItemIdentifier2Label" />
+        <ui:insert name="itemItemIdentifier2Value" />
+        
+        <ui:insert name="itemItemProjectLabel" />
+        <ui:insert name="itemItemProjectValue" />
+        
+        <ui:insert name="itemEntityTypeLabel" />
+        <ui:insert name="itemEntityTypeValue" />
+        
+        <ui:insert name="itemDescriptionLabel" />
+        <ui:insert name="itemDescriptionValue" />
+        
+        <ui:insert name="itemItemCategoryLabel" />
+        <ui:insert name="itemItemCategoryValue" />
+        
+        <ui:insert name="itemItemTypeLabel" />
+        <ui:insert name="itemItemTypeValue" />
+        
+        <ui:insert name="itemDomainLabel" />
+        <ui:insert name="itemDomainValue" />
+        
+        <ui:insert name="additionalItemInformation"/>
+        
+        <ui:insert name="entityInfoObject" />
+
+    </p:panelGrid>
+    
+    <ui:insert name="additionPanelGridContent"/>
+    <ui:insert name="templateUseAdditionPanelGridContent"/>
+    
+</ui:composition>

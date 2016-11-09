@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../../templates/portalViewTemplate.xhtml">
+
+    <!--
+        Please define entityController
+    -->
+
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
+
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.currentItemStyleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+
+    <ui:param name="viewName" value="CreateWizard" />
+
+    <ui:define name="pageTitle">: Create #{entityController.displayEntityTypeName}</ui:define>        
+    <ui:define name="middleCenter">
+
+        <h:form id="addComponentForm" rendered="#{loginController.loggedIn and pageRendered}">            
+            <div class="pageTitle">
+                <h1>Add #{entityController.displayEntityTypeName}</h1>
+            </div>
+
+            <ui:param name="itemObject" value="#{entityController.current}"/>
+
+            <p:outputPanel styleClass="cdbWizard">
+                <p:steps id="wizardStepsMenuButtons"
+                         activeIndex="#{entityController.currentWizardStepIndex}" 
+                         readonly="false"
+                         model="#{entityController.createItemWizardStepsMenuModel}"/>
+
+                <p:wizard flowListener="#{entityController.createItemWizardFlowListener}"
+                          id="#{entityTypeName}ItemCreateWizard"
+                          showStepStatus="false"
+                          widgetVar="#{entityTypeName}ItemCreateWizardWidget" 
+                          step="#{entityController.currentWizardStep}"
+                          showNavBar="false">
+
+                    <ui:insert name="derivedFromItemWizardTab"/>
+
+                    <ui:insert name="basicInformationTab"/>
+
+                    <ui:insert name="classificationTab"/>
+
+                    <ui:insert name="permissionsTab"/>
+
+                    <ui:insert name="additionalCreateWizardTabs" />
+
+                    <ui:insert name="reviewItemTab"/>        
+
+                </p:wizard>
+
+                <p:outputPanel id="wizardButtonsOutputPanel">
+                    <div style="float: left">
+                        <p:commandButton value="Previous Step" 
+                                         onstart="PF('#{entityTypeName}ItemCreateWizardWidget').back();" 
+                                         icon="ui-icon-arrowthick-1-w"
+                                         update="@form"
+                                         rendered="#{!entityController.isCreateWizardOnFirstStep()}"/>
+                        <ui:include src="../../../common/private/commonCreateCancelButton.xhtml" />
+                    </div>
+                    <div style="float: right">
+                        <ui:include src="../../../common/private/commonCreateSaveButton.xhtml"> 
+                            <ui:param name="saveButtonRendered" value="#{entityController.isCreateWizardOnLastStep()}" />
+                        </ui:include>
+                        <p:commandButton value="Next Step" 
+                                         onstart="PF('#{entityTypeName}ItemCreateWizardWidget').next();"
+                                         icon="ui-icon-arrowthick-1-e"
+                                         iconPos="right"
+                                         update="@form"
+                                         rendered="#{!entityController.isCreateWizardOnLastStep()}"/>
+
+                    </div>
+
+                    <p:remoteCommand name="updateWizardButtons"
+                                     update="wizardButtonsOutputPanel wizardStepsMenuButtons" />
+                </p:outputPanel>
+
+            </p:outputPanel>
+
+            <ui:insert name="additonalCreateItemContent" />
+            <ui:insert name="templateUseAdditonalCreateItemContent" />
+
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:selectBooleanCheckbox id="#{entityTypeName}SelectDisplayCreatedByUser" value="#{entityController.selectDisplayCreatedByUser}"/>  
+    <h:outputLabel for="#{entityTypeName}SelectDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
+
+    <p:selectBooleanCheckbox id="#{entityTypeName}SelectDisplayCreatedOnDateTime" value="#{entityController.selectDisplayCreatedOnDateTime}"/>  
+    <h:outputLabel for="#{entityTypeName}SelectDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
+
+    <p:selectBooleanCheckbox id="#{entityTypeName}SelectDisplayLastModifiedByUser" value="#{entityController.selectDisplayLastModifiedByUser}"/>  
+    <h:outputLabel for="#{entityTypeName}SelectDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
+
+    <p:selectBooleanCheckbox id="#{entityTypeName}SelectDisplayLastModifiedOnDateTime" value="#{entityController.selectDisplayLastModifiedOnDateTime}"/>  
+    <h:outputLabel for="#{entityTypeName}SelectDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
+
+    <p:selectBooleanCheckbox id="#{entityTypeName}SelectDisplayOwnerUser" value="#{entityController.selectDisplayOwnerUser}"/>  
+    <h:outputLabel for="#{entityTypeName}SelectDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
+
+    <p:selectBooleanCheckbox id="#{entityTypeName}SelectDisplayOwnerGroup" value="#{entityController.selectDisplayOwnerGroup}"/>  
+    <h:outputLabel for="#{entityTypeName}SelectDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
+
+
+</ui:composition>
+
+

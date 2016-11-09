@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:include src="itemHelpFragment.xhtml">
+        <ui:param name="helpFragmentText"
+                  value="Place a QRID sticker on your item to quickly and easily track it." />
+        <ui:param name="rendered" 
+                  value="#{entityController.entityDisplayQrId}" />
+    </ui:include>   
+
+</ui:composition>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
+    <p:dataTable id="userInfoUserRoleListDataTable" 
+                 widgetVar="userInfoUserRoleListDataTableWidget"
+                 var="userRoleObject" 
+                 value="#{userInfoObject.userRoleList}" 
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 rows="#{userRoleController.displayNumberOfItemsPerPage}"
+                 emptyMessage="No roles found.">
+
+        <p:column sortBy="#{userRoleObject.roleType.name}" headerText="Role">
+            <h:outputText value="#{userRoleObject.roleType.name}"/>
+        </p:column>
+        
+        <p:column sortBy="#{userRoleObject.userGroup.name}" headerText="User Group">
+            <h:outputText value="#{userRoleObject.userGroup.name}"/>
+        </p:column>
+
+    </p:dataTable>
+
+</ui:composition>
+
+

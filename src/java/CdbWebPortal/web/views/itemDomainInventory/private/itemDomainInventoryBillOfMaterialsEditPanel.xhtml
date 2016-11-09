@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+    <p:outputPanel rendered="#{billOfMaterialItem.hasCatalogItem()}">
+        <p:outputPanel rendered="#{renderEditPanelHeader}">
+            <div>
+                <h1 style="color: #4e80b6;">Define #{billOfMaterialItem.toString()}</h1>
+            </div>
+        </p:outputPanel>
+        
+        <p:panelGrid columns="2" rendered="#{billOfMaterialItem.partItem and loginController.loggedInAsAdmin}">   
+            <p:selectOneButton id="newInstanceAddOptions#{viewName}"
+                               value="#{billOfMaterialItem.stateSelection}"
+                               styleClass="entityDataEmphasizedText">                
+                <f:selectItem itemLabel="Select Existing: #{billOfMaterialItem.existingInventoryItemCountExistingItems}" itemValue="existingItem" />
+                <f:selectItem itemLabel="Create New" itemValue="newItem" itemDisabled="#{disabledCreateNewOption}"/>
+                <p:ajax onstart="PF('loadingDialog').show()" oncomplete="PF('loadingDialog').hide()" update="#{fullUpateTarget}"/>
+            </p:selectOneButton>
+            
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+                <ui:param name="helpFragmentText"
+                          value="Select an option for this part of the assembly." />
+            </ui:include>
+        </p:panelGrid>
+        <p/>
+
+        <p:outputPanel rendered="#{(itemDomainInventoryController.isRenderBomExisting(billOfMaterialItem) 
+                                   or itemDomainInventoryController.isRenderBomPlaceholder(billOfMaterialItem)) 
+                                   and billOfMaterialItem.partItem}">
+            <p:panel>
+                <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                    <ui:param name="selectDataModel" value="#{billOfMaterialItem.existingInventoryItemSelectDataModel}" />
+                    <ui:param name="selectionValue" value="#{billOfMaterialItem.inventoryItem}" />
+                    <ui:param name="selectionTarget" value="#{billOfMaterialItem.inventoryItem}" />
+                    <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
+                    <ui:param name="updateTarget" value="#{fullUpateTarget}" />
+                    <ui:param name="useFilteredValue" value="#{false}" />
+                </ui:include>
+            </p:panel>
+        </p:outputPanel>
+
+        <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomEdit(billOfMaterialItem) or !billOfMaterialItem.partItem}">
+            <ui:include src="itemBillOfMaterialsNewItemEditPanel.xhtml">
+                <ui:param name="itemObject" value="#{billOfMaterialItem.inventoryItem}"/>            
+            </ui:include>
+        </p:outputPanel>
+    </p:outputPanel>
+    <p:outputPanel rendered="#{!billOfMaterialItem.hasCatalogItem()}">
+        <div>
+            <h1 style="color: #4e80b6;">No Catalog Item has been defied for this part.</h1>
+        </div>
+    </p:outputPanel>
+
+
+</ui:composition>
+
+

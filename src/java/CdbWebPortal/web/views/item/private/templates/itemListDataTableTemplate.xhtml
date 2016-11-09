@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="itemListDataTableTemplateBase.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:define name="itemColumns">
+        <ui:include src="../itemListObject.xhtml" />
+    </ui:define>
+    
+    <ui:define name="rowExpansionObject">
+        <ui:include src="../itemListDataTableRowExpansionObject.xhtml" />
+    </ui:define>
+    
+    <ui:define name="propertyValueColumns">
+        <ui:include src="../../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
+            <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
+        </ui:include>
+        <ui:include src="../../../propertyValue/private/propertyValueDomainEntityListDataTableColumn.xhtml">
+            <ui:param name="propertyValueRendered" value="#{entityController.displayListDataModelScopePropertyTypeSelection}" />
+            <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
+            <ui:param name="displayModePropertyTypeId" value="#{entityController.displayListDataModelScopePropertyTypeId}" />
+            <ui:param name="propertyTypeName" value="#{entityController.getDisplayPropertyTypeName(displayModePropertyTypeId)}" />
+            <ui:param name="propertyTypeId" value="#{displayModePropertyTypeId}" />
+            <ui:param name="propertyValueFilterable" value="#{entityController.displayListDataModelScopePropertyFilterable}" />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="entityInfoColumns">
+        <ui:include src="../../../entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
+            <ui:param name="entityInfoObjectFilterable" value="true" />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="actionsColumn">
+        <p:column headerText="Actions" exportable="false">
+            <ui:include src="../../../common/private/commonListActionLinks.xhtml">
+                <ui:param name="entityController" value="#{entityController}"/>
+                <ui:param name="entityObject" value="#{itemListObject}"/>
+                <ui:param name="isEntityWriteable" value="#{isEntityWriteable != null ? isEntityWriteable : loginController.isEntityWriteable(itemListObject.entityInfo)}"/>
+                <ui:param name="isEntityCloneable" value="#{isEntityCloneable != null ? isEntityCloneable : loginController.loggedIn}"/>
+                <ui:param name="entityCloneRemoteCommandName" value="show#{entityTypeName}CloneDialog" />
+                <ui:param name="entityCloneItemToCloneTargetValue" value="#{entityController.itemToClone}" />
+                <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
+                <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />
+                <ui:param name="toggleFavoritesParameter" value="#{itemListObject}" />
+                <ui:param name="currentFavoritesIconStyle" value="#{entityController.getItemFavoritesIconStyle(itemListObject)}" />
+            </ui:include>                                             
+        </p:column>
+    </ui:define>
+
+</ui:composition>

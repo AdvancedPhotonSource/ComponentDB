@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="simpleEntityListCustomizeDisplayDialogTemplateBase.xhtml">
+
+    <ui:define name="displayNumberOfItemsPerPageLabel">
+        <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>        
+    </ui:define>
+
+    <ui:define name="displayNumberOfItemsPerPageValue">
+        <p:inputText id="displayNumberOfItemsPerPage" value="#{entityController.displayNumberOfItemsPerPage}" style="width:20px"/>
+    </ui:define>
+
+    <ui:define name="displayDescriptionLabel">
+        <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+    </ui:define>
+
+    <ui:define name="displayDescriptionValue">
+        <p:selectBooleanCheckbox id="displayDescription" value="#{entityController.displayDescription}"/>  
+    </ui:define>
+
+    <ui:define name="displayIdLabel">
+        <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
+    </ui:define>
+
+    <ui:define name="displayIdValue">
+        <p:selectBooleanCheckbox id="displayId" value="#{entityController.displayId}"/>  
+    </ui:define>
+
+</ui:composition>
