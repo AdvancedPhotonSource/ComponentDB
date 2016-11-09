@@ -127,7 +127,7 @@ class PluginManager():
         xhtml_pages = self.xhtml_parser.generate_xhtml_files_contents(self.plugins)
 
         if not os.path.exists(CDB_XHTML_PLUGIN_PATH):
-            os.mkdir(CDB_XHTML_PLUGIN_PATH)
+            os.makedirs(CDB_XHTML_PLUGIN_PATH)
 
         for file_name in xhtml_pages:
             contents = xhtml_pages[file_name]
