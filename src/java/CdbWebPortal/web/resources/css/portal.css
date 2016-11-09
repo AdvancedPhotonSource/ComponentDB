@@ -1,0 +1,1119 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+html, body {
+    background-color: #f2f4f7;
+    font-size: 12px;
+    font-family: Verdana, "Verdana CE",  Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    color: #000000;
+    margin: 0px;
+    height: 100%;
+}
+
+.apsStorageRingBackground {
+    background-image: url("../images/ApsStorageRing.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+    background-size: 20%;
+}
+
+a:link, a:visited {
+    color: #4e80b6;
+    font-weight: bold;
+}
+
+a:link:hover, a:visited:hover  {
+    color: #6da5d8;
+    font-weight: bold;
+}
+
+.ui-menu-list a {
+    color: black;
+}
+
+#contentContainer {
+    min-height: 95%;
+    margin-bottom: 15px;
+}
+
+#top {
+    position: relative;
+    color: white;
+
+    /* IE10 */
+    background-image: -ms-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Mozilla Firefox */
+    background-image: -moz-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Opera */
+    background-image: -o-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Webkit (Safari/Chrome 10) */
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #4e80b6), color-stop(1, #6da5d8));
+    /* Webkit (Chrome 11+) */
+    background-image: -webkit-linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+    /* Proposed W3C Markup */
+    background-image: linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
+
+    padding: 15px;
+    margin: 0px 0px 0px 0px;
+    height: 75px;
+}
+
+#menu {
+    background-color: #6da5d8;
+}
+
+#middle {
+}
+
+#bottom {
+    background-color: #f2f4f7;
+    position: relative;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+footer {
+    color: #4e80b6;
+    bottom: 10px;
+    left: 0;
+    position: relative;
+    right: 0;
+    text-align: center; 
+    height: 15px;
+    margin-top: -15px;
+}
+
+.title {
+    color: #f2f4f7;   /* set via CDB_CSS_PORTAL_TITLE_COLOR env variable */
+}
+
+.topLeftContent {
+    float: left;
+    width: 170px;
+    vertical-align: central;
+    text-align: center;
+    margin-left: 25px;
+}
+
+.topCenterContent {
+    position: relative;
+    vertical-align: central;
+    text-align: center;
+    margin: 0px 170px 0px 170px;
+}
+
+.topRightContent {
+    float: right;
+    width: 170px;
+    vertical-align: central;
+    text-align: left;
+    font-size: 10px;
+}
+
+.menubar {
+    background: #6da5d8;
+}
+
+.menuContent {
+    position: relative;
+    vertical-align: central;
+    text-align: left;
+    margin: 0px 0px 0px 0px;
+    color: white;
+    background-color: #6da5d8;
+}
+
+.menuLeftContent {
+    float: left;
+    width: 40px;
+    height: fit-content;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.menuCenterContent {
+    position: relative;
+    vertical-align: central;
+    text-align: left;
+    margin: 0px 0px 0px 0px;
+    color: white;
+    background-color: #6da5d8;
+}
+
+.menuRightContent {
+    float: right;
+    width: 40px;
+    vertical-align: central;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.menuBarSupportingItems {
+    margin-right: 40px; 
+    border: none; 
+    padding: 0px;
+}
+
+.middleLeftContent {
+    float: left;
+    width: 40px;
+    height: fit-content;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.middleCenterContent {
+    position: relative;
+    vertical-align: central;
+    text-align: left;
+    margin: 40px;
+    color: white;
+}
+
+.middleCenterLeftContent {
+    float: left;
+    margin-right: 2%;
+    margin-bottom: 2%;
+}
+
+.domainEntityLeftContent {
+    min-width: 500px;
+    width: 500px;
+}
+
+.domainEntityRightContent {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.middleCenterRightContent {
+    float: left;
+    margin-bottom: 2%;
+}
+
+.middleRightContent {
+    float: right;
+    width: 40px;
+    vertical-align: central;
+    text-align: center;
+    background-color: #6da5d8;
+}
+
+.userNotification h3 {
+    color: red;
+    margin-bottom: 50px;
+}
+
+.actionButtonSmall {
+    height: 25px;
+    width: 25px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 5px;
+    border: 0px;
+}
+
+.selectButtonForAutocomplete {
+    height: 25px;
+    width: 25px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 0px;
+    margin-left: 30px;
+    border: 0px;
+}
+
+.actionButton {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    border: 0px;
+}
+
+.actionButtonRight {
+    float: right;
+    margin-right: 0px;
+    margin-left: 5px;
+}
+
+.actionButtonLeft {
+    float: left;
+    margin-right: 5px;
+    margin-left: 0px;
+}
+
+.actionLink {
+    display: inline-block;
+}
+
+.entityDataLabel {
+    font-weight: bold;
+}
+
+.entityDataEmphasizedLabel {
+    font-weight: bold;
+    font-size: 105%;
+}
+
+.entityDataText {
+    font-weight: normal;
+    float: left;
+}
+
+.entityDataEmphasizedText {
+    font-weight: bold;
+    font-size: 105%;
+}
+
+.entityDataSelectOne {
+    font-weight: normal;
+}
+
+.entityDataSelectMany {
+    font-weight: normal;
+    height: 200px;
+}
+
+.entityDataError {
+    font-weight: bold;
+}
+
+
+.entityDataIcon {
+    size: 50px;
+}
+
+.createEntityDetails td:nth-child(1) {
+    vertical-align: top;
+}
+
+.createEntityDetails td:nth-child(2) {
+    width: 300px;
+}
+
+.viewEntityDetails td:nth-child(1) {
+    vertical-align: top;
+    width: 125px;
+}
+
+.viewEntityDetails td:nth-child(2) {
+    vertical-align: top;
+    width: 300px;
+}
+
+.editEntityDetails td:nth-child(1) {
+    vertical-align: top;
+}
+
+.editEntityDetails td:nth-child(2) {
+    width: 450px;
+}
+
+.commandLink {
+
+}
+
+tr:hover .actionLink {
+    display: inline-block;
+}
+
+.objectPanel {
+    display: inline-block;
+}
+
+.statusPanel {
+    display: inline-block;
+    white-space: pre;
+}
+
+.queryPanel {
+    width: 100%;
+}
+
+.queryInput {
+    width: 200px;
+}
+
+.queryColumn {
+    text-align: center;
+}
+
+.dialog {
+    background: #6da5d8;    
+    box-shadow: 0px 3px 5px #d5d5d5;    
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sortDroppable {
+    height: 0px; 
+    border: none;
+    padding: 0px;
+}
+.sortDroppableHover {
+    background: gray; 
+    height: 20px;
+    border: none; 
+    padding: 0px;
+}
+
+.borderAbove {
+    border-top: 1px solid gray;
+}
+
+.entityListPageHelpFragmentPanel {
+    background: transparent; 
+    border: none; 
+}
+
+.entityListPageHelpFragmentImage {
+    max-width: 100%;
+    max-height: 100%; 
+}
+
+.entityListPageHelpFragmentImageContainer {
+    width: 200px;
+}
+
+.dialogHelp {
+    background: #EFF1F5;
+    text-align: left;
+}
+
+.errorPanel {
+    background: #F8E6E0;
+}
+
+.locationSelectDialog {
+    background: #6da5d8;
+    box-shadow: 0px 3px 5px #d5d5d5;    
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+    height: 500px;
+    width: 800px;
+}
+
+.invisibleDialogText {
+    color: rgba(255,255,255, 0.0);
+}
+
+.dialogDataLabel {
+    float: left
+}
+
+.htmlPreserve {
+    white-space: pre;
+}
+
+input, textarea {
+    background: #f2f4f7;
+    box-shadow: 0px 3px 5px #d5d5d5;
+    width: 300px;
+}
+
+.ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
+    width: 276px;
+}
+
+.ui-selectonemenu .ui-selectonemenu-label {
+    width: 272px;
+}
+
+.ui-autocomplete .ui-inputfield {
+    width: 268px;
+}
+
+.loginInput input {
+    width: 200px;
+}
+
+.cellSelect {
+    width: 150px;
+}
+
+.cellSelect .ui-selectonemenu-label {
+    width: 150px;
+}
+
+.longCellSelect {
+    width: 300px;
+}
+
+.veryLongCellSelect {
+    width: 450px;
+}
+
+.cellInput {
+    width: 125px;
+}
+
+.shortCellInput {
+    width: 75px;
+}
+
+.longCellInput {
+    width: 240px;
+}
+
+.threeDigitCellInput {
+    width: 20px;
+}
+
+.fourDigitCellInput {
+    width: 30px;
+}
+
+select {
+    width: 150px;
+}
+
+.logDataTable {
+    width: 300px;
+}
+
+.narrowColumn { 
+    width: 5px; 
+}
+
+.logTimestampColumn {
+    width: 50px;
+}
+
+.logUserColumn {
+    width: 50px;
+}
+
+.logTextColumn {
+    width: 150px;
+}
+
+.logAttachmentsColumn {
+    width: 50px;
+}
+
+.leftAlignedText {
+    text-align: left;
+}
+
+h1 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  24px;
+    font-weight: bold;
+    margin: 20px;
+    padding-bottom: 0px;
+    color: #f2f4f7;
+    vertical-align: middle;
+}
+
+.homePage {
+    /*background-image: url(../../resources/images/ApsStorageRing.png);*/
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto 100%;
+}
+
+.pageTitle {
+    padding-bottom: 27px;
+}
+
+.pageTitle h1 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  20px;
+    font-weight: bold;
+    margin: 0px;    
+    padding-bottom: 5px;
+    color: #4e80b6;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.sectionTitle h2 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  16px;
+    font-weight: bold;
+    margin: 0px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    color: #4e80b6;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.sectionTitleHelp h2 {
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  16px;
+    font-weight: bold;
+    margin: 0px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    color: #4e80b6;
+    vertical-align: middle;
+    text-align: left;
+}
+
+.sectionText {
+    font-size: 14px;
+    font-weight: normal;
+    color: #4e80b6;
+}
+
+.entityHelpButton {
+    width: 21%; 
+    text-align: center; 
+    float: left;
+    font-family: Arial, "Arial CE", "Lucida Grande CE", lucida, "Helvetica CE", sans-serif;
+    font-size:  16px;
+    font-weight: bold;
+    color: #4e80b6;
+    text-decoration: none;
+    border-radius: 10px;
+    margin-left: 2%;
+    margin-right: 2%;
+    border-style: solid;
+}
+
+.propertyValueImageGalleria {
+    text-align: center;
+}
+
+h2 {
+    font-size:  20px;
+    font-weight: bold;
+    color: #4e80b6;
+}
+
+.shortFilterBox {
+    width: 30px !important;
+}
+
+.imagePanel {
+    max-height: 200px;
+    max-width: 200px;
+}
+
+.ui-accordion .ui-accordion-header {
+    text-align: left;
+}
+
+.ui-accordion .ui-accordion-content {
+    background: #f2f4f7;    
+}
+
+.transparent-tree {
+    background: none;
+    border: none;
+}
+
+.ui-panel {
+    border: 0px; 
+    background: #f2f4f7; 
+}
+
+.ui-panelgrid tr, .ui-panelgrid td {
+    border: none;    
+}
+
+.mainMenuBar .ui-menu, .mainMenuBar, .mainMenuBar .ui-menu .ui-menu-child {
+    background: #6da5d8;    
+}
+
+.mainMenuBar .ui-menu .ui-menu-child {
+    padding-right: 10px;
+    padding-top: 10px;
+}
+
+.mainMenuBar .ui-menu .ui-menu-child .ui-menuitem {
+    padding-bottom: 5px
+}
+
+.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {    
+    background: #acd6f2;
+    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
+    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
+}
+
+.mainMenuBar .activeSubMenuParentItem .ui-submenu-link {
+    background: #76bff0 !important;
+    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+}
+
+.mainMenuBar .activeMenuItem {
+    background: #76bff0 !important;
+    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
+    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+}
+
+.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link:hover {    
+    background: #d2e9f9;
+}
+
+.mainMenuBar .ui-menu .ui-menuitem {    
+    padding-left: 5px;
+}
+
+.mainMenuBar .ui-menuitem-text {
+    color: #5e5e5e; 
+    font-weight: bold;
+}
+
+.ui-growl-item-container {
+    vertical-align: middle;
+}
+
+.ui-tooltip {
+    text-wrap: normal;
+}
+
+.ui-icon {
+    display: inline-block;
+    opacity: 0.75;
+}
+
+.ui-icon:hover {
+    opacity: 1; 
+}
+
+.ui-dialog-footer, .ui-dialog-buttonpane, .ui-dialog .ui-dialog-buttonpane {
+    background: #6da5d8;
+    text-align: center !important;
+}
+
+.ui-column-dnd-bottom {
+    display: none;
+}
+
+.ui-icon-excel {
+    background-image: url(../../resources/images/excel.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-pdf {
+    background-image: url(../../resources/images/pdf.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-attachment {
+    background-image: url(../../resources/images/attachment.ico) !important;
+    background-repeat: no-repeat;
+    background-position: left
+}
+
+.ui-icon-info2 {
+    background-image: url(../../resources/images/info.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-history {
+    background-image: url(../../resources/images/history.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-component {
+    background-image: url(../../resources/images/component.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-design {
+    background-image: url(../../resources/images/design.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-icon-designElement {
+    background-image: url(../../resources/images/design-element.ico) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.ui-galleria-panel element.style {
+    width: 500px;
+    height: 313px;
+}
+
+.autocomplete input {
+    width: 123px;
+}
+
+.autocomplete button {
+    height: 25px;
+    width: 25px;
+    vertical-align: bottom;
+}
+
+.dataTableCheckbox {
+    text-align: center;
+}
+
+.assemblyTreeTable thead th  {
+    display: none;
+}
+
+.assemblyTreeTable tbody td  {
+    border: 0px;
+}
+
+.assemblyTreeTable .ui-widget-content {
+    border: 0px;
+}
+
+.assemblyTreeTable .ui-treetable-toggler {
+    margin-left: -15px;
+}
+
+.ui-datatable table {
+    table-layout: auto !important;
+}
+
+.ui-panelgrid .ui-panelgrid-cell {
+    background: #f2f4f7;
+    border-style: none;
+    font-weight: bold;
+}
+
+.ui-datatable .ui-sortable-column {
+    box-shadow: none;
+}
+
+.domainEntityRowExpansionDetails {
+    padding-left: 25px;
+}
+
+.domainEntityPropertyValueThumbnail {
+    border: 1px;
+    border-style: solid;
+    border-radius: 3px;
+    border-color: black; 
+}
+
+.newItemInRow {
+    background: #99e699;
+    height: 80px;
+}
+
+.createWizardPanel {
+    border: 1px !important; 
+    border-style: solid !important;
+}
+
+.catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
+    border: 1px solid !important; 
+    border-color: black;         
+}
+
+.panelGridHeaderColumn {
+    background: #C4C4C4 -moz-linear-gradient(center top , rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0)) repeat scroll 0% 0% !important;
+    border: gray !important; 
+    border-style: solid !important; 
+    border-width: 1px !important; 
+    font-weight: bold !important;
+}
+
+.panelGridBorderedCell {
+    border: gray !important; 
+    border-style: solid !important; 
+    border-width: 1px !important; 
+}
+
+.viewTransparentBackground {
+    background-color: rgba(230, 245, 255, 0.85);
+}
+
+.viewTransparentBackground .ui-panelgrid tr td, 
+.viewTransparentBackground .ui-widget-content,
+.viewTransparentBackground .ui-tooltip-text {
+    background: transparent;
+}
+
+.viewTransparentBackground.ui-tooltip.ui-tooltip-right {
+    padding: 0 0;
+}
+
+.viewTransparentBackground.ui-tooltip.ui-tooltip-left {
+    padding: 0 0;
+}
+
+.viewTransparentBackground .ui-tooltip-arrow {
+    border: none;
+}
+
+/* BUG FIX: sometimes not the correct arrow shows up for tooltip.*/
+.ui-tooltip-arrow {
+    border: none;
+}
+
+.viewColors h1 {
+    color: #4E80B6; 
+}
+
+.transparentPanel {
+    background: transparent; 
+}
+
+.triangle-isosceles {
+    position:relative;
+    padding:9px;
+    /*margin:1em 0 1em;*/
+    margin: 0px;
+    color:#000;
+    /* css3 */
+    background-color: rgba(160, 160, 160, .2);
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+    display: inline-block;
+}
+
+.triangle-isosceles.left {
+    margin-left: 10px;
+}
+
+.triangle-isosceles::after {
+    content:"";
+    position:absolute;
+    bottom:-15px; /* value = - border-top-width - border-bottom-width */
+    left:50px; /* controls horizontal position */
+    border-width:15px 15px 0; /* vary these values to change the angle of the vertex */
+    border-style:solid;
+    border-color:#f3961c transparent;
+    /* reduce the damage in FF3.0 */
+    display:block;
+    width:0;
+}
+
+.triangle-isosceles.left:after {
+    top:50%; /* controls vertical position */
+    left:-20px; /* value = - border-left-width - border-right-width */
+    bottom:auto;
+    border-width:4px 20px 3px 0;
+    border-color:transparent rgba(160, 160, 160, .2);
+}
+
+.wideListBox .ui-selectlistbox-listcontainer {
+    width: 200px !important; 
+
+}
+
+.wideListBox {
+    width: 200px;
+}
+
+.shortListBox .ui-selectlistbox-listcontainer {
+    height: 150px !important; 
+}
+
+.shortListBox {
+    height: 150px;
+}
+
+.longListBox .ui-selectlistbox-listcontainer {
+    height: 320px !important; 
+}
+
+.longListBox {
+    height: 320px;
+}
+
+.topAlignedDataCell {
+    vertical-align: top;
+}
+
+.filterViewDataTableColumn {    
+    width: 100%;
+}
+
+.contentSeperatorBorder {
+    border-right: 2px dashed !important;
+}
+
+.clckableLabel {
+    text-decoration: underline; 
+}
+
+.clckableLabel:hover {
+    color: #EEE;
+}
+
+.viewTransparentBackgroundDialog  {
+    background-color: rgba(242, 250, 255, 0.93) !important;
+    border-radius: 5px 5px 10px 10px;
+    vertical-align: central;
+    text-align: center;
+    margin: 0;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.viewTransparentBackgroundDialog-alert {
+    background-color: rgba(255, 180, 180, 0.93) !important;
+}
+
+.viewTransparentBackgroundDialog .ui-panelgrid .ui-panelgrid-cell, 
+.viewTransparentBackgroundDialog .ui-panelgrid>tbody>tr,
+.viewTransparentBackgroundDialog .ui-panelgrid>tbody>td,
+.viewTransparentBackgroundDialog .ui-accordion .ui-accordion-content,
+.viewTransparentBackgroundDialog .ui-dialog-footer,
+.viewTransparentBackgroundDialog .ui-panel,
+.viewTransparentBackgroundDialog .ui-scrollpanel {
+    background: transparent !important;
+}
+
+.viewTransparentBackgroundDialog .ui-scrollpanel {
+    text-align: left;
+}
+
+.viewTransparentBackgroundDialog .ui-tree {
+    text-align: left;
+}
+
+.favoriteOff {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star_no.png) no-repeat;    
+    opacity: 0.75;
+}
+
+.favoriteOff:hover {
+    opacity: 1.0;
+}
+
+
+.favoriteOn {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star.png) no-repeat;    
+}
+
+.favoriteOn:hover {
+    opacity: 0.75; 
+}
+
+.splitButtonMenuItem .ui-menuitem-text{
+    color: rgb(80, 80, 76); 
+}
+
+.centeredContent {
+    display: flex;
+    margin: 0px;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.cdbWizard .ui-wizard-step-titles .ui-state-default {
+    background: #eaf1fa;
+}
+
+.cdbWizard .ui-wizard-step-titles .ui-state-highlight {
+    background: #84afe1;
+}
+
+.cdbWizard .ui-state-highlight .ui-menuitem-link {
+    color: white;
+}
+
+.logWarningRow {
+    background: #ffeb99; 
+}
+
+.noCellPaddingPanelGrid .ui-panelgrid-cell {
+    padding: 0px; 
+}
+
+.filterViewItemHierarchySelectionRepeatPanel {
+    padding-bottom: 10px;
+}
+
+.plainPanelGrid, 
+.plainPanelGrid .ui-panelgrid-cell,
+.plainPanelGrid .ui-widget-content {
+    background: transparent !important;; 
+    padding: 0px;
+}
+
+.expandingInputText.ui-state-focus {
+    width: 250px;
+}
+
+.expandingInputText {
+    width: 60px;
+    transition-duration: 0.5s;
+    transition-property: width; 
+}
+
+.menuBarInputText {
+    height: 20px;
+}
+
+.locationTreeEditPageContainer{
+    width: 275px;
+}
+
+.locationTieredMenuPickerContainer {
+    padding-right: .55em;
+}
+
+.locationTieredMenuPickerContainer .ui-menu {
+    width: 260px;
+    padding: .15em;
+}
+
+.locationTieredMenuPickerContainer .ui-menu a:hover {
+    color: black;
+    font-weight: normal;
+}
+
+.locationTieredMenuPickerContainer .ui-menu .ui-menuitem-text {
+    width: 90%;
+}
+
+.locationTieredMenuPickerContainer .ui-menu .ui-menuitem-link {
+    width: 98%;
+    padding: 0;
+}
+
+.locationTieredMenuPickerContainer .activeLocationMenuItem .ui-state-hover,
+.locationTieredMenuPickerContainer .ui-state-hover {
+    border:1px solid #7096ab;
+    background:#85b2cb linear-gradient(top,rgba(255,255,255,0.6),rgba(255,255,255,0));
+    background:#85b2cb -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0.6)),to(rgba(255,255,255,0)));
+    background:#85b2cb -moz-linear-gradient(top,rgba(255,255,255,0.6),rgba(255,255,255,0));
+    font-weight:bold;
+    color:#313131;
+    -moz-box-shadow:0 0 5px #85b2cb;
+    -webkit-box-shadow:0 0 8px #85b2cb;
+    box-shadow:0 0 8px #85b2cb
+}
+
+.locationTieredMenuPickerContainer .activeLocationMenuItem {
+    background: #c2d1f0; 
+}
