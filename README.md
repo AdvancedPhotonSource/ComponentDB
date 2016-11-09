@@ -12,8 +12,12 @@ For detailed deployment instructions please see: https://confluence.aps.anl.gov/
     git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
     # Navigate inside the distribution. 
     cd ComponentDb
+    # Load default enviornment variables 
+    source setup.sh
     # Build support needed for the application
     make support
+    # reload enviornment variables with new support built. 
+    source setup.sh    
     # Create deployment configuration
     make configuration
     # Create a clean db for the distribution 
@@ -24,6 +28,13 @@ For detailed deployment instructions please see: https://confluence.aps.anl.gov/
     make deploy-web-portal
     # Deploy REST web service
     make deploy-web-service
+    
+    # All done... output of the command below should print url to the deployed portal. 
+    echo "https://`hostname`:8181/cdb"
+    
+    
+# Development 
+Section is coming soon. 
     
 # License
 [Copyright (c) UChicago Argonne, LLC. All rights reserved.](https://github.com/AdvancedPhotonSource/ComponentDB/blob/master/LICENSE)
