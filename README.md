@@ -1,7 +1,7 @@
 # Component DB
 
 # Deployment
-For detailed deployment instructions please refer to our [Administrators Guide](https://confluence.aps.anl.gov/display/APSUCMS/Administrator+Guide).
+For detailed deployment instructions please refer to our [administrators guide](https://confluence.aps.anl.gov/display/APSUCMS/Administrator+Guide).
 
 **Deployment Procedure:**
 
@@ -32,7 +32,7 @@ For detailed deployment instructions please refer to our [Administrators Guide](
     
     
 # Development 
-For detailed development instructions please referto our [developers guide](https://confluence.aps.anl.gov/display/APSUCMS/Developer+Guide). 
+For detailed development instructions please refer to our [developers guide](https://confluence.aps.anl.gov/display/APSUCMS/Developer+Guide). 
 
 **Getting Started with development:**
 
@@ -64,6 +64,7 @@ For detailed development instructions please referto our [developers guide](http
     
     # Start development
     make dev-config 
+    
     # For portal development
     ../support-`hostname`/netbeans/netbeans-8.1/bin/netbeans
     # Open the project: src/java/CdbWebPortal
