@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -26,10 +26,10 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
-. ${CDB_ENV_FILE} > /dev/null 
+. ${CDB_ENV_FILE} > /dev/null
 
 # Use first argument as db name, if provided
 if [ ! -z "$1" ]; then
@@ -44,7 +44,7 @@ fi
 
 # Backup web app
 echo "Backing up $CDB_DB_NAME web app"
-# Find the last version already backed up. 
+# Find the last version already backed up.
 CDB_WAR_BACKUP_DIR=$CDB_INSTALL_DIR/backup/$CDB_DB_NAME/deployments
 if [ ! -d $CDB_WAR_BACKUP_DIR ]; then
     mkdir -p $CDB_WAR_BACKUP_DIR
@@ -61,12 +61,12 @@ lastAddedWarFileName=`ls -t $CDB_WAR_BACKUP_DIR | head -1`
 lastAddedWarFilePath=$CDB_WAR_BACKUP_DIR/$lastAddedWarFileName
 
 if [ -z "$lastAddedWarFileName" ]; then
-    createNewDeploymentBackupFile=true 
+    createNewDeploymentBackupFile=true
 else
     # Compare hash of latest saved war deployment file
-    currentWarHash=`md5sum $CDB_GLASSFISH_WAR_FILE_PATH | awk '{print $1}'` 
+    currentWarHash=`md5sum $CDB_GLASSFISH_WAR_FILE_PATH | awk '{print $1}'`
     lastAddedWarFile=`ls -t $CDB_WAR_BACKUP_DIR | head -1`
-    
+
     lastAddedWarHash=`md5sum $lastAddedWarFilePath | awk '{print $1}'`
 
     if [ "$currentWarHash" != "$lastAddedWarHash" ]; then
@@ -79,7 +79,7 @@ getNextBackupCounter() {
 
     fileBaseName=`basename $pathUpToCounter`
     lastPath=`ls -t $pathUpToCounter* | head -1 | grep $fileBaseName-`
-    
+
     if [ -z $lastPath ]; then
 	return 1
     else
@@ -93,13 +93,13 @@ getNextBackupCounter() {
 
 if $createNewDeploymentBackupFile ; then
     deploymentBackupFileName="$CDB_DB_NAME-$timestamp.war"
-    
-    # Check if the file with standard name was already created. 
+
+    # Check if the file with standard name was already created.
     if [ -f "$CDB_WAR_BACKUP_DIR/$deploymentBackupFileName" ]; then
 	deploymentBackupFileBaseName=`echo "$deploymentBackupFileName" | awk 'BEGIN { FS = "." } ; { print $1 }'`
 
 	getNextBackupCounter "$CDB_WAR_BACKUP_DIR/$deploymentBackupFileBaseName"
-	
+
 	backupCounter=$?
 	deploymentBackupFileName="$deploymentBackupFileBaseName-$backupCounter.war"
     fi
@@ -109,7 +109,7 @@ if $createNewDeploymentBackupFile ; then
     rsync -arlvP $CDB_GLASSFISH_WAR_FILE_PATH $deploymentBackupFilePath
 fi
 
-# Create Symbolic link to the backup with a relative path this way the backup directory is portable. 
+# Create Symbolic link to the backup with a relative path this way the backup directory is portable.
 lastAddedWarFilePath=$CDB_WAR_BACKUP_DIR/`ls -t "$CDB_WAR_BACKUP_DIR" | head -1`
 backupLinkFileName="deployment-$CDB_DB_NAME.war"
 backupLinkFilePath="$CDB_BACKUP_DIR/deployment-$CDB_DB_NAME.war"
@@ -117,13 +117,13 @@ backupLinkFilePath="$CDB_BACKUP_DIR/deployment-$CDB_DB_NAME.war"
 if [ -f "$CDB_BACKUP_DIR/$backupLinkFileName" ]; then
     backupLinkFileBaseName=`echo "$backupLinkFileName" | awk 'BEGIN { FS = "." } ; { print $1 }'`
     lastBackupLinkFilePath=`ls -t $CDB_BACKUP_DIR/$backupLinkFileBaseName* | head -1`
-   
+
     linkHash=`md5sum $lastBackupLinkFilePath | awk '{print $1}'`
     lastAddedWarHash=`md5sum $lastAddedWarFilePath | awk '{print $1}'`
 
     if [ "$linkHash" == "$lastAddedWarHash" ]; then
 	backupLinkFilePath=$lastBackupLinkFilePath
-    else	
+    else
 	getNextBackupCounter "$CDB_BACKUP_DIR/$backupLinkFileBaseName"
 	backupCounter=$?
 	backupLinkFileName="$backupLinkFileBaseName-$backupCounter.war"
@@ -134,7 +134,7 @@ backupLinkFilePath=$CDB_BACKUP_DIR/$backupLinkFileName
 
 if [ ! -f $backupLinkFilePath ]; then
     lastAddedWarFileName=`basename $lastAddedWarFilePath`
-    echo "Creating new deployment backup link: $backupLinkFilePath -> $lastAddedWarFileName" 
+    echo "Creating new deployment backup link: $backupLinkFilePath -> $lastAddedWarFileName"
     ln -s ../deployments/$lastAddedWarFileName $backupLinkFilePath
 fi
 

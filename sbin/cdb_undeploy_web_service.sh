@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -19,7 +19,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null

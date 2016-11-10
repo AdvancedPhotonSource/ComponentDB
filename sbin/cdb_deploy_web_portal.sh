@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -20,7 +20,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null
@@ -76,7 +76,7 @@ fi
 mkdir -p $CDB_DATA_DIR/propertyValue
 mkdir -p $CDB_DATA_DIR/log
 
-# Modify war file for proper settings and repackage it into new war 
+# Modify war file for proper settings and repackage it into new war
 echo "Repackaging war file for context root $CDB_CONTEXT_ROOT"
 cd $CDB_DIST_DIR
 rm -rf $CDB_CONTEXT_ROOT
@@ -103,7 +103,7 @@ eval $cmd
 cmd="cat $configFile \
      | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
      | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g' > $configFile.2 && mv $configFile.2 $configFile"
-eval $cmd 
+eval $cmd
 
 configFile=WEB-INF/classes/resources.properties
 cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
@@ -141,5 +141,3 @@ while [ $t -lt $WAIT_TIME ]; do
     t=`expr $t + 1`
 done
 echo "Deployment Status: $deploymentStatus"
-
-

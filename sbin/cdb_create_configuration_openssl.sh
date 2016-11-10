@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -18,7 +18,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null
@@ -39,16 +39,16 @@ read -p "Enter the organizational name [company]: " SSL_ORG_NAME
 read -p "Enter the secondary organizational name [company]: " SSL_SECONDARY_ORG_NAME
 read -p "Enter the organizational unit name [accounting]: " SSL_ORG_UNIT_NAME
 
-if [ -z $SSL_ORG_NAME ]; then 
+if [ -z $SSL_ORG_NAME ]; then
     SSL_ORG_NAME=company
 fi
 
-if [ -z $SSL_SECONDARY_ORG_NAME ]; then 
+if [ -z $SSL_SECONDARY_ORG_NAME ]; then
     SSL_SECONDARY_ORG_NAME=company
 fi
 
 if [ -z $SSL_ORG_UNIT_NAME ]; then
-    SSL_ORG_UNIT_NAME=accounting 
+    SSL_ORG_UNIT_NAME=accounting
 fi
 
 cmd="cat $OPEN_SSL_TEMPLATE_FILE \
@@ -58,4 +58,3 @@ cmd="cat $OPEN_SSL_TEMPLATE_FILE \
     > $OPENSSL_CONFIG_FILE"
 
 eval $cmd || exit 1
-

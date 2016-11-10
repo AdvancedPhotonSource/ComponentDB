@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -102,7 +102,7 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
     if [[ -z $emailDomainSection ]]; then
       emailDomainSection=`hostname`
     fi
-    
+
     generatedAdminEmail="`whoami`@$emailDomainSection"
     generatedFromEmail="cdb@$emailDomainSection"
 

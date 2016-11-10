@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -24,7 +24,7 @@ glassfishInstallDir=$topDir/glassfish/$CDB_HOST_ARCH
 javaInstallDir=$topDir/java/$CDB_HOST_ARCH
 
 export AS_JAVA=$javaInstallDir
-ASADMIN_CMD=$glassfishInstallDir/bin/asadmin 
+ASADMIN_CMD=$glassfishInstallDir/bin/asadmin
 KEYTOOL_CMD=$AS_JAVA/bin/keytool
 
 # get glassfish
@@ -54,11 +54,11 @@ mv glassfish* `basename $glassfishInstallDir`
 # owner/group can execute/read/modify bin files and autodeploy
 # remove privileges from others
 chmod -R ug+rwx $glassfishInstallDir/bin
-chmod -R ug+rwx $glassfishInstallDir/glassfish/bin 
+chmod -R ug+rwx $glassfishInstallDir/glassfish/bin
 chmod -R ug+rwx $glassfishInstallDir/glassfish/domains/domain1/autodeploy/
 
 chmod -R o-rwx $glassfishInstallDir/bin
-chmod -R o-rwx $glassfishInstallDir/glassfish/bin 
+chmod -R o-rwx $glassfishInstallDir/glassfish/bin
 chmod -R o-w $glassfishInstallDir/glassfish/domains/domain1/autodeploy
 
 # backup passwords
@@ -70,7 +70,7 @@ for f in domains/domain1/master-password domains/domain1/local-password; do
         PASSWORD_FILES="$PASSWORD_FILES $f"
     fi
 done
-PASSWORD_TAR_FILE=passwords.orig.tar 
+PASSWORD_TAR_FILE=passwords.orig.tar
 tar cf $PASSWORD_TAR_FILE $PASSWORD_FILES
 
 # Change master password
@@ -161,7 +161,7 @@ cd $glassfishInstallDir/glassfish/domains/domain1/config/
 $KEYTOOL_CMD -list -keystore keystore.jks -storepass $MASTER_PASSWORD
 
 # update keystore.jks
-echo 
+echo
 echo "Updating keystore"
 $KEYTOOL_CMD -delete -alias s1as -keystore keystore.jks -storepass $MASTER_PASSWORD
 $KEYTOOL_CMD -delete -alias glassfish-instance -keystore keystore.jks -storepass $MASTER_PASSWORD
@@ -170,27 +170,27 @@ $KEYTOOL_CMD -genkeypair -alias s1as -dname "$GLASSFISH_DNAME" -keyalg RSA -keys
 $KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$GLASSFISH_DNAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 
 # check keystore.jks
-echo 
+echo
 echo "Checking keystore"
 $KEYTOOL_CMD -list -keystore keystore.jks -storepass $MASTER_PASSWORD
 
 # export certificates from keystore.jks
-echo 
+echo
 echo "Exporting certificates"
 $KEYTOOL_CMD -exportcert -alias s1as -file s1as.cert -keystore keystore.jks -storepass $MASTER_PASSWORD
 $KEYTOOL_CMD -exportcert -alias glassfish-instance -file glassfish-instance.cert -keystore keystore.jks -storepass $MASTER_PASSWORD
 
 # update cacerts.jks
-echo 
+echo
 echo "Updating cacerts.jks, using master password as key password"
 $KEYTOOL_CMD -delete -alias s1as -keystore cacerts.jks -storepass $MASTER_PASSWORD
-$KEYTOOL_CMD -delete -alias glassfish-instance -keystore cacerts.jks -storepass $MASTER_PASSWORD 
+$KEYTOOL_CMD -delete -alias glassfish-instance -keystore cacerts.jks -storepass $MASTER_PASSWORD
 
 $KEYTOOL_CMD -importcert -noprompt -alias s1as -file s1as.cert -keystore cacerts.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 $KEYTOOL_CMD -importcert -noprompt -alias glassfish-instance -file glassfish-instance.cert -keystore cacerts.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 
 # check cacerts.jks and tidy up
-echo 
+echo
 echo "Checking cacerts.jks"
 $KEYTOOL_CMD -list -keystore cacerts.jks -storepass $MASTER_PASSWORD > /dev/null || exit 1
 rm -f s1as.cert glassfish-instance.cert
@@ -199,24 +199,24 @@ rm -f s1as.cert glassfish-instance.cert
 # glassfish/domains/domain1/config/domain.xml
 
 # start glassfish
-echo 
+echo
 echo "Starting glassfish"
 $ASADMIN_CMD start-domain domain1
 
 # enable https for remote access to admin console
 # requests to http://xxx:4848 are redirected to https://xxx:4848
-echo 
+echo
 echo "Enabling https"
 $ASADMIN_CMD set server-config.network-config.protocols.protocol.admin-listener.security-enabled=true
 $ASADMIN_CMD enable-secure-admin
 
 # list current JVM options
-echo 
+echo
 echo "Current jvm options: "
 $ASADMIN_CMD list-jvm-options
 
 # change JVM Options
-echo 
+echo
 echo "Updating jvm options"
 $ASADMIN_CMD delete-jvm-options -Xmx512m
 $ASADMIN_CMD create-jvm-options -Xmx2048m
@@ -283,4 +283,3 @@ $ASADMIN_CMD set server.network-config.protocols.protocol.admin-listener.http.xp
 echo "Stopping glassfish"
 $ASADMIN_CMD stop-domain domain1
 echo "Glassfish installation/configuration done"
-

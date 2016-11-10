@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -49,6 +49,3 @@ if [ ! -d $CDB_DATA_DIR ]; then
     mkdir -p "$CDB_DATA_DIR/log"
     mkdir -p "$CDB_DATA_DIR/propertyValue"
 fi
-
-
-

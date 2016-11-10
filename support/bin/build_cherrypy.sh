@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -45,6 +45,3 @@ else
     echo "File $srcDir/$cherryPyInstallFileName was not found"
     exit 1
 fi
-
-
-
