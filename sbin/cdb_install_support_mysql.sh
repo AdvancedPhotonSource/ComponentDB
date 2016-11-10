@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -23,5 +23,3 @@ execute cp -R $CDB_ROOT_DIR/support $CDB_SUPPORT_DIR
 
 cd $CDB_SUPPORT_DIR
 execute $CDB_SUPPORT_DIR/bin/build_mysql.sh
-
-

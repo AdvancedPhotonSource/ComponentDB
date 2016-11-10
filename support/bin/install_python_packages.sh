@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -17,4 +17,3 @@ $binDir/build_routes.sh || exit 1
 $binDir/build_sqlalchemy.sh || exit 1
 $binDir/build_mysql_python.sh || exit 1
 $binDir/build_suds.sh || exit 1
-

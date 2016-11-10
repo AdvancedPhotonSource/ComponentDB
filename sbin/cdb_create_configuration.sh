@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -18,7 +18,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null
@@ -32,10 +32,10 @@ echo "Using DB name: $CDB_DB_NAME"
 
 CDB_ETC_DIR=$CDB_INSTALL_DIR/etc
 
-# Look for deployment file in etc directory. 
+# Look for deployment file in etc directory.
 deployConfigFile=$CDB_ETC_DIR/${CDB_DB_NAME}.deploy.conf
 if [ -f $deployConfigFile ]; then
-    echo "Using deployment config file: $deployConfigFile"    
+    echo "Using deployment config file: $deployConfigFile"
     . $deployConfigFile
 else
     echo "Deployment config file $deployConfigFile not found, creating new file."
@@ -44,7 +44,7 @@ fi
 
 
 
-# Get a DB name based on configuration file. 
+# Get a DB name based on configuration file.
 CDB_DB_NAME=${CDB_DB_NAME:=$1}
 CDB_DB_NAME=${CDB_DB_NAME:=cdb}
 
@@ -77,13 +77,13 @@ read -p "Service Port [$CDB_WEB_SERVICE_PORT]: " userServicePort
 read -p "Auth LDAP server [$CDB_LDAP_AUTH_SERVER_URL]: " userLdapServerUrl
 read -p "Auth LDAP dn format (use %s for username placeholder) [$CDB_LDAP_AUTH_DN_FORMAT]: " userLdapServerDnFormat
 
-if [ ! -z $userDbName ]; then 
+if [ ! -z $userDbName ]; then
 	CDB_DB_NAME=$userDbName
 fi
 if [ ! -z $userDbUser ]; then
 	CDB_DB_USER=$userDbUser
 fi
-if [ ! -z $userDbHost ]; then 
+if [ ! -z $userDbHost ]; then
 	CDB_DB_HOST=$userDbHost
 fi
 if [ ! -z $userDbPort ]; then
@@ -92,7 +92,7 @@ fi
 if [ ! -z $userDbAdminUser ]; then
 	CDB_DB_ADMIN_USER=$userDbAdminUser
 fi
-if [ ! -z $userDbAdminHosts ]; then 
+if [ ! -z $userDbAdminHosts ]; then
 	CDB_DB_ADMIN_HOSTS=$userDbAdminHosts
 fi
 if [ ! -z $userDbCharset ]; then
@@ -151,9 +151,3 @@ echo "Saving configuration to: $deployConfigFile"
 echo -e $configContents > $deployConfigFile
 
 $CDB_ROOT_DIR/sbin/cdb_create_configuration_openssl.sh
-
-
-
-
-
-

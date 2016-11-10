@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -15,7 +15,7 @@ pythonInstallDir=$topDir/python/$CDB_HOST_ARCH
 
 mkdir -p $buildDir
 
-# Install. 
+# Install.
 export PATH=$pythonInstallDir/bin:$PATH
 export PATH=$pythonInstallDir/lib:$PATH
 export LD_LIBRARY_PATH=$pythonInstallDir/lib:$LD_LIBRARY_PATH
@@ -24,6 +24,3 @@ echo Installing setuptools
 wget --no-check-certificate https://bootstrap.pypa.io/ez_setup.py -O - | python || exit 1
 rm -f setuptools*.zip
 cd $topDir
-
-
-

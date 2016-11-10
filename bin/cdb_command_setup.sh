@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
 
 # Helper functions for CDB commands.
 
-# Fix command line arguments 
+# Fix command line arguments
 CDB_COMMAND_ARGS=""
 while [ $# -ne 0 ]; do
     arg=$1
@@ -17,11 +17,9 @@ while [ $# -ne 0 ]; do
             CDB_COMMAND_ARGS="$CDB_COMMAND_ARGS $key=\"$value\""
         else
             CDB_COMMAND_ARGS="$CDB_COMMAND_ARGS $key"
-        fi 
+        fi
     else
         CDB_COMMAND_ARGS="$CDB_COMMAND_ARGS \"$arg\""
     fi
     shift
 done
-
-

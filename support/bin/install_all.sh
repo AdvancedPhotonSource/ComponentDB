@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -10,4 +10,3 @@ binDir=$topDir/bin
 
 $binDir/install_java_packages.sh || exit 1
 $binDir/install_python_packages.sh || exit 1
-

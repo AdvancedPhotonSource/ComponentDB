@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -46,4 +46,3 @@ else
     echo "File $srcDir/$MYSQL_TGZ_FILE not found."
     exit 1
 fi
-

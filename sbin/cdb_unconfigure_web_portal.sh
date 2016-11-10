@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -19,7 +19,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null
@@ -48,7 +48,7 @@ GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 
 export AS_JAVA=$JAVA_HOME
-ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin 
+ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
 CDB_DB_POOL=mysql_${CDB_DB_NAME}_DbPool
 CDB_DATA_SOURCE=${CDB_DB_NAME}_DataSource
@@ -66,5 +66,3 @@ $ASADMIN_CMD delete-jdbc-resource ${CDB_DATA_SOURCE}
 # delete JDBC connection pool
 echo "Deleting JDBC connection pool $CDB_DB_POOL"
 $ASADMIN_CMD delete-jdbc-connection-pool ${CDB_DB_POOL}
-
-

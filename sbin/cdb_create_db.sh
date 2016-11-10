@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -32,10 +32,10 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 1
 fi
-. ${CDB_ENV_FILE} > /dev/null 
+. ${CDB_ENV_FILE} > /dev/null
 CDB_ETC_DIR=$CDB_INSTALL_DIR/etc
 
 # Use first argument as db name, if provided
@@ -85,7 +85,7 @@ if [ -z "$CDB_DB_ADMIN_PASSWORD" ]; then
 fi
 
 
-# Read user db password if needed 
+# Read user db password if needed
 CDB_DB_PASSWORD=$CDB_DB_USER_PASSWORD
 if [ -z "$CDB_DB_USER_PASSWORD" ]; then
     CDB_DB_PASSWD_FILE="$CDB_INSTALL_DIR/etc/$CDB_DB_NAME.db.passwd"
@@ -159,7 +159,7 @@ mysqlCmd="$mysqlCmd -D $CDB_DB_NAME <"
 execute $mysqlCmd create_cdb_tables.sql
 
 # create db password file
-if [ ! -d $CDB_ETC_DIR ]; then 
+if [ ! -d $CDB_ETC_DIR ]; then
     mkdir -p $CDB_ETC_DIR
 fi
 passwordFile=$CDB_ETC_DIR/$CDB_DB_NAME.db.passwd

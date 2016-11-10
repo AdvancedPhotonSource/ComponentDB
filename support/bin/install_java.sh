@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -27,7 +27,7 @@ if [ ! -f $javaFileName ]; then
         licenseAgreement="n"
     fi
 
-    if [ "$licenseAgreement" == "y" -o "$licenseAgreement" == 'Y' ]; then
+    if [ "$licenseAgreement" = "y" -o "$licenseAgreement" = "Y" ]; then
         echo 'License Accepted'
         echo "Retrieving $DOWNLOAD_URL"
         curl -L -b "oraclelicense=accept-securebackup-cookie" -O $DOWNLOAD_URL
@@ -57,6 +57,3 @@ if [ -f $javaFileName ]; then
 else
     echo "Error: filename $srcDir/$$javaFileName does not exist"
 fi
-
-
-

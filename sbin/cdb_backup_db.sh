@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -32,10 +32,10 @@ fi
 CDB_SQL_DIR=$CDB_ROOT_DIR/db/sql/cdb
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
-. ${CDB_ENV_FILE} > /dev/null 
+. ${CDB_ENV_FILE} > /dev/null
 
 # Use first argument as db name, if provided
 if [ ! -z "$1" ]; then
@@ -70,12 +70,12 @@ fullBackupFilePath=$CDB_BACKUP_DIR/$backupFile
 
 # Check for database passwd file
 databasePasswdFile=$CDB_INSTALL_DIR/etc/$CDB_DB_NAME.db.passwd
-if [ -f $databasePasswdFile ]; then 
+if [ -f $databasePasswdFile ]; then
     CDB_DB_USER_PASSWORD=`cat $databasePasswdFile`
-else 
-    if [ -t 0 ]; then 
+else
+    if [ -t 0 ]; then
 	read -s -p "Enter MySQL $CDB_DB_NAME password: " CDB_DB_USER_PASSWORD
-    else 
+    else
 	# Script is not runnig in an interactive shell
 	# User cannot be prompted for password
 	>&2 echo "ERROR: $databasePasswdFile does not exist"
@@ -108,7 +108,7 @@ while [ $lockCnt -lt $nTableLocks ]; do
     lockCnt=`expr $lockCnt + 1`
     headLine=`expr $lockCnt \* 2`
     tailLine=2
-    echo "Working on table lock #: $lockCnt" 
+    echo "Working on table lock #: $lockCnt"
     grep -n "LOCK TABLES" $fullBackupFilePath | head -$headLine | tail -$tailLine > $processingFile
     dbTable=`cat $processingFile | head -1 | awk '{print $3}' | sed 's?\`??g'`
     firstLine=`cat $processingFile | head -1 | cut -f1 -d':'`
@@ -121,4 +121,3 @@ done
 rm -f $processingFile
 
 echo "Backup of $CDB_DB_NAME is done."
-

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -18,12 +18,12 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    >&2 echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    >&2 echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 1
 fi
 . ${CDB_ENV_FILE} > /dev/null
 
-# Unset custom varaibles that need to still be set from ENV_FILE. 
+# Unset custom varaibles that need to still be set from ENV_FILE.
 unset CDB_DB_NAME
 unset CDB_DATA_DIR
 
@@ -34,13 +34,13 @@ if [ ! -z "$1" ]; then
     else
     	CDB_DB_NAME=$1
     fi
-else 
+else
     >&2 echo "No databse or data directory provided, please provide the database or data directory and try again"
     echo "USAGE: $0 [CDB_DB_NAME | CDB_DATA_DIR]"
     exit 1
 fi
 
-if [ -z $CDB_DATA_DIR ]; then 
+if [ -z $CDB_DATA_DIR ]; then
     echo "Using DB name: $CDB_DB_NAME"
 
     # Look for deployment file in etc directory, and use it to override
@@ -64,19 +64,19 @@ fi
 CDB_BUILD_WEB_INF_DIR=$CDB_ROOT_DIR/src/java/CdbWebPortal/build/web/WEB-INF
 
 if [ ! -d "$CDB_BUILD_WEB_INF_DIR" ]; then
-    >&2 echo "Build directory: $CDB_BUILD_WEB_INF_DIR was not found, please build the portal and try again" 
+    >&2 echo "Build directory: $CDB_BUILD_WEB_INF_DIR was not found, please build the portal and try again"
     exit 1
 fi
 
-echo "Using data directory: $CDB_DATA_DIR" 
-echo 
-read -p "Would you like to backup the data directory before continuing? [Y/n] " backupDataDir 
+echo "Using data directory: $CDB_DATA_DIR"
+echo
+read -p "Would you like to backup the data directory before continuing? [Y/n] " backupDataDir
 if [ -z $backupDataDir ]; then
     backupDataDir="y"
 fi
 
 if [ $backupDataDir == "y" -o $backupDataDir == "Y" ]; then
-    if [ -z $CDB_DB_NAME ]; then 
+    if [ -z $CDB_DB_NAME ]; then
 	read -p "Please enter the deployment database for the entered data directory [cdb]: " CDB_DB_NAME
 	if [ -z $CDB_DB_NAME ]; then
 	    CDB_DB_NAME="cdb"
@@ -92,7 +92,7 @@ if [ $backupDataDir == "y" -o $backupDataDir == "Y" ]; then
     fi
 
     if [ $proceedBackup == "y" -o $proceedBackup == "Y" ]; then
-	echo "Backing up" 
+	echo "Backing up"
 
 	if [ ! -d $CDB_BACKUP_DATA_DIR ]; then
 	    echo "Creating Directory: $CDB_BACKUP_DATA_DIR"
@@ -105,9 +105,9 @@ if [ $backupDataDir == "y" -o $backupDataDir == "Y" ]; then
 	echo "Executing: $backupCommand"
 	eval $backupCommand
     else
-	echo "Exiting script" 
+	echo "Exiting script"
 	exit
-    fi  
+    fi
 fi
 
 javaCmd="java -cp $CDB_BUILD_WEB_INF_DIR/classes:$CDB_BUILD_WEB_INF_DIR/lib/* gov.anl.aps.cdb.portal.utilities.GalleryUtility $CDB_DATA_DIR"

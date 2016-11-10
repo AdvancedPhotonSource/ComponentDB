@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -9,7 +9,7 @@
 #
 # Usage:
 #
-# $0 
+# $0
 #
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
@@ -18,7 +18,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null
@@ -71,7 +71,7 @@ else
 fi
 
 echo "Restarting mysqld service"
-$CDB_MYSQLD_INIT_CMD restart 
+$CDB_MYSQLD_INIT_CMD restart
 
 if [ $setRootPassword = "true" ]; then
     if [ -z "$CDB_DB_ADMIN_PASSWORD" ]; then
@@ -82,9 +82,8 @@ if [ $setRootPassword = "true" ]; then
         echo
     fi
     echo "Setting DB root password"
-    cmd="echo \"SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST" 
+    cmd="echo \"SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST"
     eval $cmd || exit 1
 fi
 
 echo "Done deploying mysqld service"
-

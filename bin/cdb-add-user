@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -17,5 +17,3 @@ fi
 source cdb_command_setup.sh
 
 eval "$CDB_ROOT_DIR/src/python/cdb/common/db/cli/addUserCli.py $CDB_COMMAND_ARGS"
-
-

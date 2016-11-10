@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -40,7 +40,7 @@ execute cp -R $CDB_ROOT_DIR/support $CDB_SUPPORT_DIR
 
 cd $CDB_SUPPORT_DIR
 echo "Building support in $PWD"
-execute svn update
+
 execute $CDB_SUPPORT_DIR/bin/clean_all.sh
 execute $CDB_SUPPORT_DIR/bin/install_all.sh
 
@@ -49,6 +49,3 @@ if [ ! -d $CDB_DATA_DIR ]; then
     mkdir -p "$CDB_DATA_DIR/log"
     mkdir -p "$CDB_DATA_DIR/propertyValue"
 fi
-
-
-

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -19,7 +19,7 @@ if [ -z "${CDB_ROOT_DIR}" ]; then
 fi
 CDB_ENV_FILE=${CDB_ROOT_DIR}/setup.sh
 if [ ! -f ${CDB_ENV_FILE} ]; then
-    echo "Environment file ${CDB_ENV_FILE} does not exist." 
+    echo "Environment file ${CDB_ENV_FILE} does not exist."
     exit 2
 fi
 . ${CDB_ENV_FILE} > /dev/null
@@ -46,7 +46,7 @@ GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 
 export AS_JAVA=$JAVA_HOME
-ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin 
+ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
 CDB_DB_HOST=${CDB_DB_HOST:=localhost}
 CDB_DB_PORT=${CDB_DB_PORT:=3306}
@@ -59,8 +59,8 @@ CDB_DOMAIN=domain1
 passwordFile=$CDB_INSTALL_DIR/etc/$CDB_DB_NAME.db.passwd
 if [ -f $passwordFile ]; then
     CDB_DB_PASSWORD=`cat $passwordFile`
-else 
-	CDB_DB_PASSWORD=${CDB_DB_PASSWORD:=cdb}	
+else
+	CDB_DB_PASSWORD=${CDB_DB_PASSWORD:=cdb}
 fi
 
 # copy mysql driver
@@ -80,7 +80,6 @@ $ASADMIN_CMD create-jdbc-connection-pool --datasourceclassname com.mysql.jdbc.jd
 echo "Creating JDBC resource $CDB_DATA_SOURCE"
 $ASADMIN_CMD create-jdbc-resource --connectionpoolid ${CDB_DB_POOL} ${CDB_DATA_SOURCE}
 
-# test the connection settings 
+# test the connection settings
 echo "Testing connection"
 $ASADMIN_CMD ping-connection-pool $CDB_DB_POOL || exit 1
-

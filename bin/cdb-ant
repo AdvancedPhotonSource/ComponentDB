@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -20,5 +20,3 @@ export JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 export ANT_HOME=$CDB_SUPPORT_DIR/ant
 export PATH=$ANT_HOME/bin:$PATH
 ant $@
-
-

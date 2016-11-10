@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
@@ -31,7 +31,7 @@ CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.conf
 CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/${CDB_DB_NAME}.log
 CDB_DB_PASSWORD_FILE=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.db.passwd
 read -p "Please enter a url for the LDAP server: " CDB_LDAP_AUTH_SERVER_URL
-read -p "Please enter the dn string for the LDAP server (%s is replaced with username): " CDB_LDAP_AUTH_DN_FORMAT 
+read -p "Please enter the dn string for the LDAP server (%s is replaced with username): " CDB_LDAP_AUTH_DN_FORMAT
 
 echo "Preparing development configuration"
 mkdir -p $CDB_ETC_DIR
