@@ -40,7 +40,7 @@ execute cp -R $CDB_ROOT_DIR/support $CDB_SUPPORT_DIR
 
 cd $CDB_SUPPORT_DIR
 echo "Building support in $PWD"
-execute svn update
+
 execute $CDB_SUPPORT_DIR/bin/clean_all.sh
 execute $CDB_SUPPORT_DIR/bin/install_all.sh
 

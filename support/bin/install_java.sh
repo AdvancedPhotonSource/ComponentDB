@@ -27,7 +27,7 @@ if [ ! -f $javaFileName ]; then
         licenseAgreement="n"
     fi
 
-    if [ "$licenseAgreement" == "y" -o "$licenseAgreement" == 'Y' ]; then
+    if [ "$licenseAgreement" = "y" -o "$licenseAgreement" = "Y" ]; then
         echo 'License Accepted'
         echo "Retrieving $DOWNLOAD_URL"
         curl -L -b "oraclelicense=accept-securebackup-cookie" -O $DOWNLOAD_URL
