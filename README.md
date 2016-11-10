@@ -1,7 +1,7 @@
 # Component DB
 
 # Deployment
-For detailed deployment instructions please see: https://confluence.aps.anl.gov/display/APSUCMS/Administrator+Guide
+For detailed deployment instructions please refer to our [Administrators Guide](https://confluence.aps.anl.gov/display/APSUCMS/Administrator+Guide).
 
 **Deployment Procedure:**
 
@@ -12,11 +12,9 @@ For detailed deployment instructions please see: https://confluence.aps.anl.gov/
     git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
     # Navigate inside the distribution. 
     cd ComponentDb
-    # Load default enviornment variables 
-    source setup.sh
     # Build support needed for the application
     make support
-    # reload enviornment variables with new support built. 
+    # load enviornment variables with new support built. 
     source setup.sh    
     # Create deployment configuration
     make configuration
@@ -34,7 +32,44 @@ For detailed deployment instructions please see: https://confluence.aps.anl.gov/
     
     
 # Development 
-Section is coming soon. 
+For detailed development instructions please referto our [developers guide](https://confluence.aps.anl.gov/display/APSUCMS/Developer+Guide). 
+
+**Getting Started with development:**
+
+    # first make a fork of this project. 
+    # create a desired development directory and cdb into it
+    mkdir $desired_dev_directory
+    cd $desired_dev_directory
+    git clone https://github.com/AdvancedPhotonSource/ComponentDB.git
+    
+    # Getting support software
+    cd ComponentDb
+    make support 
+    
+    # Getting the tools for development of the portal (Netbeans)
+    wget http://download.netbeans.org/netbeans/8.1/final/bundles/netbeans-8.1-linux.sh
+    ./netbeans-8.1-linux.sh
+    # In the installation instructions, ensure that:
+    # - Glassfish Option is checked
+    # - Recommended Directories
+    #   - desired_dev_directory/support-`hostname`/netbeans/netbeans-8.1
+    #   - desired_dev_directory/support-`hostname`/netbeans/glassfish-4.1.1
+    rm netbeans-8.1-linux.sh    # When installation of netbeans is complete 
+    
+    # Getting the db ready
+    # mysql could be installed as part of ComponentDB support by running 'make support-mysql' 
+    # - Afterwards run `./etc/init.d/cdb-mysql start`
+    # if you have mysql installed run...
+    make clean-db     # sample-db will be coming later 
+    
+    # Start development
+    make dev-config 
+    # For portal development
+    ../support-`hostname`/netbeans/netbeans-8.1/bin/netbeans
+    # Open the project: src/java/CdbWebPortal
+    
+    # For web service development (Use your favorite python editor) to test run web service using:
+    ./sbin/cdbWebService.sh
     
 # License
 [Copyright (c) UChicago Argonne, LLC. All rights reserved.](https://github.com/AdvancedPhotonSource/ComponentDB/blob/master/LICENSE)
