@@ -31,11 +31,6 @@ public class DocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
     }
 
     @Override
-    public String getEditActionBean() {
-        return "propertyValueDocumentUploadBean";
-    }
-
-    @Override
     public void setTargetValue(PropertyValue propertyValue) {
         String targetLink = propertyValue.getValue();
         if (targetLink != null && !targetLink.isEmpty()) {

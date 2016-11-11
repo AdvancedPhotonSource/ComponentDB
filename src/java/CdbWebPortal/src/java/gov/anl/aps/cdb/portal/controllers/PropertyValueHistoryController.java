@@ -348,8 +348,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
         for (PropertyValueHistory propertyValueHistory : selectedPropertyValueHistoryList) {
             propertyTypeHandler.setDisplayValue(propertyValueHistory);
             propertyTypeHandler.setTargetValue(propertyValueHistory);
-            propertyTypeHandler.setInfoActionCommand(propertyValueHistory);
-            propertyTypeHandler.resetOneTimeUseVariables();
+            propertyTypeHandler.setInfoActionCommand(propertyValueHistory);            
         }
     }
 

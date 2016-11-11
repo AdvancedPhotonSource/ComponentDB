@@ -257,7 +257,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         }
         propertyType.setDisplayType(displayType);
         propertyValue.setHandlerInfoSet(true);
-        propertyTypeHandler.resetOneTimeUseVariables();
         return displayType;
     }
 
