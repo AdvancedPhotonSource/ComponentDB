@@ -57,12 +57,13 @@ For detailed development instructions please refer to our [developers guide](htt
     
     # Getting the tools for development of the portal (Netbeans)
     wget http://download.netbeans.org/netbeans/8.1/final/bundles/netbeans-8.1-linux.sh
-    ./netbeans-8.1-linux.sh
+    sh netbeans-8.1-linux.sh
     # In the installation instructions, ensure that:
     # - Glassfish Option is checked
     # - Recommended Directories
     #   - desired_dev_directory/support-`hostname`/netbeans/netbeans-8.1
     #   - desired_dev_directory/support-`hostname`/netbeans/glassfish-4.1.1
+    # - Use jdk located in desired_dev_directory/support-`hostname`/java/linux-x86_64
     rm netbeans-8.1-linux.sh    # When installation of netbeans is complete 
     
     # Getting the db ready
