@@ -70,16 +70,6 @@ class UserInfoHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('Username %s does not exist.' % (username))
 
-    def getUserInfoWithPasswordByUsername(self, session, username):
-        try:
-            self.logger.debug('Retrieving user %s (with password)' % username)
-            dbUserInfo = session.query(UserInfo).filter(UserInfo.username==username).one()
-            dbUserGroups = session.query(UserGroup).join(UserUserGroup).filter(and_(UserUserGroup.user_id==dbUserInfo.id, UserUserGroup.user_group_id==UserGroup.id)).all()
-            dbUserInfo.userGroupList = dbUserGroups
-            return dbUserInfo
-        except NoResultFound, ex:
-            raise ObjectNotFound('Username %s does not exist.' % (username))
-
     def addUser(self, session, username, firstName, lastName, middleName, email, description, password):
         self.logger.debug('Adding user %s' % username)
         try:

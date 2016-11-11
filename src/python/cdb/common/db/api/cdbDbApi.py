@@ -12,7 +12,9 @@ from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.db.impl.dbManager import DbManager
 
 class CdbDbApi:
-    """ Base DB API class. """
+    """
+    Base DB API class.
+    """
     def __init__(self):
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
         self.dbManager = DbManager.getInstance()
@@ -21,9 +23,20 @@ class CdbDbApi:
     def setAdminGroupName(self, adminGroupName):
         self.adminGroupName = adminGroupName
 
-    # Decorator for all DB queries
     @classmethod
     def executeQuery(cls, func):
+        """
+        Decorator for read-only DB queries
+
+        Should never be used if data is being changed.
+        This decorator allows queries to be performed on db.
+
+        When exceptions occur, logs and re-raises CdbExceptions.
+
+        :param func: function that performs a query on the database.
+        :raises CdbException: specific cdb exception
+        :return: function with kwargs or session used for the communication with db.
+        """
         def query(*args, **kwargs):
             try:
                 dbManager = DbManager.getInstance()
@@ -40,9 +53,20 @@ class CdbDbApi:
                 dbManager.closeSession(session)
         return query
 
-    # Decorator for all DB transactions
     @classmethod
     def executeTransaction(cls, func):
+        """
+        Decorator for all DB transactions
+
+        Should always be used whenever data is being changed.
+        This decorator ensures that upon exception, everything is reverted to its previous state.
+
+        When exceptions occur, logs and re-raises CdbExceptions.
+
+        :param func: function that performs a query on the database.
+        :raises CdbException: specific cdb exception
+        :return: function with kwargs or session used for the communication with db.
+        """
         def transaction(*args, **kwargs):
             try:
                 dbManager = DbManager.getInstance()
@@ -65,11 +89,22 @@ class CdbDbApi:
 
     @classmethod
     def getLogger(cls):
+        """
+        Get an instance of a logger for the class.
+
+        :return: logger instance.
+        """
         logger = LoggingManager.getInstance().getLogger(cls.__name__)
         return logger
 
     @classmethod
     def executeConnectionQuery(cls, query):
+        """
+        Allows execution of simple SQL based query on the CDB db.
+
+        :param query: (String) SQL query.
+        :return: query results list.
+        """
         connection = None
         try:
             connection = DbManager.getInstance().acquireConnection()
@@ -82,7 +117,6 @@ class CdbDbApi:
                 raise
         finally:
             DbManager.getInstance().releaseConnection(connection)
-
 
     def loadRelation(self, dbObject, relationName):
         if not relationName in dir(dbObject):
@@ -105,6 +139,12 @@ class CdbDbApi:
                 self.logger.error(ex)
 
     def toCdbObjectList(self, dbEntityList):
+        """
+        Converts a sqlAlchemy db entity list to cdb object list.
+
+        :param dbEntityList: cdbDbEntity result list from sqlalchemy
+        :return: cdbObjectList: list of type cdbObject
+        """
         cdbObjectList = []
         for dbEntity in dbEntityList:
             cdbObjectList.append(dbEntity.getCdbObject())

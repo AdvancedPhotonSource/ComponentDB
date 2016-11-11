@@ -20,54 +20,109 @@ class UserDbApi(CdbDbApi):
 
     @CdbDbApi.executeQuery
     def getUserGroups(self, **kwargs):
+        """
+        Get all user group records.
+
+        :param kwargs:
+        :return: CdbObject List of resulting records.
+        """
         session = kwargs['session']
         dbUserGroups = self.userGroupHandler.getUserGroups(session)
         return self.toCdbObjectList(dbUserGroups)
 
     @CdbDbApi.executeQuery
     def getUserGroupByName(self, name, **kwargs):
+        """
+        Get a user group record by its name.
+
+        :param name:
+        :param kwargs:
+        :return: (CdbObject) resulting record.
+        """
         session = kwargs['session']
         dbUserGroup = self.userGroupHandler.getUserGroupByName(session, name)
         return dbUserGroup.getCdbObject()
 
     @CdbDbApi.executeQuery
     def getUsers(self, **kwargs):
+        """
+        Get all user records.
+
+        :param kwargs:
+        :return: CdbObject List of resulting records.
+        """
         session = kwargs['session']
         dbUsers = self.userInfoHandler.getUserInfos(session)
         return self.toCdbObjectList(dbUsers)
 
     @CdbDbApi.executeQuery
     def getUserById(self, id, **kwargs):
+        """
+        Get a user record by its id.
+
+        :param id:
+        :param kwargs:
+        :return: (CdbObject) resulting record.
+        """
         session = kwargs['session']
         dbUserInfo = self.userInfoHandler.getUserInfoById(session, id)
         return dbUserInfo.getCdbObject()
 
     @CdbDbApi.executeQuery
     def getUserByUsername(self, username, **kwargs):
+        """
+        Get a user record by its username attribute.
+
+        :param username:
+        :param kwargs:
+        :return: (CdbObject) resulting record.
+        """
         session = kwargs['session']
         dbUserInfo = self.userInfoHandler.getUserInfoByUsername(session, username)
         return dbUserInfo.getCdbObject()
 
-    @CdbDbApi.executeQuery
-    def getUserWithPasswordByUsername(self, username, **kwargs):
-        session = kwargs['session']
-        dbUserInfo = self.userInfoHandler.getUserInfoWithPasswordByUsername(session, username)
-        return dbUserInfo.getCdbObject()
-
     @CdbDbApi.executeTransaction
-    def addUser(self, username, firstName, lastName, middleName, email, description, password, **kwargs):
+    def addUser(self, username, firstName, lastName, middleName, email, description, **kwargs):
+        """
+        Add a new user record.
+
+        :param username:
+        :param firstName:
+        :param lastName:
+        :param middleName:
+        :param email:
+        :param description:
+        :param kwargs:
+        :return: (CdbObject) newly added record.
+        """
         session = kwargs['session']
-        dbUserInfo = self.userInfoHandler.addUser(session, username, firstName, lastName, middleName, email, description, password)
+        dbUserInfo = self.userInfoHandler.addUser(session, username, firstName, lastName, middleName, email, description, None)
         return dbUserInfo.getCdbObject()
 
     @CdbDbApi.executeTransaction
     def addUserToGroup(self, username, groupName, **kwargs):
+        """
+        Assign a user to a particular group.
+
+        :param username:
+        :param groupName:
+        :param kwargs:
+        :return: (CdbObject) newly added record.
+        """
         session = kwargs['session']
         dbUserUserGroup = self.userInfoHandler.addUserToGroup(session, username, groupName)
         return dbUserUserGroup.getCdbObject()
 
     @CdbDbApi.executeTransaction
     def addGroup(self, name, description, **kwargs):
+        """
+        add a new user group record.
+
+        :param name:
+        :param description:
+        :param kwargs:
+        :return: (CdbObject) newly added record.
+        """
         session = kwargs['session']
         dbUserUserGroup = self.userGroupHandler.addGroup(session, name, description)
         return dbUserUserGroup.getCdbObject()
