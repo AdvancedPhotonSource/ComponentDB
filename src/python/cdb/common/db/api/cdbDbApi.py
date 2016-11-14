@@ -11,6 +11,8 @@ from cdb.common.exceptions.internalError import InternalError
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.db.impl.dbManager import DbManager
 
+from functools import wraps
+
 class CdbDbApi:
     """
     Base DB API class.
@@ -37,6 +39,7 @@ class CdbDbApi:
         :raises CdbException: specific cdb exception
         :return: function with kwargs or session used for the communication with db.
         """
+        @wraps(func)
         def query(*args, **kwargs):
             try:
                 dbManager = DbManager.getInstance()
@@ -67,6 +70,7 @@ class CdbDbApi:
         :raises CdbException: specific cdb exception
         :return: function with kwargs or session used for the communication with db.
         """
+        @wraps(func)
         def transaction(*args, **kwargs):
             try:
                 dbManager = DbManager.getInstance()
