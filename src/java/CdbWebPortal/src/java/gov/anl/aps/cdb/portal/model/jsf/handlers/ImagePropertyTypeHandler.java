@@ -26,9 +26,5 @@ public class ImagePropertyTypeHandler extends AbstractPropertyTypeHandler {
     public String getEditActionIcon() {
         return "ui-icon-circle-arrow-n";
     }
-
-    @Override
-    public String getEditActionBean() {
-        return "propertyValueImageUploadBean";
-    } 
+    
 }

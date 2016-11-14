@@ -23,80 +23,117 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
         return HttpLinkUtility.prepareHttpLinkDisplayValue(displayValue);
     }
 
+    /**
+     * Constructor with a property handler name. 
+     * 
+     * @param name - name of property type handler. 
+     */
     public AbstractPropertyTypeHandler(String name) {
         this.name = name;
     }
     
+    /**
+     * Constructor with a property handler name and display type. 
+     * 
+     * @param name - name of property type handler. 
+     * @param displayType - a constant that specifies how property value should be shown. 
+     */
     public AbstractPropertyTypeHandler(String name, DisplayType displayType) {
         this.name = name;
         this.displayType = displayType;
     }
 
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public DisplayType getValueDisplayType() {
         return displayType;
     }
     
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public void setInfoActionCommand(PropertyValue propertyValue){
         propertyValue.setInfoActionCommand(null);
     }
     
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public void setInfoActionCommand(PropertyValueHistory propertyValueHistory){
         propertyValueHistory.setInfoActionCommand(null);
     }
     
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public String getEditActionOncomplete() {
         return null;
     }
 
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public String getEditActionIcon() {
         return null;
     }
 
-    @Override
-    public String getEditActionBean() {
-        return null;
-    }
-
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public Boolean getDisplayEditActionButton() {
         return getEditActionIcon() != null;
     }
     
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
         propertyValue.setDisplayValueToValue();
     }
 
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setDisplayValueToValue();
     }
 
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public void setTargetValue(PropertyValue propertyValue) {
         propertyValue.setTargetValueToValue();
     }
 
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public void setTargetValue(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setTargetValueToValue();
     }
     
-    @Override
-    public void resetOneTimeUseVariables(){
-        
-    }
-    
+    /**
+     * See PropertyTypeHandlerInterface
+     */
     @Override
     public String getPropertyEditPage(){
         return null; 

@@ -31,7 +31,6 @@ See LICENSE file.
                 <ui:param name="displayEditActionButton" value="#{propertyTypeHandler.displayEditActionButton}"/>                
                 <ui:param name="editActionIcon" value="#{propertyTypeHandler.editActionIcon}"/>
                 <ui:param name="editActionOncomplete" value="#{propertyTypeHandler.editActionOncomplete}"/>
-                <ui:param name="editActionBean" value="#{propertyTypeHandler.editActionBean}"/>
 
                 <p:commandLink id="propertyValueHistoryListViewButton" 
                                oncomplete="PF('propertyValueHistoryListDialogWidget').show()" 
@@ -47,8 +46,7 @@ See LICENSE file.
                                oncomplete="#{editActionOncomplete}" 
                                styleClass="ui-icon #{editActionIcon}"
                                update="@form">
-                    <f:setPropertyActionListener value="#{propertyValueObject}" target="#{propertyValueController.current}"/>
-                    <p:tooltip for="propertyValueActionButton" value="Upload file."/>
+                    <f:setPropertyActionListener value="#{propertyValueObject}" target="#{propertyValueController.current}"/>                    
                 </p:commandLink>
 
                 <p:commandLink id="propertyValueDeleteButton" action="#{entityController.deleteProperty(propertyValueObject)}" 

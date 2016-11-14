@@ -14,7 +14,7 @@ from cdb.common.db.impl.itemHandler import ItemHandler
 class DeveloperDbApi(CdbDbApi):
     """
     Db apis that perform updates/inserts with specific dates,
-    should only be used if moving data with date importantce.
+    should only be used if moving data with date importance.
 
     Usually, dates should just be auto-generated at the time of adding to db.
     """
