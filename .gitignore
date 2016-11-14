@@ -16,3 +16,6 @@ src/java/CdbWebPortal/setup/glassfish-resources.xml
 src/java/CdbWebPortal/web/views/plugins/
 src/python/cdb/cdb_web_service/plugins/
 src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/plugins/support/
+
+# Python docs
+docs/python/_build/
