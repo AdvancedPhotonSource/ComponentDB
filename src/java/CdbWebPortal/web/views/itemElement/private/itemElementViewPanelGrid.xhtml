@@ -21,18 +21,11 @@ See LICENSE file.
             <p:inputText value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
         
-        <h:outputLabel for="parentItem" value="Part of Item" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputLink id="parentItem" value="../item/view.xhtml?id=#{itemElementObject.parentItem.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
-                      title="Parent Item #{itemElementObject.parentItem.name}">
-            <h:outputText value="#{itemElementObject.parentItem.name}" styleClass="entityDataEmphasizedText"/>
-        </h:outputLink>
+        <ui:include src="templateDefaults/itemElementFieldLabels/itemElementParentItem.xhtml"/>
+        <ui:include src="templateDefaults/itemElementFieldViewValues/itemElementParentItem.xhtml"/>
         
-        <h:outputLabel for="containedItem" value="Contains Item" styleClass="entityDataEmphasizedLabel"/>
-        <h:outputLink id="containedItem" value="../item/view.xhtml?id=#{itemElementObject.containedItem.id}&amp;breadcrumb=#{breadcrumb}&amp;breadcrumbObjectId=#{breadcrumbObjectId}" 
-                      title="Contained Item #{itemElementObject.containedItem.name}">
-            <h:outputText value="#{itemElementObject.containedItem.name}" styleClass="entityDataEmphasizedText"/>
-        </h:outputLink>
-        
+        <ui:include src="templateDefaults/itemElementFieldLabels/itemElementContainedItem.xhtml"/>
+        <ui:include src="templateDefaults/itemElementFieldViewValues/itemElementContainedItem.xhtml" />        
         
         <ui:remove>
             <h:outputLabel for="component" value="Component" styleClass="entityDataEmphasizedLabel"/>

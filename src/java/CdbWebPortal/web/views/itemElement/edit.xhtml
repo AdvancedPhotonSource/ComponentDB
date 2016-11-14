@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../templates/portalViewTemplate.xhtml">
+
+    <f:metadata>
+        <f:event type="preRenderComponent" listener="#{itemElementController.processEditRequestParams}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">: Edit Item Element #{itemElementController.selected.name}</ui:define>     
+    <ui:define name="middleCenter">
+        <h:form id="editComponentForm" 
+                enctype="multipart/form-data"
+                rendered="#{loginController.isEntityWriteable(itemElementController.selected.entityInfo)}">
+
+            <div class="middleCenterLeftContent">
+
+                <div class="pageTitle">
+                    <h1>Edit Item Element</h1>
+                </div>
+
+                <ui:include src="private/itemElementEditPanelGrid.xhtml" />
+
+                <p/>
+                <ui:param name="itemElementObject" value="#{itemElementController.selected}"/>
+                <ui:param name="entityController" value="#{itemElementController}"/>
+                <div class="actionButton">
+                    <p:commandButton id="itemElementEditViewButton" action="#{itemElementController.view()}" 
+                                     value="View" alt="View" icon="ui-icon-info" update="@form">
+                        <p:tooltip for="itemElementEditViewButton" value="View item element."/>
+                    </p:commandButton>
+                    <p:commandButton id="itemElementEditSaveButton" action="#{itemElementController.update()}" 
+                                     value="Save" alt="Save" icon="ui-icon-check" update="@form">
+                        <p:tooltip for="itemElementEditSaveButton" value="Save item element."/>
+                    </p:commandButton>
+                    <p:commandButton id="itemElementEditDoneButton" action="#{itemElementController.prepareViewToItem(itemElementObject)}" immediate="true" 
+                                     value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
+                        <p:tooltip for="itemElementEditDoneButton" value="Return to item details page."/>                    
+                    </p:commandButton>
+                </div>
+
+                <p/>
+                <p:accordionPanel multiple="true" activeIndex="0,1">
+                    <p:tab title="Log Entries">
+                        <ui:include src="../domainEntityLog/private/domainEntityLogEditList.xhtml"/>
+                    </p:tab>
+
+                    <p:tab title="Properties">
+                        <ui:include src="../domainEntityProperty/private/domainEntityPropertyEditList.xhtml"/>
+                    </p:tab>
+
+                </p:accordionPanel>  
+            </div>
+
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
