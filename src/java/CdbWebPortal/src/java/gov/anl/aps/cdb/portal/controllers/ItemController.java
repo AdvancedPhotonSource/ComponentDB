@@ -1707,7 +1707,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         updateOnRemoval();
     }
 
-    private Item cloneProperties(Item clonedItem, Item cloningFrom) {
+    protected Item cloneProperties(Item clonedItem, Item cloningFrom) {
         List<PropertyValue> cloningFromPropertyValueList = cloningFrom.getPropertyValueList();
 
         if (cloningFromPropertyValueList != null) {
@@ -1735,7 +1735,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return clonedItem;
     }
 
-    private Item cloneSources(Item clonedItem, Item cloningFrom) {
+    protected Item cloneSources(Item clonedItem, Item cloningFrom) {
         List<ItemSource> cloningFromSourceList = cloningFrom.getItemSourceList();
 
         if (cloningFromSourceList != null) {
@@ -1762,8 +1762,12 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
         return clonedItem;
     }
+    
+    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, false);
+    }
 
-    private Item cloneCreateItemElementPlaceholders(Item clonedItem, Item cloningFrom) {
+    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom, boolean addContained) {
         List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
 
         if (cloningFromItemElementList != null) {
@@ -1774,6 +1778,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                     newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement());
                 } else {
                     newItemElement.init(clonedItem);
+                }
+                
+                if (addContained) {
+                    newItemElement.setContainedItem(itemElement.getContainedItem());
                 }
 
                 newItemElement.setName(itemElement.getName());
@@ -1795,7 +1803,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             clonedItem = cloneSources(clonedItem, cloningFrom);
         }
         if (cloneCreateItemElementPlaceholders) {
-            clonedItem = cloneCreateItemElementPlaceholders(clonedItem, cloningFrom);
+            clonedItem = cloneCreateItemElements(clonedItem, cloningFrom);
         }
 
         cloneProperties = false;
