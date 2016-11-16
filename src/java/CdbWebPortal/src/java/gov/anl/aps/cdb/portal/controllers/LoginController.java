@@ -41,9 +41,9 @@ public class LoginController implements Serializable {
     private boolean loggedInAsUser = false;
     private UserInfo user = null;
     private Integer sessionTimeoutInMiliseconds = null;
-    
-    private SettingController settingController = null; 
-    private final String SETTING_CONTROLLER_NAME = "settingController"; 
+
+    private SettingController settingController = null;
+    private final String SETTING_CONTROLLER_NAME = "settingController";
 
     private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
@@ -51,7 +51,7 @@ public class LoginController implements Serializable {
 
     public LoginController() {
     }
-    
+
     public static LoginController getInstance() {
         return (LoginController) SessionUtility.findBean("loginController");
     }
@@ -136,10 +136,10 @@ public class LoginController implements Serializable {
 
         if (validCredentials) {
             if (settingController == null) {
-                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME); 
+                settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
             }
             settingController.loadSessionUser(user);
-            
+
             SessionUtility.setUser(user);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
@@ -168,7 +168,13 @@ public class LoginController implements Serializable {
                 landingPage = "/index";
             }
         }
-        landingPage += "?faces-redirect=true";
+        if (landingPage.contains("?")) {
+            landingPage += "&";
+        } else {
+            landingPage += "?";
+        }
+        landingPage += "faces-redirect=true";
+
         logger.debug("Landing page: " + landingPage);
         return landingPage;
     }
@@ -271,5 +277,5 @@ public class LoginController implements Serializable {
         }
         // logger.debug("Idle timeout in miliseconds: " + sessionTimeoutInMiliseconds);
         return sessionTimeoutInMiliseconds;
-    }   
+    }
 }

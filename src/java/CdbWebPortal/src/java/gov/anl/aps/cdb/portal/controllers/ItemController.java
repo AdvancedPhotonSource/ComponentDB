@@ -76,9 +76,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @EJB
     private ItemElementFacade itemElementFacade;
-    
+
     @EJB
-    private ItemTypeFacade itemTypeFacade; 
+    private ItemTypeFacade itemTypeFacade;
 
     @EJB
     private DomainFacade domainFacade;
@@ -534,7 +534,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 }
             } else {
                 // Item does not have item category to pick from
-                availableItemTypesForCurrentItem = itemTypeFacade.findByDomainName(getDefaultDomainName()); 
+                availableItemTypesForCurrentItem = itemTypeFacade.findByDomainName(getDefaultDomainName());
             }
         }
 
@@ -1762,7 +1762,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
         return clonedItem;
     }
-    
+
     protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom) {
         return cloneCreateItemElements(clonedItem, cloningFrom, false);
     }
@@ -1779,7 +1779,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 } else {
                     newItemElement.init(clonedItem);
                 }
-                
+
                 if (addContained) {
                     newItemElement.setContainedItem(itemElement.getContainedItem());
                 }
@@ -2489,13 +2489,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         if (sessionUser != null) {
                             SessionUtility.navigateTo("/views/itemDomainInventory/create.xhtml?faces-redirect=true");
                         } else {
-                            SessionUtility.pushViewOnStack("/views/itemDomainInventory/create.xhtml");
+                            SessionUtility.pushViewOnStack("/views/item/view.xhtml?qrId=" + qrParam);
                             SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
                         }
                         return null;
                     }
 
-                    return performItemRedirection(item, "qrId=" + qrIdViewParam, false);
+                    return performItemRedirection(item, "qrId=" + qrParam, false);
                 } catch (NumberFormatException ex) {
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }
