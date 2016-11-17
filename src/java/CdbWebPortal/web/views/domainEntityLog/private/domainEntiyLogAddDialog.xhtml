@@ -51,6 +51,7 @@ See LICENSE file.
         <f:facet name="footer" class="dialog">
             <p:outputPanel rendered="#{logObject != null}">
                 <p:commandButton value="Save" alt="Save" 
+                                 id="#{entityTypeName}SaveLogButton"
                                  action="#{entityController.saveLogList()}"
                                  update="@form"
                                  oncomplete="PF('#{entityTypeName}LogAddDialogWidget').hide()"

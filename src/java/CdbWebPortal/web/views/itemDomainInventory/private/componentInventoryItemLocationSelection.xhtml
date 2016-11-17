@@ -17,6 +17,7 @@ See LICENSE file.
             <p:column>
                 <p:outputPanel styleClass="locationTieredMenuPickerContainer" rendered="#{displayLocationSelectionTieredMenu}">
                     <p:tieredMenu model="#{itemDomainInventoryController.getItemLocataionDefaultMenuModel(itemObject)}"
+                                  id="locationSelectTieredMenu#{viewName}"
                                   toggleEvent="hover"/>
                 </p:outputPanel>
                 <p:outputPanel styleClass="locationTreeEditPageContainer" rendered="#{!displayLocationSelectionTieredMenu}" >

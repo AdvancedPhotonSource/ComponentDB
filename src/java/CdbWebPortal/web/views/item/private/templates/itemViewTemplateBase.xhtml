@@ -57,6 +57,7 @@ See LICENSE file.
                 </p:panel>
 
                 <p:panel header="Log Entries" 
+                         id="#{entityTypeName}ViewLogEntriesPanel"
                          rendered="#{entityController.entityDisplayItemLogs}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayLogList}">
@@ -67,7 +68,8 @@ See LICENSE file.
             </div>
 
             <div class="domainEntityRightContent">
-                <p:panel header="Properties" 
+                <p:panel header="Properties"
+                         id="#{entityTypeName}ViewPropertiesPanel"
                          rendered="#{entityController.entityDisplayItemProperties}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayPropertyList}">

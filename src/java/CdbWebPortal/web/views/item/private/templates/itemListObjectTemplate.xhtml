@@ -99,6 +99,7 @@ See LICENSE file.
 
     <ui:define name="nameColumn" >
         <p:column sortBy="#{itemListObject.name}" headerText="#{entityController.nameTitle}"
+                  id="#{entityTypeName}ListObjectNameColumn"
                   filterBy="#{itemListObject.name}" filterMatchMode="contains"
                   filterValue="#{entityController.filterByName}"
                   filterable="#{filterable}"
@@ -143,6 +144,7 @@ See LICENSE file.
 
     <ui:define name="itemIdentifier1Column">
         <p:column sortBy="#{itemListObject.itemIdentifier1}" 
+                  id="#{entityTypeName}ListObjectItemIdentifier1Column"
                   headerText="#{entityController.itemIdentifier1Title}"
                   filterBy="#{itemListObject.itemIdentifier1}"
                   filterValue="#{entityController.filterByItemIdentifier1}"
@@ -155,6 +157,7 @@ See LICENSE file.
 
     <ui:define name="itemIdentifier2Column">
         <p:column sortBy="#{itemListObject.itemIdentifier2}" 
+                  id="#{entityTypeName}ListObjectItemIdentifier2Column"
                   headerText="#{entityController.itemIdentifier2Title}"
                   filterBy="#{itemListObject.itemIdentifier2}"
                   filterValue="#{entityController.filterByItemIdentifier2}"

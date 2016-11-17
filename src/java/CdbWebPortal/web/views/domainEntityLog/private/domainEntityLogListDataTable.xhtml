@@ -51,9 +51,10 @@ See LICENSE file.
             <p:confirmDialog message="Would you like to remove the log?"
                              header="Confirm Log Delete" 
                              severity="alert"
-                             styleClass="dialog"
+                             styleClass="viewTransparentBackgroundDialog"
                              widgetVar="confirmDeleteLog#{logObject.viewUUID}Widget">
                 <p:commandButton value="Yes" 
+                                 id="confirmYesDestroyLogEntryButton"
                                  action="#{entityController.deleteLog(logObject)}" 
                                  actionListener="#{logController.destroy(logObject)}"
                                  onstart="PF('confirmDeleteLog#{logObject.viewUUID}Widget').hide()"

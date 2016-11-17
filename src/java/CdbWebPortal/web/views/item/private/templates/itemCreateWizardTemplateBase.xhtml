@@ -76,6 +76,7 @@ See LICENSE file.
                             <ui:param name="saveButtonRendered" value="#{entityController.isCreateWizardOnLastStep()}" />
                         </ui:include>
                         <p:commandButton value="Next Step" 
+                                         id="#{entityTypeName}createWizardNextStep"
                                          onstart="PF('#{entityTypeName}ItemCreateWizardWidget').next();"
                                          icon="ui-icon-arrowthick-1-e"
                                          iconPos="right"
