@@ -4,6 +4,8 @@
 *.pyc
 src/java/CdbWebPortal/build/
 src/java/CdbWebPortal/dist/
+tools/developer_tools/portal_testing/CdbFunctionalTester/build/
+tools/developer_tools/portal_testing/CdbFunctioanlTester/nbproject/private/
 
 # Generated deployment specific config files 
 src/java/CdbWebPortal/nbproject/private/private.xml
