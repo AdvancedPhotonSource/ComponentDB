@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+  <title>Test Suite</title>
+</head>
+<body>
+<table id="suiteTable" cellpadding="1" cellspacing="1" border="1" class="selenium"><tbody>
+<tr><td><b>Test Suite</b></td></tr>
+<tr><td><a href="Tests/Log into portal">Log into portal</a></td></tr>
+<tr><td><a href="Tests/Create Sample Catalog Item">Create Sample Catalog Item</a></td></tr>
+<tr><td><a href="Tests/Add Log Entry to Sample Catalog Item">Add Log Entry to Sample Catalog Item</a></td></tr>
+<tr><td><a href="Tests/Add Property to sample catalog item">Add Property to Sample Catalog Item</a></td></tr>
+<tr><td><a href="Tests/Edit new catalog property">Edit new catalog property</a></td></tr>
+<tr><td><a href="Tests/Create Sample Inventory Item">Add a New Inventory Item</a></td></tr>
+<tr><td><a href="Tests/Add log to inventory Item">Add a log to inventory item</a></td></tr>
+<tr><td><a href="Tests/Add property to inventory item">Add a property to invenotry item</a></td></tr>
+<tr><td><a href="Tests/Find Sample Catalog Item">Find Sample Catalog Item</a></td></tr>
+<tr><td><a href="Tests/RemoveLogEntryFromCatalogItem">Remove Log Entry</a></td></tr>
+<tr><td><a href="Tests/Delete sample catalog item from view page">Delete Sample Item From View Page</a></td></tr>
+<tr><td><a href="Tests/Logout">Logout</a></td></tr>
+</tbody></table>
+</body>
+</html>

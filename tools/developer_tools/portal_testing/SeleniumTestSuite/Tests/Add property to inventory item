@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/" />
+<title>Add a property to invenotry item</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Add a property to invenotry item</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/cdb/views/itemDomainInventory/view</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//a[@id='componentInstanceViewForm:componentInstanceViewPropertiesPanel_toggler']/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:componentInstancePropertyAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='componentInstanceViewForm:filterViewItemCategorySelection']/div[2]/ul/li[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tbody[@id='componentInstanceViewForm:componentInstancePropertySelectDataTable_data']/tr[2]/td</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:componentInstanceSinglePropertySelectDialogDoneButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentInstanceViewForm:freeFormTextValue</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentInstanceViewForm:freeFormTextValue</td>
+	<td>Sample Stuff</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=componentInstanceViewForm:componentInstanceSinglePropertyEditSaveButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:componentInstancePropertyListDataTable:0:componentInstancePropertEditActionButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentInstanceViewForm:freeFormTextValue</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:freeFormTextValue</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentInstanceViewForm:freeFormTextValue</td>
+	<td>Sample Stuff [Edit]</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentInstanceViewForm:propertyValueTag</td>
+	<td>Tag</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentInstanceViewForm:propertyValueDescription</td>
+	<td>Description</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentInstanceViewForm:propertyValueUnits</td>
+	<td>Units</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:propertyValueDynamic_input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:propertyValueUserWritable_input</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentInstanceViewForm:componentInstanceSinglePropertyEditSaveButton</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>
