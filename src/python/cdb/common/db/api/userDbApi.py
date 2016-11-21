@@ -82,7 +82,7 @@ class UserDbApi(CdbDbApi):
         return dbUserInfo.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addUser(self, username, firstName, lastName, middleName, email, description, **kwargs):
+    def addUser(self, username, firstName, lastName, middleName, email, description, password, **kwargs):
         """
         Add a new user record.
 
@@ -96,7 +96,7 @@ class UserDbApi(CdbDbApi):
         :return: (CdbObject) newly added record.
         """
         session = kwargs['session']
-        dbUserInfo = self.userInfoHandler.addUser(session, username, firstName, lastName, middleName, email, description, None)
+        dbUserInfo = self.userInfoHandler.addUser(session, username, firstName, lastName, middleName, email, description, password)
         return dbUserInfo.getCdbObject()
 
     @CdbDbApi.executeTransaction
