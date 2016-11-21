@@ -92,6 +92,7 @@ class UserDbApi(CdbDbApi):
         :param middleName:
         :param email:
         :param description:
+        :param password:
         :param kwargs:
         :return: (CdbObject) newly added record.
         """
