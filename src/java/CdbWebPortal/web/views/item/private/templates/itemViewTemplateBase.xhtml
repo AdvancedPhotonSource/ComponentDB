@@ -77,6 +77,7 @@ See LICENSE file.
                 </p:panel>
 
                 <p:panel header="Elements"
+                         id="#{entityTypeName}ViewElementsPanel"
                          rendered="#{entityController.entityDisplayItemElements}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayItemElementList}">
@@ -84,6 +85,7 @@ See LICENSE file.
                 </p:panel>
                 
                 <p:panel header="Sources" 
+                         id="#{entityTypeName}ViewSourcesPanel"
                          rendered="#{entityController.entityDisplayItemSources}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayItemSourceList}">
@@ -91,6 +93,7 @@ See LICENSE file.
                 </p:panel>
                 
                 <p:panel header="#{entityController.itemsDerivedFromItemTitle}" 
+                         id="#{entityTypeName}ViewItemsDerviedFromItemPanel"
                          rendered="#{entityController.entityDisplayItemsDerivedFromItem}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayDerivedFromItemList}">
