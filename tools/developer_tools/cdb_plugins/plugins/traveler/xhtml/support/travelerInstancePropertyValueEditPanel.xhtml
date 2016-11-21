@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:fragment>
+        <p:outputPanel>
+            
+            <ui:param name="travelerInstanceExists" value='#{propertyValueObject.value != ""}' />
+            
+            <p:commandButton rendered="#{!travelerInstanceExists}" 
+                             value="Create Traveler Instance" 
+                             oncomplete="loadEntityAvailableTemplateList();">
+                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
+                                             value="#{propertyValueObject}"/>   
+            </p:commandButton>
+            
+            <p:commandButton rendered="#{travelerInstanceExists}"
+                             value="Show Traveler Instance Info"
+                             oncomplete="loadCurrentTravelerInstance();">
+                <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
+                                             value="#{propertyValueObject}"/>   
+            </p:commandButton>
+            
+            <p:remoteCommand rendered="#{propertyValueObject.id != null}"
+                             name="updateTravelerInstanceProperyValueField#{propertyValueObject.id}"
+                             update="@parent"
+                             oncomplete="loadCurrentTravelerInstanceConfiguration();"/>
+            
+            <p:remoteCommand rendered="#{propertyValueObject.id == null}"
+                             name="updateTravelerInstanceProperyValueField"
+                             update="@form"
+                             oncomplete="loadCurrentTravelerInstanceConfiguration();"/>
+
+            <p:remoteCommand name="loadEntityAvailableTemplateList"
+                             action="#{travelerBean.loadEntityAvailableTemplateList(entityController)}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
+                             oncomplete="updateTravelerInstancePropertyValueEditDialog(); 
+                                         PF('loadingDialog').hide();"/>
+            
+            <p:remoteCommand name="loadCurrentTravelerInstance"
+                             action="#{travelerBean.loadCurrentTravelerInstance('updateTravelerInstancePropertyValueInfoDialog();')}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"                             
+                             oncomplete="PF('loadingDialog').hide();"
+                             />
+            
+            <p:remoteCommand name="loadCurrentTravelerInstanceConfiguration"
+                             action="#{travelerBean.loadCurrentTravelerInstance('updateTravelerInstancePropertyValueConfigureDialog();')}"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"                             
+                             oncomplete="PF('loadingDialog').hide();"
+                             />
+        </p:outputPanel>
+    </ui:fragment>
+</ui:composition>
+
