@@ -4,43 +4,39 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/" />
-<title>Create Sample Catalog Item</title>
+<title>Search For Sample Assembly Catalog Item</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Create Sample Catalog Item</td></tr>
+<tr><td rowspan="1" colspan="3">Search For Sample Assembly Catalog Item</td></tr>
 </thead><tbody>
 <tr>
 	<td>clickAndWait</td>
-	<td>css=#catalogButton &gt; span.ui-menuitem-text</td>
-	<td></td>
-</tr>
-<tr>
-	<td>clickAndWait</td>
-	<td>id=componentListForm:componentAddButton</td>
+	<td>id=catalogButton</td>
 	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>id=addComponentForm:nameInputTextCreateWizard</td>
-	<td>Sample Item</td>
-</tr>
-<tr>
-	<td>type</td>
-	<td>id=addComponentForm:itemIdentifier1ITCreateWizard</td>
+	<td>id=componentListForm:componentListDataTable:componentListObjectItemIdentifier1Column:filter</td>
 	<td>Sample Model</td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>id=addComponentForm:itemIdentifier2ITCreateWizard</td>
-	<td>Alternate</td>
+	<td>id=componentListForm:componentListDataTable:componentListObjectItemIdentifier2Column:filter</td>
+	<td></td>
 </tr>
 <tr>
 	<td>type</td>
-	<td>id=addComponentForm:descriptionITACreateWizard</td>
-	<td>Description</td>
+	<td>id=componentListForm:componentListDataTable:componentListObjectNameColumn:filter</td>
+	<td>Sample Assembly Item</td>
 </tr>
+<tr>
+	<td>sendKeys</td>
+	<td>id=componentListForm:componentListDataTable:componentListObjectItemIdentifier2Column:filter</td>
+	<td>Alternate</td>
+</tr>
+
 </tbody></table>
 </body>
 </html>

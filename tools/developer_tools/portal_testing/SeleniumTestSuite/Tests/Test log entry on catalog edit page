@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/" />
+<title>Test Log Entry on catalog edit page</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Test Log Entry on catalog edit page</td></tr>
+</thead><tbody>
+<!--Add a new log entry-->
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:logEntry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:logEntry</td>
+	<td>Awesome Log Entry From Edit Page</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:componentLogDestroyButton</td>
+	<td></td>
+</tr>
+<!--Ensure that log entry was removed-->
+<tr>
+	<td>waitForNotVisible</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:logEntry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:logEntry</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:logEntry</td>
+	<td>Awesome Log Entry From Edit Page</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListSaveButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:componentLogDestroyButton</td>
+	<td></td>
+</tr>
+<!--Ensure that log entry was removed-->
+<tr>
+	<td>waitForNotVisible</td>
+	<td>id=componentEditForm:editPageAccordion:componentLogEditListDataTable:0:logEntry</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

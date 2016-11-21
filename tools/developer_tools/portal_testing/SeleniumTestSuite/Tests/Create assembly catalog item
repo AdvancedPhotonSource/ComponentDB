@@ -4,12 +4,12 @@
 <head profile="http://selenium-ide.openqa.org/profiles/test-case">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link rel="selenium.base" href="http://localhost:8080/" />
-<title>Create Sample Catalog Item</title>
+<title>Create an assembly catalog item</title>
 </head>
 <body>
 <table cellpadding="1" cellspacing="1" border="1">
 <thead>
-<tr><td rowspan="1" colspan="3">Create Sample Catalog Item</td></tr>
+<tr><td rowspan="1" colspan="3">Create an assembly catalog item</td></tr>
 </thead><tbody>
 <tr>
 	<td>clickAndWait</td>
@@ -24,7 +24,7 @@
 <tr>
 	<td>type</td>
 	<td>id=addComponentForm:nameInputTextCreateWizard</td>
-	<td>Sample Item</td>
+	<td>Sample Assembly Item</td>
 </tr>
 <tr>
 	<td>type</td>
@@ -41,6 +41,7 @@
 	<td>id=addComponentForm:descriptionITACreateWizard</td>
 	<td>Description</td>
 </tr>
+
 </tbody></table>
 </body>
 </html>

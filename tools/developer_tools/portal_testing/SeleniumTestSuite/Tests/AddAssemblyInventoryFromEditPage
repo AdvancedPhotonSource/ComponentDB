@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/" />
+<title>Add assembly Invenotry Item from Edit Page</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Add assembly Invenotry Item from Edit Page</td></tr>
+</thead><tbody>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:componentcomponentInstanceEditListAddButtonOnlyOnComplete</td>
+	<td></td>
+</tr>
+<!--Wait for assembly tree to show up-->
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:partsTree:0:nodeValuenewItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:partsTree:0:nodeValuenewItem</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:locationSelectButtonBOMTreeView</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:locationSelectButtonBOMTreeView</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//li[@id='componentEditForm:componentLocationSelectionTree:0']/span/span[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//li[@id='componentEditForm:componentLocationSelectionTree:0']/span/span[3]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:componentLocationItemSelectionDialogBOMEditDoneButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>//li[@id='componentEditForm:componentLocationSelectionTree:0']/span/span[3]</td>
+	<td></td>
+</tr>
+<!--Set Element 1-->
+<tr>
+	<td>pause</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:partsTree:0_0:nodeValueplaceholder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//tbody[@id='componentEditForm:componentItemSelectDataTableBOMTreeView_data']/tr/td</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>//tbody[@id='componentEditForm:componentItemSelectDataTableBOMTreeView_data']/tr/td</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>id=componentEditForm:partsTree:0_0:nodeValueexistingItem</td>
+	<td>element 1 - [Unit: 1]</td>
+</tr>
+<!--Set Element 2-->
+<tr>
+	<td>pause</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:partsTree:0_1:nodeValueplaceholder</td>
+	<td></td>
+</tr>
+<tr>
+	<td>pause</td>
+	<td>500</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>//div[@id='componentEditForm:newInstanceAddOptionsBOMTreeView']/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='componentEditForm:newInstanceAddOptionsBOMTreeView']/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:nameInputTextBOMTreeView</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:addInventoryItemDialogWidgetSaveButton</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>
