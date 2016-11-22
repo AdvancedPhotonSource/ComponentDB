@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="pdmLinkDrawingObject" value="#{pdmLinkDrawingBean.drawing}"/>
+    <p:panelGrid columns="2">
+        <p:panelGrid columns="2">
+            <h:outputLabel for="number" value="Number" styleClass="entityDataEmphasizedLabel"/>
+            <h:outputLink id="number" value="#{pdmLinkDrawingObject.windchillUrl}" target="PDMLink Drawing" styleClass="entityDataEmphasizedText">
+                <h:outputText value="#{pdmLinkDrawingObject.number}" styleClass="entityDataEmphasizedText"/>
+            </h:outputLink>
+
+            <h:outputLabel for="respEng" value="Responsible Engineer" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="respEng" value="#{pdmLinkDrawingObject.respEng}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="drafter" value="Drafter" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="drafter" value="#{pdmLinkDrawingObject.drafter}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="wbsDescription" value="WBS Description" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="wbsDescription" value="#{pdmLinkDrawingObject.wbsDescription}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="title1" value="Title 1" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="title1" value="#{pdmLinkDrawingObject.title1}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="title2" value="Title 2" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="title2" value="#{pdmLinkDrawingObject.title2}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="title3" value="Title 3" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="title3" value="#{pdmLinkDrawingObject.title3}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="title4" value="Title 4" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="title4" value="#{pdmLinkDrawingObject.title4}" styleClass="entityDataEmphasizedText"/>
+
+            <h:outputLabel for="title5" value="Title 5" styleClass="entityDataEmphasizedLabel"/> 
+            <h:outputText id="title5" value="#{pdmLinkDrawingObject.title5}" styleClass="entityDataEmphasizedText"/>
+        </p:panelGrid>
+        <p:graphicImage value="#{pdmLinkDrawingBean.pdmLinkImage}" rendered="#{pdmLinkDrawingBean.pdmLinkImage != null}" cache="false" />
+    </p:panelGrid>
+
+</ui:composition>

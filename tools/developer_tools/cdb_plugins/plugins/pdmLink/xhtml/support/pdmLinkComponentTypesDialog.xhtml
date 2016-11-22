@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="pdmLinkComponentTypeSelectDialog" 
+              widgetVar="pdmLinkcomponentTypeSelectDialogWidget" 
+              header="Select Component Type" 
+              styleClass="dialog">
+        <h:form id="comonentTypeSelectDialogForm">
+            <div class="dialog">
+
+                <div class="actionButton">                    
+                    <p:commandButton id="pdmLinkComponentTypeSelectSeeSuggestedBtn" 
+                                     alt="See suggested component types." 
+                                     immediate="true"                                 
+                                     value="See Suggested Types"
+                                     rendered="#{pdmLinkDrawingBean.exposeSuggestedComponentType == false}"
+                                     action="#{pdmLinkDrawingBean.setExposeSuggestedComponentType(true)}"
+                                     update="@form"
+                                     oncomplete="PF('pdmLinkcomponentTypeSelectDialogWidget').initPosition()"
+                                     styleClass="actionButtonRight">
+                        <p:tooltip for="pdmLinkComponentTypeSelectSeeSuggestedBtn" value="See suggested component types."/>
+                    </p:commandButton>
+                    <p:commandButton id="pdmLinkComponentTypeSelectSeeAllBtn" 
+                                     alt="See all component types." 
+                                     immediate="true"                                 
+                                     value="Show All Types"
+                                     rendered="#{pdmLinkDrawingBean.exposeSuggestedComponentType == true}"
+                                     action="#{pdmLinkDrawingBean.setExposeSuggestedComponentType(false)}"
+                                     update="@form"
+                                     oncomplete="PF('pdmLinkcomponentTypeSelectDialogWidget').initPosition()"
+                                     styleClass="actionButtonRight">
+                        <p:tooltip for="pdmLinkComponentTypeSelectSeeAllBtn" value="See all component types."/>
+                    </p:commandButton>
+                    
+                    <ui:param name="componentTypeSelectDataTable" 
+                              value='#{pdmLinkDrawingBean.exposeSuggestedComponentType ? 
+                                       "pdmLinkAddComponentSuggestedComponentTypeSelectDataTable.xhtml" : 
+                                       "../../componentType/private/componentTypeSelectDataTable.xhtml"}' />
+                    
+                    <ui:param name="suggestedComponentTypesDataTableWidgetFilter" value="PF('pdmLinkSuggestedComponentTypeSelectDataTableWidget').filter()" />
+                    <ui:param name="allComponentTypesDataTableWidgetFilter" value="PF('componentTypeSelectDataTableWidget').filter()" />
+                    
+                    <ui:param name="filterDataTableWidget" 
+                              value="#{pdmLinkDrawingBean.exposeSuggestedComponentType ? 
+                                      suggestedComponentTypesDataTableWidgetFilter : 
+                                      allComponentTypesDataTableWidgetFilter}"/>
+
+                    <ui:include src="#{componentTypeSelectDataTable}"/>
+
+                    <p:commandButton value="Done" alt="Done"
+                                     action="#{componentController.selectComponentType(componentTypeController.selectedComponentType)}"
+                                     onclick="#{filterDataTableWidget}"
+                                     oncomplete="PF('pdmLinkcomponentTypeSelectDialogWidget').hide()" 
+                                     update="#{updateTarget}"
+                                     immediate="true"
+                                     icon="ui-icon-arrowreturnthick-1-w">
+                    </p:commandButton>
+
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+
+</ui:composition>
+
+
