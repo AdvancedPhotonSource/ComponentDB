@@ -6,7 +6,8 @@ See LICENSE file.
 
 from utilities.plugin_manager import PluginManager
 
-plugin_manager = PluginManager()
+# Storage directory is irrelevant for updating deployed plugins.
+plugin_manager = PluginManager(use_default_storage_directory=True)
 
 plugin_manager.update_auto_generated_files()
 

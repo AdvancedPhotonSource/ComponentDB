@@ -5,6 +5,7 @@ See LICENSE file.
 """
 
 import os
+from plugin_configuration import PluginConfiguration
 
 JAVA_PLUGIN_PACKAGE="gov.anl.aps.cdb.portal.plugins.support"
 
@@ -18,20 +19,21 @@ PLUGIN_MANAGER_SUFFIX = "PluginManager.java"
 
 PLUGIN_REGISTER_SYNTAX= "        cdbPluginManager.registerPlugin(new %s());\n"
 
-class PluginJavaParser():
-    def __init__(self, cdb_java_plugin_path):
-        self.CDB_JAVA_PLUGIN_PATH = cdb_java_plugin_path
+CONFIGURATION_FILE_EXTENSION = 'properties'
 
-    def generate_plugin_registrar_file_contents(self, installed_plugins):
+class PluginJavaParser():
+    def __init__(self, cdb_plugin_configuration_storage):
+        self.plugin_configurator = PluginConfiguration(cdb_plugin_configuration_storage)
+
+    def generate_plugin_registrar_file_contents(self, plugins):
         java_imports = ""
         java_registers = ""
         auto_gen_message = "Recommended not to modify."
 
-        for cdb_plugin in installed_plugins:
-            plugin_name = cdb_plugin.plugin_name
-            plugin_java_path = "%s/%s" % (self.CDB_JAVA_PLUGIN_PATH, plugin_name)
-            if os.path.exists(plugin_java_path):
-                directory_listings = os.listdir(plugin_java_path)
+        for cdb_plugin in plugins:
+            if cdb_plugin.has_deployed_java:
+                plugin_name = cdb_plugin.plugin_name
+                directory_listings = os.listdir(cdb_plugin.deploy_java_path)
                 plugin_manager_listings = []
                 for directory_listing in directory_listings:
                     if directory_listing.endswith(PLUGIN_MANAGER_SUFFIX):
@@ -56,4 +58,9 @@ class PluginJavaParser():
 
         return fileContents
 
-
+    def update_required_configuration_for_plugins(self, plugins):
+        for cdb_plugin in plugins:
+            if cdb_plugin.has_deployed_java:
+                plugin_name = cdb_plugin.plugin_name
+                plugin_deployed_path = cdb_plugin.deploy_java_path
+                self.plugin_configurator.update_plugin_configuration(plugin_name, plugin_deployed_path, CONFIGURATION_FILE_EXTENSION)
