@@ -15,7 +15,7 @@ except:
     exit(1)
 
 import os
-import shutil
+import sys
 
 from plugin_java_parser import PluginJavaParser
 from plugin_xhtml_parser import PluginXhtmlParser
@@ -30,18 +30,51 @@ CDB_XHTML_PLUGIN_PATH = CdbPlugin.get_xhtml_plugin_path(CDB_DIST_DIRECTORY)
 CDB_JAVA_PLUGIN_PATH = CdbPlugin.get_java_plugin_path(CDB_DIST_DIRECTORY)
 CDB_PYTHON_PLUGIN_PATH = CdbPlugin.get_python_plugin_path(CDB_DIST_DIRECTORY)
 
-CDB_PLUGIN_DIRECTORY = '%s/plugins' % CDB_INSTALL_DIRECTORY
+CDB_INSTALL_PLUGIN_DIRECTORY = '%s/plugins' % CDB_INSTALL_DIRECTORY
+CDB_DIST_PLUGIN_DIRECTORY = '%s/tools/developer_tools/cdb_plugins/plugins' % CDB_DIST_DIRECTORY
 
 JAVA_PLUGIN_REGISTRAR_FILE_NAME = 'PluginRegistrar.java'
 
 class PluginManager():
     def __init__(self):
-        print('Using XHTML Path %s' % CDB_XHTML_PLUGIN_PATH)
-        print('Using JAVA Path %s' % CDB_JAVA_PLUGIN_PATH)
+        print('Using XHTML Dist Path %s' % CDB_XHTML_PLUGIN_PATH)
+        print('Using JAVA Dist Path %s' % CDB_JAVA_PLUGIN_PATH)
+        print('Using Python Dist Path %s' % CDB_PYTHON_PLUGIN_PATH)
         self.plugins = []
+        self.plugin_storage_directory = self.__select_stored_plugin_directory()
         self.__load_plugins()
         self.java_parser = PluginJavaParser(CDB_JAVA_PLUGIN_PATH)
         self.xhtml_parser = PluginXhtmlParser(CDB_XHTML_PLUGIN_PATH)
+
+    def __select_stored_plugin_directory(self):
+        default_option = 0
+        options = []
+        options.append(CDB_DIST_PLUGIN_DIRECTORY)
+        options.append(CDB_INSTALL_PLUGIN_DIRECTORY)
+        options.append('Specify different directory.')
+
+        print 'Select directory for storage of cdb plugins: '
+        for i in range(0, options.__len__()):
+            print '%i - %s' % (i, options[i])
+
+        selection = raw_input("%i %s [%i]: " % (i, options[i], default_option))
+        if selection is None or selection == '':
+            selection = default_option
+
+        selection = int(selection)
+        if selection > options.__len__():
+            sys.stderr.write("Selection not valid: %s\n" % selection)
+            exit(1)
+
+        if selection == 2:
+            result = raw_input("Please enter the path to directory with all plug-ins: ")
+        else:
+            result = options[selection]
+
+        return result
+
+
+
 
     def list_plugins(self):
         self.__print_selection_list(self.plugins, 'CDB Plug-ins')
@@ -50,8 +83,8 @@ class PluginManager():
         self.__prompt_plugin_action("Enter the number of plugin to save.", self.save_portal_plugin)
 
     def save_portal_plugin(self, selection):
-        if os.path.exists(CDB_PLUGIN_DIRECTORY) == False:
-            os.mkdir(CDB_PLUGIN_DIRECTORY)
+        if os.path.exists(self.plugin_storage_directory) == False:
+            os.mkdir(self.plug)
 
         if selection is not None:
             self.__save_portal_plugin(selection)
@@ -156,23 +189,29 @@ class PluginManager():
 
         return directories
 
+    def __append_unique_names(self, list, new_list):
+        for unique_name in new_list:
+            if unique_name not in list:
+                list.append(unique_name)
+
+        return list
+
     def __load_plugins(self):
         self.plugins = []
         xhtml_dirs = self.__get_directories_in_path(CDB_XHTML_PLUGIN_PATH)
         java_dirs = self.__get_directories_in_path(CDB_JAVA_PLUGIN_PATH)
+        python_dirs = self.__get_directories_in_path(CDB_PYTHON_PLUGIN_PATH)
 
         plugin_names = xhtml_dirs
-        for file_name in java_dirs:
-            if file_name not in plugin_names:
-                plugin_names.append(file_name)
+        plugin_names = self.__append_unique_names(plugin_names, java_dirs)
+        plugin_names = self.__append_unique_names(plugin_names, python_dirs)
 
-        saved_plugin_names = self.__get_directories_in_path(CDB_PLUGIN_DIRECTORY)
-        for saved_plugin_name in saved_plugin_names:
-            if saved_plugin_name not in plugin_names:
-                plugin_names.append(saved_plugin_name)
+        # Get saved plugins
+        saved_is_plugin_names = self.__get_directories_in_path(self.plugin_storage_directory)
+        plugin_names = self.__append_unique_names(plugin_names, saved_is_plugin_names)
 
         for plugin_name in plugin_names:
-            cdb_plugin = CdbPlugin(plugin_name, CDB_PLUGIN_DIRECTORY, CDB_DIST_DIRECTORY)
+            cdb_plugin = CdbPlugin(plugin_name, self.plugin_storage_directory, CDB_DIST_DIRECTORY)
             self.plugins.append(cdb_plugin)
 
     def __print_selection_list(self, selection_list, title):
@@ -189,7 +228,7 @@ class PluginManager():
 
         listItemFormat = '*%4s - %-' + str(width - 36) + 's %-6s %-6s %-12s*'
 
-        print '\nSaved plugins are located in plug-in directory: %s' % CDB_PLUGIN_DIRECTORY
+        print '\nSaved plugins are located in plug-in directory: %s' % self.plugin_storage_directory
         print 'for xhtml, java, python (s = stored d=deployed)'
 
         print "\n%s %s %s" % (header_before, title, header_after)
@@ -221,9 +260,6 @@ class PluginManager():
 
 if __name__ == '__main__':
     plugin_manager = PluginManager()
-    plugin_manager.list_plugins()
-    plugin_manager.save_portal_plugin(0)
-
     plugin_manager.list_plugins()
     #plugin_manager.update_auto_generated_files()
 
