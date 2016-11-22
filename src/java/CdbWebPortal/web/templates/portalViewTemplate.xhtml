@@ -40,7 +40,8 @@ See LICENSE file.
                 <div>
                     <div id="topRight" class="topRightContent">
                         <ui:insert name="topRight">
-                            <p:outputLabel value="Username: #{loginController.displayUsername()}"/>
+                            <p:outputLabel id="currentUserLoggedInLabel" 
+                                           value="Username: #{loginController.displayUsername()}"/>
                             <br/>
 
                             <p:outputLabel value="Role: #{loginController.displayRole()}"/>

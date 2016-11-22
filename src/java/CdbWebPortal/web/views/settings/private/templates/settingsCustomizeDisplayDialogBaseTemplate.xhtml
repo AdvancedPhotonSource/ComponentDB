@@ -53,17 +53,20 @@ See LICENSE file.
         </p:outputPanel>
         <f:facet name="footer">
             <p:commandButton value="Close" alt="Close" 
+                             id="#{customizeDisplayDialogId}CloseButton"
                              rendered="#{!settingController.displayCurrentSettingOptions}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
                              icon="ui-icon-arrowreturnthick-1-w"/>
             <ui:param name="revertToDefaultLabel"
                       value="#{loginController.loggedIn ? 'Back to user view' : 'Revert to default'}" />
             <p:commandButton value="#{revertToDefaultLabel}" alt="#{revertToDefaultLabel}" 
+                             id="#{customizeDisplayDialogId}RevertDefaultsButton"
                              rendered="#{!settingController.displayCurrentSettingOptions}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide();"
                              action="#{settingController.setUserGroupForSettingsView(null)}"                             
                              icon="ui-icon-refresh"/>
             <p:commandButton value="Done" alt="Done" 
+                             id="#{customizeDisplayDialogId}DoneButton"
                              rendered="#{settingController.displayCurrentSettingOptions
                                          and customizeDisplayRunCustomizeListDisplayAction}"
                              action="#{entityController.customizeListDisplay()}"
@@ -71,12 +74,14 @@ See LICENSE file.
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
                              icon="ui-icon-arrowreturnthick-1-w"/>
             <p:commandButton value="Done" alt="Done" 
+                             id="#{customizeDisplayDialogId}Done2Button"
                              rendered="#{settingController.displayCurrentSettingOptions 
                                          and !customizeDisplayRunCustomizeListDisplayAction}"
                              update="#{customizeDisplayUpdateTarget}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
                              icon="ui-icon-arrowreturnthick-1-w"/>
             <p:commandButton value="Save" alt="Save"
+                             id="#{customizeDisplayDialogId}SaveButton"
                              action="#{settingController.saveSettingListForSettingEntity()}"
                              actionListener="#{entityController.saveListSettingsForSessionSettingEntityActionListener}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 

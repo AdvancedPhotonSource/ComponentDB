@@ -76,9 +76,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     @EJB
     private ItemElementFacade itemElementFacade;
-    
+
     @EJB
-    private ItemTypeFacade itemTypeFacade; 
+    private ItemTypeFacade itemTypeFacade;
 
     @EJB
     private DomainFacade domainFacade;
@@ -534,7 +534,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 }
             } else {
                 // Item does not have item category to pick from
-                availableItemTypesForCurrentItem = itemTypeFacade.findByDomainName(getDefaultDomainName()); 
+                availableItemTypesForCurrentItem = itemTypeFacade.findByDomainName(getDefaultDomainName());
             }
         }
 
@@ -1707,7 +1707,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         updateOnRemoval();
     }
 
-    private Item cloneProperties(Item clonedItem, Item cloningFrom) {
+    protected Item cloneProperties(Item clonedItem, Item cloningFrom) {
         List<PropertyValue> cloningFromPropertyValueList = cloningFrom.getPropertyValueList();
 
         if (cloningFromPropertyValueList != null) {
@@ -1735,7 +1735,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return clonedItem;
     }
 
-    private Item cloneSources(Item clonedItem, Item cloningFrom) {
+    protected Item cloneSources(Item clonedItem, Item cloningFrom) {
         List<ItemSource> cloningFromSourceList = cloningFrom.getItemSourceList();
 
         if (cloningFromSourceList != null) {
@@ -1763,7 +1763,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return clonedItem;
     }
 
-    private Item cloneCreateItemElementPlaceholders(Item clonedItem, Item cloningFrom) {
+    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, false);
+    }
+
+    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom, boolean addContained) {
         List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
 
         if (cloningFromItemElementList != null) {
@@ -1774,6 +1778,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                     newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement());
                 } else {
                     newItemElement.init(clonedItem);
+                }
+
+                if (addContained) {
+                    newItemElement.setContainedItem(itemElement.getContainedItem());
                 }
 
                 newItemElement.setName(itemElement.getName());
@@ -1795,7 +1803,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             clonedItem = cloneSources(clonedItem, cloningFrom);
         }
         if (cloneCreateItemElementPlaceholders) {
-            clonedItem = cloneCreateItemElementPlaceholders(clonedItem, cloningFrom);
+            clonedItem = cloneCreateItemElements(clonedItem, cloningFrom);
         }
 
         cloneProperties = false;
@@ -2481,13 +2489,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         if (sessionUser != null) {
                             SessionUtility.navigateTo("/views/itemDomainInventory/create.xhtml?faces-redirect=true");
                         } else {
-                            SessionUtility.pushViewOnStack("/views/itemDomainInventory/create.xhtml");
+                            SessionUtility.pushViewOnStack("/views/item/view.xhtml?qrId=" + qrParam);
                             SessionUtility.navigateTo("/views/login.xhtml?faces-redirect=true");
                         }
                         return null;
                     }
 
-                    return performItemRedirection(item, "qrId=" + qrIdViewParam, false);
+                    return performItemRedirection(item, "qrId=" + qrParam, false);
                 } catch (NumberFormatException ex) {
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }

@@ -23,7 +23,8 @@ See LICENSE file.
             </ui:include>
         </p:outputPanel>
         <f:facet name="footer" class="dialog">
-            <p:commandButton  action="#{itemDomainInventoryController.createSaveFromDialog('addInventoryItemSuccess()')}" 
+            <p:commandButton  action="#{itemDomainInventoryController.createSaveFromDialog('addInventoryItemSuccess()')}"
+                              id="addInventoryItemDialogWidgetSaveButton"
                               value="Save" alt="Save" icon="ui-icon-check"/>
 
             <p:commandButton action="#{itemDomainInventoryController.createCancelFromDialog()}" 

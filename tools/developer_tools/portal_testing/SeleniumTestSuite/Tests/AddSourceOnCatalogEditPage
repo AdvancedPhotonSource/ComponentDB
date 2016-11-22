@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/" />
+<title>Add a source on catalog edit page</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Add a source on catalog edit page</td></tr>
+</thead><tbody>
+<!--Test Adding -->
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListSaveButton</td>
+	<td></td>
+</tr>
+<!--Test Removing-->
+<tr>
+	<td>clickAndWait</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:itemSourceEditListDataTableDestroyRecord</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForNotVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_label</td>
+	<td></td>
+</tr>
+<!--Add and leave a source-->
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAt</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_label</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:source_1</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:partNumber</td>
+	<td>1234532ASVC</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:cost</td>
+	<td>500</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:description</td>
+	<td>description</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:isVendor']/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//div[@id='componentEditForm:editPageAccordion:itemSourceEditListDataTable:0:isManufacturer']/div[2]/span</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>id=componentEditForm:editPageAccordion:itemSourceEditListSaveButton</td>
+	<td></td>
+</tr>
+</tbody></table>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="pdmLinkComponent" value="#{pdmLinkDrawingBean.pdmLinkComponent}" />
+    <ui:param name="componentObject" value="#{componentController.selected}"/>
+
+    <ui:include src="pdmLinkComponentTypesDialog.xhtml">
+        <ui:param name="updateTarget" value=":addPdmComonentForm:addPdmComonentPanelGrid"/>
+    </ui:include>
+
+    <p:dialog id="pdmLinkAddComponentDialog"
+              widgetVar="pdmLinkAddComponentDialogWidget"
+              header="Add Component"
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false"
+              modal="true">
+        <h:form id="addPdmComonentForm">
+            <p:panelGrid id="addPdmComonentPanelGrid" rendered="#{pdmLinkDrawingBean.pdmLinkComponent != null}">
+                <!-- Component name value --> 
+                <p:row>
+                    <p:column>
+                        <h:outputLabel for="componentName" value="Name" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText id="componentName" value="#{pdmLinkComponent.name}" styleClass="entityDataEmphasizedText"/>
+                    </p:column>
+                </p:row>
+                <!-- Component model number value -->
+                <p:row>
+                    <p:column>
+                        <h:outputLabel for="modelNumber" value="Model Number" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText id="modelNumber" value="#{pdmLinkComponent.modelNumber}" styleClass="entityDataEmphasizedText"/>
+                    </p:column>
+                </p:row>
+
+                <!-- Component type search tools -->
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="Type" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column id="componentType">
+                        <p:autoComplete id="componentTypeDropdown"
+                                        value="#{componentController.selected.componentType}"
+                                        var="componentTypeObject"
+                                        converter="componentTypeConverter" 
+                                        completeMethod="#{componentController.completeComponentType}" 
+                                        itemLabel="#{componentTypeObject.name}"
+                                        itemValue="#{componentTypeObject}"
+                                        valueChangeListener="#{componentController.selectComponentTypeValueChangeListener}"
+                                        forceSelection="true"
+                                        scrollHeight="200"
+                                        dropdown="true" 
+                                        styleClass="autocomplete"
+                                        required="false">
+                            <p:ajax event="valueChange" immediate="true" process="@this"/>
+                        </p:autoComplete>
+                        <p:commandButton id="componentTypeSelectAllButton"
+                                         action="#{pdmLinkDrawingBean.setExposeSuggestedComponentType(false)}" 
+                                         immediate="true"
+                                         oncomplete="PF('pdmLinkcomponentTypeSelectDialogWidget').initPosition(); 
+                                         PF('pdmLinkcomponentTypeSelectDialogWidget').show();"
+                                         update=":comonentTypeSelectDialogForm"
+                                         styleClass="selectButtonForAutocomplete"
+                                         icon="ui-icon-search">
+                            <p:tooltip for="componentTypeSelectAllButton" value="Search for all component types."/>
+                            <p:ajax process="@form" update="@form"/>
+                        </p:commandButton>
+                        <p:tooltip for="componentTypeDropdown" value="Component type is required."/>
+                        <p:tooltip for="componentTypeSelectAllButton" value="Show list of all component types."/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column />
+                    <p:column>
+                        <p:commandLink id="componentTypeSelectSuggestedButton"
+                                       value="See Suggested Types" 
+                                       action="#{pdmLinkDrawingBean.setExposeSuggestedComponentType(true)}" 
+                                       immediate="true"
+                                       oncomplete="PF('pdmLinkcomponentTypeSelectDialogWidget').initPosition(); 
+                                       PF('pdmLinkcomponentTypeSelectDialogWidget').show();"
+                                       update=":comonentTypeSelectDialogForm">
+                            <p:ajax process="@form" update="@form"/>
+                        </p:commandLink>
+                         <p:tooltip for="componentTypeSelectSuggestedButton" value="Show list of suggested component types."/>
+                    </p:column>
+                </p:row>
+                <!-- Values for PDMLink properties -->
+                <p:row>
+                    <p:column>
+                        <h:outputLabel for="pdmLinkProperties" value="PdmLink Properties" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText id="pdmLinkProperties" value="#{pdmLinkComponent.displayPdmLinkPropertiesString}" escape="false" styleClass="entityDataEmphasizedText" />
+                    </p:column>
+                </p:row>
+                <!-- Value for WBS description --> 
+                <p:row>
+                    <p:column>
+                        <h:outputLabel for="wbsDescription" value="WBS-DCC" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText id="wbsDescription" value="#{pdmLinkComponent.wbsDescription}" styleClass="entityDataEmphasizedLabel"/>
+                    </p:column>
+                </p:row>
+                <!-- Component Details: Description -->
+                <p:row>
+                    <p:column>
+                        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <p:inputTextarea id="description" rows="7" cols="33" value="#{componentObject.description}" styleClass="entityDataText"/>
+                        <p:tooltip for="description" value="Description is optional."/>
+                    </p:column>
+                </p:row>
+
+                <!-- Component Details: Permissions -->
+                <p:row>
+                    <p:column>
+                        <h:outputLabel for="permissionsPanel" value="Permissions" styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+
+                        <p:panelGrid columns="4" id="permissionsPanel">
+                            <ui:include src="../../entityInfo/private/entityInfoEditObject.xhtml" rendered="#{componentObject.entityInfo != null}">
+                                <ui:param name="entityInfoObject" value="#{componentObject.entityInfo}"/>
+                            </ui:include>
+                        </p:panelGrid>
+
+                    </p:column>
+                </p:row>
+
+                <!-- Add Component Button --> 
+                <p:row>
+                    <p:column colspan="2">
+                        <ui:param name="onSuccessExecute" value="PF('pdmLinkAddComponentDialogWidget').hide()" />
+                        <p:commandButton 
+                            value="Add Component"
+                            action="#{pdmLinkDrawingBean.createComponentFromDrawingNumber(componentController, propertyTypeController, onSuccessExecute)}">
+                            <p:ajax process="@form" update="@form"/> 
+                        </p:commandButton>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+            <p:panel rendered="#{pdmLinkDrawingBean.pdmLinkComponent == null}" styleClass="errorPanel">
+                <h:outputText value="An Error occurred in generating a component using current drawing." />
+                <br/>
+                <h:outputText value="#{pdmLinkDrawingBean.dialogErrorMessage}" />
+            </p:panel>
+
+        </h:form>
+    </p:dialog>
+
+</ui:composition>

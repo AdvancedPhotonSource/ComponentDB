@@ -9,9 +9,18 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="executeOnlyAddButtonOnComplete" value="#{addActionController == null}" />
+    
     <div class="actionButton">
-        <p:commandButton id="#{childEntityTypeName}EditListAddButton" action="#{addActionController[addAction](addActionParameter)}" 
-                         oncomplete="#{addActionOnComplete}" value="Add" rendered="#{displayAddButton}" alt="Add" icon="ui-icon-plus" update="@form">
+        <p:commandButton id="#{childEntityTypeName}EditListAddButtonOnlyOnComplete"
+                         rendered="#{executeOnlyAddButtonOnComplete and displayAddButton}"
+                         oncomplete="#{addActionOnComplete}" value="Add" alt="Add" icon="ui-icon-plus" update="@form">
+            <p:tooltip for="#{childEntityTypeName}EditListAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
+        </p:commandButton>
+        <p:commandButton id="#{childEntityTypeName}EditListAddButton"
+                         rendered="#{!executeOnlyAddButtonOnComplete and displayAddButton}"
+                         action="#{addActionController[addAction](addActionParameter)}" 
+                         oncomplete="#{addActionOnComplete}" value="Add" alt="Add" icon="ui-icon-plus" update="@form">
             <p:tooltip for="#{childEntityTypeName}EditListAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}EditListSaveButton" action="#{parentEntityController[saveAction]}" 

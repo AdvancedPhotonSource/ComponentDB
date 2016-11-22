@@ -19,6 +19,7 @@ See LICENSE file.
                      severity="alert" 
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <p:commandButton value="Yes" 
+                         id="#{entityTypeName}DestroyDialogYesConfirmButton"
                          oncomplete="PF('#{entityTypeName}DestroyDialogWidget').hide()" 
                          action="#{entityController.destroy()}" update="@form"/>
         <p:commandButton value="No" onclick="PF('#{entityTypeName}DestroyDialogWidget').hide()" type="button" />

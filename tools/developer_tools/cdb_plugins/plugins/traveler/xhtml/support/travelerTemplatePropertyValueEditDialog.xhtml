@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="travelerTemplatePropertyValueEditDialog" 
+              widgetVar="travelerTemplatePropertyValueEditDialogWidget" 
+              header="Edit Traveler Template Property" 
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false">
+        <p:panelGrid id="travelerTemplateEditPanel"
+                     styleClass="centeredContent">
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="Template Title" styleClass="entityDataLabel" />
+                </p:column>
+                <p:column>
+                    <p:inputText styleClass="entityDataText" 
+                                 value="#{travelerBean.travelerTemplateTitle}" 
+                                 rendered='#{travelerBean.propertyValue.value == ""}'
+                                 />
+                    <h:outputText value="#{travelerBean.travelerTemplateTitle}"
+                                  rendered='#{travelerBean.propertyValue.value != ""}'
+                                  styleClass="entityDataEmphasizedText" />
+                </p:column>
+            </p:row>
+            <p:row rendered='#{travelerBean.propertyValue.value != ""}'>
+                <p:column colspan="2">
+                    <h:outputLink target="_blank" value="#{travelerBean.getTravelerTemplateUrl(travelerBean.propertyValue.value)}">
+                        <h:outputText value="Go to traveler template" />
+                    </h:outputLink>
+
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+
+        <p:remoteCommand name="successTravelerTemplatePropertyValueEditDialog"
+                         oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').hide();
+                         updateTemplateProperyValueField#{travelerBean.propertyValue.id}();
+                         updateTravelerTemplatePropertyValueEditDialog()" />
+        <p:remoteCommand name="successUnlinkTravelerTemplatePropertyValueEditDialog"
+                         oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').hide();
+                         updateTemplateProperyValueFieldUnlink#{travelerBean.propertyValue.id}();" />
+        <p:remoteCommand name="updateTravelerTemplatePropertyValueEditDialog" 
+                         update="travelerTemplatePropertyValueEditDialog" 
+                         oncomplete="PF('travelerTemplatePropertyValueEditDialogWidget').initPosition();
+                         PF('travelerTemplatePropertyValueEditDialogWidget').show();"/>
+
+        <f:facet name="footer">
+            <p:commandButton value="Create Traveler Template" 
+                             rendered='#{travelerBean.propertyValue.value == ""}'
+                             action="#{travelerBean.createTravelerTemplate(
+                                       entityController,
+                                       'successTravelerTemplatePropertyValueEditDialog();')}" 
+                             icon="ui-icon-plus"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
+                             oncomplete="PF('loadingDialog').hide();" />
+
+            <p:commandButton value="Link to existing traveler template" 
+                             rendered='#{travelerBean.propertyValue.value == ""}'
+                             action="#{travelerBean.loadTravelerTemplates('showTravelerTemplatePropertyValueLinkDialog();')}"
+                             onstart="PF('loadingDialog').show()"
+                             onerror="PF('loadingDialog').hide()"
+                             icon="ui-icon-search"
+                             oncomplete="PF('loadingDialog').hide(); "/>
+            <p:commandButton action="#{travelerBean.unlinkTravelerTemplate(
+                                       'successUnlinkTravelerTemplatePropertyValueEditDialog();')}" 
+                             value="Unlink Traveler Template" 
+                             icon="ui-icon-minus"
+                             rendered='#{travelerBean.propertyValue.value != ""}'
+                             onstart="PF('loadingDialog').show();"
+                             oncomplete="PF('loadingDialog').hide();" />
+        </f:facet>
+    </p:dialog>
+
+
+
+</ui:composition>
+

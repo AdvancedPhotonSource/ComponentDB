@@ -42,13 +42,14 @@ See LICENSE file.
                                      rendered="#{entityController.showCloneCreateItemElementsPlaceholdersOption}"
                                      value="#{entityController.cloneCreateItemElementPlaceholders}"/>  
             <h:outputLabel for="cloneItemElements" 
-                           value="Create Item Element Placeholders"
+                           value="Create Item Elements"
                            rendered="#{entityController.showCloneCreateItemElementsPlaceholdersOption}"
                            styleClass="dialogDataLabel"/>               
         </p:panelGrid>
 
         <f:facet name="footer">
             <p:commandButton action="#{entityController.prepareCloneForItemToClone()}"
+                             id="#{entityTypeName}CloneDialogCloneButton"
                              value="Clone Item" />
         </f:facet>
 

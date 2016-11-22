@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="http://localhost:8080/" />
+<title>Add Elements to the sample aseembly</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">Add Elements to the sample aseembly</td></tr>
+</thead><tbody>
+<!--Add Element 1-->
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemElementObjectName</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemElementObjectName</td>
+	<td>element 1</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemElementItemSelectButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectNameColumn:filter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectNameColumn:filter</td>
+	<td>Sample Item</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectItemIdentifier1Column:filter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>sendKeys</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectItemIdentifier1Column:filter</td>
+	<td>Sample Model</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>//tbody[@id='componentEditForm:editPageAccordion:itemElementItemSelectDataTable_data']/tr/td[2]</td>
+	<td>Sample Item</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tbody[@id='componentEditForm:editPageAccordion:itemElementItemSelectDataTable_data']/tr/td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDialogDoneButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForValue</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemDropdown_input</td>
+	<td>Sample Item</td>
+</tr>
+<!--Add Element 2-->
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListAddButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:1:itemElementObjectName</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemElementObjectName</td>
+	<td>element 2</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemElementItemSelectButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForVisible</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectNameColumn:filter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectNameColumn:filter</td>
+	<td>Sample Item</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectItemIdentifier1Column:filter</td>
+	<td></td>
+</tr>
+<tr>
+	<td>sendKeys</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDataTable:itemElementListObjectItemIdentifier1Column:filter</td>
+	<td>Sample Model</td>
+</tr>
+<tr>
+	<td>waitForText</td>
+	<td>//tbody[@id='componentEditForm:editPageAccordion:itemElementItemSelectDataTable_data']/tr/td[2]</td>
+	<td>Sample Item</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//tbody[@id='componentEditForm:editPageAccordion:itemElementItemSelectDataTable_data']/tr/td[2]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementItemSelectDialogDoneButton</td>
+	<td></td>
+</tr>
+<tr>
+	<td>waitForValue</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListDataTable:0:itemDropdown_input</td>
+	<td>Sample Item</td>
+</tr>
+<!--Save the Element List-->
+<tr>
+	<td>clickAndWait</td>
+	<td>id=componentEditForm:editPageAccordion:itemElementEditListSaveButton</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

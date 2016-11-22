@@ -85,6 +85,7 @@ See LICENSE file.
         <p:column headerText="Actions" exportable="false">
             <div class="actionLink">
                 <p:commandLink action="#{itemSourceController.destroy(itemSourceObject)}"
+                               id="itemSourceEditListDataTableDestroyRecord"
                                actionListener="#{entityController.deleteSource(itemSourceObject)}" 
                                styleClass="ui-icon ui-icon-trash" title="Delete" 
                                update="itemSourceEditListDataTable"

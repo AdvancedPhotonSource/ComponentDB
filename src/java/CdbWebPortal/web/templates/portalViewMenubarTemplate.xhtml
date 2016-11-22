@@ -23,10 +23,10 @@ See LICENSE file.
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
 
             </p:submenu>
-            <p:menuitem value="Catalog" url="/views/itemDomainCatalog/list" 
+            <p:menuitem value="Catalog" id="catalogButton" url="/views/itemDomainCatalog/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} "/>
-            <p:menuitem value="Inventory" url="/views/itemDomainInventory/list"
+            <p:menuitem value="Inventory" id="inventoryMenubarButton" url="/views/itemDomainInventory/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
             <f:facet name="options">
@@ -65,8 +65,8 @@ See LICENSE file.
                         <p:menuitem value="Settings"
                                     action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
                                     rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
-                        <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
-                        <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
+                        <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
+                        <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
                         <p:menuitem value="About" url="/views/about.xhtml" icon="ui-icon-help"/>
                     </p:menubar>
                 </p:panelGrid>

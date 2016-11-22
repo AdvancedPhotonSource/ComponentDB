@@ -50,20 +50,24 @@ See LICENSE file.
                 <p/>
                 
                 <p:accordionPanel multiple="true" 
+                                  id="editPageAccordion"
                                   activeIndex="0,1,2,3,4,5,6,7,8,9,10" 
                                   rendered="#{itemObject != null}">
                     
                     <p:tab title="Log Entries"
+                           id="logEntriesEditPageAccordion"
                            rendered="#{entityController.entityDisplayItemLogs}">
                         <ui:insert name="itemLogs" />
                     </p:tab>
                     
                     <p:tab title="Properties"
+                           id="propertiesEditPageAccordion"
                            rendered="#{entityController.entityDisplayItemProperties}">
                         <ui:insert name="itemProperties" />
                     </p:tab>
 
                     <p:tab title="Sources"
+                           id="sourcesEditPageAccordion"
                            rendered="#{entityController.entityDisplayItemSources}">
                         <ui:insert name="itemSources" /> 
                     </p:tab> 
@@ -71,6 +75,7 @@ See LICENSE file.
                     <ui:insert name="itemElements" />
                     
                     <p:tab title="#{entityController.itemsDerivedFromItemTitle}" 
+                           id="derivedEditPageAccordion"
                            rendered="#{entityController.entityDisplayItemsDerivedFromItem}">
                         <ui:insert name="itemsDerivedFromItem" />
                     </p:tab>
