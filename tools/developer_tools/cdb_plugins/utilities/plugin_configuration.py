@@ -78,4 +78,47 @@ class PluginConfiguration():
                 shutil.copyfile(plugin_stored_configuration_file, plugin_listing_path)
                 print 'New configuration stored in deployment: %s' % plugin_listing_path
 
+    @classmethod
+    def backup_original_plugin_configurations(cls, plugin_storage_path, configuration_extension):
+        """
+        Backs up configuration files that are in the plugin storage.
+        Used for the save process to avoid overriding default configuration.
+
+        :param plugin_storage_path: The storage path of plugin where configuration will be found.
+        :param configuration_extension: Extension of configuration files to be found in the plugin_storage_path
+        :return The path to the directory where all the configuration files were stored.
+        """
+        configuration_backup_dir = None
+        if os.path.exists(plugin_storage_path):
+            directory_listings = os.listdir(plugin_storage_path)
+            for listing in directory_listings:
+                if listing.upper().endswith(configuration_extension.upper()):
+                    configuration_storage_path = "%s/%s" % (plugin_storage_path, listing)
+                    configuration_backup_dir = "/tmp%s" % configuration_storage_path
+                    if not os.path.exists(configuration_backup_dir):
+                        os.makedirs(configuration_backup_dir)
+                    configuration_backup_path = "%s/%s" % (configuration_backup_dir, listing)
+                    print "Storing a default plugin configuration file %s to %s: " % (listing, configuration_backup_path)
+                    shutil.copyfile(configuration_storage_path, configuration_backup_path)
+
+        return configuration_backup_dir
+
+
+    @classmethod
+    def restore_configuration(cls, configuration_backup_dir, plugin_storage_path):
+        """
+        Restores the configuration files that were backed up back into storage path.
+        Used for the save process to avoid overriding default configuration.
+
+        :param configuration_backup_dir: the path where all the backed up configuration files are stored.
+        :param plugin_storage_path: The storage path of plugin where configuration will be found.
+        """
+        if configuration_backup_dir is not None:
+            if os.path.exists(plugin_storage_path) and os.path.exists(configuration_backup_dir):
+                directory_listings = os.listdir(configuration_backup_dir)
+                for listing in directory_listings:
+                    configuration_storage_path = "%s/%s" % (plugin_storage_path, listing)
+                    configuration_backup_storage_path = "%s/%s" % (configuration_backup_dir, listing)
+                    print "Reverting backup file %s to %s" % (listing, configuration_storage_path)
+                    shutil.move(configuration_backup_storage_path, configuration_storage_path)
 

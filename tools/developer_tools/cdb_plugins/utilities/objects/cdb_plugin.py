@@ -5,6 +5,7 @@ See LICENSE file.
 """
 
 import os, shutil
+from utilities.plugin_configuration import PluginConfiguration
 
 CDB_XHTML_PLUGIN_PATH = '%s/%s/web/views/plugins/private'
 CDB_JAVA_PLUGIN_PATH = '%s/%s/src/java/gov/anl/aps/cdb/portal/plugins/support'
@@ -13,6 +14,8 @@ CDB_PYTHON_PLUGIN_PATH = '%s/%s/cdb_web_service/plugins'
 CDB_WEB_SERVICE_CODE_PATH = 'src/python/cdb'
 CDB_PORTAL_CODE_PATH = 'src/java/CdbWebPortal'
 
+JAVA_CONFIGURATION_EXT = 'properties'
+PYTHON_CONFIGURATION_EXT = 'cfg'
 
 class CdbPlugin():
     def __init__(self, plugin_name, cdb_plugin_directory, cdb_dist_directory):
@@ -57,18 +60,28 @@ class CdbPlugin():
 
     def save_plugin_to_saved_plugins_directory(self):
         if self.has_java():
+            # Prevent configuration copy
+            java_backup_dir = PluginConfiguration.backup_original_plugin_configurations(self.java_path,
+                                                                                        JAVA_CONFIGURATION_EXT)
             shutil.rmtree(self.java_path)
         if self.has_python():
+            # Prevent configuration copy
+            python_backup_dir = PluginConfiguration.backup_original_plugin_configurations(self.python_path,
+                                                                                          PYTHON_CONFIGURATION_EXT)
             shutil.rmtree(self.python_path)
         if self.has_xhtml():
             shutil.rmtree(self.xhtml_path)
 
         if self.has_deployed_java():
             shutil.copytree(self.deploy_java_path, self.java_path)
+            # Restore the configuration backups
+            PluginConfiguration.restore_configuration(java_backup_dir, self.java_path)
         if self.has_deployed_xhtml():
             shutil.copytree(self.deploy_xhtml_path, self.xhtml_path)
         if self.has_deployed_python():
             shutil.copytree(self.deploy_python_path, self.python_path)
+            # Restore the configuration backups
+            PluginConfiguration.restore_configuration(python_backup_dir, self.python_path)
 
     def remove_plugin_from_distribution(self):
         if self.has_deployed_python():
