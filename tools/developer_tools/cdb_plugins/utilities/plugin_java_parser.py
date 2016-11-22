@@ -31,7 +31,7 @@ class PluginJavaParser():
         auto_gen_message = "Recommended not to modify."
 
         for cdb_plugin in plugins:
-            if cdb_plugin.has_deployed_java:
+            if cdb_plugin.has_deployed_java():
                 plugin_name = cdb_plugin.plugin_name
                 directory_listings = os.listdir(cdb_plugin.deploy_java_path)
                 plugin_manager_listings = []
@@ -60,7 +60,7 @@ class PluginJavaParser():
 
     def update_required_configuration_for_plugins(self, plugins):
         for cdb_plugin in plugins:
-            if cdb_plugin.has_deployed_java:
+            if cdb_plugin.has_deployed_java():
                 plugin_name = cdb_plugin.plugin_name
                 plugin_deployed_path = cdb_plugin.deploy_java_path
                 self.plugin_configurator.update_plugin_configuration(plugin_name, plugin_deployed_path, CONFIGURATION_FILE_EXTENSION)
