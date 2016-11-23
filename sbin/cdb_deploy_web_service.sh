@@ -140,7 +140,7 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
         | sed 's?ADMIN_EMAIL_ADDRESS?$ADMIN_EMAIL_ADDRESS?g' \
         | sed 's?EMAIL_SUBJECT_START?$EMAIL_SUBJECT_START?g' \
         | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
-        | set 's?CDB_LDAP_AUTH_DN_FORMAT=?$CDB_LDAP_AUTH_DN_FORMAT?g' \
+        | sed 's?CDB_LDAP_AUTH_DN_FORMAT=?$CDB_LDAP_AUTH_DN_FORMAT?g' \
         > $CDB_WEB_SERVICE_CONFIG_FILE"
     eval $cmd || exit 1
 else
