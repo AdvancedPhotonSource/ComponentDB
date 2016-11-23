@@ -39,15 +39,15 @@ read -p "Enter the organizational name [company]: " SSL_ORG_NAME
 read -p "Enter the secondary organizational name [company]: " SSL_SECONDARY_ORG_NAME
 read -p "Enter the organizational unit name [accounting]: " SSL_ORG_UNIT_NAME
 
-if [ -z $SSL_ORG_NAME ]; then
+if [ -z "$SSL_ORG_NAME" ]; then
     SSL_ORG_NAME=company
 fi
 
-if [ -z $SSL_SECONDARY_ORG_NAME ]; then
+if [ -z "$SSL_SECONDARY_ORG_NAME" ]; then
     SSL_SECONDARY_ORG_NAME=company
 fi
 
-if [ -z $SSL_ORG_UNIT_NAME ]; then
+if [ -z "$SSL_ORG_UNIT_NAME" ]; then
     SSL_ORG_UNIT_NAME=accounting
 fi
 

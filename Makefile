@@ -40,6 +40,9 @@ backup:
 configure-web-portal: dist
 	$(TOP)/sbin/cdb_configure_web_portal.sh
 
+deploy-cdb-plugin:
+	$(TOP)/tools/developer_tools/cdb_plugins/deploy_plugin.py cdb
+
 deploy-web-portal: dist
 	$(TOP)/sbin/cdb_deploy_web_portal.sh
 
@@ -56,7 +59,7 @@ undeploy-web-service:
 	$(TOP)/sbin/cdb_undeploy_web_service.sh
 
 configuration-dev:
-	$(TOP)/sbin/cdb_create_confiugration.sh cdb_dev
+	$(TOP)/sbin/cdb_create_configuration.sh cdb_dev
 
 db-dev:
 	$(TOP)/sbin/cdb_create_db.sh cdb_dev
@@ -66,6 +69,9 @@ clean-db-dev:
 
 backup-dev:
 	$(TOP)/sbin/cdb_backup_all.sh cdb_dev
+
+deploy-cdb-plugin-dev:
+	$(TOP)/tools/developer_tools/cdb_plugins/deploy_plugin.py cdb_dev
 
 deploy-web-portal-dev: dist 
 	$(TOP)/sbin/cdb_deploy_web_portal.sh cdb_dev Dev
