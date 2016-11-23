@@ -59,7 +59,7 @@ undeploy-web-service:
 	$(TOP)/sbin/cdb_undeploy_web_service.sh
 
 configuration-dev:
-	$(TOP)/sbin/cdb_create_confiugration.sh cdb_dev
+	$(TOP)/sbin/cdb_create_configuration.sh cdb_dev
 
 db-dev:
 	$(TOP)/sbin/cdb_create_db.sh cdb_dev
