@@ -15,10 +15,12 @@ See LICENSE file.
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
 from pdmLink import PdmLink
 import ConfigParser
+import os
 
 class PdmLinkControllerImpl(CdbObjectManager):
 
-    CONFIG_PATH = '../pdmLink.cfg'
+    PYTHON_FILE_PATH = os.path.abspath(os.path.dirname(__file__))
+    CONFIG_FILE_PATH = os.path.join(PYTHON_FILE_PATH, '..', 'pdmLink.cfg')
     CONFIG_SECTION_NAME = 'PDMLink'
     CONFIG_PDMLINK_USER_KEY = 'pdmLinkUser'
     CONFIG_PDMLINK_PASS_KEY = 'pdmLinkPass'
@@ -30,7 +32,7 @@ class PdmLinkControllerImpl(CdbObjectManager):
     def __init__(self):
         CdbObjectManager.__init__(self)
         config = ConfigParser.ConfigParser()
-        config.readfp(open(self.CONFIG_PATH))
+        config.readfp(open(self.CONFIG_FILE_PATH))
 
         pdmlinkUser = config.get(self.CONFIG_SECTION_NAME, self.CONFIG_PDMLINK_USER_KEY)
         pdmlinkPass = config.get(self.CONFIG_SECTION_NAME, self.CONFIG_PDMLINK_PASS_KEY)
