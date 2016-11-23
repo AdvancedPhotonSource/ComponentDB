@@ -107,7 +107,7 @@ fi
 if [ ! -z $userContextRoot ]; then
 	CDB_CONTEXT_ROOT=$userContextRoot
 fi
-if [ ! -z $userPortalTitle ]; then
+if [ ! -z "$userPortalTitle" ]; then
 	CDB_PORTAL_TITLE=$userPortalTitle
 fi
 if [ ! -z $userPortalTitleColor ]; then
