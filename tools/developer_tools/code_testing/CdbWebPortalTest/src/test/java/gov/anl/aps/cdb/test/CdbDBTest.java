@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.test;
 
 import gov.anl.aps.cdb.portal.model.db.beans.*;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.EJB;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -23,12 +24,16 @@ public class CdbDBTest {
 
     @Deployment
     public static Archive<?> createDeployment() {
+        
         WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
                 .addPackage(ItemFacade.class.getPackage())
+                .addClass(SessionUtility.class)
                 .addPackage(Item.class.getPackage())                
+                .addAsResource("cdb.portal.properties", "cdb.portal.properties") 
+                .addAsResource("resources.properties", "resources.properties") 
                 .addAsResource("persistence.xml", "META-INF/persistence.xml")
                 .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-
+        System.out.println(war.toString(true));
         return war;
     }
 
