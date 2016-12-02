@@ -72,28 +72,28 @@ import org.primefaces.model.menu.MenuModel;
 public abstract class ItemController extends CdbDomainEntityController<Item, ItemFacade> implements Serializable {
 
     @EJB
-    private ItemFacade itemFacade;
+    protected ItemFacade itemFacade;
 
     @EJB
-    private ItemElementFacade itemElementFacade;
+    protected ItemElementFacade itemElementFacade;
 
     @EJB
-    private ItemTypeFacade itemTypeFacade;
+    protected ItemTypeFacade itemTypeFacade;
 
     @EJB
-    private DomainFacade domainFacade;
+    protected DomainFacade domainFacade;
 
     @EJB
-    private EntityTypeFacade entityTypeFacade;
+    protected EntityTypeFacade entityTypeFacade;
 
     @EJB
-    private ItemCategoryFacade itemCategoryFacade;
+    protected ItemCategoryFacade itemCategoryFacade;
 
     @EJB
-    private ListFacade listFacade;
+    protected ListFacade listFacade;
 
     @EJB
-    private UserInfoFacade userInfoFacade;
+    protected UserInfoFacade userInfoFacade;
 
     protected final String FAVORITES_LIST_NAME = "Favorites";
 

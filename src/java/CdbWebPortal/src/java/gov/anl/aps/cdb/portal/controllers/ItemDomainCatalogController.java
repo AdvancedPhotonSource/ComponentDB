@@ -90,12 +90,6 @@ public class ItemDomainCatalogController extends ItemController {
 
     private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
 
-    @EJB
-    private ItemFacade itemFacade;
-
-    @EJB
-    private DomainFacade domainFacade;
-
     private Boolean displayModelNumber = null;
     private Boolean displayAlternateName = null;
 
