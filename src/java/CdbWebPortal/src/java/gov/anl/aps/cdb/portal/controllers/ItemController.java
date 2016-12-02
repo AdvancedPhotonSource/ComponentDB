@@ -466,7 +466,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public boolean isItemHasSimpleListView() {
         return false;
     }
-
+    
+    /** 
+     * TODO: Verify that list simple/advanced view is no longer needed. 
+     * @return 
+     */
     public String getListViewSelected() {
         if (listViewSelected == null) {
             if (isItemHasSimpleListView()) {
@@ -512,7 +516,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         Item currentItem = getCurrent();
         if (currentItem != null) {
             if (getEntityDisplayItemCategory()) {
-                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
+                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();                                
 
                 if (lastKnownItemCategoryListForCurrentItem != null) {
                     if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
@@ -525,8 +529,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                             }
                         }
                     }
+                } else {
+                    availableItemTypesForCurrentItem = null; 
                 }
-                lastKnownItemCategoryListForCurrentItem = itemCategoryList;
+                lastKnownItemCategoryListForCurrentItem = itemCategoryList;                
 
                 if (availableItemTypesForCurrentItem == null) {
                     availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
@@ -824,7 +830,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      * @param listToCompare
      * @return
      */
-    private boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
+    protected boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
         Boolean listIsDifferent = true;
         if (originalList == null
                 || listToCompare.size() == originalList.size()) {
