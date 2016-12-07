@@ -1,6 +1,7 @@
 # Component DB
 
 [![Documentation Status](https://readthedocs.org/projects/componentdb/badge/?version=latest)](http://componentdb.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://travis-ci.org/iTerminate/Component.DB.svg?branch=master)](https://travis-ci.org/iTerminate/Component.DB)
 
 **Prerequisites:**
 
