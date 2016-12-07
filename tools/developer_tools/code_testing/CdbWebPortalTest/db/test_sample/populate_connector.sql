@@ -1,0 +1,4 @@
+LOCK TABLES `connector` WRITE;
+/*!40000 ALTER TABLE `connector` DISABLE KEYS */;
+/*!40000 ALTER TABLE `connector` ENABLE KEYS */;
+UNLOCK TABLES;
