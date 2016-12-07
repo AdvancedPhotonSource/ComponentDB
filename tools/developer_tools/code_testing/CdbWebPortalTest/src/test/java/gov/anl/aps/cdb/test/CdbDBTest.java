@@ -7,7 +7,20 @@ package gov.anl.aps.cdb.test;
 import gov.anl.aps.cdb.portal.model.db.beans.*;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.sql.Connection;
 import javax.ejb.EJB;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
+import org.dbunit.database.DatabaseConfig;
+import org.dbunit.database.DatabaseConnection;
+import org.dbunit.database.IDatabaseConnection;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.operation.DatabaseOperation;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -16,27 +29,15 @@ import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(Arquillian.class)
 public class CdbDBTest {
-
-    @Deployment
-    public static Archive<?> createDeployment() {
-        
-        WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
-                .addPackage(ItemFacade.class.getPackage())
-                .addClass(SessionUtility.class)
-                .addPackage(Item.class.getPackage())                
-                .addAsResource("cdb.portal.properties", "cdb.portal.properties") 
-                .addAsResource("resources.properties", "resources.properties") 
-                .addAsResource("persistence.xml", "META-INF/persistence.xml")
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        System.out.println(war.toString(true));
-        return war;
-    }
-
+    
+    private final String DBUNIT_RESTORE_FILENAME = "src/test/resources/dbUnitDBRestore.xml";
+    
     @EJB
     AllowedPropertyValueFacade allowedPropertyValueFacade;
 
@@ -153,6 +154,53 @@ public class CdbDBTest {
     
     @EJB
     UserSettingFacade userSettingFacade; 
+    
+    @PersistenceContext
+    EntityManager em;
+    
+    @Inject
+    UserTransaction utx;
+
+    @Deployment
+    public static Archive<?> createDeployment() {
+        
+        WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war")
+                .addPackage(ItemFacade.class.getPackage())
+                .addClass(SessionUtility.class)
+                .addPackage(Item.class.getPackage())                
+                .addAsResource("cdb.portal.properties", "cdb.portal.properties") 
+                .addAsResource("resources.properties", "resources.properties") 
+                .addAsResource("persistence.xml", "META-INF/persistence.xml")
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
+        System.out.println(war.toString(true));
+        return war;
+    }
+    
+    @Before
+    public void prepareDBTest() throws Exception {
+        populateCleanDatabase(); 
+    }
+    
+    private void populateCleanDatabase() throws Exception {
+        utx.begin();
+        em.joinTransaction();
+        // Get sql connection object from the entity manager 
+        Connection connection = em.unwrap(Connection.class);
+        //Read in the restore of the db. 
+        InputStream inputStream = new FileInputStream(DBUNIT_RESTORE_FILENAME);
+        IDatabaseConnection dbunitConnection = new DatabaseConnection(connection); 
+        FlatXmlDataSetBuilder flatXmlDataSetBuilder = new FlatXmlDataSetBuilder();
+        IDataSet dataset = flatXmlDataSetBuilder.build(inputStream);
+        
+        // Allow empty fields during the import of database data. 
+        DatabaseConfig config = dbunitConnection.getConfig(); 
+        config.setProperty("http://www.dbunit.org/features/allowEmptyFields", true);
+        // Perform a clean insert of the dataset. 
+        DatabaseOperation.CLEAN_INSERT.execute(dbunitConnection, dataset);
+        
+        //Commit the changes made in preperation for next test. 
+        utx.commit();        
+    }
     
     @Test
     public void checkSomeEJBIsSet() {
@@ -313,5 +361,5 @@ public class CdbDBTest {
 
     public UserSettingFacade getUserSettingFacade() {
         return userSettingFacade;
-    }
+    }   
 }
