@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -11,6 +12,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.test.CdbDBTest;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -18,15 +21,18 @@ import org.junit.Before;
 public class ItemDomainCatalogControllerTest extends CdbDBTest {
 
     ItemDomainCatalogControllerTestable itemDomainCatalogController;
+    
+    @PersistenceContext
+    EntityManager em;
 
     @Before
-    public void initalize() {
+    public void initalize() {    
         itemDomainCatalogController = new ItemDomainCatalogControllerTestable(this);
     }
 
     @Test
     public void checkItemFacadeWasSet() {
-        assertNotNull(itemDomainCatalogController.getItem(23));
+        assertNotNull(itemDomainCatalogController.getItem(1));
     }
     
     @Test
@@ -82,6 +88,36 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
             List<ItemElement> itemElements = item.getItemElementMemberList(); 
             assertTrue(itemElements == null || itemElements.isEmpty());
         }
+    }
+    
+    @Test
+    public void testCheckItemUniqueness() {
+        // Get unique item
+        Item uniqueItem = itemDomainCatalogController.getItemList().get(0); 
+        assertNotNull(uniqueItem);
+        
+        Item newItem = itemDomainCatalogController.createEntityInstance(); 
+        assertNotNull(newItem);
+        
+        newItem.setName(uniqueItem.getName());
+        newItem.setItemIdentifier1(uniqueItem.getItemIdentifier1());
+        newItem.setItemIdentifier2(uniqueItem.getItemIdentifier2());
+        newItem.setDerivedFromItem(uniqueItem.getDerivedFromItem()); 
+        
+        assertFalse(checkItemUniqueness(newItem));                
+        
+        newItem.setName("Some New Name that wes used for the test");
+        
+        assertTrue(checkItemUniqueness(newItem));                                
+    }
+    
+    private boolean checkItemUniqueness(Item item) {
+        try {
+            itemDomainCatalogController.checkItemUniqueness(item);
+        } catch (CdbException ex) {
+            return false;
+        }
+        return true; 
     }
 
     /**
