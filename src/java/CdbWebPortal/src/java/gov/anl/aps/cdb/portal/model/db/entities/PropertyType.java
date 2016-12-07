@@ -75,6 +75,8 @@ public class PropertyType extends CdbEntity implements Serializable {
     private Boolean isInternal;
     @Column(name = "is_active")
     private Boolean isActive;
+    @Column(name = "is_metadata_dynamic")
+    private Boolean isMetadataDynamic;
     @JoinTable(name = "allowed_property_domain", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")})
@@ -164,6 +166,14 @@ public class PropertyType extends CdbEntity implements Serializable {
 
     public void setIsDynamic(Boolean isDynamic) {
         this.isDynamic = isDynamic;
+    }
+
+    public Boolean getIsMetadataDynamic() {
+        return isMetadataDynamic;
+    }
+
+    public void setIsMetadataDynamic(Boolean isMetadataDynamic) {
+        this.isMetadataDynamic = isMetadataDynamic;
     }
 
     public Boolean getIsInternal() {
