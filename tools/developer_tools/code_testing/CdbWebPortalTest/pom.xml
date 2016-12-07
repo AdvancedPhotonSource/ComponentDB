@@ -27,7 +27,7 @@
                 <executions>                    
                     <execution>
                         <configuration>
-                            <executable>sh</executable>
+                            <executable>bash</executable>
                             <arguments>
                                 <argument>preparebuild.sh</argument>
                             </arguments>    
