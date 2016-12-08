@@ -2663,6 +2663,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 throw new CdbException("Item element name cannot be empty.");
             }
         }
+        // Throws exception if a tree cannot be generated due to circular reference. 
+        ItemElementUtility.createItemElementRoot(item); 
     }
 
     protected String itemDomainToString(Item item) {
