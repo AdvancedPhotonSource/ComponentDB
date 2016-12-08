@@ -171,8 +171,7 @@ public class CdbDBTest {
                 .addAsResource("cdb.portal.properties", "cdb.portal.properties") 
                 .addAsResource("resources.properties", "resources.properties") 
                 .addAsResource("persistence.xml", "META-INF/persistence.xml")
-                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");
-        System.out.println(war.toString(true));
+                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml");        
         return war;
     }
     
@@ -190,6 +189,7 @@ public class CdbDBTest {
         InputStream inputStream = new FileInputStream(DBUNIT_RESTORE_FILENAME);
         IDatabaseConnection dbunitConnection = new DatabaseConnection(connection); 
         FlatXmlDataSetBuilder flatXmlDataSetBuilder = new FlatXmlDataSetBuilder();
+        flatXmlDataSetBuilder.setColumnSensing(true);
         IDataSet dataset = flatXmlDataSetBuilder.build(inputStream);
         
         // Allow empty fields during the import of database data. 
