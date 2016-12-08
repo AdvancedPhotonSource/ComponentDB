@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
-import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -65,6 +64,16 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
         return null; 
     }
     
+    public List<PropertyType> findByPropertyInternalStatus(Boolean isInternal){
+        try{
+            return (List<PropertyType>) em.createNamedQuery("PropertyType.findByInternalStatus")
+                    .setParameter("isInternal", isInternal)
+                    .getResultList(); 
+        }catch (NoResultException ex) {
+        }
+        return null; 
+    }
+    
     @Override
     public List<PropertyType> findAll() {
         return (List<PropertyType>) em.createNamedQuery("PropertyType.findAll")
@@ -76,12 +85,14 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
      * 
      * @param propertyTypeCategoryList [Optional] will perform query using given attribute.
      * @param propertyTypeHandlerList [Optional] will perform query using given attribute.
+     * @param isInternal Should the property types displayed be internal.  
      * 
      * @return 
      */
     public List<PropertyType> findByFilterViewAttributes(
             List<PropertyTypeCategory> propertyTypeCategoryList,
-            List<PropertyTypeHandler> propertyTypeHandlerList) {
+            List<PropertyTypeHandler> propertyTypeHandlerList, 
+            Boolean isInternal) {
         String queryString = QUERY_STRING_START; 
         String propertyTypeCategoryQueryString = null;
         String propertyTypeHandlerQueryString = null;
@@ -131,6 +142,7 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
                 queryString += propertyTypeHandlerQueryString;
             }
             
+            queryString += " AND p.isInternal = " + isInternal.toString();
             queryString += " ORDER BY p.name ASC"; 
             
             return (List<PropertyType>) em.createQuery(queryString).getResultList();
