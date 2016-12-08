@@ -111,6 +111,72 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
         assertTrue(checkItemUniqueness(newItem));                                
     }
     
+    @Test
+    public void testValidityOfItemElementsList() {
+        List<Item> items = itemDomainCatalogController.getItemList(); 
+        assertFalse(items == null || items.isEmpty());
+        ItemElement newItemElement; 
+        
+        Item assembyItem = items.get(1);
+        List<ItemElement> displayElementList = assembyItem.getItemElementDisplayList(); 
+        assertFalse(displayElementList == null || displayElementList.isEmpty());
+        
+        //Cause circular reference
+        Item containedItem = displayElementList.get(0).getContainedItem();
+        
+        // Set assembly item element to iteself. 
+        itemDomainCatalogController.prepareAddItemElement(assembyItem);
+        newItemElement = getNewItemElement(assembyItem); 
+        newItemElement.setName("Test");
+        newItemElement.setContainedItem(assembyItem); 
+        try {
+            itemDomainCatalogController.checkItem(assembyItem);
+            fail("Circular reference not caught.");
+        } catch (Exception ex) {
+            assertNotNull(ex);
+        }
+        
+        // Add a valid item elemnt         
+        newItemElement.setContainedItem(containedItem);
+        newItemElement.setName("");
+        try {
+            itemDomainCatalogController.checkItem(assembyItem);
+            fail("Name blank not caught.");
+        } catch (CdbException ex) {
+            assertNotNull(ex);            
+        }
+        
+        newItemElement.setName("Some Name");
+        try {
+            itemDomainCatalogController.checkItem(assembyItem);
+        } catch (CdbException ex) {
+            fail("Item element addition should be valid: " + ex.getErrorMessage());
+        }
+        
+        // Reference assembly item which contains the containted item. 
+        itemDomainCatalogController.prepareAddItemElement(containedItem);
+        newItemElement = getNewItemElement(containedItem); 
+        newItemElement.setName("Test");
+        newItemElement.setContainedItem(assembyItem);
+        
+        try {
+            itemDomainCatalogController.checkItem(containedItem);
+            fail("Circular reference not caught.");
+        } catch (CdbException ex) {
+            assertNotNull(ex);
+        }
+    }
+    
+    private ItemElement getNewItemElement(Item item) {
+        List<ItemElement> itemElementList = item.getItemElementDisplayList(); 
+        for (ItemElement itemElement: itemElementList) {
+            if (itemElement.getId() == null) {
+                return itemElement;
+            }
+        }
+        return null;         
+    }
+    
     private boolean checkItemUniqueness(Item item) {
         try {
             itemDomainCatalogController.checkItemUniqueness(item);
