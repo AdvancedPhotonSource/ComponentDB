@@ -63,6 +63,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     private final String SETTING_CONTROLLER_NAME = "settingController";
 
+    private final String CDB_ENTITY_INFO_LOG_LEVEL = "cdbEntityInfo";
+    private final String CDB_ENTITY_WARNING_LOG_LEVEL = "cdbEntityWarning";
+
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
 
     @EJB
@@ -1047,16 +1050,44 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
+     * Allows the controller to quickly add a log entry to system logs with
+     * current session user stamp.
+     *
+     * @param logLevel
+     * @param message
+     */
+    private void addCdbEntitySystemLog(String logLevel, String message) {
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionUser != null) {
+            String username = sessionUser.getUsername();
+            message = "User: " + username + " | " + message;
+        }
+        LogUtility.addSystemLog(logLevel, message);
+    }
+
+    public String create() {
+        return create(false, false);
+    }
+
+    /**
      * Create new entity instance and return view to the new instance.
      *
+     * @param silent determines if a message should be shown at completion to
+     * the user.
+     * @param skipSystemLog do not list entry in system logs.
      * @return URL to the new entity instance view
      */
-    public String create() {
+    public String create(Boolean silent, Boolean skipSystemLog) {
         try {
             EntityType newEntity = current;
             prepareEntityInsert(current);
             getEntityDbFacade().create(current);
-            SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            if (!silent) {
+                SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            }
+            if (!skipSystemLog) {
+                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created: " + current.toString());
+            }
             resetListDataModel();
             resetSelectDataModel();
             // Best to reload the entity after creation to ensure all connections are updated and initalized. 
@@ -1064,12 +1095,23 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             current = findById((Integer) newEntityId);
             return view();
         } catch (CdbException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            logger.error("Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            if (!silent) {
+                SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            }
+            if (!skipSystemLog) {
+                addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, "Failed to create: " + ex.getMessage());
+            }
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
             logger.error("Could not create " + getDisplayEntityTypeName() + ": " + t.getMessage());
-            SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            if (!silent) {
+                SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            }
+            if (!skipSystemLog) {
+                addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, "Failed to create: " + ex.getMessage());
+            }
             return null;
         }
     }
@@ -1118,6 +1160,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             prepareEntityUpdate(current);
             EntityType updatedEntity = getEntityDbFacade().edit(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + current.toString());
             resetListDataModel();
             resetSelectDataModel();
             resetLogText();
@@ -1125,12 +1168,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return viewForCurrentEntity();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, "Failed to update: " + ex.getMessage());
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
             logger.error("Could not update " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, "Failed to update: " + ex.getMessage());
             return null;
         }
     }
@@ -1251,18 +1296,21 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             prepareEntityDestroy(current);
             getEntityDbFacade().remove(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Deleted: " + current.toString());
             resetListDataModel();
             resetSelectDataModel();
             clearListFilters();
             return prepareList();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, "Failed to delete: " + ex.getMessage());
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
             logger.error("Could not delete " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, "Failed to delete: " + ex.getMessage());
             return null;
         }
     }
