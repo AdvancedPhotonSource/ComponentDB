@@ -1,0 +1,416 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <setting_type id="1" name="DomainEntity.Detail.Display.GalleryViewableDocuments" description="Display viewable documents in the gallery." default_value="true"/>
+    <setting_type id="1000" name="AllowedPropertyValue.List.Display.Description" description="Display allowed property value description." default_value="false"/>
+    <setting_type id="1001" name="AllowedPropertyValue.List.Display.Id" description="Display allowed property value id." default_value="false"/>
+    <setting_type id="1002" name="AllowedPropertyValue.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="1003" name="AllowedPropertyValue.List.Display.SortOrder" description="Display allowed property value sort order." default_value="true"/>
+    <setting_type id="1004" name="AllowedPropertyValue.List.Display.Units" description="Display allowed property value units." default_value="true"/>
+    <setting_type id="1005" name="AllowedPropertyValue.List.FilterBy.Description" description="Filter for allowed property value description."/>
+    <setting_type id="1006" name="AllowedPropertyValue.List.FilterBy.SortOrder" description="Filter for allowed property value class sort order."/>
+    <setting_type id="1007" name="AllowedPropertyValue.List.FilterBy.Units" description="Filter for allowed property value units."/>
+    <setting_type id="1008" name="AllowedPropertyValue.List.FilterBy.Value" description="Filter for allowed property value."/>
+    <setting_type id="2000" name="ItemDomainCatalog.List.AutoLoad.FilterBy.Properties" description="Automatically load component list with display properties for filtering." default_value="true"/>
+    <setting_type id="2001" name="ItemDomainCatalog.List.Display.Category" description="Display catalog item category." default_value="true"/>
+    <setting_type id="2002" name="ItemDomainCatalog.List.Display.CreatedByUser" description="Display created by username." default_value="false"/>
+    <setting_type id="2003" name="ItemDomainCatalog.List.Display.CreatedOnDateTime" description="Display created on date/time." default_value="false"/>
+    <setting_type id="2004" name="ItemDomainCatalog.List.Display.Description" description="Display component description." default_value="true"/>
+    <setting_type id="2005" name="ItemDomainCatalog.List.Display.Id" description="Display component id." default_value="false"/>
+    <setting_type id="2006" name="ItemDomainCatalog.List.Display.LastModifiedByUser" description="Display last modified by username." default_value="false"/>
+    <setting_type id="2007" name="ItemDomainCatalog.List.Display.LastModifiedOnDateTime" description="Display last modified on date/time." default_value="false"/>
+    <setting_type id="2008" name="ItemDomainCatalog.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="2009" name="ItemDomainCatalog.List.Display.ModelNumber" description="Display component model number." default_value="true"/>
+    <setting_type id="2010" name="ItemDomainCatalog.List.Display.OwnerUser" description="Display owner username." default_value="false"/>
+    <setting_type id="2011" name="ItemDomainCatalog.List.Display.OwnerGroup" description="Display owner group name." default_value="false"/>
+    <setting_type id="2012" name="ItemDomainCatalog.List.Display.PropertyTypeId1" description="Display property value for property type id #1." default_value=""/>
+    <setting_type id="2013" name="ItemDomainCatalog.List.Display.PropertyTypeId2" description="Display property value for property type id #2." default_value=""/>
+    <setting_type id="2014" name="ItemDomainCatalog.List.Display.PropertyTypeId3" description="Display property value for property type id #3." default_value=""/>
+    <setting_type id="2015" name="ItemDomainCatalog.List.Display.PropertyTypeId4" description="Display property value for property type id #4." default_value=""/>
+    <setting_type id="2016" name="ItemDomainCatalog.List.Display.PropertyTypeId5" description="Display property value for property type id #5." default_value=""/>
+    <setting_type id="2017" name="ItemDomainCatalog.List.Display.Sources" description="Display component sources." default_value="false"/>
+    <setting_type id="2018" name="ItemDomainCatalog.List.Display.Type" description="Display component type." default_value="true"/>
+    <setting_type id="2019" name="ItemDomainCatalog.List.Display.RowExpansion" description="Display row expansion." default_value="true"/>
+    <setting_type id="2020" name="ItemDomainCatalog.List.Display.ComponentInstance.RowExpansion" description="Display Component Instance row expansion." default_value="true"/>
+    <setting_type id="2021" name="ItemDomainCatalog.List.Display.AlternateName" description="Display Alternate Name" default_value="false"/>
+    <setting_type id="2022" name="ItemDomainCatalog.List.Display.Project" description="Display Item Project" default_value="false"/>
+    <setting_type id="2023" name="ItemDomainCatalog.List.Display.EntityTypes" description="Display Item Entity Types" default_value="true"/>
+    <setting_type id="2024" name="ItemDomainCatalog.List.Load.RowExpansionPropertyValue" description="Load property values for row expansions." default_value="false"/>
+    <setting_type id="2025" name="ItemDomainCatalog.List.Load.ComponentInstance.RowExpansionPropertyValue" description="Load property values for component instance row expansions." default_value="false"/>
+    <setting_type id="2026" name="ItemDomainCatalog.List.FilterBy.Category" description="Filter for components by type category."/>
+    <setting_type id="2027" name="ItemDomainCatalog.List.FilterBy.CreatedByUser" description="Filter for components that were created by username."/>
+    <setting_type id="2028" name="ItemDomainCatalog.List.FilterBy.CreatedOnDateTime" description="Filter for components that were created on date/time."/>
+    <setting_type id="2029" name="ItemDomainCatalog.List.FilterBy.Description" description="Filter for components by description."/>
+    <setting_type id="2030" name="ItemDomainCatalog.List.FilterBy.LastModifiedByUser" description="Filter for components that were last modified by username."/>
+    <setting_type id="2031" name="ItemDomainCatalog.List.FilterBy.LastModifiedOnDateTime" description="Filter for components that were last modified on date/time."/>
+    <setting_type id="2032" name="ItemDomainCatalog.List.FilterBy.ModelNumber" description="Filter for component model number."/>
+    <setting_type id="2033" name="ItemDomainCatalog.List.FilterBy.PropertyValue1" description="Filter for property value with displayed property type id #1." default_value=""/>
+    <setting_type id="2034" name="ItemDomainCatalog.List.FilterBy.PropertyValue2" description="Filter for property value with displayed property type id #2." default_value=""/>
+    <setting_type id="2035" name="ItemDomainCatalog.List.FilterBy.PropertyValue3" description="Filter for property value with displayed property type id #3." default_value=""/>
+    <setting_type id="2036" name="ItemDomainCatalog.List.FilterBy.PropertyValue4" description="Filter for property value with displayed property type id #4." default_value=""/>
+    <setting_type id="2037" name="ItemDomainCatalog.List.FilterBy.PropertyValue5" description="Filter for property value with displayed property type id #5." default_value=""/>
+    <setting_type id="2038" name="ItemDomainCatalog.List.FilterBy.Name" description="Filter for components by name."/>
+    <setting_type id="2039" name="ItemDomainCatalog.List.FilterBy.OwnerUser" description="Filter for components by owner username."/>
+    <setting_type id="2040" name="ItemDomainCatalog.List.FilterBy.OwnerGroup" description="Filter for components by owner group name."/>
+    <setting_type id="2041" name="ItemDomainCatalog.List.FilterBy.Sources" description="Filter for components by sources."/>
+    <setting_type id="2042" name="ItemDomainCatalog.List.FilterBy.Type" description="Filter for components by type."/>
+    <setting_type id="2043" name="ItemDomainCatalog.Help.ListPage.Display.Fragment" description="Display Help guide to the user on the main list page of the Component entity." default_value="true"/>
+    <setting_type id="2044" name="ItemDomainCatalog.List.Scope.Display" description="Show list page with a scope applied." default_value="All"/>
+    <setting_type id="2045" name="ItemDomainCatalog.List.Scope.Display.PropertyTypeId" description="Setting used along side a display scope of property type."/>
+    <setting_type id="3000" name="ItemDomainInventory.List.AutoLoad.FilterBy.Properties" description="Automatically load component instance list with display properties for filtering." default_value="true"/>
+    <setting_type id="3001" name="ItemDomainInventory.List.Display.CreatedByUser" description="Display created by username." default_value="false"/>
+    <setting_type id="3002" name="ItemDomainInventory.List.Display.CreatedOnDateTime" description="Display created on date/time." default_value="false"/>
+    <setting_type id="3003" name="ItemDomainInventory.List.Display.Description" description="Display component instance description." default_value="true"/>
+    <setting_type id="3004" name="ItemDomainInventory.List.Display.Id" description="Display component instance id." default_value="false"/>
+    <setting_type id="3005" name="ItemDomainInventory.List.Display.LastModifiedByUser" description="Display last modified by username." default_value="false"/>
+    <setting_type id="3006" name="ItemDomainInventory.List.Display.LastModifiedOnDateTime" description="Display last modified on date/time." default_value="false"/>
+    <setting_type id="3007" name="ItemDomainInventory.List.Display.Location" description="Display inventory item location." default_value="true"/>
+    <setting_type id="3008" name="ItemDomainInventory.List.Display.LocationDetails" description="Display component instance location details." default_value="false"/>
+    <setting_type id="3009" name="ItemDomainInventory.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="3010" name="ItemDomainInventory.List.Display.OwnerUser" description="Display owner username." default_value="false"/>
+    <setting_type id="3011" name="ItemDomainInventory.List.Display.OwnerGroup" description="Display owner group name." default_value="false"/>
+    <setting_type id="3012" name="ItemDomainInventory.List.Display.PropertyTypeId1" description="Display property value for property type id #1." default_value=""/>
+    <setting_type id="3013" name="ItemDomainInventory.List.Display.PropertyTypeId2" description="Display property value for property type id #2." default_value=""/>
+    <setting_type id="3014" name="ItemDomainInventory.List.Display.PropertyTypeId3" description="Display property value for property type id #3." default_value=""/>
+    <setting_type id="3015" name="ItemDomainInventory.List.Display.PropertyTypeId4" description="Display property value for property type id #4." default_value=""/>
+    <setting_type id="3016" name="ItemDomainInventory.List.Display.PropertyTypeId5" description="Display property value for property type id #5." default_value=""/>
+    <setting_type id="3017" name="ItemDomainInventory.List.Display.QrId" description="Display component instance QR id." default_value="true"/>
+    <setting_type id="3018" name="ItemDomainInventory.List.Display.SerialNumber" description="Display component instance serial number." default_value="true"/>
+    <setting_type id="3019" name="ItemDomainInventory.List.Display.Project" description="Display Inventory Item project." default_value="false"/>
+    <setting_type id="3020" name="ItemDomainInventory.List.Display.EntityTypes" description="Display Inventory Item Entity Type." default_value="true"/>
+    <setting_type id="3021" name="ItemDomainInventory.List.Display.RowExpansion" description="Display row expansion." default_value="true"/>
+    <setting_type id="3022" name="ItemDomainInventory.List.Load.RowExpansionPropertyValue" description="Load property values for row expansions." default_value="false"/>
+    <setting_type id="3023" name="ItemDomainInventory.List.FilterBy.Component" description="Filter for component instance component."/>
+    <setting_type id="3024" name="ItemDomainInventory.List.FilterBy.CreatedByUser" description="Filter for components that were created by username."/>
+    <setting_type id="3025" name="ItemDomainInventory.List.FilterBy.CreatedOnDateTime" description="Filter for components that were created on date/time."/>
+    <setting_type id="3026" name="ItemDomainInventory.List.FilterBy.Description" description="Filter for components by description."/>
+    <setting_type id="3027" name="ItemDomainInventory.List.FilterBy.LastModifiedByUser" description="Filter for components that were last modified by username."/>
+    <setting_type id="3028" name="ItemDomainInventory.List.FilterBy.LastModifiedOnDateTime" description="Filter for components that were last modified on date/time."/>
+    <setting_type id="3029" name="ItemDomainInventory.List.FilterBy.Location" description="Filter for component instance location."/>
+    <setting_type id="3030" name="ItemDomainInventory.List.FilterBy.LocationDetails" description="Filter for component instance location details."/>
+    <setting_type id="3031" name="ItemDomainInventory.List.FilterBy.OwnerUser" description="Filter for component instances by owner username."/>
+    <setting_type id="3032" name="ItemDomainInventory.List.FilterBy.OwnerGroup" description="Filter for component instances by owner group name."/>
+    <setting_type id="3033" name="ItemDomainInventory.List.FilterBy.PropertyValue1" description="Filter for property value with displayed property type id #1." default_value=""/>
+    <setting_type id="3034" name="ItemDomainInventory.List.FilterBy.PropertyValue2" description="Filter for property value with displayed property type id #2." default_value=""/>
+    <setting_type id="3035" name="ItemDomainInventory.List.FilterBy.PropertyValue3" description="Filter for property value with displayed property type id #3." default_value=""/>
+    <setting_type id="3036" name="ItemDomainInventory.List.FilterBy.PropertyValue4" description="Filter for property value with displayed property type id #4." default_value=""/>
+    <setting_type id="3037" name="ItemDomainInventory.List.FilterBy.PropertyValue5" description="Filter for property value with displayed property type id #5." default_value=""/>
+    <setting_type id="3038" name="ItemDomainInventory.List.FilterBy.QrId" description="Filter for component instance QR id."/>
+    <setting_type id="3039" name="ItemDomainInventory.List.FilterBy.SerialNumber" description="Filter for component instance serial number."/>
+    <setting_type id="3040" name="ItemDomainInventory.List.FilterBy.Tag" description="Filter for component instance tag."/>
+    <setting_type id="3041" name="ItemDomainInventory.Help.ListPage.Display.Fragment" description="Display Help guide to the user on the main list page of the Component Instance entity." default_value="true"/>
+    <setting_type id="3042" name="ItemDomainInventory.List.Scope.Display" description="Show list page with a scope applied." default_value="All"/>
+    <setting_type id="3043" name="ItemDomainInventory.List.Scope.Display.PropertyTypeId" description="Setting used along side a display scope of property type."/>
+    <setting_type id="4000" name="ItemSource.List.Display.ContactInfo" description="Display component source contact info." default_value="false"/>
+    <setting_type id="4001" name="ItemSource.List.Display.Cost" description="Display component cost." default_value="true"/>
+    <setting_type id="4002" name="ItemSource.List.Display.Description" description="Display component source description." default_value="true"/>
+    <setting_type id="4003" name="ItemSource.List.Display.Id" description="Display component source id." default_value="false"/>
+    <setting_type id="4004" name="ItemSource.List.Display.IsManufacturer" description="Display component source manufacturer designation." default_value="true"/>
+    <setting_type id="4005" name="ItemSource.List.Display.IsVendor" description="Display component source vendor designation." default_value="true"/>
+    <setting_type id="4006" name="ItemSource.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="4007" name="ItemSource.List.Display.PartNumber" description="Display component part number." default_value="true"/>
+    <setting_type id="4008" name="ItemSource.List.Display.Url" description="Display component source URL." default_value="false"/>
+    <setting_type id="4009" name="ItemSource.List.FilterBy.ContactInfo" description="Filter for component sources by contact info."/>
+    <setting_type id="4010" name="ItemSource.List.FilterBy.Cost" description="Filter for component sources by cost."/>
+    <setting_type id="4011" name="ItemSource.List.FilterBy.Description" description="Filter for component sources by description."/>
+    <setting_type id="4012" name="ItemSource.List.FilterBy.IsManufacturer" description="Filter for component sources by manufacturer designation."/>
+    <setting_type id="4013" name="ItemSource.List.FilterBy.IsVendor" description="Filter for component sources by vendor designation."/>
+    <setting_type id="4014" name="ItemSource.List.FilterBy.PartNumber" description="Filter for component sources by part number."/>
+    <setting_type id="4015" name="ItemSource.List.FilterBy.SourceName" description="Filter for component sources by name."/>
+    <setting_type id="4016" name="ItemSource.List.FilterBy.Url" description="Filter for component sources by URL."/>
+    <setting_type id="5000" name="ItemType.List.Display.Description" description="Display component type description." default_value="true"/>
+    <setting_type id="5001" name="ItemType.List.Display.Id" description="Display component type id." default_value="false"/>
+    <setting_type id="5002" name="ItemType.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="5003" name="ItemType.List.FilterBy.Description" description="Filter for component type description."/>
+    <setting_type id="5004" name="ItemType.List.FilterBy.Name" description="Filter for component type name."/>
+    <setting_type id="6000" name="ItemCategory.List.Display.Description" description="Display item category description." default_value="true"/>
+    <setting_type id="6001" name="ItemCategory.List.Display.Id" description="Display item category id." default_value="false"/>
+    <setting_type id="6002" name="ItemCategory.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="6003" name="ItemCategory.List.FilterBy.Description" description="Filter for item category description."/>
+    <setting_type id="6004" name="ItemCategory.List.FilterBy.Name" description="Filter for item category name."/>
+    <setting_type id="7000" name="Item.Member.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="7001" name="Item.Member.List.Display.Id" description="Display design id." default_value="false"/>
+    <setting_type id="7002" name="Item.Member.List.Display.Description" description="Display design description." default_value="true"/>
+    <setting_type id="7003" name="Item.Member.List.Display.OwnerUser" description="Display owner username." default_value="true"/>
+    <setting_type id="7004" name="Item.Member.List.Display.OwnerGroup" description="Display owner group name." default_value="true"/>
+    <setting_type id="7005" name="Item.Member.List.Display.CreatedByUser" description="Display created by username." default_value="false"/>
+    <setting_type id="7006" name="Item.Member.List.Display.CreatedOnDateTime" description="Display created on date/time." default_value="false"/>
+    <setting_type id="7007" name="Item.Member.List.Display.LastModifiedByUser" description="Display last modified by username." default_value="false"/>
+    <setting_type id="7008" name="Item.Member.List.Display.LastModifiedOnDateTime" description="Display last modified on date/time." default_value="false"/>
+    <setting_type id="8000" name="ItemElement.List.Display.ChildDesign" description="Display child design." default_value="false"/>
+    <setting_type id="8001" name="ItemElement.List.Display.Component" description="Display component." default_value="false"/>
+    <setting_type id="8002" name="ItemElement.List.Display.ComponentType" description="Display component type." default_value="false"/>
+    <setting_type id="8003" name="ItemElement.List.Display.CreatedByUser" description="Display created by username." default_value="false"/>
+    <setting_type id="8004" name="ItemElement.List.Display.CreatedOnDateTime" description="Display created on date/time." default_value="false"/>
+    <setting_type id="8005" name="ItemElement.List.Display.Description" description="Display design element description." default_value="false"/>
+    <setting_type id="8006" name="ItemElement.List.Display.FlatTableView" description="Display flat table view for design element list." default_value="true"/>
+    <setting_type id="8007" name="ItemElement.List.Display.Id" description="Display design element id." default_value="false"/>
+    <setting_type id="8008" name="ItemElement.List.Display.LastModifiedByUser" description="Display last modified by username." default_value="false"/>
+    <setting_type id="8009" name="ItemElement.List.Display.LastModifiedOnDateTime" description="Display last modified on date/time." default_value="false"/>
+    <setting_type id="8010" name="ItemElement.List.Display.Location" description="Display location." default_value="false"/>
+    <setting_type id="8011" name="ItemElement.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="8012" name="ItemElement.List.Display.OwnerUser" description="Display owner username." default_value="true"/>
+    <setting_type id="8013" name="ItemElement.List.Display.OwnerGroup" description="Display owner group name." default_value="true"/>
+    <setting_type id="8014" name="ItemElement.List.Display.SortOrder" description="Display design element sort order." default_value="false"/>
+    <setting_type id="8015" name="ItemElement.List.Display.RowColor" description="Display design element row color." default_value="true"/>
+    <setting_type id="8016" name="ItemElement.List.Display.PropertyTypeId1" description="Display property value for property type id #1." default_value=""/>
+    <setting_type id="8017" name="ItemElement.List.Display.PropertyTypeId2" description="Display property value for property type id #2." default_value=""/>
+    <setting_type id="8018" name="ItemElement.List.Display.PropertyTypeId3" description="Display property value for property type id #3." default_value=""/>
+    <setting_type id="8019" name="ItemElement.List.Display.PropertyTypeId4" description="Display property value for property type id #4." default_value=""/>
+    <setting_type id="8020" name="ItemElement.List.Display.PropertyTypeId5" description="Display property value for property type id #5." default_value=""/>
+    <setting_type id="8021" name="ItemElement.List.Display.RowExpansion" description="Display row expansion." default_value="true"/>
+    <setting_type id="8022" name="ItemElement.List.Load.RowExpansionPropertyValue" description="Load property values for row expansions." default_value="true"/>
+    <setting_type id="8023" name="ItemElement.List.Display.BillOfMaterialsActionColumn" description="Display design element list action column in the child design bill of materials." default_value="false"/>
+    <setting_type id="8024" name="ItemElement.List.SortBy.PropertyTypeId" description="Allow user to sort using property type id or the default sort order(NULL)"/>
+    <setting_type id="8025" name="ItemElement.List.FilterBy.ChildDesign" description="Filter for child design."/>
+    <setting_type id="8026" name="ItemElement.List.FilterBy.Component" description="Filter for component."/>
+    <setting_type id="8027" name="ItemElement.List.FilterBy.ComponentType" description="Filter for component type."/>
+    <setting_type id="8028" name="ItemElement.List.FilterBy.CreatedByUser" description="Filter for design elements that were created by username."/>
+    <setting_type id="8029" name="ItemElement.List.FilterBy.CreatedOnDateTime" description="Filter for design elements that were created on date/time."/>
+    <setting_type id="8030" name="ItemElement.List.FilterBy.Description" description="Filter for design elements by description."/>
+    <setting_type id="8031" name="ItemElement.List.FilterBy.LastModifiedByUser" description="Filter for design elements that were last modified by username."/>
+    <setting_type id="8032" name="ItemElement.List.FilterBy.LastModifiedOnDateTime" description="Filter for design elements that were last modified on date/time."/>
+    <setting_type id="8033" name="ItemElement.List.FilterBy.Location" description="Filter for component."/>
+    <setting_type id="8034" name="ItemElement.List.FilterBy.Name" description="Filter for design elements by name."/>
+    <setting_type id="8035" name="ItemElement.List.FilterBy.OwnerUser" description="Filter for design elements by owner username."/>
+    <setting_type id="8036" name="ItemElement.List.FilterBy.OwnerGroup" description="Filter for design elements by owner group name."/>
+    <setting_type id="8037" name="ItemElement.List.FilterBy.SortOrder" description="Filter for design elements by sort order."/>
+    <setting_type id="9000" name="Log.List.Display.Attachments" description="Display log entry attachments." default_value="true"/>
+    <setting_type id="9001" name="Log.List.Display.EnteredOnDateTime" description="Display log entry entered on date/time." default_value="true"/>
+    <setting_type id="9002" name="Log.List.Display.EnteredByUser" description="Display log entry entered by user." default_value="true"/>
+    <setting_type id="9003" name="Log.List.Display.Id" description="Display log entry id." default_value="false"/>
+    <setting_type id="9004" name="Log.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="9005" name="Log.List.Display.Topic" description="Display log topic." default_value="false"/>
+    <setting_type id="9006" name="Log.List.FilterBy.EnteredOnDateTime" description="Filter for log entry entered on date/time."/>
+    <setting_type id="9007" name="Log.List.FilterBy.EnteredByUser" description="Filter for log entry entered by user."/>
+    <setting_type id="9008" name="Log.List.FilterBy.Text" description="Filter for log entry text."/>
+    <setting_type id="9009" name="Log.List.FilterBy.Topic" description="Filter for log topic."/>
+    <setting_type id="10000" name="PropertyType.List.Display.Category" description="Display property type category." default_value="true"/>
+    <setting_type id="10001" name="PropertyType.List.Display.DefaultUnits" description="Display property type default units." default_value="false"/>
+    <setting_type id="10002" name="PropertyType.List.Display.DefaultValue" description="Display property type default value." default_value="false"/>
+    <setting_type id="10003" name="PropertyType.List.Display.Description" description="Display property type description." default_value="true"/>
+    <setting_type id="10004" name="PropertyType.List.Display.Handler" description="Display property type class handler." default_value="true"/>
+    <setting_type id="10005" name="PropertyType.List.Display.Id" description="Display property type id." default_value="false"/>
+    <setting_type id="10006" name="PropertyType.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="10007" name="PropertyType.List.FilterBy.Category" description="Filter for property type category."/>
+    <setting_type id="10008" name="PropertyType.List.FilterBy.DefaultUnits" description="Filter for property type default units."/>
+    <setting_type id="10009" name="PropertyType.List.FilterBy.DefaultValue" description="Filter for property type default value."/>
+    <setting_type id="10010" name="PropertyType.List.FilterBy.Description" description="Filter for property type description."/>
+    <setting_type id="10011" name="PropertyType.List.FilterBy.Handler" description="Filter for property type class handler."/>
+    <setting_type id="10012" name="PropertyType.List.FilterBy.Name" description="Filter for property type name."/>
+    <setting_type id="11000" name="PropertyTypeCategory.List.Display.Description" description="Display property type category description." default_value="true"/>
+    <setting_type id="11001" name="PropertyTypeCategory.List.Display.Id" description="Display property type category id." default_value="false"/>
+    <setting_type id="11002" name="PropertyTypeCategory.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="11003" name="PropertyTypeCategory.List.FilterBy.Description" description="Filter for property type category description."/>
+    <setting_type id="11004" name="PropertyTypeCategory.List.FilterBy.Name" description="Filter for property type category name."/>
+    <setting_type id="12000" name="PropertyTypeHandler.List.Display.Description" description="Display property type handler description." default_value="true"/>
+    <setting_type id="12001" name="PropertyTypeHandler.List.Display.Id" description="Display property type handler id." default_value="false"/>
+    <setting_type id="12002" name="PropertyTypeHandler.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="12003" name="PropertyTypeHandler.List.FilterBy.Description" description="Filter for property type handler description."/>
+    <setting_type id="12004" name="PropertyTypeHandler.List.FilterBy.Name" description="Filter for property type handler name."/>
+    <setting_type id="13000" name="PropertyValue.List.Display.Description" description="Display value entry description." default_value="false"/>
+    <setting_type id="13001" name="PropertyValue.List.Display.EnteredOnDateTime" description="Display value entry entered on date/time." default_value="false"/>
+    <setting_type id="13002" name="PropertyValue.List.Display.EnteredByUser" description="Display value entry entered by user." default_value="false"/>
+    <setting_type id="13003" name="PropertyValue.List.Display.Id" description="Display property value entry id." default_value="false"/>
+    <setting_type id="13004" name="PropertyValue.List.Display.IsDynamic" description="Display dynamic property type designation." default_value="true"/>
+    <setting_type id="13005" name="PropertyValue.List.Display.IsUserWriteable" description="Display user-writeable property type designation." default_value="false"/>
+    <setting_type id="13006" name="PropertyValue.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="13007" name="PropertyValue.List.Display.Tag" description="Display property value tag." default_value="true"/>
+    <setting_type id="13008" name="PropertyValue.List.Display.TypeCategory" description="Display property value type category." default_value="false"/>
+    <setting_type id="13009" name="PropertyValue.List.Display.Units" description="Display value units." default_value="true"/>
+    <setting_type id="13010" name="PropertyValue.List.FilterBy.Description" description="Filter for value description."/>
+    <setting_type id="13011" name="PropertyValue.List.FilterBy.EnteredOnDateTime" description="Filter for value entry entered on date/time."/>
+    <setting_type id="13012" name="PropertyValue.List.FilterBy.EnteredByUser" description="Filter for value entry entered by user."/>
+    <setting_type id="13013" name="PropertyValue.List.FilterBy.IsDynamic" description="Filter for dynamic property value designation."/>
+    <setting_type id="13014" name="PropertyValue.List.FilterBy.IsUserWriteable" description="Filter for user-writeable property value designation."/>
+    <setting_type id="13015" name="PropertyValue.List.FilterBy.Tag" description="Filter for property value tag."/>
+    <setting_type id="13016" name="PropertyValue.List.FilterBy.Type" description="Filter for property value type."/>
+    <setting_type id="13017" name="PropertyValue.List.FilterBy.TypeCategory" description="Filter for property value type category."/>
+    <setting_type id="13018" name="PropertyValue.List.FilterBy.Units" description="Filter for value units."/>
+    <setting_type id="13019" name="PropertyValue.List.FilterBy.Value" description="Filter for value entry."/>
+    <setting_type id="14000" name="PropertyValueHistory.List.Display.Description" description="Display value entry description." default_value="true"/>
+    <setting_type id="14001" name="PropertyValueHistory.List.Display.EnteredOnDateTime" description="Display value entry entered on date/time." default_value="true"/>
+    <setting_type id="14002" name="PropertyValueHistory.List.Display.EnteredByUser" description="Display value entry entered by user." default_value="true"/>
+    <setting_type id="14003" name="PropertyValueHistory.List.Display.Id" description="Display property value entry id." default_value="false"/>
+    <setting_type id="14004" name="PropertyValueHistory.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="14005" name="PropertyValueHistory.List.Display.Tag" description="Display value tag." default_value="true"/>
+    <setting_type id="14006" name="PropertyValueHistory.List.Display.Units" description="Display value units." default_value="true"/>
+    <setting_type id="14007" name="PropertyValueHistory.List.FilterBy.Description" description="Filter for value description."/>
+    <setting_type id="14008" name="PropertyValueHistory.List.FilterBy.EnteredOnDateTime" description="Filter for value entry entered on date/time."/>
+    <setting_type id="14009" name="PropertyValueHistory.List.FilterBy.EnteredByUser" description="Filter for value entry entered by user."/>
+    <setting_type id="14010" name="PropertyValueHistory.List.FilterBy.Tag" description="Filter for value tag."/>
+    <setting_type id="14011" name="PropertyValueHistory.List.FilterBy.Units" description="Filter for value units."/>
+    <setting_type id="14012" name="PropertyValueHistory.List.FilterBy.Value" description="Filter for value entry."/>
+    <setting_type id="15000" name="Search.CaseInsensitive" description="Case insensitive search." default_value="true"/>
+    <setting_type id="15001" name="Search.Display.ItemDomainCatalog" description="Display search result for catalog items." default_value="true"/>
+    <setting_type id="15002" name="Search.Display.ItemDomainInventory" description="Display search result for inventory items." default_value="true"/>
+    <setting_type id="15003" name="Search.Display.ItemDomainLocation" description="Display search result for location items." default_value="true"/>
+    <setting_type id="15004" name="Search.Display.ItemTypes" description="Display search result for component types." default_value="true"/>
+    <setting_type id="15005" name="Search.Display.ItemCategories" description="Display search result for component type categories." default_value="true"/>
+    <setting_type id="15006" name="Search.Display.ItemElements" description="Display search result for design elements." default_value="true"/>
+    <setting_type id="15007" name="Search.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="15008" name="Search.Display.PropertyTypes" description="Display search result for property types." default_value="true"/>
+    <setting_type id="15009" name="Search.Display.PropertyTypeCategories" description="Display search result for property type categories." default_value="true"/>
+    <setting_type id="15010" name="Search.Display.Sources" description="Display search result for sources." default_value="true"/>
+    <setting_type id="15011" name="Search.Display.Users" description="Display search result for users." default_value="true"/>
+    <setting_type id="15012" name="Search.Display.UserGroups" description="Display search result for user groups." default_value="true"/>
+    <setting_type id="16000" name="Source.List.Display.ContactInfo" description="Display source contact info." default_value="true"/>
+    <setting_type id="16001" name="Source.List.Display.Description" description="Display source description." default_value="true"/>
+    <setting_type id="16002" name="Source.List.Display.Url" description="Display source URL." default_value="true"/>
+    <setting_type id="16003" name="Source.List.Display.Id" description="Display source id." default_value="false"/>
+    <setting_type id="16004" name="Source.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="16005" name="Source.List.FilterBy.ContactInfo" description="Filter for source contact info."/>
+    <setting_type id="16006" name="Source.List.FilterBy.Description" description="Filter for source description."/>
+    <setting_type id="16007" name="Source.List.FilterBy.Name" description="Filter for source name."/>
+    <setting_type id="16008" name="Source.List.FilterBy.Url" description="Filter for source URL."/>
+    <setting_type id="17000" name="UserInfo.List.Display.Description" description="Display user description." default_value="false"/>
+    <setting_type id="17001" name="UserInfo.List.Display.Email" description="Display user email." default_value="true"/>
+    <setting_type id="17002" name="UserInfo.List.Display.FirstName" description="Display user first name." default_value="true"/>
+    <setting_type id="17003" name="UserInfo.List.Display.Id" description="Display user id." default_value="false"/>
+    <setting_type id="17004" name="UserInfo.List.Display.Groups" description="Display user groups." default_value="true"/>
+    <setting_type id="17005" name="UserInfo.List.Display.LastName" description="Display user last name." default_value="true"/>
+    <setting_type id="17006" name="UserInfo.List.Display.MiddleName" description="Display user middle name." default_value="false"/>
+    <setting_type id="17007" name="UserInfo.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="17008" name="UserInfo.List.FilterBy.Description" description="Filter for user description."/>
+    <setting_type id="17009" name="UserInfo.List.FilterBy.Email" description="Filter for user email."/>
+    <setting_type id="17010" name="UserInfo.List.FilterBy.FirstName" description="Filter for user first name."/>
+    <setting_type id="17011" name="UserInfo.List.FilterBy.Groups" description="Filter for user groups."/>
+    <setting_type id="17012" name="UserInfo.List.FilterBy.LastName" description="Filter for user last name."/>
+    <setting_type id="17013" name="UserInfo.List.FilterBy.MiddleName" description="Filter for user middle name."/>
+    <setting_type id="17014" name="UserInfo.List.FilterBy.Username" description="Filter for username."/>
+    <setting_type id="18000" name="UserGroup.List.Display.Description" description="Display user group description." default_value="true"/>
+    <setting_type id="18001" name="UserGroup.List.Display.Id" description="Display user group id." default_value="false"/>
+    <setting_type id="18002" name="UserGroup.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="18003" name="UserGroup.List.FilterBy.Description" description="Filter for user group description."/>
+    <setting_type id="18004" name="UserGroup.List.FilterBy.Name" description="Filter for user group name."/>
+    <setting_type id="19000" name="UserSetting.List.Display.NumberOfItemsPerPage" description="Display specified number of items per page." default_value="25"/>
+    <setting_type id="20000" name="ItemProject.System.ItemProjectId" description="Default item project to be used in the system"/>
+    <source id="1" name="Amazon" description="" contact_info="" url="www.amazon.com"/>
+    <user_group id="1" name="CDB_ADMIN" description="System Admin Group"/>
+    <user_group id="2" name="Some_User_Group" description=""/>
+    <role_type id="1" name="group_settings_admin" description="Ability to edit view settings for a particular group."/>
+    <user_info id="1" username="cdb" first_name="CDB" last_name="System Account" email="cdb@aps.anl.gov" password="Jhcs$Tta7OK9Yw9LM6RZ8kkK9xHmpkze1Bgoy"/>
+    <user_info id="3" username="some_user" first_name="Some" last_name="User" middle_name="" email="" password="4aRz$BXg5ZxXdwogbf6gpRrkDfgOjpzXRiIiT" description=""/>
+    <user_user_group user_id="1" user_group_id="1"/>
+    <user_user_group user_id="3" user_group_id="2"/>
+    <property_type_category id="1" name="Documentation"/>
+    <property_type_category id="2" name="QA"/>
+    <property_type_category id="3" name="Physical"/>
+    <property_type_category id="4" name="Other"/>
+    <property_type_handler id="1" name="Document" description="Generic document handler."/>
+    <property_type_handler id="2" name="Image" description="Image handler."/>
+    <property_type_handler id="3" name="HTTP Link" description="Handler for standard HTTP links."/>
+    <property_type_handler id="4" name="Currency" description="Handler for monetary values."/>
+    <property_type_handler id="5" name="Boolean" description="Handler for boolean values."/>
+    <property_type_handler id="6" name="Date" description="Handler for date values."/>
+    <property_type_handler id="7" name="Traveler Template" description="Handler used for creating/viewing traveler templates in the traveler system."/>
+    <property_type_handler id="8" name="Traveler Instance" description="Handler used for creating/viewing traveler instances in the traveler system."/>    
+    <property_type id="1" name="Image" property_type_category_id="1" property_type_handler_id="2" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="2" name="Document (Upload)" description="" property_type_category_id="1" property_type_handler_id="1" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="3" name="Traveler Template (Electronic)" description="Allows integration of traveler templates from traveler application." property_type_category_id="2" property_type_handler_id="7" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="4" name="Traveler Instance (Electronic)" description="Allows integration of traveler instances from traveler application." property_type_category_id="2" property_type_handler_id="8" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="5" name="Item Element Row Color" description="" property_type_category_id="4" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="6" name="Spare Parts Configuration" description="" property_type_category_id="3" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="true" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="7" name="Spare Part Indication" description="" property_type_category_id="3" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="true" is_active="true" is_metadata_dynamic="true"/>
+    <property_type id="8" name="Quality" description="" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
+    <item_project id="1" name="Sample"/>
+    <domain id="1" name="Location" description="Item Domain for managing locations."/>
+    <domain id="2" name="Catalog" description="Item domain for managing catalog items."/>
+    <domain id="3" name="Inventory" description="Item domain for managing inventory items"/>
+    <item_type id="1" name="Building" domain_id="1"/>
+    <item_type id="2" name="Area" domain_id="1"/>
+    <item_type id="3" name="Room" domain_id="1"/>
+    <item_type id="4" name="Table" domain_id="1"/>
+    <item_type id="5" name="Cabinet" domain_id="1"/>
+    <item_type id="6" name="Rack" domain_id="1"/>
+    <item_type id="7" name="Shelf" domain_id="1"/>
+    <item_type id="8" name="Other" domain_id="2"/>
+    <item_category id="1" name="Other" domain_id="2"/>
+    <item_category_item_type item_category_id="1" item_type_id="8"/>
+    <log_level id="1" name="Spares Warning"/>
+    <log_topic id="1" name="General"/>
+    <relationship_type_handler id="1" name="Location" description="Handler for location type relationships"/>
+    <relationship_type id="1" name="Location" description="Location Relationship" relationship_type_handler_id="1"/>
+    <entity_info id="1" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:14:56.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:17:22.0" last_modified_by_user_id="1"/>
+    <entity_info id="2" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:15:13.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:15:13.0" last_modified_by_user_id="1"/>
+    <entity_info id="3" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:15:27.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:15:27.0" last_modified_by_user_id="1"/>
+    <entity_info id="4" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:17:44.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:17:44.0" last_modified_by_user_id="1"/>
+    <entity_info id="5" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:18:34.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:29:14.0" last_modified_by_user_id="1"/>
+    <entity_info id="6" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:19:50.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:19:50.0" last_modified_by_user_id="1"/>
+    <entity_info id="7" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:19:45.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:19:45.0" last_modified_by_user_id="1"/>
+    <entity_info id="8" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:19:20.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:19:20.0" last_modified_by_user_id="1"/>
+    <entity_info id="9" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:19:56.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:19:56.0" last_modified_by_user_id="1"/>
+    <entity_info id="10" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:21:05.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:21:05.0" last_modified_by_user_id="1"/>
+    <entity_info id="11" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:15.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:15.0" last_modified_by_user_id="1"/>
+    <entity_info id="12" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:22.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:22.0" last_modified_by_user_id="1"/>
+    <entity_info id="13" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:19.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:19.0" last_modified_by_user_id="1"/>
+    <entity_info id="14" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:25.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:25.0" last_modified_by_user_id="1"/>
+    <entity_info id="15" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:25.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:25.0" last_modified_by_user_id="1"/>
+    <entity_info id="16" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:25.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:25.0" last_modified_by_user_id="1"/>
+    <entity_info id="17" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:25.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:25.0" last_modified_by_user_id="1"/>
+    <entity_info id="18" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:09.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:09.0" last_modified_by_user_id="1"/>
+    <entity_info id="19" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:17.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:17.0" last_modified_by_user_id="1"/>
+    <entity_info id="20" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:29.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:29.0" last_modified_by_user_id="1"/>
+    <entity_info id="21" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:48.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:48.0" last_modified_by_user_id="1"/>
+    <entity_info id="22" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:48.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:48.0" last_modified_by_user_id="1"/>
+    <entity_info id="23" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:48.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:48.0" last_modified_by_user_id="1"/>
+    <entity_info id="24" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:46.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:46.0" last_modified_by_user_id="1"/>
+    <entity_info id="25" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:44.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:44.0" last_modified_by_user_id="1"/>
+    <entity_info id="26" owner_user_id="1" owner_user_group_id="1" is_group_writeable="true" created_on_date_time="2016-12-07 07:26:48.0" created_by_user_id="1" last_modified_on_date_time="2016-12-07 07:26:48.0" last_modified_by_user_id="1"/>
+    <item id="1" domain_id="1" name="ANL"/>
+    <item id="2" domain_id="1" name="APS" item_identifier1="" item_identifier2=""/>
+    <item id="3" domain_id="2" name="Something you can buy" item_identifier1="123" item_identifier2=""/>
+    <item id="4" domain_id="2" name="An Assembly"/>
+    <item id="5" domain_id="3" name="Unit: 1" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item id="6" domain_id="3" name="Unit: 4" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item id="7" domain_id="3" name="Unit: 1" derived_from_item_id="4"/>
+    <item id="8" domain_id="3" name="Unit: 5" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item id="9" domain_id="3" name="Unit: 2" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item id="10" domain_id="3" name="Unit: 3" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item id="11" domain_id="3" name="Unit: 2" derived_from_item_id="4"/>
+    <item id="12" domain_id="3" name="Unit: 7" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item id="13" domain_id="3" name="Unit: 6" derived_from_item_id="3" item_identifier1="" item_identifier2=""/>
+    <item_element id="1" parent_item_id="1" description="" entity_info_id="1"/>
+    <item_element id="2" parent_item_id="2" description="" entity_info_id="2"/>
+    <item_element id="3" name="1" parent_item_id="1" contained_item_id="2" entity_info_id="3"/>
+    <item_element id="4" parent_item_id="3" description="" entity_info_id="4"/>
+    <item_element id="5" parent_item_id="4" description="" entity_info_id="5"/>
+    <item_element id="6" name="1" parent_item_id="4" contained_item_id="3" entity_info_id="8"/>
+    <item_element id="7" name="2" parent_item_id="4" contained_item_id="3" entity_info_id="7"/>
+    <item_element id="8" name="4" parent_item_id="4" contained_item_id="3" entity_info_id="9"/>
+    <item_element id="9" name="3" parent_item_id="4" contained_item_id="3" entity_info_id="6"/>
+    <item_element id="10" parent_item_id="5" description="" entity_info_id="10"/>
+    <item_element id="11" parent_item_id="7" entity_info_id="18"/>
+    <item_element id="12" parent_item_id="7" contained_item_id="10" derived_from_item_element_id="7" entity_info_id="15"/>
+    <item_element id="13" parent_item_id="8" description="" entity_info_id="12"/>
+    <item_element id="14" parent_item_id="9" entity_info_id="11"/>
+    <item_element id="15" parent_item_id="7" contained_item_id="6" derived_from_item_element_id="9" entity_info_id="14"/>
+    <item_element id="16" parent_item_id="10" entity_info_id="19"/>
+    <item_element id="17" parent_item_id="7" contained_item_id="9" derived_from_item_element_id="6" entity_info_id="16"/>
+    <item_element id="18" parent_item_id="6" entity_info_id="13"/>
+    <item_element id="19" parent_item_id="7" contained_item_id="8" derived_from_item_element_id="8" entity_info_id="17"/>
+    <item_element id="20" parent_item_id="11" contained_item_id="13" derived_from_item_element_id="9" entity_info_id="26"/>
+    <item_element id="21" parent_item_id="11" contained_item_id="6" derived_from_item_element_id="7" entity_info_id="23"/>
+    <item_element id="22" parent_item_id="12" description="" entity_info_id="24"/>
+    <item_element id="23" parent_item_id="11" contained_item_id="5" derived_from_item_element_id="6" entity_info_id="22"/>
+    <item_element id="24" parent_item_id="11" entity_info_id="20"/>
+    <item_element id="25" parent_item_id="11" contained_item_id="12" derived_from_item_element_id="8" entity_info_id="21"/>
+    <item_element id="26" parent_item_id="13" entity_info_id="25"/>
+    <item_element_relationship id="1" first_item_element_id="10" second_item_element_id="2" relationship_type_id="1" relationship_details=""/>
+    <item_element_relationship_history id="1" item_element_relationship_id="1" first_item_element_id="10" second_item_element_id="2" relationship_details="" entered_on_date_time="2016-12-07 07:21:23.0" entered_by_user_id="1"/>    
+    <item_item_category item_id="3" item_category_id="1"/>
+    <item_item_category item_id="4" item_category_id="1"/>
+    <item_item_project item_id="3" item_project_id="1"/>
+    <item_item_project item_id="4" item_project_id="1"/>
+    <item_item_project item_id="5" item_project_id="1"/>
+    <item_item_project item_id="6" item_project_id="1"/>
+    <item_item_project item_id="7" item_project_id="1"/>
+    <item_item_project item_id="8" item_project_id="1"/>
+    <item_item_project item_id="9" item_project_id="1"/>
+    <item_item_project item_id="10" item_project_id="1"/>
+    <item_item_project item_id="11" item_project_id="1"/>
+    <item_item_project item_id="12" item_project_id="1"/>
+    <item_item_project item_id="13" item_project_id="1"/>
+    <item_item_type item_id="3" item_type_id="8"/>
+    <item_item_type item_id="4" item_type_id="8"/>
+    <item_source id="1" item_id="4" source_id="1" part_number="123" cost="123.0" description="123" is_vendor="false" is_manufacturer="false"/>
+</dataset>

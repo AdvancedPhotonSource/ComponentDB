@@ -7,6 +7,8 @@ src/java/CdbWebPortal/dist/
 tools/developer_tools/portal_testing/CdbFunctionalTester/build/
 tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 
+/tools/developer_tools/code_testing/CdbWebPortalTest/target/
+
 # Generated deployment specific config files 
 src/java/CdbWebPortal/nbproject/private/private.xml
 src/java/CdbWebPortal/nbproject/private/private.properties

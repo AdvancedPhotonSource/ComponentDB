@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findAll", query = "SELECT p FROM PropertyType p ORDER BY p.name"),
     @NamedQuery(name = "PropertyType.findById", query = "SELECT p FROM PropertyType p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyType.findByName", query = "SELECT p FROM PropertyType p WHERE p.name = :name"),
+    @NamedQuery(name = "PropertyType.findByInternalStatus", query = "SELECT p FROM PropertyType p WHERE p.isInternal = :isInternal"),
     @NamedQuery(name = "PropertyType.findByDescription", query = "SELECT p FROM PropertyType p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyType.findByPropertyTypeHandler", query = "SELECT p FROM PropertyType p WHERE p.propertyTypeHandler = :propertyTypeHandler"),
     @NamedQuery(name = "PropertyType.findByDefaultValue", query = "SELECT p FROM PropertyType p WHERE p.defaultValue = :defaultValue"),
@@ -75,6 +76,8 @@ public class PropertyType extends CdbEntity implements Serializable {
     private Boolean isInternal;
     @Column(name = "is_active")
     private Boolean isActive;
+    @Column(name = "is_metadata_dynamic")
+    private Boolean isMetadataDynamic;
     @JoinTable(name = "allowed_property_domain", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")})
@@ -164,6 +167,14 @@ public class PropertyType extends CdbEntity implements Serializable {
 
     public void setIsDynamic(Boolean isDynamic) {
         this.isDynamic = isDynamic;
+    }
+
+    public Boolean getIsMetadataDynamic() {
+        return isMetadataDynamic;
+    }
+
+    public void setIsMetadataDynamic(Boolean isMetadataDynamic) {
+        this.isMetadataDynamic = isMetadataDynamic;
     }
 
     public Boolean getIsInternal() {

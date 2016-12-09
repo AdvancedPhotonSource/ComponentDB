@@ -1,0 +1,6 @@
+LOCK TABLES `item_source` WRITE;
+/*!40000 ALTER TABLE `item_source` DISABLE KEYS */;
+INSERT INTO `item_source` VALUES
+(1,4,1,'123',123.00,'123',0,0,NULL,NULL);
+/*!40000 ALTER TABLE `item_source` ENABLE KEYS */;
+UNLOCK TABLES;

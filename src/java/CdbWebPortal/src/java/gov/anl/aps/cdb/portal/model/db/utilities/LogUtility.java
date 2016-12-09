@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
+import gov.anl.aps.cdb.portal.controllers.LogController;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -49,5 +50,10 @@ public class LogUtility {
             String logEntryKey = baseKey + "/text";
             searchResult.doesValueContainPattern(logEntryKey, logEntry.getText(), searchPattern);
         }
+    }
+    
+    public static void addSystemLog(String logLevelName, String logMessage) {
+        LogController logController = LogController.getInstance();
+        logController.addSystemLog(logLevelName, logMessage);
     }
 }

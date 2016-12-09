@@ -72,28 +72,28 @@ import org.primefaces.model.menu.MenuModel;
 public abstract class ItemController extends CdbDomainEntityController<Item, ItemFacade> implements Serializable {
 
     @EJB
-    private ItemFacade itemFacade;
+    protected ItemFacade itemFacade;
 
     @EJB
-    private ItemElementFacade itemElementFacade;
+    protected ItemElementFacade itemElementFacade;
 
     @EJB
-    private ItemTypeFacade itemTypeFacade;
+    protected ItemTypeFacade itemTypeFacade;
 
     @EJB
-    private DomainFacade domainFacade;
+    protected DomainFacade domainFacade;
 
     @EJB
-    private EntityTypeFacade entityTypeFacade;
+    protected EntityTypeFacade entityTypeFacade;
 
     @EJB
-    private ItemCategoryFacade itemCategoryFacade;
+    protected ItemCategoryFacade itemCategoryFacade;
 
     @EJB
-    private ListFacade listFacade;
+    protected ListFacade listFacade;
 
     @EJB
-    private UserInfoFacade userInfoFacade;
+    protected UserInfoFacade userInfoFacade;
 
     protected final String FAVORITES_LIST_NAME = "Favorites";
 
@@ -466,7 +466,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public boolean isItemHasSimpleListView() {
         return false;
     }
-
+    
+    /** 
+     * TODO: Verify that list simple/advanced view is no longer needed. 
+     * @return 
+     */
     public String getListViewSelected() {
         if (listViewSelected == null) {
             if (isItemHasSimpleListView()) {
@@ -512,7 +516,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         Item currentItem = getCurrent();
         if (currentItem != null) {
             if (getEntityDisplayItemCategory()) {
-                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
+                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();                                
 
                 if (lastKnownItemCategoryListForCurrentItem != null) {
                     if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
@@ -525,8 +529,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                             }
                         }
                     }
+                } else {
+                    availableItemTypesForCurrentItem = null; 
                 }
-                lastKnownItemCategoryListForCurrentItem = itemCategoryList;
+                lastKnownItemCategoryListForCurrentItem = itemCategoryList;                
 
                 if (availableItemTypesForCurrentItem == null) {
                     availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
@@ -824,7 +830,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      * @param listToCompare
      * @return
      */
-    private boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
+    protected boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
         Boolean listIsDifferent = true;
         if (originalList == null
                 || listToCompare.size() == originalList.size()) {
@@ -2657,6 +2663,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                 throw new CdbException("Item element name cannot be empty.");
             }
         }
+        // Throws exception if a tree cannot be generated due to circular reference. 
+        ItemElementUtility.createItemElementRoot(item); 
     }
 
     protected String itemDomainToString(Item item) {

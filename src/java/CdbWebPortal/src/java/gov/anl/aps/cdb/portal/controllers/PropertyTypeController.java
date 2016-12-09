@@ -76,13 +76,14 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     private String selectFilterByDefaultValue = null;
     private String selectFilterByHandler = null;
 
+    private final Boolean FILTER_VIEW_IS_INTERNAL = false; 
     private List<PropertyTypeCategory> fitlerViewSelectedPropertyTypeCategories = null;
     private List<PropertyTypeHandler> fitlerViewSelectedPropertyTypeHandlers = null;
 
     private DataModel filterViewDataModel;
 
     public PropertyTypeController() {
-        selectDisplayDescription = true;  
+        selectDisplayDescription = true;
     }
 
     @Override
@@ -135,6 +136,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     @Override
     public List<PropertyType> getAvailableItems() {
         return super.getAvailableItems();
+    }
+    
+    public List<PropertyType> getAvailableExternalItems() { 
+        return propertyTypeFacade.findByPropertyInternalStatus(false); 
     }
 
     @Override
@@ -456,7 +461,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     public DataModel getFilterViewDataModel() {
         if (filterViewDataModel == null) {
             List<PropertyType> results;
-            results = propertyTypeFacade.findByFilterViewAttributes(fitlerViewSelectedPropertyTypeCategories, fitlerViewSelectedPropertyTypeHandlers);
+            results = propertyTypeFacade.findByFilterViewAttributes(
+                    fitlerViewSelectedPropertyTypeCategories, 
+                    fitlerViewSelectedPropertyTypeHandlers,
+                    FILTER_VIEW_IS_INTERNAL);
             if (results != null) {
                 filterViewDataModel = new ListDataModel(results);
             }
