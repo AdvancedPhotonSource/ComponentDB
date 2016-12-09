@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -204,6 +205,13 @@ public class Log extends CdbEntity implements Serializable {
         }
         return shortDisplayDateFormat.format(enteredOnDateTime);
 
+    }
+    
+    public void addLogLevel(LogLevel logLevel) {
+        if (logLevelList == null) {
+            logLevelList = new ArrayList<>(); 
+        }
+        logLevelList.add(logLevel);
     }
 
     @Override
