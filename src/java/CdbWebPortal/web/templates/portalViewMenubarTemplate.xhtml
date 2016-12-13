@@ -46,6 +46,10 @@ See LICENSE file.
                     </p:column>
                     
                     <p:menubar styleClass="menuBarSupportingItems">
+                        <p:menuitem value="Logs" 
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/adminLogs/') ? 'activeMenuItem' : ''} "
+                                    url="/views/adminLog/browseSystemLogs" />
                         <p:menuitem value="Locations" 
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} "
