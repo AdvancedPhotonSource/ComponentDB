@@ -59,17 +59,20 @@ public class LogController extends CdbEntityController<Log, LogFacade> implement
     private final String SPARES_WARNING_LOG_LEVEL_NAME = "Spares Warning";
 
     private static final Logger logger = Logger.getLogger(LogController.class.getName());
-    
-    private final String DEFAULT_SYSTEM_ADMIN_USERNAME = "cdb"; 
+
+    private final String DEFAULT_SYSTEM_ADMIN_USERNAME = "cdb";
 
     @EJB
     private LogFacade logFacade;
 
     @EJB
     private LogLevelFacade logLevelFacade;
-    
+
     @EJB
-    private UserInfoFacade userInfoFacade; 
+    private UserInfoFacade userInfoFacade;
+
+    private List<LogLevel> filterViewSelectedLogLevels = null;
+    private List<Log> filterViewListDataModelSystemLogs = null;
 
     public LogController() {
         super();
@@ -121,13 +124,13 @@ public class LogController extends CdbEntityController<Log, LogFacade> implement
         return "";
     }
 
-    public void addSystemLog(String logLevelName, String logMessage) {      
+    public void addSystemLog(String logLevelName, String logMessage) {
         UserInfo enteredByUser = userInfoFacade.findByUsername(DEFAULT_SYSTEM_ADMIN_USERNAME);
         if (enteredByUser == null) {
-            SessionUtility.addErrorMessage("System Admin Missing", 
-                    "User '" + DEFAULT_SYSTEM_ADMIN_USERNAME + "' needs to be in the system. Please notify system administrator." );
+            SessionUtility.addErrorMessage("System Admin Missing",
+                    "User '" + DEFAULT_SYSTEM_ADMIN_USERNAME + "' needs to be in the system. Please notify system administrator.");
         }
-        
+
         Date enteredOnDateTime = new Date();
 
         LogLevel logLevel = logLevelFacade.findLogLevelByName(logLevelName);
@@ -139,7 +142,7 @@ public class LogController extends CdbEntityController<Log, LogFacade> implement
 
         Log newSystemLog = createEntityInstance();
         newSystemLog.addLogLevel(logLevel);
-        newSystemLog.setText(logMessage); 
+        newSystemLog.setText(logMessage);
         newSystemLog.setEnteredOnDateTime(enteredOnDateTime);
         newSystemLog.setEnteredByUser(enteredByUser);
 
@@ -224,6 +227,25 @@ public class LogController extends CdbEntityController<Log, LogFacade> implement
         filterByEnteredOnDateTime = null;
         filterByText = null;
         filterByTopic = null;
+    }
+
+    public List<LogLevel> getFilterViewSelectedLogLevels() {
+        return filterViewSelectedLogLevels;
+    }
+
+    public void setFilterViewSelectedLogLevels(List<LogLevel> fitlerViewSelectedLogLevels) {
+        this.filterViewSelectedLogLevels = fitlerViewSelectedLogLevels;
+        this.filterViewListDataModelSystemLogs = null;
+    }
+
+    public List<Log> getFilterViewListDataModelSystemLogs() {
+        if (filterViewListDataModelSystemLogs == null) {
+            if (filterViewSelectedLogLevels != null && !filterViewSelectedLogLevels.isEmpty()) {
+                // Load in the list data model for system logs
+                filterViewListDataModelSystemLogs = logFacade.findByFilterViewSystemLogAttributes(filterViewSelectedLogLevels);
+            }
+        }
+        return filterViewListDataModelSystemLogs;
     }
 
     /**
