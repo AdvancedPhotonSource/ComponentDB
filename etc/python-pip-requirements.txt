@@ -1,6 +1,6 @@
 sqlAlchemy==0.9.8
 CherryPy==8.1.2
 routes==2.3.1
-mysql-python==1.2.5
-
+mysql-python==1.2.5 
+python-ldap==2.4.28
 

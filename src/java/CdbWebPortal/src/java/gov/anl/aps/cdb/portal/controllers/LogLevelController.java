@@ -5,12 +5,10 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.LogLevelFacade;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -19,184 +17,43 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 
 @Named("logLevelController")
 @SessionScoped
-public class LogLevelController implements Serializable {
+public class LogLevelController extends CdbEntityController<LogLevel, LogLevelFacade> implements Serializable {
 
     private LogLevel current;
     private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.LogLevelFacade ejbFacade;
+    LogLevelFacade logLevelFacade;
     private PaginationHelper pagination;
     private int selectedItemIndex;
 
     public LogLevelController() {
     }
 
-    public LogLevel getSelected() {
-        if (current == null) {
-            current = new LogLevel();
-            selectedItemIndex = -1;
-        }
-        return current;
+    @Override
+    protected LogLevelFacade getEntityDbFacade() {
+        return logLevelFacade; 
     }
 
-    private LogLevelFacade getFacade() {
-        return ejbFacade;
+    @Override
+    protected LogLevel createEntityInstance() {
+        return new LogLevel(); 
     }
 
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
+    @Override
+    public String getEntityTypeName() {
+        return "Log Level";
     }
 
-    public String prepareList() {
-        recreateModel();
-        return "List";
+    @Override
+    public String getCurrentEntityInstanceName() {
+        return current.toString(); 
     }
 
-    public String prepareView() {
-        current = (LogLevel) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
 
-    public String prepareCreate() {
-        current = new LogLevel();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("LogLevelCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (LogLevel) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("LogLevelUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (LogLevel) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("LogLevelDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public LogLevel getLogLevel(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
-
-    @FacesConverter(forClass = LogLevel.class)
+    @FacesConverter(value = "logLevelConverter", forClass = LogLevel.class)
     public static class LogLevelControllerConverter implements Converter {
 
         @Override
@@ -206,7 +63,7 @@ public class LogLevelController implements Serializable {
             }
             LogLevelController controller = (LogLevelController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "logLevelController");
-            return controller.getLogLevel(getKey(value));
+            return controller.findById(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

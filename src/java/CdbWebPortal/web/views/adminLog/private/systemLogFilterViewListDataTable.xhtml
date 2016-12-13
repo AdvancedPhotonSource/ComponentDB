@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:commandButton id="systemLogCustomizeDisplay" 
+                     onclick="PF('#{logController.entityTypeName}ListCustomizeDisplayDialogWidget').show()"
+                     alt="Customize log view." 
+                     icon="ui-icon-wrench" 
+                     styleClass="actionButtonRight">
+        <p:tooltip for="systemLogCustomizeDisplay" value="Customize selection view."/>
+    </p:commandButton>
+    <br/><br/>
+    <p:dataTable value="#{logController.filterViewListDataModelSystemLogs}"
+                 var="logObject"
+                 emptyMessage="No log entries found."
+                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 paginator="true"
+                 paginatorAlwaysVisible="false">
+        <ui:include src="../../log/private/logListObject.xhtml" >
+            <ui:param name="filterable" value="#{true}" />
+        </ui:include>
+    </p:dataTable>
+    <ui:include src="systemLogCustomizeDisplayDialog.xhtml"/>
+
+</ui:composition>
+
+
