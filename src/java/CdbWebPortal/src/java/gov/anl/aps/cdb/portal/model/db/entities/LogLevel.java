@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "LogLevel.findById", query = "SELECT l FROM LogLevel l WHERE l.id = :id"),
     @NamedQuery(name = "LogLevel.findByName", query = "SELECT l FROM LogLevel l WHERE l.name = :name"),
     @NamedQuery(name = "LogLevel.findByDescription", query = "SELECT l FROM LogLevel l WHERE l.description = :description")})
-public class LogLevel implements Serializable {
+public class LogLevel extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
