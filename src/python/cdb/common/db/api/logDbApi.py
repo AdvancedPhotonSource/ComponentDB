@@ -17,6 +17,19 @@ class LogDbApi(CdbDbApi):
         self.logHandler = LogHandler()
 
     @CdbDbApi.executeQuery
+    def getLogById(self, logId, **kwargs):
+        """
+        Finds a log entry by its id
+
+        :param logId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbLog = self.logHandler.findLogById(session, logId)
+        return dbLog.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getLogAttachments(self, **kwargs):
         """
         Get all log attachment records.
