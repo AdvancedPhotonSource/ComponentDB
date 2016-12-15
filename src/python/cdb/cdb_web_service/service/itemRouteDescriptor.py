@@ -9,7 +9,7 @@ See LICENSE file.
 #
 # Item route descriptor.
 #
-
+from cdb.cdb_web_service.service.itemSessionController import ItemSessionController
 from cdb.common.utility.configurationManager import ConfigurationManager
 from itemController import ItemController
 from itemElementController import ItemElementController
@@ -23,6 +23,7 @@ class ItemRouteDescriptor:
         # Static instances shared between different routes
         itemController = ItemController()
         itemElementController = ItemElementController()
+        itemSessionController = ItemSessionController()
 
         # Define routes.
         routes = [
@@ -43,6 +44,15 @@ class ItemRouteDescriptor:
                 'controller': itemElementController,
                 'action': 'getItemElementById',
                 'method': ['GET']
+            },
+
+            # Add a log entry for an item
+            {
+                'name': 'addLogEntryForItemByQrId',
+                'path': '%s/items/:(qrId)/addLogEntry' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addLogToItemByQrId',
+                'method': ['POST']
             }
 
         ]
