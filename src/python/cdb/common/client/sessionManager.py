@@ -24,6 +24,7 @@ from cdb.common.exceptions.urlError import UrlError
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.utility.osUtility import OsUtility
+from cdb.common.utility.urllibFileStreamUtility import UrlLibFileStreamUtility
 from cdb.common.client.cdbExceptionMapper import CdbExceptionMapper
 from cdb.common.client.cdbHttpsHandler import CdbHttpsHandler
 
@@ -173,6 +174,12 @@ class SessionManager:
                 contentType='application/x-www-form-urlencoded'
             elif type(data) == types.StringType:
                 encodedData = data
+            elif UrlLibFileStreamUtility.isStreamDataObject(data):
+                encodedData = data
+                contentType = 'application/octet-stream'
+                # In case data was used on invalid session
+                encodedData.seek(0)
+
         request = urllib2.Request(url, data=encodedData)
         request.get_method = lambda: method
         request.add_header('Content-Type', contentType)
