@@ -23,3 +23,14 @@ class ItemControllerImpl(CdbObjectManager):
     def getItemById(self, itemId):
         return self.itemDbApi.getItemById(itemId)
 
+    def addLogEntryForItemWithQrId(self, qrId, logEntryText, enteredByUserId):
+        item = self.itemDbApi.getItemByQrId(qrId)
+
+        itemId = item.data['id']
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        itemElementLog = self.itemDbApi.addItemElementLog(selfElementId, logEntryText, enteredByUserId)
+        return itemElementLog.data['log']
+
+
