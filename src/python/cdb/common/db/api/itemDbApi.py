@@ -230,6 +230,19 @@ class ItemDbApi(CdbDbApi):
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeQuery
+    def getItemByQrId(self, itemQrId, **kwargs):
+        """
+        Get an item record by its id.
+
+        :param itemQrId:
+        :param kwargs:
+        :return: (CdbObject) resulting record.
+        """
+        session = kwargs['session']
+        dbItem = self.itemHandler.getItemByQrId(session, itemQrId)
+        return dbItem.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getItemByUniqueAttributes(self, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId, **kwargs):
         """
         Get an item record based on its unique attributes.
@@ -457,7 +470,7 @@ class ItemDbApi(CdbDbApi):
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, systemLogLevelName = None, **kwargs):
+    def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime = None, effectiveToDateTime = None, logTopicName = None, enteredOnDateTime = None, systemLogLevelName = None, **kwargs):
         """
         Add a log to a particular item element.
 

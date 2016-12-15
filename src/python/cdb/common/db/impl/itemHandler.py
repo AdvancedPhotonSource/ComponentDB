@@ -58,6 +58,16 @@ class ItemHandler(CdbDbEntityHandler):
     def getItemById(self, session, id):
         return self._findDbObjById(session, Item, id)
 
+    def getItemByQrId(self, session, qrId):
+        entityDisplayName = self._getEntityDisplayName(Item)
+
+        try:
+            dbItem = session.query(Item).filter(Item.qr_id==qrId).one()
+            return dbItem
+        except NoResultFound, ex:
+            raise ObjectNotFound('No %s with QR-Id: %s found.'
+                                 % (entityDisplayName, qrId))
+
     def getItemElementsByName(self, session, name):
         return self._findDbObjByName(session, ItemElement, name)
 
