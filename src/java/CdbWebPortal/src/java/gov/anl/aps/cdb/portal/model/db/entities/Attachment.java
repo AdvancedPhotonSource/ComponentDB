@@ -81,6 +81,13 @@ public class Attachment implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+    
+    public String getDisplayName() {
+        if (tag != null && !tag.isEmpty()) {
+            return tag;
+        }
+        return name; 
+    }
 
     public String getTag() {
         return tag;
@@ -111,7 +118,7 @@ public class Attachment implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        return hash;
+        return hash; 
     }
 
     @Override
