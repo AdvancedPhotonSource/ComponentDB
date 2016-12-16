@@ -73,6 +73,9 @@ class StorageUtility:
 
         ext = ''
         for i in range(1, len(filenameSplit)):
+            extToUse = filenameSplit[i]
+            if extToUse.__len__() > 5:
+                continue
             ext += '.%s' % filenameSplit[i]
 
         return ext
