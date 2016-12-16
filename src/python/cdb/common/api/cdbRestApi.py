@@ -130,6 +130,10 @@ class CdbRestApi(CdbApi):
         if filePathGiven.startswith('/'):
             # Full path given
             return filePathGiven
+        elif filePathGiven.startswith('~'):
+            # Remove the home symbol
+            filePathGiven = filePathGiven[1:]
+            return "%s%s" % (os.path.expanduser('~'), filePathGiven)
 
         # Get full path
         return "%s/%s" % (os.getcwd(), filePathGiven)
