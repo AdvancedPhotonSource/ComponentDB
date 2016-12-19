@@ -81,7 +81,7 @@ class ItemHandler(CdbDbEntityHandler):
             if userGroup.name == self.CDB_ADMIN_GROUP_NAME:
                 return True
 
-        raise ("User %s does not have permissions to modify item element %s" % (userId, itemElementId))
+        raise InvalidSession("User %s does not have permissions to modify item element %s" % (userId, itemElementId))
 
     def getItemById(self, session, id):
         return self._findDbObjById(session, Item, id)
@@ -335,6 +335,10 @@ class ItemHandler(CdbDbEntityHandler):
         if containedItemId:
             dbItemElement.containedItem = self.getItemById(session, containedItemId)
 
+        entityInfo = parentSelfElement.entityInfo
+        parentSelfElement.entityInfo = self.entityInfoHandler.updateEntityInfo(session, entityInfo, createdByUserId)
+
+        session.add(parentSelfElement)
         session.add(dbItemElement)
         session.flush()
         self.logger.debug('Inserted item Element id %s' % dbItemElement.id)
@@ -430,9 +434,12 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemElementLog.itemElement = dbItemElement
         dbItemElementLog.log = dbLog
 
+        entityInfo = dbItemElement.entityInfo
+        dbItemElement.entityInfo = self.entityInfoHandler.updateEntityInfo(session, entityInfo, enteredByUserId)
+
+        session.add(dbItemElement)
         session.add(dbItemElementLog)
         session.flush()
-
         self.logger.debug('Added log for itemElement id %s' % (itemElementId))
         return dbItemElementLog
 
@@ -447,6 +454,10 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemElementProperty.itemElement = dbItemElement
         dbItemElementProperty.propertyValue = dbPropertyValue
 
+        entityInfo = dbItemElement.entityInfo
+        dbItemElement.entityInfo = self.entityInfoHandler.updateEntityInfo(session, entityInfo, enteredByUserId)
+
+        session.add(dbItemElement)
         session.add(dbItemElementProperty)
 
         session.flush()
