@@ -5,6 +5,9 @@ sslCertFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.crt
 sslKeyFile=CDB_INSTALL_DIR/etc/ssl/cdb-web-service.key
 sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
 
+[Storage]
+storageDirectory=CDB_DATA_DIR
+
 [WebPortal]
 portalWebAddress=CDB_PORTAL_URL
 
