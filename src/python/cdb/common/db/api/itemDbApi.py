@@ -26,6 +26,21 @@ class ItemDbApi(CdbDbApi):
         self.sourceHandler = SourceHandler()
         self.relationshipTypeHandler = RelationshipTypeHandler()
 
+    @CdbDbApi.executeQuery
+    def verifyPermissionsForWriteToItemElement(self, username, itemElementId, **kwargs):
+        """
+        Check permissions for a specific item element.
+
+        :param username:
+        :param itemElementId:
+        :param kwargs:
+        :raises InvalidSession: when user does not have permission.
+        :return: (Boolean) true if user has permissions.
+        """
+        session = kwargs['session']
+        result = self.itemHandler.verifyPermissionsForWriteToItemElement(session, username, itemElementId=itemElementId)
+        return result
+
     @CdbDbApi.executeTransaction
     def addEntityType(self, name, description, **kwargs):
         """
