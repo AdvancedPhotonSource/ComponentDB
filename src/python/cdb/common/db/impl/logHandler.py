@@ -4,8 +4,8 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-
-
+from cdb.common.exceptions.invalidArgument import InvalidArgument
+from cdb.common.exceptions.invalidSession import InvalidSession
 from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -20,12 +20,14 @@ from cdb.common.db.entities.logLevel import LogLevel
 from cdb.common.db.entities.systemLog import SystemLog
 from cdb.common.db.entities.itemElementLog import ItemElementLog
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
+from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 
 
 class LogHandler(CdbDbEntityHandler):
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
+        self.userInfoHandler = UserInfoHandler()
 
     def getLogs(self, session):
         dbLogs = session.query(Log).all()
@@ -122,8 +124,22 @@ class LogHandler(CdbDbEntityHandler):
 
         return dbAttachment
 
-    def addLogAttachment(self, session, logId, attachmentName, attachmentTag, attachmentDescription):
+    def verifyUserCreatedLogEntry(self, session, userId, logId = None, dbLogObject = None):
+        if logId is None and dbLogObject is None:
+            raise InvalidArgument("At least log id or db log object must be provided.")
+        if dbLogObject is None:
+            dbLogObject = self.findLogById(session, logId)
+        else:
+            logId = dbLogObject.id
+
+        if userId == dbLogObject.entered_by_user_id:
+            return True
+
+        raise InvalidSession("The log entry %s was created by another user." % logId)
+
+    def addLogAttachment(self, session, logId, attachmentName, attachmentTag, attachmentDescription, userAddingId):
         dbLog = self.findLogById(session, logId)
+        self.verifyUserCreatedLogEntry(session, userAddingId, dbLogObject=dbLog)
         dbAttachment = self.addAttachment(session, attachmentName, attachmentTag, attachmentDescription)
 
         dbLogAttachment = LogAttachment()
