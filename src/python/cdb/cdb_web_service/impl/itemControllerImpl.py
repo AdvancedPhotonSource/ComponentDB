@@ -39,7 +39,7 @@ class ItemControllerImpl(CdbObjectManager):
         # Check if log has an attachment that needs to be stored
         if attachmentName is not None and len(attachmentName) > 0:
             logId = logEntry.data['id']
-            logAttachment = self.logControllerImpl.addLogAttachment(logId, attachmentName, None, cherryPyData)
+            logAttachment = self.logControllerImpl.addLogAttachment(logId, attachmentName, None, enteredByUserId, cherryPyData)
             del(logAttachment.data['log'])
             logAttachmentJsonRep = logAttachment.getFullJsonRep()
             logEntry.data['logAttachmentAdded'] = logAttachmentJsonRep

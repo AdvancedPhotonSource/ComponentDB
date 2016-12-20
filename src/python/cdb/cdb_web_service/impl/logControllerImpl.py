@@ -23,9 +23,12 @@ class LogControllerImpl(CdbObjectManager):
         self.logDbApi = LogDbApi()
         self.storageUtility = StorageUtility.getInstance()
 
-    def addLogAttachment(self, logId, attachmentName, attachmentDescription, cherryPyData):
+    def addLogAttachment(self, logId, attachmentName, attachmentDescription, attachmentAddedByUserId, cherryPyData):
+        # Verify user will have permission to add log attachment before saving attachment.
+        self.logDbApi.verifyUserCreatedLogEntry(attachmentAddedByUserId, logId)
+
         storedAttachmentName = self.storageUtility.storeLogAttachment(cherryPyData, attachmentName)
-        return self.logDbApi.addLogAttachment(logId, storedAttachmentName, attachmentName, attachmentDescription)
+        return self.logDbApi.addLogAttachment(logId, storedAttachmentName, attachmentName, attachmentDescription, attachmentAddedByUserId)
 
     def getLogById(self, id):
         return self.logDbApi.getLogById(id)

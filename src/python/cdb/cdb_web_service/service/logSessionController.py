@@ -30,8 +30,11 @@ class LogSessionController(CdbSessionController):
         attachmentName = Encoder.decode(attachmentName)
         attachmentDescription = Encoder.decode(attachmentDescription)
         cherrypyData = cherrypy.request.body
+        sessionUser = self.getSessionUser()
+        attachmentAddedByUserId = sessionUser.get('id')
 
-        logAttachmentAdded = self.logControllerImpl.addLogAttachment(logId, attachmentName, attachmentDescription, cherrypyData)
+        logAttachmentAdded = self.logControllerImpl.addLogAttachment(logId, attachmentName, attachmentDescription
+                                                                     , attachmentAddedByUserId, cherrypyData)
 
         response = logAttachmentAdded.getFullJsonRep()
         self.logger.debug('Returning log attachment info for log with id %s: %s' % (logId, response))
