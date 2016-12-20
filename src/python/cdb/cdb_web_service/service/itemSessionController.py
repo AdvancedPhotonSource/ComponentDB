@@ -4,8 +4,6 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-import os
-import shutil
 
 import cherrypy
 from cdb.common.exceptions.invalidRequest import InvalidRequest
