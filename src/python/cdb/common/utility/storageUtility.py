@@ -68,8 +68,6 @@ class StorageUtility:
 
     def __getFileExtension(self, filename):
         filenameSplit = filename.split('.')
-        if filenameSplit.__len__() < 2:
-            raise CommandFailed("Cannot retrieve extension from filename: %s" % filename)
 
         ext = ''
         for i in range(1, len(filenameSplit)):
