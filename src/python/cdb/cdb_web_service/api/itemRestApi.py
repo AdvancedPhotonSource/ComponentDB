@@ -15,6 +15,9 @@ class ItemRestApi(CdbRestApi):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
     def addLogEntryToItemWithQrId(self, qrId, logEntry, attachment):
+        if qrId is None or not len(qrId):
+            raise InvalidRequest("QrId must be provided")
+
         url = '%s/items/%s/addLogEntry' % (self.getContextRoot(), qrId)
 
         if logEntry is None or not len(logEntry):
@@ -31,6 +34,11 @@ class ItemRestApi(CdbRestApi):
 
         return Log(responseDict)
 
+    def getLogEntriesForItemWithQrId(self, qrId):
+        if qrId is None or not len(qrId):
+            raise InvalidRequest("QrId must be provided")
 
+        url = '%s/items/%s/logs' % (self.getContextRoot(), qrId)
 
-
+        responseData = self.sendRequest(url, method='GET')
+        return self.toCdbObjectList(responseData, Log)
