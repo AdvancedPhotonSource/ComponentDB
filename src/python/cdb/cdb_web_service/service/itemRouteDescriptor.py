@@ -53,6 +53,15 @@ class ItemRouteDescriptor:
                 'controller': itemSessionController,
                 'action': 'addLogToItemByQrId',
                 'method': ['POST']
+            },
+
+            # Get log entries for a particular item
+            {
+                'name': 'getLogEntriesForItemByQrId',
+                'path': '%s/items/:(qrId)/logs' % contextRoot,
+                'controller': itemController,
+                'action': 'getItemLogsByQrId',
+                'method': ['GET']
             }
 
         ]
