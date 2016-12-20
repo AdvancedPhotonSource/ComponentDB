@@ -45,3 +45,11 @@ class ItemControllerImpl(CdbObjectManager):
             logEntry.data['logAttachmentAdded'] = logAttachmentJsonRep
 
         return logEntry
+
+    def getLogEntriesForItemWithQrId(self, qrId):
+        item = self.itemDbApi.getItemByQrId(qrId)
+        itemId = item.data['id']
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        return self.logControllerImpl.getLogEntriesForItemElement(selfElementId)

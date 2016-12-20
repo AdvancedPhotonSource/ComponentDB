@@ -32,3 +32,6 @@ class LogControllerImpl(CdbObjectManager):
 
     def getLogById(self, id):
         return self.logDbApi.getLogById(id)
+
+    def getLogEntriesForItemElement(self, itemElementId):
+        return self.logDbApi.getLogEntriesForItemElementId(itemElementId)
