@@ -17,6 +17,7 @@ from cdb.cdb_web_service.service.cdbPluginRouteMapper import CdbPluginRouteMappe
 from itemRouteDescriptor import ItemRouteDescriptor
 from loginRouteDescriptor import LoginRouteDescriptor
 from userRouteDescriptor import UserRouteDescriptor
+from logRouteDescriptor import LogRouteDescriptor
 
 
 class CdbWebServiceRouteMapper:
@@ -32,6 +33,7 @@ class CdbWebServiceRouteMapper:
         routes = LoginRouteDescriptor.getRoutes() + UserRouteDescriptor.getRoutes()
         routes += CdbPluginRouteMapper.getPluginRoutes()
         routes += ItemRouteDescriptor.getRoutes()
+        routes += LogRouteDescriptor.getRoutes()
 
         # Add routes to dispatcher. 
         d = cherrypy.dispatch.RoutesDispatcher()

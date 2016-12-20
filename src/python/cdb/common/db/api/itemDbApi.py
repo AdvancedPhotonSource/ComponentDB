@@ -26,6 +26,21 @@ class ItemDbApi(CdbDbApi):
         self.sourceHandler = SourceHandler()
         self.relationshipTypeHandler = RelationshipTypeHandler()
 
+    @CdbDbApi.executeQuery
+    def verifyPermissionsForWriteToItemElement(self, username, itemElementId, **kwargs):
+        """
+        Check permissions for a specific item element.
+
+        :param username:
+        :param itemElementId:
+        :param kwargs:
+        :raises InvalidSession: when user does not have permission.
+        :return: (Boolean) true if user has permissions.
+        """
+        session = kwargs['session']
+        result = self.itemHandler.verifyPermissionsForWriteToItemElement(session, username, itemElementId=itemElementId)
+        return result
+
     @CdbDbApi.executeTransaction
     def addEntityType(self, name, description, **kwargs):
         """
@@ -227,6 +242,19 @@ class ItemDbApi(CdbDbApi):
         """
         session = kwargs['session']
         dbItem = self.itemHandler.getItemById(session, itemId)
+        return dbItem.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getItemByQrId(self, itemQrId, **kwargs):
+        """
+        Get an item record by its id.
+
+        :param itemQrId:
+        :param kwargs:
+        :return: (CdbObject) resulting record.
+        """
+        session = kwargs['session']
+        dbItem = self.itemHandler.getItemByQrId(session, itemQrId)
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeQuery
@@ -457,7 +485,7 @@ class ItemDbApi(CdbDbApi):
         return dbItemType.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, systemLogLevelName = None, **kwargs):
+    def addItemElementLog(self, itemElementId, text, enteredByUserId, effectiveFromDateTime = None, effectiveToDateTime = None, logTopicName = None, enteredOnDateTime = None, systemLogLevelName = None, **kwargs):
         """
         Add a log to a particular item element.
 

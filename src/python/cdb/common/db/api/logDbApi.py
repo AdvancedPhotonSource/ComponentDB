@@ -17,6 +17,33 @@ class LogDbApi(CdbDbApi):
         self.logHandler = LogHandler()
 
     @CdbDbApi.executeQuery
+    def verifyUserCreatedLogEntry(self, userId, logId, **kwargs):
+        """
+        Checks whether a user created the log entry.
+
+        :param userId:
+        :param logId:
+        :raises InvalidSession: whenever a user has not created the log.
+        :param kwargs:
+        :return: True when user created the log
+        """
+        session = kwargs['session']
+        return self.logHandler.verifyUserCreatedLogEntry(session, userId, logId=logId)
+
+    @CdbDbApi.executeQuery
+    def getLogById(self, logId, **kwargs):
+        """
+        Finds a log entry by its id
+
+        :param logId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbLog = self.logHandler.findLogById(session, logId)
+        return dbLog.getCdbObject()
+
+    @CdbDbApi.executeQuery
     def getLogAttachments(self, **kwargs):
         """
         Get all log attachment records.
@@ -67,7 +94,7 @@ class LogDbApi(CdbDbApi):
         return self.toCdbObjectList(dbLogTopics)
 
     @CdbDbApi.executeTransaction
-    def addLogAttachment(self, logId, attachmentName, attachmentTag, attachmentDescription, **kwargs):
+    def addLogAttachment(self, logId, attachmentName, attachmentTag, attachmentDescription, userAddingId, **kwargs):
         """
         Add a new log attachment record.
 
@@ -81,7 +108,7 @@ class LogDbApi(CdbDbApi):
         :return: (CdbObject) newly added record.
         """
         session = kwargs['session']
-        dbLogAttachment = self.logHandler.addLogAttachment(session, logId, attachmentName, attachmentTag, attachmentDescription)
+        dbLogAttachment = self.logHandler.addLogAttachment(session, logId, attachmentName, attachmentTag, attachmentDescription, userAddingId)
         return dbLogAttachment.getCdbObject()
 
     @CdbDbApi.executeQuery

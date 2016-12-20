@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Run command
+
+cd `dirname $0` && myDir=`pwd`
+if [ -z $CDB_ROOT_DIR ]; then
+    setupFile=$myDir/../setup.sh
+    if [ ! -f $setupFile ]; then
+        echo "Cannot find setup file: $setupFile"
+        exit 1
+    fi
+    source $setupFile > /dev/null
+fi
+source cdb_command_setup.sh
+
+eval "$CDB_ROOT_DIR/src/python/cdb/cdb_web_service/cli/addItemLogEntryCli.py $CDB_COMMAND_ARGS"
+
+

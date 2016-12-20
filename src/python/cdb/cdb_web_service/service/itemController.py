@@ -23,5 +23,5 @@ class ItemController(CdbController):
         if not itemId:
             raise InvalidRequest("Invalid item id provided")
         response = self.itemControllerImpl.getItemById(itemId).getFullJsonRep()
-        self.logger.debug('Returning user info for %s: %s' % (itemId, response))
+        self.logger.debug('Returning item info for %s: %s' % (itemId, response))
         return response

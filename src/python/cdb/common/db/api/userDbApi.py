@@ -81,6 +81,12 @@ class UserDbApi(CdbDbApi):
         dbUserInfo = self.userInfoHandler.getUserInfoByUsername(session, username)
         return dbUserInfo.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getUserWithPasswordByUsername(self, username, **kwargs):
+        session = kwargs['session']
+        dbUserInfo = self.userInfoHandler.getUserInfoWithPasswordByUsername(session, username)
+        return dbUserInfo.getCdbObject()
+
     @CdbDbApi.executeTransaction
     def addUser(self, username, firstName, lastName, middleName, email, description, password, **kwargs):
         """

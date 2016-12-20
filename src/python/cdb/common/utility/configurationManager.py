@@ -47,6 +47,8 @@ DEFAULT_CDB_EMAIL_SENDER_EMAIL = 'cdb@aps.anl.gov'
 DEFAULT_CDB_EMAIL_ADMIN_NOTIFICATION_EMAIL = None
 DEFAULT_CDB_EMAIL_SUBJECT_START = '[CDB]'
 
+DEFAULT_CDB_LOG_ATTACHMENT_PATH = 'log/attachments'
+
 DEFAULT_CDB_SERVICE_PORT = 10232           # 10CDB
 DEFAULT_CDB_SERVICE_HOST = '127.0.0.1'
 DEFAULT_CDB_SERVICE_PROTOCOL = cdbServiceConstants.CDB_SERVICE_PROTOCOL_HTTP
@@ -136,6 +138,8 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultEmailSenderEmail'] = DEFAULT_CDB_EMAIL_SENDER_EMAIL
         self['defaultEmailAdminNotificationEmail'] = DEFAULT_CDB_EMAIL_ADMIN_NOTIFICATION_EMAIL
         self['defaultEmailSubjectStart'] = DEFAULT_CDB_EMAIL_SUBJECT_START
+
+        self['defaultLogAttachmentPath'] = DEFAULT_CDB_LOG_ATTACHMENT_PATH
 
         self['defaultPortalWebAddress'] = DEFAULT_CDB_PORTAL_WEB_ADDRESS
 
@@ -519,6 +523,27 @@ class ConfigurationManager(UserDict.UserDict):
 
     def hasPortalWebAddress(self):
         return self.has_key('portalWebAddress')
+
+    def getDefaultLogAttachmentPath(self):
+        return self['defaultLogAttachmentPath']
+
+    def setLogAttachmentPath(self, emailSubject):
+        self['logAttachmentPath'] = emailSubject
+
+    def getLogAttachmentPath(self, default='__cdb_default__'):
+        return self.__getKeyValue('logAttachmentPath', default)
+
+    def hasLogAttachmentPath(self):
+        return self.has_key('logAttachmentPath')
+
+    def setStorageDirectory(self, emailSubject):
+        self['storageDirectory'] = emailSubject
+
+    def getStorageDirectory(self, default='__cdb_default__'):
+        return self.__getKeyValue('storageDirectory', default)
+
+    def hasStorageDirectory(self):
+        return self.has_key('storageDirectory')
 
     def isDbAvailable(self):
         if os.access(self.getDbPasswordFile(), os.R_OK):

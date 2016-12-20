@@ -4,7 +4,7 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-
+from cdb.common.exceptions.invalidSession import InvalidSession
 from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -43,6 +43,8 @@ from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
 
 class ItemHandler(CdbDbEntityHandler):
 
+    CDB_ADMIN_GROUP_NAME = 'CDB_ADMIN'
+
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
         self.entityInfoHandler = EntityInfoHandler()
@@ -55,8 +57,44 @@ class ItemHandler(CdbDbEntityHandler):
         self.resourceTypeHandler = ResourceTypeHandler()
         self.userInfoHandler = UserInfoHandler()
 
+    def verifyPermissionsForWriteToItemElement(self, session, userId, itemElementId = None, dbItemElementObject = None):
+        if dbItemElementObject is None and itemElementId is None:
+            raise InvalidArgument("At least the item element id or item element object must be provided.")
+        if dbItemElementObject is None:
+            dbItemElementObject = self.getItemElementById(session, itemElementId)
+        else:
+            itemElementId = dbItemElementObject.id
+        dbUserInfo = self.userInfoHandler.getUserInfoById(session, userId)
+
+        dbEntityInfo = dbItemElementObject.entityInfo
+        ownerUserId = dbEntityInfo.ownerUserInfo.id
+
+        if ownerUserId == userId:
+            return True
+
+        ownerGroupWriteable = dbEntityInfo.is_group_writeable
+        ownerUserGroupId = dbEntityInfo.ownerUserGroup.id
+        for userGroup in dbUserInfo.userGroupList:
+            if ownerGroupWriteable:
+                if ownerUserGroupId == userGroup.id:
+                    return True
+            if userGroup.name == self.CDB_ADMIN_GROUP_NAME:
+                return True
+
+        raise InvalidSession("User %s does not have permissions to modify item element %s" % (userId, itemElementId))
+
     def getItemById(self, session, id):
         return self._findDbObjById(session, Item, id)
+
+    def getItemByQrId(self, session, qrId):
+        entityDisplayName = self._getEntityDisplayName(Item)
+
+        try:
+            dbItem = session.query(Item).filter(Item.qr_id==qrId).one()
+            return dbItem
+        except NoResultFound, ex:
+            raise ObjectNotFound('No %s with QR-Id: %s found.'
+                                 % (entityDisplayName, qrId))
 
     def getItemElementsByName(self, session, name):
         return self._findDbObjByName(session, ItemElement, name)
@@ -283,6 +321,9 @@ class ItemHandler(CdbDbEntityHandler):
             if element.parent_item_id == parentItemId and element.name == name:
                 raise ObjectAlreadyExists('Item Element with name %s already exists.' % name)
 
+        parentSelfElement = self.getSelfElementByItemId(session, parentItemId)
+        self.verifyPermissionsForWriteToItemElement(session, createdByUserId, dbItemElementObject=parentSelfElement)
+
         # Create entity info
         dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
 
@@ -294,6 +335,10 @@ class ItemHandler(CdbDbEntityHandler):
         if containedItemId:
             dbItemElement.containedItem = self.getItemById(session, containedItemId)
 
+        entityInfo = parentSelfElement.entityInfo
+        parentSelfElement.entityInfo = self.entityInfoHandler.updateEntityInfo(session, entityInfo, createdByUserId)
+
+        session.add(parentSelfElement)
         session.add(dbItemElement)
         session.flush()
         self.logger.debug('Inserted item Element id %s' % dbItemElement.id)
@@ -379,6 +424,7 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemElementLog(self, session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, systemLogLevelName = None):
         dbItemElement = self.getItemElementById(session, itemElementId)
+        self.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
         dbLog = self.logHandler.addLog(session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
 
         if systemLogLevelName is not None:
@@ -388,14 +434,18 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemElementLog.itemElement = dbItemElement
         dbItemElementLog.log = dbLog
 
+        entityInfo = dbItemElement.entityInfo
+        dbItemElement.entityInfo = self.entityInfoHandler.updateEntityInfo(session, entityInfo, enteredByUserId)
+
+        session.add(dbItemElement)
         session.add(dbItemElementLog)
         session.flush()
-
         self.logger.debug('Added log for itemElement id %s' % (itemElementId))
         return dbItemElementLog
 
     def addItemElementProperty(self, session, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime = None):
         dbItemElement = self.getItemElementById(session, itemElementId)
+        self.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
         dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue,targetValue, enteredOnDateTime)
 
         session.add(dbPropertyValue)
@@ -404,6 +454,10 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemElementProperty.itemElement = dbItemElement
         dbItemElementProperty.propertyValue = dbPropertyValue
 
+        entityInfo = dbItemElement.entityInfo
+        dbItemElement.entityInfo = self.entityInfoHandler.updateEntityInfo(session, entityInfo, enteredByUserId)
+
+        session.add(dbItemElement)
         session.add(dbItemElementProperty)
 
         session.flush()

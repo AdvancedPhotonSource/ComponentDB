@@ -94,6 +94,7 @@ cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
     | sed 's?EMAIL_SUBJECT_START?$EMAIL_SUBJECT_START?g' \
     | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g'\
     | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g'\
+    | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g'\
     > $CDB_WEB_SERVICE_CONFIG_FILE"
 eval $cmd || exit 1
 #rsync -ar $CDB_DB_PASSWORD_FILE $CDB_ETC_DIR || exit 1

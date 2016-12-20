@@ -4,16 +4,16 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-
-
+import os
 import socket
 import json
 
-from cdb.common.utility.loggingManager import LoggingManager
 from cdb.common.client.sessionManager import SessionManager
 from cdb.common.utility.configurationManager import ConfigurationManager 
 from cdb.common.exceptions.authorizationError import AuthorizationError
 from cdb.common.api.cdbApi import CdbApi
+from cdb.common.utility.urllibFileStreamUtility import UrlLibFileStreamUtility
+
 
 class CdbRestApi(CdbApi):
     """ Base cdb REST api class. """
@@ -119,6 +119,40 @@ class CdbRestApi(CdbApi):
         sm.setHost(self.__getWebServiceUrl(url))
         (response, responseData) = self.getSessionManager().sendRequest(url, method, contentType, data)
         return json.loads(responseData)
+
+    def __getFilePath(self, filePathGiven):
+        """
+        Generates a full path to a file name provided by the user.
+
+        :param filePathGiven: file name provided by the user
+        :return: full path to the file
+        """
+        if filePathGiven.startswith('/'):
+            # Full path given
+            return filePathGiven
+        elif filePathGiven.startswith('~'):
+            # Remove the home symbol
+            filePathGiven = filePathGiven[1:]
+            return "%s%s" % (os.path.expanduser('~'), filePathGiven)
+
+        # Get full path
+        return "%s/%s" % (os.getcwd(), filePathGiven)
+
+    def __getFileNameFromPath(self, filepath):
+        return os.path.basename(filepath)
+
+    def _generateFileData(self, filePathProvided):
+        """
+        Generates a file name and data that could be used to send to server.
+
+        :param filePathProvided:
+        :return: fileName, dataObject
+        """
+        fullPath = self.__getFilePath(filePathProvided)
+        fileName = self.__getFileNameFromPath(fullPath)
+        fileDataStream = UrlLibFileStreamUtility.getStreamDataObject(fullPath)
+
+        return fileName, fileDataStream
 
 #######################################################################
 # Testing.
