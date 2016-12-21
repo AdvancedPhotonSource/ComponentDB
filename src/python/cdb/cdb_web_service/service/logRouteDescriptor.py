@@ -34,11 +34,19 @@ class LogRouteDescriptor:
                 'method': ['POST']
             },
             {
-                'name': 'addAttachmentToLogEntry',
+                'name': 'updateLogEntry',
                 'path': '%s/logs/:(logId)/update' % contextRoot,
                 'controller': logSessionController,
                 'action': 'updateLogEntry',
                 'method': ['PUT']
+            },
+
+            {
+                'name': 'deleteLogEntry',
+                'path': '%s/logs/:(logId)/delete' % contextRoot,
+                'controller': logSessionController,
+                'action': 'deleteLogEntry',
+                'method': ['DELETE']
             }
 
         ]

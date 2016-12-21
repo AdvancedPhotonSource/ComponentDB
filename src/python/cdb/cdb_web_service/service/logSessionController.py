@@ -64,3 +64,14 @@ class LogSessionController(CdbSessionController):
         response = logObject.getFullJsonRep()
         self.logger.debug('Return updated log entry for log with id %s' % logId)
         return response
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def deleteLogEntry(self, logId):
+        sessionUser = self.getSessionUser()
+        userId = sessionUser.get('id')
+
+        self.logControllerImpl.deleteLogEntry(logId, userId)
+
+        return {}

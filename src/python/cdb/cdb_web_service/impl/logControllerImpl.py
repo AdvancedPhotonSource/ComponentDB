@@ -40,3 +40,6 @@ class LogControllerImpl(CdbObjectManager):
                        effectiveToDateTime, logTopicName):
         return self.logDbApi.updateLogEntry(logId, enteredByUserId, text, effectiveFromDateTime, effectiveToDateTime,
                                             logTopicName)
+
+    def deleteLogEntry(self, logId, userId):
+        self.logDbApi.deleteLogEntry(logId, userId)
