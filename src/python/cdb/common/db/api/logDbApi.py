@@ -146,6 +146,18 @@ class LogDbApi(CdbDbApi):
                                                  effectiveToDateTime, logTopicName)
         return dbUpdatedLog.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def deleteLogEntry(self, logId, userId, **kwargs):
+        """
+        Removes a log entry with given id.
+
+        :param logId:
+        :param userId:
+        :param kwargs:
+        :raises An exception when the delete fails.
+        """
+        session = kwargs['session']
+        self.logHandler.deleteLog(session, logId, userId)
 
 #######################################################################
 # Testing.

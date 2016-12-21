@@ -96,6 +96,20 @@ class LogHandler(CdbDbEntityHandler):
         self.logger.debug('Updated Log id %s' % logId)
         return dbLogEntry
 
+    def deleteLog(self, session, logId, userId):
+        dbLog = self.findLogById(session, logId)
+        self.verifyUserCreatedLogEntry(session, userId, dbLogObject=dbLog)
+
+        itemElementLogList = dbLog.itemElementLogList
+        for itemElementLog in itemElementLogList:
+            session.delete(itemElementLog)
+
+        session.delete(dbLog)
+
+        session.flush()
+
+        self.logger.debug("Removed log %s" % logId)
+
     def addSystemLog(self, session, logEntry, logLevelName):
         logLevel = self.getLogLevelByName(session, logLevelName)
 
