@@ -59,6 +59,8 @@ CDB_DB_ENTITY_MAP = {
     'attachment' : (Attachment, {} ),
     'log' : (Log, {
         'logTopic' :  { 'parentEntity' : LogTopic, 'lazy' : False },
+        'itemElementLogList' : { 'parentEntity' : ItemElementLog, 'lazy' : True },
+        'systemLog' : { 'parentEntity' : SystemLog, 'lazy' : True }
     }),
     'log_topic' : (LogTopic, {} ),
     'log_level' : (LogLevel, {} ),
