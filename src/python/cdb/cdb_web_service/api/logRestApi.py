@@ -9,6 +9,7 @@ from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.logAttachment import LogAttachment
 from cdb.common.objects.log import Log
+from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.api.cdbRestApi import CdbRestApi
 
 class LogRestApi(CdbRestApi):
@@ -60,4 +61,11 @@ class LogRestApi(CdbRestApi):
 
         return Log(responseDict)
 
+    def deleteLogEntry(self, logId):
+        if logId is None or not len(logId):
+            raise InvalidRequest('Log id must be provided.')
 
+        url = '%s/logs/%s/delete' % (self.getContextRoot(), logId)
+
+        response = self.sendSessionRequest(url=url, method='DELETE')
+        return CdbObject(response)
