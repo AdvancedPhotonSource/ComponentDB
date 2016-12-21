@@ -8,6 +8,7 @@ See LICENSE file.
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.logAttachment import LogAttachment
+from cdb.common.objects.log import Log
 from cdb.common.api.cdbRestApi import CdbRestApi
 
 class LogRestApi(CdbRestApi):
@@ -33,5 +34,30 @@ class LogRestApi(CdbRestApi):
 
         return LogAttachment(responseDict)
 
+    def updateLogEntry(self, logId, text=None, effectiveFromDateTime=None, effectiveToDateTime=None, logTopicName=None):
+        if logId is None or not len(logId):
+            raise InvalidRequest('Log id must be provided.')
+
+        url = '%s/logs/%s/update' % (self.getContextRoot(), logId)
+
+        if text is not None:
+            text = Encoder.encode(text)
+            url = self._appendUrlParameter(url, 'text', text)
+            
+        if effectiveFromDateTime is not None:
+            effectiveFromDateTime = Encoder.encode(effectiveFromDateTime)
+            url = self._appendUrlParameter(url, 'effectiveFromDateTime', effectiveFromDateTime)
+        
+        if effectiveToDateTime is not None:
+            effectiveToDateTime = Encoder.encode(effectiveToDateTime)
+            url = self._appendUrlParameter(url, 'effectiveToDateTime', effectiveToDateTime)
+
+        if logTopicName is not None:
+            logTopicName = Encoder.encode(logTopicName)
+            url = self._appendUrlParameter(url, 'logTopicName', logTopicName)
+
+        responseDict = self.sendSessionRequest(url=url, method='PUT')
+
+        return Log(responseDict)
 
 
