@@ -47,6 +47,18 @@ class LogSessionController(CdbSessionController):
         sessionUser = self.getSessionUser()
         userId = sessionUser.get('id')
 
+        if text is not None:
+            text = Encoder.decode(text)
+
+        if effectiveFromDateTime is not None:
+            effectiveFromDateTime = Encoder.decode(effectiveFromDateTime)
+
+        if effectiveToDateTime is not None:
+            effectiveToDateTime = Encoder.decode(effectiveToDateTime)
+
+        if logTopicName is not None:
+            logTopicName = Encoder.decode(logTopicName)
+
         logObject = self.logControllerImpl.updateLogEntry(logId, userId, text, effectiveFromDateTime, effectiveToDateTime, logTopicName)
 
         response = logObject.getFullJsonRep()

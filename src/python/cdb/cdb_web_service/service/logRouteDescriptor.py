@@ -38,7 +38,7 @@ class LogRouteDescriptor:
                 'path': '%s/logs/:(logId)/update' % contextRoot,
                 'controller': logSessionController,
                 'action': 'updateLogEntry',
-                'method': ['GET']
+                'method': ['PUT']
             }
 
         ]
