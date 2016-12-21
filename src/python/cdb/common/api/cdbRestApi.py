@@ -154,6 +154,20 @@ class CdbRestApi(CdbApi):
 
         return fileName, fileDataStream
 
+    def _appendUrlParameter(self, url, paramName, paramValue):
+        """
+        Adds a url parameter with a correct symbol (?/&).
+
+        :param url:
+        :param paramName:
+        :param paramValue:
+        :return: new url with parameter added
+        """
+        if '?' in url:
+            return '%s&%s=%s' % (url, paramName, paramValue)
+        else:
+            return '%s?%s=%s' % (url, paramName, paramValue)
+
 #######################################################################
 # Testing.
 
