@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -303,19 +304,40 @@ public class PropertyValue extends CdbEntity implements Serializable {
     }
 
     public Boolean getBooleanValue() {
+        if (booleanValue == null) {
+            if (value == null || value.isEmpty()) {
+                booleanValue = false;
+            } else {
+                booleanValue = Boolean.parseBoolean(this.value);
+            }
+        }
+
         return booleanValue;
     }
 
     public void setBooleanValue(Boolean booleanValue) {
         this.booleanValue = booleanValue;
+        if (booleanValue != null) {
+            this.value = booleanValue.toString();
+        }
     }
 
     public Date getDateValue() {
+        if (dateValue == null && value != null && !value.isEmpty()) {
+            try {
+                dateValue = InputDateFormat.parse(value);
+            } catch (ParseException ex) {
+                // should not happen
+            }
+        }
         return dateValue;
     }
 
     public void setDateValue(Date dateValue) {
         this.dateValue = dateValue;
+        if (dateValue != null) {
+            this.value = dateValue.toString();
+        }
     }
 
     public String getInfoActionCommand() {
@@ -368,11 +390,11 @@ public class PropertyValue extends CdbEntity implements Serializable {
         }
         return null;
     }
-    
+
     public void removePropertyMetadataKey(String key) {
         PropertyMetadata propertyMetadata = getPropertyMetadataForKey(key);
         if (propertyMetadata != null) {
-            propertyMetadataList.remove(propertyMetadata); 
+            propertyMetadataList.remove(propertyMetadata);
         }
     }
 
