@@ -13,7 +13,6 @@ from cdb.common.utility.encoder import Encoder
 
 
 class LogSessionController(CdbSessionController):
-
     def __init__(self):
         CdbSessionController.__init__(self)
         self.logControllerImpl = LogControllerImpl()
@@ -40,3 +39,16 @@ class LogSessionController(CdbSessionController):
         self.logger.debug('Returning log attachment info for log with id %s: %s' % (logId, response))
         return response
 
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def updateLogEntry(self, logId, text=None, effectiveFromDateTime=None, effectiveToDateTime=None,
+                       logTopicName=None):
+        sessionUser = self.getSessionUser()
+        userId = sessionUser.get('id')
+
+        logObject = self.logControllerImpl.updateLogEntry(logId, userId, text, effectiveFromDateTime, effectiveToDateTime, logTopicName)
+
+        response = logObject.getFullJsonRep()
+        self.logger.debug('Return updated log entry for log with id %s' % logId)
+        return response
