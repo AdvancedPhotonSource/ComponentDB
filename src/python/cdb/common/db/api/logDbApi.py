@@ -5,13 +5,11 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 
-
 from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.logHandler import LogHandler
 
 
 class LogDbApi(CdbDbApi):
-
     def __init__(self):
         CdbDbApi.__init__(self)
         self.logHandler = LogHandler()
@@ -108,11 +106,12 @@ class LogDbApi(CdbDbApi):
         :return: (CdbObject) newly added record.
         """
         session = kwargs['session']
-        dbLogAttachment = self.logHandler.addLogAttachment(session, logId, attachmentName, attachmentTag, attachmentDescription, userAddingId)
+        dbLogAttachment = self.logHandler.addLogAttachment(session, logId, attachmentName, attachmentTag,
+                                                           attachmentDescription, userAddingId)
         return dbLogAttachment.getCdbObject()
 
     @CdbDbApi.executeQuery
-    def getLogEntriesForItemElementId(self, itemElementId, logLevelName = None, **kwargs):
+    def getLogEntriesForItemElementId(self, itemElementId, logLevelName=None, **kwargs):
         """
         Get all logs for a particular item element id.
 
@@ -127,7 +126,25 @@ class LogDbApi(CdbDbApi):
         dbLogs = self.logHandler.getLogEntriesForItemElementId(session, itemElementId, logLevelName)
         return self.toCdbObjectList(dbLogs)
 
+    @CdbDbApi.executeTransaction
+    def updateLogEntry(self, logId, enteredByUserId, text=None, effectiveFromDateTime=None,
+                       effectiveToDateTime=None, logTopicName=None, **kwargs):
+        """
+        Update a log entry given its id.
 
+        :param logId:
+        :param text:
+        :param enteredByUserId:
+        :param effectiveFromDateTime:
+        :param effectiveToDateTime:
+        :param logTopicName:
+        :param kwargs:
+        :return: Updated log entry.
+        """
+        session = kwargs['session']
+        dbUpdatedLog = self.logHandler.updateLog(session, logId, enteredByUserId, text, effectiveFromDateTime,
+                                                 effectiveToDateTime, logTopicName)
+        return dbUpdatedLog.getCdbObject()
 
 
 #######################################################################
@@ -139,6 +156,3 @@ if __name__ == '__main__':
     print api.getLogs()
 
     print api.addLogAttachment(1, 'hello world', 'hi', 'desc')
-
-
-
