@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Run command
-
+cwd=`pwd`
 cd `dirname $0` && myDir=`pwd`
 if [ -z $CDB_ROOT_DIR ]; then
     setupFile=$myDir/../setup.sh
@@ -12,6 +12,7 @@ if [ -z $CDB_ROOT_DIR ]; then
     source $setupFile > /dev/null
 fi
 source cdb_command_setup.sh
+cd $cwd
 
 eval "$CDB_ROOT_DIR/src/python/cdb/cdb_web_service/cli/addItemLogEntryCli.py $CDB_COMMAND_ARGS"
 
