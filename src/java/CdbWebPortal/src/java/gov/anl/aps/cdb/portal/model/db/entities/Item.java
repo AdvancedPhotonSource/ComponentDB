@@ -577,11 +577,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
     }
-    
+
     public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
         if (itemElementAssemblyRootTreeNode == null) {
             if (getItemElementDisplayList().size() > 0) {
-                itemElementAssemblyRootTreeNode = ItemElementUtility.createItemElementRoot(this); 
+                itemElementAssemblyRootTreeNode = ItemElementUtility.createItemElementRoot(this);
             }
         }
         return itemElementAssemblyRootTreeNode;
@@ -979,8 +979,10 @@ public class Item extends CdbDomainEntity implements Serializable {
             return true;
         }
 
-        if (other.getId().equals(id)) {
-            return true;
+        if (other.getId() != null) {
+            if (other.getId().equals(id)) {
+                return true;
+            }
         }
 
         return (Objects.equals(other.getItemIdentifier1(), itemIdentifier1)
