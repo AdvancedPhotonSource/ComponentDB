@@ -24,7 +24,6 @@ from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 
 
 class LogHandler(CdbDbEntityHandler):
-
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
         self.userInfoHandler = UserInfoHandler()
@@ -47,7 +46,8 @@ class LogHandler(CdbDbEntityHandler):
         dbLogAttachments = session.query(LogAttachment).all()
         return dbLogAttachments
 
-    def addLog(self, session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None):
+    def addLog(self, session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName,
+               enteredOnDateTime=None):
         if not enteredOnDateTime:
             enteredOnDateTime = datetime.now()
 
@@ -69,6 +69,47 @@ class LogHandler(CdbDbEntityHandler):
         self.logger.debug('Added Log id %s' % dbLog.id)
         return dbLog
 
+    def updateLog(self, session, logId, enteredByUserId, text=None, effectiveFromDateTime=None,
+                  effectiveToDateTime=None, logTopicName=None):
+        if text is None and effectiveFromDateTime is None and effectiveToDateTime is None and logTopicName is None:
+            raise InvalidArgument("No argument was provided to update log %s" % logId)
+
+        dbLogEntry = self.findLogById(session, logId)
+        self.verifyUserCreatedLogEntry(session, enteredByUserId, dbLogObject=dbLogEntry)
+
+        if text is not None:
+            dbLogEntry.text = text
+
+        if effectiveFromDateTime is not None:
+            dbLogEntry.effective_from_date_time = effectiveFromDateTime
+
+        if effectiveToDateTime is not None:
+            dbLogEntry.effective_to_date_time = effectiveToDateTime
+
+        if logTopicName is not None:
+            dbLogTopic = self.findLogTopicByName(session, logTopicName)
+            dbLogEntry.logTopic = dbLogTopic
+
+        session.add(dbLogEntry)
+        session.flush()
+
+        self.logger.debug('Updated Log id %s' % logId)
+        return dbLogEntry
+
+    def deleteLog(self, session, logId, userId):
+        dbLog = self.findLogById(session, logId)
+        self.verifyUserCreatedLogEntry(session, userId, dbLogObject=dbLog)
+
+        itemElementLogList = dbLog.itemElementLogList
+        for itemElementLog in itemElementLogList:
+            session.delete(itemElementLog)
+
+        session.delete(dbLog)
+
+        session.flush()
+
+        self.logger.debug("Removed log %s" % logId)
+
     def addSystemLog(self, session, logEntry, logLevelName):
         logLevel = self.getLogLevelByName(session, logLevelName)
 
@@ -82,7 +123,7 @@ class LogHandler(CdbDbEntityHandler):
         self.logger.debug('Added System Log of log level %s to log id %s' % (logLevelName, logEntry.id))
         return dbSystemLog
 
-    def getLogEntriesForItemElementId(self, session, itemElementId, logLevelName = None):
+    def getLogEntriesForItemElementId(self, session, itemElementId, logLevelName=None):
         entityDisplayName = self._getEntityDisplayName(Log)
 
         try:
@@ -106,7 +147,7 @@ class LogHandler(CdbDbEntityHandler):
         return self._getAllDbObjects(session, LogTopic)
 
     def findLogTopicByName(self, session, logTopicName):
-        self._findDbObjByName(session, LogTopic, logTopicName)
+        return self._findDbObjByName(session, LogTopic, logTopicName)
 
     def addAttachment(self, session, attachmentName, tag, description):
         self._prepareAddUniqueNameObj(session, Attachment, attachmentName)
@@ -124,7 +165,7 @@ class LogHandler(CdbDbEntityHandler):
 
         return dbAttachment
 
-    def verifyUserCreatedLogEntry(self, session, userId, logId = None, dbLogObject = None):
+    def verifyUserCreatedLogEntry(self, session, userId, logId=None, dbLogObject=None):
         if logId is None and dbLogObject is None:
             raise InvalidArgument("At least log id or db log object must be provided.")
         if dbLogObject is None:
@@ -151,8 +192,4 @@ class LogHandler(CdbDbEntityHandler):
 
         self.logger.debug('Inserted log attachment for log id %s' % logId)
 
-        return  dbLogAttachment
-
-
-
-
+        return dbLogAttachment

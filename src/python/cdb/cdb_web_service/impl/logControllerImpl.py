@@ -5,7 +5,6 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 
-
 #
 # Implementation for the Log class
 #
@@ -28,7 +27,19 @@ class LogControllerImpl(CdbObjectManager):
         self.logDbApi.verifyUserCreatedLogEntry(attachmentAddedByUserId, logId)
 
         storedAttachmentName = self.storageUtility.storeLogAttachment(cherryPyData, attachmentName)
-        return self.logDbApi.addLogAttachment(logId, storedAttachmentName, attachmentName, attachmentDescription, attachmentAddedByUserId)
+        return self.logDbApi.addLogAttachment(logId, storedAttachmentName, attachmentName, attachmentDescription,
+                                              attachmentAddedByUserId)
 
     def getLogById(self, id):
         return self.logDbApi.getLogById(id)
+
+    def getLogEntriesForItemElement(self, itemElementId):
+        return self.logDbApi.getLogEntriesForItemElementId(itemElementId)
+
+    def updateLogEntry(self, logId, enteredByUserId, text, effectiveFromDateTime,
+                       effectiveToDateTime, logTopicName):
+        return self.logDbApi.updateLogEntry(logId, enteredByUserId, text, effectiveFromDateTime, effectiveToDateTime,
+                                            logTopicName)
+
+    def deleteLogEntry(self, logId, userId):
+        self.logDbApi.deleteLogEntry(logId, userId)
