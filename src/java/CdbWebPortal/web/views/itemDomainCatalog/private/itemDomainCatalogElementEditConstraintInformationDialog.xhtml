@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../itemElement/private/templates/itemElementEditConstraintInformationDialogTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="colorDefenitionTooltip">
+        <p:outputPanel styleClass="greenRow padded">
+            Green: Applies no constraints on update of contained item or element deletion.  
+        </p:outputPanel>
+        <p:outputPanel styleClass="yellowRow padded">
+            Yellow: Prevents element deletion
+        </p:outputPanel>
+        <p:outputPanel styleClass="redRow padded">
+            Red: Prevents element deletion and update of contained item.
+        </p:outputPanel>
+    </ui:define>
+
+    <ui:define name="additionalConstrationApplicationDefintions">
+        <h:outputText value="Inventory Item Assigned: "/>
+        <h:outputText value="Prevents element delete and update of contained item." />
+    </ui:define>
+
+    <ui:define name="additionalRelatedConstraintInfoColumns">
+        <p:column headerText="Inventory Item Assigned" >
+            <ui:include src="../../common/private/commonBooleanValue.xhtml">
+                <ui:param name="booleanValue" value="#{relatedConstraintInfo.hasInventoryItemAssigned}" />
+            </ui:include>
+        </p:column>
+    </ui:define>
+
+</ui:composition>
+
+

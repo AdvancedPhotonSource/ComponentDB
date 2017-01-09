@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.io.Serializable;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -113,6 +114,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     private static transient Integer sortByPropertyTypeId = null;
     private transient TreeNode childItemElementListTreeTableRootNode = null;
+    private transient ItemElementConstraintInformation constraintInformation; 
 
     public ItemElement() {
     }
@@ -330,6 +332,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setChildItemElementListTreeTableRootNode(TreeNode childItemElementListTreeTableRootNode) {
         this.childItemElementListTreeTableRootNode = childItemElementListTreeTableRootNode;
     }
+
+    public ItemElementConstraintInformation getConstraintInformation() {
+        return constraintInformation;
+    }
+
+    public void setConstraintInformation(ItemElementConstraintInformation constraintInformation) {
+        this.constraintInformation = constraintInformation;
+    }
     
     @Override
     public SearchResult search(Pattern searchPattern) {
@@ -381,6 +391,10 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     @Override
     public String toString() {
+        if (name != null && name.isEmpty() == false) {
+            return name; 
+        }
+        
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemElement[ id=" + id + " ]";
     }
 

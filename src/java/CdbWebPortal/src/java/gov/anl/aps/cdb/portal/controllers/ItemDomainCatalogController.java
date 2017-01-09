@@ -6,14 +6,19 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.CatalogItemElementConstraintInformation;
+import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -161,8 +166,34 @@ public class ItemDomainCatalogController extends ItemController {
     @Override
     protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom) {
         return cloneCreateItemElements(clonedItem, cloningFrom, true);
+    } 
+
+    @Override
+    public ItemElement createItemElement(Item item) {
+        ItemElement itemElement = super.createItemElement(item); 
+                
+        List<Item> inventoryItems = item.getDerivedFromItemList(); 
+        itemElement.setDerivedFromItemElementList(new ArrayList<>());
+        for (Item inventoryItem : inventoryItems) {
+            ItemController inventoryItemController = ItemController.findDomainControllerForItem(inventoryItem); 
+            ItemElement inventoryItemElement = inventoryItemController.createItemElement(inventoryItem); 
+            inventoryItemElement.setDerivedFromItemElement(itemElement);
+            EntityInfo inventoryItemEntityInfo = inventoryItem.getEntityInfo(); 
+            UserInfo inventoryItemOwner = inventoryItemEntityInfo.getOwnerUser(); 
+            UserGroup inventoryOwnerGroup = inventoryItemEntityInfo.getOwnerUserGroup(); 
+            inventoryItemElement.getEntityInfo().setOwnerUser(inventoryItemOwner);
+            inventoryItemElement.getEntityInfo().setOwnerUserGroup(inventoryOwnerGroup);
+            itemElement.getDerivedFromItemElementList().add(inventoryItemElement); 
+        }
+        
+        return itemElement; 
     }
 
+    @Override
+    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
+        return new CatalogItemElementConstraintInformation(itemElement);
+    }
+    
     @Override
     protected void checkItem(Item item) throws CdbException {
         super.checkItem(item);

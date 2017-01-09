@@ -6,33 +6,8 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
-    
-    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="childEntityController" value="#{itemElementController}"/>
-        <ui:param name="childEntityTypeName" value="#{itemElementController.entityTypeName}"/>
-        <ui:param name="addActionController" value="#{entityController}"/>
-        <ui:param name="addAction" value="prepareAddItemElement"/>
-        <ui:param name="addActionParameter" value="#{entityController.current}"/>
-        <ui:param name="addActionOnComplete" value=""/>
-        <ui:param name="saveAction" value="saveItemElementList"/>
-        <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
-    </ui:include>  
-    <p:remoteCommand name="setSortableEntityList"
-                     update="itemElementRearrangeListDialog"
-                     onstart="PF('loadingDialog').show()"
-                     action="#{itemElementController.configureSortableItemElementList(entityController.selected, 'PF(\'itemElementRearrangeListDialogWidget\').show()')}"
-                     oncomplete="PF('loadingDialog').hide();"
-                     />
-    
-        <ui:include src="itemElementEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
-    
-        <ui:include src="itemElementRearrangeListDialog.xhtml" />
-    
-        <ui:include src="itemElementEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
-    
+                template="templates/itemElementEditListTemplate.xhtml">
+
 </ui:composition>
 
 
