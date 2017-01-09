@@ -6,7 +6,38 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="templates/itemElementListTemplate.xhtml">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="constraintInfo" 
+              value="#{itemElementController.getItemElementConstraintInformation(itemElementObject)}" />
+
+    <p:autoComplete id="itemDropdown#{itemElementObject.viewUUID}" 
+                    value="#{itemElementObject.containedItem}" 
+                    var="selectItemObject"
+                    converter="itemConverter" 
+                    completeMethod="#{entityController.completeItemElementItem}" 
+                    itemLabel="#{selectItemObject.toString()}"
+                    itemValue="#{selectItemObject}"
+                    valueChangeListener="#{itemElementController.selectItemValueChangeListener}"
+                    forceSelection="true"
+                    scrollHeight="200"
+                    dropdown="true" 
+                    styleClass="autocomplete"
+                    rendered="#{constraintInfo.safeToUpdateContainedItem}">
+        <p:ajax event="valueChange" immediate="true" process="@this"/>
+    </p:autoComplete>
+    <p:commandButton id="itemElementItemSelectButton" 
+                     oncomplete="PF('#{itemElementController.entityTypeName}ItemSelectDialogWidget').show()"
+                     alt="Select Item Element Contained Item"
+                     immediate="true"
+                     styleClass="selectButtonForAutocomplete"
+                     icon="ui-icon-search"
+                     rendered="#{constraintInfo.safeToUpdateContainedItem}">
+        <f:setPropertyActionListener value="#{itemElementObject}" target="#{itemElementController.current}"/>
+        <p:tooltip for="itemElementItemSelectButton" value="Search for Item."/>
+    </p:commandButton>
+
 </ui:composition>
 
 
