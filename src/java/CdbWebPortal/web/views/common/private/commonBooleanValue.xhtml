@@ -6,23 +6,14 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
-    <p:button id="#{entityTypeName}#{viewName}ViewTypesButton"               
-              href="../#{entityTypeTypeName}/list.xhtml" 
-              rendered="#{entityController.entityHasTypes()}" 
-              alt="View #{entityController.entityEntityTypeName}" 
-              icon="ui-icon-info" styleClass="actionButtonRight">
-        <p:tooltip for="#{entityTypeName}ViewTypesButton" value="View #{entityController.entityEntityTypeName}s."/>
-    </p:button>
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
 
-    <p:button id="#{entityTypeName}#{viewName}ViewCategoriesButton" 
-              href="../#{entityTypeCategoryName}/list.xhtml" 
-              rendered="#{entityController.entityHasCategories()}" 
-              alt="View #{entityController.entityEntityCategoryName}" 
-              icon="ui-icon-info" styleClass="actionButtonRight">
-        <p:tooltip for="#{entityTypeName}ViewCategoriesButton" value="View #{entityController.entityEntityCategoryName}s."/>
-    </p:button>
-    
+    <p:outputPanel rendered="#{booleanValue}">
+        <h:outputText value="Yes" />
+    </p:outputPanel>
+    <p:outputPanel rendered="#{!booleanValue}">
+        <h:outputText value="No"  />
+    </p:outputPanel>
+
 </ui:composition>
