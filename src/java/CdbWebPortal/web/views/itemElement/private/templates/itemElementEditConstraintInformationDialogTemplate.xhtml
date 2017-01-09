@@ -6,7 +6,102 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="templates/itemElementListTemplate.xhtml">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog widgetVar="itemElement#{itemElementObject.viewUUID}ConstraintInformationDialogWidget"
+              id="itemElement#{itemElementObject.viewUUID}ConstraintInformationDialog"
+              header="Item element constraint status: #{constraintInfo.itemElement}"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+        <p:outputPanel styleClass="leftAlignedText">
+            <p:panelGrid> 
+                <f:facet name="header">
+                    <p:row>
+                        <p:column colspan="2" styleClass="panelGridBorderedCell">#{constraintInfo.itemElement} element overview</p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column styleClass="panelGridBorderedCell"><h:outputLabel value="Has Properties:" /></p:column>
+                        <p:column styleClass="panelGridBorderedCell"><h:outputLabel value="Has Logs:" /></p:column>
+                    </p:row>                    
+                </f:facet>
+
+
+                <p:row>
+                    <p:column styleClass="panelGridBorderedCell">
+                        <ui:include src="../../../common/private/commonBooleanValue.xhtml">
+                            <ui:param name="booleanValue" value="#{relatedConstraintInfo.hasProperties}" />
+                        </ui:include>
+                    </p:column>
+                    <p:column styleClass="panelGridBorderedCell">
+                        <ui:include src="../../../common/private/commonBooleanValue.xhtml">
+                            <ui:param name="booleanValue" value="#{relatedConstraintInfo.hasLogs}" />
+                        </ui:include>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:outputPanel>
+        <br/>
+
+        <p:dataTable id="itemElementConstraintInformationDataTable"
+                     value="#{constraintInfo.relatedConstraintInfo}"
+                     var="relatedConstraintInfo"
+                     rowStyleClass="#{relatedConstraintInfo.getRowStyle()}"
+                     emptyMessage="No records that apply update/delete constraints to this element.">
+            <f:facet name="header">
+                List of Related Parts
+            </f:facet>
+            <p:column headerText="Part Reference">
+                <h:outputText value="#{relatedConstraintInfo.getRelatedItemElementToString()}" />
+            </p:column>
+            <p:column headerText="Has Properties" >                       
+                <ui:include src="../../../common/private/commonBooleanValue.xhtml">
+                    <ui:param name="booleanValue" value="#{relatedConstraintInfo.hasProperties}" />
+                </ui:include>
+            </p:column>
+            <p:column headerText="Has Logs" >
+                <ui:include src="../../../common/private/commonBooleanValue.xhtml">
+                    <ui:param name="booleanValue" value="#{relatedConstraintInfo.hasLogs}" />
+                </ui:include>
+            </p:column>
+            <ui:insert name="additionalRelatedConstraintInfoColumns" />            
+        </p:dataTable>
+
+        <p:tooltip for="itemElementConstraintInformationDataTable" 
+                   styleClass="viewTransparentBackground"
+                   hideDelay="500">
+            <p:panelGrid columns="1">
+                <f:facet name="header">
+                    <h:outputText styleClass="padded" value="Row Colors:" />
+                </f:facet>
+                <ui:insert name="colorDefenitionTooltip">
+                    <p:outputPanel styleClass="greenRow padded">
+                        Green: Applies no constraints for element deletion.  
+                    </p:outputPanel>                    
+                    <p:outputPanel styleClass="redRow padded">
+                        Red: Prevents element from being deleted.
+                    </p:outputPanel>
+                </ui:insert>
+            </p:panelGrid>
+
+            <p:panelGrid columns="2">
+                <f:facet name="header">
+                    <h:outputText styleClass="padded" value="How constraints are applied:" />
+                </f:facet>
+                <ui:insert name="constraintApplicationDefintions">
+                    <h:outputText value="Has Properties: "/>
+                    <h:outputText value="Prevents element delete" />
+
+                    <h:outputText value="Has Logs: "/>
+                    <h:outputText value="Prevents element delete" />                   
+
+                    <ui:insert name="additionalConstrationApplicationDefintions"/> 
+                </ui:insert>
+            </p:panelGrid>
+        </p:tooltip>
+    </p:dialog>
+
 </ui:composition>
 
 
