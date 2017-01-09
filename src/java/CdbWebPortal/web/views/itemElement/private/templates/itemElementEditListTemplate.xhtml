@@ -7,9 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(entityController.selected.entityInfo)}"/>
-    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
+    <ui:include src="../../../common/private/commonChildEditListActionButtons.xhtml" rendered="#{isEntityWriteable}">
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="childEntityController" value="#{itemElementController}"/>
         <ui:param name="childEntityTypeName" value="#{itemElementController.entityTypeName}"/>
@@ -26,13 +26,17 @@ See LICENSE file.
                      action="#{itemElementController.configureSortableItemElementList(entityController.selected, 'PF(\'itemElementRearrangeListDialogWidget\').show()')}"
                      oncomplete="PF('loadingDialog').hide();"
                      />
-    
-        <ui:include src="itemElementEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
-    
-        <ui:include src="itemElementRearrangeListDialog.xhtml" />
-    
-        <ui:include src="itemElementEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
-    
+
+    <ui:insert name="itemElementEditListDataTable">
+        <ui:include src="../itemElementEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
+    </ui:insert>
+
+    <ui:insert name="itemElementEditListCustomizeDisplayDialog">
+        <ui:include src="../itemElementEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>
+    </ui:insert>
+
+    <ui:include src="../itemElementRearrangeListDialog.xhtml" />
+
 </ui:composition>
 
 
