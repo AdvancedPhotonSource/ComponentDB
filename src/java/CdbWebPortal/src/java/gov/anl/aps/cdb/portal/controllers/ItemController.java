@@ -44,6 +44,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
+import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -918,6 +919,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public final ItemController getSelectionController() {
         return this;
     }
+    
+    public static ItemController findDomainControllerForItem(Item item) {
+        String domainName = item.getDomain().getName(); 
+        return findDomainController(domainName); 
+    }
 
     public static ItemController findDomainController(String domainName) {
         if (domainName != null) {
@@ -1288,8 +1294,8 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         itemSourceList.remove(itemSource);
         updateOnRemoval();
     }
-
-    public void prepareAddItemElement(Item item) {
+    
+    protected ItemElement createItemElement(Item item) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         ItemElement itemElement = new ItemElement();
@@ -1297,16 +1303,37 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(item);
         itemElementList.add(itemElement);
-        itemElementsDisplayList.add(0, itemElement);
+        itemElementsDisplayList.add(0, itemElement);        
+        return itemElement; 
     }
 
-    public void deleteItemElement(ItemElement itemElement) {
-        Item item = getCurrent();
+    public void prepareAddItemElement(Item item) {
+        createItemElement(item); 
+    }
+    
+    public void completeSuccessfulItemElementRemoval(ItemElement itemElement) {
+        if (current != null) {
+            Item parentItem = itemElement.getParentItem(); 
+            if (current.equals(parentItem)) {
+                removeItemElementFromItem(itemElement, current);
+                // Remove from related items to prevent a readd to db. 
+                List<ItemElement> derivedItemElements = itemElement.getDerivedFromItemElementList(); 
+                for (ItemElement derivedItemElement : derivedItemElements) {
+                    removeItemElementFromItem(derivedItemElement, derivedItemElement.getParentItem());
+                }
+            }
+        }
+    }
+    
+    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {        
+        return new ItemElementConstraintInformation(itemElement);
+    }
+
+    private void removeItemElementFromItem(ItemElement itemElement, Item item) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         itemElementList.remove(itemElement);
-        itemElementsDisplayList.remove(itemElement);
-        updateOnRemoval();
+        itemElementsDisplayList.remove(itemElement);        
     }
 
     public void saveItemElementList() {
@@ -2616,7 +2643,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             throw new CdbException("Item is part of an assembly.");
         }
     }
-
+       
     protected ItemController getItemItemController(Item item) {
         return findDomainController(getItemDomainName(item));
     }
