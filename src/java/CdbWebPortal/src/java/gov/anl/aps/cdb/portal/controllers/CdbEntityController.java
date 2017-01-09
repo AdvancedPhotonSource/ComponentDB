@@ -1167,6 +1167,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     protected void prepareEntityUpdate(EntityType entity) throws CdbException {
     }
+    
+    public void updateWithoutRedirect() {
+        update(); 
+    }
 
     /**
      * Update current entity and save changes in the database.
@@ -1268,6 +1272,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     protected void prepareEntityDestroy(EntityType entity) throws CdbException {
     }
+    
+    /**
+     * Perform any additional actions upon successful removal of an entity. 
+     */
+    protected void completeEntityDestroy(EntityType entity) {        
+    }
 
     /**
      * Remove entity instance from the database.
@@ -1307,6 +1317,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         } else if (current.getId() == null) {
             logger.warn("Current item id is null");
+            completeEntityDestroy(current);
             // Do nothing if there is no id.
             return null;
         }
@@ -1314,6 +1325,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             logger.debug("Destroying " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityDestroy(current);
             getEntityDbFacade().remove(current);
+            completeEntityDestroy(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Deleted: " + current.toString());
             resetListDataModel();
