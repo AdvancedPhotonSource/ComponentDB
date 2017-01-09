@@ -1117,3 +1117,7 @@ h2 {
 .locationTieredMenuPickerContainer .activeLocationMenuItem {
     background: #c2d1f0; 
 }
+
+.padded {
+    padding: 10px;
+}
