@@ -4,92 +4,10 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
-
-    <p:dataTable id="#{itemElementController.entityTypeName}EditListDataTable" 
-                 widgetVar="#{itemElementController.entityTypeName}EditListDataTableWidget"
-                 var="itemElementObject" 
-                 value="#{itemObject.itemElementDisplayList}" 
-                 rows="#{itemElementController.displayNumberOfItemsPerPage}"
-                 paginator="true" 
-                 paginatorAlwaysVisible="false" 
-                 editable="true"
-                 emptyMessage="No item elements found."
-                 rowStyleClass="#{itemElementObject.id != null ? '' : 'newItemInRow'}">
-
-        <p:column sortBy="#{itemElementObject.id}" headerText="Id"
-                  rendered="#{itemElementController.displayId}">
-            <h:outputText value="#{itemElementObject.id}"/>
-        </p:column>
-
-        <p:column sortBy="#{itemElementObject.name}" headerText="Element Name">
-            <h:inputText id="itemElementObjectName" value="#{itemElementObject.name}" styleClass="cellInput"/>
-            <p:tooltip for="itemElementObjectName" value="Enter name."/>
-        </p:column>      
-
-        <p:column sortBy="#{itemElementObject.containedItem.name}" headerText="Contained Item">
-            <p:autoComplete id="itemDropdown#{itemElementObject.viewUUID}" 
-                            value="#{itemElementObject.containedItem}" 
-                            var="selectItemObject"
-                            converter="itemConverter" 
-                            completeMethod="#{entityController.completeItemElementItem}" 
-                            itemLabel="#{selectItemObject.toString()}"
-                            itemValue="#{selectItemObject}"
-                            valueChangeListener="#{itemElementController.selectItemValueChangeListener}"
-                            forceSelection="true"
-                            scrollHeight="200"
-                            dropdown="true" 
-                            styleClass="autocomplete">
-                <p:ajax event="valueChange" immediate="true" process="@this"/>
-            </p:autoComplete>
-            <p:commandButton id="itemElementItemSelectButton" 
-                             oncomplete="PF('#{itemElementController.entityTypeName}ItemSelectDialogWidget').show()"
-                             alt="Select Item Element Contained Item"
-                             immediate="true"
-                             styleClass="selectButtonForAutocomplete"
-                             icon="ui-icon-search">
-                <f:setPropertyActionListener value="#{itemElementObject}" target="#{itemElementController.current}"/>
-                <p:tooltip for="itemElementItemSelectButton" value="Search for Item."/>
-            </p:commandButton>
-        </p:column>      
-
-        <p:column sortBy="#{itemElementObject.sortOrder}" headerText="Sort Order"
-                  rendered="#{itemElementController.displaySortOrder}">
-            <h:inputText id="sortOrder" value="#{itemElementObject.sortOrder}" styleClass="shortCellInput"/>
-            <p:tooltip for="sortOrder" value="Enter sort order."/>
-        </p:column>
-
-
-        <p:column sortBy="#{itemElementObject.description}" headerText="Description"
-                  rendered="#{itemElementController.displayDescription}">
-            <h:inputText id="description" value="#{itemElementObject.description}" styleClass="longCellInput"/>
-            <p:tooltip for="description" value="Enter description."/>
-        </p:column>
-
-        <p:column headerText="Actions" exportable="false">
-            <div class="actionLink">
-                <p:commandLink action="#{entityController.deleteItemElement(itemElementObject)}" 
-                               actionListener="#{itemElementController.destroy(itemElementObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"
-                               rendered="#{loginController.isEntityWriteable(itemElementObject.entityInfo)}"/>
-            </div>
-        </p:column>
-    </p:dataTable>
-    
-    <ui:include src="../../item/private/itemSelectDialog.xhtml">
-        <ui:param name="entityTypeName" value="#{itemElementController.entityTypeName}" />
-        <ui:param name="selectionTarget" value="#{itemElementController.current.containedItem}" />
-        <ui:param name="selectDataModel" value="#{currentItemController.allowedChildItemSelectDataModel}" />
-        <ui:param name="selectionController" value="#{currentItemController}" />     
-        <ui:param name="selectionWithResetEnabled" value="#{true}" />
-        <ui:param name="selectionValueWithReset" value="#{currentItemController.getSelectedObjectAndReset()}" />
-    </ui:include>
-
+                template="templates/itemElementEditListDataTableTemplate.xhtml">
+       
 </ui:composition>
 
 
