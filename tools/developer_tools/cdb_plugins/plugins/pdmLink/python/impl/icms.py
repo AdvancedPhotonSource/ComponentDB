@@ -4,7 +4,7 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-
+from cdb.common.utility.sslUtility import SslUtility
 
 '''
 ***Class that communicates with ICMS and retrieves revisions and url of a drawing
@@ -14,21 +14,28 @@ from suds.client import Client
 
 class Icms:
 
-    ICMS_DOC_URL = '/docs/idcplg?IdcService=DISPLAY_URL&dDocName='
+    ICMS_DOC_PATH = 'docs/idcplg?IdcService=DISPLAY_URL&dDocName='
     ICMS_REVISION_PARAM = '&dRevLabel='
-    ICMS_SEARCH_WSDL = 'http://oradev.aps.anl.gov/gen-doc/soap_search11g-0813.wsdl'
-    ICMS_INFO_WSDL = "http://oradev.aps.anl.gov/gen-doc/soap_docinfo-0821.wsdl"
+    ICMS_SEARCH_WSDL_PATH = 'docs/idcplg?IdcService=DISPLAY_URL&dDocName=SEARCH'
+    ICMS_INFO_WSDL_PATH = "docs/idcplg?IdcService=DISPLAY_URL&dDocName=DOCINFO"
 
     def __init__(self, icmsUser, icmsPass, icmsUrl):
-
-        #No need for this suds client, wsdl class is not used.
-        #self.icmsSearchClass = Client(self.ICMS_SEARCH_WSDL, username=icmsUser, password=icmsPass)
-        self.icmsInfoClass = Client(self.ICMS_INFO_WSDL, username=icmsUser, password=icmsPass)
-        
-        self.icmsBaseUrl = icmsUrl + self.ICMS_DOC_URL
+        self.icmsUrl = icmsUrl
+        self.icmsBaseUrl = '%s/%s' % (icmsUrl, self.ICMS_DOC_PATH)
         self.icmsUrlRevs = self.ICMS_REVISION_PARAM
-        
-    
+
+        self.__createIcmsClients(icmsUser, icmsPass)
+
+    @SslUtility.useUnverifiedSslContext
+    def __createIcmsClients(self, icmsUser, icmsPass):
+        # No need for this suds client, wsdl class is not used.
+        # icmsSearchWsdlUrl = '%s/%s' % (self.icmsUrl, self.ICMS_SEARCH_WSDL_PATH)
+        # self.icmsSearchClass = Client(icmsSearchWsdlUrl, username=icmsUser, password=icmsPass)
+
+        icmsInfoWsdlUrl = '%s/%s' % (self.icmsUrl, self.ICMS_INFO_WSDL_PATH)
+        self.icmsInfoClass = Client(icmsInfoWsdlUrl, username=icmsUser, password=icmsPass)
+
+    @SslUtility.useUnverifiedSslContext
     def getIcmsRevisions(self, keyword):
         docSearch = self.icmsInfoClass.service.DocInfoByName(keyword)
         result = []
