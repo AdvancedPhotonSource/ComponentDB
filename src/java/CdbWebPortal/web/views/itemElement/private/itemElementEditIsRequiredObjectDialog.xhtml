@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="itemElementEditIsRequiredDialog"
+              widgetVar="itemElementEditIsRequiredDialogWidget"
+              modal="true"
+              closable="false"
+              resizable="false"
+              dynamic="true"
+              header="Update required status for element: 
+              #{itemElementController.current != null ? itemElementController.current : 'ERROR(Not Set Correctly)'}"
+              styleClass="viewTransparentBackgroundDialog" >
+        
+        <p:panelGrid columns="2" id="itemElementEditIsRequiredDialogContentsPanelGrid">
+            <p:outputLabel value="Required:" />
+            <p:outputPanel rendered="#{itemElementController.current != null}">
+                <p:commandButton update="@this"
+                                 action="#{itemElementController.toggleIsRequiredForCurrent()}"
+                                 value="#{itemElementController.isRequiredButtonValueForCurrent}"/> 
+            </p:outputPanel>
+        </p:panelGrid>
+
+        <f:facet name="footer">
+            <p:commandButton value="Save"
+                             icon="ui-icon-disk"
+                             action="#{itemElementController.submitIsRequiredValueForCurrent()}"
+                             update="@form"/>
+            <p:commandButton value="Cancel"
+                             icon="ui-icon-close"
+                             update="itemElementEditIsRequiredDialog #{itemElementController.entityTypeName}EditListDataTable"
+                             action="#{itemElementController.revertIsRequiredItemForCurrent()}"
+                             oncomplete="PF('itemElementEditIsRequiredDialogWidget').hide()"
+                             />
+        </f:facet>
+
+    </p:dialog>
+
+    <p:remoteCommand name="updateAndShowItemElementEditIsRequiredDialog"
+                     oncomplete="PF('itemElementEditIsRequiredDialogWidget').show()"
+                     update="itemElementEditIsRequiredDialog"/>
+
+</ui:composition>
+
+
