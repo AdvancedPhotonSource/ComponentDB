@@ -1325,8 +1325,22 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
     }
     
+    public void completeSuccessfulItemElementUpdate(ItemElement itemElement) {
+        if (current != null) {
+            Item parentItem = itemElement.getParentItem(); 
+            if (current.equals(parentItem)) {
+                // Resaving the item could cause revivial of the element prior update due to various connections. 
+                current = findById(current.getId()); 
+            }
+        }
+    }
+    
     public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {        
         return new ItemElementConstraintInformation(itemElement);
+    }
+    
+    public ItemElement finalizeItemElementRequiredStatusChanged(ItemElement itemElement) throws CdbException {
+        return itemElement;        
     }
 
     private void removeItemElementFromItem(ItemElement itemElement, Item item) {
