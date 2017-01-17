@@ -122,13 +122,19 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     public ItemElementController() {
     }
     
+    public static ItemElementController getInstance() {
+        return (ItemElementController) SessionUtility.findBean("itemElementController"); 
+    }
+    
     @Override
     protected void prepareEntityUpdate(ItemElement itemElement) throws CdbException {
         super.prepareEntityUpdate(itemElement);
         
         if (itemElement.getId() != null) {
             ItemElement freshDbItemElement = findById(itemElement.getId()); 
-            Item originalContainedItem = freshDbItemElement.getContainedItem();            
+            
+            // Verify if contained item changed
+            Item originalContainedItem = freshDbItemElement.getContainedItem();
             if (ObjectUtility.equals(originalContainedItem, itemElement.getContainedItem()) == false) {
                 // Contained item has been updated.
                 ItemElementConstraintInformation ieci = getItemElementConstraintInformation(freshDbItemElement); 
@@ -137,7 +143,25 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
                     throw new CdbException("Cannot update item element " + itemElement + " due to constraints not met. Please reload the item details page and try again.");
                 }
             }
+            
+            //Verify if isRequred changed
+            Boolean originalIsRequired = freshDbItemElement.getIsRequired(); 
+            if (ObjectUtility.equals(originalIsRequired, itemElement.getIsRequired()) == false) {
+                Item parentItem = itemElement.getParentItem();
+                ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
+                itemController.finalizeItemElementRequiredStatusChanged(itemElement); 
+            }
         }        
+    }
+
+    @Override
+    protected void completeEntityUpdate(ItemElement itemElement) {
+        // Force update of constraint information. 
+        itemElement.setConstraintInformation(null);
+        
+        Item parentItem = itemElement.getParentItem();
+        ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
+        itemController.completeSuccessfulItemElementUpdate(itemElement); 
     }
 
     @Override
@@ -148,8 +172,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         if (ieci.isSafeToRemove() == false) {
             throw new CdbException("Cannot remove item element. Constrains not met.");
         }
-
-    }
+    }    
 
     @Override
     protected void completeEntityDestroy(ItemElement itemElement) {
@@ -200,6 +223,36 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
             
             current.setContainedItem(containedItem);
         }
+    }
+    
+    public void toggleIsRequiredForCurrent() {
+        if (current != null) {
+            Boolean isRequired = current.getTemporaryIsRequiredValue();            
+            current.setTemporaryIsRequiredValue(!isRequired);
+        }
+    }
+    
+    public String getIsRequiredButtonValueForCurrent() {
+        if (current != null) {
+            Boolean isRequired = current.getTemporaryIsRequiredValue();
+            if (isRequired) {
+                return "Yes";
+            } else {
+                return "No"; 
+            }
+        }
+        return null; 
+    }
+    
+    public void revertIsRequiredItemForCurrent() {
+        if (current != null) {
+            current.setTemporaryIsRequiredValue(null);
+        }
+    }
+    
+    public void submitIsRequiredValueForCurrent() {
+        current.setIsRequired(current.getTemporaryIsRequiredValue());
+        updateWithoutRedirect();
     }
 
     @Override
@@ -557,19 +610,33 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         filterBySortOrder = null;
     }
 
-    public String getDisplayRowColor(ItemElement itemElement) {
+    public String getDisplayRowStyle(ItemElement itemElement) {
+        List<String> rowStyles = new ArrayList<>(); 
+        
         if (displayItemElementRowColor != null && displayItemElementRowColor) {
             List<PropertyValue> propertyValueList = itemElement.getPropertyValueList();
             if (propertyValueList != null && propertyValueList.size() > 0) {
                 for (PropertyValue propertyValue : propertyValueList) {
                     if (propertyValue.getPropertyType().getName().equals(DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME)) {
                         String value = propertyValue.getValue();
-                        return value + "Row";
+                        rowStyles.add(value + "Row");
+                        break;  
                     }
                 }
             }
         }
-        return null;
+        
+        Boolean isRequired = itemElement.getIsRequired(); 
+        if (isRequired != null && isRequired == false) {
+            rowStyles.add("optionalElement"); 
+        }
+        
+        String style = ""; 
+        for (String currentStyle : rowStyles) {
+            style += currentStyle + " "; 
+        }
+        
+        return style;
     }
 
     public Boolean getDisplayItemElementRowColor() {
