@@ -115,6 +115,9 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private static transient Integer sortByPropertyTypeId = null;
     private transient TreeNode childItemElementListTreeTableRootNode = null;
     private transient ItemElementConstraintInformation constraintInformation; 
+    
+    // Helper variable used to ensure proper procedure is executed if the attribute changes. 
+    private transient Boolean temporaryIsRequiredValue = null; 
 
     public ItemElement() {
     }
@@ -173,12 +176,23 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.name = name;
     }
 
-    public Boolean getIsRequired() {
+    public Boolean getIsRequired() {        
         return isRequired;
     }
 
     public void setIsRequired(Boolean isRequired) {
         this.isRequired = isRequired;
+    } 
+
+    public Boolean getTemporaryIsRequiredValue() {
+        if (temporaryIsRequiredValue == null) {
+            temporaryIsRequiredValue = isRequired; 
+        }
+        return temporaryIsRequiredValue;
+    }
+
+    public void setTemporaryIsRequiredValue(Boolean temporaryIsRequiredValue) {
+        this.temporaryIsRequiredValue = temporaryIsRequiredValue;
     }
 
     public String getDescription() {
