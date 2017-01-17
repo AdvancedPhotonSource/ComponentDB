@@ -7,7 +7,8 @@ package gov.anl.aps.cdb.portal.constants;
 public enum InventoryBillOfMaterialItemStates {
         placeholder("placeholder"),
         existingItem("existingItem"),
-        newItem("newItem");
+        newItem("newItem"),
+        unspecifiedOptional("unspecifiedOptional"); 
 
         private String value;
 
