@@ -171,27 +171,77 @@ public class ItemDomainCatalogController extends ItemController {
     @Override
     public ItemElement createItemElement(Item item) {
         ItemElement itemElement = super.createItemElement(item); 
-                
-        List<Item> inventoryItems = item.getDerivedFromItemList(); 
+        itemElement.setIsRequired(true);
         itemElement.setDerivedFromItemElementList(new ArrayList<>());
+               
+        return itemElement; 
+    }
+    
+    protected void addInventoryElementsForEachInventoryItem(ItemElement catalogItemElement) {
+        // Get fresh db representation of parent item. 
+        Item parentItem = findById(catalogItemElement.getParentItem().getId()); 
+        
+        
+        List<Item> inventoryItems = parentItem.getDerivedFromItemList();                 
         for (Item inventoryItem : inventoryItems) {
+            // verify item element for the particular element needs to be created. 
+            if (inventoryItemContainsItemElementForCatalogElement(catalogItemElement, inventoryItem)) {
+                continue; 
+            } 
+            
             ItemController inventoryItemController = ItemController.findDomainControllerForItem(inventoryItem); 
             ItemElement inventoryItemElement = inventoryItemController.createItemElement(inventoryItem); 
-            inventoryItemElement.setDerivedFromItemElement(itemElement);
+            
+            inventoryItemElement.setDerivedFromItemElement(catalogItemElement);
             EntityInfo inventoryItemEntityInfo = inventoryItem.getEntityInfo(); 
             UserInfo inventoryItemOwner = inventoryItemEntityInfo.getOwnerUser(); 
             UserGroup inventoryOwnerGroup = inventoryItemEntityInfo.getOwnerUserGroup(); 
             inventoryItemElement.getEntityInfo().setOwnerUser(inventoryItemOwner);
             inventoryItemElement.getEntityInfo().setOwnerUserGroup(inventoryOwnerGroup);
-            itemElement.getDerivedFromItemElementList().add(inventoryItemElement); 
+            catalogItemElement.getDerivedFromItemElementList().add(inventoryItemElement); 
+        }       
+    }
+    
+    private boolean inventoryItemContainsItemElementForCatalogElement(ItemElement catalogElement, Item inventoryItem) {
+        for (ItemElement inventoryElement : inventoryItem.getItemElementDisplayList()) {
+            if (inventoryElement.getDerivedFromItemElement().getId().equals(catalogElement.getId())) {
+                return true; 
+            }
         }
-        
-        return itemElement; 
+        return false; 
     }
 
     @Override
     public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
         return new CatalogItemElementConstraintInformation(itemElement);
+    } 
+
+    @Override
+    public ItemElement finalizeItemElementRequiredStatusChanged(ItemElement itemElement) throws CdbException {
+        itemElement = super.finalizeItemElementRequiredStatusChanged(itemElement); 
+        
+        if (itemElement.getIsRequired() == false) {
+            ItemElementController itemElementController = ItemElementController.getInstance(); 
+            
+            List<ItemElement> derivedItemElementList = new ArrayList<>(); 
+            derivedItemElementList.addAll(itemElement.getDerivedFromItemElementList());
+            
+            for (ItemElement inventoryItemElement : derivedItemElementList) {
+                // Verify safe to remove
+                ItemElementConstraintInformation ieci; 
+                ieci = itemElementController.getItemElementConstraintInformation(inventoryItemElement); 
+                if (ieci.isSafeToRemoveSelf()) {
+                    itemElementController.destroy(inventoryItemElement);
+                    // Will need to perform destroy on each inventory element. 
+                    itemElement.getDerivedFromItemElementList().remove(inventoryItemElement); 
+                }
+            }
+            itemElementController.setCurrent(itemElement);
+        } else {
+            // Item is required therefore should be part of each inventory item. 
+            addInventoryElementsForEachInventoryItem(itemElement);
+        }
+        return itemElement;
     }
     
     @Override
@@ -208,6 +258,22 @@ public class ItemDomainCatalogController extends ItemController {
         for (ItemElement itemElement : item.getItemElementDisplayList()) {
             if (itemElement.getContainedItem() == null) {
                 throw new CdbException("No item specified for element: " + itemElement.getName());
+            }
+        }
+    }   
+
+    @Override
+    public void prepareEntityUpdate(Item item) throws CdbException {
+        super.prepareEntityUpdate(item); 
+        
+        for (ItemElement itemElement : item.getFullItemElementList()) {
+            if (itemElement.getId() == null) {
+                // New item
+                if (itemElement.getIsRequired()) {
+                    addInventoryElementsForEachInventoryItem(itemElement);
+                    // Force reload constraint info
+                    itemElement.setConstraintInformation(null);
+                }
             }
         }
     }

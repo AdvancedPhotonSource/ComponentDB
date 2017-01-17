@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:confirmDialog widgetVar="removeOptionalPartConfirmDialogWidget"
+                     message="You are about to delete an optional part from this assembly."
+                     header="Confirm removal of item element."                      
+                     severity="alert">
+        <p:commandButton value="Confirm Delete"
+                         onclick="removeOptionalPart()"
+                         oncomplete="PF('removeOptionalPartConfirmDialogWidget').hide()"
+                         icon="ui-icon-check"/>
+        <p:commandButton value="Close"
+                         oncomplete="PF('removeOptionalPartConfirmDialogWidget').hide()"
+                         icon="ui-icon-close"/>
+    </p:confirmDialog>
+
+
+</ui:composition>
+
+

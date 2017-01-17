@@ -49,7 +49,24 @@ See LICENSE file.
             <p:outputPanel rendered="#{itemElementObject.id == null}">
                 <ui:include src="../itemElementEditContainedValueObject.xhtml"/> 
             </p:outputPanel>
-        </p:column>      
+        </p:column>
+
+        <p:column headerText="Required">
+            <p:outputPanel rendered="#{itemElementObject.id == null}">                
+                <ui:include src="../itemElementEditIsRequiredValueObject.xhtml" />
+            </p:outputPanel>
+
+            <p:outputPanel rendered="#{itemElementObject.id != null}">
+                <ui:include src="../../../common/private/commonBooleanValue.xhtml">
+                    <ui:param name="booleanValue"
+                              value="#{itemElementObject.isRequired}" />
+                </ui:include>
+                <p:commandLink styleClass="ui-icon ui-icon-pencil" title="Edit"                                
+                               oncomplete="updateAndShowItemElementEditIsRequiredDialog()">
+                    <f:setPropertyActionListener value="#{itemElementObject}" target="#{itemElementController.current}"/>
+                </p:commandLink>
+            </p:outputPanel>                       
+        </p:column>
 
         <p:column sortBy="#{itemElementObject.sortOrder}" headerText="Sort Order"
                   rendered="#{itemElementController.displaySortOrder}">
@@ -77,13 +94,14 @@ See LICENSE file.
             </div>
             <ui:insert name="itemElementEditConstraintInformationDialog">
                 <ui:include src="../itemElementEditConstraintInformationDialog.xhtml" />
-            </ui:insert>
-            
+            </ui:insert> 
+
         </p:column>
     </p:dataTable>
-    
+
+    <ui:include src="../itemElementEditIsRequiredObjectDialog.xhtml" />
     <ui:include src="../itemElementEditContainedValueDialog.xhtml" />
-   
+
     <ui:include src="../../../item/private/itemSelectDialog.xhtml">
         <ui:param name="entityTypeName" value="#{itemElementController.entityTypeName}" />
         <ui:param name="selectionTarget" value="#{itemElementController.validContainedItemForCurrent}" />        
@@ -92,8 +110,8 @@ See LICENSE file.
         <ui:param name="selectionWithResetEnabled" value="#{true}" />
         <ui:param name="updateTarget" 
                   value="#{itemElementController.entityTypeName}EditListDataTable 
-                        itemElementEditContainedItemContentsPanel
-                        #{entityTypeName}ItemSelectDialog" />
+                  itemElementEditContainedItemContentsPanel
+                  #{entityTypeName}ItemSelectDialog" />
         <ui:param name="selectionValueWithReset" value="#{currentItemController.getSelectedObjectAndReset()}" />
     </ui:include>
 

@@ -37,6 +37,8 @@ See LICENSE file.
         <ui:param name="viewName" value="BOMEdit"/>
         <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />
     </ui:include>
+    
+    <ui:include src="itemDomainInventoryBillOfMaterialsOptionalRemovalConfirmDialog.xhtml" />
 
     <p:remoteCommand name="prepareEditInventoryItem"
                      onstart="PF('loadingDialog').show()"

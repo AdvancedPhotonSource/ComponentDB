@@ -47,11 +47,21 @@ See LICENSE file.
                                         <ui:param name="viewName" value="placeholder"/>
                                     </ui:include>
                                 </p:treeNode>
+                                <p:treeNode rendered="#{itemDomainInventoryController.showOptionalPartsInBom}"
+                                            type="unspecifiedOptional" icon="ui-icon-radio-off" >
+                                    <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                                        <ui:param name="viewName" value="unspecifiedOptional"/>
+                                    </ui:include>
+                                </p:treeNode>
                                 <p:treeNode>
                                     <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml"/>
                                 </p:treeNode>
                             </p:tree>
                         </p:panel>
+                        <p:commandButton value="#{itemDomainInventoryController.showOptionalPartsInBom ? 'Hide' : 'Show'} Optional"
+                                         update="#{fullUpateTarget}"
+                                         action="#{itemDomainInventoryController.toggleShowOptionalItems()}"
+                                         rendered="#{itemDomainInventoryController.currentItemBOMTreeHasOptionalItems}"/>
                     </p:column>
                     <p:column styleClass="panelGridBorderedCell">
                         <p:outputPanel rendered="#{itemDomainInventoryController.selectedItemBOMTreeNode != null}">                       
@@ -70,8 +80,6 @@ See LICENSE file.
                 </p:row>
             </p:panelGrid>                       
         </p:outputPanel>
-
-
 
         <p:outputPanel rendered="#{itemDomainInventoryController.currentHasPartsToDisplay == false}">
             <ui:include src="itemDomainInventoryBillOfMaterialsEditPanel.xhtml">

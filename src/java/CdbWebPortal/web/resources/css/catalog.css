@@ -79,6 +79,10 @@ input, textarea {
     color: wheat; 
 }
 
+.optionalElement {
+    color: #808080; 
+}
+
 .ui-dialog {
     background: #F7F7F2; 
 }

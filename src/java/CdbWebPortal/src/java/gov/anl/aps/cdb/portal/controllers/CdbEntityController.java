@@ -1168,6 +1168,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected void prepareEntityUpdate(EntityType entity) throws CdbException {
     }
     
+    /**
+     * Perform any addition actions after an entity has been updated. 
+     * 
+     * @param entity 
+     */
+    protected void completeEntityUpdate(EntityType entity) {        
+    }
+    
     public void updateWithoutRedirect() {
         update(); 
     }
@@ -1182,6 +1190,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(current);
             EntityType updatedEntity = getEntityDbFacade().edit(current);
+            completeEntityUpdate(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + current.toString());
             resetListDataModel();

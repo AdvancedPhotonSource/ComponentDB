@@ -29,6 +29,8 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
+import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
+import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -133,6 +135,8 @@ public class ItemDomainInventoryController extends ItemController {
     private List<Item> newItemsToAdd = null;
     private TreeNode currentItemBOMListTree = null;
     private TreeNode selectedItemBOMTreeNode = null;
+    private boolean showOptionalPartsInBom = false;
+    private Boolean currentItemBOMTreeHasOptionalItems = null;
 
     protected ListDataModel filterViewLocationDataModel = null;
     protected Item filterViewLocationItemLoaded = null;
@@ -724,6 +728,8 @@ public class ItemDomainInventoryController extends ItemController {
         newItemsToAdd = null;
         currentItemBOMListTree = null;
         selectedItemBOMTreeNode = null;
+        showOptionalPartsInBom = false;
+        currentItemBOMTreeHasOptionalItems = null;
 
     }
 
@@ -812,6 +818,10 @@ public class ItemDomainInventoryController extends ItemController {
 
         if (bomItems != null) {
             for (InventoryBillOfMaterialItem bomItem : bomItems) {
+                if (bomItem.getState().equals(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue())) {
+                    continue;
+                }
+
                 // Check if current catalog item element already has an item element defined. 
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
                 ItemElement currentInventoryItemElement = null;
@@ -875,6 +885,13 @@ public class ItemDomainInventoryController extends ItemController {
         itemElement.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
     }
 
+    public boolean isRenderBomOptionalUnspecified(InventoryBillOfMaterialItem billOfMaterialsItem) {
+        if (billOfMaterialsItem != null) {
+            return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue());
+        }
+        return false;
+    }
+
     public boolean isRenderBomPlaceholder(InventoryBillOfMaterialItem billOfMaterialsItem) {
         if (billOfMaterialsItem != null) {
             return billOfMaterialsItem.getState().equals(InventoryBillOfMaterialItemStates.placeholder.getValue());
@@ -913,6 +930,83 @@ public class ItemDomainInventoryController extends ItemController {
         return isRenderItemBom(getCurrent());
     }
 
+    public void createOptionalBillOfMaterialsPart(InventoryBillOfMaterialItem bomItem) {
+        bomItem.setState(InventoryBillOfMaterialItemStates.placeholder.getValue());
+        currentItemBOMTreeHasOptionalItems = null; 
+    }
+
+    public void removeOptionalBillOfMaterialsPart(InventoryBillOfMaterialItem bomItem) {
+        // Removal could only happen for optional items 
+        if (bomItem.isOptional()) {
+            bomItem.setState(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue());
+            if (bomItem.getInventoryItemElement() != null) {
+                ItemElement inventoryItemElement = bomItem.getInventoryItemElement();
+                current.getFullItemElementList().remove(inventoryItemElement);
+                ItemElementController.getInstance().destroy(inventoryItemElement);
+            }
+            clearSelectedOptionalElementsIfNeeded();
+            currentItemBOMTreeHasOptionalItems = null; 
+        }
+    }
+
+    public void toggleShowOptionalItems() {
+        showOptionalPartsInBom = !showOptionalPartsInBom;
+        clearSelectedOptionalElementsIfNeeded();
+    }
+
+    public Boolean getCurrentItemBOMTreeHasOptionalItems() {
+        // TODO add support for optional elements in sub assamblies 
+        if (current != null && currentItemBOMTreeHasOptionalItems == null) {
+            currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current); 
+            if (!currentItemBOMTreeHasOptionalItems) {
+                for (Item item : newItemsToAdd) {
+                    currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(item);
+                    if (currentItemBOMTreeHasOptionalItems) {
+                        return true; 
+                    }
+                }
+            }
+
+        }
+        return currentItemBOMTreeHasOptionalItems;
+    }
+
+    private boolean itemHasOptionalsInBOM(Item item) {
+        List<InventoryBillOfMaterialItem> iBomiList = item.getInventoryDomainBillOfMaterialList();
+        for (InventoryBillOfMaterialItem iBomi : iBomiList) {
+            if (iBomi.isOptional()) {
+                if (iBomi.getState().equals(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue())) {
+                    return true;
+                }
+            }
+        }
+        return false; 
+    }
+
+    private void clearSelectedOptionalElementsIfNeeded() {
+        if (showOptionalPartsInBom == false && selectedItemBOMTreeNode != null) {
+            InventoryBillOfMaterialItem selectedBOM = (InventoryBillOfMaterialItem) selectedItemBOMTreeNode.getData();
+            if (selectedBOM.isOptional()
+                    && selectedBOM.getState().equals(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue())) {
+                selectedItemBOMTreeNode.setSelected(false);
+                selectedItemBOMTreeNode = null;
+            }
+        }
+    }
+
+    public boolean isShowOptionalPartsInBom() {
+        return showOptionalPartsInBom;
+    }
+
+    public boolean isBOMInventoryItemElementInDB(InventoryBillOfMaterialItem bomItem) {
+        ItemElement inventoryItemElement = bomItem.getInventoryItemElement();
+        if (inventoryItemElement != null) {
+            Integer itemElementId = inventoryItemElement.getId();
+            return itemElementId != null;
+        }
+        return false;
+    }
+
     public void changeBillOfMaterialsState(InventoryBillOfMaterialItem bomItem, String previousState) {
         // Update type of selected tree node. 
         selectedItemBOMTreeNode.setType(bomItem.getState());
@@ -926,11 +1020,16 @@ public class ItemDomainInventoryController extends ItemController {
 
                 bomItem.setInventoryItem(null);
 
+                Item catalogItem = bomItem.getCatalogItem();
+                if (catalogItem.getFullItemElementList().size() > 1) {
+                    // Assembly may have optionals
+                    currentItemBOMTreeHasOptionalItems = null;
+                }
+
                 if (newItem != null) {
                     for (int i = 0; i < newItemsToAdd.size(); i++) {
                         if (newItemsToAdd.get(i) == newItem) {
                             newItemsToAdd.remove(i);
-
                             break;
                         }
                     }
@@ -949,6 +1048,11 @@ public class ItemDomainInventoryController extends ItemController {
 
                 // The tree needs to be updated.
                 addNewChildrenToCurrentSelection();
+
+                if (catalogItem.getFullItemElementList().size() > 1) {
+                    // Assembly may have optionals
+                    currentItemBOMTreeHasOptionalItems = null;
+                }
             }
         }
     }
@@ -1055,29 +1159,29 @@ public class ItemDomainInventoryController extends ItemController {
             checkItem(item);
         }
         updateItemLocation(item);
-    }  
-    
+    }
+
     public String getInventoryItemAssemblyRowExpansionDisplayString(ItemElement itemElement) {
         if (itemElement != null) {
-            if (itemElement.getContainedItem() != null){
+            if (itemElement.getContainedItem() != null) {
                 return getItemDisplayString(itemElement.getContainedItem());
             }
-            
-            Item catalogItem = getCatalogItemForInventoryItemElement(itemElement); 
+
+            Item catalogItem = getCatalogItemForInventoryItemElement(itemElement);
             if (catalogItem != null) {
                 return catalogItem.getName() + "- [ ]";
             } else {
-                return "Undefined Part: " + itemElement.getDerivedFromItemElement().getName(); 
+                return "Undefined Part: " + itemElement.getDerivedFromItemElement().getName();
             }
         }
         return null;
     }
-    
+
     public Item getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
         if (inventoryItemElement != null) {
-            ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement(); 
+            ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
             if (derivedFromItemElement.getContainedItem() != null) {
-                return derivedFromItemElement.getContainedItem(); 
+                return derivedFromItemElement.getContainedItem();
             }
         }
         return null;
@@ -1150,6 +1254,11 @@ public class ItemDomainInventoryController extends ItemController {
         newItemsToAdd = null;
 
         return super.prepareCloneForItemToClone();
+    }
+
+    @Override
+    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
+        return new InventoryItemElementConstraintInformation(itemElement);
     }
 
     /**
