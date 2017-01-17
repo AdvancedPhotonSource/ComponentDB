@@ -8,12 +8,8 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
-
-    <p:outputPanel rendered="#{booleanValue}">
-        <h:outputText value="Yes" />
-    </p:outputPanel>
-    <p:outputPanel rendered="#{!booleanValue}">
-        <h:outputText value="No"  />
-    </p:outputPanel>
+    
+        <h:outputText value="Yes" rendered="#{booleanValue}"/>    
+        <h:outputText value="No" rendered="#{!booleanValue}" />
 
 </ui:composition>
