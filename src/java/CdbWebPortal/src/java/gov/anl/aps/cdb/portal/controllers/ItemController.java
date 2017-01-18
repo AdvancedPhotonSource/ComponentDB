@@ -1339,6 +1339,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         return new ItemElementConstraintInformation(itemElement);
     }
     
+    public void completeSucessfulDerivedFromItemCreation() {
+        if (current != null) {
+            // Item elements have outdated reference back to parent with new inventory item. 
+            // Will allow user to see the latest constraints on item elements.          
+            current = findById(current.getId()); 
+        }
+    }
+    
     public ItemElement finalizeItemElementRequiredStatusChanged(ItemElement itemElement) throws CdbException {
         return itemElement;        
     }
