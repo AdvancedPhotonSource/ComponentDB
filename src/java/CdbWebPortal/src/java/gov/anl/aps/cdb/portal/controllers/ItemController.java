@@ -467,10 +467,11 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public boolean isItemHasSimpleListView() {
         return false;
     }
-    
-    /** 
-     * TODO: Verify that list simple/advanced view is no longer needed. 
-     * @return 
+
+    /**
+     * TODO: Verify that list simple/advanced view is no longer needed.
+     *
+     * @return
      */
     public String getListViewSelected() {
         if (listViewSelected == null) {
@@ -517,7 +518,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         Item currentItem = getCurrent();
         if (currentItem != null) {
             if (getEntityDisplayItemCategory()) {
-                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();                                
+                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
 
                 if (lastKnownItemCategoryListForCurrentItem != null) {
                     if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
@@ -531,9 +532,9 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
                         }
                     }
                 } else {
-                    availableItemTypesForCurrentItem = null; 
+                    availableItemTypesForCurrentItem = null;
                 }
-                lastKnownItemCategoryListForCurrentItem = itemCategoryList;                
+                lastKnownItemCategoryListForCurrentItem = itemCategoryList;
 
                 if (availableItemTypesForCurrentItem == null) {
                     availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
@@ -919,10 +920,10 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     public final ItemController getSelectionController() {
         return this;
     }
-    
+
     public static ItemController findDomainControllerForItem(Item item) {
-        String domainName = item.getDomain().getName(); 
-        return findDomainController(domainName); 
+        String domainName = item.getDomain().getName();
+        return findDomainController(domainName);
     }
 
     public static ItemController findDomainController(String domainName) {
@@ -1294,7 +1295,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         itemSourceList.remove(itemSource);
         updateOnRemoval();
     }
-    
+
     protected ItemElement createItemElement(Item item) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
@@ -1303,59 +1304,59 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(item);
         itemElementList.add(itemElement);
-        itemElementsDisplayList.add(0, itemElement);        
-        return itemElement; 
+        itemElementsDisplayList.add(0, itemElement);
+        return itemElement;
     }
 
     public void prepareAddItemElement(Item item) {
-        createItemElement(item); 
+        createItemElement(item);
     }
-    
+
     public void completeSuccessfulItemElementRemoval(ItemElement itemElement) {
         if (current != null) {
-            Item parentItem = itemElement.getParentItem(); 
+            Item parentItem = itemElement.getParentItem();
             if (current.equals(parentItem)) {
                 removeItemElementFromItem(itemElement, current);
                 // Remove from related items to prevent a readd to db. 
-                List<ItemElement> derivedItemElements = itemElement.getDerivedFromItemElementList(); 
+                List<ItemElement> derivedItemElements = itemElement.getDerivedFromItemElementList();
                 for (ItemElement derivedItemElement : derivedItemElements) {
                     removeItemElementFromItem(derivedItemElement, derivedItemElement.getParentItem());
                 }
             }
         }
     }
-    
+
     public void completeSuccessfulItemElementUpdate(ItemElement itemElement) {
         if (current != null) {
-            Item parentItem = itemElement.getParentItem(); 
+            Item parentItem = itemElement.getParentItem();
             if (current.equals(parentItem)) {
                 // Resaving the item could cause revivial of the element prior update due to various connections. 
-                current = findById(current.getId()); 
+                current = findById(current.getId());
             }
         }
     }
-    
-    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {        
+
+    public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
         return new ItemElementConstraintInformation(itemElement);
     }
-    
+
     public void completeSucessfulDerivedFromItemCreation() {
         if (current != null) {
             // Item elements have outdated reference back to parent with new inventory item. 
             // Will allow user to see the latest constraints on item elements.          
-            current = findById(current.getId()); 
+            current = findById(current.getId());
         }
     }
-    
+
     public ItemElement finalizeItemElementRequiredStatusChanged(ItemElement itemElement) throws CdbException {
-        return itemElement;        
+        return itemElement;
     }
 
     private void removeItemElementFromItem(ItemElement itemElement, Item item) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         itemElementList.remove(itemElement);
-        itemElementsDisplayList.remove(itemElement);        
+        itemElementsDisplayList.remove(itemElement);
     }
 
     public void saveItemElementList() {
@@ -2665,7 +2666,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             throw new CdbException("Item is part of an assembly.");
         }
     }
-       
+
     protected ItemController getItemItemController(Item item) {
         return findDomainController(getItemDomainName(item));
     }
@@ -2705,15 +2706,30 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         }
 
         checkItemUniqueness(item);
+        checkItemElementsForItem(item);
+    }
 
+    protected void checkItemElementsForItem(Item item) throws CdbException {
         item.resetItemElementDisplayList();
+        List<String> elementNames = new ArrayList<>();
         for (ItemElement itemElement : item.getItemElementDisplayList()) {
             if (itemElement.getName() == null || itemElement.getName().isEmpty()) {
                 throw new CdbException("Item element name cannot be empty.");
             }
+            String itemElementName = itemElement.getName();
+            if (elementNames.contains(itemElementName)) {
+                throw new CdbException("Element names must be unique within their assembly. '" + itemElementName + "' is repeated."); 
+            }
+            
+            elementNames.add(itemElement.getName());
         }
         // Throws exception if a tree cannot be generated due to circular reference. 
-        ItemElementUtility.createItemElementRoot(item); 
+        ItemElementUtility.createItemElementRoot(item);
+    }
+    
+    public void checkItemElement(ItemElement itemElement) throws CdbException {
+        Item parentItem = itemElement.getParentItem(); 
+        checkItemElementsForItem(parentItem);        
     }
 
     protected String itemDomainToString(Item item) {
