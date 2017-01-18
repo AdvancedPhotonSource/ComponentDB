@@ -11,7 +11,8 @@ See LICENSE file.
     <p:confirmDialog widgetVar="removeOptionalPartConfirmDialogWidget"
                      message="You are about to delete an optional part from this assembly."
                      header="Confirm removal of item element."                      
-                     severity="alert">
+                     severity="alert"
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <p:commandButton value="Confirm Delete"
                          onclick="removeOptionalPart()"
                          oncomplete="PF('removeOptionalPartConfirmDialogWidget').hide()"
