@@ -27,6 +27,20 @@ class ItemDbApi(CdbDbApi):
         self.relationshipTypeHandler = RelationshipTypeHandler()
 
     @CdbDbApi.executeQuery
+    def getItemsOfDomain(self, domainName, **kwargs):
+        session = kwargs['session']
+        itemList = self.itemHandler.getItemsOfDomain(session, domainName)
+
+        return self.toCdbObjectList(itemList)
+
+    @CdbDbApi.executeQuery
+    def getItemsDerivedFromItem(self, derivedItemId, **kwargs):
+        session = kwargs['session']
+        itemList = self.itemHandler.getItemsDerivedFromItem(session, derivedItemId)
+
+        return self.toCdbObjectList(itemList)
+
+    @CdbDbApi.executeQuery
     def verifyPermissionsForWriteToItemElement(self, username, itemElementId, **kwargs):
         """
         Check permissions for a specific item element.
