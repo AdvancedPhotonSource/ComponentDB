@@ -130,6 +130,11 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     protected void prepareEntityUpdate(ItemElement itemElement) throws CdbException {
         super.prepareEntityUpdate(itemElement);
         
+        // Basic checks for updating an element must be verified with domain of item element. 
+        Item parentItem = itemElement.getParentItem();
+        ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
+        itemController.checkItemElement(itemElement);
+        
         if (itemElement.getId() != null) {
             ItemElement freshDbItemElement = findById(itemElement.getId()); 
             
@@ -146,9 +151,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
             
             //Verify if isRequred changed
             Boolean originalIsRequired = freshDbItemElement.getIsRequired(); 
-            if (ObjectUtility.equals(originalIsRequired, itemElement.getIsRequired()) == false) {
-                Item parentItem = itemElement.getParentItem();
-                ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
+            if (ObjectUtility.equals(originalIsRequired, itemElement.getIsRequired()) == false) {                
                 itemController.finalizeItemElementRequiredStatusChanged(itemElement); 
             }
         }        

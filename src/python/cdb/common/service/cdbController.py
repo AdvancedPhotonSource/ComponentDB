@@ -107,6 +107,7 @@ class CdbController(object):
         def decorate(*args, **kwargs):
             try:
                 response = func(*args, **kwargs)
+                cherrypy.response.headers["Access-Control-Allow-Origin"] = "*"
             except CdbException, ex:
                 cls.getLogger().error('%s' % ex)
                 cls.handleException(ex)

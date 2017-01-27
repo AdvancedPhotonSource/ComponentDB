@@ -12,15 +12,22 @@ See LICENSE file.
 
 #######################################################################
 from cdb.cdb_web_service.impl.logControllerImpl import LogControllerImpl
+from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
 from cdb.common.db.api.itemDbApi import ItemDbApi
 
 
 class ItemControllerImpl(CdbObjectManager):
+
+    CATALOG_ITEM_DOMAIN_NAME = "Catalog"
+    INVENTORY_ITEM_DOMAIN_NAME = "Inventory"
+    LOCATION_ITEM_DOMAIN_NAME = "LOCATION"
+
     def __init__(self):
         CdbObjectManager.__init__(self)
         self.itemDbApi = ItemDbApi()
         self.logControllerImpl = LogControllerImpl()
+        self.propertyDbApi = PropertyDbApi()
 
     def getItemById(self, itemId):
         return self.itemDbApi.getItemById(itemId)
@@ -53,3 +60,22 @@ class ItemControllerImpl(CdbObjectManager):
         selfElementId = selfElement.data['id']
 
         return self.logControllerImpl.getLogEntriesForItemElement(selfElementId)
+
+    def getLogEntriesForItemWithId(self, itemId):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+        return self.logControllerImpl.getLogEntriesForItemElement(selfElementId)
+
+    def getCatalogItems(self):
+        return self.itemDbApi.getItemsOfDomain(self.CATALOG_ITEM_DOMAIN_NAME)
+
+    def getItemsDerivedFromItemId(self, derivedFromItemId):
+        return self.itemDbApi.getItemsDerivedFromItem(derivedFromItemId)
+
+    def getPropertiesForItemId(self, itemId):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        return self.propertyDbApi.getPropertyValueListForItemElementId(selfElementId)
+
+

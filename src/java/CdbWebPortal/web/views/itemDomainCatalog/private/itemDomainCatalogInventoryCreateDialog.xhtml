@@ -33,9 +33,10 @@ See LICENSE file.
                              update="@form"
                              icon="ui-icon-cancel" />
 
-            <p:remoteCommand name="addInventoryItemSuccess"
+            <p:remoteCommand name="addInventoryItemSuccess"                             
+                             actionListener="#{itemDomainCatalogController.completeSucessfulDerivedFromItemCreation()}"
                              update="@form"
-                             onstart="PF('addInventoryItemDialogWidget').hide()" />           
+                             onstart="PF('addInventoryItemDialogWidget').hide()" />
         </f:facet>
     </p:dialog>
 

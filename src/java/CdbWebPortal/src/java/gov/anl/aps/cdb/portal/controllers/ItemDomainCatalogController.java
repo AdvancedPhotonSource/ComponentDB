@@ -253,14 +253,20 @@ public class ItemDomainCatalogController extends ItemController {
             // Verify that atleast one entity type is selected.
             checkEntityTypeSpecified(item);
         }
+        
+    } 
 
+    @Override
+    protected void checkItemElementsForItem(Item item) throws CdbException {
+        super.checkItemElementsForItem(item);
+        
         // Item element name check occurs prior to this check. 
         for (ItemElement itemElement : item.getItemElementDisplayList()) {
             if (itemElement.getContainedItem() == null) {
                 throw new CdbException("No item specified for element: " + itemElement.getName());
             }
         }
-    }   
+    }
 
     @Override
     public void prepareEntityUpdate(Item item) throws CdbException {

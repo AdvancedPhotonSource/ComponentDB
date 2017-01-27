@@ -87,8 +87,6 @@ CDB_DB_ENTITY_MAP = {
     'property_value' : (PropertyValue, {
         'propertyType' : { 'parentEntity' : PropertyType, 'lazy' : False }, 
         'enteredByUserInfo' : { 'parentEntity' : UserInfo, 'lazy' : False },
-        'propertyValueHistory' : { 'parentEntity' : PropertyValueHistory, 'lazy' : False },
-        'propertyMetadata' : { 'parentEntity' : PropertyMetadata, 'lazy' : False },
     }),
     'property_value_history' : (PropertyValueHistory, {
         'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 

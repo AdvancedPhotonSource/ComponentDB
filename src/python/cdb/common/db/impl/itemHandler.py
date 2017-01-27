@@ -5,7 +5,6 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 from cdb.common.exceptions.invalidSession import InvalidSession
-from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 
 from cdb.common.db.entities.itemItemProject import ItemItemProject
@@ -270,6 +269,32 @@ class ItemHandler(CdbDbEntityHandler):
         except NoResultFound, ex:
             raise ObjectNotFound('No %s with id %s exists.' % (entityDisplayName, id))
 
+    def getItemsOfDomain(self, session, domainName):
+        entityDisplayName = self._getEntityDisplayName(Item)
+        try:
+            query = session.query(Item).join(Domain)
+            query = query.filter(Domain.name==domainName)
+
+            dbItems = query.all()
+            return dbItems
+
+        except NoResultFound, ex:
+            raise ObjectNotFound("No %ss with domain %s found." % (entityDisplayName, domainName))
+
+    def getItemsDerivedFromItem(self, session, derivedItemId):
+        entityDisplayName = self._getEntityDisplayName(Item)
+
+        try:
+            query = session.query(Item).join(Domain)
+            query = query.filter(Item.derived_from_item_id==derivedItemId)
+
+            dbItems = query.all()
+            return dbItems
+        except NoResultFound, ex:
+            raise ObjectNotFound("No %ss derived from item id %s found." % (entityDisplayName, derivedItemId))
+
+
+
     def getItemsWithPropertyTypeName(self, session, propertyTypeName, itemDomainName = None, itemDerivedFromItemId = None, propertyValueMatch = None):
         entityDisplayName = self._getEntityDisplayName(Item)
         try:
@@ -287,6 +312,7 @@ class ItemHandler(CdbDbEntityHandler):
                 query = query.filter(PropertyValue.value == propertyValueMatch)
 
             if itemDomainName is not None:
+                query = query.join(Domain)
                 query = query.filter(Domain.name == itemDomainName)
 
             dbItems = query.all()
@@ -417,7 +443,7 @@ class ItemHandler(CdbDbEntityHandler):
         dbItemItemType.type = dbType
 
         session.add(dbItemItemType)
-        
+
         session.flush()
         self.logger.debug('Added type %s for item id %s' % (itemTypeName, itemId))
         return dbItemItemType

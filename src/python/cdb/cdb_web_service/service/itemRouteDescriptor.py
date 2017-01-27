@@ -62,6 +62,42 @@ class ItemRouteDescriptor:
                 'controller': itemController,
                 'action': 'getItemLogsByQrId',
                 'method': ['GET']
+            },
+
+            # Get properties for a particular item
+            {
+                'name': 'getPropertiesForItemByItemId',
+                'path': '%s/items/:(itemId)/propertiesByItemId' % contextRoot,
+                'controller': itemController,
+                'action': 'getPropertiesForItemByItemId',
+                'method': ['GET']
+            },
+
+            # Get log entries for a particular item
+            {
+                'name': 'getLogEntriesForItemById',
+                'path': '%s/items/:(itemId)/logsByItemId' % contextRoot,
+                'controller': itemController,
+                'action': 'getItemLogsById',
+                'method': ['GET']
+            },
+
+            # Get items derived from item
+            {
+                'name': 'getItemsDerivedFromItem',
+                'path': '%s/items/derivedFromItem/:(derivedFromItemId)' % contextRoot,
+                'controller': itemController,
+                'action': 'getItemsDerivedFromItem',
+                'method': ['GET']
+            },
+
+            # Get catalog items
+            {
+                'name': 'getCatalogItems',
+                'path': '%s/items/domain/catalog' % contextRoot,
+                'controller': itemController,
+                'action': 'getCatalogItems',
+                'method': ['GET']
             }
 
         ]
