@@ -67,13 +67,23 @@ public class ItemUtility {
      */
     public static List<ItemElementRelationship> getItemRelationshipList(Item item, String relationshipTypeName, boolean itemFirstInRelationship) {
         ItemElement selfElement = item.getSelfElement();
+        List<ItemElementRelationship> ierList = new ArrayList<>();
+        
+        List<ItemElementRelationship> ierListToInspect = null; 
 
         if (itemFirstInRelationship) {
-            return selfElement.getItemElementRelationshipList();
+            ierListToInspect = selfElement.getItemElementRelationshipList();
         } else {
-            return selfElement.getItemElementRelationshipList1();
+            ierListToInspect = selfElement.getItemElementRelationshipList1();
         }
-
+        
+        for (ItemElementRelationship ier : ierListToInspect) {
+            if (ier.getRelationshipType().getName().equals(relationshipTypeName)) {
+                ierList.add(ier); 
+            }
+        }
+        
+        return ierList; 
     }
 
     /**
