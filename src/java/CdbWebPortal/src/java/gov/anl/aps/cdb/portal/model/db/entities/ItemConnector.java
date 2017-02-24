@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemConnector.findById", query = "SELECT i FROM ItemConnector i WHERE i.id = :id"),
     @NamedQuery(name = "ItemConnector.findByLabel", query = "SELECT i FROM ItemConnector i WHERE i.label = :label"),
     @NamedQuery(name = "ItemConnector.findByQuantity", query = "SELECT i FROM ItemConnector i WHERE i.quantity = :quantity")})
-public class ItemConnector implements Serializable {
+public class ItemConnector extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -54,7 +55,7 @@ public class ItemConnector implements Serializable {
     @ManyToOne(optional = false)
     private Item item;
     @JoinColumn(name = "connector_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private Connector connector;
     @OneToMany(mappedBy = "firstItemConnector")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
@@ -66,7 +67,10 @@ public class ItemConnector implements Serializable {
     private List<ItemElementRelationship> itemElementRelationshipList;
     @OneToMany(mappedBy = "secondItemConnector")
     private List<ItemElementRelationship> itemElementRelationshipList1;
-
+    
+    private transient ItemConnector itemConnectorOfItemConnectedTo; 
+    private transient Item itemConnectedVia; 
+        
     public ItemConnector() {
     }
 
@@ -188,8 +192,31 @@ public class ItemConnector implements Serializable {
         return true;
     }
 
+    public ItemConnector getItemConnectorOfItemConnectedTo() {
+        return itemConnectorOfItemConnectedTo;
+    }
+
+    public void setItemConnectorOfItemConnectedTo(ItemConnector itemConnectorOfItemConnectedTo) {
+        this.itemConnectorOfItemConnectedTo = itemConnectorOfItemConnectedTo;
+    }
+
+    public Item getItemConnectedVia() {
+        return itemConnectedVia;
+    }
+
+    public void setItemConnectedVia(Item itemConnectedVia) {
+        this.itemConnectedVia = itemConnectedVia;
+    }
+    
     @Override
     public String toString() {
+        if (item != null) {
+            if (label != null) {
+                return label + " Connector for item: " + item; 
+            }
+            return "Connector for item: " + item; 
+        }
+        
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemConnector[ id=" + id + " ]";
     }
     
