@@ -7,7 +7,8 @@ package gov.anl.aps.cdb.portal.constants;
 public enum ItemDomainName {
         inventory("Inventory"),
         catalog("Catalog"),
-        location("Location");
+        location("Location"),
+        cable("Cable");
 
         private String value;
 
@@ -15,7 +16,7 @@ public enum ItemDomainName {
             this.value = value;
         }
 
-        public String getValue() {
+        public final String getValue() {
             return value;
         }
     };
