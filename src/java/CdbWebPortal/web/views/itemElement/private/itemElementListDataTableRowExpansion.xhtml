@@ -20,7 +20,7 @@ See LICENSE file.
                              sortBy="#{itemElementTreeObject.customizableSortOrder}"
                              resizableColumns="true"
                              liveResize="true"
-                             rowStyleClass="#{itemElementController.getDisplayRowColor(itemElementTreeObject)}">
+                             rowStyleClass="#{itemElementController.getDisplayRowStyle(itemElementTreeObject)}">
                     <p:column sortBy="#{itemElementTreeObject.name}" headerText="Element Name">
                         <h:outputText value="#{itemElementTreeObject.name}"/>
                     </p:column>
