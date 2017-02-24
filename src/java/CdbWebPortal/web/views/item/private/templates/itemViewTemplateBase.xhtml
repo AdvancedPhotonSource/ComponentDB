@@ -63,6 +63,15 @@ See LICENSE file.
                          collapsed="#{!entityController.displayLogList}">
                     <ui:insert name="itemLogs" />
                 </p:panel>
+                
+                <p:panel header="Connectors"
+                         id="#{entityTypeName}ViewConnectorsPanel"
+                         toggleable="true"
+                         rendered="#{entityController.entityDisplayItemConnectors}"
+                         collapsed="#{!entityController.displayItemConnectorList}">
+                    <ui:insert name="itemConnectors" />                
+                </p:panel>
+                         
 
                 <ui:insert name="additionalLeftItemPanels"/>
             </div>
