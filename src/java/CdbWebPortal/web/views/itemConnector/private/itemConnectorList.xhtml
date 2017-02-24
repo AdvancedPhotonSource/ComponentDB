@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="itemConnectorEntityTypeName" value="#{itemConnectorController.entityTypeName}" />
+
+    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+        <ui:param name="parentEntityController" value="#{entityController}"/>
+        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(domainEntityObject.entityInfo)}"/>
+        <ui:param name="childEntityController" value="#{itemConnectorController}"/>
+        <ui:param name="childEntityTypeName" value="#{itemConnectorEntityTypeName}"/>
+        <ui:param name="onCompleteAddButtonCommand" value="prepare#{entityTypeName}ConnectorAdd()" />
+    </ui:include>
+
+    <ui:include src="itemConnectorListDataTable.xhtml" />
+    
+    <p:remoteCommand name="prepare#{entityTypeName}ConnectorAdd"
+                     action="#{entityController.prepareAddItemConnector(itemObject)}"
+                     update="#{itemConnectorEntityTypeName}ListDataTable #{entityTypeName}#{itemConnectorEntityTypeName}AddDialog"
+                     oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').show()"
+                     />
+
+    <ui:include src="itemConnectorListCreateDialog.xhtml" />
+
+</ui:composition>
