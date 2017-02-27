@@ -17,6 +17,7 @@ from cdb.common.db.entities.propertyValue import PropertyValue
 from cdb.common.db.entities.propertyValueHistory import PropertyValueHistory
 from cdb.common.db.entities.itemElementProperty import ItemElementProperty
 from cdb.common.db.entities.propertyType import PropertyType
+from cdb.common.db.entities.propertyMetadata import PropertyMetadata
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from userInfoHandler import UserInfoHandler
 from propertyTypeHandler import PropertyTypeHandler
@@ -76,6 +77,18 @@ class PropertyValueHandler(CdbDbEntityHandler):
         self.logger.debug('Inserted %s id %s' % (entityDisplayName, dbPropertyValueHistory.id))
 
         return dbPropertyValueHistory
+
+    def getPropertyValueMetadata(self, session, propertyValueId):
+        self.logger.debug('Retrieving metadata for property value id %s' % id)
+
+        query = session.query(PropertyMetadata)
+        query = query.filter(PropertyMetadata.property_value_id == propertyValueId)
+
+        results = query.all()
+
+        return results
+
+
 
     def createPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable = None, isDynamic = None, displayValue = None, targetValue = None, enteredOnDateTime = None):
         enteredByDbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
