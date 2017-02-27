@@ -39,11 +39,12 @@ class SparePartsTask:
         self.logger = LoggingManager.getInstance().getLogger(self.__class__.__name__)
 
     def getPropertyMetadataDict(self, propertyValue):
-        propertyMetadataList = propertyValue.data['propertyMetadata']
+        propertyValueId = propertyValue.data['id']
+        propertyMetadataList = self.propertyDbApi.getPropertyMetadataForPropertyValueId(propertyValueId)
         propertyMetadataDict = {}
         for propertyMetadata in propertyMetadataList:
-            key = propertyMetadata.metadata_key
-            value = propertyMetadata.metadata_value
+            key = propertyMetadata.data['metadataKey']
+            value = propertyMetadata.data['metadataValue']
             propertyMetadataDict[key] = value
         return propertyMetadataDict
 
