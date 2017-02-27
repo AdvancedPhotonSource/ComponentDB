@@ -31,7 +31,11 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -114,7 +118,27 @@ import org.primefaces.model.menu.DefaultMenuModel;
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND (fiel.entityInfo.ownerUser.id = :ownerUserId "
             + "OR ieList = :list)"
-            + "AND i.domain.name = :domainName"),})
+            + "AND i.domain.name = :domainName")
+})
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+            name = "item.inventoryItemsWithConnectorType",
+            procedureName = "inventory_items_with_avaiable_connector",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "connector_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ), 
+                @StoredProcedureParameter(
+                        name = "is_male",
+                        mode = ParameterMode.IN,
+                        type = Boolean.class
+                )
+            }
+    ),})
+
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -189,6 +213,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false;
 
+    private transient List<ItemElementRelationship> itemCableConnectionsRelationshipList;
+    private transient List<Connector> itemAvaliableConnectorsList; 
+
     private transient boolean isCloned = false;
 
     private transient List<ItemElement> itemElementDisplayList;
@@ -207,7 +234,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient ItemController itemDomainController = null;
 
     private transient TreeNode assemblyRootTreeNode = null;
-    private transient TreeNode itemElementAssemblyRootTreeNode = null;
+    private transient TreeNode itemElementAssemblyRootTreeNode = null;  
 
     public Item() {
     }
@@ -990,6 +1017,22 @@ public class Item extends CdbDomainEntity implements Serializable {
                 && Objects.equals(other.getDerivedFromItem(), derivedFromItem)
                 && Objects.equals(other.getDomain(), domain)
                 && Objects.equals(other.getName(), name));
+    }
+
+    public void setItemCableConnectionsRelationshipList(List<ItemElementRelationship> itemCableConnectionsRelationshipList) {
+        this.itemCableConnectionsRelationshipList = itemCableConnectionsRelationshipList;
+    }
+
+    public List<ItemElementRelationship> getItemCableConnectionsRelationshipList() {
+        return itemCableConnectionsRelationshipList;
+    }
+
+    public List<Connector> getItemAvaliableConnectorsList() {
+        return itemAvaliableConnectorsList;
+    }
+
+    public void setItemAvaliableConnectorsList(List<Connector> itemAvaliableConnectorsList) {
+        this.itemAvaliableConnectorsList = itemAvaliableConnectorsList;
     }
 
     @Override
