@@ -79,7 +79,7 @@ class PropertyValueHandler(CdbDbEntityHandler):
         return dbPropertyValueHistory
 
     def getPropertyValueMetadata(self, session, propertyValueId):
-        self.logger.debug('Retrieving metadata for property value id %s' % id)
+        self.logger.debug('Retrieving metadata for property value id %s' % propertyValueId)
 
         query = session.query(PropertyMetadata)
         query = query.filter(PropertyMetadata.property_value_id == propertyValueId)
