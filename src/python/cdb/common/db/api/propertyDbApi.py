@@ -171,7 +171,7 @@ class PropertyDbApi(CdbDbApi):
     @CdbDbApi.executeQuery
     def getPropertyValueListForItemElementId(self, itemElementId, propertyTypeName = None, **kwargs):
         """
-        Get a property value list for a particualr item element id.
+        Get a property value list for a particular item element id.
 
         NOTE: Item properties are in their 'self element'.
         :param itemElementId:
@@ -182,6 +182,19 @@ class PropertyDbApi(CdbDbApi):
         session = kwargs['session']
         dbPropertyValues = self.propertyValueHandler.getPropertyValueListForItemElementId(session, itemElementId, propertyTypeName)
         return self.toCdbObjectList(dbPropertyValues)
+
+    @CdbDbApi.executeQuery
+    def getPropertyMetadataForPropertyValueId(self, propertyValueId, **kwargs):
+        """
+        Get a property value metadata list for a property value with a certain id.
+
+        :param propertyValueId:
+        :param kwargs:
+        :return: CdbObject List of resulting records
+        """
+        session = kwargs['session']
+        dbPropertyMetadata = self.propertyValueHandler.getPropertyValueMetadata(session, propertyValueId)
+        return self.toCdbObjectList(dbPropertyMetadata)
 
 #######################################################################
 # Testing.

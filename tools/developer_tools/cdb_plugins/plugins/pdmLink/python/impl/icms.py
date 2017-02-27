@@ -4,13 +4,16 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
+
 from cdb.common.utility.sslUtility import SslUtility
+import json
 
 '''
 ***Class that communicates with ICMS and retrieves revisions and url of a drawing
 '''
 
 from suds.client import Client
+from suds.sudsobject import asdict
 
 class Icms:
 
@@ -33,7 +36,23 @@ class Icms:
         # self.icmsSearchClass = Client(icmsSearchWsdlUrl, username=icmsUser, password=icmsPass)
 
         icmsInfoWsdlUrl = '%s/%s' % (self.icmsUrl, self.ICMS_INFO_WSDL_PATH)
+        icmsSearchWsdlUrl = '%s/%s' % (self.icmsUrl, self.ICMS_SEARCH_WSDL_PATH)
         self.icmsInfoClass = Client(icmsInfoWsdlUrl, username=icmsUser, password=icmsPass)
+        self.icmsSearchClass = Client(icmsSearchWsdlUrl, username=icmsUser, password=icmsPass)
+
+    @SslUtility.useUnverifiedSslContext
+    def performIcmsQuickSearch(self, keyword):
+        result = self.icmsSearchClass.service.QuickSearch(keyword)
+        json = self.___toJson(result)
+
+        return json
+
+    @SslUtility.useUnverifiedSslContext
+    def getDocInfo(self, keyword):
+        docInfo = self.icmsInfoClass.service.DocInfoByName(keyword)
+        json = self.___toJson(docInfo)
+
+        return json
 
     @SslUtility.useUnverifiedSslContext
     def getIcmsRevisions(self, keyword):
@@ -55,9 +74,30 @@ class Icms:
         result['version'] = str(icmsRevLabel[0:2])
         result['iteration'] = str(int(icmsRevLabel[2:]))
         return result
+
+    def ___toJson(self, sudsResponse):
+        return json.dumps(self.__convertSudsToDict(sudsResponse))
+
+    def __convertSudsToDict(self, sudsResponse):
+        out = {}
+        for k, v in asdict(sudsResponse).iteritems():
+            if hasattr(v, '__keylist__'):
+                out[k] = self.__convertSudsToDict(v)
+            elif isinstance(v, list):
+                out[k] = []
+                for item in v:
+                    if hasattr(item, '__keylist__'):
+                        out[k].append(self.__convertSudsToDict(item))
+                    else:
+                        out[k].append(item)
+            else:
+                out[k] = v
+        return out
     
 if __name__ == '__main__':
     icmsConnection = Icms()
+    print icmsConnection.performIcmsQuickSearch('quadrupole')
+    print icmsConnection.getDocInfo('D14100201-113160.ASM')
     print icmsConnection.getIcmsRevisions('D14100201-113160.ASM') 
     print icmsConnection.getIcmsRevisions('u2210203-101600.drw')
     print icmsConnection.getIcmsRevisions('U1340201-102000.DRW')

@@ -12,6 +12,7 @@ See LICENSE file.
 
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.cdb_web_service.plugins.pdmLink.service.pdmLinkController import PdmLinkController
+from cdb.cdb_web_service.plugins.pdmLink.service.icmsController import IcmsController
 
 
 class RouteDescriptor:
@@ -22,6 +23,7 @@ class RouteDescriptor:
 
         # Static instances shared between different routes
         pdmLinkController = PdmLinkController()
+        icmsController = IcmsController()
 
         # Define routes.
         routes = [
@@ -95,6 +97,24 @@ class RouteDescriptor:
                 'path': '%s/pdmLink/componentInfo/:(drawingNumber)' % contextRoot,
                 'controller': pdmLinkController,
                 'action': 'generateComponentInfo',
+                'method': ['GET']
+            },
+
+            # get ICMS doc info
+            {
+                'name': 'getICMSDocInfo',
+                'path': '%s/icms/docInfo/:(docName)' % contextRoot,
+                'controller': icmsController,
+                'action': 'getDocInfo',
+                'method': ['GET']
+            },
+
+            # perform quick search
+            {
+                'name': 'performICMSQuickSearch',
+                'path': '%s/icms/quickSearch/:(keyword)' % contextRoot,
+                'controller': icmsController,
+                'action': 'performQuickSearch',
                 'method': ['GET']
             }
 
