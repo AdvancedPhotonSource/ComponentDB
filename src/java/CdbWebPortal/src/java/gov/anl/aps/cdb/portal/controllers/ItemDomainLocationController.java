@@ -658,4 +658,9 @@ public class ItemDomainLocationController extends ItemController {
         return null;
     }
 
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false; 
+    }
+
 }

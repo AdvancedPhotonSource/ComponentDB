@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -36,7 +37,7 @@ import org.primefaces.event.FlowEvent;
 @SessionScoped
 public class ItemDomainCatalogController extends ItemController {
 
-    private final String DOMAIN_TYPE_NAME = "Catalog";
+    private final String DOMAIN_TYPE_NAME = ItemDomainName.catalog.getValue();
     private final String DERIVED_DOMAIN_NAME = "Inventory";
 
     /*
@@ -787,6 +788,11 @@ public class ItemDomainCatalogController extends ItemController {
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return DERIVED_DOMAIN_NAME;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return true; 
     }
 
 }

@@ -185,5 +185,10 @@ public class ItemGenericViewController extends ItemController {
     public String getDefaultDomainDerivedToDomainName() {
         return null;
     }
+
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return true; 
+    }
     
 }
