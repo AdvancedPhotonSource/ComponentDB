@@ -4,7 +4,6 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-from pydoc import doc
 
 from cdb.common.utility.sslUtility import SslUtility
 import json
