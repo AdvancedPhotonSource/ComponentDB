@@ -25,6 +25,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
@@ -222,6 +223,13 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      * @return
      */
     public abstract String getDefaultDomainName();
+    
+    /**
+     * Does Item connectors section need to be displayed for the item in domain. 
+     * 
+     * @return 
+     */
+    public abstract boolean getEntityDisplayItemConnectors(); 
 
     /**
      * Does item identifier 1 need to be displayed for the item in default
@@ -393,8 +401,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      */
     public abstract String getDefaultDomainDerivedToDomainName();
 
-    public Domain getDefaultDomain() {
-        return domainFacade.findByName(getDefaultDomainName());
+    public Domain getDefaultDomain() {       
+        Domain domain = domainFacade.findByName(getDefaultDomainName());
+        if (domain == null) {
+            domain = new Domain();
+            domain.setName(getDefaultDomainName());
+        }
+        return domain; 
+        
     }
 
     public String getNameTitle() {
@@ -1295,6 +1309,29 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         itemSourceList.remove(itemSource);
         updateOnRemoval();
     }
+    
+    public void prepareAddItemConnector(Item item) {
+        if (item != null) {
+            ItemConnectorController itemConnectorController = ItemConnectorController.getInstance(); 
+            ItemConnector itemConnector = itemConnectorController.createEntityInstance();             
+            itemConnector.setItem(item);
+            itemConnector = prepareItemConnectorForDomain(itemConnector); 
+            item.getItemConnectorList().add(itemConnector);
+            itemConnectorController.setCurrent(itemConnector);
+        }
+    }
+    
+    protected ItemConnector prepareItemConnectorForDomain(ItemConnector itemConnector) {        
+        return itemConnector; 
+    }
+    
+    public void revertItemConnectorListForCurrent() {
+        Item item = getCurrent();
+        if (item != null) {
+            Item dbItem = findById(item.getId());
+            item.setItemConnectorList(dbItem.getItemConnectorList());
+        }
+    }
 
     protected ItemElement createItemElement(Item item) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
@@ -1970,6 +2007,15 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
             return itemSourceList != null && !itemSourceList.isEmpty();
         }
         return false;
+    }
+    
+    public boolean getDisplayItemConnectorList() {
+        Item item = getCurrent();
+        if (item != null) {
+            List<ItemConnector> itemConnectorList = item.getItemConnectorList(); 
+            return itemConnectorList != null && !itemConnectorList.isEmpty();
+        }
+        return false; 
     }
 
     public boolean getDisplayItemElementList() {
