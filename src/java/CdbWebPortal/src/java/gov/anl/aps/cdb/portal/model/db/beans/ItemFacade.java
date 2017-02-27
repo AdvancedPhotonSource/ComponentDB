@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
@@ -20,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 
 /**
  *
@@ -122,7 +124,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public List<Item> findByDomainAndProject(String domainName, String projectName) {
         try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameAndProject")
@@ -156,7 +158,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public List<Item> findByDomainAndProjectOrderByQrId(String domainName, String projectName) {
         try {
             return (List<Item>) em.createNamedQuery("Item.findByDomainNameAndProjectOrderByQrId")
@@ -226,7 +228,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
             List<UserGroup> ownerUserGroupList, UserInfo ownerUserName, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, null, null, itemDomainName, ownerUserGroupList, ownerUserName);
     }
-    
+
     public List<Item> findByFilterViewItemProjectAttributes(ItemProject itemProject, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, null, null, itemDomainName, null, null);
     }
@@ -384,7 +386,7 @@ public class ItemFacade extends CdbEntityFacade<Item> {
         }
         return null;
     }
-    
+
     public List<Item> getItemsWithPropertyTypeAndProject(String domainName, Integer propertyTypeId, String projectName) {
         try {
             return (List<Item>) em.createNamedQuery("Item.findItemsWithPropertyTypeAndProject")
@@ -457,6 +459,19 @@ public class ItemFacade extends CdbEntityFacade<Item> {
                 return (List<Item>) namedQuery.getResultList();
             } catch (NoResultException ex) {
             }
+        }
+        return null;
+    }
+
+    public List<Item> getInventoryItemsWithAvailableConnectorType(ConnectorType connectorType, Boolean isMale) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.inventoryItemsWithConnectorType");
+            query.setParameter("connector_type_id", connectorType.getId());
+            query.setParameter("is_male", isMale); 
+            List<Item> itemList = query.getResultList();
+            
+            return itemList;
+        } catch (NoResultException ex) {
         }
         return null;
     }
