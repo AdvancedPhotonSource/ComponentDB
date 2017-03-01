@@ -18,11 +18,11 @@ See LICENSE file.
               header="Add Cable Connection"
               styleClass="viewTransparentBackgroundDialog"
               resizable="false">
-        <ui:param name="cableConnectionRelationship"
-                  value="#{itemDomainInventoryController.currentCableItemElementRelationship}" />
+        <ui:param name="connectionEditRendered"
+                  value="#{itemDomainInventoryController.connectionEditRendered}" />
 
         <p:outputPanel id="addInventoryCableConnectionDialogOutputPanel"
-                       rendered="#{cableConnectionRelationship != null}">
+                       rendered="#{connectionEditRendered}">
 
             <ui:param name="currentConnectionCable"
                       value="#{itemDomainInventoryController.currentConnectionCable}" />
@@ -31,9 +31,9 @@ See LICENSE file.
 
                 <h:outputLabel value="Port"/>    
                 <p:outputPanel rendered="#{itemDomainInventoryController.itemHasAvaialbeConnectors}">
-                    <p:selectOneListbox value="#{cableConnectionRelationship.firstItemConnector.connector}" 
-                                        var="connector"
-                                        styleClass="leftAlignedText">
+                    <p:selectOneListbox var="connector"
+                                        styleClass="leftAlignedText"
+                                        converter="connectorConverter">
                         <p:ajax listener="#{itemDomainInventoryController.handleConnectorSelectionEvent}" 
                                 update="addInventoryCableConnectionDialogOutputPanel"
                                 oncomplete="PF('addInventoryCableConnectionDialogWidget').initPosition()"/>
@@ -118,7 +118,7 @@ See LICENSE file.
                                rendered="#{currentConnectionCable != null}"/>
                 <p:outputPanel rendered="#{currentConnectionCable != null}">                        
                     <ui:param name="secondItemConnector"
-                              value="#{itemDomainInventoryController.selectedSecondConnector}"/>
+                              value="#{itemDomainInventoryController.selectedConnectorOfSecondItem}"/>
                     
                     <ui:param name="secondConnectorDefined"
                               value="#{itemDomainInventoryController.selectedSecondConnectorDefined()}" />
@@ -127,7 +127,7 @@ See LICENSE file.
                         <p:dataTable value="#{itemDomainInventoryController.inventoryItemsWithRequiredConnector}"
                                      var="inventoryItem"
                                      selectionMode="single"
-                                     selection="#{itemDomainInventoryController.selectedInventoryItemWithRequiredConnection}"
+                                     selection="#{itemDomainInventoryController.selectedSecondItemWithRequiredConnection}"
                                      rowKey="#{inventoryItem}">
                             <p:column headerText="Catalog Item">
                                 #{inventoryItem.derivedFromItem.name}
@@ -141,7 +141,7 @@ See LICENSE file.
                         </p:dataTable>
                     </p:outputPanel>
                     <p:outputPanel rendered="#{secondConnectorDefined}">
-                        <h:outputText value="#{secondItemConnector} of #{itemDomainInventoryController.selectedInventoryItemWithRequiredConnection}" />
+                        <h:outputText value="#{secondItemConnector} of #{itemDomainInventoryController.selectedSecondItemWithRequiredConnection}" />
                         <br/>
                         <p:commandButton value="Disconnect" 
                                      action="#{itemDomainInventoryController.disconnectSecondConnector()}"

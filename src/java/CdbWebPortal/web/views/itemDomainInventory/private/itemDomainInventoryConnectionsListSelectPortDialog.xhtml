@@ -18,12 +18,15 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               header="Select connector">
         <ui:param name="inventoryItemWithConnector"
-                  value="#{itemDomainInventoryController.selectedInventoryItemWithRequiredConnection}" />
-        <ui:param name="cableConnectionRelationship"
-                  value="#{itemDomainInventoryController.currentCableItemElementRelationship}" />
-        <p:outputPanel rendered="#{inventoryItemWithConnector != null and cableConnectionRelationship != null}">
-            <p:selectOneListbox value="#{itemDomainInventoryController.selectedSecondConnector}" 
+                  value="#{itemDomainInventoryController.selectedSecondItemWithRequiredConnection}" />
+        
+        <ui:param name="connectionEditRendered"
+                  value="#{itemDomainInventoryController.connectionEditRendered}" />
+        
+        <p:outputPanel rendered="#{inventoryItemWithConnector != null and connectionEditRendered}">
+            <p:selectOneListbox value="#{itemDomainInventoryController.selectedConnectorOfSecondItem}" 
                                 var="connector"
+                                converter="connectorConverter"
                                 styleClass="leftAlignedText">
                 <p:ajax update="@form:addInventoryCableConnectionDialogOutputPanel"
                         oncomplete="PF('addInventoryCableConnectionDialogWidget').initPosition();
