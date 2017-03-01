@@ -55,7 +55,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
     @ManyToOne(optional = false)
     private Item item;
     @JoinColumn(name = "connector_id", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
     private Connector connector;
     @OneToMany(mappedBy = "firstItemConnector")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
@@ -63,9 +63,9 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList1;
     @OneToMany(mappedBy = "itemConnector")
     private List<ItemResource> itemResourceList;
-    @OneToMany(mappedBy = "firstItemConnector")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemConnector")
     private List<ItemElementRelationship> itemElementRelationshipList;
-    @OneToMany(mappedBy = "secondItemConnector")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondItemConnector")
     private List<ItemElementRelationship> itemElementRelationshipList1;
     
     private transient ItemConnector itemConnectorOfItemConnectedTo; 
