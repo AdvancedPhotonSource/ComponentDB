@@ -196,7 +196,7 @@ public class ConnectorController implements Serializable {
         return ejbFacade.find(id);
     }
 
-    @FacesConverter(forClass = Connector.class)
+    @FacesConverter(value = "connectorConverter", forClass = Connector.class)
     public static class ConnectorControllerConverter implements Converter {
 
         @Override
