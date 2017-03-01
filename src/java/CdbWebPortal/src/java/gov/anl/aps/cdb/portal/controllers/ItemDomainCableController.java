@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -11,6 +12,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,6 +72,36 @@ public class ItemDomainCableController extends ItemController {
         preparePropertyTypeValueAdd(propertyType);
         
         return item; 
+    }
+    
+    public void destroyCableConnection(Item cableItem) {
+        // Cascade nature of item relationship list will remove all connection relationships automatically. 
+        this.setCurrent(cableItem);
+        this.destroy(); 
+    }
+
+    @Override
+    protected void checkItemUniqueness(Item item) throws CdbException {
+        // Cables are only unique by primary key (id). 
+    }
+    
+    public static List<ItemElementRelationship> getConnectionRelationshipList(Item item, boolean second) {
+        List<ItemElementRelationship> itemElementRelationshipList;
+        
+        if (second) {
+            itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList1(); 
+        }else {
+            itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
+        }
+        List<ItemElementRelationship> resultingList = new ArrayList<>(); 
+        
+        for(ItemElementRelationship ier : itemElementRelationshipList) {
+            if (ier.getRelationshipType().getName().equals(ItemElementRelationshipTypeNames.itemCableConnection.getValue())) {
+                resultingList.add(ier);
+            }
+        }
+        
+        return resultingList;
     }
     
     private PropertyType createRequiredPropertyTypeForCables() {
@@ -193,82 +227,82 @@ public class ItemDomainCableController extends ItemController {
 
     @Override
     public boolean getEntityDisplayItemIdentifier1() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemIdentifier2() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemType() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemCategory() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayQrId() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemGallery() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemLogs() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false;
     }
 
     @Override
     public boolean getEntityDisplayItemSources() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemProperties() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
-
+    
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemProject() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return false; 
     }
 
     @Override
