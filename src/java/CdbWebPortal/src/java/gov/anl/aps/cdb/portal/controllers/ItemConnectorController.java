@@ -72,30 +72,30 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
         }
         return "female";
     }
-    
+
     public String getItemConnectedToReprentationalString(ItemConnector itemConnector) {
         String result = "";
-        
+
         ItemConnector connectedTo = this.getItemConnectorOfItemConnectedTo(itemConnector);
         if (connectedTo != null) {
-            Item item = connectedTo.getItem();         
-            result += item.toString() + " "; 
+            Item item = connectedTo.getItem();
+            result += item.toString() + " ";
 
-            Connector connectorConnectedTo = itemConnector.getConnector(); 
-            String connectorName = connectorConnectedTo.getName(); 
+            Connector connectorConnectedTo = connectedTo.getConnector();
+            String connectorName = connectorConnectedTo.getName();
             if (connectorName != null) {
                 result += "(" + connectorName + " - ";
-            }else {
-                result += "("; 
+            } else {
+                result += "(";
             }
-            
+
             result += connectorConnectedTo.getConnectorType().getName() + ")";
         }
-        
-        return result;         
+
+        return result;
     }
 
-    private ItemElementRelationship findConnectionRelationship(List<ItemElementRelationship> ierList) {
+    public ItemElementRelationship findConnectionRelationship(List<ItemElementRelationship> ierList) {
         String relationshipTypeName = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
 
         for (ItemElementRelationship ittrIER : ierList) {
@@ -108,7 +108,10 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
     }
 
     public ItemConnector getItemConnectorOfItemConnectedTo(ItemConnector itemConnector) {
-        ItemConnector itemConnectorOfItemConnectedTo = itemConnector.getItemConnectorOfItemConnectedTo(); 
+        if (itemConnector == null) {
+            return null;
+        }
+        ItemConnector itemConnectorOfItemConnectedTo = itemConnector.getItemConnectorOfItemConnectedTo();
         if (itemConnectorOfItemConnectedTo == null) {
             // Connection from port via cable 
             if (itemConnector.getItemElementRelationshipList().size() > 0) {
@@ -117,16 +120,18 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
 
                 ItemConnector secondItemConnector = ier.getSecondItemConnector();
                 // Get cable connected to. 
-                ItemConnector anotherCableConnector = getConnectorOnOtherEndOfCable(secondItemConnector);
-                ItemConnector cableConnectorConnectedTo = getItemConnectorOfItemConnectedTo(anotherCableConnector);
-                itemConnector.setItemConnectorOfItemConnectedTo(cableConnectorConnectedTo);
+                if (secondItemConnector != null) {
+                    ItemConnector anotherCableConnector = getConnectorOnOtherEndOfCable(secondItemConnector);
+                    ItemConnector cableConnectorConnectedTo = getItemConnectorOfItemConnectedTo(anotherCableConnector);
+                    itemConnector.setItemConnectorOfItemConnectedTo(cableConnectorConnectedTo);
+                }
             } // Connection from cable connector 
             else if (itemConnector.getItemElementRelationshipList1().size() > 0) {
                 List<ItemElementRelationship> ierList = itemConnector.getItemElementRelationshipList1();
                 ItemElementRelationship ier = findConnectionRelationship(ierList);
 
                 ItemConnector firstItemConnector = ier.getFirstItemConnector();
-                ItemConnector itemConnectorConnectedTo = firstItemConnector; 
+                ItemConnector itemConnectorConnectedTo = firstItemConnector;
                 itemConnector.setItemConnectorOfItemConnectedTo(itemConnectorConnectedTo);
             }
         }
@@ -152,19 +157,24 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
     }
 
     public Item getItemConnectedVia(ItemConnector itemConnector) {
-        Item itemConnectedVia = itemConnector.getItemConnectedVia(); 
-        
+        if (itemConnector == null) {
+            return null;
+        }
+        Item itemConnectedVia = itemConnector.getItemConnectedVia();
+
         if (itemConnectedVia == null) {
             if (itemConnector.getItemElementRelationshipList().isEmpty() == false) {
                 List<ItemElementRelationship> ierList = itemConnector.getItemElementRelationshipList();
                 ItemElementRelationship ier = findConnectionRelationship(ierList);
                 ItemConnector secondItemConnector = ier.getSecondItemConnector();
-                itemConnectedVia = secondItemConnector.getItem(); 
-                itemConnector.setItemConnectedVia(itemConnectedVia);
+                if (secondItemConnector != null) {
+                    itemConnectedVia = secondItemConnector.getItem();
+                    itemConnector.setItemConnectedVia(itemConnectedVia);
+                }
             }
             // Cable is not connected via therefore item element relationship list 1 is invalid.             
         }
-               
+
         return itemConnectedVia;
 
     }
