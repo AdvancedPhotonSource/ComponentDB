@@ -341,19 +341,32 @@ public class ItemDomainInventoryController extends ItemController {
             } else {
                 // This should not happen. 
                 SessionUtility.addErrorMessage("Error", "Cable was not created sucessfully.");
+                currentConnectionCable = null; 
             }
         }
+        
+        updateConnectorTypesForCurrentCable();       
 
-        // Second item connector is the cable. 
-        // currentItemConnectionRelationship.setSecondItemConnector(firstCableItemConnector);
-        // currentItemConnectionRelationship.setSecondItemElement(currentConnectionCable.getSelfElement());
-        firstCableItemConnector.getConnector().setConnectorType(connector.getConnectorType());
-        secondCableItemConnector.getConnector().setConnectorType(connector.getConnectorType());
-        firstCableItemConnector.getConnector().setIsMale(!connector.getIsMale());
-        secondCableItemConnector.getConnector().setIsMale(!connector.getIsMale());
-
-        loadAvailableInventoryItemListWithSecondItemConnector();
-
+    }
+    
+    public void updateConnectorTypesForCurrentCable() {
+        if (currentConnectionCable != null) {                        
+            boolean isDirect = ItemDomainCableController.getIsDirectConnectionForItem(currentConnectionCable); 
+            ConnectorType connectorType = selectedConnectorOfCurrentItem.getConnectorType(); 
+            boolean connectorGender =  selectedConnectorOfCurrentItem.getIsMale(); 
+            
+            firstCableItemConnector.getConnector().setConnectorType(connectorType);
+            secondCableItemConnector.getConnector().setConnectorType(connectorType);
+            firstCableItemConnector.getConnector().setIsMale(!connectorGender);
+            
+            if (isDirect) {                
+                secondCableItemConnector.getConnector().setIsMale(connectorGender);
+            } else {                                
+                secondCableItemConnector.getConnector().setIsMale(!connectorGender);
+            }
+            
+            loadAvailableInventoryItemListWithSecondItemConnector();
+        }
     }
 
     public void loadAvailableInventoryItemListWithSecondItemConnector() {
