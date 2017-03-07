@@ -40,6 +40,7 @@ See LICENSE file.
             <div>
                 <p:commandLink id="#{entityTypeName}PortConnectionsDeleteActionButton" 
                                styleClass="ui-icon ui-icon-carat-2-e-w" 
+                               rendered="#{isEntityWriteable}"
                                action="#{itemDomainInventoryController.disconnectPortConnection(cableConnectionRelationship)}"
                                title="Disconnect Connection"
                                update="@form">
