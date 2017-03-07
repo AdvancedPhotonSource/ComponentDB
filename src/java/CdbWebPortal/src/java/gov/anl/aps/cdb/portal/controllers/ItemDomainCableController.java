@@ -29,10 +29,11 @@ public class ItemDomainCableController extends ItemController {
     
     private final String DOMAIN_TYPE_NAME = ItemDomainName.cable.getValue();
     
-    private final String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
-    private final String CABLE_PROPERTY_LENGTH_KEY = "length"; 
-    private final String CABLE_PROPERTY_LENGTH_UNIT_KEY = "length unit"; 
-    private final List<String> CABLE_ALLOWED_LENGTH_UNITS = Arrays.asList("feet", "meters"); 
+    private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
+    private final static String CABLE_PROPERTY_LENGTH_KEY = "length"; 
+    private final static String CABLE_PROPERTY_LENGTH_UNIT_KEY = "length unit"; 
+    private final static String CABLE_PROPERTY_DIRECT_KEY = "is direct"; 
+    private final static List<String> CABLE_ALLOWED_LENGTH_UNITS = Arrays.asList("feet", "meters"); 
     
     private boolean setCableLengthAttribute; 
     
@@ -114,7 +115,7 @@ public class ItemDomainCableController extends ItemController {
         return propertyType; 
     }
     
-    private PropertyValue getInternalCablePropertyValue(Item cableItem) {
+    private static PropertyValue getInternalCablePropertyValue(Item cableItem) {
         List<PropertyValue> propertyValueList = cableItem.getPropertyValueList(); 
         for (PropertyValue propertyValue: propertyValueList) {
             if (propertyValue.getPropertyType().getName().equals(CABLE_INTERNAL_PROPERTY_TYPE)) {
@@ -150,6 +151,33 @@ public class ItemDomainCableController extends ItemController {
         }        
     }
     
+    public boolean getIsDirectConnectionForCurrent() {
+        return getIsDirectConnectionForItem(getCurrent()); 
+    }
+    
+    public static boolean getIsDirectConnectionForItem(Item item) {
+        PropertyValue propertyValue = getInternalCablePropertyValue(item); 
+        
+        if (propertyValue != null) {
+            PropertyMetadata value = propertyValue.getPropertyMetadataForKey(CABLE_PROPERTY_DIRECT_KEY);
+            
+            if (value != null) {
+                String metadataValue = value.getMetadataValue();
+                return Boolean.parseBoolean(metadataValue);
+            }
+        }
+        
+        return false; 
+    }
+    
+    public void setIsDirectConnectionForCurrent(boolean isDirectValue) {
+        PropertyValue propertyValue = getInternalCablePropertyValue(getCurrent()); 
+        
+        if (propertyValue != null) {
+            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_DIRECT_KEY, Boolean.toString(isDirectValue));
+        }
+    }
+    
     public String getUnitForCurrent() {
         return getUnitForItem(getCurrent()); 
     }
@@ -179,25 +207,29 @@ public class ItemDomainCableController extends ItemController {
     public String getConnectedViaString(Item item) {
         String result = "";
         if (item != null) {
-            List<ItemConnector> itemConnectorList = item.getItemConnectorList(); 
-            if (itemConnectorList.size() == 2) {
-                String firstConnectorType = itemConnectorList.get(0).getConnector().getConnectorType().getName(); 
-                String secondConnectorType = itemConnectorList.get(1).getConnector().getConnectorType().getName();
-                
-                if (firstConnectorType.equals(secondConnectorType)) {
-                    result += firstConnectorType + " "; 
-                } else {
-                    result += firstConnectorType + " to " + secondConnectorType + " "; 
+            if (getIsDirectConnectionForItem(item)) {
+                result = "Direct Connection"; 
+            } else {
+                List <ItemConnector> itemConnectorList = item.getItemConnectorList(); 
+                if (itemConnectorList.size() == 2) {
+                    String firstConnectorType = itemConnectorList.get(0).getConnector().getConnectorType().getName(); 
+                    String secondConnectorType = itemConnectorList.get(1).getConnector().getConnectorType().getName();
+
+                    if (firstConnectorType.equals(secondConnectorType)) {
+                        result += firstConnectorType + " "; 
+                    } else {
+                        result += firstConnectorType + " to " + secondConnectorType + " "; 
+                    }
                 }
-            }
-            
-            result += "Cable"; 
-            
-            double length = getLengthForItem(item); 
-            if (length > 0) {
-                String unit = getUnitForItem(item);
-                result += " (" + length + " " + unit + ")"; 
-            }
+
+                result += "Cable"; 
+
+                double length = getLengthForItem(item); 
+                if (length > 0) {
+                    String unit = getUnitForItem(item);
+                    result += " (" + length + " " + unit + ")"; 
+                }
+            }            
         }        
         
         return result; 
