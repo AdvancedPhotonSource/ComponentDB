@@ -46,10 +46,29 @@ See LICENSE file.
                 <p:outputPanel rendered="#{!itemDomainInventoryController.itemHasAvaialbeConnectors}">
                     Item does not have any more open ports available.
                 </p:outputPanel>
-                
-                <h:outputLabel value="Cable Length"
+
+                <h:outputLabel value="Direct Connection"
                                rendered="#{currentConnectionCable != null}"/>
-                <p:outputPanel rendered="#{currentConnectionCable != null}"
+                <p:outputPanel rendered="#{currentConnectionCable != null}">
+                    <p:selectBooleanButton offLabel="No" 
+                                           onLabel="Yes"
+                                           value="#{itemDomainCableController.isDirectConnectionForCurrent}"
+                                           onchange="directConnectionValueChanged()"
+                                           disabled="#{itemDomainInventoryController.selectedSecondConnectorDefined()}"/>
+                    
+                    <p:remoteCommand name="directConnectionValueChanged"
+                                     update="addInventoryCableConnectionDialogOutputPanel"
+                                     action="#{itemDomainInventoryController.updateConnectorTypesForCurrentCable()}"
+                                     oncomplete="PF('addInventoryCableConnectionDialogWidget').initPosition()"/>
+                    
+                    <ui:param name="renderCableInformation"
+                              value="#{!itemDomainCableController.isDirectConnectionForCurrent}" />
+
+                </p:outputPanel>
+
+                <h:outputLabel value="Cable Length"
+                               rendered="#{currentConnectionCable != null and renderCableInformation}"/>
+                <p:outputPanel rendered="#{currentConnectionCable != null and renderCableInformation}"
                                id="addInventoryCableConnectionCableLengthPanel">
                     <p:outputPanel rendered="#{itemDomainCableController.setCableLengthAttribute}" >
                         <p:panelGrid columns="2">
@@ -64,7 +83,7 @@ See LICENSE file.
                         </p:panelGrid>
                         <p:remoteCommand name="updateAddInventoryCableConnectionCableLengthPanel"
                                          update="addInventoryCableConnectionCableLengthPanel"/>
-                     
+
                     </p:outputPanel>
                     <p:outputPanel rendered="#{!itemDomainCableController.setCableLengthAttribute}" >
                         <p:commandButton value="Add length information"
@@ -72,13 +91,13 @@ See LICENSE file.
                                          update="addInventoryCableConnectionCableLengthPanel"/>                    
                     </p:outputPanel>
                 </p:outputPanel>
-                
+
 
                 <h:outputLabel value="First Cable Connector" 
-                               rendered="#{currentConnectionCable != null}"/>
+                               rendered="#{currentConnectionCable != null and renderCableInformation}"/>
 
                 <p:panelGrid columns="2"
-                             rendered="#{currentConnectionCable != null}">
+                             rendered="#{currentConnectionCable != null and renderCableInformation}">
                     <ui:include src="../../itemConnector/private/itemConnectorSimpleEditObject.xhtml">
                         <ui:param name="currentItemConnector"
                                   value="#{itemDomainInventoryController.firstCableItemConnector}"/> 
@@ -87,10 +106,10 @@ See LICENSE file.
                 </p:panelGrid>                                                        
 
                 <h:outputLabel value="Second Cable Connector"
-                               rendered="#{currentConnectionCable != null}"/>
+                               rendered="#{currentConnectionCable != null and renderCableInformation}"/>
 
                 <p:outputPanel id="secondItemConnectorSimpleEdit"
-                               rendered="#{currentConnectionCable != null}">                    
+                               rendered="#{currentConnectionCable != null and renderCableInformation}">
                     <p:panelGrid columns="2"
                                  id="secondCableConnectorTypeSimpleEditObject">
                         <ui:include src="../../itemConnector/private/itemConnectorSimpleEditObject.xhtml">
@@ -104,14 +123,14 @@ See LICENSE file.
                                blocked="#{itemDomainInventoryController.selectedSecondConnectorDefined()}">
                         Please disconnect connector to make changes.
                     </p:blockUI>
-                    
-                    
+
+
                     <p:remoteCommand name="secondConnectorChanged"
                                      update="secondItemConnectorSimpleEdit"
                                      onstart="PF('loadingDialog').show()"
                                      action="#{itemDomainInventoryController.loadAvailableInventoryItemListWithSecondItemConnector()}"
                                      oncomplete="updateAddInventoryCableConnectionDialogOutputPanel();
-                                                 PF('loadingDialog').hide()"/>
+                                     PF('loadingDialog').hide()"/>
                 </p:outputPanel>
 
                 <h:outputLabel value="Connected To"
@@ -119,10 +138,10 @@ See LICENSE file.
                 <p:outputPanel rendered="#{currentConnectionCable != null}">                        
                     <ui:param name="secondItemConnector"
                               value="#{itemDomainInventoryController.selectedConnectorOfSecondItem}"/>
-                    
+
                     <ui:param name="secondConnectorDefined"
                               value="#{itemDomainInventoryController.selectedSecondConnectorDefined()}" />
-                                        
+
                     <p:outputPanel rendered="#{!secondConnectorDefined}">
                         <p:dataTable value="#{itemDomainInventoryController.inventoryItemsWithRequiredConnector}"
                                      var="inventoryItem"
@@ -144,15 +163,15 @@ See LICENSE file.
                         <h:outputText value="#{secondItemConnector} of #{itemDomainInventoryController.selectedSecondItemWithRequiredConnection}" />
                         <br/>
                         <p:commandButton value="Disconnect" 
-                                     action="#{itemDomainInventoryController.disconnectSecondConnector()}"
-                                     oncomplete="updateAddInventoryCableConnectionDialogOutputPanel()"
-                                     icon="ui-icon-carat-2-e-w"/>
+                                         action="#{itemDomainInventoryController.disconnectSecondConnector()}"
+                                         oncomplete="updateAddInventoryCableConnectionDialogOutputPanel()"
+                                         icon="ui-icon-carat-2-e-w"/>
                     </p:outputPanel>                   
-                    
+
                 </p:outputPanel>
             </p:panelGrid>
         </p:outputPanel>         
-        
+
         <p:remoteCommand name="updateAddInventoryCableConnectionDialogOutputPanel"
                          update="addInventoryCableConnectionDialogOutputPanel" />
 
@@ -165,7 +184,7 @@ See LICENSE file.
             <p:commandButton label="Cancel" icon="ui-icon-arrowreturnthick-1-w"
                              value="Cancel"
                              oncomplete="PF('addInventoryCableConnectionDialogWidget').hide()"/>
-            
+
             <p:remoteCommand name="onSuccessfulSaveConnectionInformation"
                              onstart="PF('addInventoryCableConnectionDialogWidget').hide()"
                              update="@form" />
