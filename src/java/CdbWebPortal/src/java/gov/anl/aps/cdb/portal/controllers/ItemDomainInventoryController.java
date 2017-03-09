@@ -392,8 +392,6 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     public void saveConnectionInformation(String onSuccessCommand) {
-        ItemElement secondSelfElement;
-
         if (selectedConnectorOfCurrentItem == null) {
             SessionUtility.addErrorMessage("Could not create connection", "Please select a connector.");
             return;
@@ -490,11 +488,12 @@ public class ItemDomainInventoryController extends ItemController {
     }
 
     public void disconnectPortConnection(ItemElementRelationship cableConnectionRelationship) {
-        ItemConnector firstConnector = cableConnectionRelationship.getFirstItemConnector();
+        ItemConnector firstInventoryConnector = cableConnectionRelationship.getFirstItemConnector();
 
-        if (firstConnector != null) {
+        if (firstInventoryConnector != null) {
             ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
-            Item cableItem = itemConnectorController.getItemConnectedVia(firstConnector);
+            Item cableItem = itemConnectorController.getItemConnectedVia(firstInventoryConnector);
+            ItemConnector secondInventoryConnector = itemConnectorController.getItemConnectorOfItemConnectedTo(firstInventoryConnector);
 
             if (cableItem != null) {
                 // Cable item holds the connectors that both items are connected by. 
@@ -502,6 +501,9 @@ public class ItemDomainInventoryController extends ItemController {
                 itemDomainCableController.destroyCableConnection(cableItem);
                 reloadCurrent();
             }
+            // Connectors contain no significant information unless they are connected. 
+            itemConnectorController.destroy(firstInventoryConnector);
+            itemConnectorController.destroy(secondInventoryConnector);
         }
     }
 
