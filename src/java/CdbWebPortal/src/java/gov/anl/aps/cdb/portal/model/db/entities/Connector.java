@@ -70,7 +70,7 @@ import javax.xml.bind.annotation.XmlTransient;
     )
 })
 
-public class Connector implements Serializable {
+public class Connector extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -78,7 +78,7 @@ public class Connector implements Serializable {
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = true)
-    @Size(min = 1, max = 64)
+    @Size(min = 0, max = 64)
     private String name;
     @Size(max = 256)
     private String description;
