@@ -10,8 +10,8 @@ See LICENSE file.
 
     <p:outputPanel>
         <ui:param name="renderNamedPort"
-                  value="#{connector.name != null}"/>
-
+                  value="#{connector.name != null and connector.name != ''}"/>
+        
         <p:outputPanel rendered="#{renderNamedPort}">
             #{connector.name}
         </p:outputPanel>
