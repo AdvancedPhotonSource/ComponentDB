@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemViews;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -1308,6 +1310,32 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
         List<ItemSource> itemSourceList = item.getItemSourceList();
         itemSourceList.remove(itemSource);
         updateOnRemoval();
+    }
+    
+    public void deleteItemConnector(ItemConnector itemConnector) {
+        Item item = getCurrent();
+        
+        ConnectorController connectorController = ConnectorController.getInstance(); 
+        Connector connector = itemConnector.getConnector(); 
+        if (connectorController.verifySafeRemovalOfConnector(connector)) {
+            List<ItemConnector> itemConnectorList = item.getItemConnectorList(); 
+            itemConnectorList.remove(itemConnector);
+            ItemConnectorController.getInstance().destroy(itemConnector); 
+        } else {
+            // Generate a userfull message
+            String message = "";
+            List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
+            for (ItemConnector ittrConnector : itemConnectorList) {
+                Item ittrItem = ittrConnector.getItem(); 
+                if (ittrItem.equals(item) == false) {
+                    if (ittrItem.getDomain().getName().equals(ItemDomainName.inventory.getValue())) {
+                        message = "Please check connections on inventory item: " + ittrItem.getName(); 
+                    }
+                }
+            }            
+            
+            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in inventory. " + message);
+        }
     }
     
     public void prepareAddItemConnector(Item item) {
