@@ -19,6 +19,8 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String HANDLER_NAME = "PDMLink";
     
     private static final String INFO_ACTION_COMMAND = "updatePdmLinkDrawingPropertyInfoDialog();";
+    
+    private static final String PROPERTY_EDIT_PAGE = "pdmLinkPropertyValueEditPanel";
 
     public PdmLinkPropertyTypeHandler() {
         super(HANDLER_NAME, DisplayType.INFO_ACTION);
@@ -32,6 +34,11 @@ public class PdmLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     @Override
     public void setInfoActionCommand(PropertyValueHistory propertyValueHistory){
         propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
+    }
+    
+    @Override
+    public String getPropertyEditPage() {
+        return PROPERTY_EDIT_PAGE;
     }
     
 }

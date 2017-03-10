@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="pdmLinkPropertyValueSearchDialog" 
+              widgetVar="pdmLinkPropertyValueSearchDialogWidget" 
+              header="Search for PDMLink Drawing" 
+              styleClass="viewTransparentBackgroundDialog"
+              onShow="#{pdmLinkDrawingBean.reloadPdmLinkImageStreamedContent()}"
+              modal="true"
+              resizable="false">
+        
+        <ui:param name="propertyValueObject"
+                  value="#{entityController.currentEditPropertyValue}" />
+
+        <ui:include src="pdmLinkDrawingDialogSearchBox.xhtml">
+            <ui:param name="updateTarget" value="pdmLinkDrawingSearchResultOutputPanel"/>
+            <ui:param name="parentDialogWidgetVar" value="pdmLinkPropertyValueSearchDialogWidget"/>
+        </ui:include>
+        
+        <p:outputPanel>
+            <p:outputPanel id="pdmLinkDrawingSearchResultOutputPanel">
+                <p:outputPanel rendered="#{pdmLinkDrawingBean.searchResults != null}">
+                    <p/>
+                    <p:outputPanel styleClass="borderAbove">
+                        <p/>
+                        
+                        <ui:include src="pdmLinkDrawingSearchResult.xhtml">
+                            <ui:param name="parentDialogWidgetVar" value="pdmLinkPropertyValueSearchDialogWidget" />
+                            <ui:param name="searchResultUpdate" value=":#{p:component('pdmLinkDrawingSearchResultOutputPanel')}" />
+                        </ui:include>
+                    </p:outputPanel>                                       
+
+                    <p:outputPanel styleClass="borderAbove"
+                                   rendered="#{pdmLinkDrawingBean.drawing != null and propertyValueObject != null}">
+                        <p/>
+                        <p:commandButton value="Set Property value to: #{pdmLinkDrawingBean.baseDrawingNumberForCurrentDrawing}"
+                                         update="#{propertyValueUpdateTarget}"
+                                         oncomplete="PF('pdmLinkPropertyValueSearchDialogWidget').hide()">
+                            <f:setPropertyActionListener target="#{propertyValueObject.value}"
+                                                         value="#{pdmLinkDrawingBean.baseDrawingNumberForCurrentDrawing}" />
+                        </p:commandButton>
+                        <p:commandButton value="Set Property value to: #{pdmLinkDrawingBean.drawingNumberForCurrentDrawing}"
+                                         update="#{propertyValueUpdateTarget}"
+                                         oncomplete="PF('pdmLinkPropertyValueSearchDialogWidget').hide()">
+                            <f:setPropertyActionListener target="#{propertyValueObject.value}"
+                                                         value="#{pdmLinkDrawingBean.drawingNumberForCurrentDrawing}" />
+                        </p:commandButton>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </p:outputPanel>
+        </p:outputPanel>
+    </p:dialog>
+    
+    <p:remoteCommand name="showPDMLinkPropertyValueSearchDialog"
+                     update="pdmLinkPropertyValueSearchDialog"
+                     oncomplete="PF('pdmLinkPropertyValueSearchDialogWidget').show()"
+                     action="#{pdmLinkDrawingBean.resetSearchResults()}" />
+                     
+
+    <ui:include src="pdmLinkHelpDialog.xhtml"/>
+
+</ui:composition>
+

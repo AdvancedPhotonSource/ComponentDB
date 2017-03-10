@@ -93,6 +93,23 @@ public class PdmLinkDrawingBean implements Serializable {
     public PdmLinkDrawing getDrawing() {
         return drawing;
     }
+    
+    public String getDrawingNumberForCurrentDrawing() {
+        return drawing.getNumber(); 
+    }
+    
+    public String getBaseDrawingNumberForCurrentDrawing() {
+        String drawingNumber = drawing.getNumber(); 
+        int charAt = drawingNumber.length(); 
+        for (int i = drawingNumber.length() -1; i > -1; i--) {
+            char currentChar = drawingNumber.charAt(i);
+            if (currentChar == '.') {
+                charAt = i; 
+                break; 
+            }
+        }
+        return drawingNumber.substring(0, charAt); 
+    }
 
     public void setDrawingNumber(String drawingName) {
         this.drawingNumber = drawingName;
@@ -573,6 +590,14 @@ public class PdmLinkDrawingBean implements Serializable {
     public void resetDrawingInfo() {
         drawing = null;
         pdmLinkImage = null;
+    }
+    
+    /**
+     * Reset search results 
+     */
+    public void resetSearchResults() {
+        searchResults = null; 
+        resetDrawingInfo();
     }
 
 }
