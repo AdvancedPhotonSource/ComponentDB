@@ -186,14 +186,16 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public ItemElementConstraintInformation getItemElementConstraintInformation(ItemElement itemElement) {
-        ItemElementConstraintInformation itemElementConstraintInformation;
-        itemElementConstraintInformation = itemElement.getConstraintInformation();
-        if (itemElementConstraintInformation == null) {
-            Item parentItem = itemElement.getParentItem();
-            if (parentItem != null) {
-                ItemController itemDomainController = ItemController.findDomainControllerForItem(parentItem);
-                itemElementConstraintInformation = itemDomainController.loadItemElementConstraintInformation(itemElement);
-                itemElement.setConstraintInformation(itemElementConstraintInformation);
+        ItemElementConstraintInformation itemElementConstraintInformation = null;
+        if (itemElement != null) {
+            itemElementConstraintInformation = itemElement.getConstraintInformation();
+            if (itemElementConstraintInformation == null) {
+                Item parentItem = itemElement.getParentItem();
+                if (parentItem != null) {
+                    ItemController itemDomainController = ItemController.findDomainControllerForItem(parentItem);
+                    itemElementConstraintInformation = itemDomainController.loadItemElementConstraintInformation(itemElement);
+                    itemElement.setConstraintInformation(itemElementConstraintInformation);
+                }
             }
         }
         return itemElementConstraintInformation;
