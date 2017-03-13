@@ -43,6 +43,7 @@ public class ItemDomainCatalogController extends ItemController {
     /*
      * Controller specific settings
      */
+    private static final String DisplayItemElementListItemIdentifier1SettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier1"; 
     private static final String DisplayCategorySettingTypeKey = "ItemDomainCatalog.List.Display.Category";
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainCatalog.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainCatalog.List.Display.CreatedOnDateTime";
@@ -84,7 +85,7 @@ public class ItemDomainCatalogController extends ItemController {
     private static final String FilterByPropertyValue4SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue4";
     private static final String FilterByPropertyValue5SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue5";
     private static final String FilterByTypeSettingTypeKey = "ItemDomainCatalog.List.FilterBy.Type";
-    private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCatalog.List.AutoLoad.FilterBy.Properties";
+    private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCatalog.List.AutoLoad.FilterBy.Properties";    
 
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCatalog.Help.ListPage.Display.Fragment";
 
@@ -111,6 +112,9 @@ public class ItemDomainCatalogController extends ItemController {
 
     private Boolean loadComponentInstanceRowExpansionPropertyValues = null;
     private Boolean displayComponentInstanceRowExpansion = null;
+    
+    // Set externally from item element controller
+    private Boolean displayItemElementListItemIdentifier1 = null; 
 
     private List<Item> inventorySparesList = null;
     private List<Item> inventoryNonSparesList = null;
@@ -515,6 +519,8 @@ public class ItemDomainCatalogController extends ItemController {
 
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
         displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
+        
+        displayItemElementListItemIdentifier1 = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementListItemIdentifier1SettingTypeKey).getDefaultValue()); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -579,6 +585,8 @@ public class ItemDomainCatalogController extends ItemController {
 
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
+        
+        displayItemElementListItemIdentifier1 = settingEntity.getSettingValueAsBoolean(DisplayItemElementListItemIdentifier1SettingTypeKey, displayItemElementListItemIdentifier1); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -663,6 +671,21 @@ public class ItemDomainCatalogController extends ItemController {
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
 
+    }
+    
+    @Override
+    public String getDisplayItemElementListItemIdentifier1Key() {
+        return DisplayItemElementListItemIdentifier1SettingTypeKey; 
+    }
+
+    @Override
+    public Boolean getDisplayItemElementListItemIdentifier1() {
+        return displayItemElementListItemIdentifier1; 
+    }
+
+    @Override
+    public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1) {
+        this.displayItemElementListItemIdentifier1 = displayItemElementListItemIdentifier1;
     }
 
     @Override

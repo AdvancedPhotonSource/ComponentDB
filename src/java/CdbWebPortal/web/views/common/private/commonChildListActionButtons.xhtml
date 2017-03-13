@@ -32,7 +32,9 @@ See LICENSE file.
                 <p:printer target="#{childEntityTypeName}ListDataTable"/>
                 <p:tooltip for="#{childEntityTypeName}ListPrintButton" value="Print list."/>
             </p:commandButton> 
-            <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" oncomplete="PF('#{customizeDisplayChildEntityTypeName}').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" 
+                             onstart="#{listCustomizeOnStartCommand}"
+                             oncomplete="PF('#{customizeDisplayChildEntityTypeName}').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
                 <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
             </p:commandButton>
             <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" 

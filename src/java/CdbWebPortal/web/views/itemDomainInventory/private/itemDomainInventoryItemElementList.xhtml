@@ -11,16 +11,13 @@ See LICENSE file.
     <ui:param name="renderEditButton" value="#{isEntityWriteable and itemDomainInventoryController.displayBOMEditButton()}"/>
 
     <ui:define name="listActionButtons">
-        <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
-            <ui:param name="parentEntityController" value="#{entityController}"/>
-            <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
-            <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
+        <ui:include src="../../itemElement/private/itemElementListActionButtons.xhtml">
+            <ui:param name="onCompleteEditButtonCommand" value="prepareEditInventoryItem()" />            
             <ui:param name="displayEditButton" value="#{renderEditButton}" />  
-            <ui:param name="onCompleteEditButtonCommand" value="prepareEditInventoryItem()" />
         </ui:include>
     </ui:define>
     <ui:define name="treeListActionButtons" >
-        <ui:include src="../../common/private/commonChildListTreeTableActionButtons.xhtml">
+        <ui:include src="../../itemElement/private/itemElementTreeListActionButtons.xhtml">
             <ui:param name="displayEditButton" value="#{renderEditButton}" />  
             <ui:param name="onCompleteEditButtonCommand" value="prepareEditInventoryItem()" />
         </ui:include>
