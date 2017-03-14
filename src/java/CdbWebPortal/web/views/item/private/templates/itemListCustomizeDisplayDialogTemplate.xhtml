@@ -85,5 +85,14 @@ See LICENSE file.
         
         <ui:insert name="additionalItemSpecificColumns" />
     </ui:define>
+    
+    <ui:define name="domainEntitySpecificOthers">
+        <p:selectBooleanCheckbox id="autoLoadListDataTableFilters"
+                                 value="#{entityController.autoLoadListFilterValues}"/>
+        
+        <p:outputLabel for="autoLoadListDataTableFilters" 
+                       value="Autoload filters on data table*"
+                       styleClass="dialogDataLabel"/>                       
+    </ui:define>
 
 </ui:composition>
