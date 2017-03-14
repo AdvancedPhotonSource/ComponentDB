@@ -91,10 +91,10 @@ public class ItemDomainInventoryController extends ItemController {
     private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainInventory.List.Display.PropertyTypeId5";
     private static final String DisplayQrIdSettingTypeKey = "ItemDomainInventory.List.Display.QrId";
     private static final String DisplaySerialNumberSettingTypeKey = "ItemDomainInventory.List.Display.SerialNumber";
-    private static final String DisplayItemProjectSettingTypeKey = "ItemDomainInventory.List.Display.Project";
-    private static final String DisplayItemEntityTypeSettingTypeKey = "ItemDomainInventory.List.Display.EntityTypes";
+    private static final String DisplayItemProjectSettingTypeKey = "ItemDomainInventory.List.Display.Project";   
     private static final String DisplayRowExpansionSettingTypeKey = "ItemDomainInventory.List.Display.RowExpansion";
     private static final String LoadRowExpansionPropertyValueSettingTypeKey = "ItemDomainInventory.List.Load.RowExpansionPropertyValue";
+    private static final String AutoLoadListFilterValuesSettingTypeKey = "ItemDomainInventory.List.Load.FilterDataTable"; 
     private static final String FilterByComponentSettingTypeKey = "ItemDomainInventory.List.FilterBy.Component";
     private static final String FilterByCreatedByUserSettingTypeKey = "ItemDomainInventory.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ItemDomainInventory.List.FilterBy.CreatedOnDateTime";
@@ -1494,6 +1494,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
         
         displayItemElementListItemIdentifier1 = Boolean.parseBoolean(settingTypeMap.get(DisplayItemElementListItemIdentifier1SettingTypeKey).getDefaultValue()); 
+        autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
     }
@@ -1562,6 +1563,7 @@ public class ItemDomainInventoryController extends ItemController {
         displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
         
         displayItemElementListItemIdentifier1 = settingEntity.getSettingValueAsBoolean(DisplayItemElementListItemIdentifier1SettingTypeKey, displayItemElementListItemIdentifier1); 
+        autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
 
         resetDomainEntityPropertyTypeIdIndexMappings();
 
@@ -1647,6 +1649,8 @@ public class ItemDomainInventoryController extends ItemController {
 
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
+        
+        settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
 
     }   
 
