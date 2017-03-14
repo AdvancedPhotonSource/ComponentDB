@@ -3,6 +3,9 @@
 -- See LICENSE file.
 --
 
+-- Please backup & recreate the tables for the db before running this script.
+-- Modification for the connections functionality exist in the create tables script. 
+
 -- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.2.0.sql` 
 
 select @domainId:=id
