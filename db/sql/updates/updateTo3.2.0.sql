@@ -3,6 +3,9 @@
 -- See LICENSE file.
 --
 
+-- Please backup & recreate the tables for the db before running this script.
+-- Modification for the connections functionality exist in the create tables script. 
+
 -- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.2.0.sql` 
 
 select @domainId:=id
@@ -15,6 +18,11 @@ where item.domain_id = @domainId;
 
 insert into setting_type (id, name, description, default_value) 
 values (2046, "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier1", "Display column for item identifier 1 in the item elements list.", "true");
+insert into setting_type (id, name, description, default_value)
+values (2047, "ItemDomainCatalog.List.Load.FilterDataTable","Automatically load list filter values in data table on page load.", "true"); 
 
 insert into setting_type (id, name, description, default_value) 
 values (3044, "ItemDomainInventory.ItemElementList.Display.ItemIdentifier1", "Display column for item identifier 1 in the item elements list.", "true");
+insert into setting_type (id, name, description, default_value)
+values (3045, "ItemDomainInventory.List.Load.FilterDataTable","Automatically load list filter values in data table on page load.", "true");
+
