@@ -47,7 +47,8 @@ See LICENSE file.
 
     <ui:define name="additionalLeftItemPanels">
         <p:panel header="Port Connections"
-                 toggleable="true">
+                 toggleable="true"
+                 collapsed="#{!itemDomainInventoryController.displayItemCableRelationshipList}">
             <ui:include src="private/itemDomainInventoryConnectionsList.xhtml" />
         </p:panel>
     </ui:define>

@@ -280,6 +280,14 @@ public class ItemDomainInventoryController extends ItemController {
         }
         return inventoryItem.getItemCableConnectionsRelationshipList();
     }
+    
+    public boolean getDisplayItemCableRelationshipList() {
+        if (getCurrent() != null) {
+            List<ItemElementRelationship> itemCableRelationshipList = getItemCableRelationshipList(getCurrent());
+            return itemCableRelationshipList != null && !itemCableRelationshipList.isEmpty();             
+        } 
+        return false; 
+    }
 
     public void createItemCableConnectionRelationshipForCurrent() {
         resetConnectorVairables();
