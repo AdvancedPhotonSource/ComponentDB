@@ -43,6 +43,8 @@ See LICENSE file.
                                rendered="#{isEntityWriteable}"
                                action="#{itemDomainInventoryController.disconnectPortConnection(cableConnectionRelationship)}"
                                title="Disconnect Connection"
+                               onstart="PF('loadingDialog').show()"
+                               oncomplete="PF('loadingDialog').hide()"
                                update="@form">
                     <p:tooltip for="#{entityTypeName}PortConnectionsDeleteActionButton" 
                                value="Disconnect."/>
