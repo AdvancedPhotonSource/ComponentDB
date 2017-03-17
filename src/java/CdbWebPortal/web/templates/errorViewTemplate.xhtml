@@ -9,10 +9,10 @@ See LICENSE file.
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-
+    
     <h:head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <h:outputStylesheet name="portal.css" library="css" />
+        <link href="../../resources/css/portal.css" rel="stylesheet" type="text/css"/>
         <link rel="icon" type="image/png" href="../../resources/images/anl.ico" />
         <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>
     </h:head>
@@ -107,21 +107,8 @@ See LICENSE file.
                 </ui:insert>
             </div>
         </ui:fragment>
-
-        <h:form id="loginForm">
-            <p:dialog id="loginDialog" styleClass="dialog" header="Login" widgetVar="loginDialogWidget">
-                <h:panelGrid styleClass="loginInput">
-                    <p:inputText id="username" value="#{loginController.username}" title="Username"/>
-                    <p:watermark for="username" value="Username"/>
-                    <p:password id="password" value="#{loginController.password}" title="Password"/>
-                    <p:watermark for="password" value="Password"/>
-
-                    <f:facet name="footer">
-                        <p:commandButton id="loginButton" value="Login" action="#{loginController.login}" oncomplete="PF('loginDialogWidget').hide()"/>
-                    </f:facet>
-                </h:panelGrid>
-            </p:dialog>
-        </h:form>
+        
+        <ui:include src="loginDialogTemplate.xhtml"/>
     </h:body>
 
 </html>
