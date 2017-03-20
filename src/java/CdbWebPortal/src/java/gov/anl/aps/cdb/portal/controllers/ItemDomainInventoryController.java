@@ -292,28 +292,10 @@ public class ItemDomainInventoryController extends ItemController {
     public void createItemCableConnectionRelationshipForCurrent() {
         resetConnectorVairables();
         connectionEditRendered = true;
-
-        /*
-        Item item = getCurrent();
-
-        
-        ItemElementRelationship currentItemConnectionRelationship;
-        currentItemConnectionRelationship = new ItemElementRelationship();
-
-        ItemElement selfElement = item.getSelfElement();
-        currentItemConnectionRelationship.setFirstItemElement(selfElement);
-
-        RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType();
-        currentItemConnectionRelationship.setRelationshipType(cableConnectionRelationshipType);
-        
-        // First item connector represents the inventory item. 
-        ItemConnector firstItemConnector = new ItemConnector();
-        firstItemConnector.setItem(item);
-        currentItemConnectionRelationship.setFirstItemConnector(firstItemConnector);
-        
-        currentConnectionCable = null;
-        this.currentItemConnectionRelationship = currentItemConnectionRelationship;
-         */
+    }
+    
+    public void cancelCreateItemCableConnectionRelationshipForCurrent() {
+        resetConnectorVairables();
     }
 
     public List<Connector> getAvailableConnectorListForCurrent() {
