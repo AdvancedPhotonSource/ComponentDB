@@ -180,10 +180,15 @@ See LICENSE file.
                              action="#{itemDomainInventoryController.saveConnectionInformation('onSuccessfulSaveConnectionInformation()')}"
                              update="addInventoryCableConnectionDialogOutputPanel"
                              rendered="#{itemDomainInventoryController.itemHasAvaialbeConnectors}" 
-                             icon="ui-icon-disk"/>
+                             icon="ui-icon-disk">
+                <p:resetInput target="addInventoryCableConnectionDialogOutputPanel"/> 
+            </p:commandButton>
             <p:commandButton label="Cancel" icon="ui-icon-arrowreturnthick-1-w"
                              value="Cancel"
-                             oncomplete="PF('addInventoryCableConnectionDialogWidget').hide()"/>
+                             action="#{itemDomainInventoryController.cancelCreateItemCableConnectionRelationshipForCurrent()}"
+                             oncomplete="PF('addInventoryCableConnectionDialogWidget').hide()">                
+                <p:resetInput target="addInventoryCableConnectionDialogOutputPanel"/> 
+            </p:commandButton>
 
             <p:remoteCommand name="onSuccessfulSaveConnectionInformation"
                              onstart="PF('addInventoryCableConnectionDialogWidget').hide()"
