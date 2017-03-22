@@ -22,6 +22,9 @@ See LICENSE file.
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+    
+    <p:remoteCommand autoRun="#{entityController.autoLoadListFilterValues}"
+                     oncomplete="PF('#{entityTypeName}ListDataTable#{viewName}Widget').filter();" />
 
     <p:dataTable id="#{entityTypeName}ListDataTable#{viewName}" 
                  widgetVar="#{entityTypeName}ListDataTable#{viewName}Widget"

@@ -22,7 +22,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="nameColumn" >
-        <p:column sortBy="#{itemElementObject.name}" headerText="Name"
+        <p:column sortBy="#{itemElementObject.name}" headerText="Element Name"
                   filterBy="#{itemElementObject.name}" filterMatchMode="contains"
                   filterValue="#{itemElementController.filterByName}"
                   filterable="#{filterable}"
@@ -31,7 +31,7 @@ See LICENSE file.
         </p:column>
     </ui:define>
 
-    <ui:define name="containedItemColumn">
+    <ui:define name="containedItemColumn">                
         <p:column headerText="Contained Item"
                   filterBy="#{itemElementObject.containedItem.name}"
                   sortBy="#{itemElementObject.containedItem.name}"
@@ -39,7 +39,20 @@ See LICENSE file.
                   filterable="#{filterable}">
             <h:outputText value="#{currentItemController.getItemElementContainedItemText(itemElementObject)}" />
         </p:column>
-    </ui:define>
+        
+        <ui:param name="containedItemItemIdentifier1"
+                  value="#{itemElementObject.containedItem.itemIdentifier1}" /> 
+        
+        <p:column id="containedItemItemIdentifier1"
+                  rendered="#{currentItemController.entityDisplayItemIdentifier1 and currentItemController.displayItemElementListItemIdentifier1}"
+                  headerText="#{currentItemController.itemIdentifier1Title}" 
+                  sortable="#{sortable}"
+                  filterable="#{filterable}"
+                  sortBy="#{containedItemItemIdentifier1}"
+                  filterBy="#{containedItemItemIdentifier1}">
+            <h:outputText value="#{containedItemItemIdentifier1}" />
+        </p:column>
+    </ui:define>        
 
     <ui:define name="isRequiredColumn">
         <p:column headerText="Required">

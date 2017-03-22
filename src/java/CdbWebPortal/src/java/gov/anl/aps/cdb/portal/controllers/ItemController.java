@@ -110,6 +110,7 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
     protected Boolean displayItemEntityTypes = null;
+    protected Boolean autoLoadListFilterValues = false; 
 
     protected Boolean displayItemListTreeView = null;
 
@@ -392,6 +393,18 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
      * @return
      */
     public abstract String getDefaultDomainDerivedToDomainName();
+    
+    public String getDisplayItemElementListItemIdentifier1Key() {
+        return null; 
+    }
+    
+    public Boolean getDisplayItemElementListItemIdentifier1() {
+        return null; 
+    }
+    
+    public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1){
+        
+    }
 
     public Domain getDefaultDomain() {
         return domainFacade.findByName(getDefaultDomainName());
@@ -2261,6 +2274,14 @@ public abstract class ItemController extends CdbDomainEntityController<Item, Ite
 
     public boolean isDisplayListDataModelScopePropertyFilterable() {
         return fetchFilterablePropertyValue(displayListDataModelScopePropertyTypeId);
+    }
+
+    public void setAutoLoadListFilterValues(Boolean autoLoadListFilterValues) {
+        this.autoLoadListFilterValues = autoLoadListFilterValues;
+    }
+
+    public Boolean getAutoLoadListFilterValues() {
+        return autoLoadListFilterValues;
     }
 
     @Override
