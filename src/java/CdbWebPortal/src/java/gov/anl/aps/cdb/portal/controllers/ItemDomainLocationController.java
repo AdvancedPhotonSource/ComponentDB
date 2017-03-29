@@ -8,8 +8,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
@@ -28,7 +30,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 
 @Named("itemDomainLocationController")
 @SessionScoped
-public class ItemDomainLocationController extends ItemController {
+public class ItemDomainLocationController extends ItemController<ItemDomainLocation, ItemDomainLocationFacade> {
 
     private final String ENTITY_TYPE_NAME = "Location";
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
@@ -46,10 +48,10 @@ public class ItemDomainLocationController extends ItemController {
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     @EJB
-    ItemFacade itemFacade;
-
-    @EJB
     DomainFacade domainFacade;
+    
+    @EJB
+    ItemDomainLocationFacade itemDomainLocationFacade; 
 
     public ItemDomainLocationController() {
         super();
@@ -71,7 +73,7 @@ public class ItemDomainLocationController extends ItemController {
 
     public FilterViewItemHierarchySelection getFilterViewLocationSelection() {
         if (filterViewLocationSelection == null) {
-            List<Item> locationTopLevel = getItemsWithoutParents();
+            List<Item> locationTopLevel = (List<Item>) (List<?>)getItemsWithoutParents();
             filterViewLocationSelection = new FilterViewItemHierarchySelection(locationTopLevel);
         }
         return filterViewLocationSelection;
@@ -81,8 +83,8 @@ public class ItemDomainLocationController extends ItemController {
         return getFilterViewLocationSelection().getFilterViewSelectionHierarchyList();
     }
 
-    public Item getFilterViewLocationLastSelection() {
-        return getFilterViewLocationSelection().getLowesetSelectionMade();
+    public ItemDomainLocation getFilterViewLocationLastSelection() {
+        return (ItemDomainLocation) getFilterViewLocationSelection().getLowesetSelectionMade();
     }
 
     @Override
@@ -97,9 +99,9 @@ public class ItemDomainLocationController extends ItemController {
      * @param locationItem
      * @return
      */
-    public static List<Item> getAllItemsLocatedInHierarchy(Item locationItem) {
+    public static List<ItemDomainInventory> getAllItemsLocatedInHierarchy(ItemDomainLocation locationItem) {
         List<Item> itemList = new ArrayList<>();
-        return getAllItemsLocatedInHierarchy(itemList, locationItem);
+        return (List<ItemDomainInventory>)(List<?>)getAllItemsLocatedInHierarchy(itemList, locationItem);
     }
 
     /**
@@ -110,7 +112,7 @@ public class ItemDomainLocationController extends ItemController {
      * @param locationItem
      * @return
      */
-    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, Item locationItem) {
+    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, ItemDomainLocation locationItem) {
         String relationshipToLocation = ItemElementRelationshipTypeNames.itemLocation.getValue();
         boolean isLocationItemFirst = false;
         List<Item> itemsInLocation = ItemUtility.getItemsRelatedToItem(locationItem, relationshipToLocation, isLocationItemFirst);
@@ -119,7 +121,7 @@ public class ItemDomainLocationController extends ItemController {
         List<ItemElement> itemElementList = locationItem.getItemElementDisplayList();
         if (itemElementList != null) {
             for (ItemElement itemElement : itemElementList) {
-                Item containedItem = itemElement.getContainedItem();
+                ItemDomainLocation containedItem = (ItemDomainLocation) itemElement.getContainedItem();
                 if (containedItem != null) {
                     getAllItemsLocatedInHierarchy(itemList, containedItem);
                 }
@@ -143,9 +145,9 @@ public class ItemDomainLocationController extends ItemController {
      * style will be applied to the location that lead to the lowest location.
      * @return
      */
-    public DefaultMenuModel generateLocationMenuModel(String baseNodeName, String setLocationController, String setLocationMethod, Item lowestLocation) {
+    public DefaultMenuModel generateLocationMenuModel(String baseNodeName, String setLocationController, String setLocationMethod, ItemDomainLocation lowestLocation) {
         DefaultMenuModel generatedMenuModel = new DefaultMenuModel();
-        List<Item> locationHierarchyList = null;
+        List<ItemDomainLocation> locationHierarchyList = null;
         if (lowestLocation != null) {
             locationHierarchyList = generateLocationHierarchyList(lowestLocation);
         }
@@ -171,9 +173,9 @@ public class ItemDomainLocationController extends ItemController {
      * @param locationHierarchy - Apply location selected style to menu items in
      * the list.
      */
-    private void generateLocationMenuModel(DefaultSubMenu locationSubmenu, TreeNode locationTreeNode, String setLocationController, String setLocationMethod, List<Item> locationHierarchy) {
+    private void generateLocationMenuModel(DefaultSubMenu locationSubmenu, TreeNode locationTreeNode, String setLocationController, String setLocationMethod, List<ItemDomainLocation> locationHierarchy) {
         if (locationTreeNode.getData() != null) {
-            Item locationItem = (Item) locationTreeNode.getData();
+            ItemDomainLocation locationItem = (ItemDomainLocation) locationTreeNode.getData();
             boolean applyLocationActiveStyle = false; 
             if (locationHierarchy != null) {
                 if (locationHierarchy.contains(locationItem)) {
@@ -220,7 +222,7 @@ public class ItemDomainLocationController extends ItemController {
      * @param applayActiveLocationStyle - Apply location selected style to menu items in
      * the list.
      */
-    private void addLocationMenuItemToSubmenu(DefaultSubMenu submenu, Item locationItem, String setLocationController, String setLocationMethod, boolean applayActiveLocationStyle) {
+    private void addLocationMenuItemToSubmenu(DefaultSubMenu submenu, ItemDomainLocation locationItem, String setLocationController, String setLocationMethod, boolean applayActiveLocationStyle) {
         DefaultMenuItem locationMenuItem = new DefaultMenuItem();
         locationMenuItem.setValue(locationItem.getName());
 
@@ -384,10 +386,10 @@ public class ItemDomainLocationController extends ItemController {
         }
     }
 
-    public static List<Item> generateLocationHierarchyList(Item lowestLocationItem) {
+    public static List<ItemDomainLocation> generateLocationHierarchyList(ItemDomainLocation lowestLocationItem) {
         if (lowestLocationItem != null) {
-            List<Item> itemHerarchyList = new ArrayList<>();
-            Item currentLowestItem = lowestLocationItem;
+            List<ItemDomainLocation> itemHerarchyList = new ArrayList<>();
+            ItemDomainLocation currentLowestItem = lowestLocationItem;
             ItemElement currentLowestLocationSelfElement;
 
             itemHerarchyList.add(0, lowestLocationItem);
@@ -411,7 +413,7 @@ public class ItemDomainLocationController extends ItemController {
                     } else {
                         locationElementList.add(currentLowestLocationSelfElement);
                     }
-                    itemHerarchyList.add(0, currentLowestLocationSelfElement.getParentItem());
+                    itemHerarchyList.add(0, (ItemDomainLocation) currentLowestLocationSelfElement.getParentItem());
                 }
             }
 
@@ -419,13 +421,13 @@ public class ItemDomainLocationController extends ItemController {
             locationElementList = null;
 
             // Use the location herarchy relationship to complete the tree. 
-            currentLowestItem = currentLowestLocationSelfElement.getParentItem();
+            currentLowestItem = (ItemDomainLocation) currentLowestLocationSelfElement.getParentItem();
             while (currentLowestItem != null) {
                 if (currentLowestItem != null) {
                     List<ItemElement> itemElementMembershipList = currentLowestItem.getItemElementMemberList();
                     if (itemElementMembershipList.size() > 0) {
                         ItemElement memberOfItemElement = itemElementMembershipList.get(0);
-                        currentLowestItem = memberOfItemElement.getParentItem();
+                        currentLowestItem = (ItemDomainLocation) memberOfItemElement.getParentItem();
                         itemHerarchyList.add(0, currentLowestItem);
                     } else {
                         currentLowestItem = null;
@@ -445,9 +447,9 @@ public class ItemDomainLocationController extends ItemController {
      * @return root of tree branch that has item passed at lowest level of
      * branch.
      */
-    public static TreeNode generateLocationNodeTreeBranch(Item lowestLocationItem) {
+    public static TreeNode generateLocationNodeTreeBranch(ItemDomainLocation lowestLocationItem) {
         if (lowestLocationItem != null) {
-            List<Item> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
+            List<ItemDomainLocation> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
 
             if (itemHierarchyList != null) {
                 TreeNode rootTreeNode = new DefaultTreeNode(null, null);
@@ -471,13 +473,13 @@ public class ItemDomainLocationController extends ItemController {
         return null;
     }
 
-    public static String generateLocatonHierarchyString(Item lowestLocationItem) {
+    public static String generateLocatonHierarchyString(ItemDomainLocation lowestLocationItem) {
         if (lowestLocationItem != null) {
-            List<Item> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
+            List<ItemDomainLocation> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
 
             if (itemHierarchyList != null) {
                 String result = "";
-                for (Item item : itemHierarchyList) {
+                for (ItemDomainLocation item : itemHierarchyList) {
                     result += item.getName();
                     // Still more items to load.
                     if (itemHierarchyList.indexOf(item) != itemHierarchyList.size() - 1) {
@@ -656,6 +658,16 @@ public class ItemDomainLocationController extends ItemController {
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
+    }
+
+    @Override
+    protected ItemDomainLocation instenciateNewItemDomainEntity() {
+        return new ItemDomainLocation();
+    }
+
+    @Override
+    protected ItemDomainLocationFacade getEntityDbFacade() {
+        return itemDomainLocationFacade; 
     }
 
 }
