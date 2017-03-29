@@ -21,7 +21,7 @@ import javax.inject.Named;
  */
 @Named("itemGenericViewController")
 @SessionScoped
-public class ItemGenericViewController extends ItemController<Item, ItemFacade> {
+public class ItemGenericViewController extends ItemController {
     
     @EJB
     private DomainFacade domainFacade; 
@@ -184,16 +184,6 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade> 
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }
-
-    @Override
-    protected Item instenciateNewItemDomainEntity() {
-        return new Item();         
-    }
-
-    @Override
-    protected ItemFacade getEntityDbFacade() {
-        return itemFacade;
     }
     
 }

@@ -4,14 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
@@ -20,7 +18,7 @@ import javax.inject.Named;
  */
 @Named("itemMemberViewController")
 @SessionScoped
-public class ItemMemberViewController extends ItemController<Item, ItemFacade> {
+public class ItemMemberViewController extends ItemController {
 
     private static final String DisplayMemberNumberOfItemsPerPageSettingTypeKey = "Item.Member.List.Display.NumberOfItemsPerPage";
     private static final String DisplayMemberIdSettingTypeKey = "Item.Member.List.Display.Id";
@@ -31,9 +29,6 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade> {
     private static final String DisplayMemberCreatedOnDateTimeSettingTypeKey = "Item.Member.List.Display.CreatedOnDateTime";
     private static final String DisplayMemberLastModifiedByUserSettingTypeKey = "Item.Member.List.Display.LastModifiedByUser";
     private static final String DisplayMemberLastModifiedOnDateTimeSettingTypeKey = "Item.Member.List.Display.LastModifiedOnDateTime";
-    
-    @EJB
-    ItemFacade itemFacade; 
     
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
@@ -229,16 +224,6 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade> {
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected Item instenciateNewItemDomainEntity() {
-        return new Item();
-    }
-
-    @Override
-    protected ItemFacade getEntityDbFacade() {
-        return itemFacade;
     }
 
 }

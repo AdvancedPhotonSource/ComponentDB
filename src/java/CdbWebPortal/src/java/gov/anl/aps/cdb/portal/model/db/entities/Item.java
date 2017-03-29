@@ -8,7 +8,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,18 +28,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.ManyToOne;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.menu.DefaultMenuModel;
 
 /**
  *
@@ -44,8 +45,7 @@ import org.primefaces.model.TreeNode;
  */
 @Entity
 @Table(name = "item")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "domain_id", discriminatorType = DiscriminatorType.INTEGER)
+@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Item.findAll",
             query = "SELECT i FROM Item i"),
@@ -172,31 +172,42 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
     private List<ItemResource> itemResourceList;
 
-    // Item element representing self 
     private transient ItemElement selfItemElement = null;
-    
-    // Descriptors in string format
     private transient String itemTypeString = null;
     private transient String itemCategoryString = null;
     private transient String itemSourceString = null;
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
-       
-    private transient String entityTypeString = null;
 
-    private transient String primaryImageValue = null;   
+    private transient String primaryImageValue = null;
+
+    private transient TreeNode locationTree = null;
+    private transient String locationDetails = null;
+    private transient Item location;
+    private transient String locationString;
+    private transient DefaultMenuModel locationMenuModel;
+    // Needed to determine whenever location was removed in edit process. 
+    private transient Boolean originalLocationLoaded = false;
 
     private transient boolean isCloned = false;
 
-    // List of item elements that should be shown to user. 
-    private transient List<ItemElement> itemElementDisplayList;  
+    private transient List<ItemElement> itemElementDisplayList;
 
-    // Description that is list friendly (shortened if needed). 
-    private transient String listDisplayDescription = null;               
-    
-    private transient ItemController itemDomainController = null; 
-    
+    private transient String entityTypeString = null;
+
+    private transient String listDisplayDescription = null;
+
+    private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
+    private transient InventoryBillOfMaterialItem containedInBOM;
+
+    private transient Boolean sparePartIndicator = null;
+    private transient SparePartsBean sparePartsBean = null;
+    private final transient String SPARE_PARTS_BEAN_NAME = "sparePartsBean";
+
+    private transient ItemController itemDomainController = null;
+
     private transient TreeNode assemblyRootTreeNode = null;
+    private transient TreeNode itemElementAssemblyRootTreeNode = null;
 
     public Item() {
     }
@@ -217,18 +228,13 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         this.domain = domain;
     }
-    
-    // Override in sub domains 
-    public Item createInstance() {
-        return null; 
-    }
-              
+
     @Override
     public Item clone() throws CloneNotSupportedException {
-        Item clonedItem = createInstance();
+        Item clonedItem = new Item();
         clonedItem.isCloned = true;
 
-        clonedItem.setDomain(this.getDomain());        
+        clonedItem.setDomain(this.getDomain());
         clonedItem.entityTypeList = this.getEntityTypeList();
         clonedItem.setItemCategoryList(this.getItemCategoryList());
         clonedItem.setItemTypeList(this.getItemTypeList());
@@ -252,7 +258,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         clonedItem.fullItemElementList.add(newSelfElement);
 
         clonedItem.setItemSourceList(null);
-        clonedItem.setQrId(null);        
+        clonedItem.setQrId(null);
+        clonedItem.setLocationDetails(null);
+        clonedItem.setLocation(null);
         clonedItem.setPropertyValueList(null);
         clonedItem.setLogList(null);
         clonedItem.setDerivedFromItemList(null);
@@ -570,6 +578,25 @@ public class Item extends CdbDomainEntity implements Serializable {
         itemElementDisplayList = null;
     }
 
+    public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
+        if (itemElementAssemblyRootTreeNode == null) {
+            if (getItemElementDisplayList().size() > 0) {
+                itemElementAssemblyRootTreeNode = ItemElementUtility.createItemElementRoot(this);
+            }
+        }
+        return itemElementAssemblyRootTreeNode;
+    }
+
+    public TreeNode getAssemblyRootTreeNode() throws CdbException {
+        if (assemblyRootTreeNode == null) {
+            if (getItemElementDisplayList().size() > 0) {
+                assemblyRootTreeNode = ItemElementUtility.createItemRoot(this);
+
+            }
+        }
+        return assemblyRootTreeNode;
+    }
+
     public void resetSelfElement() {
         selfItemElement = null;
     }
@@ -632,6 +659,22 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.derivedFromItem = derivedFromItem;
     }
 
+    public List<InventoryBillOfMaterialItem> getInventoryDomainBillOfMaterialList() {
+        return inventoryDomainBillOfMaterialList;
+    }
+
+    public void setInventoryDomainBillOfMaterialList(List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList) {
+        this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
+    }
+
+    public InventoryBillOfMaterialItem getContainedInBOM() {
+        return containedInBOM;
+    }
+
+    public void setContainedInBOM(InventoryBillOfMaterialItem containedInBOM) {
+        this.containedInBOM = containedInBOM;
+    }
+
     @Override
     public EntityInfo getEntityInfo() {
         return getSelfElement().getEntityInfo();
@@ -670,7 +713,53 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemSourceString;
     }
 
+    public TreeNode getLocationTree() {
+        return locationTree;
+    }
 
+    public void setLocationTree(TreeNode locationTree) {
+        this.locationTree = locationTree;
+    }
+
+    public DefaultMenuModel getLocationMenuModel() {
+        return locationMenuModel;
+    }
+
+    public void setLocationMenuModel(DefaultMenuModel locationMenuModel) {
+        this.locationMenuModel = locationMenuModel;
+    }
+
+    public Boolean getOriginalLocationLoaded() {
+        return originalLocationLoaded;
+    }
+
+    public void setOriginalLocationLoaded(Boolean originalLocationLoaded) {
+        this.originalLocationLoaded = originalLocationLoaded;
+    }
+
+    public String getLocationDetails() {
+        return locationDetails;
+    }
+
+    public void setLocationDetails(String locationDetails) {
+        this.locationDetails = locationDetails;
+    }
+
+    public Item getLocation() {
+        return location;
+    }
+
+    public void setLocation(Item location) {
+        this.location = location;
+    }
+
+    public String getLocationString() {
+        return locationString;
+    }
+
+    public void setLocationString(String locationString) {
+        this.locationString = locationString;
+    }
 
     @XmlTransient
     public List<ItemResource> getItemResourceList() {
@@ -822,6 +911,28 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.isCloned = isCloned;
     }
 
+    public Boolean getSparePartIndicator() {
+        if (sparePartIndicator == null) {
+            sparePartIndicator = getSparePartsBean().getSparePartsIndication(this);
+        }
+        return sparePartIndicator;
+    }
+
+    public void setSparePartIndicator(Boolean sparePartIndicator) {
+        this.sparePartIndicator = sparePartIndicator;
+    }
+
+    public void updateSparePartsIndication() {
+        getSparePartsBean().setSparePartsIndication(this);
+    }
+
+    public SparePartsBean getSparePartsBean() {
+        if (sparePartsBean == null) {
+            sparePartsBean = (SparePartsBean) SessionUtility.findBean(SPARE_PARTS_BEAN_NAME);
+        }
+        return sparePartsBean;
+    }
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult;
@@ -896,15 +1007,5 @@ public class Item extends CdbDomainEntity implements Serializable {
             return "New Item";
         }
     }
-    
-    public TreeNode getAssemblyRootTreeNode() throws CdbException {
-        if (assemblyRootTreeNode == null) {
-            if (getItemElementDisplayList().size() > 0) {
-                assemblyRootTreeNode = ItemElementUtility.createItemRoot(this);
-
-            }
-        }
-        return assemblyRootTreeNode;
-    }      
 
 }

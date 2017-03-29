@@ -15,8 +15,8 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
@@ -70,8 +70,11 @@ import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuModel;
 
-public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements Serializable {
-    
+public abstract class ItemController extends CdbDomainEntityController<Item, ItemFacade> implements Serializable {
+
+    @EJB
+    protected ItemFacade itemFacade;
+
     @EJB
     protected ItemElementFacade itemElementFacade;
 
@@ -128,10 +131,10 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     private TreeNode itemElementListTreeTableRootNode = null;
 
-    private List<ItemDomainEntity> selectItemCandidateList;
+    private List<Item> selectItemCandidateList;
     private List<Item> selectedItems;
 
-    private List<ItemDomainEntity> selectItemElementItemCandidateList;
+    private List<Item> selectItemElementItemCandidateList;
 
     protected DataModel itemsWithNoParentsListDataModel = null;
     protected TreeNode itemsWithNoParentsRootNode = null;
@@ -213,8 +216,6 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public ItemController() {
     }
-    
-    protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
      * Default domain of items managed by the controller.
@@ -431,9 +432,9 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return getItemItemCategoryTitle();
     }
 
-    public List<ItemDomainEntity> getItemListWithProject(ItemProject itemProject) {
+    public List<Item> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
-        return getEntityDbFacade().findByDomainAndProject(getDefaultDomainName(), projectName);
+        return itemFacade.findByDomainAndProject(getDefaultDomainName(), projectName);
     }
 
     /**
@@ -472,8 +473,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         }
     }
 
-    public List<ItemDomainEntity> getItemList() {
-        return getEntityDbFacade().findByDomain(getDefaultDomainName());
+    public List<Item> getItemList() {
+        return itemFacade.findByDomain(getDefaultDomainName());
     }
 
     public boolean isItemHasSimpleListView() {
@@ -746,11 +747,11 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public ListDataModel getFilterViewCategoryTypeListDataModel() {
         if (filterViewCategoryTypeListDataModelLoaded == false) {
-            List<ItemDomainEntity> filterViewItemList = null;
+            List<Item> filterViewItemList = null;
             if (getCurrentItemProject() != null
                     || filterViewItemCategorySelectionList != null
                     || filterViewSelectedItemType != null) {
-                filterViewItemList = getEntityDbFacade().findByFilterViewCategoryTypeAttributes(getCurrentItemProject(),
+                filterViewItemList = itemFacade.findByFilterViewCategoryTypeAttributes(getCurrentItemProject(),
                         filterViewItemCategorySelectionList, filterViewSelectedItemType, getDefaultDomainName());
             }
 
@@ -763,11 +764,11 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public ListDataModel getFilterViewOwnerListDataModel() {
         if (filterViewOwnerListDataModelLoaded == false) {
-            List<ItemDomainEntity> filterViewItemList = null;
+            List<Item> filterViewItemList = null;
             if (getCurrentItemProject() != null
                     || filterViewSelectedUserInfo != null
                     || filterViewUserGroupSelectionList != null) {
-                filterViewItemList = getEntityDbFacade().findByFilterViewOwnerAttributes(getCurrentItemProject(), filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDefaultDomainName());
+                filterViewItemList = itemFacade.findByFilterViewOwnerAttributes(getCurrentItemProject(), filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDefaultDomainName());
             }
 
             filterViewOwnerListDataModel = createFilterViewListDataModel(filterViewItemList);
@@ -789,7 +790,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         }
     }
 
-    protected ListDataModel createFilterViewListDataModel(List<ItemDomainEntity> itemList) {
+    protected ListDataModel createFilterViewListDataModel(List<Item> itemList) {
         if (itemList != null) {
             List<FilterViewResultItem> filterViewItemObjectList = new ArrayList<>();
             for (Item item : itemList) {
@@ -867,7 +868,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     private ListDataModel getUpdatedDomainListDataModel() {
         ItemProject currentItemProject = getCurrentItemProject();
 
-        List<ItemDomainEntity> itemList;
+        List<Item> itemList;
         if (currentItemProject != null) {
             itemList = getItemListWithProject(currentItemProject);
         } else {
@@ -1027,8 +1028,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         setListDataModel(getUpdatedDomainListDataModel());
     }
 
-    public List<ItemDomainEntity> getItemsWithoutParents() {
-        return getEntityDbFacade().findByDomainWithoutParents(getDefaultDomainName());
+    public List<Item> getItemsWithoutParents() {
+        return itemFacade.findByDomainWithoutParents(getDefaultDomainName());
     }
 
     public DataModel getItemsWithNoParentsListDataModel() {
@@ -1040,7 +1041,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public TreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
-            List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
+            List<Item> itemsWitNoParentsList = getItemsWithoutParents();
             itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
 
             for (Item item : itemsWitNoParentsList) {
@@ -1077,15 +1078,15 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
                 if (displayListDataModelScopePropertyTypeId == null) {
                     return null;
                 } else {
-                    List<ItemDomainEntity> itemList;
+                    List<Item> itemList;
                     ItemProject currentProject = getCurrentItemProject();
                     if (currentProject != null) {
-                        itemList = getEntityDbFacade().getItemsWithPropertyTypeAndProject(
+                        itemList = itemFacade.getItemsWithPropertyTypeAndProject(
                                 getDefaultDomainName(),
                                 getDisplayListDataModelScopePropertyTypeId(),
                                 currentProject.getName());
                     } else {
-                        itemList = getEntityDbFacade().getItemListWithPropertyType(
+                        itemList = itemFacade.getItemListWithPropertyType(
                                 getDefaultDomainName(),
                                 getDisplayListDataModelScopePropertyTypeId());
                     }
@@ -1101,22 +1102,22 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
                 // Show only favorites
                 if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    List<ItemDomainEntity> itemList = getEntityDbFacade().getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
+                    List<Item> itemList = itemFacade.getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
                     scopedListDataModel = new ListDataModel(itemList);
                 } else {
                     // Show owned or owned & favorites. 
                     boolean showOwnedAndFavorites = displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
                     boolean showOwned = !showOwnedAndFavorites;
 
-                    List<ItemDomainEntity> itemList = null;
+                    List<Item> itemList = null;
 
                     if (showOwnedAndFavorites) {
                         if (getFavoritesList() != null) {
                             if (settingEntity instanceof UserInfo) {
-                                itemList = getEntityDbFacade()
+                                itemList = itemFacade
                                         .getItemListContainedInListOrOwnedByUser(getDefaultDomainName(), getFavoritesList(), (UserInfo) settingEntity);
                             } else if (settingEntity instanceof UserGroup) {
-                                itemList = getEntityDbFacade()
+                                itemList = itemFacade
                                         .getItemListContainedInListOrOwnedByGroup(getDefaultDomainName(), getFavoritesList(), (UserGroup) settingEntity);
                             }
                         } else {
@@ -1127,9 +1128,9 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
                     if (showOwned) {
                         if (settingEntity instanceof UserInfo) {
-                            itemList = getEntityDbFacade().getItemListOwnedByUser(getDefaultDomainName(), (UserInfo) settingEntity);
+                            itemList = itemFacade.getItemListOwnedByUser(getDefaultDomainName(), (UserInfo) settingEntity);
                         } else if (settingEntity instanceof UserGroup) {
-                            itemList = getEntityDbFacade().getItemListOwnedByUserGroup(getDefaultDomainName(), (UserGroup) settingEntity);
+                            itemList = itemFacade.getItemListOwnedByUserGroup(getDefaultDomainName(), (UserGroup) settingEntity);
                         }
                     }
 
@@ -1274,7 +1275,12 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     public Item getItem(java.lang.Integer id) {
-        return getEntityDbFacade().find(id);
+        return itemFacade.find(id);
+    }
+
+    @Override
+    protected ItemFacade getEntityDbFacade() {
+        return itemFacade;
     }
 
     void prepareItemElementListTreeTable(Item item) {
@@ -1303,7 +1309,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         updateOnRemoval();
     }
 
-    protected ItemElement createItemElement(ItemDomainEntity item) {
+    protected ItemElement createItemElement(Item item) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         ItemElement itemElement = new ItemElement();
@@ -1315,7 +1321,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return itemElement;
     }
 
-    public void prepareAddItemElement(ItemDomainEntity item) {
+    public void prepareAddItemElement(Item item) {
         createItemElement(item);
     }
 
@@ -1370,7 +1376,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         update();
     }
 
-    public List<ItemDomainEntity> getSelectItemCandidateList() {
+    public List<Item> getSelectItemCandidateList() {
         if (selectItemCandidateList == null) {
             selectItemCandidateList = getItemList();
         }
@@ -1385,9 +1391,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         this.selectedItems = selectedItems;
     }
 
-    public List<ItemDomainEntity> completeItem(String query) {
-        List<Item> itemList = (List<Item>)(List<?>) getSelectItemCandidateList(); 
-        return (List<ItemDomainEntity>) ItemUtility.filterItem(query, itemList);
+    public List<Item> completeItem(String query) {
+        return ItemUtility.filterItem(query, getSelectItemCandidateList());
     }
 
     public Boolean isRenderClassificationCreateWizardTab() {
@@ -1407,7 +1412,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     public Boolean isItemExistInDb(Item item) {
         Item dbItem = null;
         if (item.getId() != null) {
-            dbItem = getEntityDbFacade().find(item.getId());
+            dbItem = itemFacade.find(item.getId());
         }
 
         return dbItem != null;
@@ -1609,11 +1614,11 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return super.prepareCreate();
     }
 
-    public String getItemDisplayString(ItemDomainEntity item) {
+    public String getItemDisplayString(Item item) {
         return item.toString();
     }
 
-    public String getItemMembmershipPartIdentifier(ItemDomainEntity item) {
+    public String getItemMembmershipPartIdentifier(Item item) {
         return getItemDisplayString(item);
     }
 
@@ -1663,7 +1668,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return false;
     }
 
-    public List<ItemDomainEntity> getSelectItemElementItemCandidateList() {
+    public List<Item> getSelectItemElementItemCandidateList() {
         if (selectItemElementItemCandidateList == null) {
             logger.debug("Preparing Item element candiate list for user.");
             selectItemElementItemCandidateList = new ArrayList<>();
@@ -1723,8 +1728,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     public List<Item> completeItemElementItem(String queryString) {
-        //return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
-        return null; 
+        return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
     }
 
     /**
@@ -1736,7 +1740,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     public void prepareAddItemDerivedFromItem(Item derivedFromItem) {
         List<Item> itemDerivedFromItemList = derivedFromItem.getDerivedFromItemList();
 
-        ItemDomainEntity newItemDerivedFromItem = instenciateNewItemDomainEntity();
+        Item newItemDerivedFromItem = new Item();
 
         newItemDerivedFromItem.init(getDefaultDomain());
 
@@ -1764,15 +1768,15 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         update();
     }
 
-    public void deleteItemDerivedFromItem(ItemDomainEntity itemDerivedFromItem) {
-        ItemDomainEntity item = (ItemDomainEntity) itemDerivedFromItem.getDerivedFromItem();
+    public void deleteItemDerivedFromItem(Item itemDerivedFromItem) {
+        Item item = itemDerivedFromItem.getDerivedFromItem();
         List<Item> itemDerivedFromItemList = item.getDerivedFromItemList();
         itemDerivedFromItemList.remove(itemDerivedFromItem);
         setCurrent(item);
         updateOnRemoval();
     }
 
-    protected ItemDomainEntity cloneProperties(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
+    protected Item cloneProperties(Item clonedItem, Item cloningFrom) {
         List<PropertyValue> cloningFromPropertyValueList = cloningFrom.getPropertyValueList();
 
         if (cloningFromPropertyValueList != null) {
@@ -1800,7 +1804,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return clonedItem;
     }
 
-    protected ItemDomainEntity cloneSources(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
+    protected Item cloneSources(Item clonedItem, Item cloningFrom) {
         List<ItemSource> cloningFromSourceList = cloningFrom.getItemSourceList();
 
         if (cloningFromSourceList != null) {
@@ -1828,11 +1832,11 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return clonedItem;
     }
 
-    protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom) {
+    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom) {
         return cloneCreateItemElements(clonedItem, cloningFrom, false);
     }
 
-    protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained) {
+    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom, boolean addContained) {
         List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
 
         if (cloningFromItemElementList != null) {
@@ -1858,8 +1862,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return clonedItem;
     }
 
-    public ItemDomainEntity completeClone(ItemDomainEntity clonedItem, Integer cloningFromItemId) {
-        ItemDomainEntity cloningFrom = findById(cloningFromItemId);
+    public Item completeClone(Item clonedItem, Integer cloningFromItemId) {
+        Item cloningFrom = findById(cloningFromItemId);
 
         if (cloneProperties) {
             clonedItem = cloneProperties(clonedItem, cloningFrom);
@@ -1906,7 +1910,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     public String prepareCloneForItemToClone() {
-        ItemDomainEntity item = (ItemDomainEntity) itemToClone;
+        Item item = itemToClone;
         itemToClone = null;
         return prepareClone(item);
     }
@@ -2499,8 +2503,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     @Override
-    protected ItemDomainEntity createEntityInstance() {
-        ItemDomainEntity item = instenciateNewItemDomainEntity();
+    protected Item createEntityInstance() {
+        Item item = new Item();
 
         Domain domain = getDefaultDomain();
         if (domain != null) {
@@ -2518,7 +2522,12 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     @Override
-    public ItemDomainEntity selectByViewRequestParams() throws CdbException {
+    public Item findById(Integer id) {
+        return itemFacade.findById(id);
+    }
+
+    @Override
+    public Item selectByViewRequestParams() throws CdbException {
         setBreadcrumbRequestParams();
         Integer idParam = null;
         String paramValue = SessionUtility.getRequestParameterValue("id");
@@ -2531,7 +2540,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
             throw new InvalidRequest("Invalid value supplied for " + getDisplayEntityTypeName() + " id: " + paramValue);
         }
         if (idParam != null) {
-            ItemDomainEntity item = findById(idParam);
+            Item item = findById(idParam);
             if (item == null) {
                 throw new InvalidRequest("Item id " + idParam + " does not exist.");
             }
@@ -2545,7 +2554,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
             if (paramValue != null) {
                 try {
                     Integer qrParam = Integer.parseInt(paramValue);
-                    ItemDomainEntity item = findByQrId(qrParam);
+                    Item item = findByQrId(qrParam);
                     if (item == null) {
                         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
 
@@ -2580,7 +2589,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
 
-    private ItemDomainEntity performItemRedirection(ItemDomainEntity item, String paramString, boolean forceRedirection) {
+    private Item performItemRedirection(Item item, String paramString, boolean forceRedirection) {
         String currentViewId = SessionUtility.getCurrentViewId();
 
         Domain itemDomain = item.getDomain();
@@ -2614,8 +2623,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         return "";
     }
 
-    public ItemDomainEntity findByQrId(Integer qrId) {
-        return getEntityDbFacade().findByQrId(qrId);
+    public Item findByQrId(Integer qrId) {
+        return itemFacade.findByQrId(qrId);
     }
 
     public String getItemElementContainedItemText(ItemElement itemElement) {
@@ -2632,12 +2641,12 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     @Override
-    public void prepareEntityInsert(ItemDomainEntity item) throws CdbException {
+    public void prepareEntityInsert(Item item) throws CdbException {
         checkItem(item);
     }
 
     @Override
-    public void prepareEntityUpdate(ItemDomainEntity item) throws CdbException {
+    public void prepareEntityUpdate(Item item) throws CdbException {
         checkItem(item);
         item.resetAttributesToNullIfEmpty();
         EntityInfo entityInfo = item.getEntityInfo();
@@ -2650,7 +2659,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         }
 
         // Compare properties with what is in the db
-        List<PropertyValue> originalPropertyValueList = getEntityDbFacade().findById(item.getId()).getPropertyValueList();
+        List<PropertyValue> originalPropertyValueList = itemFacade.findById(item.getId()).getPropertyValueList();
         List<PropertyValue> newPropertyValueList = item.getPropertyValueList();
         logger.debug("Verifying properties for item " + item);
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
@@ -2672,7 +2681,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     @Override
-    protected void prepareEntityDestroy(ItemDomainEntity item) throws CdbException {
+    protected void prepareEntityDestroy(Item item) throws CdbException {
         super.prepareEntityDestroy(item);
         if (item.getItemElementMemberList() != null && item.getItemElementMemberList().isEmpty() == false) {
             throw new CdbException("Item is part of an assembly.");
@@ -2700,11 +2709,11 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         }
     }
 
-    protected void checkItem(ItemDomainEntity item) throws CdbException {
+    protected void checkItem(Item item) throws CdbException {
         checkItem(item, false);
     }
 
-    protected void checkItem(ItemDomainEntity item, boolean skipProjects) throws CdbException {
+    protected void checkItem(Item item, boolean skipProjects) throws CdbException {
         Domain itemDomain = item.getDomain();
 
         if (itemDomain == null) {
@@ -2721,7 +2730,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         checkItemElementsForItem(item);
     }
 
-    protected void checkItemElementsForItem(ItemDomainEntity item) throws CdbException {
+    protected void checkItemElementsForItem(Item item) throws CdbException {
         item.resetItemElementDisplayList();
         List<String> elementNames = new ArrayList<>();
         for (ItemElement itemElement : item.getItemElementDisplayList()) {
@@ -2740,7 +2749,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
     
     public void checkItemElement(ItemElement itemElement) throws CdbException {
-        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem(); 
+        Item parentItem = itemElement.getParentItem(); 
         checkItemElementsForItem(parentItem);        
     }
 
@@ -2768,7 +2777,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
         if (getEntityDisplayQrId()) {
             if (qrId != null) {
-                Item existingItem = getEntityDbFacade().findByQrId(qrId);
+                Item existingItem = itemFacade.findByQrId(qrId);
                 if (existingItem != null) {
                     if (!Objects.equals(existingItem.getId(), item.getId())) {
                         throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with qrId " + existingItem.getQrIdDisplay() + ".");
@@ -2777,7 +2786,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
             }
         }
 
-        Item existingItem = getEntityDbFacade().findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
+        Item existingItem = itemFacade.findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
 
         // The same item will have all the same attributes if it wasn't changed.  
         if (existingItem != null) {

@@ -5,19 +5,15 @@
 package gov.anl.aps.cdb.portal.constants;
 
 public enum ItemDomainName {
-        location("Location"),
+        inventory("Inventory"),
         catalog("Catalog"),
-        inventory("Inventory");
-        
-        public final static int LOCATION_ID = 1; 
-        public final static int CATALOG_ID = 2; 
-        public final static int INVENTORY_ID = 3; 
+        location("Location");
 
         private String value;
 
         private ItemDomainName(String value) {
             this.value = value;
-        }               
+        }
 
         public String getValue() {
             return value;

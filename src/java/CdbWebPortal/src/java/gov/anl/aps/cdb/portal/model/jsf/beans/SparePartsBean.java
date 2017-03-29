@@ -13,8 +13,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -49,7 +47,7 @@ public class SparePartsBean implements Serializable {
 
     protected PropertyType sparePartsConfigurationPropertyType = null;
     protected PropertyType sparePartIndicationPropertyType = null;    
-    protected ItemDomainCatalog currentItem;
+    protected Item currentItem;
 
     protected String selectedEmailOption = null;
     protected List<String> emailOptionsList = null;
@@ -77,10 +75,6 @@ public class SparePartsBean implements Serializable {
 
     @EJB
     PropertyTypeFacade propertyTypeFacade;
-    
-    public static SparePartsBean getInstance() {
-        return (SparePartsBean) SessionUtility.findBean(SPARE_PARTS_BEAN_NAME); 
-    }
 
     public void resetSparePartsVariables() {
         selectedEmailOption = null;
@@ -90,7 +84,7 @@ public class SparePartsBean implements Serializable {
     public void loadSparePartsConfiguration(CdbEntityController entityController, String onSuccessCommand) {
         resetSparePartsVariables();
         try {
-            ItemDomainCatalog item = getCurrentCatalogItemForController(entityController);
+            Item item = getCurrentCatalogItemForController(entityController);
             sparePartsConfigurationPropertyValue = prepareSparePartsConfigurationPropertyValue(item);
             RequestContext.getCurrentInstance().execute(onSuccessCommand);
         } catch (CdbException ex) {
@@ -100,8 +94,8 @@ public class SparePartsBean implements Serializable {
 
     public String saveSparePartsConfiguration(CdbEntityController entityController) {
         try {
-            ItemDomainCatalog catalogItem = getCurrentCatalogItemForController(entityController);
-            prepareSavePartsConfiurgationForItem(catalogItem);
+            Item item = getCurrentCatalogItemForController(entityController);
+            prepareSavePartsConfiurgationForItem(item);
             ItemDomainCatalogController itemController = getItemController(entityController);
             String result = itemController.update();
             if (result != null) {
@@ -117,9 +111,9 @@ public class SparePartsBean implements Serializable {
 
     public String removeSparePartsConfiguration(CdbEntityController entityController) {
         try {
-            ItemDomainCatalog catalogItem = getCurrentCatalogItemForController(entityController);
+            Item item = getCurrentCatalogItemForController(entityController);
             if (sparePartsConfigurationPropertyValue.getId() != null) {
-                catalogItem.getPropertyValueList().remove(sparePartsConfigurationPropertyValue);
+                item.getPropertyValueList().remove(sparePartsConfigurationPropertyValue);
             }
             ItemDomainCatalogController itemController = getItemController(entityController);
             return itemController.update();
@@ -129,14 +123,14 @@ public class SparePartsBean implements Serializable {
         return null;
     }
     
-    public static int getSparePartsMinimumForItem(ItemDomainCatalog catalogItem) {
-        SparePartsBean sparePartsBean = getInstance(); 
-        return sparePartsBean.getSparePartsMinimumForItemCached(catalogItem);        
+    public static int getSparePartsMinimumForItem(Item item) {
+        SparePartsBean sparePartsBean = (SparePartsBean) SessionUtility.findBean(SPARE_PARTS_BEAN_NAME); 
+        return sparePartsBean.getSparePartsMinimumForItemCached(item);        
     }
     
-    private int getSparePartsMinimumForItemCached(ItemDomainCatalog catalogItem) {
-        if (!ObjectUtility.equals(currentItem, catalogItem)) {
-            sparePartsConfigurationPropertyValue = getStoredSparePartsConfigrationPropertyValue(catalogItem);             
+    private int getSparePartsMinimumForItemCached(Item item) {
+        if (!ObjectUtility.equals(currentItem, item)) {
+            sparePartsConfigurationPropertyValue = getStoredSparePartsConfigrationPropertyValue(item);             
         }
         
         if (sparePartsConfigurationPropertyValue != null) {
@@ -155,17 +149,17 @@ public class SparePartsBean implements Serializable {
      * Used by the catalog item controller to identify when a property value
      * list contains configuration.
      *
-     * @param catalogItem
+     * @param item
      * @return
      */
-    public static boolean isItemContainSparePartConfiguration(ItemDomainCatalog catalogItem) {
-        if (catalogItem != null) {
-            return getStoredSparePartsConfigrationPropertyValue(catalogItem) != null;
+    public static boolean isItemContainSparePartConfiguration(Item item) {
+        if (item != null) {
+            return getStoredSparePartsConfigrationPropertyValue(item) != null;
         }
         return false; 
     }
 
-    private void prepareSavePartsConfiurgationForItem(ItemDomainCatalog catalogItem) throws CdbException {
+    private void prepareSavePartsConfiurgationForItem(Item item) throws CdbException {
         if (sparePartsConfigurationPropertyValue == null) {
             throw new CdbException("No item specified in controller.");
         }
@@ -195,11 +189,11 @@ public class SparePartsBean implements Serializable {
             }
         }
         if (sparePartsConfigurationPropertyValue.getId() == null) {
-            catalogItem.getPropertyValueList().add(sparePartsConfigurationPropertyValue);
+            item.getPropertyValueList().add(sparePartsConfigurationPropertyValue);
         }
     }
 
-    private ItemDomainCatalog getCurrentCatalogItemForController(CdbEntityController entityController) throws CdbException {
+    private Item getCurrentCatalogItemForController(CdbEntityController entityController) throws CdbException {
         ItemDomainCatalogController itemController = getItemController(entityController);
         currentItem = itemController.getCurrent();
         if (currentItem == null) {
@@ -217,11 +211,11 @@ public class SparePartsBean implements Serializable {
 
     }
 
-    private static PropertyValue getStoredSparePartsIndicationPropertyValue(ItemDomainInventory item) {
+    private static PropertyValue getStoredSparePartsIndicationPropertyValue(Item item) {
         return getPropertyValueByType(item, SPARE_PARTS_INDICATION_PROPERTY_TYPE_NAME);
     }
 
-    private static PropertyValue getStoredSparePartsConfigrationPropertyValue(ItemDomainCatalog item) {
+    private static PropertyValue getStoredSparePartsConfigrationPropertyValue(Item item) {
         return getPropertyValueByType(item, SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME);
     }
 
@@ -238,12 +232,12 @@ public class SparePartsBean implements Serializable {
         return null;
     }
 
-    private PropertyValue prepareSparePartsConfigurationPropertyValue(ItemDomainCatalog catalogItem) throws CdbException {
+    private PropertyValue prepareSparePartsConfigurationPropertyValue(Item item) throws CdbException {
         // Only one property type of spare parts can be added. 
-        PropertyValue propertyValue = getStoredSparePartsConfigrationPropertyValue(catalogItem);
+        PropertyValue propertyValue = getStoredSparePartsConfigrationPropertyValue(item);
         if (propertyValue == null) {
             // Add property value
-            List<PropertyValue> propertyValueList = catalogItem.getPropertyValueList();
+            List<PropertyValue> propertyValueList = item.getPropertyValueList();
             propertyValue = new PropertyValue();
             propertyValue.setPropertyType(getSparePartsConfigurationPropertyType());
         }
@@ -353,7 +347,7 @@ public class SparePartsBean implements Serializable {
         return sparePartsConfigurationPropertyValue != null;
     }
 
-    public boolean getSparePartsIndication(ItemDomainInventory inventoryItem) {
+    public boolean getSparePartsIndication(Item inventoryItem) {
         PropertyValue propertyValue = getStoredSparePartsIndicationPropertyValue(inventoryItem);
         if (propertyValue != null) {
             return Boolean.parseBoolean(propertyValue.getValue());
@@ -362,7 +356,7 @@ public class SparePartsBean implements Serializable {
         return false;
     }
 
-    public void setSparePartsIndication(ItemDomainInventory inventoryItem) {        
+    public void setSparePartsIndication(Item inventoryItem) {
         PropertyValue spareIndicatorPropertyValue = getStoredSparePartsIndicationPropertyValue(inventoryItem);
         boolean currentSpareValue = inventoryItem.getSparePartIndicator();
         

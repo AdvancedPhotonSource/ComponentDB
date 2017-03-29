@@ -8,16 +8,13 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
@@ -64,7 +61,7 @@ import org.primefaces.model.menu.MenuModel;
  */
 @Named("itemDomainInventoryController")
 @SessionScoped
-public class ItemDomainInventoryController extends ItemController<ItemDomainInventory, ItemDomainInventoryFacade> {
+public class ItemDomainInventoryController extends ItemController {
 
     private static final String DEFAULT_DOMAIN_NAME = "Inventory";
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
@@ -139,17 +136,20 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private List<PropertyValue> filteredPropertyValueList = null;
 
     //Variables used for creation of new inventory item. 
-    private List<ItemDomainInventory> newItemsToAdd = null;
+    private List<Item> newItemsToAdd = null;
     private TreeNode currentItemBOMListTree = null;
     private TreeNode selectedItemBOMTreeNode = null;
     private boolean showOptionalPartsInBom = false;
     private Boolean currentItemBOMTreeHasOptionalItems = null;
 
     protected ListDataModel filterViewLocationDataModel = null;
-    protected ItemDomainLocation filterViewLocationItemLoaded = null;
+    protected Item filterViewLocationItemLoaded = null;
     protected boolean filterViewLocationDataModelLoaded = false;
 
-    private ItemDomainInventory lastInventoryItemRequestedLocationMenuModel = null;   
+    private Item lastInventoryItemRequestedLocationMenuModel = null;
+
+    @EJB
+    private ItemFacade itemFacade;
 
     @EJB
     private DomainFacade domainFacade;
@@ -158,9 +158,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     @EJB
     private RelationshipTypeFacade relationshipTypeFacade;
-    
-    @EJB
-    private ItemDomainInventoryFacade itemDomainInventoryFacade; 
 
     public ItemDomainInventoryController() {
         super();
@@ -194,14 +191,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         //return DisplayListPageHelpFragmentSettingTypeKey;
     }
 
-    public TreeNode getLocationRelationshipTree(ItemDomainInventory inventoryItem) {
+    public TreeNode getLocationRelationshipTree(Item inventoryItem) {
         if (inventoryItem.getLocationTree() == null) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationTree();
     }
 
-    private ItemElementRelationship findItemLocationRelationship(ItemDomainInventory item) {
+    private ItemElementRelationship findItemLocationRelationship(Item item) {
         // Support items that have not yet been saved to db.
         if (item.getSelfElement().getId() != null) {
             return itemElementRelationshipFacade
@@ -213,14 +210,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
+    public List<Item> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
-        return itemDomainInventoryFacade.findByDomainAndProjectOrderByQrId(getDefaultDomainName(), projectName);
+        return itemFacade.findByDomainAndProjectOrderByQrId(getDefaultDomainName(), projectName);
     }
 
     @Override
-    public List<ItemDomainInventory> getItemList() {
-        return itemDomainInventoryFacade.findByDomainOrderByQrId(getDefaultDomainName());
+    public List<Item> getItemList() {
+        return itemFacade.findByDomainOrderByQrId(getDefaultDomainName());
     }
 
     @Override
@@ -228,7 +225,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return getDefaultDomainDerivedFromDomain().getAllowedEntityTypeList();
     }
 
-    public String getLocationRelationshipDetails(ItemDomainInventory inventoryItem) {
+    public String getLocationRelationshipDetails(Item inventoryItem) {
         if (inventoryItem.getLocationDetails() == null) {
             setItemLocationInfo(inventoryItem);
         }
@@ -236,14 +233,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return inventoryItem.getLocationDetails();
     }
 
-    public ItemDomainLocation getLocation(ItemDomainInventory inventoryItem) {
+    public Item getLocation(Item inventoryItem) {
         if (inventoryItem.getLocation() == null) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocation();
     }
 
-    public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
+    public DefaultMenuModel getItemLocataionDefaultMenuModel(Item item) {
         lastInventoryItemRequestedLocationMenuModel = item;
         if (item != null) {
             if (item.getLocationMenuModel() == null) {
@@ -256,7 +253,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 if (locationString == null || locationString.isEmpty()) {
                     locationString = "Select Location";
                 }
-                ItemDomainLocation lowestLocation = item.getLocation();
+                Item lowestLocation = item.getLocation();
 
                 itemLocationMenuModel = itemDomainLocationController.generateLocationMenuModel(locationString, inventoryControllerName, "updateLocationForLastRequestedMenuModel", lowestLocation);
                 item.setLocationMenuModel(itemLocationMenuModel);
@@ -266,7 +263,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return null;
     }
 
-    public void updateLocationForLastRequestedMenuModel(ItemDomainLocation locationItem) {
+    public void updateLocationForLastRequestedMenuModel(Item locationItem) {
         if (lastInventoryItemRequestedLocationMenuModel != null) {
             updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, locationItem, null);
         } else {
@@ -274,7 +271,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
     }
 
-    public void updateLocationForItem(ItemDomainInventory item, ItemDomainLocation locationItem, String onSuccess) {
+    public void updateLocationForItem(Item item, Item locationItem, String onSuccess) {
         if (item.equals(locationItem)) {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
@@ -282,7 +279,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
         if (locationItem != null) {
             if (isInventoryDomainItem(locationItem)) {
-                ItemDomainInventory itemToCheck = item;
+                Item itemToCheck = item;
                 if (item.getId() == null) {
                     // new item is part of currents assembly. 
                     itemToCheck = getCurrent();
@@ -293,7 +290,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 } else {
                     // Existent item.
                     // Check that current item is not placed in its own herarchy. 
-                    List<ItemDomainLocation> locationHierarchyList = ItemDomainLocationController.generateLocationHierarchyList(locationItem);
+                    List<Item> locationHierarchyList = ItemDomainLocationController.generateLocationHierarchyList(locationItem);
                     if (locationHierarchyList != null) {
                         if (locationHierarchyList.contains(item)) {
                             SessionUtility.addErrorMessage("Error", "Item is part of the the desired location heriarchy.");
@@ -372,7 +369,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         filterViewLocationDataModelLoaded = false;
     }
 
-    public boolean isFilterViewLocationDataModelNeedReloading(ItemDomainLocation newLocationItem) {
+    public boolean isFilterViewLocationDataModelNeedReloading(Item newLocationItem) {
         if (filterViewLocationDataModel == null) {
             return true;
         }
@@ -392,7 +389,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return false;
     }
 
-    public void updateFilterViewLocationDataModelReloadStatus(ItemDomainLocation lastLocationLoaded) {
+    public void updateFilterViewLocationDataModelReloadStatus(Item lastLocationLoaded) {
         filterViewLocationDataModelLoaded = true;
         filterViewLocationItemLoaded = lastLocationLoaded;
     }
@@ -412,9 +409,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     public ListDataModel getFilterViewLocationDataModel() {
-        ItemDomainLocation selection = getItemDomainLocationController().getFilterViewLocationLastSelection();
+        Item selection = getItemDomainLocationController().getFilterViewLocationLastSelection();
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
-            List<ItemDomainInventory> itemList = new ArrayList<>();
+            List<Item> itemList = new ArrayList<>();
             ItemProject currentItemProject = getCurrentItemProject();
             if (selection != null) {
                 itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
@@ -429,7 +426,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                     itemList.removeAll(itemsToRemove);
                 }
             } else if (currentItemProject != null) {
-                itemList = itemDomainInventoryFacade.findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
+                itemList = itemFacade.findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
             }
             filterViewLocationDataModel = createFilterViewListDataModel(itemList);
         }
@@ -469,9 +466,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
      *
      * @param item
      */
-    public void updateLocationTreeForItem(ItemDomainInventory item) {
+    public void updateLocationTreeForItem(Item item) {
         if (item != null) {
-            ItemDomainLocation location = item.getLocation();
+            Item location = item.getLocation();
             item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
         }
     }
@@ -481,9 +478,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
      *
      * @param item
      */
-    public void updateLocationStringForItem(ItemDomainInventory item) {
+    public void updateLocationStringForItem(Item item) {
         if (item != null) {
-            ItemDomainLocation locationItem = item.getLocation();
+            Item locationItem = item.getLocation();
             item.setLocationString(ItemDomainLocationController.generateLocatonHierarchyString(locationItem));
         }
     }
@@ -494,7 +491,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
      * @param item
      * @return
      */
-    public String getLocationStringForItem(ItemDomainInventory item) {
+    public String getLocationStringForItem(Item item) {
         if (item != null) {
             if (item.getLocationString() == null) {
                 loadLocationStringForItem(item);
@@ -513,17 +510,17 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
      *
      * @param inventoryItem
      */
-    public void loadLocationStringForItem(ItemDomainInventory inventoryItem) {
+    public void loadLocationStringForItem(Item inventoryItem) {
         setItemLocationInfo(inventoryItem, false, true);
     }
 
-    public void setItemLocationInfo(ItemDomainInventory inventoryItem) {
+    public void setItemLocationInfo(Item inventoryItem) {
         setItemLocationInfo(inventoryItem, true, true);
     }
 
-    public void setItemLocationInfo(ItemDomainInventory inventoryItem, boolean loadLocationTreeForItem, boolean loadLocationHierarchyString) {
+    public void setItemLocationInfo(Item inventoryItem, boolean loadLocationTreeForItem, boolean loadLocationHierarchyString) {
         if (inventoryItem.getOriginalLocationLoaded() == false) {
-            ItemDomainLocation itemLocationItem = inventoryItem.getLocation();
+            Item itemLocationItem = inventoryItem.getLocation();
 
             if (itemLocationItem == null) {
                 ItemElementRelationship itemElementRelationship;
@@ -532,7 +529,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 if (itemElementRelationship != null) {
                     ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
                     if (locationSelfItemElement != null) {
-                        ItemDomainLocation locationItem = (ItemDomainLocation) locationSelfItemElement.getParentItem();
+                        Item locationItem = locationSelfItemElement.getParentItem();
                         inventoryItem.setLocation(locationItem);
                         if (loadLocationTreeForItem) {
                             updateLocationTreeForItem(inventoryItem);
@@ -569,7 +566,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         super.processPreProcessIteratedDomainEntity(entity);
 
         if (displayLocation) {
-            ItemDomainInventory item = (ItemDomainInventory) entity;
+            Item item = (Item) entity;
             loadLocationStringForItem(item);
         }
     }
@@ -597,7 +594,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public void createCancelFromDialog() {
         if (getCurrent() != null) {
-            ItemDomainCatalog catalogItem = getCurrent().getCatalogItem();
+            Item catalogItem = getCurrent().getDerivedFromItem();
             if (catalogItem != null) {
                 catalogItem.getDerivedFromItemList().remove(getCurrent());
             }
@@ -679,13 +676,13 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public String prepareView(ItemDomainInventory item) {
+    public String prepareView(Item item) {
         resetBOMSupportVariables();
         return super.prepareView(item); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public String prepareEdit(ItemDomainInventory inventoryItem) {
+    public String prepareEdit(Item inventoryItem) {
         resetBOMSupportVariables();
         setCurrent(inventoryItem);
         return super.prepareEdit(inventoryItem);
@@ -819,7 +816,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     }
 
-    public void addItemElementsFromBillOfMaterials(ItemDomainInventory item) throws CdbException {
+    public void addItemElementsFromBillOfMaterials(Item item) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
 
@@ -861,7 +858,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                         throw new CdbException("An item for: " + bomItem.getCatalogItemElement().getName() + " is not " + actionWord + ".");
                     }
 
-                    ItemDomainInventory inventoryItem = bomItem.getInventoryItem();
+                    Item inventoryItem = bomItem.getInventoryItem();
 
                     // No need to do that for existing items. 
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
@@ -870,7 +867,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
                     } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
-                            currentInventoryItemElement.setContainedItem(itemDomainInventoryFacade.find(inventoryItem.getId()));
+                            currentInventoryItemElement.setContainedItem(itemFacade.find(inventoryItem.getId()));
                         }
                     }
                 } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
@@ -884,7 +881,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     }
 
-    public void updateItemElementPermissionsToItem(ItemElement itemElement, ItemDomainInventory item) {
+    public void updateItemElementPermissionsToItem(ItemElement itemElement, Item item) {
         EntityInfo entityInfo = item.getEntityInfo();
 
         itemElement.getEntityInfo().setOwnerUser(entityInfo.getOwnerUser());
@@ -920,7 +917,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return false;
     }
 
-    public boolean isRenderItemBom(ItemDomainInventory item) {
+    public boolean isRenderItemBom(Item item) {
         return item.getInventoryDomainBillOfMaterialList() != null
                 && item.getInventoryDomainBillOfMaterialList().isEmpty() == false;
     }
@@ -966,7 +963,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         if (current != null && currentItemBOMTreeHasOptionalItems == null) {
             currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current); 
             if (!currentItemBOMTreeHasOptionalItems) {
-                for (ItemDomainInventory item : newItemsToAdd) {
+                for (Item item : newItemsToAdd) {
                     currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(item);
                     if (currentItemBOMTreeHasOptionalItems) {
                         return true; 
@@ -978,7 +975,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return currentItemBOMTreeHasOptionalItems;
     }
 
-    private boolean itemHasOptionalsInBOM(ItemDomainInventory item) {
+    private boolean itemHasOptionalsInBOM(Item item) {
         List<InventoryBillOfMaterialItem> iBomiList = item.getInventoryDomainBillOfMaterialList();
         for (InventoryBillOfMaterialItem iBomi : iBomiList) {
             if (iBomi.isOptional()) {
@@ -1020,14 +1017,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
         if (!previousState.equals(bomItem.getState())) {
             if (previousState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
-                ItemDomainInventory newItem = bomItem.getInventoryItem();
+                Item newItem = bomItem.getInventoryItem();
 
                 // The current item will not be defined. it has no children.                 
                 selectedItemBOMTreeNode.getChildren().clear();
 
                 bomItem.setInventoryItem(null);
 
-                ItemDomainCatalog catalogItem = bomItem.getCatalogItem();
+                Item catalogItem = bomItem.getCatalogItem();
                 if (catalogItem.getFullItemElementList().size() > 1) {
                     // Assembly may have optionals
                     currentItemBOMTreeHasOptionalItems = null;
@@ -1043,9 +1040,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 }
             } else if (InventoryBillOfMaterialItemStates.newItem.getValue().equals(bomItem.getState())) {
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
-                ItemDomainCatalog catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();
+                Item catalogItem = catalogItemElement.getContainedItem();
 
-                ItemDomainInventory newInventoryItem = createEntityInstance();
+                Item newInventoryItem = createEntityInstance();
                 newItemsToAdd.add(newInventoryItem);
 
                 newInventoryItem.setDerivedFromItem(catalogItem);
@@ -1066,7 +1063,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public void updatePermissionOnAllNewPartsIfNeeded() {
         if (isApplyPermissionToAllNewPartsForCurrent()) {
-            for (ItemDomainInventory item : newItemsToAdd) {
+            for (Item item : newItemsToAdd) {
                 setPermissionsForItemToCurrentItem(item);
             }
         }
@@ -1076,17 +1073,17 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return getCurrent().getContainedInBOM().isApplyPermissionToAllNewParts();
     }
 
-    private void setPermissionsForItemToCurrentItem(ItemDomainInventory inventoryItem) {
-        if (inventoryItem != getCurrent()) {
+    private void setPermissionsForItemToCurrentItem(Item item) {
+        if (item != getCurrent()) {
             // Set the permissions to equal. 
             EntityInfo entityInfo = getCurrent().getEntityInfo();
-            inventoryItem.getEntityInfo().setOwnerUser(entityInfo.getOwnerUser());
-            inventoryItem.getEntityInfo().setOwnerUserGroup(entityInfo.getOwnerUserGroup());
-            inventoryItem.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
+            item.getEntityInfo().setOwnerUser(entityInfo.getOwnerUser());
+            item.getEntityInfo().setOwnerUserGroup(entityInfo.getOwnerUserGroup());
+            item.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
         }
     }
 
-    public List<ItemDomainInventory> getNewItemsToAdd() {
+    public List<Item> getNewItemsToAdd() {
         return newItemsToAdd;
     }
 
@@ -1100,7 +1097,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             }
         }
 
-        ItemDomainInventory containedItem = (ItemDomainInventory) instanceItemElement.getContainedItem();
+        Item containedItem = instanceItemElement.getContainedItem();
 
         return getItemDisplayString(containedItem);
     }
@@ -1113,7 +1110,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public void prepareEntityInsert(ItemDomainInventory item) throws CdbException {
+    public void prepareEntityInsert(Item item) throws CdbException {
         if (item.getDerivedFromItem() == null) {
             throw new CdbException("Please specify " + getDerivedFromItemTitle());
         }
@@ -1123,7 +1120,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
         if (newItemsToAdd != null) {
             // Clear new item elements for new items. In case a previous insert failed. 
-            for (ItemDomainInventory itemToAdd : newItemsToAdd) {
+            for (Item itemToAdd : newItemsToAdd) {
                 if (isItemExistInDb(itemToAdd) == false) {
                     //Make sure newest version of display list is fetched.
                     ItemElement selfElement = itemToAdd.getSelfElement();
@@ -1140,7 +1137,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
     }
 
-    private void clearItemElementsForItem(ItemDomainInventory item) {
+    private void clearItemElementsForItem(Item item) {
         //Make sure newest version of display list is fetched.
         //Item should be updated using addItemElementsFromBillOfMaterials.
         ItemElement selfElement = item.getSelfElement();
@@ -1151,9 +1148,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     private void checkNewItemsToAdd() throws CdbException {
-        ItemDomainInventory item = getCurrent();
+        Item item = getCurrent();
         if (newItemsToAdd != null && !newItemsToAdd.isEmpty()) {
-            for (ItemDomainInventory newItem : newItemsToAdd) {
+            for (Item newItem : newItemsToAdd) {
                 // item is checked by default. 
                 if (item != newItem) {
                     checkItem(newItem);
@@ -1171,11 +1168,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public String getInventoryItemAssemblyRowExpansionDisplayString(ItemElement itemElement) {
         if (itemElement != null) {
             if (itemElement.getContainedItem() != null) {
-                ItemDomainInventory inventoryItem = (ItemDomainInventory) itemElement.getContainedItem();                
-                return getItemDisplayString(inventoryItem);
+                return getItemDisplayString(itemElement.getContainedItem());
             }
 
-            ItemDomainCatalog catalogItem = getCatalogItemForInventoryItemElement(itemElement);
+            Item catalogItem = getCatalogItemForInventoryItemElement(itemElement);
             if (catalogItem != null) {
                 return catalogItem.getName() + "- [ ]";
             } else {
@@ -1185,18 +1181,18 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return null;
     }
 
-    public ItemDomainCatalog getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
+    public Item getCatalogItemForInventoryItemElement(ItemElement inventoryItemElement) {
         if (inventoryItemElement != null) {
             ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
             if (derivedFromItemElement.getContainedItem() != null) {
-                return (ItemDomainCatalog) derivedFromItemElement.getContainedItem();
+                return derivedFromItemElement.getContainedItem();
             }
         }
         return null;
     }
 
     @Override
-    public String getItemDisplayString(ItemDomainInventory item) {
+    public String getItemDisplayString(Item item) {
         if (item != null) {
             if (item.getDerivedFromItem() != null) {
                 String result = item.getDerivedFromItem().getName();
@@ -1215,14 +1211,19 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return null;
     }
 
+    @Override
+    public String getItemMembmershipPartIdentifier(Item item) {
+        return getItemDisplayString(item);
+    }
+
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
         for (int i = 0; i < newItemsToAdd.size(); i++) {
             for (int j = newItemsToAdd.size() - 1; j > -1; j--) {
                 if (i == j) {
                     break;
                 }
-                ItemDomainInventory itemA = newItemsToAdd.get(i);
-                ItemDomainInventory itemB = newItemsToAdd.get(j);
+                Item itemA = newItemsToAdd.get(i);
+                Item itemB = newItemsToAdd.get(j);
 
                 String itemCompareString = itemA.getContainedInBOM().toString() + " and " + itemB.getContainedInBOM().toString();
 
@@ -1270,9 +1271,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
      * @param catalogItem
      * @return count
      */
-    public int getNewItemCount(ItemDomainCatalog catalogItem) {
+    public int getNewItemCount(Item catalogItem) {
         int count = 0;
-        for (ItemDomainInventory item : newItemsToAdd) {
+        for (Item item : newItemsToAdd) {
             if (item.getDerivedFromItem() == catalogItem) {
                 count++;
             }
@@ -1284,20 +1285,20 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public void prepareEntityUpdate(ItemDomainInventory item) throws CdbException {
+    public void prepareEntityUpdate(Item item) throws CdbException {
         super.prepareEntityUpdate(item);
         checkNewItemsToAdd();
 
         addItemElementsFromBillOfMaterials(item);
     }
 
-    private void updateItemLocation(ItemDomainInventory item) {
+    private void updateItemLocation(Item item) {
         // Determie updating of location relationship. 
-        ItemDomainInventory existingItem = null;
+        Item existingItem = null;
         ItemElementRelationship itemElementRelationship = null;
 
         if (item.getId() != null) {
-            existingItem = itemDomainInventoryFacade.findById(item.getId());
+            existingItem = itemFacade.findById(item.getId());
             // Item is not new
             if (existingItem != null) {
                 setItemLocationInfo(existingItem);
@@ -1831,16 +1832,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }
-
-    @Override
-    protected ItemDomainInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainInventory(); 
-    }
-
-    @Override
-    protected ItemDomainInventoryFacade getEntityDbFacade() {
-        return itemDomainInventoryFacade; 
     }
 
 }
