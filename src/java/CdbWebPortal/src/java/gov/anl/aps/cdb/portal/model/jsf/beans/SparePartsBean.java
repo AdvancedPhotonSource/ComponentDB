@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
