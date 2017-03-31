@@ -59,7 +59,7 @@ See LICENSE file.
                 disabled="#{singleClickSelectionDisabled}"
                 oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommandName}()" />
 
-        <p:ajax event="rowDblselect"
+        <p:ajax event="rowDblselect"                
                 disabled="#{!singleClickSelectionDisabled}"
                 oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommandName}()" />
 
@@ -76,7 +76,9 @@ See LICENSE file.
     </p:dataTable>
 
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
-                     update="#{updateTarget}"                      
+                     onstart="PF('loadingDialog').show();"
+                     update="#{updateTarget}"      
+                     oncomplete="PF('loadingDialog').hide();"
                      >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
                                      value="#{selectionValue}" 
@@ -85,7 +87,9 @@ See LICENSE file.
 
     
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMadeWithReset"
+                     onstart="PF('loadingDialog').show();"
                      update="#{updateTarget}" 
+                     oncomplete="PF('loadingDialog').hide();"
                     >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
                                      value="#{selectionValueWithReset}" 
