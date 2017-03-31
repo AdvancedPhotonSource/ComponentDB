@@ -70,8 +70,8 @@ import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuModel;
 
-public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements Serializable {
-    
+public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements Serializable {
+
     @EJB
     protected ItemElementFacade itemElementFacade;
 
@@ -107,7 +107,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
     protected Boolean displayItemEntityTypes = null;
-    protected Boolean autoLoadListFilterValues = false; 
+    protected Boolean autoLoadListFilterValues = false;
 
     protected Boolean displayItemListTreeView = null;
 
@@ -174,6 +174,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     protected List<ItemType> availableItemTypesForCurrentItem = null;
     protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
+    protected ItemElement newItemElementForCurrent = null; 
 
     protected Boolean cloneProperties = false;
     protected Boolean cloneCreateItemElementPlaceholders = false;
@@ -213,7 +214,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public ItemController() {
     }
-    
+
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
@@ -392,17 +393,17 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
      * @return
      */
     public abstract String getDefaultDomainDerivedToDomainName();
-    
+
     public String getDisplayItemElementListItemIdentifier1Key() {
-        return null; 
+        return null;
     }
-    
+
     public Boolean getDisplayItemElementListItemIdentifier1() {
-        return null; 
+        return null;
     }
-    
+
     public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1){
-        
+
     }
 
     public Domain getDefaultDomain() {
@@ -524,6 +525,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         super.resetVariablesForCurrent();
         availableItemTypesForCurrentItem = null;
         lastKnownItemCategoryListForCurrentItem = null;
+        newItemElementForCurrent = null; 
     }
 
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
@@ -1302,21 +1304,73 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         itemSourceList.remove(itemSource);
         updateOnRemoval();
     }
+    
+    public void prepareCreateSingleItemElementSimpleDialog() {
+        Item item = getCurrent(); 
+        if (item != null) {
+            newItemElementForCurrent = createItemElement(getCurrent()); 
+        }        
+    }
+    
+    public void cancelCreateSingleItemElementSimpleDialog() {
+        newItemElementForCurrent = null; 
+    }
+    
+    public void saveCreateSingleItemElementSimpleDialog() {
+        Item currentItem = getCurrent(); 
+        if (currentItem != null) {
+            prepareAddItemElement(getCurrent(), newItemElementForCurrent);
+        }
+        
+        update();
+        
+        newItemElementForCurrent = null;
+    }
 
-    protected ItemElement createItemElement(ItemDomainEntity item) {
-        List<ItemElement> itemElementList = item.getFullItemElementList();
+    protected ItemElement createItemElement(ItemDomainEntity item) {        
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         ItemElement itemElement = new ItemElement();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         itemElement.setEntityInfo(entityInfo);
-        itemElement.setParentItem(item);
+        itemElement.setParentItem(item);        
+
+        int elementNumber = itemElementsDisplayList.size() + 1;
+        String elementNameSuffix = "E";
+        String elementName = null;
+
+        boolean unique = false;
+        while (elementName == null) {
+            String test = elementNameSuffix + elementNumber;
+            for (ItemElement ittrItemElement : itemElementsDisplayList) {
+                if (ittrItemElement.getName().equalsIgnoreCase(test)) {
+                    elementNumber++;
+                    unique = false;
+                    break;
+                } else {
+                    unique = true;
+                }
+            }
+            if (unique) {
+                elementName = test;
+            }
+        }
+
+        itemElement.setName(elementName);
+        
+        return itemElement;
+    }
+    
+    protected void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
+        List<ItemElement> itemElementList = item.getFullItemElementList();
+        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();                
+        
         itemElementList.add(itemElement);
         itemElementsDisplayList.add(0, itemElement);
-        return itemElement;
     }
 
     public void prepareAddItemElement(ItemDomainEntity item) {
-        createItemElement(item);
+        ItemElement itemElement = createItemElement(item);
+        prepareAddItemElement(item, itemElement);
     }
 
     public void completeSuccessfulItemElementRemoval(ItemElement itemElement) {
@@ -1386,7 +1440,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     public List<ItemDomainEntity> completeItem(String query) {
-        List<Item> itemList = (List<Item>)(List<?>) getSelectItemCandidateList(); 
+        List<Item> itemList = (List<Item>) (List<?>) getSelectItemCandidateList();
         return (List<ItemDomainEntity>) ItemUtility.filterItem(query, itemList);
     }
 
@@ -1724,7 +1778,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public List<Item> completeItemElementItem(String queryString) {
         //return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
-        return null; 
+        return null;
     }
 
     /**
@@ -1954,6 +2008,14 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public void setItemToClone(Item itemToClone) {
         this.itemToClone = itemToClone;
+    }
+
+    public ItemElement getNewItemElementForCurrent() {
+        return newItemElementForCurrent;
+    }
+
+    public void setNewItemElementForCurrent(ItemElement newItemElementForCurrent) {
+        this.newItemElementForCurrent = newItemElementForCurrent;
     }
 
     public TreeNode getItemElementListTreeTableRootNode() {
@@ -2730,18 +2792,18 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
             }
             String itemElementName = itemElement.getName();
             if (elementNames.contains(itemElementName)) {
-                throw new CdbException("Element names must be unique within their assembly. '" + itemElementName + "' is repeated."); 
+                throw new CdbException("Element names must be unique within their assembly. '" + itemElementName + "' is repeated.");
             }
-            
+
             elementNames.add(itemElement.getName());
         }
         // Throws exception if a tree cannot be generated due to circular reference. 
         ItemElementUtility.createItemElementRoot(item);
     }
-    
+
     public void checkItemElement(ItemElement itemElement) throws CdbException {
-        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem(); 
-        checkItemElementsForItem(parentItem);        
+        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem();
+        checkItemElementsForItem(parentItem);
     }
 
     protected String itemDomainToString(Item item) {
