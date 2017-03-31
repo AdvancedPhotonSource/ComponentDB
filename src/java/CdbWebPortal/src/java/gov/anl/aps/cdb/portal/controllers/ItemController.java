@@ -52,6 +52,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -175,6 +176,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected List<ItemType> availableItemTypesForCurrentItem = null;
     protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
     protected ItemElement newItemElementForCurrent = null; 
+    protected Boolean newItemElementForCurrentSaveButtonEnabled = false; 
 
     protected Boolean cloneProperties = false;
     protected Boolean cloneCreateItemElementPlaceholders = false;
@@ -526,6 +528,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         availableItemTypesForCurrentItem = null;
         lastKnownItemCategoryListForCurrentItem = null;
         newItemElementForCurrent = null; 
+        newItemElementForCurrentSaveButtonEnabled = false; 
     }
 
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
@@ -1314,6 +1317,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     
     public void cancelCreateSingleItemElementSimpleDialog() {
         newItemElementForCurrent = null; 
+        newItemElementForCurrentSaveButtonEnabled = false; 
     }
     
     public void saveCreateSingleItemElementSimpleDialog() {
@@ -1325,6 +1329,28 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         update();
         
         newItemElementForCurrent = null;
+    }
+    
+    public void changeItemCreateSingleItemElementSimpleDialog() {
+        newItemElementForCurrent.setContainedItem(null);
+        newItemElementForCurrentSaveButtonEnabled = false; 
+    }
+    
+    public void itemSelectedCreateSingleItemElementSimpleDialog(String onSuccessCommand) {
+        ItemDomainEntity item = getCurrent(); 
+        try { 
+            prepareAddItemElement(item, newItemElementForCurrent);                       
+            checkItemElementsForItem(item);
+            
+            newItemElementForCurrentSaveButtonEnabled = true; 
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);                         
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error Selecting Item", ex.getErrorMessage());
+            newItemElementForCurrentSaveButtonEnabled = false; 
+        } finally {
+            item.getFullItemElementList().remove(newItemElementForCurrent); 
+            item.resetItemElementDisplayList();            
+        }                        
     }
 
     protected ItemElement createItemElement(ItemDomainEntity item) {        
@@ -2014,8 +2040,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return newItemElementForCurrent;
     }
 
-    public void setNewItemElementForCurrent(ItemElement newItemElementForCurrent) {
-        this.newItemElementForCurrent = newItemElementForCurrent;
+    public Boolean getNewItemElementForCurrentSaveButtonEnabled() {
+        return newItemElementForCurrentSaveButtonEnabled;
     }
 
     public TreeNode getItemElementListTreeTableRootNode() {

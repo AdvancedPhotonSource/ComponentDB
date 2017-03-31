@@ -56,9 +56,15 @@ See LICENSE file.
                 </ui:include>
 
                 <p:remoteCommand name="addNewAssemblyItemSelected"
+                                 onstart="PF('loadingDialog').show();"
+                                 action="#{itemDomainCatalogController.itemSelectedCreateSingleItemElementSimpleDialog('addNewAssemblyItemSelectedSucesfully()')}"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 /> 
+                
+                <p:remoteCommand name="addNewAssemblyItemSelectedSucesfully"
                                  onstart="toggleAddNewAssemblyItemPanels()"
-                                 update="addNewAssemblyItemOutputPanel"
-                                 action="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep1Defaults()}"/> 
+                                 update="#{updateAddNewAssemblyItemDialogIds}"
+                                 action="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep1Defaults()}" />
 
             </p:panel>
 
@@ -75,10 +81,9 @@ See LICENSE file.
 
                         <p:commandButton value="Change Item"
                                          onstart="toggleAddNewAssemblyItemPanels()"
-                                         action="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep2Defaults()}"
-                                         update="#{updateAddNewAssemblyItemDialogIds}">
-                            <f:setPropertyActionListener value="#{null}"
-                                                         target="#{newItemElement.containedItem}" />
+                                         update="#{updateAddNewAssemblyItemDialogIds}">                            
+                            <f:actionListener binding="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep2Defaults()}" />
+                            <f:actionListener binding="#{itemDomainCatalogController.changeItemCreateSingleItemElementSimpleDialog()}" />
                         </p:commandButton>
 
                         <h:outputLabel value="Required in all assamblies" 
@@ -95,13 +100,13 @@ See LICENSE file.
         </p:outputPanel>
         <f:facet name="footer">
             <p:outputPanel id="addNewAssemblyItemDialogFooterOutputPanel">
-                <p:commandButton value="Save" alt="Save" 
-                                 rendered="#{newItemElement.containedItem != null}"                                 
+                <p:commandButton value="Add" alt="Add" 
+                                 disabled="#{!itemDomainCatalogController.newItemElementForCurrentSaveButtonEnabled}" 
                                  action="#{entityController.saveCreateSingleItemElementSimpleDialog()}"
                                  ajax="false"
                                  update="@form"
                                  oncomplete="PF('addNewAssemblyItemDialogWidget').hide()"
-                                 icon="ui-icon-disk"/>
+                                 icon="ui-icon-plus"/>
 
                 <p:commandButton value="Close" 
                                  icon="ui-icon-arrowreturnthick-1-w"
