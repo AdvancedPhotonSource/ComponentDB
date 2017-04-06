@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../item/private/templates/itemDomainEntityCustomizeDisplayDialogTemplate.xhtml">
+
+
+    <ui:define name="rowExpansionCustomizeOptionsTab" />
+    <ui:define name="extraOptionsCustomizeOptionsTab" />
+    <ui:define name="propertyValueCustomizeOptionsTab" />
+    <ui:define name="additionalInformationAboutAllConfigurations" />
+
+    <ui:define name="entitySpecificCustomizeOptionsTab">
+        <p:tab title="Display Item Columns">
+            <p:panelGrid columns="2">                
+                <ui:include src="templateDefaults/customizeDisplayDialog/displayItemElementItemIdentifier1.xhtml" />
+
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemIdentifier2" 
+                                         rendered="#{currentItemController.entityDisplayItemIdentifier2}"
+                                         value="#{currentItemController.displayItemElementListItemIdentifier2}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemIdentifier2" 
+                               rendered="#{currentItemController.entityDisplayItemIdentifier2}"
+                               value="Display #{currentItemController.itemIdentifier2Title}"
+                               styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemType" 
+                                         rendered="#{currentItemController.entityDisplayItemType}"
+                                         value="#{currentItemController.displayItemElementListItemType}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemType" 
+                               rendered="#{currentItemController.entityDisplayItemType}"
+                               value="Display #{currentItemController.itemItemTypeTitle}"
+                               styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemCategory" 
+                                         rendered="#{currentItemController.entityDisplayItemCategory}"
+                                         value="#{currentItemController.displayItemElementListItemCategory}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemCategory" 
+                               rendered="#{currentItemController.entityDisplayItemCategory}"
+                               value="Display #{currentItemController.itemItemCategoryTitle}"
+                               styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemProject" 
+                                         rendered="#{currentItemController.entityDisplayItemProject}"
+                                         value="#{currentItemController.displayItemElementListProject}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemProject" 
+                               rendered="#{currentItemController.entityDisplayItemProject}"
+                               value="Display Project"
+                               styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemSource" 
+                                         rendered="#{currentItemController.entityDisplayItemSources}"
+                                         value="#{currentItemController.displayItemElementListSource}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemSource" 
+                               rendered="#{currentItemController.entityDisplayItemSources}"
+                               value="Display Source"
+                               styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemDescription"                                          
+                                         value="#{currentItemController.displayItemElementListDescription}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemDescription" 
+                               value="Display Description"
+                               styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemQrId"         
+                                         rendered="#{currentItemController.entityDisplayQrId}"
+                                         value="#{currentItemController.displayItemElementListQrId}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementItemQrId" 
+                               value="Display QrId"
+                               styleClass="dialogDataLabel"/>
+
+            </p:panelGrid>
+
+        </p:tab>
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogAdditionalFooterContent">
+        <ui:include src="templateDefaults/customizeDisplayDialog/toggleSimpleComplexElementsListCommandButton.xhtml" >
+            <ui:param name="commandButtonText" value="Complex View" />
+        </ui:include>
+    </ui:define>
+
+
+</ui:composition>
