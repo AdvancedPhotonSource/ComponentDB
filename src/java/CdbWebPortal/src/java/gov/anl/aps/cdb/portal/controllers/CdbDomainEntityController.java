@@ -594,13 +594,19 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
 
     public boolean isDisplayRowExpansionLogs(CdbDomainEntity domainEntity) {
-        List<Log> itemLog = domainEntity.getLogList();
-        return itemLog != null && !itemLog.isEmpty();
+        if (domainEntity != null) {
+            List<Log> itemLog = domainEntity.getLogList();
+            return itemLog != null && !itemLog.isEmpty();
+        }
+        return false; 
     }
 
     public boolean isDisplayRowExpansionProperties(CdbDomainEntity domainEntity) {
-        List<PropertyValue> itemProperties = domainEntity.getPropertyValueDisplayList();
-        return itemProperties != null && !itemProperties.isEmpty();
+        if (domainEntity != null) {
+            List<PropertyValue> itemProperties = domainEntity.getPropertyValueDisplayList();
+            return itemProperties != null && !itemProperties.isEmpty();
+        }
+        return false;
     }
 
     public String getFilterByPropertyValue1() {
