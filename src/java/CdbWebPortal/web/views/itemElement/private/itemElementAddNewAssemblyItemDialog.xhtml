@@ -14,7 +14,7 @@ See LICENSE file.
     <p:remoteCommand name="showAddNewAssemblyItemDialog"
                      update="addNewAssemblyItemDialog"
                      oncomplete="PF('addNewAssemblyItemDialogWidget').show()">
-        <f:actionListener binding="#{itemDomainCatalogController.prepareCreateSingleItemElementSimpleDialog()}" />
+        <f:actionListener binding="#{currentItemController.prepareCreateSingleItemElementSimpleDialog()}" />
         <f:actionListener binding="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep1Defaults()}" />
     </p:remoteCommand>
 
@@ -26,7 +26,7 @@ See LICENSE file.
               header="Add New Item Element">
 
         <ui:param name="newItemElement"
-                  value="#{itemDomainCatalogController.newItemElementForCurrent}"
+                  value="#{currentItemController.newItemElementForCurrent}"
                   />
 
         <ui:param name="updateAddNewAssemblyItemDialogIds"
@@ -34,6 +34,8 @@ See LICENSE file.
                   />
         <p:outputPanel id="addNewAssemblyItemOutputPanel"
                        rendered="#{newItemElement != null}">
+            
+            <ui:param name="simpleElementsView" value="#{itemElementController.displayItemElementSimpleView}" />
 
             <p:remoteCommand name="toggleAddNewAssemblyItemPanels"
                              onstart="PF('loadingDialog').show();
@@ -52,12 +54,12 @@ See LICENSE file.
                     <ui:param name="updateTarget" value="#{updateAddNewAssemblyItemDialogIds}" />
                     <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
                     <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />                    
-                    <ui:param name="additionalSelectionMadeRemoteCommandName" value="addNewAssemblyItemSelected" /> 
+                    <ui:param name="additionalSelectionMadeRemoteCommands" value="addNewAssemblyItemSelected();" /> 
                 </ui:include>
 
                 <p:remoteCommand name="addNewAssemblyItemSelected"
                                  onstart="PF('loadingDialog').show();"
-                                 action="#{itemDomainCatalogController.itemSelectedCreateSingleItemElementSimpleDialog('addNewAssemblyItemSelectedSucesfully()')}"
+                                 action="#{currentItemController.validateCreateSingleItemElementSimpleDialog('addNewAssemblyItemSelectedSucesfully()', 'Error Selecting Item')}"
                                  oncomplete="PF('loadingDialog').hide();"
                                  /> 
                 
@@ -68,7 +70,8 @@ See LICENSE file.
 
             </p:panel>
 
-            <p:panel binding="#{simpleCreateItemElementDialogUtility.selectOptionsPanel}"
+            <p:panel id="addNewAssemblyItemDialogSelectOptionsPanel"
+                     binding="#{simpleCreateItemElementDialogUtility.selectOptionsPanel}"
                      toggleable="true"
                      widgetVar="addNewAssemblyItemOptionsPanelWidget"
                      collapsed="true">                
@@ -83,7 +86,7 @@ See LICENSE file.
                                          onstart="toggleAddNewAssemblyItemPanels()"
                                          update="#{updateAddNewAssemblyItemDialogIds}">                            
                             <f:actionListener binding="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep2Defaults()}" />
-                            <f:actionListener binding="#{itemDomainCatalogController.changeItemCreateSingleItemElementSimpleDialog()}" />
+                            <f:actionListener binding="#{currentItemController.changeItemCreateSingleItemElementSimpleDialog()}" />
                         </p:commandButton>
 
                         <h:outputLabel value="Required in all assamblies" 
@@ -92,7 +95,16 @@ See LICENSE file.
                             <ui:param name="itemElementObject"
                                       value="#{newItemElement}" />
                         </ui:include>
-
+                        
+                        <h:outputText id="addNewAssemblyItemDialogItemElementName"
+                                      value="Item Element Name"
+                                      styleClass="entityDataEmphasizedLabel"
+                                      rendered="#{!simpleElementsView}"/>
+                        <h:inputText value="#{newItemElement.name}"
+                                     rendered="#{!simpleElementsView}"/> 
+                        <p:tooltip for="addNewAssemblyItemDialogItemElementName" 
+                                   value="Name of the new element."
+                                   rendered="#{!simpleElementsView}"/>
                     </p:panelGrid>                   
                 </p:outputPanel>                
             </p:panel>
@@ -101,11 +113,11 @@ See LICENSE file.
         <f:facet name="footer">
             <p:outputPanel id="addNewAssemblyItemDialogFooterOutputPanel">
                 <p:commandButton value="Add" alt="Add" 
-                                 disabled="#{!itemDomainCatalogController.newItemElementForCurrentSaveButtonEnabled}" 
-                                 action="#{entityController.saveCreateSingleItemElementSimpleDialog()}"
-                                 ajax="false"
-                                 update="@form"
-                                 oncomplete="PF('addNewAssemblyItemDialogWidget').hide()"
+                                 update="addNewAssemblyItemDialogSelectOptionsPanel @this"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide()"
+                                 disabled="#{!currentItemController.newItemElementForCurrentSaveButtonEnabled}" 
+                                 action="#{currentItemController.validateCreateSingleItemElementSimpleDialog('onSuccessDialogAddItemElementValidation()', 'Error Adding Assembly Item')}"                                 
                                  icon="ui-icon-plus"/>
 
                 <p:commandButton value="Close" 
@@ -113,6 +125,13 @@ See LICENSE file.
                                  oncomplete="PF('addNewAssemblyItemDialogWidget').hide()"
                                  action="#{entityController.cancelCreateSingleItemElementSimpleDialog()}"
                                  />
+                
+                <p:remoteCommand name="onSuccessDialogAddItemElementValidation"
+                                 action="#{entityController.saveCreateSingleItemElementSimpleDialog()}"
+                                 update="@form"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide();
+                                             PF('addNewAssemblyItemDialogWidget').hide()"/>
             </p:outputPanel>
         </f:facet>
     </p:dialog>
