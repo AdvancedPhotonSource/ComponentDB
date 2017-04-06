@@ -90,7 +90,9 @@ See LICENSE file.
                              rendered="#{settingController.displayCurrentSettingOptions 
                                          and savable 
                                          and settingController.sessionUserHaveSettingsWritePermissions}"
-                             icon="ui-icon-check"/>
+                             icon="ui-icon-disk"/>
+            
+            <ui:insert name="customizeDisplayDialogAdditionalFooterContent" />
         </f:facet>
     </p:dialog>
 
