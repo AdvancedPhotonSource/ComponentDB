@@ -35,6 +35,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
@@ -51,8 +52,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -111,6 +112,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Boolean autoLoadListFilterValues = false;
 
     protected Boolean displayItemListTreeView = null;
+    
+    protected Boolean displayItemElementListItemIdentifier1 = false; 
+    protected Boolean displayItemElementListItemIdentifier2 = false; 
+    protected Boolean displayItemElementListItemType = false; 
+    protected Boolean displayItemElementListItemCategory = false; 
+    protected Boolean displayItemElementListSource = false; 
+    protected Boolean displayItemElementListProject = false; 
+    protected Boolean displayItemElementListDescription = false; 
+    protected Boolean displayItemElementListQrId = false; 
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected Integer displayListDataModelScopePropertyTypeId = null;
@@ -395,17 +405,187 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
      * @return
      */
     public abstract String getDefaultDomainDerivedToDomainName();
+    
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        logger.debug("Updating list settings from setting type defaults");
+        
+        if (getDisplayItemElementListItemIdentifier1Key() != null) {
+            displayItemElementListItemIdentifier1 = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemIdentifier1Key()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListItemIdentifier2Key() != null) {
+            displayItemElementListItemIdentifier2 = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemIdentifier2Key()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListItemTypeKey() != null) {
+            displayItemElementListItemType = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemTypeKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListItemCategoryKey() != null) {
+            displayItemElementListItemCategory = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemCategoryKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListProjectKey() != null) {
+            displayItemElementListProject = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListProjectKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListSourceKey() != null) {
+            displayItemElementListSource = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListSourceKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListDescriptionKey() != null) {
+            displayItemElementListDescription = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListDescriptionKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListQrIdKey() != null) {
+            displayItemElementListQrId = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListQrIdKey()).getDefaultValue()); 
+        }
+        
+    }
+    
+    @Override
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        super.updateSettingsFromSessionSettingEntity(settingEntity);
+        if (settingEntity == null) {
+            return;
+        }
+
+        logger.debug("Updating list settings from session user"); 
+        
+        if (getDisplayItemElementListItemIdentifier1Key() != null) {
+            displayItemElementListItemIdentifier1 = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemIdentifier1Key(), displayItemElementListItemIdentifier1); 
+        }
+        
+        if (getDisplayItemElementListItemIdentifier2Key() != null) {
+            displayItemElementListItemIdentifier2 = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemIdentifier2Key(), displayItemElementListItemIdentifier2); 
+        }
+        
+        if (getDisplayItemElementListItemTypeKey() != null) {
+            displayItemElementListItemType = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemTypeKey(), displayItemElementListItemType); 
+        }
+        
+        if (getDisplayItemElementListItemCategoryKey() != null) {
+            displayItemElementListItemCategory = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemCategoryKey(), displayItemElementListItemCategory); 
+        }
+        
+        if (getDisplayItemElementListProjectKey() != null) {
+            displayItemElementListProject = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListProjectKey(), displayItemElementListProject);         
+        }
+        
+        if (getDisplayItemElementListSourceKey() != null) {
+            displayItemElementListSource = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListSourceKey(), displayItemElementListSource); 
+        }
+        
+        if (getDisplayItemElementListDescriptionKey() != null) {
+            displayItemElementListDescription = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListDescriptionKey(), displayItemElementListDescription); 
+        }
+        
+        if (getDisplayItemElementListQrIdKey() != null) {
+            displayItemElementListQrId = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListQrIdKey(), displayItemElementListQrId); 
+        }
+        
+    }
 
     public String getDisplayItemElementListItemIdentifier1Key() {
         return null;
     }
 
     public Boolean getDisplayItemElementListItemIdentifier1() {
-        return null;
+        return displayItemElementListItemIdentifier1;
     }
 
     public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1){
+        this.displayItemElementListItemIdentifier1 = displayItemElementListItemIdentifier1; 
+    }
 
+    public String getDisplayItemElementListItemIdentifier2Key() {
+        return null; 
+    }
+    
+    public Boolean getDisplayItemElementListItemIdentifier2() {
+        return displayItemElementListItemIdentifier2;
+    }
+
+    public void setDisplayItemElementListItemIdentifier2(Boolean displayItemElementListItemIdentifier2) {
+        this.displayItemElementListItemIdentifier2 = displayItemElementListItemIdentifier2;
+    }
+
+    public String getDisplayItemElementListItemTypeKey() {
+        return null; 
+    }
+    
+    public Boolean getDisplayItemElementListItemType() {
+        return displayItemElementListItemType;
+    }
+
+    public void setDisplayItemElementListItemType(Boolean displayItemElementListItemType) {
+        this.displayItemElementListItemType = displayItemElementListItemType;
+    }
+    
+    public String getDisplayItemElementListItemCategoryKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListItemCategory() {
+        return displayItemElementListItemCategory;
+    }
+
+    public void setDisplayItemElementListItemCategory(Boolean displayItemElementListItemCategory) {
+        this.displayItemElementListItemCategory = displayItemElementListItemCategory;
+    }
+    
+    public String getDisplayItemElementListSourceKey() {
+        return null;
+    }
+
+    public Boolean getDisplayItemElementListSource() {
+        return displayItemElementListSource;
+    }
+
+    public void setDisplayItemElementListSource(Boolean displayItemElementListSource) {
+        this.displayItemElementListSource = displayItemElementListSource;
+    }
+    
+    public String getDisplayItemElementListProjectKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListProject() {
+        return displayItemElementListProject;
+    }
+
+    public void setDisplayItemElementListProject(Boolean displayItemElementListProject) {
+        this.displayItemElementListProject = displayItemElementListProject;
+    }
+    
+    public String getDisplayItemElementListDescriptionKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListDescription() {
+        return displayItemElementListDescription;
+    }
+
+    public void setDisplayItemElementListDescription(Boolean displayItemElementListDescription) {
+        this.displayItemElementListDescription = displayItemElementListDescription;
+    }
+    
+    public String getDisplayItemElementListQrIdKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListQrId() {
+        return displayItemElementListQrId;
+    }
+
+    public void setDisplayItemElementListQrId(Boolean displayItemElementListQrId) {
+        this.displayItemElementListQrId = displayItemElementListQrId;
     }
 
     public Domain getDefaultDomain() {
@@ -1336,7 +1516,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         newItemElementForCurrentSaveButtonEnabled = false; 
     }
     
-    public void itemSelectedCreateSingleItemElementSimpleDialog(String onSuccessCommand) {
+    public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
         ItemDomainEntity item = getCurrent(); 
         try { 
             prepareAddItemElement(item, newItemElementForCurrent);                       
@@ -1344,9 +1524,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             
             newItemElementForCurrentSaveButtonEnabled = true; 
             RequestContext.getCurrentInstance().execute(onSuccessCommand);                         
-        } catch (CdbException ex) {
-            SessionUtility.addErrorMessage("Error Selecting Item", ex.getErrorMessage());
-            newItemElementForCurrentSaveButtonEnabled = false; 
+        } catch (CdbException ex) {            
+            SessionUtility.addErrorMessage(errorSummary, ex.getErrorMessage()); 
         } finally {
             item.getFullItemElementList().remove(newItemElementForCurrent); 
             item.resetItemElementDisplayList();            
