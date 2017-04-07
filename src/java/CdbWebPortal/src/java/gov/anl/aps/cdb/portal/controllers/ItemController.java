@@ -1546,14 +1546,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         boolean unique = false;
         while (elementName == null) {
             String test = elementNameSuffix + elementNumber;
-            for (ItemElement ittrItemElement : itemElementsDisplayList) {
-                if (ittrItemElement.getName().equalsIgnoreCase(test)) {
-                    elementNumber++;
-                    unique = false;
-                    break;
-                } else {
-                    unique = true;
+            if (itemElementsDisplayList.size() > 0) {
+                for (ItemElement ittrItemElement : itemElementsDisplayList) {
+                    if (ittrItemElement.getName().equalsIgnoreCase(test)) {
+                        elementNumber++;
+                        unique = false;
+                        break;
+                    } else {
+                        unique = true;
+                    }
                 }
+            } else {                
+                unique = true; 
             }
             if (unique) {
                 elementName = test;
