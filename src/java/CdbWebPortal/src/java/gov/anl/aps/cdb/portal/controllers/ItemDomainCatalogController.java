@@ -6,9 +6,10 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -22,6 +23,7 @@ import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
@@ -34,7 +36,7 @@ import org.primefaces.event.FlowEvent;
  */
 @Named("itemDomainCatalogController")
 @SessionScoped
-public class ItemDomainCatalogController extends ItemController {
+public class ItemDomainCatalogController extends ItemController<ItemDomainCatalog, ItemDomainCatalogFacade>  {
 
     private final String DOMAIN_TYPE_NAME = "Catalog";
     private final String DERIVED_DOMAIN_NAME = "Inventory";
@@ -115,9 +117,18 @@ public class ItemDomainCatalogController extends ItemController {
     // Set externally from item element controller
     private Boolean displayItemElementListItemIdentifier1 = null; 
 
-    private List<Item> inventorySparesList = null;
-    private List<Item> inventoryNonSparesList = null;
+    private List<ItemDomainInventory> inventorySparesList = null;
+    private List<ItemDomainInventory> inventoryNonSparesList = null;
     private Boolean displayInventorySpares = null;
+    
+    @EJB
+    ItemDomainCatalogFacade itemDomainCatalogFacade;    
+
+    @Override
+    public List<ItemDomainCatalog> getItemList() {
+        List<ItemDomainCatalog> itemList = super.getItemList();
+        return itemList; 
+    }
 
     public ItemDomainCatalogController() {
         super();
@@ -143,14 +154,6 @@ public class ItemDomainCatalogController extends ItemController {
         return "Technical System";
     }
 
-    public boolean isCurrentItemElementListEditable() {
-        Item item = getCurrent();
-        if (item != null) {
-            return item.getDerivedFromItemList().isEmpty();
-        }
-        return false;
-    }
-
     @Override
     public boolean isItemHasSimpleListView() {
         return true;
@@ -168,13 +171,13 @@ public class ItemDomainCatalogController extends ItemController {
     } 
 
     @Override
-    protected Item cloneCreateItemElements(Item clonedItem, Item cloningFrom) {
+    protected ItemDomainCatalog cloneCreateItemElements(ItemDomainCatalog clonedItem, ItemDomainCatalog cloningFrom) {
         return cloneCreateItemElements(clonedItem, cloningFrom, true);
     } 
 
     @Override
-    public ItemElement createItemElement(Item item) {
-        ItemElement itemElement = super.createItemElement(item); 
+    public ItemElement createItemElement(ItemDomainCatalog item) {
+        ItemElement itemElement = super.createItemElement(item);
         itemElement.setIsRequired(true);
         itemElement.setDerivedFromItemElementList(new ArrayList<>());
                
@@ -183,11 +186,11 @@ public class ItemDomainCatalogController extends ItemController {
     
     protected void addInventoryElementsForEachInventoryItem(ItemElement catalogItemElement) {
         // Get fresh db representation of parent item. 
-        Item parentItem = findById(catalogItemElement.getParentItem().getId()); 
+        ItemDomainCatalog parentItem = findById(catalogItemElement.getParentItem().getId()); 
         
         
-        List<Item> inventoryItems = parentItem.getDerivedFromItemList();                 
-        for (Item inventoryItem : inventoryItems) {
+        List<ItemDomainInventory> inventoryItems = parentItem.getInventoryItemList();
+        for (ItemDomainInventory inventoryItem : inventoryItems) {
             // verify item element for the particular element needs to be created. 
             if (inventoryItemContainsItemElementForCatalogElement(catalogItemElement, inventoryItem)) {
                 continue; 
@@ -206,7 +209,7 @@ public class ItemDomainCatalogController extends ItemController {
         }       
     }
     
-    private boolean inventoryItemContainsItemElementForCatalogElement(ItemElement catalogElement, Item inventoryItem) {
+    private boolean inventoryItemContainsItemElementForCatalogElement(ItemElement catalogElement, ItemDomainInventory inventoryItem) {
         for (ItemElement inventoryElement : inventoryItem.getItemElementDisplayList()) {
             if (inventoryElement.getDerivedFromItemElement().getId().equals(catalogElement.getId())) {
                 return true; 
@@ -249,19 +252,13 @@ public class ItemDomainCatalogController extends ItemController {
     }
     
     @Override
-    protected void checkItem(Item item) throws CdbException {
-        super.checkItem(item);
-
-        //Check needed to make sure it is not attempting to save one of the instances.
-        if (getDefaultDomainName().equals(item.getDomain().getName())) {
-            // Verify that atleast one entity type is selected.
-            checkEntityTypeSpecified(item);
-        }
+    protected void checkItem(ItemDomainCatalog catalogItem) throws CdbException {
+        super.checkItem(catalogItem);
         
     } 
 
     @Override
-    protected void checkItemElementsForItem(Item item) throws CdbException {
+    protected void checkItemElementsForItem(ItemDomainCatalog item) throws CdbException {
         super.checkItemElementsForItem(item);
         
         // Item element name check occurs prior to this check. 
@@ -273,7 +270,7 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     @Override
-    public void prepareEntityUpdate(Item item) throws CdbException {
+    public void prepareEntityUpdate(ItemDomainCatalog item) throws CdbException {
         super.prepareEntityUpdate(item); 
         
         for (ItemElement itemElement : item.getFullItemElementList()) {
@@ -288,18 +285,9 @@ public class ItemDomainCatalogController extends ItemController {
         }
     }
 
-    private void checkEntityTypeSpecified(Item item) throws CdbException {
-        if (getEntityDisplayItemEntityTypes()) {
-            List<EntityType> entityTypeList = item.getEntityTypeList();
-            if (entityTypeList == null || entityTypeList.isEmpty()) {
-                throw new CdbException("At least one entity type must be specified for a catalog item.");
-            }
-        }
-    }
-
     @Override
-    protected Item createEntityInstance() {
-        Item newItem = super.createEntityInstance();
+    protected ItemDomainCatalog createEntityInstance() {
+        ItemDomainCatalog newItem = super.createEntityInstance();
         if (getCurrentItemProject() != null) {
             List<ItemProject> itemProjectList = new ArrayList<>();
             itemProjectList.add(getCurrentItemProject());
@@ -313,12 +301,7 @@ public class ItemDomainCatalogController extends ItemController {
         String currentStep = event.getOldStep();
 
         if (currentStep.equals(ItemCreateWizardSteps.classification.getValue())) {
-            try {
-                checkEntityTypeSpecified(getCurrent());
-            } catch (CdbException ex) {
-                SessionUtility.addWarningMessage("Entity type not specified", ex.getErrorMessage());
-                return ItemCreateWizardSteps.classification.getValue();
-            }
+            // Nothing needs to be verified for classification step at this point. 
         }
 
         return super.getNextStepForCreateItemWizard(event);
@@ -338,11 +321,11 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     public void resetInventorySpares() {
-        Item currentItem = getCurrent();
+        ItemDomainCatalog currentItem = getCurrent();
         if (currentItem != null) {
-            List<Item> inventoryItems = currentItem.getDerivedFromItemList();
+            List<ItemDomainInventory> inventoryItems = currentItem.getInventoryItemList();
             if (inventoryItems != null) {
-                for (Item inventoryItem : inventoryItems) {
+                for (ItemDomainInventory inventoryItem : inventoryItems) {
                     inventoryItem.setSparePartIndicator(null);
                 }
             }
@@ -351,12 +334,12 @@ public class ItemDomainCatalogController extends ItemController {
         inventorySparesList = null;
     }
 
-    public List<Item> getInventorySparesList() {
+    public List<ItemDomainInventory> getInventorySparesList() {
         if (inventorySparesList == null) {
-            Item currentItem = getCurrent();
+            ItemDomainCatalog currentItem = getCurrent();
             if (current != null) {
                 inventorySparesList = new ArrayList<>();
-                for (Item inventoryItem : currentItem.getDerivedFromItemList()) {
+                for (ItemDomainInventory inventoryItem : currentItem.getInventoryItemList()) {
                     if (inventoryItem.getSparePartIndicator()) {
                         inventorySparesList.add(inventoryItem);
                     }
@@ -366,12 +349,12 @@ public class ItemDomainCatalogController extends ItemController {
         return inventorySparesList;
     }
 
-    public List<Item> getInventoryNonSparesList() {
+    public List<ItemDomainInventory> getInventoryNonSparesList() {
         if (inventoryNonSparesList == null) {
-            Item currentItem = getCurrent();
+            ItemDomainCatalog currentItem = getCurrent();
             if (currentItem != null) {
-                List<Item> spareItems = getInventorySparesList();
-                List<Item> allInventoryItems = getCurrent().getDerivedFromItemList();
+                List<ItemDomainInventory> spareItems = getInventorySparesList();
+                List<ItemDomainInventory> allInventoryItems = getCurrent().getInventoryItemList();
                 inventoryNonSparesList = new ArrayList<>(allInventoryItems);
                 inventoryNonSparesList.removeAll(spareItems);
             }
@@ -380,7 +363,7 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     public int getInventorySparesCount() {
-        List<Item> sparesList = getInventorySparesList();
+        List<ItemDomainInventory> sparesList = getInventorySparesList();
         if (sparesList != null) {
             return sparesList.size();
         }
@@ -412,7 +395,7 @@ public class ItemDomainCatalogController extends ItemController {
     }
 
     public int getInventoryNonSparesCount() {
-        List<Item> nonSparesList = getInventoryNonSparesList();
+        List<ItemDomainInventory> nonSparesList = getInventoryNonSparesList();
         if (nonSparesList != null) {
             return nonSparesList.size();
         }
@@ -814,6 +797,16 @@ public class ItemDomainCatalogController extends ItemController {
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return DERIVED_DOMAIN_NAME;
+    }
+
+    @Override
+    protected ItemDomainCatalog instenciateNewItemDomainEntity() {
+        return new ItemDomainCatalog();
+    }
+
+    @Override
+    protected ItemDomainCatalogFacade getEntityDbFacade() {
+        return itemDomainCatalogFacade; 
     }
 
 }
