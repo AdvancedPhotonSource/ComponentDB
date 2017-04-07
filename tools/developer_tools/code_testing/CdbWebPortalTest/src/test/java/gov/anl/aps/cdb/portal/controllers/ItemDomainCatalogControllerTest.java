@@ -33,8 +33,8 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     }
 
     @Test
-    public void checkItemFacadeWasSet() {
-        assertNotNull(itemDomainCatalogController.getItem(1));
+    public void checkItemFacadeWasSet() {                
+        assertNotNull(itemDomainCatalogController.getEntityDbFacade().findAll());
     }
     
     @Test
