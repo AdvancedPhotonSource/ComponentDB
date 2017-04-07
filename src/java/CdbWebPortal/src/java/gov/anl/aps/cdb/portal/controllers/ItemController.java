@@ -35,6 +35,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
@@ -70,8 +72,8 @@ import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.MenuElement;
 import org.primefaces.model.menu.MenuModel;
 
-public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements Serializable {
-    
+public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements Serializable {
+
     @EJB
     protected ItemElementFacade itemElementFacade;
 
@@ -107,9 +109,18 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     protected Boolean displayQrId = null;
     protected Boolean displayItemProject = null;
     protected Boolean displayItemEntityTypes = null;
-    protected Boolean autoLoadListFilterValues = false; 
+    protected Boolean autoLoadListFilterValues = false;
 
     protected Boolean displayItemListTreeView = null;
+    
+    protected Boolean displayItemElementListItemIdentifier1 = false; 
+    protected Boolean displayItemElementListItemIdentifier2 = false; 
+    protected Boolean displayItemElementListItemType = false; 
+    protected Boolean displayItemElementListItemCategory = false; 
+    protected Boolean displayItemElementListSource = false; 
+    protected Boolean displayItemElementListProject = false; 
+    protected Boolean displayItemElementListDescription = false; 
+    protected Boolean displayItemElementListQrId = false; 
 
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected Integer displayListDataModelScopePropertyTypeId = null;
@@ -174,6 +185,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     protected List<ItemType> availableItemTypesForCurrentItem = null;
     protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
+    protected ItemElement newItemElementForCurrent = null; 
+    protected Boolean newItemElementForCurrentSaveButtonEnabled = false; 
 
     protected Boolean cloneProperties = false;
     protected Boolean cloneCreateItemElementPlaceholders = false;
@@ -213,7 +226,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public ItemController() {
     }
-    
+
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
@@ -393,16 +406,186 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
      */
     public abstract String getDefaultDomainDerivedToDomainName();
     
-    public String getDisplayItemElementListItemIdentifier1Key() {
-        return null; 
-    }
-    
-    public Boolean getDisplayItemElementListItemIdentifier1() {
-        return null; 
-    }
-    
-    public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1){
+    @Override
+    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
+        super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
+        if (settingTypeMap == null) {
+            return;
+        }
+
+        logger.debug("Updating list settings from setting type defaults");
         
+        if (getDisplayItemElementListItemIdentifier1Key() != null) {
+            displayItemElementListItemIdentifier1 = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemIdentifier1Key()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListItemIdentifier2Key() != null) {
+            displayItemElementListItemIdentifier2 = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemIdentifier2Key()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListItemTypeKey() != null) {
+            displayItemElementListItemType = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemTypeKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListItemCategoryKey() != null) {
+            displayItemElementListItemCategory = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemCategoryKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListProjectKey() != null) {
+            displayItemElementListProject = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListProjectKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListSourceKey() != null) {
+            displayItemElementListSource = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListSourceKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListDescriptionKey() != null) {
+            displayItemElementListDescription = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListDescriptionKey()).getDefaultValue()); 
+        }
+        
+        if (getDisplayItemElementListQrIdKey() != null) {
+            displayItemElementListQrId = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListQrIdKey()).getDefaultValue()); 
+        }
+        
+    }
+    
+    @Override
+    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
+        super.updateSettingsFromSessionSettingEntity(settingEntity);
+        if (settingEntity == null) {
+            return;
+        }
+
+        logger.debug("Updating list settings from session user"); 
+        
+        if (getDisplayItemElementListItemIdentifier1Key() != null) {
+            displayItemElementListItemIdentifier1 = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemIdentifier1Key(), displayItemElementListItemIdentifier1); 
+        }
+        
+        if (getDisplayItemElementListItemIdentifier2Key() != null) {
+            displayItemElementListItemIdentifier2 = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemIdentifier2Key(), displayItemElementListItemIdentifier2); 
+        }
+        
+        if (getDisplayItemElementListItemTypeKey() != null) {
+            displayItemElementListItemType = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemTypeKey(), displayItemElementListItemType); 
+        }
+        
+        if (getDisplayItemElementListItemCategoryKey() != null) {
+            displayItemElementListItemCategory = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemCategoryKey(), displayItemElementListItemCategory); 
+        }
+        
+        if (getDisplayItemElementListProjectKey() != null) {
+            displayItemElementListProject = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListProjectKey(), displayItemElementListProject);         
+        }
+        
+        if (getDisplayItemElementListSourceKey() != null) {
+            displayItemElementListSource = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListSourceKey(), displayItemElementListSource); 
+        }
+        
+        if (getDisplayItemElementListDescriptionKey() != null) {
+            displayItemElementListDescription = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListDescriptionKey(), displayItemElementListDescription); 
+        }
+        
+        if (getDisplayItemElementListQrIdKey() != null) {
+            displayItemElementListQrId = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListQrIdKey(), displayItemElementListQrId); 
+        }
+        
+    }
+
+    public String getDisplayItemElementListItemIdentifier1Key() {
+        return null;
+    }
+
+    public Boolean getDisplayItemElementListItemIdentifier1() {
+        return displayItemElementListItemIdentifier1;
+    }
+
+    public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1){
+        this.displayItemElementListItemIdentifier1 = displayItemElementListItemIdentifier1; 
+    }
+
+    public String getDisplayItemElementListItemIdentifier2Key() {
+        return null; 
+    }
+    
+    public Boolean getDisplayItemElementListItemIdentifier2() {
+        return displayItemElementListItemIdentifier2;
+    }
+
+    public void setDisplayItemElementListItemIdentifier2(Boolean displayItemElementListItemIdentifier2) {
+        this.displayItemElementListItemIdentifier2 = displayItemElementListItemIdentifier2;
+    }
+
+    public String getDisplayItemElementListItemTypeKey() {
+        return null; 
+    }
+    
+    public Boolean getDisplayItemElementListItemType() {
+        return displayItemElementListItemType;
+    }
+
+    public void setDisplayItemElementListItemType(Boolean displayItemElementListItemType) {
+        this.displayItemElementListItemType = displayItemElementListItemType;
+    }
+    
+    public String getDisplayItemElementListItemCategoryKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListItemCategory() {
+        return displayItemElementListItemCategory;
+    }
+
+    public void setDisplayItemElementListItemCategory(Boolean displayItemElementListItemCategory) {
+        this.displayItemElementListItemCategory = displayItemElementListItemCategory;
+    }
+    
+    public String getDisplayItemElementListSourceKey() {
+        return null;
+    }
+
+    public Boolean getDisplayItemElementListSource() {
+        return displayItemElementListSource;
+    }
+
+    public void setDisplayItemElementListSource(Boolean displayItemElementListSource) {
+        this.displayItemElementListSource = displayItemElementListSource;
+    }
+    
+    public String getDisplayItemElementListProjectKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListProject() {
+        return displayItemElementListProject;
+    }
+
+    public void setDisplayItemElementListProject(Boolean displayItemElementListProject) {
+        this.displayItemElementListProject = displayItemElementListProject;
+    }
+    
+    public String getDisplayItemElementListDescriptionKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListDescription() {
+        return displayItemElementListDescription;
+    }
+
+    public void setDisplayItemElementListDescription(Boolean displayItemElementListDescription) {
+        this.displayItemElementListDescription = displayItemElementListDescription;
+    }
+    
+    public String getDisplayItemElementListQrIdKey() {
+        return null; 
+    }
+
+    public Boolean getDisplayItemElementListQrId() {
+        return displayItemElementListQrId;
+    }
+
+    public void setDisplayItemElementListQrId(Boolean displayItemElementListQrId) {
+        this.displayItemElementListQrId = displayItemElementListQrId;
     }
 
     public Domain getDefaultDomain() {
@@ -524,6 +707,8 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         super.resetVariablesForCurrent();
         availableItemTypesForCurrentItem = null;
         lastKnownItemCategoryListForCurrentItem = null;
+        newItemElementForCurrent = null; 
+        newItemElementForCurrentSaveButtonEnabled = false; 
     }
 
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
@@ -1302,21 +1487,99 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
         itemSourceList.remove(itemSource);
         updateOnRemoval();
     }
+    
+    public void prepareCreateSingleItemElementSimpleDialog() {
+        Item item = getCurrent(); 
+        if (item != null) {
+            newItemElementForCurrent = createItemElement(getCurrent()); 
+        }        
+    }
+    
+    public void cancelCreateSingleItemElementSimpleDialog() {
+        newItemElementForCurrent = null; 
+        newItemElementForCurrentSaveButtonEnabled = false; 
+    }
+    
+    public void saveCreateSingleItemElementSimpleDialog() {
+        Item currentItem = getCurrent(); 
+        if (currentItem != null) {
+            prepareAddItemElement(getCurrent(), newItemElementForCurrent);
+        }
+        
+        update();
+        
+        newItemElementForCurrent = null;
+    }
+    
+    public void changeItemCreateSingleItemElementSimpleDialog() {
+        newItemElementForCurrent.setContainedItem(null);
+        newItemElementForCurrentSaveButtonEnabled = false; 
+    }
+    
+    public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
+        ItemDomainEntity item = getCurrent(); 
+        try { 
+            prepareAddItemElement(item, newItemElementForCurrent);                       
+            checkItemElementsForItem(item);
+            
+            newItemElementForCurrentSaveButtonEnabled = true; 
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);                         
+        } catch (CdbException ex) {            
+            SessionUtility.addErrorMessage(errorSummary, ex.getErrorMessage()); 
+        } finally {
+            item.getFullItemElementList().remove(newItemElementForCurrent); 
+            item.resetItemElementDisplayList();            
+        }                        
+    }
 
-    protected ItemElement createItemElement(ItemDomainEntity item) {
-        List<ItemElement> itemElementList = item.getFullItemElementList();
+    protected ItemElement createItemElement(ItemDomainEntity item) {        
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         ItemElement itemElement = new ItemElement();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         itemElement.setEntityInfo(entityInfo);
-        itemElement.setParentItem(item);
+        itemElement.setParentItem(item);        
+
+        int elementNumber = itemElementsDisplayList.size() + 1;
+        String elementNameSuffix = "E";
+        String elementName = null;
+
+        boolean unique = false;
+        while (elementName == null) {
+            String test = elementNameSuffix + elementNumber;
+            if (itemElementsDisplayList.size() > 0) {
+                for (ItemElement ittrItemElement : itemElementsDisplayList) {
+                    if (ittrItemElement.getName().equalsIgnoreCase(test)) {
+                        elementNumber++;
+                        unique = false;
+                        break;
+                    } else {
+                        unique = true;
+                    }
+                }
+            } else {                
+                unique = true; 
+            }
+            if (unique) {
+                elementName = test;
+            }
+        }
+
+        itemElement.setName(elementName);
+        
+        return itemElement;
+    }
+    
+    protected void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
+        List<ItemElement> itemElementList = item.getFullItemElementList();
+        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();                
+        
         itemElementList.add(itemElement);
         itemElementsDisplayList.add(0, itemElement);
-        return itemElement;
     }
 
     public void prepareAddItemElement(ItemDomainEntity item) {
-        createItemElement(item);
+        ItemElement itemElement = createItemElement(item);
+        prepareAddItemElement(item, itemElement);
     }
 
     public void completeSuccessfulItemElementRemoval(ItemElement itemElement) {
@@ -1386,7 +1649,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
     }
 
     public List<ItemDomainEntity> completeItem(String query) {
-        List<Item> itemList = (List<Item>)(List<?>) getSelectItemCandidateList(); 
+        List<Item> itemList = (List<Item>) (List<?>) getSelectItemCandidateList();
         return (List<ItemDomainEntity>) ItemUtility.filterItem(query, itemList);
     }
 
@@ -1724,7 +1987,7 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public List<Item> completeItemElementItem(String queryString) {
         //return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
-        return null; 
+        return null;
     }
 
     /**
@@ -1954,6 +2217,14 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
 
     public void setItemToClone(Item itemToClone) {
         this.itemToClone = itemToClone;
+    }
+
+    public ItemElement getNewItemElementForCurrent() {
+        return newItemElementForCurrent;
+    }
+
+    public Boolean getNewItemElementForCurrentSaveButtonEnabled() {
+        return newItemElementForCurrentSaveButtonEnabled;
     }
 
     public TreeNode getItemElementListTreeTableRootNode() {
@@ -2730,18 +3001,18 @@ public abstract class ItemController <ItemDomainEntity extends Item, ItemDomainE
             }
             String itemElementName = itemElement.getName();
             if (elementNames.contains(itemElementName)) {
-                throw new CdbException("Element names must be unique within their assembly. '" + itemElementName + "' is repeated."); 
+                throw new CdbException("Element names must be unique within their assembly. '" + itemElementName + "' is repeated.");
             }
-            
+
             elementNames.add(itemElement.getName());
         }
         // Throws exception if a tree cannot be generated due to circular reference. 
         ItemElementUtility.createItemElementRoot(item);
     }
-    
+
     public void checkItemElement(ItemElement itemElement) throws CdbException {
-        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem(); 
-        checkItemElementsForItem(parentItem);        
+        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem();
+        checkItemElementsForItem(parentItem);
     }
 
     protected String itemDomainToString(Item item) {

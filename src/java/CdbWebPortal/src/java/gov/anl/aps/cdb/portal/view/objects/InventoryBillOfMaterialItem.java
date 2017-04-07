@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.view.objects;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -49,6 +50,15 @@ public class InventoryBillOfMaterialItem {
     private ItemDomainCatalog catalogItem = null;
 
     protected DataModel existingInventoryItemSelectDataModel = null;
+    
+    protected Boolean simpleView = null; 
+
+    public Boolean getSimpleView() {
+        if (simpleView == null) {
+            simpleView = ItemElementController.getInstance().getDisplayItemElementSimpleView(); 
+        }
+        return simpleView;
+    }
     
     public InventoryBillOfMaterialItem(ItemElement catalogItemElement, ItemDomainInventory parentItemInstance) {        
         loadItemDomainInventoryController();
@@ -348,8 +358,17 @@ public class InventoryBillOfMaterialItem {
             // Root Item
             response += inventoryItem.getDerivedFromItem().getName();
         } else {
-            // Part of root item. 
-            response += catalogItemElement.getName();
+            // Part of root item.
+            if (getSimpleView()) {
+                ItemDomainCatalog catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();  
+                if (catalogItem != null) {
+                    response += catalogItem.getName(); 
+                } else {
+                    response += catalogItemElement.getName();
+                }
+            } else {
+                response += catalogItemElement.getName();
+            }
         }
 
         // Add simple attributes specified by user. 

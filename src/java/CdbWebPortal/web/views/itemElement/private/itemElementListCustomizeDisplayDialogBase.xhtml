@@ -11,13 +11,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 template="../../item/private/templates/itemDomainEntityCustomizeDisplayDialogTemplate.xhtml">
     
-    <ui:define name="domainEntitySpecificColumns">
-        <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemIdentifier1" 
-                                 rendered="#{currentItemController.entityDisplayItemIdentifier1}"
-                                 value="#{currentItemController.displayItemElementListItemIdentifier1}"/>
-        <h:outputLabel for="#{entityTypeName}DisplayItemElementItemIdentifier1" 
-                       rendered="#{currentItemController.entityDisplayItemIdentifier1}"
-                       value="Display #{currentItemController.itemIdentifier1Title}"/>
+    <ui:define name="domainEntitySpecificColumns">                
+        <ui:include src="templateDefaults/customizeDisplayDialog/displayItemElementItemIdentifier1.xhtml" />        
     </ui:define>
     
     <ui:define name="domainEntitySpecificRowExpansion">
@@ -52,6 +47,12 @@ See LICENSE file.
                 <h:outputLabel for="#{entityTypeName}SortByPropertyType" value="Sort By Property Type" styleClass="dialogDataLabel"/>  
             </p:panelGrid>
         </p:tab>
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogAdditionalFooterContent">
+        <ui:include src="templateDefaults/customizeDisplayDialog/toggleSimpleComplexElementsListCommandButton.xhtml" >
+            <ui:param name="commandButtonText" value="Simple View" />
+        </ui:include>
     </ui:define>
 
 </ui:composition>

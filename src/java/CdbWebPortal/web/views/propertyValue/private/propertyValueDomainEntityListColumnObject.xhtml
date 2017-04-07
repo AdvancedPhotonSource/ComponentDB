@@ -20,12 +20,13 @@ See LICENSE file.
     <ui:param name="propertyTypeName5" value="#{entityController.getDisplayPropertyTypeName(propertyTypeId5)}"/>
     
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
+    <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
     
     <ui:include src="#{propertyValueColumn}">
         <ui:param name="propertyTypeName" value="#{propertyTypeName1}" />  
         <ui:param name="propertyTypeId" value="#{propertyTypeId1}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue1}" />
-        <ui:param name="propertyValueRendered" value="#{propertyTypeId1 != null}" /> 
+        <ui:param name="propertyValueRendered" value="#{rendered and propertyTypeId1 != null}" /> 
         <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue1}" />
     </ui:include>
 
@@ -33,7 +34,7 @@ See LICENSE file.
         <ui:param name="propertyTypeName" value="#{propertyTypeName2}" />
         <ui:param name="propertyTypeId" value="#{propertyTypeId2}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue2}" />
-        <ui:param name="propertyValueRendered" value="#{propertyTypeId2 != null}" />   
+        <ui:param name="propertyValueRendered" value="#{rendered and propertyTypeId2 != null}" />   
         <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue2}" />
     </ui:include>
 
@@ -41,7 +42,7 @@ See LICENSE file.
         <ui:param name="propertyTypeName" value="#{propertyTypeName3}" />
         <ui:param name="propertyTypeId" value="#{propertyTypeId3}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue3}" />
-        <ui:param name="propertyValueRendered" value="#{propertyTypeId3 != null}" /> 
+        <ui:param name="propertyValueRendered" value="#{rendered and propertyTypeId3 != null}" /> 
         <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue3}" />
     </ui:include>
 
@@ -49,7 +50,7 @@ See LICENSE file.
         <ui:param name="propertyTypeName" value="#{propertyTypeName4}" />
         <ui:param name="propertyTypeId" value="#{propertyTypeId4}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue4}" />
-        <ui:param name="propertyValueRendered" value="#{propertyTypeId4 != null}" />  
+        <ui:param name="propertyValueRendered" value="#{rendered and propertyTypeId4 != null}" />  
         <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue4}" />
     </ui:include>
 
@@ -57,7 +58,7 @@ See LICENSE file.
         <ui:param name="propertyTypeName" value="#{propertyTypeName5}" />
         <ui:param name="propertyTypeId" value="#{propertyTypeId5}" />
         <ui:param name="prpoertyValueFilterValue" value="#{entityController.filterByPropertyValue5}" />
-        <ui:param name="propertyValueRendered" value="#{propertyTypeId5 != null}" />   
+        <ui:param name="propertyValueRendered" value="#{rendered and propertyTypeId5 != null}" />   
         <ui:param name="propertyValueFilterable" value="#{filterable and entityController.filterablePropertyValue5}" />
     </ui:include>
 

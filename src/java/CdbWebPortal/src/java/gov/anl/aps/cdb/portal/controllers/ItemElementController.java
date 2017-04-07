@@ -102,6 +102,8 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     private Boolean displayItemElementRowColor = null;
     private Boolean displayBillOfMaterialsActionColumn = null;
 
+    private Boolean displayItemElementSimpleView = true; 
+
     private Integer sortByPropertyTypeId = null;
 
     private String filterByChildItem = null;
@@ -659,7 +661,19 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         
         return style;
     }
+    
+    public void toggleSimpleComplexElementsList() {
+        displayItemElementSimpleView = !displayItemElementSimpleView; 
+        displayFlatTableView = true; 
+        
+        SettingController settingController = SettingController.getInstance();
+        settingController.saveSettingListForSettingEntity(); 
+    }
 
+    public Boolean getDisplayItemElementSimpleView() {
+        return displayItemElementSimpleView;
+    }
+    
     public Boolean getDisplayItemElementRowColor() {
         return displayItemElementRowColor;
     }
