@@ -12,8 +12,10 @@ See LICENSE file.
 
 
     <p:remoteCommand name="showAddNewAssemblyItemDialog"
+                     onstart="PF('loadingDialog').show()"
                      update="addNewAssemblyItemDialog"
-                     oncomplete="PF('addNewAssemblyItemDialogWidget').show()">
+                     oncomplete="PF('loadingDialog').hide(); 
+                                 PF('addNewAssemblyItemDialogWidget').show()">
         <f:actionListener binding="#{currentItemController.prepareCreateSingleItemElementSimpleDialog()}" />
         <f:actionListener binding="#{simpleCreateItemElementDialogUtility.resetToggleConfigurationToStep1Defaults()}" />
     </p:remoteCommand>
