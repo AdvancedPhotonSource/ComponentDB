@@ -8,8 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="redneredIsRequired"
+              value="#{redneredIsRequired != null ? redneredIsRequired : true}" />
     <p:column headerText="Required"
-              rendered="#{rendered}">
+              rendered="#{rendered and redneredIsRequired}">
         <ui:include src="../../../../common/private/commonBooleanValue.xhtml">
             <ui:param name="booleanValue" value="#{itemElementObject.isRequired}" />
         </ui:include>
