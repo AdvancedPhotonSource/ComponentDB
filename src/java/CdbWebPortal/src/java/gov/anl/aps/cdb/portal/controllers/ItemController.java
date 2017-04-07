@@ -2051,8 +2051,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public List<Item> completeItemElementItem(String queryString) {
-        //return ItemUtility.filterItem(queryString, getSelectItemElementItemCandidateList());
-        return null;
+        List<Item> candiateList = (List<Item>) getSelectItemElementItemCandidateList(); 
+        return ItemUtility.filterItem(queryString, candiateList);
     }
 
     /**
