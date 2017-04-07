@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemViews;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -21,10 +22,12 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
@@ -235,6 +238,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
      * @return
      */
     public abstract String getDefaultDomainName();
+    
+    /**
+     * Does Item connectors section need to be displayed for the item in domain. 
+     * 
+     * @return 
+     */
+    public abstract boolean getEntityDisplayItemConnectors(); 
 
     /**
      * Does item identifier 1 need to be displayed for the item in default
@@ -588,8 +598,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         this.displayItemElementListQrId = displayItemElementListQrId;
     }
 
-    public Domain getDefaultDomain() {
-        return domainFacade.findByName(getDefaultDomainName());
+    public Domain getDefaultDomain() {       
+        Domain domain = domainFacade.findByName(getDefaultDomainName());
+        if (domain == null) {
+            domain = new Domain();
+            domain.setName(getDefaultDomainName());
+        }
+        return domain; 
+        
     }
 
     public String getNameTitle() {
@@ -1531,6 +1547,55 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             item.resetItemElementDisplayList();            
         }                        
     }
+    
+    public void deleteItemConnector(ItemConnector itemConnector) {
+        Item item = getCurrent();
+        
+        ConnectorController connectorController = ConnectorController.getInstance(); 
+        Connector connector = itemConnector.getConnector(); 
+        if (connectorController.verifySafeRemovalOfConnector(connector)) {
+            List<ItemConnector> itemConnectorList = item.getItemConnectorList(); 
+            itemConnectorList.remove(itemConnector);
+            ItemConnectorController.getInstance().destroy(itemConnector); 
+        } else {
+            // Generate a userfull message
+            String message = "";
+            List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
+            for (ItemConnector ittrConnector : itemConnectorList) {
+                Item ittrItem = ittrConnector.getItem(); 
+                if (ittrItem.equals(item) == false) {
+                    if (ittrItem.getDomain().getName().equals(ItemDomainName.inventory.getValue())) {
+                        message = "Please check connections on inventory item: " + ittrItem.getName(); 
+                    }
+                }
+            }            
+            
+            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in inventory. " + message);
+        }
+    }
+    
+    public void prepareAddItemConnector(Item item) {
+        if (item != null) {
+            ItemConnectorController itemConnectorController = ItemConnectorController.getInstance(); 
+            ItemConnector itemConnector = itemConnectorController.createEntityInstance();             
+            itemConnector.setItem(item);
+            itemConnector = prepareItemConnectorForDomain(itemConnector); 
+            item.getItemConnectorList().add(itemConnector);
+            itemConnectorController.setCurrent(itemConnector);
+        }
+    }
+    
+    protected ItemConnector prepareItemConnectorForDomain(ItemConnector itemConnector) {        
+        return itemConnector; 
+    }
+    
+    public void revertItemConnectorListForCurrent() {
+        Item item = getCurrent();
+        if (item != null) {
+            Item dbItem = findById(item.getId());
+            item.setItemConnectorList(dbItem.getItemConnectorList());
+        }
+    }
 
     protected ItemElement createItemElement(ItemDomainEntity item) {        
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
@@ -2250,6 +2315,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return itemSourceList != null && !itemSourceList.isEmpty();
         }
         return false;
+    }
+    
+    public boolean getDisplayItemConnectorList() {
+        Item item = getCurrent();
+        if (item != null) {
+            List<ItemConnector> itemConnectorList = item.getItemConnectorList(); 
+            return itemConnectorList != null && !itemConnectorList.isEmpty();
+        }
+        return false; 
     }
 
     public boolean getDisplayItemElementList() {

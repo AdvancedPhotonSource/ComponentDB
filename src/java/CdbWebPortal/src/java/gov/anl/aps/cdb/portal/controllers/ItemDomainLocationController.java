@@ -669,5 +669,10 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     protected ItemDomainLocationFacade getEntityDbFacade() {
         return itemDomainLocationFacade; 
     }
+        
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false; 
+    }
 
 }

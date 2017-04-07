@@ -196,4 +196,9 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade> 
         return itemFacade;
     }
     
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return true; 
+    }
+    
 }

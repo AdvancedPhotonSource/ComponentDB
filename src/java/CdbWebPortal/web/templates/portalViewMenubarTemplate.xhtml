@@ -45,27 +45,46 @@ See LICENSE file.
                         </h:form>
                     </p:column>
                     
-                    <p:menubar styleClass="menuBarSupportingItems">
-                        <p:menuitem value="Logs" 
-                                    rendered="#{loginController.loggedInAsAdmin}"
-                                    styleClass="#{fn:startsWith(view.viewId, '/views/adminLogs/') ? 'activeMenuItem' : ''} "
-                                    url="/views/adminLog/browseSystemLogs" />
-                        <p:menuitem value="Locations" 
+                    <p:menubar styleClass="menuBarSupportingItems">                        
+                        <p:submenu label="Administrative"
+                                   rendered="#{loginController.loggedInAsAdmin}"
+                                   styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainLocation') 
+                                                  or fn:startsWith(view.viewId, '/views/adminLog')
+                                                  or fn:startsWith(view.viewId, '/views/propertyType')
+                                                  or fn:startsWith(view.viewId, '/views/source')
+                                                  or fn:startsWith(view.viewId, '/views/userInfo')
+                                                  or fn:startsWith(view.viewId, '/views/connectorType')) ? 'activeSubMenuParentItem' : ''} ">
+                            <p:menuitem value="Locations" 
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} "
                                     action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
-                        <p:menuitem value="Property Types" 
+                            
+                            <p:menuitem value="Logs" 
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/adminLog/') ? 'activeMenuItem' : ''} "
+                                    url="/views/adminLog/browseSystemLogs" />
+                            
+                            <p:menuitem value="Property Types" 
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} "
                                     action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
-                        <p:menuitem value="Sources"
+                            
+                            <p:menuitem value="Sources"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} "
                                     action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
-                        <p:menuitem value="Users"
+                            
+                            <p:menuitem value="Users"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} "
-                                    action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/> 
+                                    action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>                        
+                            
+                            <p:menuitem value="Connector Types"
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
+                                    action="#{connectorTypeController.prepareListFromViewPath('/views/connectorType')}"/>                        
+                        </p:submenu>                                                                        
+                        
                         <p:menuitem value="Settings"
                                     action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
                                     rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>

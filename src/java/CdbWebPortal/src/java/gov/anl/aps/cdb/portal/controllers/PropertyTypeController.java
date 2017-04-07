@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -84,6 +85,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     public PropertyTypeController() {
         selectDisplayDescription = true;
+    }
+    
+    public static PropertyTypeController getInstance(){ 
+        return (PropertyTypeController) SessionUtility.findBean("propertyTypeController"); 
     }
 
     @Override

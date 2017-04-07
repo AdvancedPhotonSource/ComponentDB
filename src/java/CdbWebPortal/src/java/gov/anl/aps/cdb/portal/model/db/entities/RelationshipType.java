@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "RelationshipType.findById", query = "SELECT r FROM RelationshipType r WHERE r.id = :id"),
     @NamedQuery(name = "RelationshipType.findByName", query = "SELECT r FROM RelationshipType r WHERE r.name = :name"),
     @NamedQuery(name = "RelationshipType.findByDescription", query = "SELECT r FROM RelationshipType r WHERE r.description = :description")})
-public class RelationshipType implements Serializable {
+public class RelationshipType extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

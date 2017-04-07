@@ -157,6 +157,8 @@ execute "$mysqlCmd < $sqlFile"
 # create db tables
 mysqlCmd="$mysqlCmd -D $CDB_DB_NAME <"
 execute $mysqlCmd create_cdb_tables.sql
+execute $mysqlCmd create_views.sql
+execute $mysqlCmd create_stored_procedures.sql
 
 # create db password file
 if [ ! -d $CDB_ETC_DIR ]; then

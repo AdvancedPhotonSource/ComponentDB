@@ -628,12 +628,12 @@ CREATE TABLE `connector_type` (
 DROP TABLE IF EXISTS `connector`;
 CREATE TABLE `connector` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
+  `name` varchar(64) NULL,
   `description` varchar(256) DEFAULT NULL,
+  `is_male` bool NOT NULL DEFAULT 0,
   `connector_type_id` int(11) unsigned DEFAULT NULL,
   `resource_type_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `connector_u1` (`name`),
   KEY `connector_k1` (`connector_type_id`),
   KEY `connector_k2` (`resource_type_id`),
   CONSTRAINT `connector_fk1` FOREIGN KEY (`connector_type_id`) REFERENCES `connector_type` (`id`) ON UPDATE CASCADE,

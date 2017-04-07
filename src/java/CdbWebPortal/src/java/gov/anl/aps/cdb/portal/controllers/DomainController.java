@@ -5,14 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -20,204 +15,42 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 
 @Named("domainController")
 @SessionScoped
 public class DomainController extends CdbEntityController<Domain, DomainFacade> implements Serializable {
 
-    private Domain current;
-    private DataModel items = null;
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.DomainFacade domainFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
-
-    public DomainController() {
+    DomainFacade domainFacade; 
+    
+    public Domain createDomainWithName(String domainName){
+        Domain domain = createEntityInstance();
+        domain.setName(domainName);
+        setCurrent(domain);
+        create(); 
+        return domain; 
     }
-
-    public Domain getSelected() {
-        if (current == null) {
-            current = new Domain();
-            selectedItemIndex = -1;
-        }
-        return current;
-    }
-
-    private DomainFacade getFacade() {
-        return domainFacade;
-    }
-
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (Domain) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new Domain();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("DomainCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (Domain) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("DomainUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (Domain) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("DomainDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(domainFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(domainFacade.findAll(), true);
-    }
-
-    public Domain getDomain(java.lang.Integer id) {
-        return domainFacade.find(id);
-    }
-
+    
     @Override
     protected DomainFacade getEntityDbFacade() {
-        return domainFacade; //To change body of generated methods, choose Tools | Templates.
+        return domainFacade;
     }
 
     @Override
     protected Domain createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new Domain(); 
     }
 
     @Override
     public String getEntityTypeName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return "domain";
     }
 
     @Override
-    public String getCurrentEntityInstanceName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getCurrentEntityInstanceName() {        
+        return getCurrent().toString(); 
     }
-
+    
     @FacesConverter(forClass = Domain.class)
     public static class DomainControllerConverter implements Converter {
 
@@ -228,7 +61,7 @@ public class DomainController extends CdbEntityController<Domain, DomainFacade> 
             }
             DomainController controller = (DomainController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "domainController");
-            return controller.getDomain(getKey(value));
+            return controller.findById(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {
@@ -257,5 +90,4 @@ public class DomainController extends CdbEntityController<Domain, DomainFacade> 
         }
 
     }
-
 }

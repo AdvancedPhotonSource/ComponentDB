@@ -6,18 +6,24 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
+import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
@@ -41,10 +47,12 @@ import java.util.Map;
 import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
@@ -66,7 +74,7 @@ import org.primefaces.model.menu.MenuModel;
 @SessionScoped
 public class ItemDomainInventoryController extends ItemController<ItemDomainInventory, ItemDomainInventoryFacade> {
 
-    private static final String DEFAULT_DOMAIN_NAME = "Inventory";
+    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
 
     private final String ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP = "itemElementInstantiation";
@@ -142,6 +150,17 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private boolean showOptionalPartsInBom = false;
     private Boolean currentItemBOMTreeHasOptionalItems = null;
 
+    private Connector selectedConnectorOfCurrentItem = null;
+    private Connector selectedConnectorOfSecondItem = null;
+    // Connector that is on the same side as current. 
+    private ItemConnector firstCableItemConnector = null;
+    private ItemConnector secondCableItemConnector = null;
+    private ItemDomainCable currentConnectionCable = null;
+    private ListDataModel inventoryItemsWithRequiredConnector = null;
+    private ItemDomainInventory selectedSecondItemWithRequiredConnection = null;
+
+    private boolean connectionEditRendered = false;
+
     protected ListDataModel filterViewLocationDataModel = null;
     protected ItemDomainLocation filterViewLocationItemLoaded = null;
     protected boolean filterViewLocationDataModelLoaded = false;
@@ -158,6 +177,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade; 
+
+    @EJB
+    private ConnectorFacade connectorFacade;
 
     public ItemDomainInventoryController() {
         super();
@@ -209,6 +231,17 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
     }
 
+    private List<ItemElementRelationship> findItemCableConnectionRelationship(Item item) {
+        // Support items that have not yet been saved to db.
+        if (item.getSelfElement().getId() != null) {
+            return itemElementRelationshipFacade
+                    .findItemElementRelationshipListByNameAndItemElementId(ItemElementRelationshipTypeNames.itemCableConnection.getValue(),
+                            item.getSelfElement().getId());
+        }
+
+        return null;
+    }
+
     @Override
     public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
@@ -238,6 +271,277 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocation();
+    }
+    
+    public List<ItemElementRelationship> getItemCableRelationshipList(Item inventoryItem) {
+        if (inventoryItem.getItemCableConnectionsRelationshipList() == null) {
+            List<ItemElementRelationship> cableRelationshipList;
+            cableRelationshipList = findItemCableConnectionRelationship(inventoryItem);
+            inventoryItem.setItemCableConnectionsRelationshipList(cableRelationshipList);
+        }
+        return inventoryItem.getItemCableConnectionsRelationshipList();
+    }
+    
+    public boolean getDisplayItemCableRelationshipList() {
+        if (getCurrent() != null) {
+            List<ItemElementRelationship> itemCableRelationshipList = getItemCableRelationshipList(getCurrent());
+            return itemCableRelationshipList != null && !itemCableRelationshipList.isEmpty();             
+        } 
+        return false; 
+    }
+
+    public void createItemCableConnectionRelationshipForCurrent() {
+        resetConnectorVairables();
+        connectionEditRendered = true;
+    }
+    
+    public void cancelCreateItemCableConnectionRelationshipForCurrent() {
+        resetConnectorVairables();
+    }
+
+    public List<Connector> getAvailableConnectorListForCurrent() {
+        Item inventoryItem = getCurrent();
+
+        List<Connector> availableConnectors = inventoryItem.getItemAvaliableConnectorsList();
+        if (availableConnectors == null) {
+            availableConnectors = connectorFacade.getAvailableConnectorsForInventoryItem(inventoryItem, null, null);
+            inventoryItem.setItemAvaliableConnectorsList(availableConnectors);
+        }
+
+        return availableConnectors;
+    }
+
+    public boolean isConnectionEditRendered() {
+        return connectionEditRendered;
+    }
+
+    public boolean getItemHasAvaialbeConnectors() {
+        return getAvailableConnectorListForCurrent().size() > 0;
+    }
+
+    public void handleConnectorSelectionEvent(AjaxBehaviorEvent event) {
+        SelectOneListbox selectOneListBox = (SelectOneListbox) event.getSource();
+        Connector connector = (Connector) selectOneListBox.getValue();
+        selectedConnectorOfCurrentItem = connector;
+
+        if (currentConnectionCable == null) {
+            ItemDomainCableController itemDomainCableController = ItemDomainCableController.getInstance();
+            currentConnectionCable = itemDomainCableController.createEntityInstance();
+
+            // Item should have two connectors
+            List<ItemConnector> cableConnectorList = currentConnectionCable.getItemConnectorList();
+            if (cableConnectorList.size() == 2) {
+                firstCableItemConnector = cableConnectorList.get(0);
+                secondCableItemConnector = cableConnectorList.get(1);
+            } else {
+                // This should not happen. 
+                SessionUtility.addErrorMessage("Error", "Cable was not created sucessfully.");
+                currentConnectionCable = null; 
+            }
+        }
+        
+        updateConnectorTypesForCurrentCable();       
+
+    }
+    
+    public void updateConnectorTypesForCurrentCable() {
+        if (currentConnectionCable != null) {                        
+            boolean isDirect = ItemDomainCableController.getIsDirectConnectionForItem(currentConnectionCable); 
+            ConnectorType connectorType = selectedConnectorOfCurrentItem.getConnectorType(); 
+            boolean connectorGender =  selectedConnectorOfCurrentItem.getIsMale(); 
+            
+            firstCableItemConnector.getConnector().setConnectorType(connectorType);
+            secondCableItemConnector.getConnector().setConnectorType(connectorType);
+            firstCableItemConnector.getConnector().setIsMale(!connectorGender);
+            
+            if (isDirect) {                
+                secondCableItemConnector.getConnector().setIsMale(connectorGender);
+            } else {                                
+                secondCableItemConnector.getConnector().setIsMale(!connectorGender);
+            }
+            
+            loadAvailableInventoryItemListWithSecondItemConnector();
+        }
+    }
+
+    public void loadAvailableInventoryItemListWithSecondItemConnector() {
+        List<ItemDomainInventory> inventoryWithRequiredConnectorType;
+
+        ConnectorType connectorType = secondCableItemConnector.getConnector().getConnectorType();
+        Boolean requiredIsMale = !secondCableItemConnector.getConnector().getIsMale();
+
+        inventoryWithRequiredConnectorType = itemDomainInventoryFacade.getInventoryItemsWithAvailableConnectorType(connectorType, requiredIsMale);
+        inventoryWithRequiredConnectorType.remove(current);
+
+        inventoryItemsWithRequiredConnector = new ListDataModel(inventoryWithRequiredConnectorType);
+    }
+
+    public List<Connector> loadAppropriateConnectorsForItemAndCurrentSelections(Item item) {
+        if (item != null) {
+            Boolean reqIsMale = !secondCableItemConnector.getConnector().getIsMale();
+            ConnectorType reqConnectorType = secondCableItemConnector.getConnector().getConnectorType();
+
+            return connectorFacade.getAvailableConnectorsForInventoryItem(item, reqConnectorType, reqIsMale);
+        }
+        return null;
+    }
+
+    public void saveConnectionInformation(String onSuccessCommand) {
+        if (selectedConnectorOfCurrentItem == null) {
+            SessionUtility.addErrorMessage("Could not create connection", "Please select a connector.");
+            return;
+        }
+
+        if (selectedSecondItemWithRequiredConnection == null
+                || selectedConnectorOfSecondItem == null) {
+            SessionUtility.addErrorMessage("Could not create connection", "Please select a port on second inventory item.");
+            return;
+        }
+
+        ItemConnector firstItemConnector = getItemConnectorToConnectTo(getCurrent(), selectedConnectorOfCurrentItem);
+        ItemConnector secondItemConnector = getItemConnectorToConnectTo(selectedSecondItemWithRequiredConnection, selectedConnectorOfSecondItem);
+
+        ItemElementRelationship currentToCableRelationship = createItemElementRelationshipToCableConnector(getCurrent(), currentConnectionCable, firstItemConnector, firstCableItemConnector);
+        ItemElementRelationship secondToCableRelationship = createItemElementRelationshipToCableConnector(selectedSecondItemWithRequiredConnection, currentConnectionCable, secondItemConnector, secondCableItemConnector);
+        
+        // New cable item still needs a list for item element relationships. 
+        ItemElement cableSelfElement = currentConnectionCable.getSelfElement();
+        cableSelfElement.setItemElementRelationshipList1(new ArrayList<>());
+        
+        // Add the apporpriate item relationships to the model. 
+        addItemElementRelationshipToItem(getCurrent(), currentToCableRelationship, false);
+        addItemElementRelationshipToItem(selectedSecondItemWithRequiredConnection, secondToCableRelationship, false);                        
+        addItemElementRelationshipToItem(currentConnectionCable, currentToCableRelationship, true);
+        addItemElementRelationshipToItem(currentConnectionCable, secondToCableRelationship, true);        
+
+        this.update();
+
+        // Prevent re-render of non-needed dialog content.
+        resetConnectorVairables();
+
+        RequestContext.getCurrentInstance().execute(onSuccessCommand);
+
+    }
+
+    private void addItemElementRelationshipToItem(Item item, ItemElementRelationship ier, boolean secondItem) {
+        ItemElement selfElement = item.getSelfElement();
+        List<ItemElementRelationship> ierList;
+        if (secondItem) {
+            ierList = selfElement.getItemElementRelationshipList1();
+        } else {
+            ierList = selfElement.getItemElementRelationshipList();
+        }
+        ierList.add(ier); 
+    }
+
+    private ItemElementRelationship createItemElementRelationshipToCableConnector(Item item,
+            Item cableItem, ItemConnector itemItemConnector, ItemConnector cableItemConnector) {
+        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
+        itemElementRelationship.setFirstItemElement(item.getSelfElement());
+        itemElementRelationship.setFirstItemConnector(itemItemConnector);
+        itemElementRelationship.setSecondItemElement(cableItem.getSelfElement());
+        itemElementRelationship.setSecondItemConnector(cableItemConnector);
+
+        RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType();
+        itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
+
+        return itemElementRelationship;
+    }
+
+    /**
+     * get a valid item connector for a particular connector of an item.
+     *
+     * @param inventoryItem
+     * @param connector
+     * @return
+     */
+    private ItemConnector getItemConnectorToConnectTo(Item inventoryItem, Connector connector) {
+        List<ItemConnector> itemConnectors = inventoryItem.getItemConnectorList();
+
+        // Verify if an item already has a item connection. 
+        for (ItemConnector itemConnector : itemConnectors) {
+            if (itemConnector.getConnector().equals(connector)) {
+                return itemConnector;
+            }
+        }
+
+        // Create a new item connector
+        // Verify that a connector could be created. 
+        Item catalogItem = inventoryItem.getDerivedFromItem();
+        List<ItemConnector> catalogItemConnectorList = catalogItem.getItemConnectorList();
+        for (ItemConnector catalogItemConnector : catalogItemConnectorList) {
+            if (catalogItemConnector.getConnector().equals(connector)) {
+                ItemConnector itemConnector = new ItemConnector();
+                itemConnector.setConnector(connector);
+                itemConnector.setItem(inventoryItem);
+                inventoryItem.getItemConnectorList().add(itemConnector);
+                return itemConnector;
+            }
+        }
+
+        return null;
+    }
+
+    public void disconnectPortConnection(ItemElementRelationship cableConnectionRelationship) {
+        ItemConnector firstInventoryConnector = cableConnectionRelationship.getFirstItemConnector();
+
+        if (firstInventoryConnector != null) {
+            ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
+            ItemDomainCable cableItem = (ItemDomainCable) itemConnectorController.getItemConnectedVia(firstInventoryConnector);
+            ItemConnector secondInventoryConnector = itemConnectorController.getItemConnectorOfItemConnectedTo(firstInventoryConnector);
+
+            if (cableItem != null) {
+                // Cable item holds the connectors that both items are connected by. 
+                ItemDomainCableController itemDomainCableController = ItemDomainCableController.getInstance();
+                itemDomainCableController.destroyCableConnection(cableItem);
+                reloadCurrent();
+            }
+            // Connectors contain no significant information unless they are connected. 
+            itemConnectorController.destroy(firstInventoryConnector);
+            itemConnectorController.destroy(secondInventoryConnector);
+        }
+    }
+
+    public void disconnectSecondConnector() {
+        selectedSecondItemWithRequiredConnection = null;
+        selectedConnectorOfSecondItem = null;
+    }
+
+    public boolean selectedSecondConnectorDefined() {
+        return selectedConnectorOfSecondItem != null;
+    }
+
+    public ListDataModel getInventoryItemsWithRequiredConnector() {
+        return inventoryItemsWithRequiredConnector;
+    }
+
+    public Item getCurrentConnectionCable() {
+        return currentConnectionCable;
+    }
+
+    public ItemConnector getFirstCableItemConnector() {
+        return firstCableItemConnector;
+    }
+
+    public ItemConnector getSecondCableItemConnector() {
+        return secondCableItemConnector;
+    }
+
+    public Connector getSelectedConnectorOfSecondItem() {
+        return selectedConnectorOfSecondItem;
+    }
+
+    public void setSelectedConnectorOfSecondItem(Connector selectedConnectorOfSecondItem) {
+        this.selectedConnectorOfSecondItem = selectedConnectorOfSecondItem;
+    }
+
+    public Item getSelectedSecondItemWithRequiredConnection() {
+        return selectedSecondItemWithRequiredConnection;
+    }
+
+    public void setSelectedSecondItemWithRequiredConnection(ItemDomainInventory selectedInventoryItemWithRequiredConnection) {
+        this.selectedConnectorOfSecondItem = null;
+        this.selectedSecondItemWithRequiredConnection = selectedInventoryItemWithRequiredConnection;
     }
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
@@ -381,11 +685,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 return true;
             }
         } else // last is null but new is not. 
-        {
-            if (newLocationItem != null) {
+         if (newLocationItem != null) {
                 return true;
             }
-        }
         return false;
     }
 
@@ -550,6 +852,16 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemLocation.getValue());
     }
 
+    private RelationshipType getCableConnectionRelationshipType() {
+        RelationshipType relationshipType = relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+        if (relationshipType == null) {
+            RelationshipTypeController controller = RelationshipTypeController.getInstance();
+            String name = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
+            relationshipType = controller.createRelationshipTypeWithName(name);
+        }
+        return relationshipType;
+    }
+
     @Override
     protected boolean isPreProcessListDataModelIterateNeeded() {
         boolean result = super.isPreProcessListDataModelIterateNeeded();
@@ -675,9 +987,29 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
     }
 
+    private void resetConnectorVairables() {
+        currentConnectionCable = null;
+        firstCableItemConnector = null;
+        secondCableItemConnector = null;
+
+        inventoryItemsWithRequiredConnector = null;
+
+        selectedSecondItemWithRequiredConnection = null;
+        selectedConnectorOfSecondItem = null;
+        selectedConnectorOfCurrentItem = null;
+
+        connectionEditRendered = false;
+
+        Item item = getCurrent();
+        if (item != null) {
+            item.setItemAvaliableConnectorsList(null);
+        }
+    }
+
     @Override
     public String prepareView(ItemDomainInventory item) {
         resetBOMSupportVariables();
+        resetConnectorVairables();
         return super.prepareView(item); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -936,7 +1268,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public void createOptionalBillOfMaterialsPart(InventoryBillOfMaterialItem bomItem) {
         bomItem.setState(InventoryBillOfMaterialItemStates.placeholder.getValue());
-        currentItemBOMTreeHasOptionalItems = null; 
+        currentItemBOMTreeHasOptionalItems = null;
     }
 
     public void removeOptionalBillOfMaterialsPart(InventoryBillOfMaterialItem bomItem) {
@@ -949,7 +1281,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 ItemElementController.getInstance().destroy(inventoryItemElement);
             }
             clearSelectedOptionalElementsIfNeeded();
-            currentItemBOMTreeHasOptionalItems = null; 
+            currentItemBOMTreeHasOptionalItems = null;
         }
     }
 
@@ -961,12 +1293,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public Boolean getCurrentItemBOMTreeHasOptionalItems() {
         // TODO add support for optional elements in sub assamblies 
         if (current != null && currentItemBOMTreeHasOptionalItems == null) {
-            currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current); 
+            currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current);
             if (!currentItemBOMTreeHasOptionalItems) {
                 for (ItemDomainInventory item : newItemsToAdd) {
                     currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(item);
                     if (currentItemBOMTreeHasOptionalItems) {
-                        return true; 
+                        return true;
                     }
                 }
             }
@@ -984,7 +1316,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 }
             }
         }
-        return false; 
+        return false;
     }
 
     private void clearSelectedOptionalElementsIfNeeded() {
@@ -1399,6 +1731,25 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public Boolean getDisplaySerialNumber() {
         return displaySerialNumber;
+    }
+
+    public boolean getIsCurrentItemHaveConnectors() {
+        Item item = getCurrent();
+        if (item != null) {
+            List<ItemConnector> itemConnectorList = item.getItemConnectorList();
+            if (itemConnectorList != null && !itemConnectorList.isEmpty()) {
+                return true;
+            }
+
+            Item catalogItem = item.getDerivedFromItem();
+            itemConnectorList = catalogItem.getItemConnectorList();
+
+            if (itemConnectorList != null && !itemConnectorList.isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void setDisplaySerialNumber(Boolean displaySerialNumber) {
@@ -1825,7 +2176,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     @Override
     protected ItemDomainInventoryFacade getEntityDbFacade() {
-        return itemDomainInventoryFacade; 
+        return itemDomainInventoryFacade;         
+    }
+    
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false;
     }
 
 }

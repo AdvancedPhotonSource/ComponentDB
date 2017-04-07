@@ -240,5 +240,10 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade> {
     protected ItemFacade getEntityDbFacade() {
         return itemFacade;
     }
+    
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

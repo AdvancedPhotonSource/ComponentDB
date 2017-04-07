@@ -4,13 +4,15 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -18,185 +20,63 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 
 @Named("connectorController")
 @SessionScoped
-public class ConnectorController implements Serializable {
-
-    private Connector current;
-    private DataModel items = null;
+public class ConnectorController extends CdbEntityController<Connector, ConnectorFacade> implements Serializable {
+    
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
-
-    public ConnectorController() {
+    private ConnectorFacade connectorFacade;
+    
+    public static ConnectorController getInstance() {
+        return (ConnectorController) SessionUtility.findBean("connectorController"); 
     }
-
-    public Connector getSelected() {
-        if (current == null) {
-            current = new Connector();
-            selectedItemIndex = -1;
-        }
-        return current;
-    }
-
-    private ConnectorFacade getFacade() {
-        return ejbFacade;
-    }
-
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (Connector) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new Connector();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ConnectorCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (Connector) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ConnectorUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (Connector) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
+    
+    public boolean verifySafeRemovalOfConnector(Connector connector) {
+        // Get latest version from DB. 
+        connector = findById(connector.getId());        
+        if (connector.getItemConnectorList().size() != 1) {
+            return false;
         } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ConnectorDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
+            // connector itemconnector list has size of 1 
+            ItemConnector itemConnector = connector.getItemConnectorList().get(0); 
+            Item item = itemConnector.getItem(); 
+            if (!item.getDomain().getName().equals(ItemDomainName.catalog.getValue())) {
+                return false; 
             }
+        } 
+        return true; 
+    }
+
+    @Override
+    protected void prepareEntityDestroy(Connector connector) throws CdbException {
+        if (verifySafeRemovalOfConnector(connector) == false) {
+            throw new CdbException("Cannot remove connector, it has invalid usages."); 
         }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
+        super.prepareEntityDestroy(connector); 
     }
 
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
+    @Override
+    protected ConnectorFacade getEntityDbFacade() {
+        return connectorFacade; 
     }
 
-    private void recreateModel() {
-        items = null;
+    @Override
+    protected Connector createEntityInstance() {
+        return new Connector(); 
     }
 
-    private void recreatePagination() {
-        pagination = null;
+    @Override
+    public String getEntityTypeName() {
+        return "connector"; 
     }
 
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
+    @Override
+    public String getCurrentEntityInstanceName() {
+        return getCurrent().toString(); 
+    }     
 
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public Connector getConnector(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
-
-    @FacesConverter(forClass = Connector.class)
+    @FacesConverter(value = "connectorConverter", forClass = Connector.class)
     public static class ConnectorControllerConverter implements Converter {
 
         @Override
@@ -206,7 +86,7 @@ public class ConnectorController implements Serializable {
             }
             ConnectorController controller = (ConnectorController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "connectorController");
-            return controller.getConnector(getKey(value));
+            return controller.findById(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

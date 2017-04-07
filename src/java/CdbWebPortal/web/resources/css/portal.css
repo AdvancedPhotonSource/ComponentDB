@@ -626,7 +626,7 @@ h2 {
 }
 
 .mainMenuBar .ui-menu, .mainMenuBar, .mainMenuBar .ui-menu .ui-menu-child {
-    background: #6da5d8;    
+    background: #6da5d8 !important;    
 }
 
 .mainMenuBar .ui-menu .ui-menu-child {
@@ -1121,3 +1121,4 @@ h2 {
 .padded {
     padding: 10px;
 }
+
