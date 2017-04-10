@@ -1,3 +1,8 @@
+--
+-- Copyright (c) UChicago Argonne, LLC. All rights reserved.
+-- See LICENSE file.
+--
+
 LOCK TABLES `setting_type` WRITE;
 /*!40000 ALTER TABLE `setting_type` DISABLE KEYS */;
 INSERT INTO `setting_type` VALUES
