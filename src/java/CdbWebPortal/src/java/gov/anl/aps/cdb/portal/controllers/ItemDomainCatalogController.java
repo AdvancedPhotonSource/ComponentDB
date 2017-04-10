@@ -44,7 +44,14 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     /*
      * Controller specific settings
      */
-    private static final String DisplayItemElementListItemIdentifier1SettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier1"; 
+    private static final String DisplayItemElementListItemIdentifier1SettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier1";  
+    private static final String DisplayItemElementListItemIdentifier2SettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemIdentifier2";
+    private static final String DisplayItemElementListItemTypeSettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemType"; 
+    private static final String DisplayItemElementListItemCategorySettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.ItemCategory";
+    private static final String DisplayItemElementListSourceSettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.Source";
+    private static final String DisplayItemElementListProjectSettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.Project";
+    private static final String DisplayItemElementListDescriptionSettingTypeKey = "ItemDomainCatalog.ItemElementList.Display.Description";               
+    
     private static final String DisplayCategorySettingTypeKey = "ItemDomainCatalog.List.Display.Category";
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainCatalog.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainCatalog.List.Display.CreatedOnDateTime";
@@ -657,6 +664,36 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     @Override
     public String getDisplayItemElementListItemIdentifier1Key() {
         return DisplayItemElementListItemIdentifier1SettingTypeKey; 
+    }
+    
+    @Override
+    public String getDisplayItemElementListItemIdentifier2Key() {
+        return DisplayItemElementListItemIdentifier2SettingTypeKey;
+    } 
+
+    @Override
+    public String getDisplayItemElementListItemTypeKey() {
+        return DisplayItemElementListItemTypeSettingTypeKey; 
+    }
+
+    @Override
+    public String getDisplayItemElementListItemCategoryKey() {
+        return DisplayItemElementListItemCategorySettingTypeKey; 
+    } 
+
+    @Override
+    public String getDisplayItemElementListSourceKey() {
+        return DisplayItemElementListSourceSettingTypeKey; 
+    } 
+
+    @Override
+    public String getDisplayItemElementListProjectKey() {
+        return DisplayItemElementListProjectSettingTypeKey; 
+    } 
+
+    @Override
+    public String getDisplayItemElementListDescriptionKey() {
+        return DisplayItemElementListDescriptionSettingTypeKey; 
     }
     
     @Override

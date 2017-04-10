@@ -76,6 +76,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
      * Controller specific settings
      */
     private static final String DisplayItemElementListItemIdentifier1SettingTypeKey = "ItemDomainInventory.ItemElementList.Display.ItemIdentifier1"; 
+    private static final String DisplayItemElementListProjectSettingTypeKey = "ItemDomainInventory.ItemElementList.Display.Project";
+    private static final String DisplayItemElementListDescriptionSettingTypeKey = "ItemDomainInventory.ItemElementList.Display.Description";
+    private static final String DisplayItemElementListQrIdSettingTypeKey = "ItemDomainInventory.ItemElementList.Display.QrId";
+    
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainInventory.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainInventory.List.Display.CreatedOnDateTime";
     private static final String DisplayDescriptionSettingTypeKey = "ItemDomainInventory.List.Display.Description";
@@ -1651,6 +1655,21 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public String getDisplayItemElementListItemIdentifier1Key() {
         return DisplayItemElementListItemIdentifier1SettingTypeKey; 
+    }
+    
+    @Override
+    public String getDisplayItemElementListProjectKey() {
+        return DisplayItemElementListProjectSettingTypeKey; 
+    } 
+
+    @Override
+    public String getDisplayItemElementListDescriptionKey() {
+        return DisplayItemElementListDescriptionSettingTypeKey; 
+    }
+
+    @Override
+    public String getDisplayItemElementListQrIdKey() {
+        return DisplayItemElementListQrIdSettingTypeKey; 
     }
 
     @Override
