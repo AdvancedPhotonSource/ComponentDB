@@ -614,12 +614,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         
         // Update related external setting values. 
         if (currentSettingsItemController != null) {
-            String displayItemElementItemIdentifier1Key = currentSettingsItemController.getDisplayItemElementListItemIdentifier1Key();
-             
-            if (displayItemElementItemIdentifier1Key != null) {
-                Boolean displayItemElementItemIdentifier1Val = currentSettingsItemController.getDisplayItemElementListItemIdentifier1(); 
-                settingEntity.setSettingValue(displayItemElementItemIdentifier1Key, displayItemElementItemIdentifier1Val);
-            }
+            currentSettingsItemController.saveItemElementListSettingsForSessionSettingEntity(settingEntity);
         } 
     }
 

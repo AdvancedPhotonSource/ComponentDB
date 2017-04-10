@@ -491,6 +491,40 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
         
     }
+    
+    public void saveItemElementListSettingsForSessionSettingEntity(SettingEntity settingEntity) {
+         if (getDisplayItemElementListItemIdentifier1Key() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListItemIdentifier1Key(), displayItemElementListItemIdentifier1);
+        }
+        
+        if (getDisplayItemElementListItemIdentifier2Key() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListItemIdentifier2Key(), displayItemElementListItemIdentifier2);
+        }
+        
+        if (getDisplayItemElementListItemTypeKey() != null) {
+             settingEntity.setSettingValue(getDisplayItemElementListItemTypeKey(), displayItemElementListItemType);
+        }
+        
+        if (getDisplayItemElementListItemCategoryKey() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListItemCategoryKey(), displayItemElementListItemCategory);
+        }
+        
+        if (getDisplayItemElementListProjectKey() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListProjectKey(), displayItemElementListProject);
+        }
+        
+        if (getDisplayItemElementListSourceKey() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListSourceKey(), displayItemElementListSource);
+        }
+        
+        if (getDisplayItemElementListDescriptionKey() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListDescriptionKey(), displayItemElementListDescription);
+        }
+        
+        if (getDisplayItemElementListQrIdKey() != null) {
+            settingEntity.setSettingValue(getDisplayItemElementListQrIdKey(), displayItemElementListQrId);
+        }
+    }
 
     public String getDisplayItemElementListItemIdentifier1Key() {
         return null;
