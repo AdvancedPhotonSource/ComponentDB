@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.utilities;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -67,13 +68,29 @@ public class ItemUtility {
      */
     public static List<ItemElementRelationship> getItemRelationshipList(Item item, String relationshipTypeName, boolean itemFirstInRelationship) {
         ItemElement selfElement = item.getSelfElement();
+        
+        List<ItemElementRelationship> ierList = new ArrayList<>(); 
+        List<ItemElementRelationship> ierListToLookAt = null; 
 
         if (itemFirstInRelationship) {
-            return selfElement.getItemElementRelationshipList();
+            ierListToLookAt = selfElement.getItemElementRelationshipList();
         } else {
-            return selfElement.getItemElementRelationshipList1();
+            ierListToLookAt = selfElement.getItemElementRelationshipList1();
         }
-
+        
+        if (ierListToLookAt != null) {
+            for (ItemElementRelationship ier : ierListToLookAt) {
+                RelationshipType relationshipType = ier.getRelationshipType();
+                if (relationshipType != null) {
+                    if (relationshipType.getName().equals(relationshipTypeName)) {
+                        ierList.add(ier); 
+                    }
+                }
+            }
+                
+        }
+        
+        return ierList; 
     }
 
     /**
