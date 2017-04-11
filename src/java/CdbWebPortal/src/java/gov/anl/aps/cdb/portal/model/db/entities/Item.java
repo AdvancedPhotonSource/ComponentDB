@@ -32,7 +32,11 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
@@ -114,7 +118,8 @@ import org.primefaces.model.TreeNode;
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND (fiel.entityInfo.ownerUser.id = :ownerUserId "
             + "OR ieList = :list)"
-            + "AND i.domain.name = :domainName"),})
+            + "AND i.domain.name = :domainName")
+})
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -181,7 +186,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemSourceString = null;
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
-       
+
+    private transient List<ItemElementRelationship> itemCableConnectionsRelationshipList;
+    private transient List<Connector> itemAvaliableConnectorsList; 
+    
     private transient String entityTypeString = null;
 
     private transient String primaryImageValue = null;   
@@ -879,6 +887,22 @@ public class Item extends CdbDomainEntity implements Serializable {
                 && Objects.equals(other.getDerivedFromItem(), derivedFromItem)
                 && Objects.equals(other.getDomain(), domain)
                 && Objects.equals(other.getName(), name));
+    }
+
+    public void setItemCableConnectionsRelationshipList(List<ItemElementRelationship> itemCableConnectionsRelationshipList) {
+        this.itemCableConnectionsRelationshipList = itemCableConnectionsRelationshipList;
+    }
+
+    public List<ItemElementRelationship> getItemCableConnectionsRelationshipList() {
+        return itemCableConnectionsRelationshipList;
+    }
+
+    public List<Connector> getItemAvaliableConnectorsList() {
+        return itemAvaliableConnectorsList;
+    }
+
+    public void setItemAvaliableConnectorsList(List<Connector> itemAvaliableConnectorsList) {
+        this.itemAvaliableConnectorsList = itemAvaliableConnectorsList;
     }
 
     @Override

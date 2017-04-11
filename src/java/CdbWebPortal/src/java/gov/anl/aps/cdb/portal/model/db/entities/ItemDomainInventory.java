@@ -12,6 +12,10 @@ import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.NamedStoredProcedureQueries;
+import javax.persistence.NamedStoredProcedureQuery;
+import javax.persistence.ParameterMode;
+import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -23,22 +27,41 @@ import org.primefaces.model.menu.DefaultMenuModel;
 @Entity
 @Table(name = "item")
 @DiscriminatorValue(value = ItemDomainName.INVENTORY_ID + "")
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+            name = "item.inventoryItemsWithConnectorType",
+            procedureName = "inventory_items_with_avaiable_connector",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "connector_type_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "is_male",
+                        mode = ParameterMode.IN,
+                        type = Boolean.class
+                )
+            }
+    ),
+})
 public class ItemDomainInventory extends Item {
-    
+
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
-    
+
     private transient TreeNode locationTree = null;
     private transient String locationDetails = null;
     private transient ItemDomainLocation location;
     private transient String locationString;
     private transient DefaultMenuModel locationMenuModel;
     // Needed to determine whenever location was removed in edit process. 
-    private transient Boolean originalLocationLoaded = false;    
-           
+    private transient Boolean originalLocationLoaded = false;
+
     private transient TreeNode itemElementAssemblyRootTreeNode = null;
-    
+
     private transient InventoryBillOfMaterialItem containedInBOM;
-    
+
     private transient Boolean sparePartIndicator = null;
     private transient SparePartsBean sparePartsBean = null;
 
@@ -46,21 +69,21 @@ public class ItemDomainInventory extends Item {
     public Item createInstance() {
         return new ItemDomainInventory();
     }
-    
+
     public ItemDomainCatalog getCatalogItem() {
-        return (ItemDomainCatalog) getDerivedFromItem(); 
+        return (ItemDomainCatalog) getDerivedFromItem();
     }
-    
+
     @Override
     public Item clone() throws CloneNotSupportedException {
         ItemDomainInventory clonedItem = (ItemDomainInventory) super.clone();
-        
+
         clonedItem.setLocationDetails(null);
         clonedItem.setLocation(null);
-        
-        return clonedItem; 
+
+        return clonedItem;
     }
-    
+
     public TreeNode getLocationTree() {
         return locationTree;
     }
@@ -108,7 +131,7 @@ public class ItemDomainInventory extends Item {
     public void setLocationString(String locationString) {
         this.locationString = locationString;
     }
-    
+
     public List<InventoryBillOfMaterialItem> getInventoryDomainBillOfMaterialList() {
         return inventoryDomainBillOfMaterialList;
     }
@@ -125,7 +148,7 @@ public class ItemDomainInventory extends Item {
         }
         return itemElementAssemblyRootTreeNode;
     }
-          
+
     public InventoryBillOfMaterialItem getContainedInBOM() {
         return containedInBOM;
     }
@@ -133,7 +156,7 @@ public class ItemDomainInventory extends Item {
     public void setContainedInBOM(InventoryBillOfMaterialItem containedInBOM) {
         this.containedInBOM = containedInBOM;
     }
-    
+
     public Boolean getSparePartIndicator() {
         if (sparePartIndicator == null) {
             sparePartIndicator = getSparePartsBean().getSparePartsIndication(this);
@@ -151,9 +174,9 @@ public class ItemDomainInventory extends Item {
 
     public SparePartsBean getSparePartsBean() {
         if (sparePartsBean == null) {
-            sparePartsBean = SparePartsBean.getInstance(); 
+            sparePartsBean = SparePartsBean.getInstance();
         }
         return sparePartsBean;
     }
-    
+
 }

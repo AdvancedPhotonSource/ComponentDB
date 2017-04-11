@@ -27,7 +27,7 @@ import javax.persistence.Query;
 public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbEntityFacade<ItemDomainEntity> {
 
     @PersistenceContext(unitName = "CdbWebPortalPU")
-    private EntityManager em;
+    protected EntityManager em;
 
     List<ItemDomainEntity> itemsToAdd;
 

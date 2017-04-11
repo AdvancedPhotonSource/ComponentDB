@@ -86,8 +86,7 @@ public class ItemUtility {
                         ierList.add(ier); 
                     }
                 }
-            }
-                
+            }              
         }
         
         return ierList; 

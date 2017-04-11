@@ -78,6 +78,9 @@ public class CdbDBTest {
     ItemFacade itemFacade; 
     
     @EJB
+    ItemDomainCatalogFacade itemDomainCatalogFacade; 
+    
+    @EJB
     ItemProjectFacade itemProjectFacade;
     
     @EJB
@@ -258,6 +261,10 @@ public class CdbDBTest {
     public ItemFacade getItemFacade() {
         return itemFacade;
     }
+
+    public ItemDomainCatalogFacade getItemDomainCatalogFacade() {
+        return itemDomainCatalogFacade;
+    }   
 
     public ItemProjectFacade getItemProjectFacade() {
         return itemProjectFacade;

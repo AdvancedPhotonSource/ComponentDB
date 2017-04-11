@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="#{entityTypeName}#{itemConnectorEntityTypeName}AddDialog"
+              widgetVar="#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget"
+              modal="true"
+              header="Configure Connector"
+              resizable="false"
+              closable="false"
+              styleClass="viewTransparentBackgroundDialog">
+
+        <ui:param name="currentItemConnector" value="#{itemConnectorController.current}" />
+
+        <p:panelGrid columns="2"
+                     rendered="#{currentItemConnector != null}">
+
+            <ui:include src="itemConnectorSimpleEditObject.xhtml" />                                                
+
+            <p:outputLabel>Connector Name</p:outputLabel>
+            <p:inputText value="#{currentItemConnector.connector.name}" />
+
+        </p:panelGrid>
+
+        <f:facet name="footer" >
+            <p:commandButton value="Save" 
+                             oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
+                             icon="ui-icon-disk"
+                             update="#{itemConnectorEntityTypeName}ListDataTable"
+                             action="#{itemConnectorController.create()}"/>
+            <p:commandButton label="Cancel" icon="ui-icon-arrowreturnthick-1-w"
+                             value="Cancel"
+                             update="#{itemConnectorEntityTypeName}ListDataTable"
+                             oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
+                             action="#{entityController.revertItemConnectorListForCurrent}"
+                             />
+        </f:facet>
+
+
+
+    </p:dialog>
+
+</ui:composition>
+
+

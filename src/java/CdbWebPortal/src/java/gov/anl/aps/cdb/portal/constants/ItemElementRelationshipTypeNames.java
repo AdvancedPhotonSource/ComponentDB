@@ -5,7 +5,8 @@
 package gov.anl.aps.cdb.portal.constants;
 
 public enum ItemElementRelationshipTypeNames {
-        itemLocation("Location");
+        itemLocation("Location"),
+        itemCableConnection("Cable Connection");
 
         private String value;
 

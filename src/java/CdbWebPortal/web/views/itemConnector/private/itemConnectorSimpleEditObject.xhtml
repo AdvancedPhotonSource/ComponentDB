@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+
+<!-- onChangeConnector - parameter to be called when one of the simple edit fields change. --> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="disabled" value="#{disabled != null? disabled : false}" />
+    
+    <p:column>
+        <p:outputLabel>Connector Type</p:outputLabel>
+    </p:column>
+    <p:column>
+        <p:selectOneMenu value="#{currentItemConnector.connector.connectorType}"
+                         disabled="#{disabled}"
+                         var="connector">            
+            <p:ajax oncomplete="#{onChangeConnector}" />
+            <f:selectItems value="#{connectorTypeController.availableItems}"/> 
+            <p:column>
+                <b>#{connector.name}</b>
+                #{connector.description}
+            </p:column>
+        </p:selectOneMenu>
+    </p:column>
+
+    <p:column>
+        <p:outputLabel>Gender</p:outputLabel>
+    </p:column>   
+    <p:column>
+        <p:selectOneButton value="#{currentItemConnector.connector.isMale}"
+                           disabled="#{disabled}">
+            <p:ajax oncomplete="#{onChangeConnector}" />
+            <f:selectItem itemValue="false" itemLabel="Female"/>
+            <f:selectItem itemValue="true" itemLabel="Male"/>
+        </p:selectOneButton>
+    </p:column>
+    
+</ui:composition>
