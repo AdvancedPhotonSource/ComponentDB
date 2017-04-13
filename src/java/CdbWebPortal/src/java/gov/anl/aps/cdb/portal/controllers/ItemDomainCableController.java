@@ -86,7 +86,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }
 
     @Override
-    protected void checkItemUniqueness(Item item) throws CdbException {        
+    public void checkItemUniqueness(Item item) throws CdbException {        
         // Cables are only unique by primary key (id). 
     }
     
