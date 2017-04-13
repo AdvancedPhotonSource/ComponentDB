@@ -412,12 +412,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public String getEntityEntityTypeName() {
+    public final String getEntityEntityTypeName() {
         return getItemItemTypeTitle();
     }
 
     @Override
-    public String getEntityEntityCategoryName() {
+    public final String getEntityEntityCategoryName() {
         return getItemItemCategoryTitle();
     }
 
