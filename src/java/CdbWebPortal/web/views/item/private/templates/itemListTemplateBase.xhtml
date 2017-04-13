@@ -65,26 +65,6 @@ See LICENSE file.
 
                 <ui:insert name="domainSpecificAddionalDialogs"/>
             </p:outputPanel>
-
-            <ui:remove>
-                <p:outputPanel rendered="#{entityController.itemHasSimpleListView}">
-                    <div style="text-align: center">
-                        <br/>
-                        <br/>
-                        <p:selectOneButton value="#{entityController.listViewSelected}"
-                                           onchange="updateForm()">
-                            <f:selectItem itemLabel="Simple View" itemValue="simpleView" />
-                            <f:selectItem itemLabel="Advanced View" itemValue="advancedView" />
-                        </p:selectOneButton>
-                    </div>
-                </p:outputPanel>
-            </ui:remove>
-
-
-            <p:remoteCommand name="updateForm"
-                             update="@form"/>
-
-
         </h:form>
 
     </ui:define>

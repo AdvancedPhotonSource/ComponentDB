@@ -146,8 +146,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected List<ItemCategory> domainItemCategoryList = null;
 
-    protected String listViewSelected;
-
     protected List<ItemType> availableItemTypesForCurrentItem = null;
     protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
     protected ItemElement newItemElementForCurrent = null; 
@@ -391,7 +389,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         this.displayItemElementListQrId = displayItemElementListQrId;
     }
 
-    public Domain getDefaultDomain() {       
+    public Domain getDefaultDomain() {
         Domain domain = domainFacade.findByName(getDefaultDomainName());
         if (domain == null) {
             domain = new Domain();
@@ -465,38 +463,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public List<ItemDomainEntity> getItemList() {
         return getEntityDbFacade().findByDomain(getDefaultDomainName());
-    }
-
-    public boolean isItemHasSimpleListView() {
-        return false;
-    }
-
-    /**
-     * TODO: Verify that list simple/advanced view is no longer needed.
-     *
-     * @return
-     */
-    public String getListViewSelected() {
-        if (listViewSelected == null) {
-            if (isItemHasSimpleListView()) {
-                listViewSelected = ItemViews.simpleListView.getValue();
-            } else {
-                listViewSelected = ItemViews.advancedListView.getValue();
-            }
-        }
-        return listViewSelected;
-    }
-
-    public void setListViewSelected(String listViewSelected) {
-        this.listViewSelected = listViewSelected;
-    }
-
-    public boolean getRenderSimpleView() {
-        return getListViewSelected().equals(ItemViews.simpleListView.getValue());
-    }
-
-    public boolean getRenderAdvanceView() {
-        return getListViewSelected().equals(ItemViews.advancedListView.getValue());
     }
 
     public List<ItemCategory> getDomainItemCategoryList() {
