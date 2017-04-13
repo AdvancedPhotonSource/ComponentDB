@@ -8,8 +8,9 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -36,7 +37,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementRelationshipUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -54,12 +54,9 @@ import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -76,9 +73,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
-
-    private final String ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP = "itemElementInstantiation";
-    private final String ITEM_DOMAIN_LOCATION_CONTROLLER_NAME = "itemDomainLocationController";
 
     /*
      * Controller specific settings
@@ -165,14 +159,8 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     private boolean connectionEditRendered = false;
 
-    protected ListDataModel filterViewLocationDataModel = null;
-    protected ItemDomainLocation filterViewLocationItemLoaded = null;
-    protected boolean filterViewLocationDataModelLoaded = false;
-
     private ItemDomainInventory lastInventoryItemRequestedLocationMenuModel = null;   
-
-    @EJB
-    private DomainFacade domainFacade;
+    
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
 
@@ -192,6 +180,11 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public static ItemDomainInventoryController getInstance() {
         return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
+    }
+    
+    @Override
+    protected ItemCreateWizardController getItemCreateWizardController() {
+        return ItemCreateWizardDomainInventoryController.getInstance(); 
     }
 
     public Boolean getDisplayLocationDetails() {
@@ -669,36 +662,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
 
         return false;
-    }
-
-    @Override
-    protected void filterViewItemProjectChanged() {
-        super.filterViewItemProjectChanged();
-        filterViewLocationDataModelLoaded = false;
-    }
-
-    public boolean isFilterViewLocationDataModelNeedReloading(ItemDomainLocation newLocationItem) {
-        if (filterViewLocationDataModel == null) {
-            return true;
-        }
-        if (filterViewLocationDataModelLoaded) {
-            return true;
-        }
-        if (filterViewLocationItemLoaded != null) {
-            if (!filterViewLocationItemLoaded.equals(newLocationItem)) {
-                return true;
-            }
-        } else // last is null but new is not. 
-         if (newLocationItem != null) {
-                return true;
-            }
-        return false;
-    }
-
-    public void updateFilterViewLocationDataModelReloadStatus(ItemDomainLocation lastLocationLoaded) {
-        filterViewLocationDataModelLoaded = true;
-        filterViewLocationItemLoaded = lastLocationLoaded;
-    }
+    }       
 
     public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(Item item) {
         String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
@@ -712,55 +676,11 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
 
         return null;
-    }
-
-    public ListDataModel getFilterViewLocationDataModel() {
-        ItemDomainLocation selection = getItemDomainLocationController().getFilterViewLocationLastSelection();
-        if (isFilterViewLocationDataModelNeedReloading(selection)) {
-            List<ItemDomainInventory> itemList = new ArrayList<>();
-            ItemProject currentItemProject = getCurrentItemProject();
-            if (selection != null) {
-                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
-                if (currentItemProject != null) {
-                    List<Item> itemsToRemove = new ArrayList<>();
-                    for (Item item : itemList) {
-                        if (item.getItemProjectList().contains(currentItemProject)) {
-                            continue;
-                        }
-                        itemsToRemove.add(item);
-                    }
-                    itemList.removeAll(itemsToRemove);
-                }
-            } else if (currentItemProject != null) {
-                itemList = itemDomainInventoryFacade.findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
-            }
-            filterViewLocationDataModel = createFilterViewListDataModel(itemList);
-        }
-
-        return filterViewLocationDataModel;
-    }
-
-    @Override
-    protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
-        super.prepareFilterViewResultItem(fvio);
-        Item inventoryItem = fvio.getItemObject();
-
-        TreeNode rootTreeNode = ItemUtility.createNewTreeNode(inventoryItem, null);
-        ItemDomainLocationController.addLocationRelationshipsToParentTreeNode(inventoryItem, rootTreeNode);
-        if (rootTreeNode.getChildren().size() > 0) {
-            fvio.addFilterViewItemExpansion(rootTreeNode, "Location For");
-        }
-
-    }
-
+    }    
+    
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
-    }
-
-    public ItemDomainLocationController getItemDomainLocationController() {
-        Object bean = SessionUtility.findBean(ITEM_DOMAIN_LOCATION_CONTROLLER_NAME);
-        return (ItemDomainLocationController) bean;
     }
 
     public boolean isInventoryDomainItem(Item item) {
@@ -922,67 +842,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public void prepareAddItemDerivedFromItem(Item item) {
         super.prepareAddItemDerivedFromItem(item);
         prepareBillOfMaterialsForCurrentItem();
-    }
-
-    @Override
-    protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
-        switch (step) {
-            case basicInformation:
-                return null;
-            case classification:
-                return null;
-            case permissions:
-                return null;
-            case reviewSave:
-                return null;
-            default:
-                break;
-        }
-
-        return super.getCreateItemWizardMenuItemValue(step);
-    }
-
-    @Override
-    protected String getCreateItemWizardMenuItemCustomValue(String stepName) {
-        if (stepName.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
-            return "Bill of Materials";
-        }
-
-        return super.getCreateItemWizardMenuItemCustomValue(stepName);
-    }
-
-    @Override
-    public MenuModel getCreateItemWizardStepsMenuModel() {
-        if (createItemWizardStepsMenuModel == null) {
-            // Create all of the standard menu items.
-            super.getCreateItemWizardStepsMenuModel();
-
-            DefaultMenuItem menuItem;
-            String menuItemDisplayValue = getCreateItemWizardMenuItemCustomValue(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
-            menuItem = createMenuItemForCreateWizardSteps(menuItemDisplayValue, ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
-
-            createItemWizardStepsMenuModel.addElement(menuItem);
-
-        }
-
-        return createItemWizardStepsMenuModel;
-    }
-
-    @Override
-    public String getNextStepForCreateItemWizard(FlowEvent event) {
-        if (getCurrent().getDerivedFromItem() == null) {
-            SessionUtility.addWarningMessage("No Catalog Item Selected", "Please select a catalog item.");
-            return ItemCreateWizardSteps.derivedFromItemSelection.getValue();
-        }
-
-        String nsEvent = event.getNewStep();
-
-        if (nsEvent.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
-            prepareBillOfMaterialsForCurrentItem();
-        }
-
-        return super.getNextStepForCreateItemWizard(event);
-    }
+    }   
 
     public void prepareBillOfMaterialsForCurrentItem() {
         // Prepare bill of materials if not yet done so. 
@@ -1071,12 +931,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         showOptionalPartsInBom = false;
         currentItemBOMTreeHasOptionalItems = null;
 
-    }
-
-    @Override
-    public String getLastCreateWizardStep() {
-        return ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP;
-    }
+    }   
 
     public TreeNode getCurrentItemBOMListTree() {
         if (currentItemBOMListTree == null) {

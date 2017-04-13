@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import static gov.anl.aps.cdb.portal.controllers.CdbEntityController.parseSettingValueAsInteger;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatalogController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -137,6 +139,15 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
 
     public ItemDomainCatalogController() {
         super();
+    } 
+    
+    public static ItemDomainCatalogController getInstance() {
+        return (ItemDomainCatalogController) SessionUtility.findBean("itemDomainCatalogController");
+    }
+
+    @Override
+    protected ItemCreateWizardController getItemCreateWizardController() {
+        return ItemCreateWizardDomainCatalogController.getInstance(); 
     }
 
     @Override
@@ -299,23 +310,7 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
             newItem.setItemProjectList(itemProjectList);
         }
         return newItem;
-    }
-
-    @Override
-    public String getNextStepForCreateItemWizard(FlowEvent event) {
-        String currentStep = event.getOldStep();
-
-        if (currentStep.equals(ItemCreateWizardSteps.classification.getValue())) {
-            // Nothing needs to be verified for classification step at this point. 
-        }
-
-        return super.getNextStepForCreateItemWizard(event);
-    }
-
-    @Override
-    public String getFirstCreateWizardStep() {
-        return ItemCreateWizardSteps.basicInformation.getValue();
-    }
+    }   
 
     @Override
     protected void resetVariablesForCurrent() {
@@ -835,6 +830,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return true; 
-    }
+    }     
 
 }

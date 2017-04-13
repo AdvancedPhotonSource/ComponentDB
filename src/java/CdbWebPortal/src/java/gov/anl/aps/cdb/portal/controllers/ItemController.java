@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemViews;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -47,10 +48,8 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -67,16 +66,15 @@ import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
-import org.primefaces.event.FlowEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.MenuElement;
-import org.primefaces.model.menu.MenuModel;
 
-public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements Serializable {
+public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements IItemController<ItemDomainEntity> {
 
+    private static final Logger logger = Logger.getLogger(Item.class.getName());
+    protected final String FAVORITES_LIST_NAME = "Favorites";
+    protected final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";    
+    
     @EJB
     protected ItemElementFacade itemElementFacade;
 
@@ -98,10 +96,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @EJB
     protected UserInfoFacade userInfoFacade;
 
-    protected final String FAVORITES_LIST_NAME = "Favorites";
-
-    protected final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
-
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
     protected Boolean displayItemSources = null;
@@ -113,9 +107,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Boolean displayItemProject = null;
     protected Boolean displayItemEntityTypes = null;
     protected Boolean autoLoadListFilterValues = false;
-
-    protected Boolean displayItemListTreeView = null;
-    
+    protected Boolean displayItemListTreeView = null;    
     protected Boolean displayItemElementListItemIdentifier1 = false; 
     protected Boolean displayItemElementListItemIdentifier2 = false; 
     protected Boolean displayItemElementListItemType = false; 
@@ -128,9 +120,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected Integer displayListDataModelScopePropertyTypeId = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
-    protected DataModel scopedListDataModel = null;
-
-    private static final Logger logger = Logger.getLogger(Item.class.getName());
+    protected DataModel scopedListDataModel = null;   
 
     protected String filterByItemSources = null;
     protected String filterByQrId = null;
@@ -158,34 +148,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected String listViewSelected;
 
-    protected List<ItemCategory> filterViewItemCategorySelectionList = null;
-
-    // Geenerated based on the currently selected item category. 
-    protected List<ItemType> filterViewItemTypeList = null;
-
-    protected List<UserGroup> filterViewUserGroupSelectionList = null;
-
-    // Generated based on the currently selected user group.  
-    protected List<UserInfo> filterViewUserInfoList = null;
-
-    protected ItemType filterViewSelectedItemType = null;
-
-    protected UserInfo filterViewSelectedUserInfo = null;
-
-    protected boolean filterViewCategoryTypeListDataModelLoaded = false;
-
-    protected boolean filterViewOwnerListDataModelLoaded = false;
-
-    protected ListDataModel filterViewCategoryTypeDataModel = null;
-
-    protected ListDataModel filterViewOwnerListDataModel = null;
-
-    private final int FILTER_VIEW_MIN_ROWS = 14;
-
-    private final int FILTER_VIEW_MAX_ROWS = 20;
-
-    private int filterViewDataTableRowCount = -1;
-
     protected List<ItemType> availableItemTypesForCurrentItem = null;
     protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
     protected ItemElement newItemElementForCurrent = null; 
@@ -197,225 +159,22 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Item itemToClone;
 
     // Globalized item project functionality. 
-    protected ItemProjectController itemProjectController = null;
-
-    protected enum ItemCreateWizardSteps {
-        derivedFromItemSelection("derivedFromItemSelectionTab", "Derived From Item"),
-        basicInformation("basicItemInformationTab", "Basic Information"),
-        classification("itemClassificationTab", "Classification"),
-        permissions("itemPermissionTab", "Permissions"),
-        reviewSave("reviewItemTab", "Review");
-
-        private final String value;
-        private final String displayValue;
-
-        private ItemCreateWizardSteps(String value, String displayValue) {
-            this.value = value;
-            this.displayValue = displayValue;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public String getDisplayValue() {
-            return displayValue;
-        }
-    };
-
-    private String currentWizardStep;
-    protected MenuModel createItemWizardStepsMenuModel = null;
-    protected Integer currentWizardStepIndex = null;
+    protected ItemProjectController itemProjectController = null;        
 
     public ItemController() {
     }
-
+    
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
-
-    /**
-     * Default domain of items managed by the controller.
-     *
-     * @return
-     */
-    public abstract String getDefaultDomainName();
     
     /**
-     * Does Item connectors section need to be displayed for the item in domain. 
+     * Get item create wizard controller for current controller. 
      * 
      * @return 
      */
-    public abstract boolean getEntityDisplayItemConnectors(); 
+    protected ItemCreateWizardController getItemCreateWizardController() {
+        return null; 
+    }
 
-    /**
-     * Does item identifier 1 need to be displayed for the item in default
-     * domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemIdentifier1();
-
-    /**
-     * Does item identifier 2 need to be displayed for the item in default
-     * domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemIdentifier2();
-
-    /**
-     * Does item name need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemName();
-
-    /**
-     * Does item type need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemType();
-
-    /**
-     * Does item category need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemCategory();
-
-    /**
-     * Does item of default domain need to display item it derived from.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayDerivedFromItem();
-
-    /**
-     * Does item qrId need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayQrId();
-
-    /**
-     * Does item gallery need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemGallery();
-
-    /**
-     * Do the item logs need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemLogs();
-
-    /**
-     * Do the item sources need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemSources();
-
-    /**
-     * Do the item properties need to be displayed for the item in default
-     * domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemProperties();
-
-    /**
-     * Do the item elements need to be displayed for the item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemElements();
-
-    /**
-     * Do the items derived from the item in default domain need to be
-     * displayed.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemsDerivedFromItem();
-
-    /**
-     * Does item membership in other items as elements of item in default domain
-     * need to be shown.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemMemberships();
-
-    /**
-     * Does the item project need to be displayed for items in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemProject();
-
-    /**
-     * Do the item entity types need to be displayed for item in default domain.
-     *
-     * @return
-     */
-    public abstract boolean getEntityDisplayItemEntityTypes();
-
-    /**
-     * What does item identifier 1 represent for items in default domain.
-     *
-     * @return
-     */
-    public abstract String getItemIdentifier1Title();
-
-    /**
-     * What does item identifier 2 represent for items in default domain.
-     *
-     * @return
-     */
-    public abstract String getItemIdentifier2Title();
-
-    /**
-     * What is the meaningful representation/title of items derived form item in
-     * default domain. ex: inventory items for catalog item.
-     *
-     * @return
-     */
-    public abstract String getItemsDerivedFromItemTitle();
-
-    /**
-     * What is the meaningful representation/title of item the item in default
-     * domain derived from. ex: catalog item for inventory item.
-     *
-     * @return
-     */
-    public abstract String getDerivedFromItemTitle();
-
-    /**
-     * What is the name of the css style for items in default domain.
-     *
-     * @return
-     */
-    public abstract String getStyleName();
-
-    /**
-     * Get method for domain name for which the default domain items have
-     * derived from.
-     *
-     * @return
-     */
-    public abstract String getDefaultDomainDerivedFromDomainName();
-
-    /**
-     * Get method for domain name for which the default domain items have
-     * derived to.
-     *
-     * @return
-     */
-    public abstract String getDefaultDomainDerivedToDomainName();
-    
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
@@ -675,7 +434,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
      */
     public void itemProjectChanged() {
         resetListDataModel();
-        filterViewItemProjectChanged();
     }
 
     /**
@@ -808,7 +566,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
     }
 
-    private List<ItemType> getAvaiableTypesForItemCategoryList(List<ItemCategory> itemCategoryList) {
+    public List<ItemType> getAvaiableTypesForItemCategoryList(List<ItemCategory> itemCategoryList) {
         List<ItemType> avaiableItemTypes = new ArrayList<>();
 
         if (itemCategoryList != null) {
@@ -859,239 +617,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return avaiableItemTypesForCurrentItem.isEmpty();
         }
         return true;
-    }
-
-    public List<UserGroup> getFilterViewUserGroupSelectionList() {
-        return filterViewUserGroupSelectionList;
-    }
-
-    public List<UserInfo> getFilterViewUserInfoList() {
-        if (filterViewUserInfoList == null) {
-            if (filterViewUserGroupSelectionList == null
-                    || filterViewUserGroupSelectionList.isEmpty()) {
-                filterViewUserInfoList = new ArrayList<>();
-            } else {
-                filterViewUserInfoList = new ArrayList<>();
-                for (UserGroup userGroup : filterViewUserGroupSelectionList) {
-                    for (UserInfo userInfo : userGroup.getUserInfoList()) {
-                        if (!filterViewUserInfoList.contains(userInfo)) {
-                            filterViewUserInfoList.add(userInfo);
-                        }
-                    }
-                }
-                if (filterViewUserGroupSelectionList.size() > 1) {
-                    // Alphabetical sort order needs to be re-applied. 
-                    Comparator<UserInfo> userInfoAlphabeticalComperitor;
-                    userInfoAlphabeticalComperitor = new Comparator<UserInfo>() {
-                        @Override
-                        public int compare(UserInfo o1, UserInfo o2) {
-                            return o1.toString().compareTo(o2.toString());
-                        }
-                    };
-                    filterViewUserInfoList.sort(userInfoAlphabeticalComperitor);
-                }
-            }
-        }
-        return filterViewUserInfoList;
-    }
-
-    public void setFilterViewUserGroupSelectionList(List<UserGroup> filterViewUserGroupSelectionList) {
-        // List is different.
-        if (isListDifferent((List<Object>) (Object) this.filterViewUserGroupSelectionList, (List<Object>) (Object) filterViewUserGroupSelectionList)) {
-            filterViewUserInfoList = null;
-            this.filterViewUserGroupSelectionList = filterViewUserGroupSelectionList;
-            this.filterViewOwnerListDataModelLoaded = false;
-            // Verify validity of current selection. 
-            setFilterViewSelectedUserInfo(filterViewSelectedUserInfo);
-        }
-    }
-
-    public List<ItemCategory> getFilterViewItemCategorySelection() {
-        return filterViewItemCategorySelectionList;
-    }
-
-    public void setFilterViewItemCategorySelection(List<ItemCategory> filterViewItemCategorySelectionList) {
-        // List is diferent.
-        if (isListDifferent((List<Object>) (Object) this.filterViewItemCategorySelectionList, (List<Object>) (Object) filterViewItemCategorySelectionList)) {
-            this.filterViewItemCategorySelectionList = filterViewItemCategorySelectionList;
-            filterViewItemTypeList = null;
-            filterViewCategoryTypeListDataModelLoaded = false;
-            // Verify validity of current selection. 
-            setFilterViewSelectedItemType(filterViewSelectedItemType);
-        }
-    }
-
-    public ItemType getFilterViewSelectedItemType() {
-        return filterViewSelectedItemType;
-    }
-
-    public void setFilterViewSelectedItemType(ItemType filterViewSelectedItemType) {
-        if (getFilterViewItemTypeList().contains(filterViewSelectedItemType)) {
-            filterViewCategoryTypeListDataModelLoaded = false;
-            this.filterViewSelectedItemType = filterViewSelectedItemType;
-        } else if (!getFilterViewItemTypeList().contains(this.filterViewSelectedItemType)) {
-            // Current item is not valid
-            filterViewCategoryTypeListDataModelLoaded = false;
-            this.filterViewSelectedItemType = null;
-        } else if (filterViewSelectedItemType == null) {
-            filterViewCategoryTypeListDataModelLoaded = false;
-            this.filterViewSelectedItemType = null;
-        }
-    }
-
-    public UserInfo getFilterViewSelectedUserInfo() {
-        return filterViewSelectedUserInfo;
-    }
-
-    public void setFilterViewSelectedUserInfo(UserInfo filterViewSelectedUserInfo) {
-        if (filterViewSelectedUserInfo == null) {
-            this.filterViewSelectedUserInfo = filterViewSelectedUserInfo;
-            this.filterViewOwnerListDataModelLoaded = false;
-        } else if (getFilterViewUserInfoList().contains(filterViewSelectedUserInfo)) {
-            this.filterViewSelectedUserInfo = filterViewSelectedUserInfo;
-            this.filterViewOwnerListDataModelLoaded = false;
-        } else if (!getFilterViewUserInfoList().contains(filterViewSelectedUserInfo)) {
-            this.filterViewSelectedUserInfo = null;
-            this.filterViewOwnerListDataModelLoaded = false;
-        }
-    }
-
-    public boolean isFilterViewItemTypeSelectOneDisabled() {
-        return getFilterViewItemTypeList().isEmpty();
-    }
-
-    public boolean isFilterViewUserInfoSelectOneDisabled() {
-        return getFilterViewUserInfoList().isEmpty();
-    }
-
-    protected void filterViewItemProjectChanged() {
-        filterViewCategoryTypeListDataModelLoaded = false;
-        filterViewOwnerListDataModelLoaded = false;
-    }
-
-    public List<ItemType> getFilterViewItemTypeList() {
-        if (filterViewItemTypeList == null) {
-            filterViewItemTypeList = new ArrayList<>();
-            if (filterViewItemCategorySelectionList != null) {
-                filterViewItemTypeList = getAvaiableTypesForItemCategoryList(filterViewItemCategorySelectionList);
-            }
-        }
-        return filterViewItemTypeList;
-    }
-
-    public ListDataModel getFilterViewCategoryTypeListDataModel() {
-        if (filterViewCategoryTypeListDataModelLoaded == false) {
-            List<ItemDomainEntity> filterViewItemList = null;
-            if (getCurrentItemProject() != null
-                    || filterViewItemCategorySelectionList != null
-                    || filterViewSelectedItemType != null) {
-                filterViewItemList = getEntityDbFacade().findByFilterViewCategoryTypeAttributes(getCurrentItemProject(),
-                        filterViewItemCategorySelectionList, filterViewSelectedItemType, getDefaultDomainName());
-            }
-
-            filterViewCategoryTypeDataModel = createFilterViewListDataModel(filterViewItemList);
-            filterViewCategoryTypeListDataModelLoaded = true;
-        }
-
-        return filterViewCategoryTypeDataModel;
-    }
-
-    public ListDataModel getFilterViewOwnerListDataModel() {
-        if (filterViewOwnerListDataModelLoaded == false) {
-            List<ItemDomainEntity> filterViewItemList = null;
-            if (getCurrentItemProject() != null
-                    || filterViewSelectedUserInfo != null
-                    || filterViewUserGroupSelectionList != null) {
-                filterViewItemList = getEntityDbFacade().findByFilterViewOwnerAttributes(getCurrentItemProject(), filterViewUserGroupSelectionList, filterViewSelectedUserInfo, getDefaultDomainName());
-            }
-
-            filterViewOwnerListDataModel = createFilterViewListDataModel(filterViewItemList);
-            filterViewOwnerListDataModelLoaded = true;
-        }
-
-        return filterViewOwnerListDataModel;
-    }
-
-    protected void prepareFilterViewResultItem(FilterViewResultItem fvio) {
-        Item item = fvio.getItemObject();
-        if (!item.getItemElementDisplayList().isEmpty()) {
-            try {
-                TreeNode rootTreeNode = ItemElementUtility.createItemRoot(item);
-                fvio.addFilterViewItemExpansion(rootTreeNode, "Item Assembly");
-            } catch (Exception ex) {
-                logger.error(ex);
-            }
-        }
-    }
-
-    protected ListDataModel createFilterViewListDataModel(List<ItemDomainEntity> itemList) {
-        if (itemList != null) {
-            List<FilterViewResultItem> filterViewItemObjectList = new ArrayList<>();
-            for (Item item : itemList) {
-                FilterViewResultItem fvio = new FilterViewResultItem(item);
-                prepareFilterViewResultItem(fvio);
-                filterViewItemObjectList.add(fvio);
-            }
-
-            return new ListDataModel(filterViewItemObjectList);
-        }
-        return null;
-    }
-
-    /**
-     * Function generates number of optimal rows for a data table. A known issue
-     * is that data table will stop attempting to fetch number of rows after
-     * interaction with paginator.
-     *
-     * @return number of rows to display in data table. public int
-     * getFilterViewDataTableRowCount() { if (filterViewDataTableRowCount == -1)
-     * { ListDataModel filterDataModel = getFilterViewListDataModel();
-     *
-     * int filterDataModelRowCount = filterDataModel.getRowCount();
-     *
-     * int lastBestNumRows = 0; if (filterDataModelRowCount != -1) {
-     *
-     * Double lastBestResult = null; for (int i = FILTER_VIEW_MAX_ROWS; i >
-     * FILTER_VIEW_MIN_ROWS; i--) { if (lastBestResult == null) { lastBestResult
-     * = (i * 1.0) / (filterDataModelRowCount * 1.0); lastBestNumRows = i; }
-     * else { double currentResult = (i * 1.0) / (filterDataModelRowCount *
-     * 1.0); double resultDecimal = currentResult - Math.floor(currentResult);
-     * if (resultDecimal != 0) { double lastDecimal = lastBestResult -
-     * Math.floor(lastBestResult); if (currentResult > lastDecimal) {
-     * lastBestResult = currentResult; lastBestNumRows = i; } } else { // Whole
-     * number reached. lastBestResult = currentResult; }
-     *
-     * }
-     *
-     * // Optimal result reached... whole number returned. if (lastBestResult %
-     * 1 == 0) { lastBestNumRows = i; break; } } }
-     *
-     * filterViewDataTableRowCount = lastBestNumRows; }
-     *
-     * return filterViewDataTableRowCount;
-     *
-     * }
-     */
-    /**
-     * Compares if two lists are different.
-     *
-     * @param originalList
-     * @param listToCompare
-     * @return
-     */
-    protected boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
-        Boolean listIsDifferent = true;
-        if (originalList == null
-                || listToCompare.size() == originalList.size()) {
-            List<Object> test = new ArrayList<>(listToCompare);
-            if (originalList != null) {
-                test.removeAll(originalList);
-            }
-
-            listIsDifferent = !test.isEmpty();
-        }
-        return listIsDifferent;
-    }
+    }   
 
     /**
      * Create a list data model with items of controller domain and item project
@@ -1157,13 +683,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public Domain getDefaultDomainDerivedToDomain() {
         return domainFacade.findByName(getDefaultDomainDerivedToDomainName());
     }
-
-    /**
-     * Default controller to perform selection of items. One could be specified
-     * for the specific view page otherwise this one will be provided.
-     *
-     * @return
-     */
+    
     public final ItemController getSelectionController() {
         return this;
     }
@@ -1210,7 +730,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return false;
     }
 
-    private String getDomainControllerName() {
+    public String getDomainControllerName() {
         return getDomainControllerName(getDefaultDomainName());
     }
 
@@ -1474,28 +994,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return genEntityTypeName.toLowerCase() + getDefaultDomainName();
     }
 
-    public String getListStyleName() {
-        /* Style is changed based on the list shown 
-        if (getListEntityType() != null) {
-            return getEntityTypeStyleName(getListEntityType().getName());
-        }
-         */
-
+    public String getListStyleName() { 
         return getStyleName();
 
     }
 
     public String getCurrentItemStyleName() {
-        /* Style is change based on entity type of item shown. 
-        Item item = getCurrent();
-        if (item != null) {
-            ListTbl<EntityType> itemEntityTypeList = item.getEntityTypeDisplayList();
-            if (itemEntityTypeList != null && itemEntityTypeList.size() == 1) {
-                return getEntityTypeStyleName(itemEntityTypeList.get(0).getName());
-            }
-        }
-         */
-
         return getStyleName();
     }
 
@@ -1750,13 +1254,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public List<ItemDomainEntity> completeItem(String query) {
         List<Item> itemList = (List<Item>) (List<?>) getSelectItemCandidateList();
         return (List<ItemDomainEntity>) ItemUtility.filterItem(query, itemList);
-    }
-
-    public Boolean isRenderClassificationCreateWizardTab() {
-        return this.isEntityTypeEditable()
-                && this.getEntityDisplayItemType()
-                && this.getEntityDisplayItemCategory();
-    }
+    }   
 
     public ItemController getDefaultDomainDerivedFromDomainController() {
         return findDomainController(getDefaultDomainDerivedFromDomainName());
@@ -1775,199 +1273,23 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return dbItem != null;
     }
 
-    /**
-     * Method to be overridden by child controllers to control wizard steps in
-     * menu.
-     *
-     * @param step
-     * @return
-     */
-    protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
-        if (step.getValue().equals(ItemCreateWizardSteps.derivedFromItemSelection.getValue())) {
-            if (getEntityDisplayDerivedFromItem()) {
-                return getDerivedFromItemTitle();
-            } else {
-                return null;
-            }
-        }
-
-        return step.getDisplayValue();
-    }
-
-    public MenuModel getCreateItemWizardStepsMenuModel() {
-        if (createItemWizardStepsMenuModel == null) {
-            createItemWizardStepsMenuModel = new DefaultMenuModel();
-            for (ItemCreateWizardSteps step : ItemCreateWizardSteps.values()) {
-                String menuItemValue = getCreateItemWizardMenuItemValue(step);
-
-                if (menuItemValue != null) {
-                    DefaultMenuItem menuItem;
-                    menuItem = createMenuItemForCreateWizardSteps(menuItemValue, step.getValue());
-                    createItemWizardStepsMenuModel.addElement(menuItem);
-                }
-            }
-        }
-
-        return createItemWizardStepsMenuModel;
-    }
-
-    protected DefaultMenuItem createMenuItemForCreateWizardSteps(String displayValue, String stepValue) {
-        DefaultMenuItem menuElement = new DefaultMenuItem(displayValue);
-        String menuElementCommand = "#{";
-        menuElementCommand += getDomainControllerName();
-        menuElementCommand += ".updateCurrentWizardStep('" + stepValue + "')";
-        menuElementCommand += "}";
-        menuElement.setCommand(menuElementCommand);
-        return menuElement;
-    }
-
-    private ItemCreateWizardSteps getStepForValue(String value) {
-        for (ItemCreateWizardSteps step : ItemCreateWizardSteps.values()) {
-            if (step.getValue().equals(value)) {
-                return step;
-            }
-        }
-
-        return null;
-    }
-
-    protected String getCreateItemWizardMenuItemCustomValue(String stepName) {
-        return null;
-    }
-
-    private void updateCurrentWizardStepIndex(String currentStep) {
-        if (createItemWizardStepsMenuModel != null) {
-            ItemCreateWizardSteps step = getStepForValue(currentStep);
-            String menuItemValue = null;
-            if (step != null) {
-                menuItemValue = getCreateItemWizardMenuItemValue(step);
-            } else {
-                // Step is null, this may be a custom step spefic to derived controller.
-                menuItemValue = getCreateItemWizardMenuItemCustomValue(currentStep);
-            }
-            if (menuItemValue != null) {
-                for (MenuElement menuElement : createItemWizardStepsMenuModel.getElements()) {
-                    DefaultMenuItem menuItem = (DefaultMenuItem) menuElement;
-                    if (menuItem.getValue().equals(menuItemValue)) {
-                        currentWizardStepIndex = createItemWizardStepsMenuModel.getElements().indexOf(menuElement);
-                        break;
-                    }
-
-                }
-            }
-        }
-    }
-
-    public int getCurrentWizardStepIndex() {
-        if (currentWizardStepIndex == null) {
-            currentWizardStepIndex = 0;
-        }
-
-        return currentWizardStepIndex;
-    }
-
-    public String getCurrentWizardStep() {
-        if (currentWizardStep == null) {
-            currentWizardStep = getFirstCreateWizardStep();
-        }
-
-        return currentWizardStep;
-    }
-
-    public String updateCurrentWizardStep(String currentWizardStep) {
-        this.currentWizardStep = currentWizardStep;
-        updateCurrentWizardStepIndex(currentWizardStep);
-
-        return SessionUtility.getCurrentViewId() + "?faces-redirect=true";
-    }
-
-    public void setCurrentWizardStep(String currentWizardStep) {
-        this.currentWizardStep = currentWizardStep;
-    }
-
-    public String createItemWizardFlowListener(FlowEvent event) {
-        String prevStep = event.getOldStep();
-        String nextStep = getNextStepForCreateItemWizard(event);
-
-        currentWizardStep = nextStep;
-
-        if (prevStep.equals(currentWizardStep) == false) {
-            updateCurrentWizardStepIndex(nextStep);
-            RequestContext.getCurrentInstance().execute("updateWizardButtons()");
-        }
-        return nextStep;
-    }
-
-    public boolean isCreateWizardOnLastStep() {
-        if (currentWizardStep != null) {
-            return getLastCreateWizardStep().equals(currentWizardStep);
-        }
-        return false;
-    }
-
-    public boolean isCreateWizardOnFirstStep() {
-        if (currentWizardStep != null) {
-            return getFirstCreateWizardStep().equals(currentWizardStep);
-        }
-        // On first step; flow listener never got a chance to set current step.
-        return true;
-    }
-
-    public String getLastCreateWizardStep() {
-        return ItemCreateWizardSteps.reviewSave.getValue();
-
-    }
-
-    public String getFirstCreateWizardStep() {
-        return ItemCreateWizardSteps.derivedFromItemSelection.getValue();
-    }
-
-    public void resetCreateItemWizardVariables() {
-        // Reset any variables for the wizard.
-        currentWizardStep = null;
-        currentWizardStepIndex = null;
-    }
-
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
         getCurrent().setDerivedFromItem(derivedFromItem);
     }
 
-    protected void checkItemProject(Item item) throws CdbException {
+    public void checkItemProject(Item item) throws CdbException {
         if (item.getItemProjectList() == null || item.getItemProjectList().isEmpty()) {
             throw new CdbException("Project for item " + itemDomainToString(item) + " must be specified.");
         }
-    }
-
-    public String getNextStepForCreateItemWizard(FlowEvent event) {
-        logger.debug("User entering step " + event.getNewStep() + " in " + getDisplayEntityTypeName() + "Create Wizard.");
-        String finishedStep = event.getOldStep();
-
-        // Verify that the new item is unique. Prompt user to update information if this is not the case. 
-        if ((finishedStep.equals(ItemCreateWizardSteps.basicInformation.getValue()))
-                && (!event.getNewStep().equals(ItemCreateWizardSteps.derivedFromItemSelection.getValue()))) {
-            try {
-                checkItemUniqueness(getCurrent());
-            } catch (CdbException ex) {
-                SessionUtility.addWarningMessage("Requirement Not Met", ex.getErrorMessage());
-                return ItemCreateWizardSteps.basicInformation.getValue();
-            }
-        } else if (finishedStep.equals(ItemCreateWizardSteps.classification.getValue())) {
-            if (isItemProjectRequired()) {
-                try {
-                    checkItemProject(getCurrent());
-                } catch (CdbException ex) {
-                    SessionUtility.addWarningMessage("Requirement Not Met", ex.getErrorMessage());
-                    return finishedStep;
-                }
-            }
-        }
-
-        return event.getNewStep();
-    }
+    }   
 
     @Override
-    public String prepareCreate() {
-        resetCreateItemWizardVariables();
+    public String prepareCreate() {        
+        // Reset create wizard variables. 
+        ItemCreateWizardController itemCreateWizardController = getItemCreateWizardController();
+        if (itemCreateWizardController != null) {
+            itemCreateWizardController.resetCreateItemWizardVariables();
+        }
         return super.prepareCreate();
     }
 
@@ -2029,37 +1351,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (selectItemElementItemCandidateList == null) {
             logger.debug("Preparing Item element candiate list for user.");
             selectItemElementItemCandidateList = new ArrayList<>();
-
             selectItemElementItemCandidateList = getItemList();
-
-            /*Entity Type is not used any longer.. Element selection is based on same domain. 
-            Item item = getCurrent();            
-            List<EntityType> entityTypeList = item.getEntityTypeList();
-
-            List<EntityType> allowedChildEntityTypeList = new ArrayList<>();
-
-            for (EntityType entityType : entityTypeList) {
-                List<EntityType> currentEntityTypeAllowedList = entityType.getAllowedEntityTypeList();
-
-                for (EntityType allowedEntityType : currentEntityTypeAllowedList) {
-                    if (allowedChildEntityTypeList.contains(allowedEntityType) == false) {
-                        allowedChildEntityTypeList.add(allowedEntityType);
-                    }
-                }
-            }
-
-            Domain itemDomain = item.getDomain();
-            for (EntityType allowedEntityType : allowedChildEntityTypeList) {
-                List<Item> itemList = itemFacade.findByDomainAndEntityType(itemDomain.getName(), allowedEntityType.getName());
-                if (itemList != null) {
-                    for (Item newItem : itemList) {
-                        if (selectItemElementItemCandidateList.contains(newItem) == false) {
-                            selectItemElementItemCandidateList.add(newItem);
-                        }
-                    }
-                }
-            }
-             */
         }
 
         return selectItemElementItemCandidateList;
@@ -3131,7 +2423,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return getEntityDisplayDerivedFromItem();
     }
 
-    protected void checkItemUniqueness(Item item) throws CdbException {
+    public void checkItemUniqueness(Item item) throws CdbException {
         String name = item.getName();
         String itemIdentifier1 = item.getItemIdentifier1();
         String itemIdentifier2 = item.getItemIdentifier2();
