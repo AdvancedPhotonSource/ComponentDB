@@ -37,7 +37,7 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     
     private Integer systemItemProjectId = null; 
     
-    private Set<ItemController> itemProjectChangeListeners = null;  
+    private Set<IItemController> itemProjectChangeListeners = null;  
     
     // Current item project is used to determine what project receives precedence on pages. 
     private ItemProject currentItemProject = null; 
@@ -79,14 +79,18 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
         return "";
     }
     
-    public void addItemControllerProjectChangeListener(ItemController itemController) {
+    public void addItemControllerProjectChangeListener(IItemController itemDomainView) {
         if (itemProjectChangeListeners == null) {
             itemProjectChangeListeners = new ArraySet<>();
         }
-        itemProjectChangeListeners.add(itemController); 
+        itemProjectChangeListeners.add(itemDomainView); 
         
     }
-
+    
+    public static ItemProject getSelectedItemProject() {
+        return getInstance().getCurrentItemProject(); 
+    }
+    
     public ItemProject getCurrentItemProject() {
         return currentItemProject;
     }
@@ -104,8 +108,8 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     }
     
     private void notifyItemProjectChangeListeners() {
-        for (ItemController itemController : itemProjectChangeListeners) {
-            itemController.itemProjectChanged();
+        for (IItemController iItemController : itemProjectChangeListeners) {
+            iItemController.itemProjectChanged();
         }
     }
     
