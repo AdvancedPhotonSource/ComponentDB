@@ -17,12 +17,13 @@ See LICENSE file.
     
     <ui:remove>
         <ui:define name="itemRowExpansionExtras">
-            <p:outputPanel styleClass="domainEntityRowExpansionDetails" rendered="#{itemDomainCatalogController.displayComponentInstanceRowExpansion}">
+            <ui:param name="itemDomainCatalogSettingObject" value="#{itemDomainCatalogController.settingObject}" />
+            <p:outputPanel styleClass="domainEntityRowExpansionDetails" rendered="#{itemDomainCatalogSettingObject.displayComponentInstanceRowExpansion}">
                 <p:accordionPanel activeIndex="">
                     <p:tab title="Component Instances">
                         <ui:include src="componentComponentInstanceListDataTable.xhtml">
                             <ui:param name="viewMode" value="rowExpansion" />
-                            <ui:param name="loadPropertyValues" value="#{itemDomainCatalogController.loadComponentInstanceRowExpansionPropertyValues}" />
+                            <ui:param name="loadPropertyValues" value="#{itemDomainCatalogSettingObject.loadComponentInstanceRowExpansionPropertyValues}" />
                             <ui:param name="childEntityController" value="#{itemDomainInventoryController}" />
                         </ui:include>
                     </p:tab>

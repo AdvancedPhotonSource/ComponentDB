@@ -16,41 +16,42 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="customizeDisplayDialogConent">
+        <ui:param name="itemDomainInventorySettingObject" value="#{itemDomainInventoryController.settingObject}" />
         <p:panelGrid columns="2">
-            <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainInventoryController.displayNumberOfItemsPerPage}" style="width:20px"/>
+            <p:inputText id="componentInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainInventorySettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
             <h:outputLabel for="componentInstanceDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{itemDomainInventoryController.displayCreatedByUser}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedByUser" value="#{itemDomainInventorySettingObject.displayCreatedByUser}"/>  
             <h:outputLabel for="componentInstanceDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedOnDateTime" value="#{itemDomainInventoryController.displayCreatedOnDateTime}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayCreatedOnDateTime" value="#{itemDomainInventorySettingObject.displayCreatedOnDateTime}"/>  
             <h:outputLabel for="componentInstanceDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{itemDomainInventoryController.displayDescription}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayDescription" value="#{itemDomainInventorySettingObject.displayDescription}"/>  
             <h:outputLabel for="componentInstanceDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayId" value="#{itemDomainInventoryController.displayId}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayId" value="#{itemDomainInventorySettingObject.displayId}"/>  
             <h:outputLabel for="componentInstanceDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedByUser" value="#{itemDomainInventoryController.displayLastModifiedByUser}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedByUser" value="#{itemDomainInventorySettingObject.displayLastModifiedByUser}"/>  
             <h:outputLabel for="componentInstanceDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedOnDateTime" value="#{itemDomainInventoryController.displayLastModifiedOnDateTime}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayLastModifiedOnDateTime" value="#{itemDomainInventorySettingObject.displayLastModifiedOnDateTime}"/>  
             <h:outputLabel for="componentInstanceDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventoryController.displayLocationDetails}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventorySettingObject.displayLocationDetails}"/>  
             <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerUser" value="#{itemDomainInventoryController.displayOwnerUser}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerUser" value="#{itemDomainInventorySettingObject.displayOwnerUser}"/>  
             <h:outputLabel for="componentInstanceDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerGroup" value="#{itemDomainInventoryController.displayOwnerGroup}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayOwnerGroup" value="#{itemDomainInventorySettingObject.displayOwnerGroup}"/>  
             <h:outputLabel for="componentInstanceDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>                
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{itemDomainInventoryController.displayQrId}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplayQrId" value="#{itemDomainInventorySettingObject.displayQrId}"/>  
             <h:outputLabel for="componentInstanceDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
 
-            <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{itemDomainInventoryController.displaySerialNumber}"/>  
+            <p:selectBooleanCheckbox id="componentInstanceDisplaySerialNumber" value="#{itemDomainInventorySettingObject.displaySerialNumber}"/>  
             <h:outputLabel for="componentInstanceDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
 
         </p:panelGrid>

@@ -12,11 +12,13 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
+    <ui:param name="allowedPropertyValueSettingObject" value="#{allowedPropertyValueController.settingObject}"/> 
+    
     <p:dataTable id="allowedPropertyValueEditListDataTable" 
                  widgetVar="allowedPropertyValueEditListDataTableWidget"
                  var="allowedPropertyValueObject" 
                  value="#{propertyTypeObject.allowedPropertyValueList}" 
-                 rows="#{allowedPropertyValueController.displayNumberOfItemsPerPage}"
+                 rows="#{allowedPropertyValueSettingObject.displayNumberOfItemsPerPage}"
                  editable="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 

@@ -11,14 +11,16 @@ See LICENSE file.
                 template="itemElementListObjectTemplateBase.xhtml">    
     
     <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
+    <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}"/> 
+    <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />
 
     <ui:define name="idColumn">
         <p:column sortBy="#{itemElementObject.id}" headerText="Id"
                   filterBy="#{itemElementObject.id}" filterMatchMode="contains"
-                  filterValue="#{itemElementController.filterById}"
+                  filterValue="#{itemElementSettingObject.filterById}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{rendered and itemElementController.displayId}" >
+                  rendered="#{rendered and itemElementSettingObject.displayId}" >
             <h:outputText value="#{itemElementObject.id}" />
         </p:column>
     </ui:define>
@@ -26,7 +28,7 @@ See LICENSE file.
     <ui:define name="nameColumn" >
         <p:column sortBy="#{itemElementObject.name}" headerText="Element Name"
                   filterBy="#{itemElementObject.name}" filterMatchMode="contains"
-                  filterValue="#{itemElementController.filterByName}"
+                  filterValue="#{itemElementSettingObject.filterByName}"
                   filterable="#{filterable}"
                   sortable="#{sortable}" 
                   rendered="#{rendered}">
@@ -48,7 +50,7 @@ See LICENSE file.
                   value="#{itemElementObject.containedItem.itemIdentifier1}" /> 
         
         <p:column id="containedItemItemIdentifier1"
-                  rendered="#{rendered and currentItemController.entityDisplayItemIdentifier1 and currentItemController.displayItemElementListItemIdentifier1}"
+                  rendered="#{rendered and currentItemController.entityDisplayItemIdentifier1 and currentItemSettingObject.displayItemElementListItemIdentifier1}"
                   headerText="#{currentItemController.itemIdentifier1Title}" 
                   sortable="#{sortable}"
                   filterable="#{filterable}"
@@ -65,10 +67,10 @@ See LICENSE file.
     <ui:define name="descriptionColumn" > 
         <p:column sortBy="#{itemElementObject.description}" headerText="Description" 
                   filterBy="#{itemElementObject.description}" filterMatchMode="contains"
-                  filterValue="#{itemElementController.filterByDescription}"
+                  filterValue="#{itemElementSettingObject.filterByDescription}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{rendered and itemElementController.displayDescription}">
+                  rendered="#{rendered and itemElementSettingObject.displayDescription}">
             <h:outputText value="#{itemElementObject.description}"/>
         </p:column>
     </ui:define>

@@ -13,12 +13,13 @@ See LICENSE file.
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
     <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion' and viewMode != 'inViewRowExpansion'}" />
     <ui:param name="logDataList" value="#{entityObject.logList}" />
+    <ui:param name="logSettingObject" value="#{logController.settingObject}" />
 
     <p:dataTable id="#{entityTypeName}LogListDataTable"
                  widgetVar="#{entityTypeName}LogListDataTableWidget" 
                  var="logObject"
                  value="#{logDataList}" 
-                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 rows="#{logSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  reflow="true"

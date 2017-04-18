@@ -9,12 +9,12 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-
+    <ui:param name="logSettingObject" value="#{logController.settingObject}" />
     <p:panelGrid columns="2">
-        <p:inputText id="logListDisplayNumberOfItemsPerPage" value="#{logController.displayNumberOfItemsPerPage}" style="width:20px"/>
+        <p:inputText id="logListDisplayNumberOfItemsPerPage" value="#{logSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
         <h:outputLabel for="logListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="logListDisplayTopic" value="#{logController.displayTopic}"/>  
+        <p:selectBooleanCheckbox id="logListDisplayTopic" value="#{logSettingObject.displayTopic}"/>  
         <h:outputLabel for="logListDisplayTopic" value="Display Topic" styleClass="dialogDataLabel"/> 
     </p:panelGrid>
 

@@ -23,7 +23,9 @@ See LICENSE file.
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
     
-    <p:remoteCommand autoRun="#{entityController.autoLoadListFilterValues}"
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+    
+    <p:remoteCommand autoRun="#{entitySettingObject.autoLoadListFilterValues}"
                      oncomplete="PF('#{entityTypeName}ListDataTable#{viewName}Widget').filter();" />
 
     <p:dataTable id="#{entityTypeName}ListDataTable#{viewName}" 
@@ -32,7 +34,7 @@ See LICENSE file.
                  value="#{itemListDataTableValue}" 
                  filteredValue="#{entityController.filteredObjectList}"
                  draggableColumns="true"
-                 rows="#{entityController.displayNumberOfItemsPerPage}" 
+                 rows="#{entitySettingObject.displayNumberOfItemsPerPage}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No #{displayEntityTypeName}s found.">

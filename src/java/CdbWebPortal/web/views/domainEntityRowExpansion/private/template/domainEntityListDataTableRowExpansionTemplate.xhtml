@@ -12,7 +12,7 @@ See LICENSE file.
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
     <ui:param name="viewMode" value="#{viewMode != null ? viewMode : 'rowExpansion'}" />
     <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : 
-                                                viewMode != 'rowExpansion' or entityController.loadRowExpansionPropertyValues}" />
+                                                viewMode != 'rowExpansion' or entitySettingObject.loadRowExpansionPropertyValues}" />
 
     <p:outputPanel styleClass="domainEntityRowExpansionDetails">
         <p:accordionPanel activeIndex="" multiple="true">

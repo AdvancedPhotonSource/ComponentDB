@@ -9,12 +9,14 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}" />
 
     <p:dataTable id="#{itemElementController.entityTypeName}EditListDataTable" 
                  widgetVar="#{itemElementController.entityTypeName}EditListDataTableWidget"
                  var="itemElementObject" 
                  value="#{itemObject.itemElementDisplayList}" 
-                 rows="#{itemElementController.displayNumberOfItemsPerPage}"
+                 rows="#{itemElementSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  editable="true"
@@ -28,7 +30,7 @@ See LICENSE file.
                   value="#{itemElementController.getItemElementConstraintInformation(itemElementObject)}" />
 
         <p:column sortBy="#{itemElementObject.id}" headerText="Id"
-                  rendered="#{itemElementController.displayId}">
+                  rendered="#{itemElementSettingObject.displayId}">
             <h:outputText value="#{itemElementObject.id}"/>
         </p:column>
 
@@ -69,14 +71,14 @@ See LICENSE file.
         </p:column>
 
         <p:column sortBy="#{itemElementObject.sortOrder}" headerText="Sort Order"
-                  rendered="#{itemElementController.displaySortOrder}">
+                  rendered="#{itemElementSettingObject.displaySortOrder}">
             <h:inputText id="sortOrder" value="#{itemElementObject.sortOrder}" styleClass="shortCellInput"/>
             <p:tooltip for="sortOrder" value="Enter sort order."/>
         </p:column>
 
 
         <p:column sortBy="#{itemElementObject.description}" headerText="Description"
-                  rendered="#{itemElementController.displayDescription}">
+                  rendered="#{itemElementSettingObject.displayDescription}">
             <h:inputText id="description" value="#{itemElementObject.description}" styleClass="longCellInput"/>
             <p:tooltip for="description" value="Enter description."/>
         </p:column>

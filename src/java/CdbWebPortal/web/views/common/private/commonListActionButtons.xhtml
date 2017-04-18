@@ -17,8 +17,9 @@ See LICENSE file.
     <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
     <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
     <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
-    <ui:param name="displayShowEntityListPageHelpFragmentButton" value="#{entityController.displayListPageHelpFragmentSettingTypeKey != null}" />
-    <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+    <ui:param name="displayShowEntityListPageHelpFragmentButton" value="#{entitySettingObject.displayListPageHelpFragmentSettingTypeKey != null}" />
+    <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />    
         
     <div class="actionButton">
         <ui:insert name="listAddButton">

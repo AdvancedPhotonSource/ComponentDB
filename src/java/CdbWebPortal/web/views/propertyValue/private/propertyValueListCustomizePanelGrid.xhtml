@@ -8,36 +8,38 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}" />
 
     <p:panelGrid columns="2">
-        <p:inputText id="#{childEntityTypeName}propertyValueListDisplayNumberOfItemsPerPage" value="#{propertyValueController.displayNumberOfItemsPerPage}" style="width:20px"/>
+        <p:inputText id="#{childEntityTypeName}propertyValueListDisplayNumberOfItemsPerPage" value="#{propertyValueSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayDescription" value="#{propertyValueController.displayDescription}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayDescription" value="#{propertyValueSettingObject.displayDescription}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayEnteredByUser" value="#{propertyValueController.displayEnteredByUser}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayEnteredByUser" value="#{propertyValueSettingObject.displayEnteredByUser}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayEnteredByUser" value="Display Entered By User" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayEnteredOnDateTime" value="#{propertyValueController.displayEnteredOnDateTime}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayEnteredOnDateTime" value="#{propertyValueSettingObject.displayEnteredOnDateTime}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayEnteredOnDateTime" value="Display Entered On Date/Time" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayId" value="#{propertyValueController.displayId}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayId" value="#{propertyValueSettingObject.displayId}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}displayIsDynamic" value="#{propertyValueController.displayIsDynamic}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}displayIsDynamic" value="#{propertyValueSettingObject.displayIsDynamic}"/>  
         <h:outputLabel for="#{childEntityTypeName}displayIsDynamic" value="Display Dynamic Flag" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}displayIsUserWriteable" value="#{propertyValueController.displayIsUserWriteable}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}displayIsUserWriteable" value="#{propertyValueSettingObject.displayIsUserWriteable}"/>  
         <h:outputLabel for="#{childEntityTypeName}displayIsUserWriteable" value="Display User-Writeable Flag" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayTag" value="#{propertyValueController.displayTag}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayTag" value="#{propertyValueSettingObject.displayTag}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayTag" value="Display Tag" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayTypeCategory" value="#{propertyValueController.displayTypeCategory}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayTypeCategory" value="#{propertyValueSettingObject.displayTypeCategory}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayTypeCategory" value="Display Type Category" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayUnits" value="#{propertyValueController.displayUnits}"/>  
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueListDisplayUnits" value="#{propertyValueSettingObject.displayUnits}"/>  
         <h:outputLabel for="#{childEntityTypeName}propertyValueListDisplayUnits" value="Display Units" styleClass="dialogDataLabel"/>
 
     </p:panelGrid>

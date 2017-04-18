@@ -15,23 +15,24 @@ See LICENSE file.
               header="Customize Display" 
               styleClass="dialog">
         <div class="dialog">
+            <ui:param name="itemDerivedSettingObject" value="#{itemDerivedController.settingObject}" />
             <p:panelGrid columns="2">
-                <p:inputText id="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="#{itemDerivedController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <p:inputText id="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="#{itemDerivedSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayDescription" value="#{itemDerivedController.displayDescription}"/>  
+                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayDescription" value="#{itemDerivedSettingObject.displayDescription}"/>  
                 <h:outputLabel for="itemDerivedFromItemDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayId" value="#{itemDerivedController.displayId}"/>  
+                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayId" value="#{itemDerivedSettingObject.displayId}"/>  
                 <h:outputLabel for="itemDerivedFromItemDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
                 <ui:remove>
-                    <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayLocationDetails" value="#{itemDerivedController.displayLocationDetails}"/>  
+                    <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayLocationDetails" value="#{itemDerivedSettingObject.displayLocationDetails}"/>  
                     <h:outputLabel for="itemDerivedFromItemDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
                 </ui:remove>
-                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayQrId" value="#{itemDerivedController.displayQrId}"/>  
+                <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayQrId" value="#{itemDerivedSettingObject.displayQrId}"/>  
                 <h:outputLabel for="itemDerivedFromItemDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
                 <ui:remove>
-                    <p:selectBooleanCheckbox id="itemDerivedFromItemDisplaySerialNumber" value="#{itemDerivedController.displaySerialNumber}"/>  
+                    <p:selectBooleanCheckbox id="itemDerivedFromItemDisplaySerialNumber" value="#{itemDerivedSettingObject.displaySerialNumber}"/>  
                     <h:outputLabel for="itemDerivedFromItemDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>          
                 </ui:remove>
             </p:panelGrid>

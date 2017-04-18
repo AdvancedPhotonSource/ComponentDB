@@ -12,6 +12,7 @@ See LICENSE file.
                 template="../../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
 
     <ui:define name="customizeDisplayDialogConent">
+        <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
         <p:panelGrid columns="2">
 
             <ui:insert name="displayNumberOfItemsPerPageValue"/>       

@@ -8,30 +8,31 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-
+    <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}" />
+    
     <p:panelGrid columns="2">
-        <p:inputText id="propertyValueListDisplayNumberOfItemsPerPage" value="#{propertyValueController.displayNumberOfItemsPerPage}" style="width:20px"/>
+        <p:inputText id="propertyValueListDisplayNumberOfItemsPerPage" value="#{propertyValueSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
         <h:outputLabel for="propertyValueListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="propertyValueListDisplayEnteredByUser" value="#{propertyValueController.displayEnteredByUser}"/>  
+        <p:selectBooleanCheckbox id="propertyValueListDisplayEnteredByUser" value="#{propertyValueSettingObject.displayEnteredByUser}"/>  
         <h:outputLabel for="propertyValueListDisplayEnteredByUser" value="Display Entered By User" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="propertyValueListDisplayEnteredOnDateTime" value="#{propertyValueController.displayEnteredOnDateTime}"/>  
+        <p:selectBooleanCheckbox id="propertyValueListDisplayEnteredOnDateTime" value="#{propertyValueSettingObject.displayEnteredOnDateTime}"/>  
         <h:outputLabel for="propertyValueListDisplayEnteredOnDateTime" value="Display Entered On Date/Time" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="propertyValueListDisplayId" value="#{propertyValueController.displayId}"/>  
+        <p:selectBooleanCheckbox id="propertyValueListDisplayId" value="#{propertyValueSettingObject.displayId}"/>  
         <h:outputLabel for="propertyValueListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="displayIsDynamic" value="#{propertyValueController.displayIsDynamic}"/>  
+        <p:selectBooleanCheckbox id="displayIsDynamic" value="#{propertyValueSettingObject.displayIsDynamic}"/>  
         <h:outputLabel for="displayIsDynamic" value="Display Dynamic Flag" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="displayIsUserWriteable" value="#{propertyValueController.displayIsUserWriteable}"/>  
+        <p:selectBooleanCheckbox id="displayIsUserWriteable" value="#{propertyValueSettingObject.displayIsUserWriteable}"/>  
         <h:outputLabel for="displayIsUserWriteable" value="Display User-Writeable Flag" styleClass="dialogDataLabel"/>
         
-        <p:selectBooleanCheckbox id="propertyValueListDisplayTag" value="#{propertyValueController.displayTag}"/>  
+        <p:selectBooleanCheckbox id="propertyValueListDisplayTag" value="#{propertyValueSettingObject.displayTag}"/>  
         <h:outputLabel for="propertyValueListDisplayTag" value="Display Tag" styleClass="dialogDataLabel"/>
         
-        <p:selectBooleanCheckbox id="propertyValueListDisplayTypeCategory" value="#{propertyValueController.displayTypeCategory}"/>  
+        <p:selectBooleanCheckbox id="propertyValueListDisplayTypeCategory" value="#{propertyValueSettingObject.displayTypeCategory}"/>  
         <h:outputLabel for="propertyValueListDisplayTypeCategory" value="Display Type Category" styleClass="dialogDataLabel"/>
     </p:panelGrid>
 

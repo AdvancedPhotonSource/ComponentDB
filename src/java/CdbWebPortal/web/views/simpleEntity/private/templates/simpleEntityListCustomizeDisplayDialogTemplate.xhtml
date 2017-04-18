@@ -15,7 +15,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="displayNumberOfItemsPerPageValue">
-        <p:inputText id="displayNumberOfItemsPerPage" value="#{entityController.displayNumberOfItemsPerPage}" style="width:20px"/>
+        <p:inputText id="displayNumberOfItemsPerPage" value="#{entitySettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
     </ui:define>
 
     <ui:define name="displayDescriptionLabel">
@@ -23,7 +23,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="displayDescriptionValue">
-        <p:selectBooleanCheckbox id="displayDescription" value="#{entityController.displayDescription}"/>  
+        <p:selectBooleanCheckbox id="displayDescription" value="#{entitySettingObject.displayDescription}"/>  
     </ui:define>
 
     <ui:define name="displayIdLabel">
@@ -31,7 +31,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="displayIdValue">
-        <p:selectBooleanCheckbox id="displayId" value="#{entityController.displayId}"/>  
+        <p:selectBooleanCheckbox id="displayId" value="#{entitySettingObject.displayId}"/>  
     </ui:define>
 
 </ui:composition>

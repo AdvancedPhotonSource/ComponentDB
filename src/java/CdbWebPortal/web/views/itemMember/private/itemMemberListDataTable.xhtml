@@ -9,12 +9,13 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="itemMemberDataList" value="#{entityController.parentItemList}" />
-
+    <ui:param name="itemMemberViewSettingObject" value="#{itemMemberViewController.settingObject}" />
+    
     <p:dataTable id="designMemberListDataTable" 
                  widgetVar="designMemberListDataTableWidget" 
                  var="parentItemObject" 
                  value="#{itemMemberDataList}" 
-                 rows="#{itemMemberViewController.displayNumberOfItemsPerPage}"
+                 rows="#{itemMemberViewSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  reflow="true"
                  paginatorAlwaysVisible="false" 

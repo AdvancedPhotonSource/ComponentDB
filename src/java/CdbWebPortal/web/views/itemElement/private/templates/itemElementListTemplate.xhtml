@@ -10,8 +10,9 @@ See LICENSE file.
 
     <ui:param name="childEntityController" value="#{itemElementController}"/>   
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
+    <ui:param name="childEntitySettingObject" value="#{childEntityController.settingObject}" />
 
-    <ui:fragment rendered="#{childEntityController.displayFlatTableView}">
+    <ui:fragment rendered="#{childEntitySettingObject.displayFlatTableView}">
         <ui:insert name="listActionButtons">
             <ui:include src="../itemElementListActionButtons.xhtml"/>
         </ui:insert>
@@ -21,7 +22,7 @@ See LICENSE file.
         </ui:insert>      
     </ui:fragment>
 
-    <ui:fragment rendered="#{!childEntityController.displayFlatTableView}">
+    <ui:fragment rendered="#{!childEntitySettingObject.displayFlatTableView}">
 
         <ui:insert name="treeListActionButtons">
             <ui:include src="../itemElementTreeListActionButtons.xhtml" />

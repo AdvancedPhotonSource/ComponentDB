@@ -12,11 +12,12 @@ See LICENSE file.
     
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
-    <p:selectBooleanCheckbox rendered="#{filterable}" id="#{entityTypeName}AutoLoadProperty" value="#{entityController.filterByPropertiesAutoLoad}"/>  
+    <p:selectBooleanCheckbox rendered="#{filterable}" id="#{entityTypeName}AutoLoadProperty" value="#{entitySettingObject.filterByPropertiesAutoLoad}"/>  
     <h:outputLabel rendered="#{filterable}" for="#{entityTypeName}AutoLoadProperty" value="Automatically Load Property Filter Values*" styleClass="dialogDataLabel"/>
 
-    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType1" value="#{entityController.displayPropertyTypeId1}" 
+    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType1" value="#{entitySettingObject.displayPropertyTypeId1}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
         <f:selectItems var="propertyType1" value="#{propertyTypeController.availableItems}" 
@@ -24,7 +25,7 @@ See LICENSE file.
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType1" value="Display Property Type #1" styleClass="dialogDataLabel"/>
 
-    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType2" value="#{entityController.displayPropertyTypeId2}" 
+    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType2" value="#{entitySettingObject.displayPropertyTypeId2}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
         <f:selectItems var="propertyType2" value="#{propertyTypeController.availableItems}" 
@@ -32,7 +33,7 @@ See LICENSE file.
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType2" value="Display Property Type #2" styleClass="dialogDataLabel"/>                
 
-    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType3" value="#{entityController.displayPropertyTypeId3}" 
+    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType3" value="#{entitySettingObject.displayPropertyTypeId3}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
         <f:selectItems var="propertyType3" value="#{propertyTypeController.availableItems}" 
@@ -40,7 +41,7 @@ See LICENSE file.
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType3" value="Display Property Type #3" styleClass="dialogDataLabel"/>   
 
-    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType4" value="#{entityController.displayPropertyTypeId4}" 
+    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType4" value="#{entitySettingObject.displayPropertyTypeId4}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
         <f:selectItems var="propertyType4" value="#{propertyTypeController.availableItems}" 
@@ -48,7 +49,7 @@ See LICENSE file.
     </p:selectOneMenu>
     <p:outputLabel for="#{entityTypeName}DisplayPropertyType4" value="Display Property Type #4" styleClass="dialogDataLabel"/>   
 
-    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType5" value="#{entityController.displayPropertyTypeId5}" 
+    <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType5" value="#{entitySettingObject.displayPropertyTypeId5}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
         <f:selectItems var="propertyType5" value="#{propertyTypeController.availableItems}" 

@@ -14,7 +14,7 @@ See LICENSE file.
                  widgetVar="userSettingEditListDataTableWidget" 
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 
-                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
+                 rows="#{userSettingSettingObject.displayNumberOfItemsPerPage}"
                  editable="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
@@ -22,13 +22,13 @@ See LICENSE file.
 
         <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name"
                   filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains"
-                  filterValue="#{userSettingController.filterBySettingType}">
+                  filterValue="#{userSettingSettingObject.filterBySettingType}">
             <h:outputText value="#{userSettingObject.settingType.name}"/>
         </p:column>
 
         <p:column sortBy="#{userSettingObject.value}" headerText="Value"
                   filterBy="#{userSettingObject.value}" filterMatchMode="contains"
-                  filterValue="#{userSettingController.filterByValue}">
+                  filterValue="#{userSettingSettingObject.filterByValue}">
             <h:inputText value="#{userSettingObject.value}" styleClass="cellInput"/>
         </p:column>
 

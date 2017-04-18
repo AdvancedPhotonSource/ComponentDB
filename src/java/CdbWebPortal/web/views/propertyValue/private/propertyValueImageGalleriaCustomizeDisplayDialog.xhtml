@@ -11,13 +11,15 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
     
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+    
     <ui:define name="defineCustomizeDisplayDialogVariables">
         <ui:param name="customizeDisplayEntityTypeName" value="propertyValueGalleria" />
     </ui:define>
 
     <ui:define name="customizeDisplayDialogConent">
         <p:panelGrid columns="2">
-            <p:selectBooleanCheckbox id="displayPropertyValueViewableDocumentsBoolean" value="#{entityController.displayGalleryViewableDocuments}"/>  
+            <p:selectBooleanCheckbox id="displayPropertyValueViewableDocumentsBoolean" value="#{entitySettingObject.displayGalleryViewableDocuments}"/>  
             <h:outputLabel for="displayPropertyValueViewableDocumentsBoolean" value="Display Viewable Documents" styleClass="dialogDataLabel"/>
         </p:panelGrid>
     </ui:define>

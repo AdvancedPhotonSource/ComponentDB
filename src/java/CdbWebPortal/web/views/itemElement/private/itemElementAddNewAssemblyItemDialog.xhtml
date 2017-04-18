@@ -37,7 +37,8 @@ See LICENSE file.
         <p:outputPanel id="addNewAssemblyItemOutputPanel"
                        rendered="#{newItemElement != null}">
             
-            <ui:param name="simpleElementsView" value="#{itemElementController.displayItemElementSimpleView}" />
+            
+            <ui:param name="simpleElementsView" value="#{itemElementController.settingObject.displayItemElementSimpleView}" />
 
             <p:remoteCommand name="toggleAddNewAssemblyItemPanels"
                              onstart="PF('loadingDialog').show();

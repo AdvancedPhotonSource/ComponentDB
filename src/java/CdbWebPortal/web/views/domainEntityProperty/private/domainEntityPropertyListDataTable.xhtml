@@ -14,6 +14,7 @@ See LICENSE file.
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
     <ui:param name="propertyValueDataList" value="#{entityObject.propertyValueDisplayList}" />
+    <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}"/>
 
     <p:dataTable id="#{entityTypeName}PropertyListDataTable" 
                  widgetVar="#{entityTypeName}PropertyListDataTableWidget"
@@ -21,7 +22,7 @@ See LICENSE file.
                  reflow="true"
                  value="#{propertyValueDataList}" 
                  filteredValue="#{entityController.filteredPropertyValueList}"
-                 rows="#{propertyValueController.displayNumberOfItemsPerPage}"
+                 rows="#{propertyValueSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No #{entityTypeDisplayName} properties found.">
