@@ -55,7 +55,7 @@ public class InventoryBillOfMaterialItem {
 
     public Boolean getSimpleView() {
         if (simpleView == null) {
-            simpleView = ItemElementController.getInstance().getDisplayItemElementSimpleView(); 
+            simpleView = ItemElementController.getInstance().getSettingObject().getDisplayItemElementSimpleView(); 
         }
         return simpleView;
     }
