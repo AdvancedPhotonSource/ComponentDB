@@ -136,9 +136,12 @@ public abstract class SettingsBase<EntityController extends CdbEntityController>
             } else if (settingEntity == null) {
                 if (settingController.SettingsRequireLoading(settingsTimestamp)) {
                     parentController.settingsAreReloaded();
-                    updateSettingsFromSettingTypeDefaults(getSettingTypeMap());
-                    settingsTimestamp = new Date();
-                    return true;
+                    Map<String, SettingType> defaultSettingMap = getSettingTypeMap();
+                    if(defaultSettingMap != null) {
+                        updateSettingsFromSettingTypeDefaults(defaultSettingMap);
+                        settingsTimestamp = new Date();
+                        return true;
+                    }                    
                 }
             }
         } catch (Exception ex) {
@@ -214,7 +217,7 @@ public abstract class SettingsBase<EntityController extends CdbEntityController>
         SettingEntity settingEntity = settingController.getCurrentSettingEntity();
 
         if (settingEntity != null) {
-            logger.debug("Updating list settings for session user");
+            logger.debug("Updating list settings for " + settingEntity);
             saveSettingsForSessionSettingEntity(settingEntity);
             parentController.resetListDataModel();
             settingsTimestamp = new Date();
