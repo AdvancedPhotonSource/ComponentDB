@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.controllers.SettingController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -231,13 +232,16 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         settingEntity.setSettingValue(FilterByComponentTypeSettingTypeKey, filterByComponentType);
         settingEntity.setSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
         settingEntity.setSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        
-        /* TODO update the save of item controller stuff
+                
         // Update related external setting values. 
-        if (currentSettingsItemController != null) {
-            currentSettingsItemController.saveItemElementListSettingsForSessionSettingEntity(settingEntity);
-        } 
-        */
+        ItemController itemController = parentController.getCurrentSettingsItemController();
+        if (itemController != null) {
+            SettingsBase settings = itemController.getSettingObject(); 
+            if (settings instanceof ItemSettings) {
+                ItemSettings itemSettings = (ItemSettings) settings; 
+                itemSettings.saveItemElementListSettingsForSessionSettingEntity(settingEntity);            
+            }
+        }
     }
     
     @Override

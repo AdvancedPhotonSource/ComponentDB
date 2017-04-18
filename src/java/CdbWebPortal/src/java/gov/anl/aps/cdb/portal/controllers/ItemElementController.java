@@ -65,6 +65,10 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     public static ItemElementController getInstance() {
         return (ItemElementController) SessionUtility.findBean("itemElementController"); 
     }
+
+    public ItemController getCurrentSettingsItemController() {
+        return currentSettingsItemController;
+    }
     
     public void setCurrentSettingsItemController(ItemController itemController) {
         currentSettingsItemController = itemController; 
