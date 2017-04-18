@@ -1451,23 +1451,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
         return settingTypeList;
     }
-    
-    /* TODO UPDATE HELP FRAGMENT CODE 
-    public void saveDisplayListPageHelpFragmentActionListener() {
-        logger.debug("Saving settings");
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionUser != null) {
-            logger.debug("Updating display list settings for " + this.getEntityTypeName() + "Entity");
-            sessionUser.setSettingValue(getDisplayListPageHelpFragmentSettingTypeKey(), displayListPageHelpFragment);
-            settingsTimestamp = new Date();
-            SessionUtility.addInfoMessage("Saved", "Saved setting for displaying help info for " + this.getEntityTypeName() + " entity.");
-        } else {
-            String error = "The setting for showing help infomation could not be saved.";
-            SessionUtility.addErrorMessage("Error", error);
-            logger.error(error);
-        }
-    }
-    */
 
     public Boolean getDisplayLoadPropertyValuesButton() {
         return false;
