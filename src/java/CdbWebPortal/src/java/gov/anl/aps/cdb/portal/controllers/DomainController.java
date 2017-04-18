@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.DomainSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 
@@ -18,7 +19,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("domainController")
 @SessionScoped
-public class DomainController extends CdbEntityController<Domain, DomainFacade> implements Serializable {
+public class DomainController extends CdbEntityController<Domain, DomainFacade, DomainSettings> implements Serializable {
 
     @EJB
     DomainFacade domainFacade; 
@@ -49,6 +50,11 @@ public class DomainController extends CdbEntityController<Domain, DomainFacade> 
     @Override
     public String getCurrentEntityInstanceName() {        
         return getCurrent().toString(); 
+    }
+
+    @Override
+    protected DomainSettings createNewSettingObject() {
+        return new DomainSettings(this); 
     }
     
     @FacesConverter(forClass = Domain.class)

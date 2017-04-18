@@ -4,13 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemMemberViewSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -20,71 +18,10 @@ import javax.inject.Named;
  */
 @Named("itemMemberViewController")
 @SessionScoped
-public class ItemMemberViewController extends ItemController<Item, ItemFacade> {
-
-    private static final String DisplayMemberNumberOfItemsPerPageSettingTypeKey = "Item.Member.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayMemberIdSettingTypeKey = "Item.Member.List.Display.Id";
-    private static final String DisplayMemberDescriptionSettingTypeKey = "Item.Member.List.Display.Description";
-    private static final String DisplayMemberOwnerUserSettingTypeKey = "Item.Member.List.Display.OwnerUser";
-    private static final String DisplayMemberOwnerGroupSettingTypeKey = "Item.Member.List.Display.OwnerGroup";
-    private static final String DisplayMemberCreatedByUserSettingTypeKey = "Item.Member.List.Display.CreatedByUser";
-    private static final String DisplayMemberCreatedOnDateTimeSettingTypeKey = "Item.Member.List.Display.CreatedOnDateTime";
-    private static final String DisplayMemberLastModifiedByUserSettingTypeKey = "Item.Member.List.Display.LastModifiedByUser";
-    private static final String DisplayMemberLastModifiedOnDateTimeSettingTypeKey = "Item.Member.List.Display.LastModifiedOnDateTime";
+public class ItemMemberViewController extends ItemController<Item, ItemFacade, ItemMemberViewSettings> {    
     
     @EJB
     ItemFacade itemFacade; 
-    
-    @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        if (settingTypeMap == null) {
-            return;
-        }
-        
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayMemberNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberIdSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberDescriptionSettingTypeKey).getDefaultValue());
-        displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberOwnerUserSettingTypeKey).getDefaultValue());
-        displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberOwnerGroupSettingTypeKey).getDefaultValue());
-        displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberCreatedByUserSettingTypeKey).getDefaultValue());
-        displayCreatedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberCreatedOnDateTimeSettingTypeKey).getDefaultValue());
-        displayLastModifiedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberLastModifiedByUserSettingTypeKey).getDefaultValue());
-        displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayMemberLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
-    }
-    
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-        
-        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayMemberNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = settingEntity.getSettingValueAsBoolean(DisplayMemberIdSettingTypeKey, displayId);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayMemberDescriptionSettingTypeKey, displayDescription);
-        displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayMemberOwnerUserSettingTypeKey, displayOwnerUser);
-        displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayMemberOwnerGroupSettingTypeKey, displayOwnerGroup);
-        displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayMemberCreatedByUserSettingTypeKey, displayCreatedByUser);
-        displayCreatedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayMemberCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        displayLastModifiedByUser = settingEntity.getSettingValueAsBoolean(DisplayMemberLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayMemberLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
-    }
-    
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-        
-        settingEntity.setSettingValue(DisplayMemberNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        settingEntity.setSettingValue(DisplayMemberIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayMemberDescriptionSettingTypeKey, displayDescription);
-        settingEntity.setSettingValue(DisplayMemberOwnerUserSettingTypeKey, displayOwnerUser);
-        settingEntity.setSettingValue(DisplayMemberOwnerGroupSettingTypeKey, displayOwnerGroup);
-        settingEntity.setSettingValue(DisplayMemberCreatedByUserSettingTypeKey, displayCreatedByUser);
-        settingEntity.setSettingValue(DisplayMemberCreatedOnDateTimeSettingTypeKey, displayCreatedOnDateTime);
-        settingEntity.setSettingValue(DisplayMemberLastModifiedByUserSettingTypeKey, displayLastModifiedByUser);
-        settingEntity.setSettingValue(DisplayMemberLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
-    }
 
     @Override
     public boolean getEntityDisplayItemIdentifier1() {
@@ -244,6 +181,11 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade> {
     @Override
     public boolean getEntityDisplayItemConnectors() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected ItemMemberViewSettings createNewSettingObject() {
+        return new ItemMemberViewSettings(this);
     }
 
 }

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -30,7 +31,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 
 @Named("itemDomainLocationController")
 @SessionScoped
-public class ItemDomainLocationController extends ItemController<ItemDomainLocation, ItemDomainLocationFacade> {
+public class ItemDomainLocationController extends ItemController<ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings> {
 
     private final String ENTITY_TYPE_NAME = "Location";
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
@@ -54,10 +55,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     ItemDomainLocationFacade itemDomainLocationFacade; 
 
     public ItemDomainLocationController() {
-        super();
-        displayNumberOfItemsPerPage = 25;
-        displayDescription = true;
-        displayItemListTreeView = true;
+        super();        
     }
 
     public static ItemDomainLocationController getInstance() {
@@ -673,6 +671,11 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return false; 
+    }
+
+    @Override
+    protected ItemDomainLocationSettings createNewSettingObject() {
+        return new ItemDomainLocationSettings(this);
     }
 
 }

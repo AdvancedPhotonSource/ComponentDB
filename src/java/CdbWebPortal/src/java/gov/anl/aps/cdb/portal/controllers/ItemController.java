@@ -10,9 +10,9 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.ItemViews;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -39,7 +39,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
@@ -54,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
@@ -69,7 +67,7 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
-public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade> implements IItemController<ItemDomainEntity> {
+public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity> {
 
     private static final Logger logger = Logger.getLogger(Item.class.getName());
     protected final String FAVORITES_LIST_NAME = "Favorites";
@@ -96,37 +94,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @EJB
     protected UserInfoFacade userInfoFacade;
 
-    protected Boolean displayItemIdentifier1 = null;
-    protected Boolean displayItemIdentifier2 = null;
-    protected Boolean displayItemSources = null;
-    protected Boolean displayItemType = null;
-    protected Boolean displayItemCategory = null;
-    protected Boolean displayName = null;
-    protected Boolean displayDerivedFromItem = null;
-    protected Boolean displayQrId = null;
-    protected Boolean displayItemProject = null;
-    protected Boolean displayItemEntityTypes = null;
-    protected Boolean autoLoadListFilterValues = false;
-    protected Boolean displayItemListTreeView = null;    
-    protected Boolean displayItemElementListItemIdentifier1 = false; 
-    protected Boolean displayItemElementListItemIdentifier2 = false; 
-    protected Boolean displayItemElementListItemType = false; 
-    protected Boolean displayItemElementListItemCategory = false; 
-    protected Boolean displayItemElementListSource = false; 
-    protected Boolean displayItemElementListProject = false; 
-    protected Boolean displayItemElementListDescription = false; 
-    protected Boolean displayItemElementListQrId = false; 
-
-    protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
-    protected Integer displayListDataModelScopePropertyTypeId = null;
-    protected List<String> displayListDataModelScopeSelectionList = null;
-    protected DataModel scopedListDataModel = null;   
-
-    protected String filterByItemSources = null;
-    protected String filterByQrId = null;
-
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
+        
+    protected DataModel scopedListDataModel = null;     
+    protected List<String> displayListDataModelScopeSelectionList = null;
 
     protected Integer qrIdViewParam = null;
 
@@ -158,6 +130,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     // Globalized item project functionality. 
     protected ItemProjectController itemProjectController = null;        
+    protected SettingController settingController; 
 
     public ItemController() {
     }
@@ -171,222 +144,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
      */
     protected ItemCreateWizardController getItemCreateWizardController() {
         return null; 
-    }
-
-    @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
-        if (settingTypeMap == null) {
-            return;
-        }
-
-        logger.debug("Updating list settings from setting type defaults");
-        
-        if (getDisplayItemElementListItemIdentifier1Key() != null) {
-            displayItemElementListItemIdentifier1 = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemIdentifier1Key()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListItemIdentifier2Key() != null) {
-            displayItemElementListItemIdentifier2 = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemIdentifier2Key()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListItemTypeKey() != null) {
-            displayItemElementListItemType = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemTypeKey()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListItemCategoryKey() != null) {
-            displayItemElementListItemCategory = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListItemCategoryKey()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListProjectKey() != null) {
-            displayItemElementListProject = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListProjectKey()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListSourceKey() != null) {
-            displayItemElementListSource = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListSourceKey()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListDescriptionKey() != null) {
-            displayItemElementListDescription = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListDescriptionKey()).getDefaultValue()); 
-        }
-        
-        if (getDisplayItemElementListQrIdKey() != null) {
-            displayItemElementListQrId = Boolean.parseBoolean(settingTypeMap.get(getDisplayItemElementListQrIdKey()).getDefaultValue()); 
-        }
-        
-    }
-    
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        super.updateSettingsFromSessionSettingEntity(settingEntity);
-        if (settingEntity == null) {
-            return;
-        }
-
-        logger.debug("Updating list settings from session user"); 
-        
-        if (getDisplayItemElementListItemIdentifier1Key() != null) {
-            displayItemElementListItemIdentifier1 = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemIdentifier1Key(), displayItemElementListItemIdentifier1); 
-        }
-        
-        if (getDisplayItemElementListItemIdentifier2Key() != null) {
-            displayItemElementListItemIdentifier2 = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemIdentifier2Key(), displayItemElementListItemIdentifier2); 
-        }
-        
-        if (getDisplayItemElementListItemTypeKey() != null) {
-            displayItemElementListItemType = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemTypeKey(), displayItemElementListItemType); 
-        }
-        
-        if (getDisplayItemElementListItemCategoryKey() != null) {
-            displayItemElementListItemCategory = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListItemCategoryKey(), displayItemElementListItemCategory); 
-        }
-        
-        if (getDisplayItemElementListProjectKey() != null) {
-            displayItemElementListProject = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListProjectKey(), displayItemElementListProject);         
-        }
-        
-        if (getDisplayItemElementListSourceKey() != null) {
-            displayItemElementListSource = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListSourceKey(), displayItemElementListSource); 
-        }
-        
-        if (getDisplayItemElementListDescriptionKey() != null) {
-            displayItemElementListDescription = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListDescriptionKey(), displayItemElementListDescription); 
-        }
-        
-        if (getDisplayItemElementListQrIdKey() != null) {
-            displayItemElementListQrId = settingEntity.getSettingValueAsBoolean(getDisplayItemElementListQrIdKey(), displayItemElementListQrId); 
-        }
-        
-    }
-    
-    public void saveItemElementListSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-         if (getDisplayItemElementListItemIdentifier1Key() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListItemIdentifier1Key(), displayItemElementListItemIdentifier1);
-        }
-        
-        if (getDisplayItemElementListItemIdentifier2Key() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListItemIdentifier2Key(), displayItemElementListItemIdentifier2);
-        }
-        
-        if (getDisplayItemElementListItemTypeKey() != null) {
-             settingEntity.setSettingValue(getDisplayItemElementListItemTypeKey(), displayItemElementListItemType);
-        }
-        
-        if (getDisplayItemElementListItemCategoryKey() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListItemCategoryKey(), displayItemElementListItemCategory);
-        }
-        
-        if (getDisplayItemElementListProjectKey() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListProjectKey(), displayItemElementListProject);
-        }
-        
-        if (getDisplayItemElementListSourceKey() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListSourceKey(), displayItemElementListSource);
-        }
-        
-        if (getDisplayItemElementListDescriptionKey() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListDescriptionKey(), displayItemElementListDescription);
-        }
-        
-        if (getDisplayItemElementListQrIdKey() != null) {
-            settingEntity.setSettingValue(getDisplayItemElementListQrIdKey(), displayItemElementListQrId);
-        }
-    }
-
-    public String getDisplayItemElementListItemIdentifier1Key() {
-        return null;
-    }
-
-    public Boolean getDisplayItemElementListItemIdentifier1() {
-        return displayItemElementListItemIdentifier1;
-    }
-
-    public void setDisplayItemElementListItemIdentifier1(Boolean displayItemElementListItemIdentifier1){
-        this.displayItemElementListItemIdentifier1 = displayItemElementListItemIdentifier1; 
-    }
-
-    public String getDisplayItemElementListItemIdentifier2Key() {
-        return null; 
-    }
-    
-    public Boolean getDisplayItemElementListItemIdentifier2() {
-        return displayItemElementListItemIdentifier2;
-    }
-
-    public void setDisplayItemElementListItemIdentifier2(Boolean displayItemElementListItemIdentifier2) {
-        this.displayItemElementListItemIdentifier2 = displayItemElementListItemIdentifier2;
-    }
-
-    public String getDisplayItemElementListItemTypeKey() {
-        return null; 
-    }
-    
-    public Boolean getDisplayItemElementListItemType() {
-        return displayItemElementListItemType;
-    }
-
-    public void setDisplayItemElementListItemType(Boolean displayItemElementListItemType) {
-        this.displayItemElementListItemType = displayItemElementListItemType;
-    }
-    
-    public String getDisplayItemElementListItemCategoryKey() {
-        return null; 
-    }
-
-    public Boolean getDisplayItemElementListItemCategory() {
-        return displayItemElementListItemCategory;
-    }
-
-    public void setDisplayItemElementListItemCategory(Boolean displayItemElementListItemCategory) {
-        this.displayItemElementListItemCategory = displayItemElementListItemCategory;
-    }
-    
-    public String getDisplayItemElementListSourceKey() {
-        return null;
-    }
-
-    public Boolean getDisplayItemElementListSource() {
-        return displayItemElementListSource;
-    }
-
-    public void setDisplayItemElementListSource(Boolean displayItemElementListSource) {
-        this.displayItemElementListSource = displayItemElementListSource;
-    }
-    
-    public String getDisplayItemElementListProjectKey() {
-        return null; 
-    }
-
-    public Boolean getDisplayItemElementListProject() {
-        return displayItemElementListProject;
-    }
-
-    public void setDisplayItemElementListProject(Boolean displayItemElementListProject) {
-        this.displayItemElementListProject = displayItemElementListProject;
-    }
-    
-    public String getDisplayItemElementListDescriptionKey() {
-        return null; 
-    }
-
-    public Boolean getDisplayItemElementListDescription() {
-        return displayItemElementListDescription;
-    }
-
-    public void setDisplayItemElementListDescription(Boolean displayItemElementListDescription) {
-        this.displayItemElementListDescription = displayItemElementListDescription;
-    }
-    
-    public String getDisplayItemElementListQrIdKey() {
-        return null; 
-    }
-
-    public Boolean getDisplayItemElementListQrId() {
-        return displayItemElementListQrId;
-    }
-
-    public void setDisplayItemElementListQrId(Boolean displayItemElementListQrId) {
-        this.displayItemElementListQrId = displayItemElementListQrId;
     }
 
     public Domain getDefaultDomain() {
@@ -791,11 +548,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public final DataModel getScopedListDataModel() {
         // Show all
-        if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showAll.getValue())) {
+        if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue())) {
             return getListDataModel();
         } else if (scopedListDataModel == null) {
-            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                if (displayListDataModelScopePropertyTypeId == null) {
+            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                if (settingObject.getDisplayListDataModelScopePropertyTypeId() == null) {
                     return null;
                 } else {
                     List<ItemDomainEntity> itemList;
@@ -803,12 +560,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                     if (currentProject != null) {
                         itemList = getEntityDbFacade().getItemsWithPropertyTypeAndProject(
                                 getDefaultDomainName(),
-                                getDisplayListDataModelScopePropertyTypeId(),
+                                settingObject.getDisplayListDataModelScopePropertyTypeId(),
                                 currentProject.getName());
                     } else {
                         itemList = getEntityDbFacade().getItemListWithPropertyType(
                                 getDefaultDomainName(),
-                                getDisplayListDataModelScopePropertyTypeId());
+                                settingObject.getDisplayListDataModelScopePropertyTypeId());
                     }
                     scopedListDataModel = new ListDataModel(itemList);
                 }
@@ -821,12 +578,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 }
 
                 // Show only favorites
-                if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
+                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
                     List<ItemDomainEntity> itemList = getEntityDbFacade().getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
                     scopedListDataModel = new ListDataModel(itemList);
                 } else {
                     // Show owned or owned & favorites. 
-                    boolean showOwnedAndFavorites = displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
+                    boolean showOwnedAndFavorites = settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
                     boolean showOwned = !showOwnedAndFavorites;
 
                     List<ItemDomainEntity> itemList = null;
@@ -866,6 +623,23 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         loadPreProcessListDataModelIfNeeded(scopedListDataModel);
 
         return scopedListDataModel;
+    }
+    
+    public List<String> getDisplayListDataScopeSelectionList() {
+        if (displayListDataModelScopeSelectionList == null) {
+            displayListDataModelScopeSelectionList = new ArrayList<>();
+            SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+            boolean settingEntityLoaded = (settingEntity != null);
+            for (ItemDisplayListDataModelScope value : ItemDisplayListDataModelScope.values()) {
+                if (!settingEntityLoaded) {
+                    if (value.isSettingEntityRequired()) {
+                        continue;
+                    }
+                }
+                displayListDataModelScopeSelectionList.add(value.getValue());
+            }
+        }
+        return displayListDataModelScopeSelectionList;
     }
 
     public void toggleItemInFavoritesList(Item item) {
@@ -1268,7 +1042,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public boolean isDisplayRowExpansionForItem(Item item) {
-        if (getDisplayRowExpansion()) {
+        if (settingObject.getDisplayRowExpansion()) {
             return isDisplayRowExpansionLogs(item)
                     || isDisplayRowExpansionProperties(item)
                     || isDisplayRowExpansionAssembly(item);
@@ -1675,254 +1449,31 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
         return parentItemList;
-    }
-
-    public String getFilterByQrId() {
-        return filterByQrId;
-    }
-
-    public void setFilterByQrId(String filterByQrId) {
-        this.filterByQrId = filterByQrId;
-    }
-
-    @Override
-    public void clearListFilters() {
-        super.clearListFilters();
-        filterByItemIdentifier1 = null;
-        filterByItemIdentifier2 = null;
-
-        filterByPropertyValue1 = null;
-        filterByPropertyValue2 = null;
-        filterByPropertyValue3 = null;
-        filterByPropertyValue4 = null;
-        filterByPropertyValue5 = null;
-    }
-
-    @Override
-    public void clearSelectFilters() {
-        super.clearSelectFilters();
-        filterByItemIdentifier1 = null;
-        filterByItemIdentifier2 = null;
-    }
-
-    public String getFilterByItemIdentifier1() {
-        return filterByItemIdentifier1;
-    }
-
-    public void setFilterByItemIdentifier1(String filterByItemIdentifier1) {
-        this.filterByItemIdentifier1 = filterByItemIdentifier1;
-    }
-
-    public String getFilterByItemIdentifier2() {
-        return filterByItemIdentifier2;
-    }
-
-    public void setFilterByItemIdentifier2(String filterByItemIdentifier2) {
-        this.filterByItemIdentifier2 = filterByItemIdentifier2;
-    }
-
-    public Boolean getDisplayQrId() {
-        if (displayQrId == null) {
-            displayQrId = getEntityDisplayQrId();
-        }
-
-        return displayQrId;
-    }
-
-    public void setDisplayQrId(Boolean displayQrId) {
-        this.displayQrId = displayQrId;
-    }
+    }   
 
     public Boolean isItemProjectRequired() {
         return getEntityDisplayItemProject();
     }
-
-    public Boolean getDisplayItemProject() {
-        if (displayItemProject == null) {
-            displayItemProject = getEntityDisplayItemProject();
-        }
-        return displayItemProject;
-    }
-
-    public void setDisplayItemProject(Boolean displayItemProject) {
-        this.displayItemProject = displayItemProject;
-    }
-
-    public Boolean getDisplayItemEntityTypes() {
-        if (displayItemEntityTypes == null) {
-            displayItemEntityTypes = getEntityDisplayItemEntityTypes();
-        }
-        return displayItemEntityTypes;
-    }
-
-    public void setDisplayItemEntityTypes(Boolean displayItemEntityTypes) {
-        this.displayItemEntityTypes = displayItemEntityTypes;
-    }
-
-    public Boolean getDisplayItemIdentifier1() {
-        if (displayItemIdentifier1 == null) {
-            displayItemIdentifier1 = getEntityDisplayItemIdentifier1();
-        }
-        return displayItemIdentifier1;
-    }
-
-    public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
-        this.displayItemIdentifier1 = displayItemIdentifier1;
-    }
-
-    public Boolean getDisplayItemIdentifier2() {
-        if (displayItemIdentifier2 == null) {
-            displayItemIdentifier2 = getEntityDisplayItemIdentifier2();
-        }
-        return displayItemIdentifier2;
-    }
-
-    public void setDisplayItemIdentifier2(Boolean displayItemIdentifier2) {
-        this.displayItemIdentifier2 = displayItemIdentifier2;
-    }
-
-    public Boolean getDisplayItemSources() {
-        if (displayItemSources == null) {
-            displayItemSources = getEntityDisplayItemSources();
-        }
-        return displayItemSources;
-    }
-
-    public void setDisplayItemSources(Boolean displayItemSources) {
-        this.displayItemSources = displayItemSources;
-    }
-
-    public Boolean getDisplayName() {
-        if (displayName == null) {
-            displayName = getEntityDisplayItemName();
-        }
-        return displayName;
-    }
-
-    public void setDisplayName(Boolean displayItemName) {
-        this.displayName = displayItemName;
-    }
-
-    public Boolean getDisplayItemType() {
-        if (displayItemType == null) {
-            displayItemType = getEntityDisplayItemType();
-        }
-        return displayItemType;
-    }
-
-    public void setDisplayItemType(Boolean displayItemType) {
-        this.displayItemType = displayItemType;
-    }
-
-    public Boolean getDisplayItemCategory() {
-        if (displayItemCategory == null) {
-            displayItemCategory = getEntityDisplayItemCategory();
-        }
-        return displayItemCategory;
-    }
-
-    public void setDisplayItemCategory(Boolean displayItemCategory) {
-        this.displayItemCategory = displayItemCategory;
-    }
-
-    public String getFilterByItemSources() {
-        return filterByItemSources;
-    }
-
-    public void setFilterByItemSources(String filterByItemSources) {
-        this.filterByItemSources = filterByItemSources;
-    }
-
-    public Boolean getDisplayDerivedFromItem() {
-        if (displayDerivedFromItem == null) {
-            displayDerivedFromItem = getEntityDisplayDerivedFromItem();
-        }
-        return displayDerivedFromItem;
-    }
-
-    public void setDisplayDerivedFromItem(Boolean displayDerivedFromItem) {
-        this.displayDerivedFromItem = displayDerivedFromItem;
-    }
-
-    public Boolean getDisplayItemListTreeView() {
-        return displayItemListTreeView;
-    }
-
-    public void setDisplayItemListTreeView(Boolean displayItemListTreeView) {
-        this.displayItemListTreeView = displayItemListTreeView;
-    }
-
+    
     public String getDisplayListDataModelScopeDisplayString() {
-        if (getDisplayListDataModelScope() != null) {
-            if (getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
-                return getDisplayListDataModelScope() + " '" + getDisplayPropertyTypeName(getDisplayListDataModelScopePropertyTypeId()) + "'";
+        if (settingObject.getDisplayListDataModelScope() != null) {
+            if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
+                return settingObject.getDisplayListDataModelScope() + " '" + getDisplayPropertyTypeName(settingObject.getDisplayListDataModelScopePropertyTypeId()) + "'";
             }
         }
-        return getDisplayListDataModelScope();
-    }
-
-    public String getDisplayListDataModelScope() {
-        return displayListDataModelScope;
-    }
-
-    public void setDisplayListDataModelScope(String listDataModelMode) {
-        if (!this.displayListDataModelScope.equals(listDataModelMode)) {
-            resetListDataModel();
-        }
-        this.displayListDataModelScope = listDataModelMode;
-    }
-
-    public boolean isDisplayGlobalProjectWarning() {
-        if (displayListDataModelScope != null) {
-            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                return true;
-            }
-            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwned.getValue())) {
-                return true;
-            }
-            if (displayListDataModelScope.equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean isDisplayListDataModelScopePropertyTypeSelection() {
-        if (displayListDataModelScope != null) {
-            return displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue());
-        }
-        return false;
-    }
-
-    public Integer getDisplayListDataModelScopePropertyTypeId() {
-        return displayListDataModelScopePropertyTypeId;
-    }
-
-    public void setDisplayListDataModelScopePropertyTypeId(Integer displayListDataModelScopePropertyTypeId) {
-        if (!Objects.equals(this.displayListDataModelScopePropertyTypeId, displayListDataModelScopePropertyTypeId)) {
-            resetListDataModel();
-        }
-        this.displayListDataModelScopePropertyTypeId = displayListDataModelScopePropertyTypeId;
-    }
+        return settingObject.getDisplayListDataModelScope();
+    }         
 
     public boolean isDisplayListDataModelScopePropertyFilterable() {
-        return fetchFilterablePropertyValue(displayListDataModelScopePropertyTypeId);
+        return fetchFilterablePropertyValue(settingObject.getDisplayListDataModelScopePropertyTypeId());
     }
-
-    public void setAutoLoadListFilterValues(Boolean autoLoadListFilterValues) {
-        this.autoLoadListFilterValues = autoLoadListFilterValues;
-    }
-
-    public Boolean getAutoLoadListFilterValues() {
-        return autoLoadListFilterValues;
-    }
-
+    
     @Override
     protected void setPreProcessPropertyValueInformation(CdbDomainEntity entity) {
         super.setPreProcessPropertyValueInformation(entity);
 
-        if (isDisplayListDataModelScopePropertyTypeSelection()) {
-            loadPropertyValueInformation(displayListDataModelScopePropertyTypeId, entity);
+        if (settingObject.isDisplayListDataModelScopePropertyTypeSelection()) {
+            loadPropertyValueInformation(settingObject.getDisplayListDataModelScopePropertyTypeId(), entity);
         }
     }
 
@@ -1930,8 +1481,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected void updatePreProcessCurrentPropertyValueSettingsLoaded() {
         super.updatePreProcessCurrentPropertyValueSettingsLoaded();
 
-        if (isDisplayListDataModelScopePropertyTypeSelection()) {
-            addPropertyTypeToLoadedDisplayPropertyTypes(displayListDataModelScopePropertyTypeId);
+        if (settingObject.isDisplayListDataModelScopePropertyTypeSelection()) {
+            addPropertyTypeToLoadedDisplayPropertyTypes(settingObject.getDisplayListDataModelScopePropertyTypeId());
         }
     }
 
@@ -1940,8 +1491,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         boolean result = super.isPreProcessPropertyValueInformationSettingsPresent();
 
         if (!result) {
-            if (isDisplayListDataModelScopePropertyTypeSelection()) {
-                return displayListDataModelScopePropertyTypeId != null;
+            if (settingObject.isDisplayListDataModelScopePropertyTypeSelection()) {
+                return settingObject.getDisplayListDataModelScopePropertyTypeId() != null;
             }
         }
 
@@ -2110,30 +1661,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @Override
     public Boolean getDisplayLoadPropertyValuesButton() {
-        if (filterByPropertiesAutoLoad != null && filterByPropertiesAutoLoad) {
+        if (isFilterByPropertiesAutoLoad()) {
             return false;
         }
 
         return super.getDisplayLoadPropertyValuesButton()
-                || checkDisplayLoadPropertyValueButtonByProperty(displayListDataModelScopePropertyTypeId);
-    }
-
-    public List<String> getDisplayListDataScopeSelectionList() {
-        if (displayListDataModelScopeSelectionList == null) {
-            displayListDataModelScopeSelectionList = new ArrayList<>();
-            SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
-            boolean settingEntityLoaded = (settingEntity != null);
-            for (ItemDisplayListDataModelScope value : ItemDisplayListDataModelScope.values()) {
-                if (!settingEntityLoaded) {
-                    if (value.isSettingEntityRequired()) {
-                        continue;
-                    }
-                }
-                displayListDataModelScopeSelectionList.add(value.getValue());
-            }
-        }
-        return displayListDataModelScopeSelectionList;
-    }
+                || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayListDataModelScopePropertyTypeId());
+    }   
 
     @Override
     protected ItemDomainEntity createEntityInstance() {
@@ -2438,6 +1972,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
             }
         }
+    }
+
+    protected SettingController getSettingController() {
+        if (settingController == null) {
+            settingController = SettingController.getInstance();
+        }
+        return settingController; 
     }
 
     @FacesConverter(value = "itemConverter", forClass = Item.class)

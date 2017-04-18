@@ -4,14 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemProjectSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -26,16 +24,12 @@ import org.jboss.weld.util.collections.ArraySet;
 
 @Named("itemProjectController")
 @SessionScoped
-public class ItemProjectController extends CdbEntityController<ItemProject, ItemProjectFacade> implements Serializable {
+public class ItemProjectController extends CdbEntityController<ItemProject, ItemProjectFacade, ItemProjectSettings> implements Serializable {
 
     @EJB
     ItemProjectFacade itemProjectFacade; 
     
-    private static final Logger logger = Logger.getLogger(ItemProjectController.class.getName());
-    
-    private static final String SystemItemProjectIdSettingTypeKey = "ItemProject.System.ItemProjectId";
-    
-    private Integer systemItemProjectId = null; 
+    private static final Logger logger = Logger.getLogger(ItemProjectController.class.getName());        
     
     private Set<IItemController> itemProjectChangeListeners = null;  
     
@@ -47,8 +41,7 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     }
     
     public ItemProjectController() {
-        super();
-        displayDescription = true; 
+        super();        
     }
 
     @Override
@@ -99,9 +92,9 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
         if (!Objects.equals(this.currentItemProject, currentItemProject)) {
             this.currentItemProject = currentItemProject;
             if (currentItemProject != null) {
-                systemItemProjectId = currentItemProject.getId();
+                settingObject.setSystemItemProjectId(currentItemProject.getId());
             } else {
-                systemItemProjectId = null; 
+                settingObject.setSystemItemProjectId(null);
             }
             notifyItemProjectChangeListeners();            
         }
@@ -119,37 +112,9 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
         }
         return "All"; 
     }
-    
-    @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        if (settingTypeMap == null) {
-            return;
-        }
-        
-        systemItemProjectId = parseSettingValueAsInteger(settingTypeMap.get(SystemItemProjectIdSettingTypeKey).getDefaultValue());
-        updateCurrentItemProjectFromSetting();
-    }
-    
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-        
-        systemItemProjectId = settingEntity.getSettingValueAsInteger(SystemItemProjectIdSettingTypeKey, systemItemProjectId);
-        updateCurrentItemProjectFromSetting();
-    }
-    
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-        
-        settingEntity.setSettingValue(SystemItemProjectIdSettingTypeKey, systemItemProjectId);
-    }
-    
-    private void updateCurrentItemProjectFromSetting() {
+
+    public void updateCurrentItemProjectFromSetting() {
+        Integer systemItemProjectId = settingObject.getSystemItemProjectId();
         if (systemItemProjectId == null) {
             currentItemProject = null; 
         } else {
@@ -160,6 +125,11 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
             }
             setCurrentItemProject(findById(systemItemProjectId)); 
         }
+    }
+
+    @Override
+    protected ItemProjectSettings createNewSettingObject() {
+        return new ItemProjectSettings(this);
     }
     
     /**
