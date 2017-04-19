@@ -5,8 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
-import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;

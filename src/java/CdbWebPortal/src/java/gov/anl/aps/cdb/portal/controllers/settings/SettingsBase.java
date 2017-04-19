@@ -22,7 +22,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public abstract class SettingsBase<EntityController extends CdbEntityController> {
+public abstract class SettingsBase<EntityController extends CdbEntityController> implements ICdbSettings {
     
     private static final Logger logger = Logger.getLogger(SettingsBase.class.getName());
     
@@ -230,7 +230,7 @@ public abstract class SettingsBase<EntityController extends CdbEntityController>
      * @param settingValue setting string value
      * @return integer value, or null in case string value cannot be parsed
      */
-    public static Integer parseSettingValueAsInteger(String settingValue) {
+    protected static Integer parseSettingValueAsInteger(String settingValue) {
         if (settingValue == null || settingValue.isEmpty()) {
             return null;
         }

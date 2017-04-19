@@ -236,7 +236,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         // Update related external setting values. 
         ItemController itemController = parentController.getCurrentSettingsItemController();
         if (itemController != null) {
-            SettingsBase settings = itemController.getSettingObject(); 
+            ICdbSettings settings = itemController.getSettingObject(); 
             if (settings instanceof ItemSettings) {
                 ItemSettings itemSettings = (ItemSettings) settings; 
                 itemSettings.saveItemElementListSettingsForSessionSettingEntity(settingEntity);            

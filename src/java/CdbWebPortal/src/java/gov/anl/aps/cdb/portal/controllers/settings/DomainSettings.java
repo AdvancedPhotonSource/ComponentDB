@@ -13,25 +13,6 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class DomainSettings extends SettingsBase<DomainController> {
-
-    public DomainSettings(DomainController parentController) {
-        super(parentController);
-    }
-
-    @Override
-    protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+public class DomainSettings extends EmptySettingsBase {
     
 }
