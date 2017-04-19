@@ -12,6 +12,7 @@ See LICENSE file.
                 template="../../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
 
     <ui:define name="customizeDisplayDialogConent">
+        <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
         <p:accordionPanel multiple="false"
                           id="domainEntityCustomizeDisplayDialogAccordionPanel">
             <ui:insert name="entitySpecificCustomizeOptionsTab"/>

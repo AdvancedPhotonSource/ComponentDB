@@ -9,22 +9,24 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="propertyValueHistorySettingObject" value="#{propertyValueHistoryController.settingObject}" />
 
     <p:column sortBy="#{propertyValueHistoryObject.id}" headerText="Id"
-              rendered="#{propertyValueHistoryController.displayId}">
+              rendered="#{propertyValueHistorySettingObject.displayId}">
         <h:outputText value="#{propertyValueHistoryObject.id}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.tag}" headerText="Tag"
               filterBy="#{propertyValueHistoryObject.tag}" filterMatchMode="contains"
-              filterValue="#{propertyValueHistoryController.filterByTag}"
-              rendered="#{propertyValueHistoryController.displayTag}">
+              filterValue="#{propertyValueHistorySettingObject.filterByTag}"
+              rendered="#{propertyValueHistorySettingObject.displayTag}">
         <h:outputText value="#{propertyValueHistoryObject.tag}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.value}" headerText="Value"
               filterBy="#{propertyValueHistoryObject.value}" filterMatchMode="contains"
-              filterValue="#{propertyValueHistoryController.filterByValue}">
+              filterValue="#{propertyValueHistorySettingObject.filterByValue}">
 
         <h:outputText value="#{propertyValueHistoryObject.value}"
                       rendered="#{propertyValueHistoryController.displayTextValue()}"/>
@@ -76,29 +78,29 @@ See LICENSE file.
 
     <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"
               filterBy="#{propertyValueHistoryObject.units}" filterMatchMode="contains"
-              filterValue="#{propertyValueHistoryController.filterByUnits}"
-              rendered="#{propertyValueHistoryController.displayUnits}">
+              filterValue="#{propertyValueHistorySettingObject.filterByUnits}"
+              rendered="#{propertyValueHistorySettingObject.displayUnits}">
         <h:outputText value="#{propertyValueHistoryObject.units}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.description}" headerText="Description"
               filterBy="#{propertyValueHistoryObject.description}" filterMatchMode="contains"
-              filterValue="#{propertyValueHistoryController.filterByDescription}"
-              rendered="#{propertyValueHistoryController.displayDescription}">
+              filterValue="#{propertyValueHistorySettingObject.filterByDescription}"
+              rendered="#{propertyValueHistorySettingObject.displayDescription}">
         <h:outputText value="#{propertyValueHistoryObject.description}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.enteredByUser.username}" headerText="Entered By"
               filterBy="#{propertyValueHistoryObject.enteredByUser.username}" filterMatchMode="contains"
-              filterValue="#{propertyValueHistoryController.filterByEnteredByUser}"
-              rendered="#{propertyValueHistoryController.displayEnteredByUser}">
+              filterValue="#{propertyValueHistorySettingObject.filterByEnteredByUser}"
+              rendered="#{propertyValueHistorySettingObject.displayEnteredByUser}">
         <h:outputText value="#{propertyValueHistoryObject.enteredByUser.username}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.enteredOnDateTime}" headerText="Entered On"
               filterBy="#{propertyValueHistoryObject.enteredOnDateTime}" filterMatchMode="contains"
-              filterValue="#{propertyValueHistoryController.filterByEnteredOnDateTime}"
-              rendered="#{propertyValueHistoryController.displayEnteredOnDateTime}">
+              filterValue="#{propertyValueHistorySettingObject.filterByEnteredOnDateTime}"
+              rendered="#{propertyValueHistorySettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{propertyValueHistoryObject.enteredOnDateTime}"/>
     </p:column>
 

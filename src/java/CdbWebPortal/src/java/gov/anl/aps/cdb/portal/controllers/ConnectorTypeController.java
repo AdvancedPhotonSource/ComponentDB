@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ConnectorTypeSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade;
 
@@ -18,7 +19,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("connectorTypeController")
 @SessionScoped
-public class ConnectorTypeController extends CdbEntityController<ConnectorType, ConnectorTypeFacade> implements Serializable {
+public class ConnectorTypeController extends CdbEntityController<ConnectorType, ConnectorTypeFacade, ConnectorTypeSettings> implements Serializable {
     
     @EJB
     ConnectorTypeFacade connectorTypeFacade;
@@ -49,6 +50,11 @@ public class ConnectorTypeController extends CdbEntityController<ConnectorType, 
     @Override
     public String getDisplayEntityTypeName() {
         return "Connector Type"; 
+    }
+
+    @Override
+    protected ConnectorTypeSettings createNewSettingObject() {
+        return new ConnectorTypeSettings(this);
     }
 
     @FacesConverter(forClass = ConnectorType.class)

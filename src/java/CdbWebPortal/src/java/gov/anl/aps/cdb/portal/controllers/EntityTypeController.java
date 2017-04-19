@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.EntityTypeSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 
@@ -18,7 +19,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("entityTypeController")
 @SessionScoped
-public class EntityTypeController extends CdbEntityController<EntityType, EntityTypeFacade>implements Serializable {
+public class EntityTypeController extends CdbEntityController<EntityType, EntityTypeFacade, EntityTypeSettings> implements Serializable {
 
     @EJB
     EntityTypeFacade entityTypeFacade;
@@ -48,6 +49,11 @@ public class EntityTypeController extends CdbEntityController<EntityType, Entity
     public EntityType findById(Integer id) {
         return entityTypeFacade.find(id);
     }    
+
+    @Override
+    protected EntityTypeSettings createNewSettingObject() {
+        return new EntityTypeSettings();
+    }
 
     @FacesConverter(value = "entityTypeConverter", forClass = EntityType.class)
     public static class EntityTypeControllerConverter implements Converter {

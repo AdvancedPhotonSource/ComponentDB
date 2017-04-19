@@ -22,6 +22,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
     
     <ui:define name="pageTitle">: View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}</ui:define> 
 
@@ -83,9 +84,9 @@ See LICENSE file.
                          toggleable="true" 
                          collapsed="#{!entityController.displayPropertyList}">
                     <ui:insert name="itemProperties"/>
-                </p:panel>
+                </p:panel>                
 
-                <p:panel header="#{itemElementController.displayItemElementSimpleView ? 'Assembly Listing' : 'Elements'}"
+                <p:panel header="#{itemElementController.settingObject.displayItemElementSimpleView ? 'Assembly Listing' : 'Elements'}"
                          id="#{entityTypeName}ViewElementsPanel"
                          rendered="#{entityController.entityDisplayItemElements}"
                          toggleable="true" 

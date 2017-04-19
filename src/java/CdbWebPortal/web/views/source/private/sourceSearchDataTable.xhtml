@@ -8,12 +8,13 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="sourceSettingObject" value="#{sourceController.settingObject}" />
     <p:dataTable id="sourceSearchDataTable" 
                  var="searchResultObject" 
                  value="#{sourceController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{searchController.displayNumberOfItemsPerPage}" 
+                 rows="#{searchSettingObject.displayNumberOfItemsPerPage}" 
                  emptyMessage="No sources match.">
 
         <ui:include src="../../search/private/searchResultListObject.xhtml">

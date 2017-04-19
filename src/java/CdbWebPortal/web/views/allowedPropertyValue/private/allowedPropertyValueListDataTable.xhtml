@@ -11,19 +11,20 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="propertyTypeObject" value="#{propertyTypeController.selected}"/>
+    <ui:param name="allowedPropertyValueSettingObject" value="#{allowedPropertyValueController.settingObject}"/> 
    
     <p:dataTable id="allowedPropertyValueListDataTable" 
                  widgetVar="allowedPropertyValueListDataTableWidget" 
                  var="allowedPropertyValueObject" 
                  value="#{propertyTypeObject.allowedPropertyValueList}"
                  filteredValue="#{allowedPropertyValueController.filteredObjectList}"
-                 rows="#{allowedPropertyValueController.displayNumberOfItemsPerPage}"
+                 rows="#{allowedPropertyValueSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No allowed property values have been specified.">
 
         <p:column sortBy="#{allowedPropertyValueObject.id}" headerText="Id"
-                  rendered="#{allowedPropertyValueController.displayId}">
+                  rendered="#{allowedPropertyValueSettingObject.displayId}">
             <h:outputText value="#{allowedPropertyValueObject.id}"/>
         </p:column>
 
@@ -32,17 +33,17 @@ See LICENSE file.
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.units}" headerText="Units"
-                  rendered="#{allowedPropertyValueController.displayUnits}">
+                  rendered="#{allowedPropertyValueSettingObject.displayUnits}">
             <h:outputText value="#{allowedPropertyValueObject.units}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.sortOrder}" headerText="Sort Order"
-                  rendered="#{allowedPropertyValueController.displaySortOrder}">
+                  rendered="#{allowedPropertyValueSettingObject.displaySortOrder}">
             <h:outputText value="#{allowedPropertyValueObject.sortOrder}"/>
         </p:column>
 
         <p:column sortBy="#{allowedPropertyValueObject.description}" headerText="Description"
-                  rendered="#{allowedPropertyValueController.displayDescription}">
+                  rendered="#{allowedPropertyValueSettingObject.displayDescription}">
             <h:outputText value="#{allowedPropertyValueObject.description}"/>
         </p:column>
 

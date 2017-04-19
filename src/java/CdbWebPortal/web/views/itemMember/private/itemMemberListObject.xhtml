@@ -10,9 +10,10 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="filterable" value="#{filterable != null ? filterable : false}"/>
+    <ui:param name="itemMemberViewSettingObject" value="#{itemMemberViewController.settingObject}" />
 
     <p:column sortBy="#{parentItemObject.id}" headerText="Id"
-              rendered="#{itemMemberViewController.displayId}">
+              rendered="#{itemMemberViewSettingObject.displayId}">
         <h:outputText value="#{parentItemObject.id}"/>
     </p:column>
 
@@ -32,7 +33,7 @@ See LICENSE file.
               filterBy="#{parentItemObject.description}" 
               filterMatchMode="contains"
               filterable="#{filterable}"
-              rendered="#{itemMemberViewController.displayDescription}">
+              rendered="#{itemMemberViewSettingObject.displayDescription}">
         <h:outputText value="#{parentItemObject.description}"/>
     </p:column>
 

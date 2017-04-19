@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.settings.ConnectorSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -23,7 +24,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("connectorController")
 @SessionScoped
-public class ConnectorController extends CdbEntityController<Connector, ConnectorFacade> implements Serializable {
+public class ConnectorController extends CdbEntityController<Connector, ConnectorFacade, ConnectorSettings> implements Serializable {
     
     @EJB
     private ConnectorFacade connectorFacade;
@@ -75,6 +76,11 @@ public class ConnectorController extends CdbEntityController<Connector, Connecto
     public String getCurrentEntityInstanceName() {
         return getCurrent().toString(); 
     }     
+
+    @Override
+    protected ConnectorSettings createNewSettingObject() {
+        return new ConnectorSettings();
+    }
 
     @FacesConverter(value = "connectorConverter", forClass = Connector.class)
     public static class ConnectorControllerConverter implements Converter {

@@ -72,7 +72,7 @@ public class SettingController implements Serializable {
         if (itemProjectController == null) {
             itemProjectController = ItemProjectController.getInstance();
         }
-        itemProjectController.updateSettings();
+        itemProjectController.getSettingObject().updateSettings();
     }
 
     public SettingEntity getCurrentSettingEntity() {

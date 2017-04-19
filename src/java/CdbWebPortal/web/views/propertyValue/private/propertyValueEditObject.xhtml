@@ -9,9 +9,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}" />
 
     <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
-              rendered="#{propertyValueController.displayId}">
+              rendered="#{propertyValueSettingObject.displayId}">
         <h:outputText id="id" value="#{propertyValueObject.id}"/>
         <p:tooltip for="id" value="Property value id cannot be modified."/>
     </p:column>
@@ -22,13 +24,13 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
-              rendered="#{propertyValueController.displayTypeCategory}">
+              rendered="#{propertyValueSettingObject.displayTypeCategory}">
         <h:outputText id="typeCategory" value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
         <p:tooltip for="typeCategory" value="Property type category cannot be modified."/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
-              rendered="#{propertyValueController.displayTag}">
+              rendered="#{propertyValueSettingObject.displayTag}">
         <h:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
         <p:tooltip for="name" value="Property value tag is optional."/>
     </p:column>
@@ -50,19 +52,19 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
-              rendered="#{propertyValueController.displayEnteredByUser}">
+              rendered="#{propertyValueSettingObject.displayEnteredByUser}">
         <h:outputText id="enteredBy" value="#{propertyValueObject.enteredByUser.username}"/>
         <p:tooltip for="enteredBy" value="Entered by user field cannot be modified."/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
-              rendered="#{propertyValueController.displayEnteredOnDateTime}">
+              rendered="#{propertyValueSettingObject.displayEnteredOnDateTime}">
         <h:outputText id="enteredOn" value="#{propertyValueObject.enteredOnDateTime}"/>
         <p:tooltip for="enteredOn" value="Entered on date/time field cannot be modified."/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
-              rendered="#{propertyValueController.displayIsDynamic}">
+              rendered="#{propertyValueSettingObject.displayIsDynamic}">
         <div class="dataTableCheckbox">
             <p:selectBooleanCheckbox id="dynamic" value="#{propertyValueObject.isDynamic}"/>
         </div>
@@ -70,7 +72,7 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User-Writeable"
-              rendered="#{propertyValueController.displayIsUserWriteable}">
+              rendered="#{propertyValueSettingObject.displayIsUserWriteable}">
         <div class="dataTableCheckbox">
             <p:selectBooleanCheckbox id="userWriteable" value="#{propertyValueObject.isUserWriteable}"/>
         </div>

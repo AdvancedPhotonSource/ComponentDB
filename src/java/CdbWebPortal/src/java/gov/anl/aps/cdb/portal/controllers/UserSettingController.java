@@ -4,14 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.UserSettingSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -20,23 +18,15 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("userSettingController")
 @SessionScoped
-public class UserSettingController extends CdbEntityController<UserSetting, UserSettingFacade>implements Serializable {
-     /*
-     * Controller specific settings
-     */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserSetting.List.Display.NumberOfItemsPerPage";
+public class UserSettingController extends CdbEntityController<UserSetting, UserSettingFacade,  UserSettingSettings> implements Serializable {    
 
     @EJB
     private UserSettingFacade userSettingFacade;
     private static final Logger logger = Logger.getLogger(UserSettingController.class.getName());
-
-    // These do not correspond to setting types.
-    private String filterBySettingType = null;
-    private String filterByValue = null;
+    
 
     public UserSettingController() {
     }
@@ -83,57 +73,8 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     }
 
     @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-    }
-
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-    }
-
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        super.updateListSettingsFromListDataTable(dataTable);
-        if (dataTable == null) {
-            return;
-        }
-
-        Map<String, Object> filters = dataTable.getFilters();
-        filterBySettingType = (String) filters.get("settingType");
-        filterByValue = (String) filters.get("value");
-    }
-
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-    }
-
-    @Override
-    public void clearListFilters() {
-        super.clearListFilters();
-        filterBySettingType = null;
-        filterByValue = null;
-    }
-
-    public String getFilterBySettingType() {
-        return filterBySettingType;
-    }
-
-    public void setFilterBySettingType(String filterBySettingType) {
-        this.filterBySettingType = filterBySettingType;
-    }
-
-    public String getFilterByValue() {
-        return filterByValue;
-    }
-
-    public void setFilterByValue(String filterByValue) {
-        this.filterByValue = filterByValue;
+    protected UserSettingSettings createNewSettingObject() {
+        return new UserSettingSettings(this);
     }
 
     /**

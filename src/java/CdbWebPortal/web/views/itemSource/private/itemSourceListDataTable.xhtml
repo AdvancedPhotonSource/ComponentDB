@@ -13,12 +13,14 @@ See LICENSE file.
     <ui:param name="breadcrumb" value="#{itemSourceController.currentViewId}"/>
     <ui:param name="itemSourceDataList" value="#{itemObject.itemSourceList}" />
     
+    <ui:param name="itemSourceSettingObject" value="#{itemSourceController.settingObject}" />
+    
     <p:dataTable id="itemSourceListDataTable" 
                  widgetVar="itemSourceListWidget"
                  var="itemSourceObject" 
                  value="#{itemSourceDataList}" 
                  filteredValue="#{itemSourceController.filteredObjectList}"
-                 rows="#{itemSourceController.displayNumberOfItemsPerPage}"
+                 rows="#{itemSourceSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  reflow="true"
                  paginatorAlwaysVisible="false"

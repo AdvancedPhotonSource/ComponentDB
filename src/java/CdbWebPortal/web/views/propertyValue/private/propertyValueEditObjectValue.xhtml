@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
-
+    
     <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}">
         <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>

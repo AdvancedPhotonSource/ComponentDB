@@ -8,13 +8,15 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"        
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
-    <p:column rendered="#{entityController.displayRowExpansion}"
+    <p:column rendered="#{entitySettingObject.displayRowExpansion}"
               headerText="More Info"
               styleClass="narrowColumn">
         <p:rowToggler rendered="#{entityController.isDisplayRowExpansionForItem(itemListObject)}"/>
     </p:column>
-    <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entityController.displayRowExpansion}">
+    <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entitySettingObject.displayRowExpansion}">
         <ui:insert name="itemRowExpansion">
             <ui:include src="../itemListDataTableRowExpansion.xhtml"/>
         </ui:insert>            

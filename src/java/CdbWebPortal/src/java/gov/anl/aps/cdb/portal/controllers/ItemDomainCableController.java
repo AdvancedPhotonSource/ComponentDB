@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
@@ -26,7 +27,7 @@ import javax.inject.Named;
 
 @Named("itemDomainCableController")
 @SessionScoped
-public class ItemDomainCableController extends ItemController<ItemDomainCable, ItemDomainCableFacade> {
+public class ItemDomainCableController extends ItemController<ItemDomainCable, ItemDomainCableFacade, ItemDomainCableSettings> {
     
     private final String DOMAIN_TYPE_NAME = ItemDomainName.cable.getValue();
     
@@ -86,7 +87,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }
 
     @Override
-    protected void checkItemUniqueness(Item item) throws CdbException {        
+    public void checkItemUniqueness(Item item) throws CdbException {        
         // Cables are only unique by primary key (id). 
     }
     
@@ -389,6 +390,11 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     @Override
     protected ItemDomainCableFacade getEntityDbFacade() {
         return itemDomainCableFacade; 
+    }
+
+    @Override
+    protected ItemDomainCableSettings createNewSettingObject() {
+        return new ItemDomainCableSettings(this); 
     }
     
 }

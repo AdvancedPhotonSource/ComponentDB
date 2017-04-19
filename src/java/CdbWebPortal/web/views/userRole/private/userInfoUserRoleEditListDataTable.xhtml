@@ -10,14 +10,15 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
+    <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>
+    <ui:param name="userRoleSettingObject" value="#{userRoleController.settingObject}" />
     <p:dataTable id="userInfoUserRoleEditListDataTable" 
                  widgetVar="userInfoUserRoleEditListDataTableWidget"
                  var="userRoleObject" 
                  value="#{userInfoObject.userRoleList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false"
-                 rows="#{userRoleController.displayNumberOfItemsPerPage}"
+                 rows="#{userRoleSettingObject.displayNumberOfItemsPerPage}"
                  emptyMessage="No roles found."
                  rowStyleClass="#{userRoleObject.userRolePK != null ? '' : 'newItemInRow'}">
 

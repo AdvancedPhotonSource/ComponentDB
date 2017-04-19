@@ -13,13 +13,15 @@ See LICENSE file.
     <ui:param name="breadcrumbObjectId" value="#{itemObject.id}"/>  
     <ui:param name="itemElementDataList" value="#{itemObject.itemElementDisplayList}" />
     <ui:param name="itemElementListFilterable" value="#{facesUtility.displayFiltersForList(itemElementDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
+    <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}" />
+    <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />
 
     <p:dataTable id="#{childEntityTypeName}ListDataTable"
                  widgetVar="#{childEntityTypeName}ListDataTableWidget"
                  value="#{itemElementDataList}"
                  var="itemElementObject"
                  filteredValue="#{itemElementController.filteredObjectList}"
-                 rows="#{itemElementController.displayNumberOfItemsPerPage}"
+                 rows="#{itemElementSettingObject.displayNumberOfItemsPerPage}"
                  sortBy="#{itemElementObject.customizableSortOrder}"
                  resizableColumns="true"
                  liveResize="true"
@@ -28,12 +30,12 @@ See LICENSE file.
                  emptyMessage="No item elements found."
                  rowStyleClass="#{itemElementController.getDisplayRowStyle(itemElementObject)}">   
 
-        <ui:param name="simpleView" value="#{itemElementController.displayItemElementSimpleView}" /> 
+        <ui:param name="simpleView" value="#{itemElementSettingObject.displayItemElementSimpleView}" /> 
 
         <ui:param name="itemListObject" value="#{itemElementObject.containedItem}" />
         <ui:param name="renderRowExpansion" value="#{simpleView 
                                                      ? itemListObject != null and entityController.isDisplayRowExpansionForItem(itemListObject) 
-                                                     : itemElementController.displayRowExpansion and itemElementController.displayFlatTableView}" />
+                                                     : itemElementSettingObject.displayRowExpansion and itemElementSettingObject.displayFlatTableView}" />
 
         <p:column exportable="false">
             <p:rowToggler rendered="#{renderRowExpansion}"/>
@@ -63,14 +65,14 @@ See LICENSE file.
         </ui:include>
 
         <ui:include src="../../item/private/itemListObject.xhtml">
-            <ui:param name="itemListDisplayItemIdentifier1" value="#{currentItemController.entityDisplayItemIdentifier1 and currentItemController.displayItemElementListItemIdentifier1}" />
-            <ui:param name="itemListDisplayItemIdentifier2" value="#{currentItemController.entityDisplayItemIdentifier2 and currentItemController.displayItemElementListItemIdentifier2}" />                        
-            <ui:param name="itemListDisplayItemType" value="#{currentItemController.entityDisplayItemType and currentItemController.displayItemElementListItemType}" /> 
-            <ui:param name="itemListDisplayItemCategory" value="#{currentItemController.entityDisplayItemCategory and currentItemController.displayItemElementListItemCategory}" /> 
-            <ui:param name="itemListDisplayDescription" value="#{currentItemController.displayItemElementListDescription}" />
-            <ui:param name="itemListDisplayItemProject" value="#{currentItemController.entityDisplayItemProject and currentItemController.displayItemElementListProject}" />
-            <ui:param name="itemListDisplayItemSource" value="#{currentItemController.entityDisplayItemSources and currentItemController.displayItemElementListSource}" />
-            <ui:param name="itemListDisplayQrId" value="#{currentItemController.entityDisplayQrId and currentItemController.displayItemElementListQrId}" />
+            <ui:param name="itemListDisplayItemIdentifier1" value="#{currentItemController.entityDisplayItemIdentifier1 and currentItemSettingObject.displayItemElementListItemIdentifier1}" />
+            <ui:param name="itemListDisplayItemIdentifier2" value="#{currentItemController.entityDisplayItemIdentifier2 and currentItemSettingObject.displayItemElementListItemIdentifier2}" />                        
+            <ui:param name="itemListDisplayItemType" value="#{currentItemController.entityDisplayItemType and currentItemSettingObject.displayItemElementListItemType}" /> 
+            <ui:param name="itemListDisplayItemCategory" value="#{currentItemController.entityDisplayItemCategory and currentItemSettingObject.displayItemElementListItemCategory}" /> 
+            <ui:param name="itemListDisplayDescription" value="#{currentItemSettingObject.displayItemElementListDescription}" />
+            <ui:param name="itemListDisplayItemProject" value="#{currentItemController.entityDisplayItemProject and currentItemSettingObject.displayItemElementListProject}" />
+            <ui:param name="itemListDisplayItemSource" value="#{currentItemController.entityDisplayItemSources and currentItemSettingObject.displayItemElementListSource}" />
+            <ui:param name="itemListDisplayQrId" value="#{currentItemController.entityDisplayQrId and currentItemSettingObject.displayItemElementListQrId}" />
             <ui:param name="filterable" value="#{itemElementListFilterable}" /> 
             <ui:param name="rendered" value="#{simpleView}" />
         </ui:include>    
@@ -80,7 +82,7 @@ See LICENSE file.
         </ui:include>
 
         <p:rowExpansion styleClass="domainEntityRowExpansion">
-            <p:outputPanel rendered="#{itemElementController.displayRowExpansion}">
+            <p:outputPanel rendered="#{itemElementSettingObject.displayRowExpansion}">
                 <p:outputPanel rendered="#{!simpleView}">
                     <ui:include src="itemElementListDataTableRowExpansion.xhtml">
                         <ui:param name="parentDesignElementObject" value="#{itemElementObject}" />

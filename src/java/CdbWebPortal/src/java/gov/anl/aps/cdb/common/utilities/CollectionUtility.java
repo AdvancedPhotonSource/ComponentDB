@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.common.utilities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import javax.faces.model.SelectItem;
@@ -101,5 +102,26 @@ public class CollectionUtility {
                 iterator.remove();
             }
         }
+    }
+    
+    /**
+     * Compares if two lists are different.
+     *
+     * @param originalList
+     * @param listToCompare
+     * @return
+     */
+    public static boolean isListDifferent(List<Object> originalList, List<Object> listToCompare) {
+        Boolean listIsDifferent = true;
+        if (originalList == null
+                || listToCompare.size() == originalList.size()) {
+            List<Object> test = new ArrayList<>(listToCompare);
+            if (originalList != null) {
+                test.removeAll(originalList);
+            }
+
+            listIsDifferent = !test.isEmpty();
+        }
+        return listIsDifferent;
     }
 }

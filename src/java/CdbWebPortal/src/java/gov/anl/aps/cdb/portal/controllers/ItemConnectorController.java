@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemConnectorSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -24,7 +25,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("itemConnectorController")
 @SessionScoped
-public class ItemConnectorController extends CdbEntityController<ItemConnector, ItemConnectorFacade> implements Serializable {
+public class ItemConnectorController extends CdbEntityController<ItemConnector, ItemConnectorFacade, ItemConnectorSettings> implements Serializable {
 
     @EJB
     ItemConnectorFacade itemConnectorFacade;
@@ -177,6 +178,11 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
 
         return itemConnectedVia;
 
+    }
+
+    @Override
+    protected ItemConnectorSettings createNewSettingObject() {
+        return new ItemConnectorSettings();
     }
 
     @FacesConverter(forClass = ItemConnector.class)

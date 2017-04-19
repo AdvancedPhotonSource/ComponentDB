@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
     <ui:param name="viewMode" value="inViewRowExpansion" />
+    <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}" />
 
     <p:outputPanel styleClass="domainEntityRowExpansionDetails">
         <p:accordionPanel activeIndex="" multiple="true"  dynamic="true">
@@ -31,7 +32,7 @@ See LICENSE file.
 
                     <ui:include src="itemElementListObjectActions.xhtml" >
                         <ui:param name="itemElementObject" value="#{itemElementTreeObject}" />
-                        <ui:param name="rendered" value="#{itemElementController.displayBillOfMaterialsActionColumn}" />
+                        <ui:param name="rendered" value="#{itemElementSettingObject.displayBillOfMaterialsActionColumn}" />
                     </ui:include>
                 </p:treeTable>
             </p:tab>

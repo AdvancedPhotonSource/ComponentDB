@@ -9,9 +9,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="logSettingObject" value="#{logController.settingObject}" />
 
     <p:column sortBy="#{logObject.id}" headerText="Id"
-              rendered="#{logController.displayId}">
+              rendered="#{logSettingObject.displayId}">
         <h:outputText id="logId" value="#{logObject.id}"/>
         <p:tooltip for="logId" value="Log entry id cannot be modified."/>
     </p:column>
@@ -28,7 +30,7 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
-              rendered="#{logController.displayTopic}">
+              rendered="#{logSettingObject.displayTopic}">
         <p:selectOneMenu id="topic" value="#{logObject.logTopic}" styleClass="entityDataText">
             <f:selectItem itemLabel="Select" noSelectionOption="true"/>
             <f:selectItems var="topic" value="#{logTopicController.availableItems}" itemLabel="#{topic.name}" itemValue="#{topic}"/>

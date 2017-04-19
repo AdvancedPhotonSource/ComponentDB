@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.UserRoleSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
 import gov.anl.aps.cdb.portal.model.db.beans.UserRoleFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -19,14 +20,13 @@ import javax.faces.convert.FacesConverter;
 
 @Named("userRoleController")
 @SessionScoped
-public class UserRoleController extends CdbEntityController<UserRole, UserRoleFacade> implements Serializable {
+public class UserRoleController extends CdbEntityController<UserRole, UserRoleFacade, UserRoleSettings> implements Serializable {
 
     @EJB
     UserRoleFacade userRoleFacade;
     
     public UserRoleController(){
         super();
-        displayNumberOfItemsPerPage = 25; 
     }
     
     public UserRole getUserRole(gov.anl.aps.cdb.portal.model.db.entities.UserRolePK id) {
@@ -65,6 +65,11 @@ public class UserRoleController extends CdbEntityController<UserRole, UserRoleFa
         UserRole userRole = new UserRole();
         userRole.init(userInfoObject);
         userInfoObject.getUserRoleList().add(0, userRole); 
+    }
+
+    @Override
+    protected UserRoleSettings createNewSettingObject() {
+        return new UserRoleSettings(this); 
     }
 
     @FacesConverter(forClass = UserRole.class)

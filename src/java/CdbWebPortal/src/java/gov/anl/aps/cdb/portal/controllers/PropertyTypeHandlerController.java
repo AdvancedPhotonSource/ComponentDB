@@ -5,14 +5,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeHandlerSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -24,16 +22,7 @@ import org.apache.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
-public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade> implements Serializable {
-
-    /*
-     * Controller specific settings
-     */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeHandler.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "PropertyTypeHandler.List.Display.Id";
-    private static final String DisplayDescriptionSettingTypeKey = "PropertyTypeHandler.List.Display.Description";
-    private static final String FilterByNameSettingTypeKey = "PropertyTypeHandler.List.FilterBy.Name";
-    private static final String FilterByDescriptionSettingTypeKey = "PropertyTypeHandler.List.FilterBy.Description";
+public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade, PropertyTypeHandlerSettings> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(PropertyTypeHandlerController.class.getName());
 
@@ -88,48 +77,11 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
 
     @Override
     public void prepareEntityUpdate(PropertyTypeHandler propertyHandler) throws ObjectAlreadyExists {
-    }
+    }   
 
     @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        if (settingTypeMap == null) {
-            return;
-        }
-
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-
-        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
-        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
-    }
-
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-
-        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-    }
-
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-
-        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
-        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
+    protected PropertyTypeHandlerSettings createNewSettingObject() {
+        return new PropertyTypeHandlerSettings(this);
     }
 
     /**

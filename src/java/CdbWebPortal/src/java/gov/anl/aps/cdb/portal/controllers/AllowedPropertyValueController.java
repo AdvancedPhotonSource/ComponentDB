@@ -4,13 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.AllowedPropertyValueSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -21,35 +19,14 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("allowedPropertyValueController")
 @SessionScoped
-public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueFacade> implements Serializable {
-
-    /*
-     * Controller specific settings
-     */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AllowedPropertyValue.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "AllowedPropertyValue.List.Display.Id";
-    private static final String DisplayDescriptionSettingTypeKey = "AllowedPropertyValue.List.Display.Description";
-    private static final String DisplaySortOrderSettingTypeKey = "AllowedPropertyValue.List.Display.SortOrder";
-    private static final String DisplayUnitsSettingTypeKey = "AllowedPropertyValue.List.Display.Units";
-    private static final String FilterByDescriptionSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Description";
-    private static final String FilterBySortOrderSettingTypeKey = "AllowedPropertyValue.List.FilterBy.SortOrder";
-    private static final String FilterByUnitsSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Units";
-    private static final String FilterByValueSettingTypeKey = "AllowedPropertyValue.List.FilterBy.Value";
+public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueFacade, AllowedPropertyValueSettings> implements Serializable {    
 
     @EJB
     private AllowedPropertyValueFacade allowedPropertyValueFacade;
-    private static final Logger logger = Logger.getLogger(AllowedPropertyValueController.class.getName());
-
-    private Boolean displayUnits = null;
-    private Boolean displaySortOrder = null;
-
-    private String filterBySortOrder = null;
-    private String filterByUnits = null;
-    private String filterByValue = null;
+    private static final Logger logger = Logger.getLogger(AllowedPropertyValueController.class.getName());   
 
     public AllowedPropertyValueController() {
     }
@@ -120,115 +97,11 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
         if (allowedPropertyValue.getId() != null) {
             super.destroy(allowedPropertyValue);
         }
-    }
+    }    
 
     @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displaySortOrder = Boolean.parseBoolean(settingTypeMap.get(DisplaySortOrderSettingTypeKey).getDefaultValue());
-        displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-
-        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
-        filterBySortOrder = settingTypeMap.get(FilterBySortOrderSettingTypeKey).getDefaultValue();
-        filterByUnits = settingTypeMap.get(FilterByUnitsSettingTypeKey).getDefaultValue();
-        filterByValue = settingTypeMap.get(FilterByValueSettingTypeKey).getDefaultValue();
-    }
-
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-
-        displaySortOrder = settingEntity.getSettingValueAsBoolean(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-
-        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterBySortOrder = settingEntity.getSettingValueAsString(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        filterByUnits = settingEntity.getSettingValueAsString(FilterByUnitsSettingTypeKey, filterByUnits);
-        filterByValue = settingEntity.getSettingValueAsString(FilterByValueSettingTypeKey, filterByValue);
-    }
-
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        super.updateListSettingsFromListDataTable(dataTable);
-        if (dataTable == null) {
-            return;
-        }
-
-        Map<String, Object> filters = dataTable.getFilters();
-        filterBySortOrder = (String) filters.get("sortOrder");
-        filterByUnits = (String) filters.get("units");
-        filterByValue = (String) filters.get("value");
-    }
-
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        settingEntity.setSettingValue(DisplaySortOrderSettingTypeKey, displaySortOrder);
-        settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
-
-        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        settingEntity.setSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-        settingEntity.setSettingValue(FilterByUnitsSettingTypeKey, filterByUnits);
-        settingEntity.setSettingValue(FilterByValueSettingTypeKey, filterByValue);
-    }
-
-    @Override
-    public void clearListFilters() {
-        super.clearListFilters();
-        filterBySortOrder = null;
-        filterByUnits = null;
-        filterByValue = null;
-    }
-
-    public Boolean getDisplayUnits() {
-        return displayUnits;
-    }
-
-    public void setDisplayUnits(Boolean displayUnits) {
-        this.displayUnits = displayUnits;
-    }
-
-    public Boolean getDisplaySortOrder() {
-        return displaySortOrder;
-    }
-
-    public void setDisplaySortOrder(Boolean displaySortOrder) {
-        this.displaySortOrder = displaySortOrder;
-    }
-
-    public String getFilterBySortOrder() {
-        return filterBySortOrder;
-    }
-
-    public void setFilterBySortOrder(String filterBySortOrder) {
-        this.filterBySortOrder = filterBySortOrder;
-    }
-
-    public String getFilterByUnits() {
-        return filterByUnits;
-    }
-
-    public void setFilterByUnits(String filterByUnits) {
-        this.filterByUnits = filterByUnits;
-    }
-
-    public String getFilterByValue() {
-        return filterByValue;
-    }
-
-    public void setFilterByValue(String filterByValue) {
-        this.filterByValue = filterByValue;
+    protected AllowedPropertyValueSettings createNewSettingObject() {
+        return new AllowedPropertyValueSettings(this);
     }
 
     /**

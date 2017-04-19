@@ -10,25 +10,26 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="userInfoObject" value="#{userInfoController.selected}"/>    
+    <ui:param name="userSettingSettingObject" value="#{userSettingController.settingObject}"/>
     <p:dataTable id="userSettingListDataTable" 
                  widgetVar="userSettingListDataTableWidget"
                  var="userSettingObject" 
                  value="#{userInfoObject.userSettingList}" 
                  filteredValue="#{userSettingController.filteredObjectList}"
-                 rows="#{userSettingController.displayNumberOfItemsPerPage}"
+                 rows="#{userSettingSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  emptyMessage="No user settings found.">
 
         <p:column sortBy="#{userSettingObject.settingType.name}" headerText="Name"
                   filterBy="#{userSettingObject.settingType.name}" filterMatchMode="contains"
-                  filterValue="#{userSettingController.filterBySettingType}">
+                  filterValue="#{userSettingSettingObject.filterBySettingType}">
             <h:outputText value="#{userSettingObject.settingType.name}"/>
         </p:column>
 
         <p:column sortBy="#{userSettingObject.value}" headerText="Value"
                   filterBy="#{userSettingObject.value}" filterMatchMode="contains"
-                  filterValue="#{userSettingController.filterByValue}">
+                  filterValue="#{userSettingSettingObject.filterByValue}">
             <h:outputText value="#{userSettingObject.value}"/>
         </p:column>
 

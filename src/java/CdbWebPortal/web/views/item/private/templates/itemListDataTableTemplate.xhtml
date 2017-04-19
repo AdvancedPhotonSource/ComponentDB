@@ -22,12 +22,12 @@ See LICENSE file.
             <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
         </ui:include>
         <ui:include src="../../../propertyValue/private/propertyValueDomainEntityListDataTableColumn.xhtml">
-            <ui:param name="propertyValueRendered" value="#{entityController.displayListDataModelScopePropertyTypeSelection}" />
+            <ui:param name="propertyValueRendered" value="#{entitySettingObject.displayListDataModelScopePropertyTypeSelection}" />
             <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
-            <ui:param name="displayModePropertyTypeId" value="#{entityController.displayListDataModelScopePropertyTypeId}" />
+            <ui:param name="displayModePropertyTypeId" value="#{entitySettingObject.displayListDataModelScopePropertyTypeId}" />
             <ui:param name="propertyTypeName" value="#{entityController.getDisplayPropertyTypeName(displayModePropertyTypeId)}" />
             <ui:param name="propertyTypeId" value="#{displayModePropertyTypeId}" />
-            <ui:param name="propertyValueFilterable" value="#{entityController.displayListDataModelScopePropertyFilterable}" />
+            <ui:param name="propertyValueFilterable" value="#{entitySettingObject.displayListDataModelScopePropertyFilterable}" />
         </ui:include>
     </ui:define>
     

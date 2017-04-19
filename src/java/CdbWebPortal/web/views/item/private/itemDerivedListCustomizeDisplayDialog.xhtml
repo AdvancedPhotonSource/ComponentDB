@@ -15,41 +15,42 @@ See LICENSE file.
               header="Customize Display" 
               styleClass="dialog">
         <div class="dialog">
+            <ui:param name="itemDerivedSettingObject" value="#{itemDerivedController.settingObject}" />
             <p:panelGrid columns="2">
-                <p:inputText id="derivedItemDisplayNumberOfItemsPerPage" value="#{derivedController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <p:inputText id="derivedItemDisplayNumberOfItemsPerPage" value="#{derivedSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
                 <h:outputLabel for="derivedItemDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayCreatedByUser" value="#{derivedController.displayCreatedByUser}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayCreatedByUser" value="#{derivedSettingObject.displayCreatedByUser}"/>  
                 <h:outputLabel for="derivedItemDisplayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayCreatedOnDateTime" value="#{derivedController.displayCreatedOnDateTime}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayCreatedOnDateTime" value="#{derivedSettingObject.displayCreatedOnDateTime}"/>  
                 <h:outputLabel for="derivedItemDisplayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayDescription" value="#{derivedController.displayDescription}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayDescription" value="#{derivedSettingObject.displayDescription}"/>  
                 <h:outputLabel for="derivedItemDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayId" value="#{derivedController.displayId}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayId" value="#{derivedSettingObject.displayId}"/>  
                 <h:outputLabel for="derivedItemDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayLastModifiedByUser" value="#{derivedController.displayLastModifiedByUser}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayLastModifiedByUser" value="#{derivedSettingObject.displayLastModifiedByUser}"/>  
                 <h:outputLabel for="derivedItemDisplayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayLastModifiedOnDateTime" value="#{derivedController.displayLastModifiedOnDateTime}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayLastModifiedOnDateTime" value="#{derivedSettingObject.displayLastModifiedOnDateTime}"/>  
                 <h:outputLabel for="derivedItemDisplayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayLocationDetails" value="#{derivedController.displayLocationDetails}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayLocationDetails" value="#{derivedSettingObject.displayLocationDetails}"/>  
                 <h:outputLabel for="derivedItemDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayOwnerUser" value="#{derivedController.displayOwnerUser}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayOwnerUser" value="#{derivedSettingObject.displayOwnerUser}"/>  
                 <h:outputLabel for="derivedItemDisplayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayOwnerGroup" value="#{derivedController.displayOwnerGroup}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayOwnerGroup" value="#{derivedSettingObject.displayOwnerGroup}"/>  
                 <h:outputLabel for="derivedItemDisplayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>                
 
-                <p:selectBooleanCheckbox id="derivedItemDisplayQrId" value="#{derivedController.displayQrId}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplayQrId" value="#{derivedSettingObject.displayQrId}"/>  
                 <h:outputLabel for="derivedItemDisplayQrId" value="Display QR Id" styleClass="dialogDataLabel"/>
 
-                <p:selectBooleanCheckbox id="derivedItemDisplaySerialNumber" value="#{derivedController.displaySerialNumber}"/>  
+                <p:selectBooleanCheckbox id="derivedItemDisplaySerialNumber" value="#{derivedSettingObject.displaySerialNumber}"/>  
                 <h:outputLabel for="derivedItemDisplaySerialNumber" value="Display Serial Number" styleClass="dialogDataLabel"/>
 
             </p:panelGrid>

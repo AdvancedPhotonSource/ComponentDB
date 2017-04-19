@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../itemElement/private/templates/itemElementListTemplate.xhtml">
 
-    <ui:param name="renderEditButton" value="#{isEntityWriteable and itemDomainInventoryController.displayBOMEditButton()}"/>
+    <ui:param name="renderEditButton" value="#{isEntityWriteable and itemDomainInventorySettingObject.displayBOMEditButton()}"/>
 
     <ui:define name="listActionButtons">
         <ui:include src="../../itemElement/private/itemElementListActionButtons.xhtml">
