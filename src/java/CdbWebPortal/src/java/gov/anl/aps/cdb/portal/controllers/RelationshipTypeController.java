@@ -59,7 +59,7 @@ public class RelationshipTypeController extends CdbEntityController<Relationship
 
     @Override
     protected RelationshipTypeSettings createNewSettingObject() {
-        return new RelationshipTypeSettings(this);
+        return new RelationshipTypeSettings();
     }
 
     @FacesConverter(forClass = RelationshipType.class)

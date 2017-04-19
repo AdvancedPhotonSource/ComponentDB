@@ -25,7 +25,7 @@ import gov.anl.aps.cdb.portal.view.jsf.components.CdbExcelExporter;
 import gov.anl.aps.cdb.portal.view.jsf.components.CdbPdfExporter;
 import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
-import gov.anl.aps.cdb.portal.controllers.settings.SettingsBase;
+import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.io.IOException;
@@ -57,7 +57,7 @@ import org.primefaces.component.export.Exporter;
  * @param <EntityType> CDB entity type
  * @param <FacadeType> CDB DB facade type
  */
-public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends SettingsBase> implements Serializable {   
+public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable {   
 
     private final String CDB_ENTITY_INFO_LOG_LEVEL = "cdbEntityInfo";
     private final String CDB_ENTITY_WARNING_LOG_LEVEL = "cdbEntityWarning";

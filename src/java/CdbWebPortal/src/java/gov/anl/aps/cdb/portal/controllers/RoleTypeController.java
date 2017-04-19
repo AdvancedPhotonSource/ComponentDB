@@ -50,7 +50,7 @@ public class RoleTypeController extends CdbEntityController<RoleType, RoleTypeFa
 
     @Override
     protected RoleTypeSettings createNewSettingObject() {
-        return new RoleTypeSettings(this);
+        return new RoleTypeSettings();
     }
 
     @FacesConverter(value = "roleTypeConverter" ,forClass = RoleType.class)

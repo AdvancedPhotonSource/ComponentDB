@@ -62,7 +62,7 @@ public class LogTopicController extends CdbEntityController<LogTopic, LogTopicFa
 
     @Override
     protected LogTopicSettings createNewSettingObject() {
-        return new LogTopicSettings(this); 
+        return new LogTopicSettings(); 
     }
 
     @FacesConverter(forClass = LogTopic.class)

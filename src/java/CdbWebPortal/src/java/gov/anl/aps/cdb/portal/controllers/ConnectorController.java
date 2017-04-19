@@ -79,7 +79,7 @@ public class ConnectorController extends CdbEntityController<Connector, Connecto
 
     @Override
     protected ConnectorSettings createNewSettingObject() {
-        return new ConnectorSettings(this);
+        return new ConnectorSettings();
     }
 
     @FacesConverter(value = "connectorConverter", forClass = Connector.class)

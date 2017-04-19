@@ -52,7 +52,7 @@ public class EntityTypeController extends CdbEntityController<EntityType, Entity
 
     @Override
     protected EntityTypeSettings createNewSettingObject() {
-        return new EntityTypeSettings(this);
+        return new EntityTypeSettings();
     }
 
     @FacesConverter(value = "entityTypeConverter", forClass = EntityType.class)

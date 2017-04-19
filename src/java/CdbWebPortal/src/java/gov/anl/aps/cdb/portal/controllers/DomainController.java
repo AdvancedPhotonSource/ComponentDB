@@ -54,7 +54,7 @@ public class DomainController extends CdbEntityController<Domain, DomainFacade, 
 
     @Override
     protected DomainSettings createNewSettingObject() {
-        return new DomainSettings(this); 
+        return new DomainSettings(); 
     }
     
     @FacesConverter(forClass = Domain.class)

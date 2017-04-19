@@ -182,7 +182,7 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
 
     @Override
     protected ItemConnectorSettings createNewSettingObject() {
-        return new ItemConnectorSettings(this);
+        return new ItemConnectorSettings();
     }
 
     @FacesConverter(forClass = ItemConnector.class)
