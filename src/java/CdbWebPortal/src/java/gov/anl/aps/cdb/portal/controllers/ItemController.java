@@ -1042,10 +1042,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public boolean isDisplayRowExpansionForItem(Item item) {
-        if (settingObject.getDisplayRowExpansion()) {
-            return isDisplayRowExpansionLogs(item)
-                    || isDisplayRowExpansionProperties(item)
-                    || isDisplayRowExpansionAssembly(item);
+        Boolean displayRowExpansion = settingObject.getDisplayRowExpansion();
+        if (displayRowExpansion != null && displayRowExpansion) {
+            if (item != null) {
+                return isDisplayRowExpansionLogs(item)
+                        || isDisplayRowExpansionProperties(item)
+                        || isDisplayRowExpansionAssembly(item);
+            }
         }
 
         return false;
@@ -1062,10 +1065,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public boolean isDisplayRowExpansionItemsDerivedFromItem(Item item) {
-        if (getEntityDisplayItemsDerivedFromItem()) {
-            List<Item> itemsDerivedFromItem = item.getDerivedFromItemList();
-            if (itemsDerivedFromItem != null) {
-                return !itemsDerivedFromItem.isEmpty();
+        if (item != null) {
+            if (getEntityDisplayItemsDerivedFromItem()) {
+                List<Item> itemsDerivedFromItem = item.getDerivedFromItemList();
+                if (itemsDerivedFromItem != null) {
+                    return !itemsDerivedFromItem.isEmpty();
+                }
             }
         }
         return false;
