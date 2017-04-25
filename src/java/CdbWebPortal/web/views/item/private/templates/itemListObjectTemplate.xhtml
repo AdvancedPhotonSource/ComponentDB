@@ -220,11 +220,12 @@ See LICENSE file.
     <ui:define name="derivedFromItemColumn" > 
         <p:column headerText="#{entityController.derivedFromItemTitle}"                  
                   filterBy="#{itemListObject.derivedFromItem.name}"
-                  sortBy="#{itemListObject.derivedFromItem.name}"
+                  sortBy="#{itemListObject.derivedFromItem.name}"                  
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{rendered and itemListRenderDerivedFromItem}"
-                  filterValue="#{entitySettingObject.filterByName}">
+                  filterValue="#{entitySettingObject.filterByName}"
+                  groupRow="true">
             <ui:insert name="derivedFromItemColumnObject" />
         </p:column>
     </ui:define>
