@@ -24,3 +24,6 @@ src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/plugins/support/
 # Python docs
 docs/python/_build/
 /src/java/CdbWebPortal/nbproject/private/
+/src/src/java/CdbWebPortal/build/
+/src/src/java/CdbWebPortal/dist/
+/src/src/java/CdbWebPortal/nbproject/private/
