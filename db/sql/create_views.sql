@@ -32,3 +32,10 @@ LEFT OUTER JOIN v_item_connector_domain_inventory invConnector on (invConnector.
 LEFT OUTER JOIN item_element_relationship ier on invConnector.id = ier.first_item_connector_id 
 ORDER BY inventoryItem.id;
 
+CREATE VIEW v_item_self_element
+AS 
+SELECT i.id as item_id, ie.id as self_element_id, ie.entity_info_id
+FROM item i inner join item_element ie on i.id = ie.parent_item_id
+WHERE ie.name is NULL and ie.derived_from_item_element_id is null;
+
+

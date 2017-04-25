@@ -20,10 +20,6 @@ import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.jsf.components.CdbCsvExporter;
-import gov.anl.aps.cdb.portal.view.jsf.components.CdbExcelExporter;
-import gov.anl.aps.cdb.portal.view.jsf.components.CdbPdfExporter;
-import gov.anl.aps.cdb.portal.view.jsf.utilities.UiComponentUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
@@ -38,7 +34,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
-import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -46,7 +41,6 @@ import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.component.export.Exporter;
 
 /**
  * Base class for all CDB entity controllers. It encapsulates common
@@ -1496,6 +1490,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.breadcrumbViewParam = breadcrumbViewParam;
     }   
 
+    /** TODO FIX exporter params
+     * 
     public static void exportDataTableAsPdf(String dataTableId, String filename) throws IOException {
         FacesContext context = FacesContext.getCurrentInstance();
         DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
@@ -1519,4 +1515,5 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
         context.responseComplete();
     }
+    * */
 }

@@ -8,6 +8,8 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -65,6 +67,11 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     @Override
     protected ItemCreateWizardController getItemCreateWizardController() {
         return ItemCreateWizardDomainCatalogController.getInstance(); 
+    }
+
+    @Override
+    public ItemMultiEditController getItemMultiEditController() {
+        return ItemMultiEditDomainCatalogController.getInstance();
     }
 
     @Override
