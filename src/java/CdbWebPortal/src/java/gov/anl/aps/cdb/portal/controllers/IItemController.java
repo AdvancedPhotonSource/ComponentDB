@@ -5,16 +5,20 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.List;
+import javax.faces.model.DataModel;
+import javax.faces.model.SelectItem;
 
 /**
  * Interface specifies all necessary functions for item controllers. 
  * - Many functions are required by the item views. 
  */
-public interface IItemController<ItemDomainEntity extends Item> {
+public interface IItemController<ItemDomainEntity extends Item, SettingObject extends ItemSettings> {
 
     /**
      * Default domain of items managed by the controller.
@@ -282,6 +286,13 @@ public interface IItemController<ItemDomainEntity extends Item> {
     public String getPrimaryImageValueForItem(Item item);
     
     /**
+     * Get id of default domain for the particular item controller. 
+     * 
+     * @return 
+     */
+    public Integer getDomainId();
+    
+    /**
      * Provides a display string for an item. 
      * 
      * @param item
@@ -420,5 +431,144 @@ public interface IItemController<ItemDomainEntity extends Item> {
      * @return 
      */
     public String getCurrentItemItemTypeEditString();
+    
+    /**
+     * Fetch the object that holds all of the settings for the item controller.
+     * 
+     * @return 
+     */
+    public SettingObject getSettingObject();
+    
+    /**
+     * Fetch data model with all of the items. 
+     * 
+     * @return 
+     */
+    public DataModel getListDataModel();
+    
+    /**
+     * Get list of filtered items
+     * 
+     * @return 
+     */
+    public List<ItemDomainEntity> getFilteredObjectList();
+    
+    /**
+     * Set list of filtered items. 
+     * 
+     * @param itemList 
+     */
+    public void setFilteredObjectList(List<ItemDomainEntity> itemList);
+    
+    /**
+     * Get a list of filtered property values 
+     * 
+     * @return 
+     */
+    public List<PropertyValue> getFilteredPropertyValueList();
+    
+    /**
+     * Set a list of filtered property values. 
+     * 
+     * @param propertyValueList 
+     */
+    public void setFilteredPropertyValueList(List<PropertyValue> propertyValueList); 
+    
+    /**
+     * Get a select item list for categories for the item domain. 
+     * 
+     * @return 
+     */
+    public SelectItem[] getDomainItemCategoryListForSelectOne();
+    
+    /**
+     * Specify if row expansion should be displayed for a particular item. 
+     * 
+     * @param item
+     * @return 
+     */
+    public boolean isDisplayRowExpansionForItem(Item item);
+    
+    /**
+     * Specify if section for assembly should show up on row expansion
+     * 
+     * @param item
+     * @return 
+     */
+    public boolean isDisplayRowExpansionAssembly(Item item);
+
+    /**
+     * Specify if section for items derived from item should show up on row expansion
+     * 
+     * @param item
+     * @return 
+     */
+    public boolean isDisplayRowExpansionItemsDerivedFromItem(Item item);
+
+    /**
+     * Specify if section for properties should show up on row expansion
+     * 
+     * @param item
+     * @return 
+     */
+    public boolean isDisplayRowExpansionProperties(Item item);
+    
+    /**
+     * Specify if section for logs should show up on row expansion
+     * 
+     * @param item
+     * @return 
+     */
+    public boolean isDisplayRowExpansionLogs(Item item);
+    
+     /**
+     * Update current item and save changes in the database.
+     *
+     * @return URL to current entity instance view page or null when exception occurs.
+     */
+    public String update(); 
+    
+    /**
+     * Get boolean if a value is filterable 
+     * 
+     * @return 
+     */
+    public Boolean getFilterablePropertyValue1();
+
+    /**
+     * Get boolean if a value is filterable 
+     * 
+     * @return 
+     */
+    public Boolean getFilterablePropertyValue2();
+
+    /**
+     * Get boolean if a value is filterable 
+     * 
+     * @return 
+     */
+    public Boolean getFilterablePropertyValue3();
+
+    /**
+     * Get boolean if a value is filterable 
+     * 
+     * @return 
+     */
+    public Boolean getFilterablePropertyValue4();
+
+    /**
+     * Get boolean if a value is filterable 
+     * 
+     * @return 
+     */
+    public Boolean getFilterablePropertyValue5();
+    
+    /**
+     * Get property type name to display to the user. 
+     * 
+     * @param propertyTypeId
+     * @return 
+     */
+    public String getDisplayPropertyTypeName(Integer propertyTypeId);
     
 }

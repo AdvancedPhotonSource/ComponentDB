@@ -11,6 +11,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.List;
 import gov.anl.aps.cdb.portal.controllers.IItemController;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import javax.faces.model.DataModel;
+import javax.faces.model.SelectItem;
 
 /**
  * The extension helper exposes item controller functionality and allows for lightweight controllers to add additional features for items. 
@@ -200,6 +204,10 @@ public abstract class ItemControllerExtensionHelper implements IItemController {
         return getItemController().getPrimaryImageValueForItem(item);
     }
     
+    public Integer getDomainId() {
+        return getItemController().getDomainId(); 
+    }
+    
     @Override
     public String getItemDisplayString(Item item) {
         return getItemController().getItemDisplayString(item); 
@@ -297,6 +305,101 @@ public abstract class ItemControllerExtensionHelper implements IItemController {
     @Override
     public String getCurrentItemItemTypeEditString() {
         return getItemController().getCurrentItemItemTypeEditString();
+    }
+    
+    @Override
+    public ItemSettings getSettingObject() {
+        return (ItemSettings) getItemController().getSettingObject(); 
+    }
+    
+    @Override
+    public DataModel getListDataModel() {
+        return getItemController().getListDataModel(); 
+    }
+    
+    @Override
+    public List<Item> getFilteredObjectList() {
+        return getItemController().getFilteredObjectList(); 
+    }
+    
+    @Override
+    public void setFilteredObjectList(List itemList) {
+        getItemController().setFilteredObjectList(itemList);
+    }
+    
+    @Override
+    public List<PropertyValue> getFilteredPropertyValueList() {
+        return getItemController().getFilteredPropertyValueList(); 
+    }
+    
+    @Override
+    public void setFilteredPropertyValueList(List propertyValueList) {
+        getItemController().setFilteredPropertyValueList(propertyValueList);
+    }
+    
+    @Override
+    public SelectItem[] getDomainItemCategoryListForSelectOne() {
+        return getItemController().getDomainItemCategoryListForSelectOne(); 
+    }
+    
+    @Override
+    public boolean isDisplayRowExpansionForItem(Item item) {
+        return getItemController().isDisplayRowExpansionForItem(item);
+    }
+    
+    @Override
+    public boolean isDisplayRowExpansionAssembly(Item item) {
+        return getItemController().isDisplayRowExpansionAssembly(item);
+    }
+
+    @Override
+    public boolean isDisplayRowExpansionItemsDerivedFromItem(Item item) {
+        return getItemController().isDisplayRowExpansionItemsDerivedFromItem(item);
+    }
+
+    @Override
+    public boolean isDisplayRowExpansionProperties(Item item) {
+        return getItemController().isDisplayRowExpansionProperties(item);
+    }
+
+    @Override
+    public boolean isDisplayRowExpansionLogs(Item item) {
+        return getItemController().isDisplayRowExpansionLogs(item);
+    }
+    
+    @Override
+    public String update() {
+        return getItemController().update();
+    }        
+    
+    @Override
+    public Boolean getFilterablePropertyValue1() {
+        return getItemController().getFilterablePropertyValue1();
+    }
+
+    @Override
+    public Boolean getFilterablePropertyValue2() {
+        return getItemController().getFilterablePropertyValue2();
+    }
+
+    @Override
+    public Boolean getFilterablePropertyValue3() {
+        return getItemController().getFilterablePropertyValue3();
+    }
+
+    @Override
+    public Boolean getFilterablePropertyValue4() {
+        return getItemController().getFilterablePropertyValue4();
+    }
+
+    @Override
+    public Boolean getFilterablePropertyValue5() {
+        return getItemController().getFilterablePropertyValue5();
+    }
+    
+    @Override
+    public String getDisplayPropertyTypeName(Integer propertyTypeId) {
+        return getItemController().getDisplayPropertyTypeName(propertyTypeId);
     }
     
 }
