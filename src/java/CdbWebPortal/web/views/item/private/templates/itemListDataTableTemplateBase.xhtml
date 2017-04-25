@@ -13,7 +13,7 @@ See LICENSE file.
     -->
 
     <ui:insert name="domainEntityListDataTableParameters">
-    </ui:insert>
+    </ui:insert>    
     
     <ui:param name="itemListDataTableValue" value="#{itemListDataTableValue != null ? itemListDataTableValue : entityController.listDataModel}" />
     
@@ -31,6 +31,8 @@ See LICENSE file.
     <p:dataTable id="#{entityTypeName}ListDataTable#{viewName}" 
                  widgetVar="#{entityTypeName}ListDataTable#{viewName}Widget"
                  var="itemListObject" 
+                 selection="#{dataTableSelectionList}"
+                 rowKey="#{itemListObject}"
                  value="#{itemListDataTableValue}" 
                  filteredValue="#{entityController.filteredObjectList}"
                  draggableColumns="true"
@@ -38,6 +40,8 @@ See LICENSE file.
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No #{displayEntityTypeName}s found.">
+        
+        <ui:insert name="selectionColumn" />                
         
         <ui:param name="itemListObject" value="#{itemListObject}" />
         
