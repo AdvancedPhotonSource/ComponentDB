@@ -10,6 +10,8 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
@@ -108,8 +110,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private ConnectorFacade connectorFacade;
 
     public ItemDomainInventoryController() {
-        super();
-        settingObject.setDisplayDerivedFromItem(false);
+        super();        
     }
 
     public static ItemDomainInventoryController getInstance() {
@@ -120,6 +121,11 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     protected ItemCreateWizardController getItemCreateWizardController() {
         return ItemCreateWizardDomainInventoryController.getInstance(); 
     }   
+    
+    @Override
+    public ItemMultiEditController getItemMultiEditController() {
+        return ItemMultiEditDomainInventoryController.getInstance(); 
+    }
 
     public TreeNode getLocationRelationshipTree(ItemDomainInventory inventoryItem) {
         if (inventoryItem.getLocationTree() == null) {
