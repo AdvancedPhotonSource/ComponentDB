@@ -19,6 +19,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.StoredProcedureQuery;
 
 /**
  *
@@ -72,7 +73,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
 
         return super.edit(item);
-    }
+    }        
 
     private void populateItemsToAdd(ItemDomainEntity item) {
         if (item != null) {
@@ -167,6 +168,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
                     .getResultList();
         } catch (NoResultException ex) {
 
+        }
+        return null;
+    }
+    
+    public List<ItemDomainEntity> findItemsWithPermissionsOfDomain(Integer userId, Integer domainId) {
+          try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.itemWithWritePermissionsForUser");
+            query.setParameter("user_id", userId);
+            query.setParameter("domain_id", domainId);
+            List<ItemDomainEntity> itemList = query.getResultList();
+
+            return itemList;
+        } catch (NoResultException ex) {
         }
         return null;
     }

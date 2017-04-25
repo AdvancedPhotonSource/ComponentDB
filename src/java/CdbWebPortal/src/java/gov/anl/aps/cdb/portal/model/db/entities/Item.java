@@ -120,6 +120,26 @@ import org.primefaces.model.TreeNode;
             + "OR ieList = :list)"
             + "AND i.domain.name = :domainName")
 })
+@NamedStoredProcedureQueries({
+    @NamedStoredProcedureQuery(
+            name = "item.itemWithWritePermissionsForUser",
+            procedureName = "items_with_write_permission_for_user",
+            resultClasses = Item.class,
+            parameters = {
+                @StoredProcedureParameter(
+                        name = "user_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                ),
+                @StoredProcedureParameter(
+                        name = "domain_id",
+                        mode = ParameterMode.IN,
+                        type = Integer.class
+                )
+            }
+    ),
+})
+
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
