@@ -6,8 +6,11 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.primefaces.event.FlowEvent;
@@ -47,5 +50,5 @@ public class ItemCreateWizardDomainCatalogController extends ItemCreateWizardCon
     @Override
     public String getFirstCreateWizardStep() {
         return ItemCreateWizardSteps.basicInformation.getValue();
-    }   
+    }            
 }
