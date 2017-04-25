@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
@@ -67,7 +68,7 @@ import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
-public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity> {
+public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
     private static final Logger logger = Logger.getLogger(Item.class.getName());
     protected final String FAVORITES_LIST_NAME = "Favorites";
@@ -131,6 +132,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     // Globalized item project functionality. 
     protected ItemProjectController itemProjectController = null;        
     protected SettingController settingController; 
+    
+    protected Integer domainId = null;
 
     public ItemController() {
     }
@@ -143,6 +146,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
      * @return 
      */
     protected ItemCreateWizardController getItemCreateWizardController() {
+        return null; 
+    }
+    
+    public ItemMultiEditController getItemMultiEditController() {
         return null; 
     }
 
@@ -1077,7 +1084,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public boolean isDisplayRowExpansionProperties(CdbDomainEntity item) {
+    public boolean isDisplayRowExpansionProperties(Item item) {
         if (getEntityDisplayItemProperties()) {
             return super.isDisplayRowExpansionProperties(item);
         }
@@ -1085,7 +1092,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public boolean isDisplayRowExpansionLogs(CdbDomainEntity item) {
+    public boolean isDisplayRowExpansionLogs(Item item) {
         if (getEntityDisplayItemLogs()) {
             return super.isDisplayRowExpansionLogs(item);
         }
@@ -1691,6 +1698,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
         return item;
+    }
+
+    public Integer getDomainId() {
+        if (domainId == null) {
+            domainId = domainFacade.findByName(getDefaultDomainName()).getId();
+        }
+        
+        return domainId;
     }
 
     @Override
