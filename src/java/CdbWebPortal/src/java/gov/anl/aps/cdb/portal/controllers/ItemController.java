@@ -1004,11 +1004,17 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }   
 
     public ItemController getDefaultDomainDerivedFromDomainController() {
-        return findDomainController(getDefaultDomainDerivedFromDomainName());
+        if (getEntityDisplayDerivedFromItem()) {
+            return findDomainController(getDefaultDomainDerivedFromDomainName());
+        } 
+        return null;
     }
 
     public ItemController getDefaultDomainDerivedToDomainController() {
-        return findDomainController(getDefaultDomainDerivedToDomainName());
+        if (getEntityDisplayItemsDerivedFromItem()) {
+            return findDomainController(getDefaultDomainDerivedToDomainName());
+        }
+        return null;
     }
 
     public Boolean isItemExistInDb(Item item) {
@@ -1120,6 +1126,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void resetSelectDataModel() {
         super.resetSelectDataModel();
         allowedChildItemSelectDataModel = null;
+        selectItemElementItemCandidateList = null;
     }
 
     public Item getSelectedObjectAndReset() {
