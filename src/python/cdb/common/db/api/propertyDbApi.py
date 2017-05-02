@@ -100,6 +100,32 @@ class PropertyDbApi(CdbDbApi):
         return self.toCdbObjectList(dbPropertyTypes)
 
     @CdbDbApi.executeQuery
+    def getPropertyTypeById(self, propertyTypeId, **kwargs):
+        """
+        Get property type record by id.
+
+        :param propertyTypeId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeById(session, propertyTypeId)
+        return dbPropertyType.toCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getAllowedPropertyValuesForPropertyType(self, propertyTypeId, **kwargs):
+        """
+        Get a list of allowed property values for a certain property type
+
+        :param propertyTypeId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbAllowedPropertyValues = self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, propertyTypeId)
+        return  self.toCdbObjectList(dbAllowedPropertyValues)
+
+    @CdbDbApi.executeQuery
     def getPropertyTypeCategories(self, **kwargs):
         """
         Get all property type category records.
@@ -195,6 +221,37 @@ class PropertyDbApi(CdbDbApi):
         session = kwargs['session']
         dbPropertyMetadata = self.propertyValueHandler.getPropertyValueMetadata(session, propertyValueId)
         return self.toCdbObjectList(dbPropertyMetadata)
+
+    @CdbDbApi.executeTransaction
+    def addPropertyMetadataForPropertyValueId(self, propertyValueId, metadataKey, metadataValue, userId, **kwargs):
+        """
+        Add propertyMetadata for a certain property value.
+
+        :param propertyValueId:
+        :param metadataKey:
+        :param metadataValue:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbProperyMetadata = self.propertyValueHandler.addPropertyValueMetadata(session, propertyValueId, metadataKey, metadataValue, userId)
+        return dbProperyMetadata.toCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def addPropertyValueMetadataFromDict(self, propertyValueId, propertyValueMetadataKeyValueDict, userId, **kwargs):
+        """
+        Add propertyMetadata for a certain property value using a key value dict.
+
+        :param propertyValueId:
+        :param propertyValueMetadataKeyValueDict:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbPropertyMetadata = self.propertyValueHandler.addPropertyValueMetadataFromDict(session, propertyValueId, propertyValueMetadataKeyValueDict, userId)
+        return self.toCdbObjectList(dbPropertyMetadata)
+
+
 
 #######################################################################
 # Testing.

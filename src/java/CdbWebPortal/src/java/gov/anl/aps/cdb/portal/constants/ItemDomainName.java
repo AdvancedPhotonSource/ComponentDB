@@ -8,12 +8,14 @@ public enum ItemDomainName {
         location("Location"),
         catalog("Catalog"),
         inventory("Inventory"),
-        cable("Cable");
+        cable("Cable"),
+        maarc("MAARC");
         
         public final static int LOCATION_ID = 1; 
         public final static int CATALOG_ID = 2; 
         public final static int INVENTORY_ID = 3; 
         public final static int CABLE_ID = 4; 
+        public final static int MAARC_ID = 5; 
 
         private String value;
 

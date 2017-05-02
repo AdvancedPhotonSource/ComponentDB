@@ -53,6 +53,15 @@ class ItemControllerImpl(CdbObjectManager):
 
         return logEntry
 
+    def addPropertyValueForItemWithId(self, itemId, propertyTypeName, enteredByUserId):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        propertyValueAdded = self.itemDbApi.addItemElementProperty(selfElementId,propertyTypeName, 0, 0,0,0, enteredByUserId, 0, 0, 0, 0)
+
+        return propertyValueAdded
+
+
     def getLogEntriesForItemWithQrId(self, qrId):
         item = self.itemDbApi.getItemByQrId(qrId)
         itemId = item.data['id']

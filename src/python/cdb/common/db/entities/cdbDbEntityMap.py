@@ -80,7 +80,6 @@ CDB_DB_ENTITY_MAP = {
     'property_type_category' : (PropertyTypeCategory, {}),
     'property_type_handler' : (PropertyTypeHandler, {}),
     'property_type' : (PropertyType, {
-        'allowedPropertyValueList' : { 'parentEntity' : AllowedPropertyValue, 'lazy' : False },
         'propertyTypeCategory' : { 'parentEntity' : PropertyTypeCategory, 'lazy' : False }, 
         'propertyTypeHandler' : { 'parentEntity' : PropertyTypeHandler, 'lazy' : False }, 
     }),
@@ -91,7 +90,9 @@ CDB_DB_ENTITY_MAP = {
     'property_value_history' : (PropertyValueHistory, {
         'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False }, 
     }),
-    'property_metadata' : (PropertyMetadata, {}),
+    'property_metadata' : (PropertyMetadata, {
+        'propertyValue' : { 'parentEntity' : PropertyValue, 'lazy' : False },
+    }),
     'user_info' : (UserInfo, {}), 
     'user_group' : (UserGroup, {}),
     'user_user_group' : (UserUserGroup, {

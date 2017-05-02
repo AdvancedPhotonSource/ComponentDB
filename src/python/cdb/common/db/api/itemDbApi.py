@@ -10,6 +10,7 @@ from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.entityTypeHandler import EntityTypeHandler
 from cdb.common.db.impl.domainHandler import DomainHandler
 from cdb.common.db.impl.itemHandler import ItemHandler
+from cdb.common.db.impl.permissionHandler import PermissionHandler
 from cdb.common.db.impl.sourceHandler import SourceHandler
 from cdb.common.db.impl.relationshipTypeHandler import RelationshipTypeHandler
 
@@ -25,6 +26,7 @@ class ItemDbApi(CdbDbApi):
         self.itemHandler = ItemHandler()
         self.sourceHandler = SourceHandler()
         self.relationshipTypeHandler = RelationshipTypeHandler()
+        self.permissionHandler = PermissionHandler()
 
     @CdbDbApi.executeQuery
     def getItemsOfDomain(self, domainName, **kwargs):
@@ -52,7 +54,7 @@ class ItemDbApi(CdbDbApi):
         :return: (Boolean) true if user has permissions.
         """
         session = kwargs['session']
-        result = self.itemHandler.verifyPermissionsForWriteToItemElement(session, username, itemElementId=itemElementId)
+        result = self.permissionHandler.verifyPermissionsForWriteToItemElement(session, username, itemElementId=itemElementId)
         return result
 
     @CdbDbApi.executeTransaction

@@ -8,6 +8,7 @@ See LICENSE file.
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.log import Log
+from cdb.common.objects.propertyValue import PropertyValue
 from cdb.common.api.cdbRestApi import CdbRestApi
 
 class ItemRestApi(CdbRestApi):
@@ -33,6 +34,18 @@ class ItemRestApi(CdbRestApi):
             responseDict = self.sendSessionRequest(url=url, method='POST')
 
         return Log(responseDict)
+    
+    def addPropertyValueToItemwithId(self, itemId, propertyTypeName):
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+        if propertyTypeName is None or not len(propertyTypeName):
+            raise InvalidRequest("propertyTypeName must be provided")
+
+        url = '%s/items/%s/addPropertyValue/%s' % (self.getContextRoot(), itemId, propertyTypeName)
+
+        responseDict = self.sendSessionRequest(url=url, method='POST')
+
+        return PropertyValue(responseDict)
 
     def getLogEntriesForItemWithQrId(self, qrId):
         if qrId is None or not len(qrId):
