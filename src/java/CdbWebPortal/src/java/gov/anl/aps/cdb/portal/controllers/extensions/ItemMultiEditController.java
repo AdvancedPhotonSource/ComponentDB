@@ -98,6 +98,27 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
         return editableListDataModel;
     }
+    
+    public boolean getRenderPreviousButton() {
+        return activeIndex > 0; 
+    }
+    
+    public boolean getRenderNextButton() {
+        return activeIndex < MultipleEditMenu.values().length -1; 
+    }
+    
+    public boolean getRenderUpdateAllButton() {
+        return activeIndex == MultipleEditMenu.values().length -1
+                && selectedItemsToEdit.size() > 0; 
+    }
+    
+    public void goToNextStep() {
+        activeIndex ++; 
+    }
+    
+    public void goToPrevStep() {
+        activeIndex --;
+    }
  
     public List<Item> getSelectedItemsToEdit() {
         return selectedItemsToEdit;
