@@ -19,8 +19,9 @@ from cdb.common.db.entities.itemElementProperty import ItemElementProperty
 from cdb.common.db.entities.propertyType import PropertyType
 from cdb.common.db.entities.propertyMetadata import PropertyMetadata
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
-from userInfoHandler import UserInfoHandler
-from propertyTypeHandler import PropertyTypeHandler
+from cdb.common.db.impl.userInfoHandler import UserInfoHandler
+from cdb.common.db.impl.propertyTypeHandler import PropertyTypeHandler
+from cdb.common.db.impl.permissionHandler import PermissionHandler
 
 class PropertyValueHandler(CdbDbEntityHandler):
 
@@ -28,6 +29,7 @@ class PropertyValueHandler(CdbDbEntityHandler):
         CdbDbEntityHandler.__init__(self)
         self.userInfoHandler = UserInfoHandler()
         self.propertyTypeHandler = PropertyTypeHandler()
+        self.permissionHandler = PermissionHandler()
 
     def getPropertyValues(self, session):
         self.logger.debug('Retrieving property value list')
@@ -88,14 +90,89 @@ class PropertyValueHandler(CdbDbEntityHandler):
 
         return results
 
+    def getPropertyValueMetadataByKey(self, session, propertyValueId, metadataKey):
+        self.logger.debug('Retrieving metadata for property value id %s with key %s' % (propertyValueId, metadataKey))
 
+        query = session.query(PropertyMetadata)
+        query = query.filter(PropertyMetadata.property_value_id == propertyValueId)
+        query = query.filter(PropertyMetadata.metadata_key == metadataKey)
+
+        try:
+            dbPropertyMetadata = query.one()
+            return dbPropertyMetadata
+        except NoResultFound, ex:
+            raise ObjectNotFound('Metadata for property value id %s with key %s do(es) not exists' % (propertyValueId, metadataKey))
+
+    def addPropertyValueMetadata(self, session, propertyValueId, metadataKey, metadataValue, userId):
+        entityDisplayName = self._getEntityDisplayName(PropertyMetadata)
+
+        try:
+            self.getPropertyValueMetadataByKey(session, propertyValueId, metadataKey)
+            raise ObjectAlreadyExists ('%s with key %s for property id %s already exists.' % (entityDisplayName, metadataKey, propertyValueId))
+        except ObjectNotFound, ex:
+            # ok
+            pass
+
+        dbPropertyValue = self.getPropertyValueById(session, propertyValueId)
+
+        self.permissionHandler.verifyPermissionsToUpdatePropertyValue(session, dbPropertyValue, userId)
+
+        dbPropertyMetadata = PropertyMetadata()
+
+        dbPropertyMetadata.propertyValue = dbPropertyValue
+        dbPropertyMetadata.metadata_key = metadataKey
+        dbPropertyMetadata.metadata_value = metadataValue
+
+        session.add(dbPropertyMetadata)
+        session.flush()
+
+        self.logger.debug('Inserted %s id %s' % (entityDisplayName, dbPropertyMetadata.id))
+
+        return dbPropertyMetadata
+
+    def addPropertyValueMetadataFromDict(self, session, propertyValueId, propertyValueMetadataKeyValueDict, userId):
+        entityDisplayName = self._getEntityDisplayName(PropertyMetadata)
+
+        dbPropertyValue = self.getPropertyValueById(session, propertyValueId)
+        self.permissionHandler.verifyPermissionsToUpdatePropertyValue(session, dbPropertyValue, userId)
+
+        dbMetadataAdded = []
+
+        dbStoredPropertyMetadataList = self.getPropertyValueMetadata(session, propertyValueId)
+
+        for metadataKey in propertyValueMetadataKeyValueDict:
+            dbPropertyMetadata = None
+
+            # Verify if key already exists
+            for dbStoredPropertyMetadata in dbStoredPropertyMetadataList:
+                if (dbStoredPropertyMetadata.metadata_key == metadataKey):
+                    dbPropertyMetadata = dbStoredPropertyMetadata
+                    break
+
+            # Add a nonexistent key
+            if dbPropertyMetadata is None:
+                dbPropertyMetadata = PropertyMetadata()
+                dbPropertyMetadata.propertyValue = dbPropertyValue
+                dbPropertyMetadata.metadata_key = metadataKey
+
+            dbPropertyMetadata.metadata_value = propertyValueMetadataKeyValueDict[metadataKey]
+
+            session.add(dbPropertyMetadata)
+            dbMetadataAdded.append(dbPropertyMetadata)
+
+        session.flush()
+
+        self.logger.debug('Inserted %s id values for property id %s: %s' % (entityDisplayName, propertyValueId, dbMetadataAdded))
+
+        return dbMetadataAdded
 
     def createPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable = None, isDynamic = None, displayValue = None, targetValue = None, enteredOnDateTime = None):
         enteredByDbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
         if enteredOnDateTime is None:
             enteredOnDateTime = datetime.datetime.now()
         dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, propertyTypeName)
-        self.propertyTypeHandler.checkPropertyValueIsAllowed(value, dbPropertyType.allowedPropertyValueList)
+        allowedPropertyValueList = self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
+        self.propertyTypeHandler.checkPropertyValueIsAllowed(value, allowedPropertyValueList)
         dbPropertyValue = PropertyValue(tag=tag, value=value, units=units, description=description, entered_on_date_time=enteredOnDateTime)
         dbPropertyValue.enteredByUserInfo = enteredByDbUserInfo
         dbPropertyValue.propertyType = dbPropertyType

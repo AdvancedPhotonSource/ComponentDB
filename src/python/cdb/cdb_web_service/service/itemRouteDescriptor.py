@@ -98,7 +98,17 @@ class ItemRouteDescriptor:
                 'controller': itemController,
                 'action': 'getCatalogItems',
                 'method': ['GET']
-            }
+            },
+
+            # Add Property value to item
+            {
+                'name': 'addPropertyValueForItemById',
+                'path': '%s/items/:(itemId)/addPropertyValue/:(propertyTypeName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addPropertyValueToItemByItemId',
+                'method': ['POST']
+            },
+
 
         ]
 
