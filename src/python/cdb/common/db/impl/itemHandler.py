@@ -38,11 +38,10 @@ from cdb.common.db.impl.relationshipTypeHandler import RelationshipTypeHandler
 from cdb.common.db.impl.resourceTypeHandler import ResourceTypeHandler
 from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
+from cdb.common.db.impl.permissionHandler import PermissionHandler
 
 
 class ItemHandler(CdbDbEntityHandler):
-
-    CDB_ADMIN_GROUP_NAME = 'CDB_ADMIN'
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
@@ -55,32 +54,7 @@ class ItemHandler(CdbDbEntityHandler):
         self.relationshipTypeHandler = RelationshipTypeHandler()
         self.resourceTypeHandler = ResourceTypeHandler()
         self.userInfoHandler = UserInfoHandler()
-
-    def verifyPermissionsForWriteToItemElement(self, session, userId, itemElementId = None, dbItemElementObject = None):
-        if dbItemElementObject is None and itemElementId is None:
-            raise InvalidArgument("At least the item element id or item element object must be provided.")
-        if dbItemElementObject is None:
-            dbItemElementObject = self.getItemElementById(session, itemElementId)
-        else:
-            itemElementId = dbItemElementObject.id
-        dbUserInfo = self.userInfoHandler.getUserInfoById(session, userId)
-
-        dbEntityInfo = dbItemElementObject.entityInfo
-        ownerUserId = dbEntityInfo.ownerUserInfo.id
-
-        if ownerUserId == userId:
-            return True
-
-        ownerGroupWriteable = dbEntityInfo.is_group_writeable
-        ownerUserGroupId = dbEntityInfo.ownerUserGroup.id
-        for userGroup in dbUserInfo.userGroupList:
-            if ownerGroupWriteable:
-                if ownerUserGroupId == userGroup.id:
-                    return True
-            if userGroup.name == self.CDB_ADMIN_GROUP_NAME:
-                return True
-
-        raise InvalidSession("User %s does not have permissions to modify item element %s" % (userId, itemElementId))
+        self.permissionHandler = PermissionHandler()
 
     def getItemById(self, session, id):
         return self._findDbObjById(session, Item, id)
@@ -348,7 +322,7 @@ class ItemHandler(CdbDbEntityHandler):
                 raise ObjectAlreadyExists('Item Element with name %s already exists.' % name)
 
         parentSelfElement = self.getSelfElementByItemId(session, parentItemId)
-        self.verifyPermissionsForWriteToItemElement(session, createdByUserId, dbItemElementObject=parentSelfElement)
+        self.permissionHandler.verifyPermissionsForWriteToItemElement(session, createdByUserId, dbItemElementObject=parentSelfElement)
 
         # Create entity info
         dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
@@ -450,7 +424,7 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemElementLog(self, session, itemElementId, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime = None, systemLogLevelName = None):
         dbItemElement = self.getItemElementById(session, itemElementId)
-        self.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
+        self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
         dbLog = self.logHandler.addLog(session, text, enteredByUserId, effectiveFromDateTime, effectiveToDateTime, logTopicName, enteredOnDateTime)
 
         if systemLogLevelName is not None:
@@ -471,7 +445,7 @@ class ItemHandler(CdbDbEntityHandler):
 
     def addItemElementProperty(self, session, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime = None):
         dbItemElement = self.getItemElementById(session, itemElementId)
-        self.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
+        self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
         dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue,targetValue, enteredOnDateTime)
 
         session.add(dbPropertyValue)
