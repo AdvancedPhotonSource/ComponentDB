@@ -34,15 +34,17 @@ BEGIN
     EXECUTE stmt; 
 END //
 
+drop procedure if exists items_with_write_permission_for_user;//
 create procedure `items_with_write_permission_for_user` (IN user_id int, IN domain_id int)
 BEGIN
-    SELECT i.* 
-    FROM item i inner join v_item_self_element ise on i.id = ise.item_id inner join entity_info ei on ise.entity_info_id = ei.id 
-    WHERE i.domain_id = domain_id AND 
-    (ei.owner_user_id = 26 
-    OR
-    (ei.owner_user_group_id in (select ug.id from user_group ug inner join user_user_group uug on uug.user_group_id = ug.id where uug.user_id = 26) AND ei.is_group_writeable = 1)
-    );
+    SET @query = 'SELECT i.* FROM item i inner join v_item_self_element ise on i.id = ise.item_id inner join entity_info ei on ise.entity_info_id = ei.id WHERE';
+    SET @query = CONCAT(@query, ' i.domain_id =', domain_id);
+    SET @query = CONCAT(@query, ' AND (ei.owner_user_id =', user_id);
+    SET @query = CONCAT(@query, ' OR ', '(ei.owner_user_group_id in (select ug.id from user_group ug inner join user_user_group uug on uug.user_group_id = ug.id where uug.user_id = ', user_id, ')');
+    SET @query = CONCAT(@query, ' AND ei.is_group_writeable = 1));' ;
+
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
 END //
 
 delimiter ;
