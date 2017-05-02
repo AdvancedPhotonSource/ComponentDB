@@ -571,4 +571,11 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      */
     public String getDisplayPropertyTypeName(Integer propertyTypeId);
     
+    /**
+     * Prepares a list and redirects to it. 
+     * 
+     * @return redirection string.
+     */
+    public String prepareList(); 
+    
 }

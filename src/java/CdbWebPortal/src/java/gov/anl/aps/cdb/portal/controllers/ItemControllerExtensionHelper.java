@@ -402,4 +402,7 @@ public abstract class ItemControllerExtensionHelper implements IItemController {
         return getItemController().getDisplayPropertyTypeName(propertyTypeId);
     }
     
+    public String prepareList() {
+        return getItemController().prepareList(); 
+    }
 }
