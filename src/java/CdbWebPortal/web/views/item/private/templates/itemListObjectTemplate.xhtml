@@ -225,7 +225,7 @@ See LICENSE file.
                   sortable="#{sortable}"
                   rendered="#{rendered and itemListRenderDerivedFromItem}"
                   filterValue="#{entitySettingObject.filterByName}"
-                  groupRow="true">
+                  groupRow="#{rendered and itemListRenderDerivedFromItem}">
             <ui:insert name="derivedFromItemColumnObject" />
         </p:column>
     </ui:define>
