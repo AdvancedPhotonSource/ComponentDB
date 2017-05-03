@@ -29,6 +29,11 @@ See LICENSE file.
             <p:menuitem value="Inventory" id="inventoryMenubarButton" url="/views/itemDomainInventory/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
+            
+            <p:menuitem value="MAARC" id="maarcMenubarButton" url="/views/itemDomainMAARC/list" 
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
+            
+            
             <f:facet name="options">
                 <p:panelGrid columns="2" styleClass="plainPanelGrid">                         
                     <p:column>                        
@@ -91,9 +96,10 @@ See LICENSE file.
                         <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
                         <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
                         <p:menuitem value="About" url="/views/about.xhtml" icon="ui-icon-help"/>
-                    </p:menubar>
+                    </p:menubar>                    
                 </p:panelGrid>
             </f:facet>
         </p:menubar>
+        <p:tooltip for="maarcMenubarButton" value="Measurement and Analysis Archive" />
     </p:outputPanel>
 </ui:composition>
