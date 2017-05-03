@@ -41,7 +41,7 @@ BEGIN
     SET @query = CONCAT(@query, ' i.domain_id =', domain_id);
     SET @query = CONCAT(@query, ' AND (ei.owner_user_id =', user_id);
     SET @query = CONCAT(@query, ' OR ', '(ei.owner_user_group_id in (select ug.id from user_group ug inner join user_user_group uug on uug.user_group_id = ug.id where uug.user_id = ', user_id, ')');
-    SET @query = CONCAT(@query, ' AND ei.is_group_writeable = 1));' ;
+    SET @query = CONCAT(@query, ' AND ei.is_group_writeable = 1))');
 
     PREPARE stmt FROM @query;
     EXECUTE stmt;
