@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
+import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -93,8 +94,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public ListDataModel getEditableListDataModel() {
         if (editableListDataModel == null) {
-            UserInfo userInfo = (UserInfo) SessionUtility.getUser();
-            editableListDataModel = new ListDataModel(getItemDbFacade().findItemsWithPermissionsOfDomain(userInfo.getId(), getDomainId()));
+            
+            LoginController loginController = LoginController.getInstance();
+            if (loginController.isLoggedInAsAdmin()) {
+                editableListDataModel = new ListDataModel(getItemList()); 
+            } else { 
+                UserInfo userInfo = (UserInfo) SessionUtility.getUser();
+                editableListDataModel = new ListDataModel(getItemDbFacade().findItemsWithPermissionsOfDomain(userInfo.getId(), getDomainId()));
+            }
         }
         return editableListDataModel;
     }

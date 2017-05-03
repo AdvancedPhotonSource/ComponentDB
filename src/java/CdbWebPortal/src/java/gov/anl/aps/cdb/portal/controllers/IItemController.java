@@ -578,4 +578,11 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      */
     public String prepareList(); 
     
+    /**
+     * Get List of items for the particular controller. 
+     * 
+     * @return 
+     */
+    public List<ItemDomainEntity> getItemList();
+    
 }
