@@ -5,7 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -49,11 +49,12 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     
     @Test
     public void checkItemTypeBehavior() {
-        // Set current to a new item 
-        itemDomainCatalogController.prepareCreate();
+        Item item = itemDomainCatalogController.getItemList().get(0);
+        itemDomainCatalogController.setCurrent((ItemDomainCatalog) item);
         //Item should have been created 
-        Item item = itemDomainCatalogController.getCurrent(); 
+        item = itemDomainCatalogController.getCurrent(); 
         assertNotNull(item);
+        item.setItemCategoryList(new ArrayList());
         // Should be disabled until category is selected
         assertTrue(itemDomainCatalogController.isDisabledItemItemType());               
         // Generated item type list should be empty
@@ -206,7 +207,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
         }                
        
         public boolean isListDifferentTestable(List<Object> originalList, List<Object> listToCompare) {
-            return super.isListDifferent(originalList, listToCompare);
+            return CollectionUtility.isListDifferent(originalList, listToCompare);
         }                
     }
 
