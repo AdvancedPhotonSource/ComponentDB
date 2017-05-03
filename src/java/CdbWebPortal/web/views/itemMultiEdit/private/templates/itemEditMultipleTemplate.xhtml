@@ -9,7 +9,7 @@ See LICENSE file.
                 template="../../../../templates/portalViewTemplate.xhtml"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
-    
+
     <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
 
     <ui:define name="templateCss">
@@ -20,13 +20,16 @@ See LICENSE file.
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <ui:define name="pageTitle">: #{entityController.pageTitle}</ui:define>
-    
+
     <ui:define name="middleCenter">    
         <h:form>
-            <p:outputPanel>
+            <p:outputPanel styleClass="multiEditPrimaryPanel">
                 <p:tabMenu model="#{entityController.editStepsMenuModel}"                     
                            activeIndex="#{entityController.activeIndex}"/>
                 <p:outputPanel rendered="#{entityController.renderSelection}">
+                    <h2>
+                        Select items to edit. Current user has edit permissions for all items shown.
+                    </h2>
                     <br/>
                     <ui:insert name="itemMulitEditSelectionListDataTable">
                         <ui:include src="../itemMultiEditListDataTable.xhtml" />
@@ -39,17 +42,40 @@ See LICENSE file.
                             <ui:include src="../itemMultiEditUpdateOptionsPanelGrid.xhtml" />                                                        
                         </p:tab>
                     </p:accordionPanel>
-                    
-                    <ui:include src="../itemMultiEditEditableDataTable.xhtml" />
-                    
-                    <br/>
-                    <p:commandButton value="Update All"
-                                     icon="ui-icon-disk"
-                                     update="@form"
-                                     action="#{entityController.updateSelectedItems()}" />
+
+                    <ui:include src="../itemMultiEditEditableDataTable.xhtml" />                  
                 </p:outputPanel>
+                
+                <br/>
+                <p:outputPanel style="display: grid">
+                    <div>
+                        <div style="float: left;">
+                            <p:commandButton value="Previous Step" 
+                                             rendered="#{entityController.renderPreviousButton}"
+                                             action="#{entityController.goToPrevStep()}"
+                                             icon="ui-icon-arrowthick-1-w"
+                                             update="@form"/>
+                            <ui:include src="../../../common/private/commonCreateCancelButton.xhtml" />
+                        </div>
+                        <div style="float: right;">                        
+                            <p:commandButton value="Update All"
+                                             icon="ui-icon-disk"
+                                             rendered="#{entityController.renderUpdateAllButton}"
+                                             update="@form"
+                                             action="#{entityController.updateSelectedItems()}" />
+                            <p:commandButton value="Next Step" 
+                                             rendered="#{entityController.renderNextButton}"                                             
+                                             id="#{entityTypeName}createWizardNextStep"
+                                             action="#{entityController.goToNextStep()}"
+                                             icon="ui-icon-arrowthick-1-e"
+                                             iconPos="right"
+                                             update="@form"/>
+
+                        </div>
+                    </div>
+                </p:outputPanel>
+
             </p:outputPanel>
         </h:form>
     </ui:define>
 </ui:composition>
- 
