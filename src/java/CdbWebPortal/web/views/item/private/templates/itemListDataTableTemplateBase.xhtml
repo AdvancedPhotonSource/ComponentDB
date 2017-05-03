@@ -32,7 +32,7 @@ See LICENSE file.
                  widgetVar="#{entityTypeName}ListDataTable#{viewName}Widget"
                  var="itemListObject" 
                  selection="#{dataTableSelectionList}"
-                 rowKey="#{itemListObject}"
+                 rowKey="#{itemListObject.viewUUID}"
                  value="#{itemListDataTableValue}" 
                  filteredValue="#{entityController.filteredObjectList}"
                  draggableColumns="true"
