@@ -822,6 +822,14 @@ h2 {
     border-style: solid !important;
 }
 
+.multiEditPrimaryPanel {
+    border: 1px !important;
+    border-style: solid !important;
+    color: lightgray; 
+    padding: 2px;
+    border-radius: 4px;
+}
+
 .catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
     border: 1px solid !important; 
     border-color: black;         
