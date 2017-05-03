@@ -13,9 +13,9 @@ See LICENSE file.
                  value="#{entityController.selectedItemsToEdit}"
                  var="itemObject">
         
-        <p:column headerText="#{itemMultiEditDomainInventoryController.derivedFromItemTitle}"
-                  rendered="#{itemMultiEditDomainInventoryController.entityDisplayDerivedFromItem}"
-                  groupRow="true">
+        <p:column headerText="#{entityController.derivedFromItemTitle}"
+                  rendered="#{entityController.entityDisplayDerivedFromItem}"
+                  groupRow="#{entityController.entityDisplayDerivedFromItem}">
             <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemDerivedFromItem.xhtml" />
         </p:column>
         
@@ -33,10 +33,14 @@ See LICENSE file.
             <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml"/>
         </p:column>
 
-        <p:column headerText="Project"
+        <p:column id="itemProjectColumn"
+                  headerText="Project"
                   rendered="#{entityController.entityDisplayItemProject 
                               and entityController.updateProject}" >
-            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml" />
+            
+                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml">
+                    <ui:param name="onHideUpdateTarget" value="#{entityTypeName}MultiEditItemDataTable" />
+                </ui:include>            
         </p:column>
 
         <p:column headerText="Description"
