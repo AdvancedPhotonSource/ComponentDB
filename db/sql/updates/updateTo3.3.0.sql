@@ -21,3 +21,8 @@ INSERT INTO `setting_type` (id, name, description, default_value) VALUES
 (3046, "ItemDomainInventory.ItemElementList.Display.Project" , "Display column for project in the item elements list.", "false"),
 (3047, "ItemDomainInventory.ItemElementList.Display.Description" , "Display column for description in the item elements list.", "false"),
 (3048, "ItemDomainInventory.ItemElementList.Display.QrId" , "Display column for qrid in the item elements list.", "false");
+
+
+INSERT INTO `domain` (id, name, description) VALUES 
+(4, "Cable", "Item Domain for managaing cables, items that form connections between inventory items."),
+(5, "MAARC", "Item domain used for managing measurement and analysis archive");
