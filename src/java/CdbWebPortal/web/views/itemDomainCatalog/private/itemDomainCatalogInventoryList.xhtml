@@ -15,7 +15,10 @@ See LICENSE file.
     <ui:param name="showSparesSplitView"
               value="#{itemDomainCatalogController.displayInventorySpares}" />
 
-    <ui:include src="itemDomainCatalogInventoryListView.xhtml"/>
+    <ui:include src="itemDomainCatalogInventoryListView.xhtml">
+        <ui:param name="itemListDisplayDerivedFromItem"
+                  value="#{false}"/>
+    </ui:include>
     
     <ui:include src="itemDomainCatalogInventoryListCustomizeDisplayDialog.xhtml"/>
 
