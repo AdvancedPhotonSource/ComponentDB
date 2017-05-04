@@ -42,7 +42,7 @@ See LICENSE file.
     <ui:include src="../../domainEntityRowExpansion/private/domainEntityListDataTableRowExpansion.xhtml">
         <ui:param name="entityObject" value="#{itemElementObject}" />
         <ui:param name="entityController" value="#{itemElementController}" />
-        <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : itemElementController.loadRowExpansionPropertyValues}" />
+        <ui:param name="loadPropertyValues" value="#{loadPropertyValues != null ? loadPropertyValues : itemElementSettingObject.loadRowExpansionPropertyValues}" />
     </ui:include>
 </ui:composition>
 
