@@ -85,7 +85,7 @@ See LICENSE file.
                                     action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>                        
                             
                             <p:menuitem value="Connector Types"
-                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    rendered="#{loginController.loggedInAsAdmin and resources.EnabledConnectorAndConnectionsFunctionality}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
                                     action="#{connectorTypeController.prepareListFromViewPath('/views/connectorType')}"/>                        
                         </p:submenu>                                                                        
