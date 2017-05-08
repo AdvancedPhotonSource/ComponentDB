@@ -27,13 +27,12 @@ public class ItemElementConstraintInformation {
             }
         }
     }
-    
-    public boolean isSafeToRemoveSelf() {
-        return !this.isPreventsDelete() && isSafeToRemove();
-    }
- 
-    // TODO update the name to signify its only doing check on related items. 
+
     public boolean isSafeToRemove() {
+        if (this.isPreventsDelete()) {
+           return false; 
+        }
+        
         for (ItemElementConstraintInformation ieci : relatedConstraintInfo) {
             if (ieci.isPreventsDelete()) {
                 return false;

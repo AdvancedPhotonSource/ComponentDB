@@ -161,7 +161,7 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
                 // Verify safe to remove
                 ItemElementConstraintInformation ieci; 
                 ieci = itemElementController.getItemElementConstraintInformation(inventoryItemElement); 
-                if (ieci.isSafeToRemoveSelf()) {
+                if (ieci.isSafeToRemove()) {
                     itemElementController.destroy(inventoryItemElement);
                     // Will need to perform destroy on each inventory element. 
                     itemElement.getDerivedFromItemElementList().remove(inventoryItemElement); 
