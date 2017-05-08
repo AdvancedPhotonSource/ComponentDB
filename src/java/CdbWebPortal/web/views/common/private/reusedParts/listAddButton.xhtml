@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:commandButton id="#{entityTypeName}#{viewName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="ui-icon-plus">
+    <p:commandButton id="#{entityTypeName}#{viewName}AddButton" action="#{entityController.prepareCreate()}" rendered="#{displayAddButton}" value="Add" alt="Add new #{entityTypeName}" icon="fa fa-plus">
         <p:tooltip for="#{entityTypeName}#{viewName}AddButton" value="Add new #{entityController.displayEntityTypeName}."/>
     </p:commandButton>
 
