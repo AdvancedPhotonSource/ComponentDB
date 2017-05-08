@@ -42,9 +42,8 @@ See LICENSE file.
         <p:column sortBy="#{itemElementObject.containedItem.name}" headerText="Contained Item">            
             <p:outputPanel rendered="#{itemElementObject.id != null}">
                 <h:outputText value="#{currentItemController.getItemElementContainedItemText(itemElementObject)}"/>
-                <p:commandLink styleClass="ui-icon ui-icon-pencil" title="Edit" 
-                               rendered="#{constraintInfo.safeToUpdateContainedItem}"
-                               oncomplete="updateAndShowItemElementEditContainedItemDialog()">
+                <p:commandLink styleClass="fa fa-link-icon #{constraintInfo.safeToUpdateContainedItem ? '' : 'fa-icon-warning'} fa-pencil" title="Edit"                                
+                               action="#{itemElementController.openEditContainedItemForCurrent('updateAndShowItemElementEditContainedItemDialog()')}">
                     <f:setPropertyActionListener value="#{itemElementObject}" target="#{itemElementController.current}"/>
                 </p:commandLink>
             </p:outputPanel>
@@ -63,7 +62,7 @@ See LICENSE file.
                     <ui:param name="booleanValue"
                               value="#{itemElementObject.isRequired}" />
                 </ui:include>
-                <p:commandLink styleClass="ui-icon ui-icon-pencil" title="Edit"                                
+                <p:commandLink styleClass="fa fa-link-icon fa-pencil" title="Edit"                                
                                oncomplete="updateAndShowItemElementEditIsRequiredDialog()">
                     <f:setPropertyActionListener value="#{itemElementObject}" target="#{itemElementController.current}"/>
                 </p:commandLink>
@@ -84,15 +83,13 @@ See LICENSE file.
         </p:column>
 
         <p:column headerText="Actions" exportable="false">
-            <div class="actionLink">
-                <ui:param name="entityDeletable"
-                          value="#{loginController.isEntityWriteable(itemElementObject.entityInfo) 
-                                   and constraintInfo.safeToRemove}"/>
+            <div class="actionLink">                
                 <p:commandLink actionListener="#{itemElementController.destroy(itemElementObject)}"
-                               styleClass="ui-icon ui-icon-trash" title="Delete" update="@form"
-                               rendered="#{entityDeletable}"/>
+                               styleClass="fa fa-link-icon #{constraintInfo.safeToRemove ? '' : 'fa-icon-warning'} fa-trash" title="Delete" update="@form"
+                               rendered="#{loginController.isEntityWriteable(itemElementObject.entityInfo)}"/>
                 <p:commandLink onclick="PF('itemElement#{itemElementObject.viewUUID}ConstraintInformationDialogWidget').show()"
-                               styleClass="ui-icon ui-icon-help" />
+                               rendered="#{loginController.loggedInAsAdmin}"
+                               styleClass="fa fa-link-icon fa-info" />
             </div>
             <ui:insert name="itemElementEditConstraintInformationDialog">
                 <ui:include src="../itemElementEditConstraintInformationDialog.xhtml" />
