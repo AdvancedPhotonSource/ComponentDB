@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.CatalogItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.io.IOException;
 
@@ -42,11 +43,10 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
 
     @EJB
     private ItemElementFacade itemElementFacade;
-    
 
     private static final Logger logger = Logger.getLogger(ItemElementController.class.getName());
 
-    private static final String DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME = "Item Element Row Color";    
+    private static final String DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME = "Item Element Row Color";
 
     private Item selectedParentItem = null;
 
@@ -56,63 +56,63 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     private List<ItemElement> sortableItemElementList = null;
 
     private List<Item> selectChildItemCandidateList = null;
-    
-    private ItemController currentSettingsItemController = null; 
+
+    private ItemController currentSettingsItemController = null;
 
     public ItemElementController() {
     }
-    
+
     public static ItemElementController getInstance() {
-        return (ItemElementController) SessionUtility.findBean("itemElementController"); 
+        return (ItemElementController) SessionUtility.findBean("itemElementController");
     }
 
     public ItemController getCurrentSettingsItemController() {
         return currentSettingsItemController;
     }
-    
+
     public void setCurrentSettingsItemController(ItemController itemController) {
-        currentSettingsItemController = itemController; 
+        currentSettingsItemController = itemController;
     }
-    
+
     @Override
     protected void prepareEntityUpdate(ItemElement itemElement) throws CdbException {
         super.prepareEntityUpdate(itemElement);
-        
+
         // Basic checks for updating an element must be verified with domain of item element. 
         Item parentItem = itemElement.getParentItem();
         ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
         itemController.checkItemElement(itemElement);
-        
+
         if (itemElement.getId() != null) {
-            ItemElement freshDbItemElement = findById(itemElement.getId()); 
-            
+            ItemElement freshDbItemElement = findById(itemElement.getId());
+
             // Verify if contained item changed
             Item originalContainedItem = freshDbItemElement.getContainedItem();
             if (ObjectUtility.equals(originalContainedItem, itemElement.getContainedItem()) == false) {
                 // Contained item has been updated.
-                ItemElementConstraintInformation ieci = getItemElementConstraintInformation(freshDbItemElement); 
+                ItemElementConstraintInformation ieci = getItemElementConstraintInformation(freshDbItemElement);
                 if (ieci.isSafeToUpdateContainedItem() == false) {
                     itemElement.setContainedItem(originalContainedItem);
                     throw new CdbException("Cannot update item element " + itemElement + " due to constraints not met. Please reload the item details page and try again.");
                 }
             }
-            
+
             //Verify if isRequred changed
-            Boolean originalIsRequired = freshDbItemElement.getIsRequired(); 
-            if (ObjectUtility.equals(originalIsRequired, itemElement.getIsRequired()) == false) {                
-                itemController.finalizeItemElementRequiredStatusChanged(itemElement); 
+            Boolean originalIsRequired = freshDbItemElement.getIsRequired();
+            if (ObjectUtility.equals(originalIsRequired, itemElement.getIsRequired()) == false) {
+                itemController.finalizeItemElementRequiredStatusChanged(itemElement);
             }
-        }        
+        }
     }
 
     @Override
     protected void completeEntityUpdate(ItemElement itemElement) {
         // Force update of constraint information. 
         itemElement.setConstraintInformation(null);
-        
+
         Item parentItem = itemElement.getParentItem();
         ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
-        itemController.completeSuccessfulItemElementUpdate(itemElement); 
+        itemController.completeSuccessfulItemElementUpdate(itemElement);
     }
 
     @Override
@@ -121,9 +121,44 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         // Verify that item domain allows destroy of item element. 
         ItemElementConstraintInformation ieci = getFreshItemElementConstraintInformation(itemElement);
         if (ieci.isSafeToRemove() == false) {
-            throw new CdbException("Cannot remove item element. Constrains not met.");
+            String constraintMessage = generateSingleDeleteConstraintMessage(itemElement); 
+            throw new CdbException("Cannot remove item element. Constrains not met. " + constraintMessage);
         }
-    }    
+    }
+
+    private String generateSingleDeleteConstraintMessage(ItemElement itemElement) {
+        ItemElementConstraintInformation constraint = getItemElementConstraintInformation(itemElement);
+        String message = null; 
+        
+        if (constraint instanceof CatalogItemElementConstraintInformation) {
+            CatalogItemElementConstraintInformation catalogConstraint = (CatalogItemElementConstraintInformation) constraint;
+            message = generateCatalogSpecificPreventDeleteUpdateContainedMessage(catalogConstraint); 
+        }
+        if (message == null) {
+            // Check set log and properties 
+            if (constraint.isHasLogs()) {
+                return "Item element has logs.";
+            } else if (constraint.isHasProperties()) {
+                return "Item element has properties"; 
+            }
+            
+            List<ItemElementConstraintInformation> relatedConstraintInfo = constraint.getRelatedConstraintInfo();
+            for (ItemElementConstraintInformation ittrConstraint : relatedConstraintInfo) {
+                String itemElementIdentifyingString = "Related item element of: " + ittrConstraint.getItemElement().getParentItem().getName(); 
+                if (ittrConstraint.isHasLogs()) {
+                    return itemElementIdentifyingString + " has logs.";
+                } else if (constraint.isHasProperties()) {
+                    return itemElementIdentifyingString + " has properties.";
+                }
+            }
+            
+        } else {
+            return message; 
+        }
+        
+
+        return "";
+    }
 
     @Override
     protected void completeEntityDestroy(ItemElement itemElement) {
@@ -131,6 +166,41 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         Item parentItem = itemElement.getParentItem();
         ItemController itemController = ItemController.findDomainControllerForItem(parentItem);
         itemController.completeSuccessfulItemElementRemoval(itemElement);
+    }
+
+    private String generateCatalogSpecificPreventDeleteUpdateContainedMessage(CatalogItemElementConstraintInformation catalogConstraint) {
+        List<ItemElementConstraintInformation> relatedConstraintInfo = catalogConstraint.getRelatedConstraintInfo();
+
+        for (ItemElementConstraintInformation ittrConstraint : relatedConstraintInfo) {
+            if (ittrConstraint instanceof CatalogItemElementConstraintInformation) {
+                if (((CatalogItemElementConstraintInformation) ittrConstraint).isHasInventoryItemAssigned()) {
+                    String message = ittrConstraint.getItemElement().getParentItem().getName();
+                    message += " has an inventory item assinged for this element.";
+                    return message;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void openEditContainedItemForCurrent(String onSuccessCommand) {
+        ItemElementConstraintInformation constraint = getItemElementConstraintInformation(getCurrent());
+
+        if (constraint.isSafeToUpdateContainedItem()) {
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        } else {
+            String errorMessage = "";
+
+            if (constraint instanceof CatalogItemElementConstraintInformation) {
+                CatalogItemElementConstraintInformation catalogConstraint = (CatalogItemElementConstraintInformation) constraint;
+                errorMessage = generateCatalogSpecificPreventDeleteUpdateContainedMessage(catalogConstraint);
+                if (errorMessage == null) {
+                    errorMessage = "";
+                }
+            }
+
+            SessionUtility.addErrorMessage("Cannot Edit Contained Item", errorMessage);
+        }
     }
 
     public ItemElementConstraintInformation getItemElementConstraintInformation(ItemElement itemElement) {
@@ -150,7 +220,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public ItemElementConstraintInformation getFreshItemElementConstraintInformation(ItemElement itemElement) {
-        itemElement = findById(itemElement.getId()); 
+        itemElement = findById(itemElement.getId());
         return getItemElementConstraintInformation(itemElement);
     }
 
@@ -168,41 +238,41 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
 
         SessionUtility.addErrorMessage("Constraints not met", "Couldn't update contained item due to certain constraints. Refresh the detail page and try again.");
     }
-    
+
     public void revertContainedItemForCurrent() {
         if (current != null) {
-            ItemElement itemElement = findById(current.getId()); 
+            ItemElement itemElement = findById(current.getId());
             Item containedItem = itemElement.getContainedItem();
-            
+
             current.setContainedItem(containedItem);
         }
     }
-    
+
     public void toggleIsRequiredForCurrent() {
         if (current != null) {
-            Boolean isRequired = current.getTemporaryIsRequiredValue();            
+            Boolean isRequired = current.getTemporaryIsRequiredValue();
             current.setTemporaryIsRequiredValue(!isRequired);
         }
     }
-    
+
     public String getIsRequiredButtonValueForCurrent() {
         if (current != null) {
             Boolean isRequired = current.getTemporaryIsRequiredValue();
             if (isRequired) {
                 return "Yes";
             } else {
-                return "No"; 
+                return "No";
             }
         }
-        return null; 
+        return null;
     }
-    
+
     public void revertIsRequiredItemForCurrent() {
         if (current != null) {
             current.setTemporaryIsRequiredValue(null);
         }
     }
-    
+
     public void submitIsRequiredValueForCurrent() {
         current.setIsRequired(current.getTemporaryIsRequiredValue());
         updateWithoutRedirect();
@@ -298,7 +368,6 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         resetSelectObjectLists();
     }
      */
-
     // This listener is accessed either after selection made in dialog,
     // or from selection menu.    
     public void selectItemValueChangeListener(ValueChangeEvent valueChangeEvent) {
@@ -364,15 +433,15 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
             return null;
         }
     }
-    
+
     @Override
     public void resetDomainEntityPropertyTypeIdIndexMappings() {
         super.resetDomainEntityPropertyTypeIdIndexMappings();
         ItemElement.setSortByPropertyTypeId(settingObject.getSortByPropertyTypeId());
     }
-    
+
     public String getDisplayRowStyle(ItemElement itemElement) {
-        List<String> rowStyles = new ArrayList<>(); 
+        List<String> rowStyles = new ArrayList<>();
         Boolean displayItemElementRowColor = settingObject.getDisplayItemElementRowColor();
         if (displayItemElementRowColor != null && displayItemElementRowColor) {
             List<PropertyValue> propertyValueList = itemElement.getPropertyValueList();
@@ -381,25 +450,25 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
                     if (propertyValue.getPropertyType().getName().equals(DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME)) {
                         String value = propertyValue.getValue();
                         rowStyles.add(value + "Row");
-                        break;  
+                        break;
                     }
                 }
             }
         }
-        
-        Boolean isRequired = itemElement.getIsRequired(); 
+
+        Boolean isRequired = itemElement.getIsRequired();
         if (isRequired != null && isRequired == false) {
-            rowStyles.add("optionalElement"); 
+            rowStyles.add("optionalElement");
         }
-        
-        String style = ""; 
+
+        String style = "";
         for (String currentStyle : rowStyles) {
-            style += currentStyle + " "; 
+            style += currentStyle + " ";
         }
-        
+
         return style;
     }
-    
+
     public Item getSelectedParentItem() {
         return selectedParentItem;
     }
