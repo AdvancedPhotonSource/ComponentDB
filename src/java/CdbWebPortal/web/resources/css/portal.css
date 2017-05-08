@@ -1130,3 +1130,14 @@ h2 {
     padding: 10px;
 }
 
+.fa-link-icon {
+    padding: 4px;
+    color: #4f4f4f !important; 
+    text-decoration: none; 
+    font-weight: unset !important;
+}
+
+.fa-icon-warning {
+    color: #6d0000 !important;
+}
+
