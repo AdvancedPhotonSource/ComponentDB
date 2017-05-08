@@ -61,26 +61,31 @@ See LICENSE file.
                                                   or fn:startsWith(view.viewId, '/views/connectorType')) ? 'activeSubMenuParentItem' : ''} ">
                             <p:menuitem value="Locations" 
                                     rendered="#{loginController.loggedInAsAdmin}"
+                                    icon="fa fa-building"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} "
                                     action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
                             
                             <p:menuitem value="Logs" 
+                                    icon="fa fa-book"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/adminLog/') ? 'activeMenuItem' : ''} "
                                     url="/views/adminLog/browseSystemLogs" />
                             
                             <p:menuitem value="Property Types" 
+                                    icon="fa fa-th"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} "
                                     action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
                             
                             <p:menuitem value="Sources"
+                                    icon="fa fa-globe"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} "
                                     action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
                             
                             <p:menuitem value="Users"
                                     rendered="#{loginController.loggedInAsAdmin}"
+                                    icon="fa fa-users"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} "
                                     action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>                        
                             
@@ -92,10 +97,10 @@ See LICENSE file.
                         
                         <p:menuitem value="Settings"
                                     action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
-                                    rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
-                        <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
-                        <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
-                        <p:menuitem value="About" url="/views/about.xhtml" icon="ui-icon-help"/>
+                                    rendered="#{loginController.loggedIn}" icon="fa fa-cogs"/>
+                        <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="fa fa-sign-in"/>
+                        <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="fa fa-sign-out"/>
+                        <p:menuitem value="About" url="/views/about.xhtml" icon="fa fa-question"/>
                     </p:menubar>                    
                 </p:panelGrid>
             </f:facet>
