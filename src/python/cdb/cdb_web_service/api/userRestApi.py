@@ -16,6 +16,7 @@ from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.userInfo import UserInfo
 from cdb.common.objects.userGroup import UserGroup
 
+
 class UserRestApi(CdbRestApi):
     
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):

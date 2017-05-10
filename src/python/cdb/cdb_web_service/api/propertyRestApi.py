@@ -10,11 +10,14 @@ from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.propertyMetadata import PropertyMetadata
 from cdb.common.api.cdbRestApi import CdbRestApi
 
+
 class PropertyRestApi(CdbRestApi):
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
     def addPropertyMetadataToPropertyValue(self, propertyValueId, metadataKey = None, metadataValue = None, metadataDict = None):
+        if propertyValueId is not None:
+            propertyValueId = str(propertyValueId)
         if propertyValueId is None or not len(propertyValueId):
             raise InvalidRequest("propertyValueId must be provided")
 

@@ -12,11 +12,14 @@ from cdb.common.objects.log import Log
 from cdb.common.objects.cdbObject import CdbObject
 from cdb.common.api.cdbRestApi import CdbRestApi
 
+
 class LogRestApi(CdbRestApi):
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
         CdbRestApi.__init__(self, username, password, host, port, protocol)
 
     def addLogAttachment(self, logId, attachment, attachmentDescription = None):
+        if logId is not None:
+            logId = str(logId)
         if logId is None or not len(logId):
             raise InvalidRequest('Log id must be provided.')
         if attachment is None or len(attachment) == 0:
@@ -36,6 +39,8 @@ class LogRestApi(CdbRestApi):
         return LogAttachment(responseDict)
 
     def updateLogEntry(self, logId, text=None, effectiveFromDateTime=None, effectiveToDateTime=None, logTopicName=None):
+        if logId is not None:
+            logId = str(logId)
         if logId is None or not len(logId):
             raise InvalidRequest('Log id must be provided.')
 
@@ -62,6 +67,8 @@ class LogRestApi(CdbRestApi):
         return Log(responseDict)
 
     def deleteLogEntry(self, logId):
+        if logId is not None:
+            logId = str(logId)
         if logId is None or not len(logId):
             raise InvalidRequest('Log id must be provided.')
 
