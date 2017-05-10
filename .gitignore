@@ -27,3 +27,8 @@ docs/python/_build/
 /src/src/java/CdbWebPortal/build/
 /src/src/java/CdbWebPortal/dist/
 /src/src/java/CdbWebPortal/nbproject/private/
+
+# Python REST Api Dist
+/src/python/cdb_api.egg-info
+/src/python/dist
+
