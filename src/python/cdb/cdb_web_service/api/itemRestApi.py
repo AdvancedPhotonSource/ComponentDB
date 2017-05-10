@@ -8,6 +8,8 @@ See LICENSE file.
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.log import Log
+from cdb.common.objects.item import Item
+from cdb.common.objects.itemElement import ItemElement
 from cdb.common.objects.propertyValue import PropertyValue
 from cdb.common.api.cdbRestApi import CdbRestApi
 
@@ -38,7 +40,7 @@ class ItemRestApi(CdbRestApi):
 
         return Log(responseDict)
     
-    def addPropertyValueToItemwithId(self, itemId, propertyTypeName):
+    def addPropertyValueToItemWithId(self, itemId, propertyTypeName):
         if itemId is not None:
             itemId = str(itemId)
         if itemId is None or not len(itemId):
@@ -62,3 +64,74 @@ class ItemRestApi(CdbRestApi):
 
         responseData = self.sendRequest(url, method='GET')
         return self.toCdbObjectList(responseData, Log)
+
+    def getItemById(self, itemId):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+        
+        url = '%s/items/%s' % (self.getContextRoot(), itemId)
+        
+        responseData = self.sendRequest(url=url, method='GET')
+        return Item(responseData)
+
+    def getItemElementById(self, ItemElementId):
+        if ItemElementId is not None:
+            ItemElementId = str(ItemElementId)
+        if ItemElementId is None or not len(ItemElementId):
+            raise InvalidRequest("ItemElementId must be provided")
+
+        url = '%s/itemElements/%s' % (self.getContextRoot(), ItemElementId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return ItemElement(responseData)
+
+    def getLogsForItemByItemQrId(self, qrId):
+        if qrId is not None:
+            qrId = str(qrId)
+        if qrId is None or not len(qrId):
+            raise InvalidRequest("qrId must be provided")
+
+        url = '%s/items/%s/logs' % (self.getContextRoot(), qrId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Log)
+    
+    def getLogsForItemByItemId(self, itemId):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+
+        url = '%s/items/%s/logsByItemId' % (self.getContextRoot(), itemId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Log)
+
+    def getPropertiesForItemByItemId(self, itemId):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+        
+        url = '%s/items/%s/propertiesByItemId' % (self.getContextRoot(), itemId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, PropertyValue)
+
+    def getItemsDerivedFromItem(self, itemId):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+        url= '%s/items/derivedFromItem/%s' % (self.getContextRoot(), itemId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Item)
+
+    def getCatalogItems(self):
+        url = '%s/items/domain/catalog' % self.getContextRoot()
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Item)
