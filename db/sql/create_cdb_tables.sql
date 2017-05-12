@@ -319,7 +319,7 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) unsigned NOT NULL,
-  `name` varchar(64) NULL,
+  `name` varchar(64) NOT NULL,
   `derived_from_item_id` int(11) unsigned DEFAULT NULL,
   `item_identifier1` varchar(32) DEFAULT NULL,
   `item_identifier2` varchar(32) DEFAULT NULL,
