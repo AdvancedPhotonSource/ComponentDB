@@ -159,7 +159,6 @@ mysqlCmd="$mysqlCmd -D $CDB_DB_NAME <"
 execute $mysqlCmd create_cdb_tables.sql
 execute $mysqlCmd create_views.sql
 execute $mysqlCmd create_stored_procedures.sql
-execute $mysqlCmd create_triggers.sql
 
 # create db password file
 if [ ! -d $CDB_ETC_DIR ]; then
@@ -247,6 +246,9 @@ for dbTable in $CDB_DB_TABLES; do
         echo "$dbFile not found, skipping $dbTable update"
     fi
 done
+
+cd $CDB_SQL_DIR
+execute $mysqlCmd create_triggers.sql
 
 echo "select username from user_info inner join user_user_group on user_info.id = user_user_group.user_id inner join user_group on user_group.id = user_user_group.user_group_id where user_group.name = 'CDB_ADMIN' and user_info.password is not null;" > temporaryAdminCommand.sql
 
