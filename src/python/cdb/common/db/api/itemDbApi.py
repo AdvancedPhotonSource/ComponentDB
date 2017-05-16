@@ -139,6 +139,18 @@ class ItemDbApi(CdbDbApi):
         dbDomain = self.domainHandler.addDomain(session, name, description)
         return dbDomain.getCdbObject()
 
+    def getDomains(self, **kwargs):
+        """
+        Get a list of all domains.
+
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbDomainList = self.domainHandler.getDomains(session)
+        return self.toCdbObjectList(dbDomainList)
+
+
     @CdbDbApi.executeTransaction
     def addRelationshipTypeHandler(self, name, description, **kwargs):
         """
@@ -195,31 +207,33 @@ class ItemDbApi(CdbDbApi):
         return dbRelationshipType.getCdbObject()
     
     @CdbDbApi.executeTransaction
-    def addItem(self, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description,
-                createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime=None, lastModifiedOnDateTime=None, **kwargs):
+    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+                itemIdentifier1 = None, itemIdentifier2 = None, qrId = None, description = None,
+                isGroupWriteable=True, createdOnDataTime=None, lastModifiedOnDateTime=None,
+                derivedFromItemId=None, entityTypeNames=None, **kwargs):
         """
         Add an item record.
 
         :param domainName:
         :param name:
-        :param derivedFromItemId:
-        :param itemIdentifier1:
-        :param itemIdentifier2:
-        :param entityTypeName:
-        :param qrId:
-        :param description:
         :param createdByUserId:
         :param ownerUserId:
         :param ownerGroupId:
+        :param itemIdentifier1:
+        :param itemIdentifier2:
+        :param qrId:
         :param isGroupWriteable:
         :param createdOnDataTime:
         :param lastModifiedOnDateTime:
+        :param derivedFromItemId:
+        :param entityTypeNames:
         :param kwargs:
         :return: (CdbObject) newly added record.
         """
         session = kwargs['session']
-        dbItem = self.itemHandler.addItem(session, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description,
-                                          createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
+        dbItem = self.itemHandler.addItem(session, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+                                          itemIdentifier1, itemIdentifier2, qrId, description, isGroupWriteable,
+                                          createdOnDataTime, lastModifiedOnDateTime, derivedFromItemId, entityTypeNames)
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeTransaction
