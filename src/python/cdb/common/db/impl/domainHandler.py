@@ -17,6 +17,9 @@ class DomainHandler(CdbDbEntityHandler):
         CdbDbEntityHandler.__init__(self)
         self.entityTypeHandler = EntityTypeHandler()
 
+    def getDomains(self, session):
+        return self._getAllDbObjects(session, Domain)
+
     def findDomainByName(self, session, name):
         return self._findDbObjByName(session, Domain, name)
 
