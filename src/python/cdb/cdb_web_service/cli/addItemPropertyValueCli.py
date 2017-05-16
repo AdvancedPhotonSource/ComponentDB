@@ -37,12 +37,15 @@ Description:
         self.checkArgs()
         api = ItemRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
 
-        propertyValue = api.addPropertyValueToItemwithId(self.getItemId(),self.getPropertyTypeName())
+        propertyValue = api.addPropertyValueToItemWithId(self.getItemId(), self.getPropertyTypeName())
 
         print propertyValue.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 
 #######################################################################
 # Run command.
-if __name__ == '__main__':
+def runCommand():
     cli = addItemPropertyValueCli()
     cli.run()
+
+if __name__ == '__main__':
+    runCommand()

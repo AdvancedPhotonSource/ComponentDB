@@ -57,6 +57,9 @@ Description:
 
 #######################################################################
 # Run command.
-if __name__ == '__main__':
+def runCommand():
     cli = UpdateLogCli()
     cli.run()
+
+if __name__ == '__main__':
+    runCommand()

@@ -9,7 +9,7 @@ from cdb.cdb_web_service.api.logRestApi import LogRestApi
 from cdbWebServiceCli import CdbWebServiceCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
-class addItemLogEntry(CdbWebServiceCli):
+class addItemLogAttachment(CdbWebServiceCli):
     def __init__(self):
         CdbWebServiceCli.__init__(self)
         self.addOption('', '--log-id', dest='logId', help='Id of the log entry to add attachment for')
@@ -49,6 +49,9 @@ Description:
 
 #######################################################################
 # Run command.
-if __name__ == '__main__':
-    cli = addItemLogEntry()
+def runCommand():
+    cli = addItemLogAttachment()
     cli.run()
+
+if __name__ == '__main__':
+    runCommand()
