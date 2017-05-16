@@ -109,6 +109,24 @@ class ItemRouteDescriptor:
                 'method': ['POST']
             },
 
+            # Get all domains
+            {
+                'name': 'getDomains',
+                'path': '%s/domains' % contextRoot,
+                'controller': itemController,
+                'action': 'getDomains',
+                'method': ['GET']
+            },
+
+            # Add new item
+            {
+                'name': 'addItem',
+                'path': '%s/items/add/:(name)/domain/:(domainName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addItem',
+                'method': ['POST']
+            }
+
 
         ]
 

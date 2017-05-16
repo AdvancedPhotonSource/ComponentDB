@@ -87,4 +87,20 @@ class ItemControllerImpl(CdbObjectManager):
 
         return self.propertyDbApi.getPropertyValueListForItemElementId(selfElementId)
 
+    def getDomains(self):
+        return self.itemDbApi.getDomains()
+
+    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True):
+        return self.itemDbApi.addItem(domainName=domainName,
+                                      name=name,
+                                      createdByUserId=createdByUserId,
+                                      ownerUserId=ownerUserId,
+                                      ownerGroupId=ownerGroupId,
+                                      itemIdentifier1=itemIdentifier1,
+                                      itemIdentifier2=itemIdentifier2,
+                                      qrId=qrId,
+                                      description=description,
+                                      isGroupWriteable=isGroupWriteable)
+
 

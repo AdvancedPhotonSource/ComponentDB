@@ -75,3 +75,10 @@ class ItemController(CdbController):
         response = self.listToJson(properties)
         return response
 
+    @cherrypy.expose
+    @CdbController.execute
+    def getDomains(self):
+        domains = self.itemControllerImpl.getDomains()
+        response = self.listToJson(domains)
+        return response
+

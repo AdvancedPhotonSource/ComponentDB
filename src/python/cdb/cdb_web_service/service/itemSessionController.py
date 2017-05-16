@@ -48,6 +48,8 @@ class ItemSessionController(CdbSessionController):
         if not propertyTypeName:
             raise InvalidRequest("Invalid propertyTypeName provided")
 
+        propertyTypeName = Encoder.decode(propertyTypeName)
+
         sessionUser = self.getSessionUser()
         enteredByUserId = sessionUser.get('id')
 
@@ -57,4 +59,55 @@ class ItemSessionController(CdbSessionController):
         response = propertyValueAdded.getFullJsonRep()
         self.logger.debug('Returning new property value created for item with id %s: %s' % (itemId, propertyValueAdded))
         return response
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def addItem(self, domainName, name, ownerUserId=None, ownerGroupId=None,
+                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True):
+        if not domainName:
+            raise InvalidRequest("Invalid domain name provided")
+        if not name:
+            raise InvalidRequest("Invalid item name provided")
+
+        domainName = Encoder.decode(domainName)
+        name = Encoder.decode(name)
+
+        sessionUser = self.getSessionUser()
+        createdByUserId = sessionUser.get('id')
+
+        if ownerUserId is None:
+            ownerUserId = createdByUserId
+
+        if ownerGroupId is None:
+            userGroupList = sessionUser.data['userGroupList']
+            if len(userGroupList) > 0:
+                ownerGroupId = userGroupList[0].data['id']
+            else:
+                raise InvalidRequest("Invalid, current session user is not assigned to any groups... please specify owner group id.")
+
+        optionalParameters = {}
+
+        if itemIdentifier1 is not None:
+            itemIdentifier1 = Encoder.decode(itemIdentifier1)
+            optionalParameters.update({'itemIdentifier1': itemIdentifier1})
+
+        if itemIdentifier2 is not None:
+            itemIdentifier2 = Encoder.decode(itemIdentifier2)
+            optionalParameters.update({'itemIdentifier2': itemIdentifier2})
+            
+        if qrId is not None:
+            optionalParameters.update({'qrId': qrId})
+            
+        if description is not None:
+            description = Encoder.decode(description)
+            optionalParameters.update({'description': description})
+            
+        if isGroupWriteable is not None:
+            isGroupWriteable = eval(isGroupWriteable)
+            optionalParameters.update({'isGroupWriteable': isGroupWriteable})
+
+        response = self.itemControllerImpl.addItem(domainName, name, createdByUserId, ownerUserId, ownerGroupId, **optionalParameters)
+        self.logger.debug('Returning new item: %s' % (response))
+        return response.getFullJsonRep()
 
