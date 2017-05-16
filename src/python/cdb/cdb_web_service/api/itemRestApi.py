@@ -7,6 +7,7 @@ See LICENSE file.
 
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
+from cdb.common.objects.domain import Domain
 from cdb.common.objects.log import Log
 from cdb.common.objects.item import Item
 from cdb.common.objects.itemElement import ItemElement
@@ -47,6 +48,8 @@ class ItemRestApi(CdbRestApi):
             raise InvalidRequest("itemId must be provided")
         if propertyTypeName is None or not len(propertyTypeName):
             raise InvalidRequest("propertyTypeName must be provided")
+
+        propertyTypeName = Encoder.encode(propertyTypeName)
 
         url = '%s/items/%s/addPropertyValue/%s' % (self.getContextRoot(), itemId, propertyTypeName)
 
@@ -135,3 +138,49 @@ class ItemRestApi(CdbRestApi):
 
         responseData = self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, Item)
+
+    def getDomains(self):
+        url = '%s/itemDomains' % self.getContextRoot()
+        responseData =self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Domain)
+
+    def addItem(self, domainName, name, itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None,
+                ownerUserId=None, ownerGroupId=None, isGroupWriteable=None):
+        if domainName is None or not len(domainName):
+            raise InvalidRequest("domainName must be provided")
+        
+        if name is None or not len(name):
+            raise InvalidRequest("name must be provided")
+        
+        name = Encoder.encode(name)
+        domainName = Encoder.encode(domainName)
+
+        url = '%s/items/add/%s/domain/%s' % (self.getContextRoot(), name, domainName)
+
+        if itemIdentifier1 is not None:
+            itemIdentifier1 = Encoder.encode(itemIdentifier1)
+            url = self._appendUrlParameter(url, 'itemIdentifier1', itemIdentifier1)
+            
+        if itemIdentifier2 is not None:
+            itemIdentifier2 = Encoder.encode(itemIdentifier2)
+            url = self._appendUrlParameter(url, 'itemIdentifier2', itemIdentifier2)
+            
+        if qrId is not None:
+            url = self._appendUrlParameter(url, 'qrId', qrId)
+            
+        if description is not None:
+            description = Encoder.encode(description)
+            url = self._appendUrlParameter(url, 'description', description)
+        
+        if ownerUserId is not None:
+            url = self._appendUrlParameter(url, 'ownerUserId', ownerUserId)
+            
+        if ownerGroupId is not None:
+            url = self._appendUrlParameter(url, 'ownerGroupId', ownerGroupId)
+
+        if isGroupWriteable is not None:
+            url = self._appendUrlParameter(url, 'isGroupWriteable', isGroupWriteable)
+            
+        responseData = self.sendSessionRequest(url, method='POST')
+
+        return Item(responseData)
