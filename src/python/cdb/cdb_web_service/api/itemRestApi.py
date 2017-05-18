@@ -184,3 +184,20 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendSessionRequest(url, method='POST')
 
         return Item(responseData)
+
+    def addItemElement(self, itemElementName, parentItemId):
+        if parentItemId is not None:
+            parentItemId = str(parentItemId)
+
+        if parentItemId is None or not len(parentItemId):
+            raise InvalidRequest("parentItemId must be provided")
+
+        if itemElementName is None or not len(itemElementName):
+            raise InvalidRequest("itemElementName must be provided")
+
+        itemElementName = Encoder.encode(itemElementName)
+
+        url = '%s/itemElements/add/%s/%s' % (self.getContextRoot(), itemElementName, parentItemId)
+
+        responseData = self.sendSessionRequest(url=url, method='POST')
+        return ItemElement(responseData)
