@@ -339,8 +339,12 @@ class ItemHandler(CdbDbEntityHandler):
         if containedItemId:
             dbItemElement.containedItem = self.getItemById(session, containedItemId)
 
-        session.add(dbItemElement)
-        session.flush()
+        try:
+            session.add(dbItemElement)
+            session.flush()
+        except OperationalError, err:
+            raise DbError(err.message)
+
         self.logger.debug('Inserted item Element id %s' % dbItemElement.id)
 
         return dbItemElement
