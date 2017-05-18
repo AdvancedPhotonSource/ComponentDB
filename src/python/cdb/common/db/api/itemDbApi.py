@@ -537,7 +537,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemElementLog.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItemElementProperty(self, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime = None, **kwargs):
+    def addItemElementProperty(self, itemElementId, propertyTypeName, tag=None, value=None, units=None,
+                               description=None, enteredByUserId=None, isUserWriteable=False, isDynamic=False,
+                               displayValue=None, targetValue=None, enteredOnDateTime = None, **kwargs):
         """
         Add a property to a particular item element.
 
