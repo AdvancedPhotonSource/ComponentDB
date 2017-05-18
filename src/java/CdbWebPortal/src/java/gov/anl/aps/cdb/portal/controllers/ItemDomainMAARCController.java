@@ -115,7 +115,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false;
+        return true;
     }
 
     @Override
@@ -130,7 +130,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     @Override
     public boolean getEntityDisplayItemProject() {
-        return true;
+        return false;
     }
 
     @Override
