@@ -12,6 +12,7 @@ See LICENSE file.
 #######################################################################
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
+from cdb.common.utility.encoder import Encoder
 import ast
 
 
@@ -37,5 +38,33 @@ class PropertyControllerImpl(CdbObjectManager):
 
     def addPropertyValueMetadataFromDict(self, propertyValueId, propertyValueMetadataKeyValueDictStringRep, userId):
         propertyValueMetadataKeyValueDict = ast.literal_eval(propertyValueMetadataKeyValueDictStringRep)
-
         return self.propertyDbApi.addPropertyValueMetadataFromDict(propertyValueId, propertyValueMetadataKeyValueDict, userId)
+
+    def packageOptionalPropertyValueVariables(self, tag=None, value=None, units=None, description=None, isUserWriteable=None, isDynamic=None):
+        optionalParameters = {}
+
+        if tag is not None:
+            tag = Encoder.decode(tag)
+            optionalParameters.update({'tag': tag})
+
+        if value is not None:
+            value = Encoder.decode(value)
+            optionalParameters.update({'value': value})
+
+        if units is not None:
+            units = Encoder.decode(units)
+            optionalParameters.update({'units': units})
+
+        if description is not None:
+            description = Encoder.decode(description)
+            optionalParameters.update({'description': description})
+
+        if isUserWriteable is not None:
+            isUserWriteable = eval(isUserWriteable)
+            optionalParameters.update({'isUserWriteable': isUserWriteable})
+
+        if isDynamic is not None:
+            isDynamic = eval(isDynamic)
+            optionalParameters.update({'isDynamic', isDynamic})
+
+        return optionalParameters

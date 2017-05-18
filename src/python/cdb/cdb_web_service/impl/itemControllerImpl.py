@@ -53,11 +53,15 @@ class ItemControllerImpl(CdbObjectManager):
 
         return logEntry
 
-    def addPropertyValueForItemWithId(self, itemId, propertyTypeName, enteredByUserId):
+    def addPropertyValueForItemWithId(self, itemId, propertyTypeName, enteredByUserId,
+                                      tag=None, value=None, units=None, description=None,
+                                      isUserWriteable=None, isDynamic=False):
         selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
         selfElementId = selfElement.data['id']
 
-        propertyValueAdded = self.itemDbApi.addItemElementProperty(selfElementId,propertyTypeName, 0, 0,0,0, enteredByUserId, 0, 0, 0, 0)
+        propertyValueAdded = self.itemDbApi.addItemElementProperty(selfElementId, propertyTypeName,
+                                                                   tag, value, units, description,
+                                                                   enteredByUserId, isUserWriteable, isDynamic)
 
         return propertyValueAdded
 

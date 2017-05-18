@@ -111,6 +111,15 @@ class ItemRouteDescriptor:
                 'method': ['POST']
             },
 
+            # Add Property value to item element
+            {
+                'name': 'addPropertyValueForItemElementById',
+                'path': '%s/itemElements/:(itemElementId)/addPropertyValue/:(propertyTypeName)' % contextRoot,
+                'controller': itemElementSessionController,
+                'action': 'addPropertyValueToItemElementById',
+                'method': ['POST']
+            },
+
             # Get all domains
             {
                 'name': 'getDomains',

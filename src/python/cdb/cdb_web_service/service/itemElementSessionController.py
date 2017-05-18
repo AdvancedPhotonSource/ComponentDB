@@ -8,6 +8,7 @@ See LICENSE file.
 import cherrypy
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.cdb_web_service.impl.itemElementControllerImpl import ItemElementControllerImpl
+from cdb.cdb_web_service.impl.propertyControllerImpl import PropertyControllerImpl
 from cdb.common.service.cdbSessionController import CdbSessionController
 from cdb.common.utility.encoder import Encoder
 
@@ -17,6 +18,7 @@ class ItemElementSessionController(CdbSessionController):
     def __init__(self):
         CdbSessionController.__init__(self)
         self.itemElementImplController = ItemElementControllerImpl()
+        self.propertyControllerImpl = PropertyControllerImpl()
 
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
@@ -59,3 +61,33 @@ class ItemElementSessionController(CdbSessionController):
         response = self.itemElementImplController.addItemElement(parentItemId, itemElementName, createdByUserId, ownerUserId, ownerGroupId, **optionalParameters)
         self.logger.debug('Returning new item element: %s' % (response))
         return response.getFullJsonRep()
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def addPropertyValueToItemElementById(self, itemElementId, propertyTypeName, tag=None, value=None, units=None,
+                                       description=None,
+                                       isUserWriteable=None, isDynamic=None):
+        if not itemElementId:
+            raise InvalidRequest("Invalid itemElementId provided")
+        if not propertyTypeName:
+            raise InvalidRequest("Invalid propertyTypeName provided")
+
+        propertyTypeName = Encoder.decode(propertyTypeName)
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        optionalParameters = self.propertyControllerImpl.packageOptionalPropertyValueVariables(tag, value,
+                                                                                               units, description,
+                                                                                               isUserWriteable,
+                                                                                               isDynamic)
+
+        itemElementPropertyValueAdded = self.itemElementImplController.addPropertyValueForItemElementWithId(itemElementId, propertyTypeName,
+                                                                                              enteredByUserId,
+                                                                                              **optionalParameters)
+        propertyValueAdded = itemElementPropertyValueAdded.data['propertyValue']
+
+        response = propertyValueAdded.getFullJsonRep()
+        self.logger.debug('Returning new property value created for item element with id %s: %s' % (itemElementId, propertyValueAdded))
+        return response

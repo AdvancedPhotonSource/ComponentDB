@@ -8,6 +8,7 @@ See LICENSE file.
 import cherrypy
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.cdb_web_service.impl.itemControllerImpl import ItemControllerImpl
+from cdb.cdb_web_service.impl.propertyControllerImpl import PropertyControllerImpl
 from cdb.common.service.cdbSessionController import CdbSessionController
 from cdb.common.utility.encoder import Encoder
 
@@ -17,6 +18,7 @@ class ItemSessionController(CdbSessionController):
     def __init__(self):
         CdbSessionController.__init__(self)
         self.itemControllerImpl = ItemControllerImpl()
+        self.propertyControllerImpl = PropertyControllerImpl()
 
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
@@ -42,7 +44,8 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
-    def addPropertyValueToItemByItemId(self, itemId, propertyTypeName):
+    def addPropertyValueToItemByItemId(self, itemId, propertyTypeName, tag=None, value=None, units=None, description=None,
+                                      isUserWriteable=None, isDynamic=None):
         if not itemId:
             raise InvalidRequest("Invalid itemId provided")
         if not propertyTypeName:
@@ -53,7 +56,13 @@ class ItemSessionController(CdbSessionController):
         sessionUser = self.getSessionUser()
         enteredByUserId = sessionUser.get('id')
 
-        itemElementPropertyValueAdded = self.itemControllerImpl.addPropertyValueForItemWithId(itemId, propertyTypeName, enteredByUserId)
+        optionalParameters = self.propertyControllerImpl.packageOptionalPropertyValueVariables(tag, value,
+                                                                                               units, description,
+                                                                                               isUserWriteable, isDynamic)
+
+        itemElementPropertyValueAdded = self.itemControllerImpl.addPropertyValueForItemWithId(itemId, propertyTypeName,
+                                                                                              enteredByUserId,
+                                                                                              **optionalParameters)
         propertyValueAdded = itemElementPropertyValueAdded.data['propertyValue']
 
         response = propertyValueAdded.getFullJsonRep()
