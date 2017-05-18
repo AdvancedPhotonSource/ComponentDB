@@ -61,7 +61,6 @@ class ItemControllerImpl(CdbObjectManager):
 
         return propertyValueAdded
 
-
     def getLogEntriesForItemWithQrId(self, qrId):
         item = self.itemDbApi.getItemByQrId(qrId)
         itemId = item.data['id']

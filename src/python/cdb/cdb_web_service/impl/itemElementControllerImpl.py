@@ -24,3 +24,8 @@ class ItemElementControllerImpl(CdbObjectManager):
 
     def getItemElementById(self, itemElementId):
         return self.itemDbApi.getItemElementById(itemElementId)
+
+    def addItemElement(self, parentItemId, name, createdByUserId, ownerUserId, ownerGroupId,
+       containedItemId=None, description=None, isRequired=None, isGroupWriteable=True):
+        return self.itemDbApi.addItemElement(name, parentItemId, containedItemId, isRequired, description,
+                                      createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable)

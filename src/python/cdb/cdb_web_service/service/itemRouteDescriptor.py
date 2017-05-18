@@ -13,6 +13,7 @@ from cdb.cdb_web_service.service.itemSessionController import ItemSessionControl
 from cdb.common.utility.configurationManager import ConfigurationManager
 from itemController import ItemController
 from itemElementController import ItemElementController
+from itemElementSessionController import ItemElementSessionController
 
 
 class ItemRouteDescriptor:
@@ -23,6 +24,7 @@ class ItemRouteDescriptor:
         # Static instances shared between different routes
         itemController = ItemController()
         itemElementController = ItemElementController()
+        itemElementSessionController = ItemElementSessionController()
         itemSessionController = ItemSessionController()
 
         # Define routes.
@@ -124,6 +126,15 @@ class ItemRouteDescriptor:
                 'path': '%s/items/add/:(name)/domain/:(domainName)' % contextRoot,
                 'controller': itemSessionController,
                 'action': 'addItem',
+                'method': ['POST']
+            },
+
+            # Add item element
+            {
+                'name': 'addItemElement',
+                'path': '%s/itemElements/add/:(itemElementName)/:(parentItemId)' % contextRoot,
+                'controller': itemElementSessionController,
+                'action': 'addItemElement',
                 'method': ['POST']
             }
 

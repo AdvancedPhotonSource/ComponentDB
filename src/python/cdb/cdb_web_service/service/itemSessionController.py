@@ -64,7 +64,7 @@ class ItemSessionController(CdbSessionController):
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
     def addItem(self, domainName, name, ownerUserId=None, ownerGroupId=None,
-                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True):
+                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=None):
         if not domainName:
             raise InvalidRequest("Invalid domain name provided")
         if not name:
