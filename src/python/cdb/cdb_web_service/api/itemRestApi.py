@@ -40,22 +40,64 @@ class ItemRestApi(CdbRestApi):
             responseDict = self.sendSessionRequest(url=url, method='POST')
 
         return Log(responseDict)
-    
-    def addPropertyValueToItemWithId(self, itemId, propertyTypeName):
-        if itemId is not None:
-            itemId = str(itemId)
-        if itemId is None or not len(itemId):
-            raise InvalidRequest("itemId must be provided")
+
+    def __createAddPropertyRequest(self, url, id, propertyTypeName, tag=None, value=None, units=None, description=None,
+                                      isUserWriteable=None, isDynamic=None):
         if propertyTypeName is None or not len(propertyTypeName):
             raise InvalidRequest("propertyTypeName must be provided")
 
         propertyTypeName = Encoder.encode(propertyTypeName)
+        url = url % (self.getContextRoot(), id, propertyTypeName)
 
-        url = '%s/items/%s/addPropertyValue/%s' % (self.getContextRoot(), itemId, propertyTypeName)
+        if tag is not None:
+            tag = Encoder.encode(tag)
+            url = self._appendUrlParameter(url, 'tag', tag)
+
+        if value is not None:
+            value = Encoder.encode(value)
+            url = self._appendUrlParameter(url, 'value', value)
+
+        if units is not None:
+            units = Encoder.encode(units)
+            url = self._appendUrlParameter(url, 'units', units)
+
+        if description is not None:
+            description = Encoder.encode(description)
+            url = self._appendUrlParameter(url, 'description', description)
+
+        if isUserWriteable is not None:
+            url = self._appendUrlParameter(url, 'isUserWriteable', isUserWriteable)
+
+        if isDynamic is not None:
+            url = self._appendUrlParameter(url, 'isDynamc', isDynamc)
 
         responseDict = self.sendSessionRequest(url=url, method='POST')
 
         return PropertyValue(responseDict)
+
+    def addPropertyValueToItemWithId(self, itemId, propertyTypeName, tag=None, value=None, units=None, description=None,
+                                      isUserWriteable=None, isDynamic=None):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+
+        url = '%s/items/%s/addPropertyValue/%s'
+
+        return self.__createAddPropertyRequest(url,  itemId, propertyTypeName, tag, value, units, description,
+                                      isUserWriteable, isDynamic)
+
+    def addPropertyValueToItemElementWithId(self, itemElementId, propertyTypeName, tag=None, value=None, units=None,
+                                            description=None, isUserWriteable=None, isDynamic=None):
+        if itemElementId is not None:
+            itemElementId = str(itemElementId)
+        if itemElementId is None or not len(itemElementId):
+            raise InvalidRequest("itemElementId must be provided")
+
+        url = '%s/itemElements/%s/addPropertyValue/%s'
+
+        return self.__createAddPropertyRequest(url, itemElementId, propertyTypeName, tag, value, units, description,
+                                      isUserWriteable, isDynamic)
 
     def getLogEntriesForItemWithQrId(self, qrId):
         if qrId is not None:
