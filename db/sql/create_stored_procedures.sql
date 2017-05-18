@@ -49,6 +49,24 @@ BEGIN
     EXECUTE stmt;
 END //
 
+drop function if exists is_record_unique;//
+CREATE FUNCTION `is_record_unique`
+	(row_count INT,
+	 existing_record_id INT,
+	 found_record_id INT)
+RETURNS BOOLEAN
+BEGIN 
+	IF ISNULL(existing_record_id)
+	THEN
+		RETURN (row_count < 1);
+	ELSEIF row_count = 1
+	THEN 
+		RETURN (existing_record_id = found_record_id);
+	ELSE
+		RETURN FALSE;
+	END IF;
+END//
+
 drop procedure if exists is_item_attributes_unique//
 create procedure `is_item_attributes_unique` 
 (IN domain_id INT, 
@@ -87,16 +105,7 @@ BEGIN
 		AND item_identifier1 = new_item_identifier1
 		AND item_identifier2 = new_item_identifier2;
 
-	IF ISNULL(existing_item_id)
-	THEN
-		SET unique_result = (row_count < 1);
-	ELSEIF row_count = 1
-	THEN 
-		SET unique_result = (existing_item_id = record_found_id);
-	ELSE
-		SET unique_result = FALSE;
-	END IF;
-	
+	SET unique_result = is_record_unique(row_count, existing_item_id, record_found_id);
 END//
 
 DROP procedure IF EXISTS is_item_attributes_valid//
@@ -178,6 +187,58 @@ BEGIN
 	RETURN true;
 END//
 
+DROP FUNCTION IF EXISTS is_item_element_attributes_unique;//
+CREATE FUNCTION is_item_element_attributes_unique
+	(new_item_element_name VARCHAR(64),
+	new_parent_item_id INT,
+	new_derived_from_item_element_id INT,
+	existing_item_element_id INT)
+RETURNS BOOLEAN
+BEGIN
+	DECLARE row_count INT;
+	DECLARE record_found_id INT;
 
+	SELECT 
+		IFNULL(new_item_element_name, ''),
+		IFNULL(new_derived_from_item_element_id, -1)
+	INTO
+		new_item_element_name,
+		new_derived_from_item_element_id;
+
+	SELECT count(*), id
+	INTO row_count, record_found_id
+	FROM (
+		SELECT	
+			IFNULL(name, '') as name,
+			id,		
+			IFNULL(derived_from_item_element_id, -1) AS derived_from_item_element_id
+		FROM item_element
+		WHERE parent_item_id=new_parent_item_id
+		) AS itemElement2
+	WHERE derived_from_item_element_id = new_derived_from_item_element_id
+		AND itemElement2.name = new_item_element_name;
+	
+	RETURN is_record_unique(row_count, existing_item_element_id, record_found_id);	
+END//
+
+DROP FUNCTION IF EXISTS check_item_element//
+CREATE FUNCTION check_item_element
+	(item_element_name VARCHAR(64),
+	parent_item_id INT,
+	derived_from_item_element_id INT,
+	existing_item_element_id INT)
+RETURNS BOOLEAN
+BEGIN	
+	DECLARE result BOOLEAN;
+	SET result = is_item_element_attributes_unique(item_element_name, parent_item_id, derived_from_item_element_id, existing_item_element_id); 
+
+	IF not result
+	THEN 
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'Item element is not unque, please update: name, parent item, or derived from item element attribute.';
+	END IF;
+
+	RETURN true;
+END//
 
 delimiter ;

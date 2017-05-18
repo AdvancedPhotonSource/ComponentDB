@@ -40,4 +40,26 @@ BEGIN
 		NEW.id);
 END//
 
+DROP TRIGGER IF EXISTS insert_item_element//
+CREATE trigger insert_item_element BEFORE INSERT ON item_element
+FOR EACH ROW
+BEGIN
+	SET @unused = check_item_element(
+		NEW.name, 
+		NEW.parent_item_id, 
+		NEW.derived_from_item_element_id, 
+		NULL);
+END //
+
+DROP TRIGGER IF EXISTS update_item_element//
+CREATE trigger update_item_element BEFORE UPDATE ON item_element
+FOR EACH ROW
+BEGIN
+	SET @unused = check_item_element(
+		NEW.name, 
+		NEW.parent_item_id, 
+		NEW.derived_from_item_element_id, 
+		NEW.id);
+END //
+
 DELIMITER ;
