@@ -172,13 +172,33 @@ if [ "$3" == "1" ]; then
     exit 0
 fi
 
+function executePopulateScripts {
+    for dbTable in $1; do
+        dbFile=populate_$dbTable.sql
+        if [ -f $dbFile ]; then
+            echo "Populating $dbTable using $dbFile script"
+            execute $mysqlCmd $dbFile || exit 1
+        else
+            echo "$dbFile not found, skipping $dbTable update"
+        fi
+    done
+}
+
+STATIC_DB_SCRIPTS_DIR="$CDB_SQL_DIR/static"
+cd $CURRENT_DIR && cd $STATIC_DB_SCRIPTS_DIR
+STATIC_CDB_DB_TABLES="\
+    setting_type \
+    domain \
+"
+
+executePopulateScripts "$STATIC_CDB_DB_TABLES"
+
 # populate db
 cd $CURRENT_DIR && cd $CDB_DB_SCRIPTS_DIR
 CDB_DB_TABLES="\
     user_info \
     user_group \
     user_user_group \
-    setting_type \
     user_group_setting \
     user_setting \
     entity_info \
@@ -193,7 +213,6 @@ CDB_DB_TABLES="\
     log_attachment \
     log_level \
     system_log \
-    domain \
     item \
     item_element \
     item_element_log \
@@ -237,15 +256,9 @@ CDB_DB_TABLES="\
     item_element_property \
     connector_property \
 "
-for dbTable in $CDB_DB_TABLES; do
-    dbFile=populate_$dbTable.sql
-    if [ -f $dbFile ]; then
-        echo "Populating $dbTable using $dbFile script"
-        execute $mysqlCmd $dbFile || exit 1
-    else
-        echo "$dbFile not found, skipping $dbTable update"
-    fi
-done
+
+executePopulateScripts "$CDB_DB_TABLES"
+
 
 cd $CDB_SQL_DIR
 execute $mysqlCmd create_triggers.sql
