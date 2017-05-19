@@ -6,6 +6,7 @@ See LICENSE file.
 """
 
 import os
+import uuid
 
 DIST_ROOT_DIRECTORY_ENV_KEY = "CDB_ROOT_DIR";
 PYTHON_SRC_DIST_PATH = 'src/python'
@@ -76,8 +77,14 @@ os.chdir('%s/%s' % (rootDir, PYTHON_SRC_DIST_PATH))
 buildExit = os.system('python %s sdist' % tmpSetupFilePath)
 
 if buildExit == 0:
+    uniqueIdentifier = uuid.uuid1().hex
+    originalFileName = '%s-%s.tar.gz' % (projectName, versionNumber)
+    newFileName = '%s-%s-%s.tar.gz' % (projectName, versionNumber, uniqueIdentifier)
+    
+    os.rename('dist/%s' % originalFileName, 'dist/%s' % newFileName)
+
     # Attempt to upload to pip
-    distFilePath = 'dist/%s-%s.tar.gz' % (projectName, versionNumber)
+    distFilePath = 'dist/%s' % newFileName
 
     pipExit = os.system('twine upload %s' % distFilePath)
 
