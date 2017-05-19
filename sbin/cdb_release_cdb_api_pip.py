@@ -6,7 +6,6 @@ See LICENSE file.
 """
 
 import os
-import uuid
 
 DIST_ROOT_DIRECTORY_ENV_KEY = "CDB_ROOT_DIR";
 PYTHON_SRC_DIST_PATH = 'src/python'
@@ -25,7 +24,7 @@ def getDistVersion():
 setupFilePath = "%s/%s/%s" % (rootDir, PYTHON_SRC_DIST_PATH, PYTHON_SETUP_FILE)
 setupFile = open(setupFilePath, 'r')
 
-setupFileContents = ""
+newSetupFileContents = ""
 
 projectName = ""
 
@@ -64,34 +63,28 @@ for line in setupFile.readlines():
         else:
             raise IOError("Invalid input given %s" % response)
 
-    setupFileContents += line
+    newSetupFileContents += line
 
-tmpSetupFileName = 'tmp-setup.py'
-tmpSetupFilePath = "%s/%s/%s" % (rootDir, PYTHON_SRC_DIST_PATH, tmpSetupFileName)
-setupFile = open(tmpSetupFilePath, 'w+')
-setupFile.write(setupFileContents)
+setupFile = open(setupFilePath, 'r')
+originalSetupFileContents = setupFile.read()
+
+setupFile = open(setupFilePath, 'w+')
+setupFile.write(newSetupFileContents)
 setupFile.close()
 
 
 os.chdir('%s/%s' % (rootDir, PYTHON_SRC_DIST_PATH))
-buildExit = os.system('python %s sdist' % tmpSetupFilePath)
+buildExit = os.system('python %s sdist' % setupFilePath)
 
 if buildExit == 0:
-    uniqueIdentifier = uuid.uuid1().hex
-    originalFileName = '%s-%s.tar.gz' % (projectName, versionNumber)
-    newFileName = '%s-%s-%s.tar.gz' % (projectName, versionNumber, uniqueIdentifier)
-    
-    os.rename('dist/%s' % originalFileName, 'dist/%s' % newFileName)
+    tarFileName = '%s-%s.tar.gz' % (projectName, versionNumber)
 
     # Attempt to upload to pip
-    distFilePath = 'dist/%s' % newFileName
+    distFilePath = 'dist/%s' % tarFileName
 
     pipExit = os.system('twine upload %s' % distFilePath)
 
-    if pipExit == 0:
+    if pipExit != 0:
         setupFile = open(setupFilePath, 'w')
-        setupFile.write(setupFileContents)
+        setupFile.write(originalSetupFileContents)
         setupFile.close()
-
-
-os.remove(tmpSetupFilePath)
