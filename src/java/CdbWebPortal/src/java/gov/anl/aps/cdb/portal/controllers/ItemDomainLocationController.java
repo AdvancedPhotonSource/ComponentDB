@@ -544,16 +544,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    public boolean getEntityDisplayItemType() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemCategory() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return false;
     }

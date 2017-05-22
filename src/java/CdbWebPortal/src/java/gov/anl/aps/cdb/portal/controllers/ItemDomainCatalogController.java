@@ -82,16 +82,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     @Override
     public String getDisplayEntityTypeName() {
         return "Catalog Item";
-    }
-
-    @Override
-    public String getItemItemTypeTitle() {
-        return "Function";
-    }
-
-    @Override
-    public String getItemItemCategoryTitle() {
-        return "Technical System";
     }    
 
     @Override
@@ -334,16 +324,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
 
     @Override
     public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemType() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemCategory() {
         return true;
     }
 

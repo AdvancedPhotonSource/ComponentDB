@@ -50,6 +50,10 @@ public class Domain extends CdbEntity implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
+    @Size(max = 32)
+    private String item_identifier1_label;    
+    @Size(max = 32)
+    private String item_identifier2_label;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "domain")
     private List<Item> itemList;
     @OneToMany(mappedBy = "domain")
@@ -98,6 +102,14 @@ public class Domain extends CdbEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getItem_identifier1_label() {
+        return item_identifier1_label;
+    }
+
+    public String getItem_identifier2_label() {
+        return item_identifier2_label;
     }
 
     @XmlTransient

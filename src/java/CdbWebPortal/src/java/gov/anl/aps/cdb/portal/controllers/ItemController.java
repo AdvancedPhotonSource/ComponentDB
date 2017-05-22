@@ -134,6 +134,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected SettingController settingController; 
     
     protected Integer domainId = null;
+    
+    protected Domain defaultControllerDomain = null;
 
     public ItemController() {
     }
@@ -154,12 +156,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public Domain getDefaultDomain() {
-        Domain domain = domainFacade.findByName(getDefaultDomainName());
-        if (domain == null) {
-            domain = new Domain();
-            domain.setName(getDefaultDomainName());
+        if (defaultControllerDomain == null) {
+            defaultControllerDomain = domainFacade.findByName(getDefaultDomainName());
+            if (defaultControllerDomain == null) {
+                defaultControllerDomain = new Domain();
+                defaultControllerDomain.setName(getDefaultDomainName());
+            }
         }
-        return domain; 
+        return defaultControllerDomain; 
         
     }
 
@@ -168,11 +172,19 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public String getItemItemTypeTitle() {
-        return "Type";
+        return getDefaultDomain().getItem_identifier1_label();
     }
 
     public String getItemItemCategoryTitle() {
-        return "Category";
+        return getDefaultDomain().getItem_identifier2_label();
+    }
+    
+    public boolean getEntityDisplayItemType() {
+        return getItemItemTypeTitle() != null; 
+    }
+    
+    public boolean getEntityDisplayItemCategory() {
+        return getItemItemCategoryTitle() != null;
     }
 
     @Override

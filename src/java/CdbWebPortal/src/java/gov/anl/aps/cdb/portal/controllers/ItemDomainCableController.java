@@ -278,16 +278,6 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }
 
     @Override
-    public boolean getEntityDisplayItemType() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemCategory() {
-        return false; 
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return false; 
     }

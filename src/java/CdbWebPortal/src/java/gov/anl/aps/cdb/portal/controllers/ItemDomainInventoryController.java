@@ -1547,16 +1547,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public boolean getEntityDisplayItemType() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemCategory() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return true;
     }

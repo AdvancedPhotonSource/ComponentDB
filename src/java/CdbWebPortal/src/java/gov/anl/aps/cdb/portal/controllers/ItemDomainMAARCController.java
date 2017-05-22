@@ -74,16 +74,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     @Override
-    public boolean getEntityDisplayItemType() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemCategory() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return false;
     }
