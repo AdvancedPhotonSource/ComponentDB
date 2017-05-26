@@ -12,6 +12,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.List;
 import gov.anl.aps.cdb.portal.controllers.IItemController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
@@ -411,4 +413,48 @@ public abstract class ItemControllerExtensionHelper implements IItemController {
     public List<Item> getItemList() {
         return getItemController().getItemList(); 
     }
+    
+    @Override
+    public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType) {
+        return getItemController().preparePropertyTypeValueAdd(propertyType);
+    }
+    
+    @Override
+    public void restoreCurrentEditPropertyValueToOriginalState() {
+        getItemController().restoreCurrentEditPropertyValueToOriginalState(); 
+    }
+    
+    @Override
+    public void updateEditProperty() {
+        getItemController().updateEditProperty(); 
+    }
+    
+    @Override
+    public void deleteCurrentEditPropertyValue() {
+        getItemController().deleteCurrentEditPropertyValue();
+    }
+    
+    @Override
+    public PropertyValue getCurrentEditPropertyValue() {
+        return getItemController().getCurrentEditPropertyValue(); 
+    }
+    
+    @Override
+    public void setCurrentEditPropertyValue(PropertyValue currentEditPropertyValue) {
+        getItemController().setCurrentEditPropertyValue(currentEditPropertyValue);
+    }
+
+    @Override
+    public void performUpdateOperations(Item entity) throws CdbException, RuntimeException {
+        getItemController().performUpdateOperations(entity);
+    }
+    
+    public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
+        getItemController().addCdbEntityWarningSystemLog(warningMessage, exception, entity);
+    }
+    
+    public void savePropertyList() {
+        getItemController().savePropertyList();
+    }
+            
 }

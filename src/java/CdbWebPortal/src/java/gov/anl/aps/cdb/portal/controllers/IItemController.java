@@ -6,9 +6,11 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.List;
 import javax.faces.model.DataModel;
@@ -529,6 +531,24 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
     public String update(); 
     
     /**
+    * Perform all necessary operations to update an item.
+    * 
+    * @param entity
+    * @throws CdbException
+    * @throws RuntimeException 
+    */
+    public void performUpdateOperations(ItemDomainEntity entity) throws CdbException, RuntimeException;
+    
+    /**
+     * Add a system log message 
+     * 
+     * @param warningMessage
+     * @param exception
+     * @param entity 
+     */
+    public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity);
+    
+    /**
      * Get boolean if a value is filterable 
      * 
      * @return 
@@ -584,5 +604,43 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return 
      */
     public List<ItemDomainEntity> getItemList();
+    
+    /**
+     * Functionality allows for adding a certain property type for current item.
+     * 
+     * @param propertyType
+     * @return 
+     */
+    public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType);
+    
+    /**
+     * Functionality restored the item to a state before the dialog was opened (dialog). 
+     */
+    public void restoreCurrentEditPropertyValueToOriginalState(); 
+    
+    /**
+     * Functionality saves the edits made to the currently edit property.
+     */
+    public void updateEditProperty(); 
+    
+    /**
+     * Functionality deletes the single property currently being edited.
+     */
+    public void deleteCurrentEditPropertyValue();
+    
+    /**
+     * Get current edit property value for application single property edits. 
+     */
+    public PropertyValue getCurrentEditPropertyValue();
+
+    /**
+     * Set current edit property value for application single property edits. 
+     */
+    public void setCurrentEditPropertyValue(PropertyValue currentEditPropertyValue);
+    
+    /**
+     * Save the list of properties for current item.
+     */
+    public void savePropertyList();
     
 }
