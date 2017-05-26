@@ -10,7 +10,8 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <ui:fragment>
-        <p:outputPanel id="travelerTemplatePropertyValueDataTableValueEditPanel#{propertyValueObject.id}">
+        <p:outputPanel id="travelerTemplatePropertyValueDataTableValueEditPanel#{propertyValueObject.id}"
+                       styleClass="inlineOutputPanel">
             
             <ui:param name="actionForTravelerTemplate" value='#{propertyValueObject.value != "" ? "Edit" : "Add" }' />
             

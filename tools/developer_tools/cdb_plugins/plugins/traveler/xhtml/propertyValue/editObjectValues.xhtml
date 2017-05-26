@@ -9,11 +9,11 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
-                               == "travelerTemplatePropertyValueEditPanel"}' styleClass="longCellInput">
+                               == "travelerTemplatePropertyValueEditPanel"}' styleClass="longCellInput inlineOutputPanel">
         <ui:include src="../support/travelerTemplatePropertyValueEditPanel.xhtml"/>
     </p:outputPanel>
     <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
-                               == "travelerInstancePropertyValueEditPanel"}' styleClass="longCellInput">
+                               == "travelerInstancePropertyValueEditPanel"}' styleClass="longCellInput inlineOutputPanel">
         <ui:include src="../support/travelerInstancePropertyValueEditPanel.xhtml"/>
     </p:outputPanel>
 
