@@ -28,7 +28,7 @@ See LICENSE file.
     <ui:include src="domainEntityPropertyListDataTable.xhtml"/>
 
     <p:remoteCommand name="show#{entityTypeName}SinglePropertySelectDialogWidget"
-                     action="#{entityController.removeCurrentEditPropertyValue()}"
+                     action="#{entityController.restoreCurrentEditPropertyValueToOriginalState()}"
                      oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()"
                      update="#{entityTypeName}SinglePropertyEditDialog"
                      />
