@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="multiEditSelectSpecificPropertyValueDialog"
+              widgetVar="multiEditSelectSpecificPropertyValueDialogWidget"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog"
+              header="Select specific property value for the multi edit screen."
+              modal="true">
+        <ui:param name="currentMultiEditPropertyRecord"
+                  value="#{entityController.currentMultiEditPropertyRecord}" />
+
+        <p:outputPanel rendered="#{currentMultiEditPropertyRecord != null}">
+            <p:dataTable value="#{currentMultiEditPropertyRecord.relatedPropertyValueList}"
+                         var="relatedPropertyValue"
+                         selection="#{currentMultiEditPropertyRecord.propertyValue}"
+                         rowKey="#{relatedPropertyValue.viewUUID}">
+
+                <p:ajax event="rowSelect" 
+                        onstart="PF('loadingDialog').show();"
+                        update="@form"
+                        oncomplete="PF('loadingDialog').hide();
+                        PF('multiEditSelectSpecificPropertyValueDialogWidget').hide()"/>
+
+                <p:column selectionMode="single" />
+
+                <p:column headerText="Tag">
+                    <h:outputText value="#{relatedPropertyValue.tag}" />
+                </p:column>
+
+                <p:column headerText="Value">
+                    <ui:include src="../../propertyValue/private/propertyValueListObjectValue.xhtml">
+                        <ui:param name="propertyValueObject"
+                                  value="#{relatedPropertyValue}" />
+                    </ui:include>
+                </p:column>
+
+                <f:facet name="footer">
+                    <p:commandButton value="Update Selected Property Value"
+                                     onstart="PF('loadingDialog').show();"
+                                     update="@form"
+                                     oncomplete="PF('loadingDialog').hide();
+                                     PF('multiEditSelectSpecificPropertyValueDialogWidget').hide()"/>
+                </f:facet>
+            </p:dataTable>
+        </p:outputPanel>
+
+    </p:dialog>
+</ui:composition>
