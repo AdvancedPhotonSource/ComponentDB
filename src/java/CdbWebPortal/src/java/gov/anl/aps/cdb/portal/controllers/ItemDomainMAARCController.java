@@ -59,16 +59,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     @Override
-    public boolean getEntityDisplayItemIdentifier1() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayItemName() {
         return true;
     }
@@ -126,16 +116,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return false;
-    }
-
-    @Override
-    public String getItemIdentifier1Title() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getItemIdentifier2Title() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

@@ -305,16 +305,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
             displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
         }
         return displayInventorySpares;
-    }  
-    
-    @Override
-    public boolean getEntityDisplayItemIdentifier1() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return true;
     }
 
     @Override
@@ -335,16 +325,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     @Override
     public boolean getEntityDisplayQrId() {
         return false;
-    }
-
-    @Override
-    public String getItemIdentifier1Title() {
-        return "Model Number";
-    }
-
-    @Override
-    public String getItemIdentifier2Title() {
-        return "Alternate Name";
     }
 
     @Override

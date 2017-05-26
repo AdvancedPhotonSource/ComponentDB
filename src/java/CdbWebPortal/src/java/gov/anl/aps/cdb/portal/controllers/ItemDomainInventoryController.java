@@ -1527,16 +1527,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public boolean getEntityDisplayItemIdentifier1() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayItemSources() {
         return false;
     }
@@ -1554,11 +1544,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public boolean getEntityDisplayQrId() {
         return true;
-    }
-
-    @Override
-    public String getItemIdentifier1Title() {
-        return "Serial Number";
     }
 
     @Override
@@ -1619,11 +1604,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public String getDefaultDomainDerivedFromDomainName() {
         return DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME;
-    }
-
-    @Override
-    public String getItemIdentifier2Title() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
