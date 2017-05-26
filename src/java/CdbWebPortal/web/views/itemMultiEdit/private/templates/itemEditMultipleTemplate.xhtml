@@ -37,43 +37,56 @@ See LICENSE file.
                 </p:outputPanel>
                 <p:outputPanel rendered="#{entityController.renderUpdateItems}">
                     <br/>
-                    <p:accordionPanel>
-                        <p:tab title="Update Options">
+                    <p:accordionPanel id="editOptionsAccordionPanel">
+                        <p:tab title="General">
                             <ui:include src="../itemMultiEditUpdateOptionsPanelGrid.xhtml" />                                                        
                         </p:tab>
+                        <p:tab title="Properties">
+                            <p:commandButton value="Select Property Types"
+                                             oncomplete="PF('#{entityTypeName}PropertySelectDialogWidget').show()"/>
+                            
+                                <p:repeat value="#{entityController.selectedPropertyTypesForEditing}"
+                                          var="selectedPropertyType">
+                                    <p:panelGrid columns="4" >
+
+                                        <h:outputText value="#{selectedPropertyType.name}"/>
+                                        <p:commandButton value="Add to all Missing Property" 
+                                                         action="#{entityController.addPropertyTypeToRestItems(selectedPropertyType)}"
+                                                         onstart="PF('loadingDialog').show()"
+                                                         oncomplete="PF('loadingDialog').hide()"
+                                                         update="@form:#{entityTypeName}MultiEditItemDataTable" />
+
+                                        <p:column>
+                                            <p:commandLink styleClass="fa fa-link-icon fa-times" 
+                                                           onstart="PF('loadingDialog').show()"
+                                                           oncomplete="PF('loadingDialog').hide()"
+                                                           action="#{entityController.removePropertyTypeForEditing(selectedPropertyType)}"
+                                                           update="@form"
+                                                           title="Remove from multi-edit"/>
+                                            <p:commandLink styleClass="fa fa-link-icon fa-pencil" 
+                                                           rendered="#{false}"
+                                                           onstart="PF('loadingDialog').show()"
+                                                           oncomplete="PF('loadingDialog').hide()"
+                                                           update="@form:#{entityTypeName}PropertySelectDialog
+                                                                   @form:#{entityTypeName}MultiEditItemDataTable
+                                                                   @from:editOptionsAccordionPanel"
+                                                           title="Remove from update list"/>
+                                        </p:column>
+
+
+                                    </p:panelGrid>
+                                </p:repeat>
+                        </p:tab>                            
                     </p:accordionPanel>
 
-                    <ui:include src="../itemMultiEditEditableDataTable.xhtml" />                  
+                    <ui:include src="../itemMultiEditEditableDataTable.xhtml" />
+                    
+                    <ui:include src="../itemMultiEditEditableListSupport.xhtml" />                    
+                    
                 </p:outputPanel>
-                
-                <br/>
-                <p:outputPanel style="display: grid">
-                    <div>
-                        <div style="float: left;">
-                            <p:commandButton value="Previous Step" 
-                                             rendered="#{entityController.renderPreviousButton}"
-                                             action="#{entityController.goToPrevStep()}"
-                                             icon="ui-icon-arrowthick-1-w"
-                                             update="@form"/>
-                            <ui:include src="../../../common/private/commonCreateCancelButton.xhtml" />
-                        </div>
-                        <div style="float: right;">                        
-                            <p:commandButton value="Update All"
-                                             icon="ui-icon-disk"
-                                             rendered="#{entityController.renderUpdateAllButton}"
-                                             update="@form"
-                                             action="#{entityController.updateSelectedItems()}" />
-                            <p:commandButton value="Next Step" 
-                                             rendered="#{entityController.renderNextButton}"                                             
-                                             id="#{entityTypeName}createWizardNextStep"
-                                             action="#{entityController.goToNextStep()}"
-                                             icon="ui-icon-arrowthick-1-e"
-                                             iconPos="right"
-                                             update="@form"/>
 
-                        </div>
-                    </div>
-                </p:outputPanel>
+                <br/>
+                <ui:include src="../itemMultiEditNavigation.xhtml"/> 
 
             </p:outputPanel>
         </h:form>
