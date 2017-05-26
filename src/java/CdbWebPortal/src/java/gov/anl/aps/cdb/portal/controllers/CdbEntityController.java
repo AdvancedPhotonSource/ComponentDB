@@ -778,7 +778,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @param exception - [OPTIONAL] will append the message of the exception. 
      * @param entity - [OPTIONAL] will append the toString of the entity. 
      */
-    private void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
+    public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
         if (entity != null) {
             warningMessage += ": " + entity.toString(); 
         }
@@ -893,16 +893,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public String update() {
         try {
-            logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
-            prepareEntityUpdate(current);
-            EntityType updatedEntity = getEntityDbFacade().edit(current);
-            completeEntityUpdate(current);
+            performUpdateOperations(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
-            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + current.toString());
-            resetListDataModel();
-            resetSelectDataModel();
-            resetLogText();
-            setCurrent(updatedEntity);
             return viewForCurrentEntity();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -916,6 +908,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             addCdbEntityWarningSystemLog("Failed to update", ex, current);
             return null;
         }
+    }
+    
+    public void performUpdateOperations(EntityType entity) throws CdbException, RuntimeException {
+        logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
+        prepareEntityUpdate(entity);
+        EntityType updatedEntity = getEntityDbFacade().edit(entity);
+        completeEntityUpdate(entity);        
+        addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
+        resetListDataModel();
+        resetSelectDataModel();
+        resetLogText();
+        setCurrent(updatedEntity);
     }
 
     public void reloadCurrent() {
