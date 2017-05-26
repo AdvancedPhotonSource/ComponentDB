@@ -63,19 +63,10 @@ See LICENSE file.
 
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
 
-    <ui:include src="../../propertyValue/private/propertyValueImageUploadDialog.xhtml">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="saveAction" value="savePropertyList"/>
-    </ui:include>
-
-    <ui:include src="../../propertyValue/private/propertyValueDocumentUploadDialog.xhtml">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="saveAction" value="savePropertyList"/>
-    </ui:include>
-
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
     
-    <ui:include src="../../plugins/private/propertyEditListSupport.xhtml" />
+    <ui:include src="../../propertyValue/private/propertyValueEditListSupport.xhtml" />
+    
 </ui:composition>
 
 
