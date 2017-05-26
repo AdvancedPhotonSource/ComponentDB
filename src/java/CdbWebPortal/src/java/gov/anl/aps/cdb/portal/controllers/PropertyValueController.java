@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
@@ -37,6 +38,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     public PropertyValueController() {
         super();
+    }
+    
+    public static PropertyValueController getInstance() {
+        return (PropertyValueController) SessionUtility.findBean("propertyValueController");
     }
 
     @Override
