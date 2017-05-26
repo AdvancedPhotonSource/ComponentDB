@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:columns value="#{entityController.selectedPropertyTypesForEditing}"
+               var="propertyTypeObject">
+        <f:facet name="header">
+            #{propertyTypeObject.name}
+        </f:facet>
+
+        <ui:param name="multiEditPropertyRecord" value="#{entityController.getMultiEditPropertyRecordForItem(propertyTypeObject, itemObject)}" />
+        <ui:param name="propertyValueObject" value="#{multiEditPropertyRecord.propertyValue}" />
+
+        <p:outputPanel rendered="#{propertyValueObject != null}" 
+                       styleClass="inlineOutputPanel">  
+            <ui:include src="../../propertyValue/private/propertyValueEditObjectValue.xhtml" />
+            <p:commandLink styleClass="fa fa-link-icon fa-search-plus" 
+                           rendered="#{multiEditPropertyRecord.itemHasMoreThanOneOfSameType}"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();
+                           PF('multiEditSelectSpecificPropertyValueDialogWidget').show()"
+                           update="@form:multiEditSelectSpecificPropertyValueDialog"
+                           title="Select specific property value">
+                <f:setPropertyActionListener value="#{multiEditPropertyRecord}"
+                                             target="#{entityController.currentMultiEditPropertyRecord}" />
+            </p:commandLink>
+            <p:commandLink styleClass="fa fa-link-icon fa-pencil"
+                           action="#{entityController.prepareEditSingleProperty(multiEditPropertyRecord)}"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();
+                           PF('#{entityTypeName}SinglePropertyEditDialogWidget').show();"                               
+                           update="@form:#{entityTypeName}SinglePropertyEditDialog"
+                           title="Edit attributes of the property value."/>
+        </p:outputPanel>
+
+        <p:commandLink styleClass="fa fa-link-icon fa-plus"
+                       action="#{entityController.addPropertyValueForItem(multiEditPropertyRecord)}"
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide();"
+                       update="@form:#{entityTypeName}MultiEditItemDataTable"
+                       title="Add #{propertyValueObject != null ? 'additional ' : ''}property value of this property type."/>
+    </p:columns>
+
+</ui:composition>
