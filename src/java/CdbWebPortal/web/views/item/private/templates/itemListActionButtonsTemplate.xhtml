@@ -13,6 +13,7 @@ See LICENSE file.
         <ui:param name="itemMultiEditController"
                   value="#{entityController.itemMultiEditController}" />
         <p:commandButton value="Edit Multiple Items"
+                         icon="fa fa-object-group"
                          action="#{itemMultiEditController.prepareEditMultipleItems()}"
                          rendered="#{itemMultiEditController != null and loginController.loggedIn}"/> 
         <ui:insert name="additonalListButtons"/>
