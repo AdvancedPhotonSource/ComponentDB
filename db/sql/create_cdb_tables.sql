@@ -308,6 +308,8 @@ CREATE TABLE `domain` (
   `description` varchar(256) DEFAULT NULL,
   `item_identifier1_label` varchar(32) DEFAULT NULL,
   `item_identifier2_label` varchar(32) DEFAULT NULL, 
+  `item_type_label` varchar(32) DEFAULT NULL,
+  `item_category_label` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `domain_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
