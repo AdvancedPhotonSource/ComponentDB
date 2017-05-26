@@ -140,7 +140,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         this.currentEditPropertyValue = currentEditPropertyValue;
     }
 
-    public void removeCurrentEditPropertyValue() {
+    public void restoreCurrentEditPropertyValueToOriginalState() {
         if (currentEditPropertyValue != null) {
             EntityType cdbDomainEntity = getCurrent();
             if (currentEditPropertyValue.getId() == null) {
