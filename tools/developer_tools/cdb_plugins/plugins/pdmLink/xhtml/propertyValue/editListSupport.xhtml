@@ -7,10 +7,15 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="defaultPropertyValueUpdateTarget"
+              value="#{entityTypeName}PropertyEditListDataTable" />
 
     <ui:include src="../support/pdmLinkPropertyValueSearchDialog.xhtml" >
         <ui:param name="propertyValueUpdateTarget"
-                  value="#{entityTypeName}PropertyEditListDataTable" />  
+                  value="#{propertyValueUpdateTarget != null 
+                           ? propertyValueUpdateTarget 
+                           : defaultPropertyValueUpdateTarget}" />  
     </ui:include>
 
 </ui:composition>
