@@ -150,6 +150,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected ItemCreateWizardController getItemCreateWizardController() {
         return null; 
     }
+
+    /**
+     * Forwarding to CdbEntityController allows the function to be called from extensions.  
+     */
+    @Override
+    public void performUpdateOperations(ItemDomainEntity entity) throws CdbException, RuntimeException {
+        super.performUpdateOperations(entity); 
+    }
     
     public ItemMultiEditController getItemMultiEditController() {
         return null; 
@@ -172,11 +180,39 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public String getItemItemTypeTitle() {
-        return getDefaultDomain().getItem_identifier1_label();
+        if (getDefaultDomain() != null) {
+            return getDefaultDomain().getItemTypeLabel();
+        }
+        return null; 
     }
 
     public String getItemItemCategoryTitle() {
-        return getDefaultDomain().getItem_identifier2_label();
+        if (getDefaultDomain() != null) {
+            return getDefaultDomain().getItemCategoryLabel();
+        }
+        return null; 
+    }
+    
+    public String getItemIdentifier1Title() {
+        if (getDefaultDomain() != null) {
+            return getDefaultDomain().getItemIdentifier1Label();
+        }
+        return null;         
+    }
+    
+    public String getItemIdentifier2Title() {
+        if (getDefaultDomain() != null) {
+            return getDefaultDomain().getItemIdentifier2Label();
+        }
+        return null;         
+    }
+    
+    public boolean getEntityDisplayItemIdentifier1() {
+        return getItemIdentifier1Title() != null; 
+    }
+    
+    public boolean getEntityDisplayItemIdentifier2() {
+        return getItemIdentifier2Title() != null; 
     }
     
     public boolean getEntityDisplayItemType() {
