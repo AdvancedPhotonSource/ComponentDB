@@ -418,7 +418,6 @@ tr:hover .actionLink {
 }
 
 input, textarea {
-    background: #f2f4f7;
     box-shadow: 0px 3px 5px #d5d5d5;
     width: 300px;
 }
@@ -791,8 +790,12 @@ h2 {
     table-layout: auto !important;
 }
 
+.ui-panelgrid > tbody > tr.ui-widget-content, .ui-panelgrid-even, .ui-panelgrid-odd {
+    background: transparent;
+}
+
 .ui-panelgrid .ui-panelgrid-cell {
-    background: #f2f4f7;
+    background: transparent;
     border-style: none;
     font-weight: bold;
 }
@@ -925,7 +928,6 @@ h2 {
 
 .wideListBox .ui-selectlistbox-listcontainer {
     width: 200px !important; 
-
 }
 
 .wideListBox {
@@ -1128,6 +1130,10 @@ h2 {
 
 .padded {
     padding: 10px;
+}
+
+.inlineOutputPanel {
+    display: inline; 
 }
 
 .fa-link-icon {
