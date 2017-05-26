@@ -7,62 +7,15 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:dataTable id="#{entityTypeName}MultiEditItemDataTable"
                  value="#{entityController.selectedItemsToEdit}"
-                 var="itemObject">
-        
-        <p:column headerText="#{entityController.derivedFromItemTitle}"
-                  rendered="#{entityController.entityDisplayDerivedFromItem}"
-                  groupRow="#{entityController.entityDisplayDerivedFromItem}">
-            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemDerivedFromItem.xhtml" />
-        </p:column>
-        
-        <p:column headerText="Name">
-            <h:inputText value="#{itemObject.name}"/>                            
-        </p:column>
-
-        <p:column headerText="#{entityController.itemIdentifier1Title}" 
-                  rendered="#{entityController.updateItemIdentifier1 and entityController.entityDisplayItemIdentifier1}">
-            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml"/>
-        </p:column>
-
-        <p:column headerText="#{entityController.itemIdentifier2Title}" 
-                  rendered="#{entityController.updateItemIdentifier2 and entityController.entityDisplayItemIdentifier2}">
-            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml"/>
-        </p:column>
-
-        <p:column id="itemProjectColumn"
-                  headerText="Project"
-                  rendered="#{entityController.entityDisplayItemProject 
-                              and entityController.updateProject}" >
-            
-                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml">
-                    <ui:param name="onHideUpdateTarget" value="#{entityTypeName}MultiEditItemDataTable" />
-                </ui:include>            
-        </p:column>
-
-        <p:column headerText="Description"
-                  rendered="#{entityController.updateDescription}">
-            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml"/>
-        </p:column>  
-
-        <p:column headerText="QrId"
-                  rendered="#{entityController.updateQrId and entityController.entityDisplayQrId}">
-            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
-        </p:column>
-
-        <p:column headerText="Action">
-            <p:commandLink id="#{entityTypeName}MulitEditListRemoveSelection" 
-                           action="#{entityController.removeSelection(itemObject)}"
-                           styleClass="ui-icon ui-icon-close" 
-                           onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide()"
-                           update="@form"
-                           title="Remove from update list"/>
-        </p:column>
-
+                 rowKey="#{itemObject.viewUUID}MultiEditItemDataTableRow"
+                 var="itemObject"
+                 rowIndexVar="rowIndex">
+        <ui:include src="itemMultiEditEditableListObject.xhtml" />
     </p:dataTable>
-   
+    
 </ui:composition>
