@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -51,9 +52,17 @@ public class Domain extends CdbEntity implements Serializable {
     @Size(max = 256)
     private String description;
     @Size(max = 32)
-    private String item_identifier1_label;    
+    @Column(name = "item_identifier1_label")
+    private String itemIdentifier1Label;    
     @Size(max = 32)
-    private String item_identifier2_label;    
+    @Column(name = "item_identifier2_label")
+    private String itemIdentifier2Label;
+    @Size(max = 32)
+    @Column(name = "item_type_label")
+    private String itemTypeLabel;
+    @Size(max = 32)
+    @Column(name = "item_category_label")
+    private String itemCategoryLabel;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "domain")
     private List<Item> itemList;
     @OneToMany(mappedBy = "domain")
@@ -104,12 +113,28 @@ public class Domain extends CdbEntity implements Serializable {
         this.description = description;
     }
 
-    public String getItem_identifier1_label() {
-        return item_identifier1_label;
+    public String getItemIdentifier1Label() {
+        return itemIdentifier1Label;
     }
 
-    public String getItem_identifier2_label() {
-        return item_identifier2_label;
+    public String getItemIdentifier2Label() {
+        return itemIdentifier2Label;
+    }
+
+    public String getItemTypeLabel() {
+        return itemTypeLabel;
+    }
+
+    public void setItemTypeLabel(String itemTypeLabel) {
+        this.itemTypeLabel = itemTypeLabel;
+    }
+
+    public String getItemCategoryLabel() {
+        return itemCategoryLabel;
+    }
+
+    public void setItemCategoryLabel(String itemCategoryLabel) {
+        this.itemCategoryLabel = itemCategoryLabel;
     }
 
     @XmlTransient
