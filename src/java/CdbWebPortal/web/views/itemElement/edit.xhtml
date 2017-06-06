@@ -31,6 +31,7 @@ See LICENSE file.
 
                 <p/>
                 <ui:param name="itemElementObject" value="#{itemElementController.selected}"/>
+                <ui:param name="currentObject" value="#{itemElementObject}" />
                 <ui:param name="entityController" value="#{itemElementController}"/>
                 <div class="actionButton">
                     <p:commandButton id="itemElementEditViewButton" action="#{itemElementController.view()}" 

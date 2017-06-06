@@ -28,6 +28,7 @@ See LICENSE file.
                 </div>
                 
                 <ui:param name="itemElementObject" value="#{itemElementController.selected}"/>
+                <ui:param name="currentObject" value="#{itemElementObject}" />
                 <ui:param name="entityController" value="#{itemElementController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemElementObject.entityInfo)}"/>
                 

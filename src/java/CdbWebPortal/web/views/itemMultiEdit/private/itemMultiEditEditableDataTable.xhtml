@@ -13,9 +13,11 @@ See LICENSE file.
     <p:dataTable id="#{entityTypeName}MultiEditItemDataTable"
                  value="#{entityController.selectedItemsToEdit}"
                  rowKey="#{itemObject.viewUUID}MultiEditItemDataTableRow"
-                 var="itemObject"
-                 rowIndexVar="rowIndex">
-        <ui:include src="itemMultiEditEditableListObject.xhtml" />
+                 var="currentObject"
+                 rowIndexVar="rowIndex">        
+        <ui:include src="itemMultiEditEditableListObject.xhtml" >
+            <ui:param name="itemObject" value="#{currentObject}" />
+        </ui:include>
     </p:dataTable>
     
 </ui:composition>
