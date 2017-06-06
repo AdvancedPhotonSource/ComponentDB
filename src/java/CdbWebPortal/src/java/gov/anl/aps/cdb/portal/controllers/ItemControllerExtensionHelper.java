@@ -23,7 +23,7 @@ import javax.faces.model.SelectItem;
  * 
  * @author djarosz
  */
-public abstract class ItemControllerExtensionHelper implements IItemController {
+public abstract class ItemControllerExtensionHelper implements IItemController<Item, ItemSettings> {
     
     protected abstract ItemController getItemController(); 
     
@@ -233,7 +233,7 @@ public abstract class ItemControllerExtensionHelper implements IItemController {
     @Override
     public void checkItemUniqueness(Item item) throws CdbException {
         getItemController().checkItemUniqueness(item);
-    }
+    } 
     
     @Override
     public void setCurrent(Item current) {

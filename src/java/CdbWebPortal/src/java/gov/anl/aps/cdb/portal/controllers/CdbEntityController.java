@@ -51,7 +51,7 @@ import org.primefaces.component.datatable.DataTable;
  * @param <EntityType> CDB entity type
  * @param <FacadeType> CDB DB facade type
  */
-public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable {   
+public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable, ICdbEntityController<EntityType> {   
 
     private final String CDB_ENTITY_INFO_LOG_LEVEL = "cdbEntityInfo";
     private final String CDB_ENTITY_WARNING_LOG_LEVEL = "cdbEntityWarning";

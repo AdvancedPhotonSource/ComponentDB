@@ -20,7 +20,7 @@ import javax.faces.model.SelectItem;
  * Interface specifies all necessary functions for item controllers. 
  * - Many functions are required by the item views. 
  */
-public interface IItemController<ItemDomainEntity extends Item, SettingObject extends ItemSettings> {
+public interface IItemController<ItemDomainEntity extends Item, SettingObject extends ItemSettings> extends ICdbDomainEntityController<ItemDomainEntity> {
 
     /**
      * Default domain of items managed by the controller.
@@ -335,21 +335,7 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @param item
      * @throws CdbException 
      */
-    public void checkItemUniqueness(Item item) throws CdbException;
-    
-    /**
-     * Get item currently being viewed/edited by the user.
-     * 
-     * @param current 
-     */
-    public void setCurrent(ItemDomainEntity current);
-    
-    /**
-     * Set item currently being viewed/edited by the user.
-     * 
-     * @return 
-     */
-    public ItemDomainEntity getCurrent();
+    public void checkItemUniqueness(Item item) throws CdbException;        
     
     /**
      * determines if item project is required.
@@ -603,44 +589,6 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * 
      * @return 
      */
-    public List<ItemDomainEntity> getItemList();
-    
-    /**
-     * Functionality allows for adding a certain property type for current item.
-     * 
-     * @param propertyType
-     * @return 
-     */
-    public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType);
-    
-    /**
-     * Functionality restored the item to a state before the dialog was opened (dialog). 
-     */
-    public void restoreCurrentEditPropertyValueToOriginalState(); 
-    
-    /**
-     * Functionality saves the edits made to the currently edit property.
-     */
-    public void updateEditProperty(); 
-    
-    /**
-     * Functionality deletes the single property currently being edited.
-     */
-    public void deleteCurrentEditPropertyValue();
-    
-    /**
-     * Get current edit property value for application single property edits. 
-     */
-    public PropertyValue getCurrentEditPropertyValue();
-
-    /**
-     * Set current edit property value for application single property edits. 
-     */
-    public void setCurrentEditPropertyValue(PropertyValue currentEditPropertyValue);
-    
-    /**
-     * Save the list of properties for current item.
-     */
-    public void savePropertyList();
+    public List<ItemDomainEntity> getItemList();        
     
 }

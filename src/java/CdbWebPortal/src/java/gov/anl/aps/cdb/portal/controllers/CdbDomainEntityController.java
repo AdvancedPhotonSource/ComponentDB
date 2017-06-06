@@ -35,7 +35,7 @@ import org.primefaces.event.RowEditEvent;
  * @param <EntityType>
  * @param <FacadeType>
  */
-public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable {
+public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable, ICdbDomainEntityController<EntityType> {
 
     private PropertyValue currentEditPropertyValue;
 
