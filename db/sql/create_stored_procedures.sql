@@ -56,14 +56,17 @@ CREATE FUNCTION `is_record_unique`
 	 found_record_id INT)
 RETURNS BOOLEAN
 BEGIN 
+	# Check for new items.
 	IF ISNULL(existing_record_id)
 	THEN
 		RETURN (row_count < 1);
+	# One row was found, checks that its not same item. 
 	ELSEIF row_count = 1
-	THEN 
+	THEN
 		RETURN (existing_record_id = found_record_id);
+	# Multiple rows or less than one row was found.
 	ELSE
-		RETURN FALSE;
+		RETURN (row_count < 1);
 	END IF;
 END//
 
