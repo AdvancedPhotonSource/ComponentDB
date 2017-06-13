@@ -131,8 +131,15 @@ BEGIN
 	WHERE d.id = domain_id
 	LIMIT 1;
 
+	IF item_identifier1 = '' THEN
+		SET item_identifier1 = NULL;
+	END IF;
+	IF item_identifier2 = '' THEN
+		SET item_identifier2 = NULL;
+	END IF;
+
 	IF ISNULL(item_identifier1_label) AND NOT ISNULL(item_identifier1)
-	THEN
+	THEN		
 		SET error_message = 'Item_identifier1 cannot be specified for item of this domain';
 	END IF;
 
