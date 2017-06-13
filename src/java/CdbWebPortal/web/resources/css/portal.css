@@ -591,6 +591,7 @@ h2 {
     font-size:  20px;
     font-weight: bold;
     color: #4e80b6;
+    padding: 6px;
 }
 
 .shortFilterBox {
@@ -815,9 +816,20 @@ h2 {
     border-color: black; 
 }
 
-.newItemInRow {
-    background: #99e699;
-    height: 80px;
+.ui-datatable-even.newItemInRow {
+    background: #eafff0;    
+}
+
+.ui-datatable-odd.newItemInRow {
+    background: #ccf9d9;    
+}
+
+.ui-datatable-even.errorItemInRow {
+    background: #ffdbdb;
+}
+
+.ui-datatable-odd.errorItemInRow {
+    background: #ffc1c1;
 }
 
 .createWizardPanel {
