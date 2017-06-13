@@ -37,6 +37,10 @@ See LICENSE file.
     <ui:param name="itemSelectionMadeWithResetRemoteCommand" value="#{entityTypeName}ItemSelectionMadeWithReset" />
     <ui:param name="itemSelectionMadeRemoteCommand" value="#{entityTypeName}ItemSelectionMade" />
     <ui:param name="selectionRemoteComandName" value="#{selectionWithResetEnabled ? itemSelectionMadeWithResetRemoteCommand : itemSelectionMadeRemoteCommand}" />
+    
+    <ui:param name="immediateUpdate"
+              value="#{immediateUpdate != null ? immediateUpdate : false}" />
+              
 
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
                  var="itemListObject" 
@@ -78,6 +82,7 @@ See LICENSE file.
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
                      onstart="PF('loadingDialog').show();"
                      update="#{updateTarget}"      
+                     immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();"
                      >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
@@ -89,6 +94,7 @@ See LICENSE file.
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMadeWithReset"
                      onstart="PF('loadingDialog').show();"
                      update="#{updateTarget}" 
+                     immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();"
                     >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
