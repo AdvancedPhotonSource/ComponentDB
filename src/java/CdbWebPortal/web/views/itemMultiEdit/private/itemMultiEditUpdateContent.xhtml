@@ -10,14 +10,54 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:dataTable id="#{entityTypeName}MultiEditItemDataTable"
-                 value="#{entityController.selectedItemsToEdit}"
-                 rowKey="#{itemObject.viewUUID}MultiEditItemDataTableRow"
-                 var="currentObject"
-                 rowIndexVar="rowIndex">        
-        <ui:include src="itemMultiEditEditableListObject.xhtml" >
-            <ui:param name="itemObject" value="#{currentObject}" />
-        </ui:include>
-    </p:dataTable>
-    
+    <p:outputPanel rendered="#{renderUpdateItems}">
+        <br/>
+        <p:accordionPanel id="editOptionsAccordionPanel">
+            <p:tab title="General">
+                <ui:include src="itemMultiEditUpdateOptionsPanelGrid.xhtml" />                                                        
+            </p:tab>
+            <p:tab title="Properties">
+                <p:commandButton value="Select Property Types"
+                                 oncomplete="PF('#{entityTypeName}PropertySelectDialogWidget').show()"/>
+
+                <p:repeat value="#{entityController.selectedPropertyTypesForEditing}"
+                          var="selectedPropertyType">
+                    <p:panelGrid columns="4" >
+
+                        <h:outputText value="#{selectedPropertyType.name}"/>
+                        <p:commandButton value="Add to all Missing Property" 
+                                         action="#{entityController.addPropertyTypeToRestItems(selectedPropertyType)}"
+                                         onstart="PF('loadingDialog').show()"
+                                         oncomplete="PF('loadingDialog').hide()"
+                                         update="@form:#{entityTypeName}MultiEditItemDataTable" />
+
+                        <p:column>
+                            <p:commandLink styleClass="fa fa-link-icon fa-times" 
+                                           onstart="PF('loadingDialog').show()"
+                                           oncomplete="PF('loadingDialog').hide()"
+                                           action="#{entityController.removePropertyTypeForEditing(selectedPropertyType)}"
+                                           update="@form"
+                                           title="Remove from multi-edit"/>
+                            <p:commandLink styleClass="fa fa-link-icon fa-pencil" 
+                                           rendered="#{false}"
+                                           onstart="PF('loadingDialog').show()"
+                                           oncomplete="PF('loadingDialog').hide()"
+                                           update="@form:#{entityTypeName}PropertySelectDialog
+                                           @form:#{entityTypeName}MultiEditItemDataTable
+                                           @from:editOptionsAccordionPanel"
+                                           title="Remove from update list"/>
+                        </p:column>
+
+
+                    </p:panelGrid>
+                </p:repeat>
+            </p:tab>                            
+        </p:accordionPanel>
+
+        <ui:include src="itemMultiEditEditableDataTable.xhtml" />
+
+        <ui:include src="itemMultiEditEditableListSupport.xhtml" />                    
+
+    </p:outputPanel>
+
 </ui:composition>
