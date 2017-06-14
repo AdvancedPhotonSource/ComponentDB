@@ -150,14 +150,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected ItemCreateWizardController getItemCreateWizardController() {
         return null; 
     }
-
-    /**
-     * Forwarding to CdbEntityController allows the function to be called from extensions.  
-     */
-    @Override
-    public void performUpdateOperations(ItemDomainEntity entity) throws CdbException, RuntimeException {
-        super.performUpdateOperations(entity); 
-    }
     
     public ItemMultiEditController getItemMultiEditController() {
         return null; 
@@ -1753,6 +1745,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
         return item;
+    }
+    
+    @Override
+    public final ItemDomainEntity createItemEntity() {
+        return createEntityInstance(); 
     }
 
     public Integer getDomainId() {
