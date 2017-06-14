@@ -6,8 +6,11 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
@@ -23,12 +26,16 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     
     private ItemDomainInventoryController itemDomainInventoryController = null; 
 
-    @Override
-    protected ItemController getItemController() {
+    public ItemDomainInventoryController getItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
             itemDomainInventoryController = ItemDomainInventoryController.getInstance();
         }
         return itemDomainInventoryController; 
+    }
+
+    @Override
+    protected ItemController getItemController() {
+        return getItemDomainInventoryController(); 
     }
 
     @Override
@@ -38,6 +45,31 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     
     public static ItemMultiEditDomainInventoryController getInstance() {
         return (ItemMultiEditDomainInventoryController) SessionUtility.findBean(controllerNamed);
+    }
+
+    @Override
+    public Item createItemEntity() {
+        Item item = super.createItemEntity();
+        // Create a bill of materials for later creating placeholder elements.         
+        List<ItemElement> itemElementDisplayList = derivedFromItemForNewItems.getItemElementDisplayList();
+        List<ItemElement> newItemItemElementList = item.getFullItemElementList();
+        
+        for (ItemElement catalogItemElement : itemElementDisplayList) {
+            ItemElement newItemElement = new ItemElement();
+            newItemElement.init(item, catalogItemElement);
+            newItemItemElementList.add(newItemElement);            
+        }
+        
+        return item; 
+    }
+
+    @Override
+    protected boolean checkCreateConfig() {
+        if (derivedFromItemForNewItems == null) {
+            SessionUtility.addErrorMessage("No Catalog Item Selected", "Please select a catalog item.");
+            return false; 
+        }
+        return true; 
     }
     
 }
