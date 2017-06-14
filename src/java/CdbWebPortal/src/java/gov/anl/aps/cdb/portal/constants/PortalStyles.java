@@ -6,7 +6,10 @@ package gov.anl.aps.cdb.portal.constants;
 
 public enum PortalStyles {
     favoritesOn("favoriteOn"),
-    favoritesOff("favoriteOff");
+    favoritesOff("favoriteOff"),
+    
+    rowStyleErrorInEntity("errorItemInRow"), 
+    rowStyleNewEntity("newItemInRow"); 
 
     private String value;
 
