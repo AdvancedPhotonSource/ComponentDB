@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
@@ -51,27 +52,27 @@ import org.primefaces.component.datatable.DataTable;
  * @param <EntityType> CDB entity type
  * @param <FacadeType> CDB DB facade type
  */
-public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable, ICdbEntityController<EntityType> {   
+public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable, ICdbEntityController<EntityType> {
 
     private final String CDB_ENTITY_INFO_LOG_LEVEL = "cdbEntityInfo";
     private final String CDB_ENTITY_WARNING_LOG_LEVEL = "cdbEntityWarning";
 
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
-    
+
     @EJB
     private LogTopicFacade logTopicFacade;
-    
+
     @EJB
     private SettingTypeFacade settingTypeFacade;
-    
-    protected SettingObject settingObject = null; 
+
+    protected SettingObject settingObject = null;
 
     protected EntityType current = null;
 
     protected DataModel listDataModel = null;
     protected DataTable listDataTable = null;
     protected boolean listDataModelReset = true;
-    protected List<EntityType> filteredObjectList = null;        
+    protected List<EntityType> filteredObjectList = null;
 
     protected DataModel selectDataModel = null;
     protected DataTable selectDataTable = null;
@@ -88,14 +89,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private String searchString = null;
     private boolean caseInsensitive = true;
     private LinkedList<SearchResult> searchResultList;
-        
+
     protected List<SettingType> settingTypeList;
 
     /**
      * Default constructor.
      */
     public CdbEntityController() {
-        settingObject = createNewSettingObject(); 
+        settingObject = createNewSettingObject();
     }
 
     /**
@@ -105,7 +106,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void initialize() {
         settingObject.updateSettings();
     }
-    
+
     protected abstract SettingObject createNewSettingObject();
 
     /**
@@ -124,7 +125,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void resetLogText() {
         logText = "";
         logTopicId = null;
-    }           
+    }
 
     /**
      * Abstract method for returning entity DB facade.
@@ -459,7 +460,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public void settingsAreReloaded() {
         resetListDataModel();
-    }   
+    }
 
     /**
      * Customize display for entity list.
@@ -482,7 +483,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
         logger.debug("Returning to page: " + returnPage);
         return returnPage;
-    }  
+    }
 
     /**
      * Reset list variables and associated filter values and data model.
@@ -744,6 +745,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return "/views/" + getEntityViewsDirectory();
     }
 
+    public String getEntityEditRowStyle(EntityType entity) {
+        if (entity.getPersitanceErrorMessage() != null) {
+            return PortalStyles.rowStyleErrorInEntity.getValue();
+        }
+        if (entity.getId() == null) {
+            return PortalStyles.rowStyleNewEntity.getValue();
+        }
+        return "";
+    }
+
     /**
      * Prepare entity insert.
      *
@@ -770,24 +781,25 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         }
         LogUtility.addSystemLog(logLevel, message);
     }
-    
+
     /**
-     * Allows the controller to quickly add a warning log entry while automatically appending appropriate info. 
-     * 
-     * @param warningMessage - Generic warning message. 
-     * @param exception - [OPTIONAL] will append the message of the exception. 
-     * @param entity - [OPTIONAL] will append the toString of the entity. 
+     * Allows the controller to quickly add a warning log entry while
+     * automatically appending appropriate info.
+     *
+     * @param warningMessage - Generic warning message.
+     * @param exception - [OPTIONAL] will append the message of the exception.
+     * @param entity - [OPTIONAL] will append the toString of the entity.
      */
     public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
         if (entity != null) {
-            warningMessage += ": " + entity.toString(); 
+            warningMessage += ": " + entity.toString();
         }
         if (exception != null) {
-            warningMessage += ". Exception - " + exception.getMessage(); 
+            warningMessage += ". Exception - " + exception.getMessage();
         }
-        
+
         addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, warningMessage);
-        
+
     }
 
     public String create() {
@@ -804,20 +816,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     public String create(Boolean silent, Boolean skipSystemLog) {
         try {
-            EntityType newEntity = current;
-            prepareEntityInsert(current);
-            getEntityDbFacade().create(current);
+            performCreateOperations(current, skipSystemLog);
             if (!silent) {
                 SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             }
-            if (!skipSystemLog) {
-                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created: " + current.toString());
-            }
-            resetListDataModel();
-            resetSelectDataModel();
-            // Best to reload the entity after creation to ensure all connections are updated and initalized. 
-            Object newEntityId = newEntity.getId();
-            current = findById((Integer) newEntityId);
             return view();
         } catch (CdbException ex) {
             logger.error("Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -838,6 +840,36 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
                 addCdbEntityWarningSystemLog("Failed to create", ex, current);
             }
             return null;
+        }
+    }
+
+    public void performCreateOperations(EntityType entity) throws CdbException, RuntimeException {
+        performCreateOperations(entity, false);
+    }
+
+    public void performCreateOperations(EntityType entity, boolean skipSystemLog) throws CdbException, RuntimeException {
+        try {
+            setCurrent(entity);
+            EntityType newEntity = entity;
+            prepareEntityInsert(entity);
+            getEntityDbFacade().create(entity);
+            resetListDataModel();
+            resetSelectDataModel();
+            // Best to reload the entity after creation to ensure all connections are updated and initalized. 
+            Object newEntityId = newEntity.getId();
+
+            if (!skipSystemLog) {
+                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created: " + entity.toString());
+            }
+            setCurrent(findById((Integer) newEntityId));
+
+            entity.setPersitanceErrorMessage(null);
+        } catch (CdbException ex) {
+            entity.setPersitanceErrorMessage(ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            entity.setPersitanceErrorMessage(ex.getMessage());
+            throw ex;
         }
     }
 
@@ -873,17 +905,17 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     protected void prepareEntityUpdate(EntityType entity) throws CdbException {
     }
-    
+
     /**
-     * Perform any addition actions after an entity has been updated. 
-     * 
-     * @param entity 
+     * Perform any addition actions after an entity has been updated.
+     *
+     * @param entity
      */
-    protected void completeEntityUpdate(EntityType entity) {        
+    protected void completeEntityUpdate(EntityType entity) {
     }
-    
+
     public void updateWithoutRedirect() {
-        update(); 
+        update();
     }
 
     /**
@@ -898,7 +930,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return viewForCurrentEntity();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
-            addCdbEntityWarningSystemLog("Failed to update", ex, current);            
+            addCdbEntityWarningSystemLog("Failed to update", ex, current);
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
@@ -909,17 +941,27 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
     }
-    
+
     public void performUpdateOperations(EntityType entity) throws CdbException, RuntimeException {
-        logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
-        prepareEntityUpdate(entity);
-        EntityType updatedEntity = getEntityDbFacade().edit(entity);
-        completeEntityUpdate(entity);        
-        addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
-        resetListDataModel();
-        resetSelectDataModel();
-        resetLogText();
-        setCurrent(updatedEntity);
+        try {
+            setCurrent(entity);
+            logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
+            prepareEntityUpdate(entity);
+            EntityType updatedEntity = getEntityDbFacade().edit(entity);
+            completeEntityUpdate(entity);
+            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
+            resetListDataModel();
+            resetSelectDataModel();
+            resetLogText();
+            setCurrent(updatedEntity);
+            entity.setPersitanceErrorMessage(null);
+        } catch (CdbException ex) {
+            entity.setPersitanceErrorMessage(ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            entity.setPersitanceErrorMessage(ex.getMessage());
+            throw ex;
+        }
     }
 
     public void reloadCurrent() {
@@ -991,11 +1033,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     protected void prepareEntityDestroy(EntityType entity) throws CdbException {
     }
-    
+
     /**
-     * Perform any additional actions upon successful removal of an entity. 
+     * Perform any additional actions upon successful removal of an entity.
      */
-    protected void completeEntityDestroy(EntityType entity) {        
+    protected void completeEntityDestroy(EntityType entity) {
     }
 
     /**
@@ -1053,7 +1095,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return prepareList();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
-            addCdbEntityWarningSystemLog("Failed to delete", ex, current);            
+            addCdbEntityWarningSystemLog("Failed to delete", ex, current);
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
@@ -1435,7 +1477,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public SettingObject getSettingObject() {
         return settingObject;
     }
-    
+
     /**
      * Get list of setting types.
      *
@@ -1484,7 +1526,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return true;
         }
         return false;
-    }   
+    }
 
     public String getBreadcrumbViewParam() {
         return breadcrumbViewParam;
@@ -1492,32 +1534,31 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public void setBreadcrumbViewParam(String breadcrumbViewParam) {
         this.breadcrumbViewParam = breadcrumbViewParam;
-    }   
-
-    /** TODO FIX exporter params
-     * 
-    public static void exportDataTableAsPdf(String dataTableId, String filename) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
-        Exporter exporter = new CdbPdfExporter();
-        exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
-        context.responseComplete();
     }
 
-    public static void exportDataTableAsXls(String dataTableId, String filename) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
-        Exporter exporter = new CdbExcelExporter();
-        exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
-        context.responseComplete();
-    }
-
-    public static void exportDataTableAsCsv(String dataTableId, String filename) throws IOException {
-        FacesContext context = FacesContext.getCurrentInstance();
-        DataTable dataTable = (DataTable) UiComponentUtility.findComponent(dataTableId);
-        Exporter exporter = new CdbCsvExporter();
-        exporter.export(context, dataTable, filename, false, false, "UTF-8", null, null);
-        context.responseComplete();
-    }
-    * */
+    /**
+     * TODO FIX exporter params
+     *
+     * public static void exportDataTableAsPdf(String dataTableId, String
+     * filename) throws IOException { FacesContext context =
+     * FacesContext.getCurrentInstance(); DataTable dataTable = (DataTable)
+     * UiComponentUtility.findComponent(dataTableId); Exporter exporter = new
+     * CdbPdfExporter(); exporter.export(context, dataTable, filename, false,
+     * false, "UTF-8", null, null); context.responseComplete(); }
+     *
+     * public static void exportDataTableAsXls(String dataTableId, String
+     * filename) throws IOException { FacesContext context =
+     * FacesContext.getCurrentInstance(); DataTable dataTable = (DataTable)
+     * UiComponentUtility.findComponent(dataTableId); Exporter exporter = new
+     * CdbExcelExporter(); exporter.export(context, dataTable, filename, false,
+     * false, "UTF-8", null, null); context.responseComplete(); }
+     *
+     * public static void exportDataTableAsCsv(String dataTableId, String
+     * filename) throws IOException { FacesContext context =
+     * FacesContext.getCurrentInstance(); DataTable dataTable = (DataTable)
+     * UiComponentUtility.findComponent(dataTableId); Exporter exporter = new
+     * CdbCsvExporter(); exporter.export(context, dataTable, filename, false,
+     * false, "UTF-8", null, null); context.responseComplete(); }
+     *
+     */
 }
