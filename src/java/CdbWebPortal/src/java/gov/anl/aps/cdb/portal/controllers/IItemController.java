@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.util.List;
 import javax.faces.model.DataModel;
@@ -514,16 +513,7 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      *
      * @return URL to current entity instance view page or null when exception occurs.
      */
-    public String update(); 
-    
-    /**
-    * Perform all necessary operations to update an item.
-    * 
-    * @param entity
-    * @throws CdbException
-    * @throws RuntimeException 
-    */
-    public void performUpdateOperations(ItemDomainEntity entity) throws CdbException, RuntimeException;
+    public String update();         
     
     /**
      * Add a system log message 
@@ -590,5 +580,20 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return 
      */
     public List<ItemDomainEntity> getItemList();        
+    
+    /**
+     * Forwarding function for create entity instance for the extension controllers.
+     * 
+     * @return 
+     */
+    public ItemDomainEntity createItemEntity(); 
+    
+    /**
+     * Checks if an item exists in the db. 
+     * 
+     * @param item
+     * @return 
+     */
+    public Boolean isItemExistInDb(Item item);
     
 }

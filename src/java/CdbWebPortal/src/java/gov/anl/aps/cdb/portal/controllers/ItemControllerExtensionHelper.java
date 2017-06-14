@@ -447,14 +447,34 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     @Override
     public void performUpdateOperations(Item entity) throws CdbException, RuntimeException {
         getItemController().performUpdateOperations(entity);
+    } 
+    
+    @Override
+    public void performCreateOperations(Item item) throws CdbException, RuntimeException {
+        getItemController().performCreateOperations(item);
     }
     
+    @Override
     public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
         getItemController().addCdbEntityWarningSystemLog(warningMessage, exception, entity);
     }
     
+    @Override
     public void savePropertyList() {
         getItemController().savePropertyList();
     }
-            
+    
+    @Override
+    public Item createItemEntity() {
+        return getItemController().createItemEntity(); 
+    }
+    
+    @Override
+    public String getEntityEditRowStyle(Item entity) {
+        return getItemController().getEntityEditRowStyle(entity); 
+    }
+    
+    public Boolean isItemExistInDb(Item item) {
+        return getItemController().isItemExistInDb(item); 
+    }
 }
