@@ -16,7 +16,7 @@ See LICENSE file.
         <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemDerivedFromItem.xhtml" />
     </p:column>
 
-    <p:column headerText="Name">
+    <p:column headerText="#{entityController.nameTitle}">
         <h:inputText value="#{itemObject.name}"/>                            
     </p:column>
 
@@ -68,11 +68,29 @@ See LICENSE file.
                        update="@form:#{entityTypeName}MultiEditItemDataTable"
                        title="Restore the item back to original state"/>
         <p:commandLink styleClass="fa fa-link-icon fa-floppy-o" 
+                       rendered="#{itemObject.id != null}"
                        action="#{entityController.updateSingleItem(itemObject)}"
                        onstart="PF('loadingDialog').show()"
                        oncomplete="PF('loadingDialog').hide()"
                        update="@form:#{entityTypeName}MultiEditItemDataTable"
                        title="Save this item"/>
+        <p:commandLink styleClass="fa fa-link-icon fa-plus-square-o" 
+                       rendered="#{itemObject.id == null}"
+                       action="#{entityController.createSingleItem(itemObject)}"
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       update="@form:#{entityTypeName}MultiEditItemDataTable"
+                       title="Create this item"/>
+        <p:commandLink id="itemMultiEditErrorMessageDisplayCommandLink"
+                       styleClass="fa fa-link-icon fa-exclamation-triangle" 
+                       rendered="#{itemObject.persitanceErrorMessage != null}"
+                       />
+        <p:overlayPanel for="itemMultiEditErrorMessageDisplayCommandLink"
+                        hideEffect="fade"
+                        showEffect="fade">
+            <h:outputText value="#{itemObject.persitanceErrorMessage}"/>
+        </p:overlayPanel>
+                        
     </p:column>    
 
 </ui:composition>
