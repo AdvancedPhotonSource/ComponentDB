@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 
 /**
@@ -26,4 +27,24 @@ public interface ICdbEntityController<EntityType extends CdbEntity> {
      */
     public EntityType getCurrent();
     
+    /**
+    * Perform all necessary operations to update an item.
+    * 
+    * @param entity
+    * @throws CdbException
+    * @throws RuntimeException 
+    */
+    public void performUpdateOperations(EntityType entity) throws CdbException, RuntimeException;
+    
+    /**
+     * Perform all necessary operations to create an item.
+     * 
+     * @param item
+     * @throws CdbException
+     * @throws RuntimeException 
+     */
+    public void performCreateOperations(EntityType item) throws CdbException, RuntimeException; 
+    
+    public String getEntityEditRowStyle(EntityType entity); 
+
 }
