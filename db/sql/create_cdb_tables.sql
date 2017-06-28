@@ -825,6 +825,7 @@ CREATE TABLE `property_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `prompt_description` varchar(256) DEFAULT NULL, 
   `property_type_category_id` int(11) unsigned DEFAULT NULL,
   `property_type_handler_id` int(11) unsigned DEFAULT NULL,
   `default_value` varchar(64) DEFAULT NULL,
