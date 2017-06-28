@@ -39,6 +39,8 @@ public abstract class CdbDomainEntity extends CdbEntity {
         return null;
     }
     
+    public abstract void setPropertyValueList(List<PropertyValue> propertyValueList);
+    
     public List<PropertyValue> getPropertyValueDisplayList() {
         return getPropertyValueList();
     }
