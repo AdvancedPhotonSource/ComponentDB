@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -151,7 +152,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return null; 
     }
     
+    /**
+     * Get item multi edit controller for the current controller. 
+     * 
+     * @return 
+     */
     public ItemMultiEditController getItemMultiEditController() {
+        return null; 
+    }
+    
+    public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
         return null; 
     }
 

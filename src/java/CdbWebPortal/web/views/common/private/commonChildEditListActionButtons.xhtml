@@ -14,42 +14,42 @@ See LICENSE file.
     <div class="actionButton">
         <p:commandButton id="#{childEntityTypeName}EditListAddButtonOnlyOnComplete"
                          rendered="#{executeOnlyAddButtonOnComplete and displayAddButton}"
-                         oncomplete="#{addActionOnComplete}" value="Add" alt="Add" icon="ui-icon-plus" update="@form">
+                         oncomplete="#{addActionOnComplete}" value="Add" alt="Add" icon="fa fa-plus" update="@form">
             <p:tooltip for="#{childEntityTypeName}EditListAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}EditListAddButton"
                          rendered="#{!executeOnlyAddButtonOnComplete and displayAddButton}"
                          action="#{addActionController[addAction](addActionParameter)}" 
-                         oncomplete="#{addActionOnComplete}" value="Add" alt="Add" icon="ui-icon-plus" update="@form">
+                         oncomplete="#{addActionOnComplete}" value="Add" alt="Add" icon="fa fa-plus" update="@form">
             <p:tooltip for="#{childEntityTypeName}EditListAddButton" value="Add new #{childEntityController.displayEntityTypeName}."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}EditListSaveButton" action="#{parentEntityController[saveAction]}" 
-                         ajax="false" value="Save" alt="Save List" icon="ui-icon-check">
+                         ajax="false" value="Save" alt="Save List" icon="fa fa-check">
             <p:tooltip for="#{childEntityTypeName}EditListSaveButton" value="Save list."/>
         </p:commandButton>
         
         <p:commandButton id="#{childEntityTypeName}SortOrderButton" rendered="#{childEntityController.displayUpdateSortOrderButton}"
-                         value="Rearrange" icon="ui-icon-triangle-2-n-s"
+                         value="Rearrange" icon="fa fa-sort"
                          oncomplete="setSortableEntityList();">
             <p:tooltip for="#{childEntityTypeName}SortOrderButton" value="Sort list or change order of items in the list"/>
         </p:commandButton>
         
-        <p:commandButton id="#{childEntityTypeName}EditListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+        <p:commandButton id="#{childEntityTypeName}EditListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="fa fa-file-excel-o">
             <p:dataExporter type="xls" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
             <p:tooltip for="#{childEntityTypeName}EditListExportXlsButton" value="Export list to excel file."/>
         </p:commandButton>  
-        <p:commandButton id="#{childEntityTypeName}EditListExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+        <p:commandButton id="#{childEntityTypeName}EditListExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="fa fa-file-pdf-o">
             <p:dataExporter type="pdf" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
             <p:tooltip for="#{childEntityTypeName}EditListExportPdfButton" value="Export list to pdf file."/>
         </p:commandButton>  
-        <p:commandButton id="#{childEntityTypeName}EditListPrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+        <p:commandButton id="#{childEntityTypeName}EditListPrintButton" styleClass="actionButtonRight" icon="fa fa-print">
             <p:printer target="#{childEntityTypeName}EditListDataTable"/>
             <p:tooltip for="#{childEntityTypeName}EditListPrintButton" value="Print list."/>
         </p:commandButton> 
-        <p:commandButton id="#{childEntityTypeName}EditListCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').show()" alt="Customize Edit List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+        <p:commandButton id="#{childEntityTypeName}EditListCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').show()" alt="Customize Edit List" styleClass="actionButtonRight" update="@form" icon="fa fa-wrench">
             <p:tooltip for="#{childEntityTypeName}EditListCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}EditListResetFiltersButton" action="#{childEntityController.resetListForEdit}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+        <p:commandButton id="#{childEntityTypeName}EditListResetFiltersButton" action="#{childEntityController.resetListForEdit}" alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight">
             <p:tooltip for="#{childEntityTypeName}EditListResetFiltersButton" value="Reset filters."/>
         </p:commandButton>
 

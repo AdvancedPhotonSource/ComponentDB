@@ -34,7 +34,7 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
         super(PropertyType.class);
     }
     
-        public PropertyType findByName(String name) {
+    public PropertyType findByName(String name) {
         try {
             return (PropertyType) em.createNamedQuery("PropertyType.findByName")
                     .setParameter("name", name)
@@ -58,6 +58,16 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
         try{
             return (List<PropertyType>) em.createNamedQuery("PropertyType.findByPropertyTypeHandler")
                     .setParameter("propertyTypeHandler", handler)
+                    .getResultList(); 
+        }catch (NoResultException ex) {
+        }
+        return null; 
+    }
+    
+    public List<PropertyType> findByPropertyTypeCategory(PropertyTypeCategory category){
+        try{
+            return (List<PropertyType>) em.createNamedQuery("PropertyType.findByPropertyTypeCategory")
+                    .setParameter("propertyTypeCategory", category)
                     .getResultList(); 
         }catch (NoResultException ex) {
         }

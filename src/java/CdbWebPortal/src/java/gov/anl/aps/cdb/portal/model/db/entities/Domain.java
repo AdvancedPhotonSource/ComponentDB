@@ -64,7 +64,9 @@ public class Domain extends CdbEntity implements Serializable {
     @Column(name = "item_category_label")
     private String itemCategoryLabel;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "domain")
-    private List<Item> itemList;
+    private List<Item> itemList;    
+    @ManyToMany(mappedBy = "allowedDomainList")
+    private List<PropertyType> propertyTypeList;    
     @OneToMany(mappedBy = "domain")
     @OrderBy("name ASC")
     private List<ItemType> itemTypeList;
@@ -75,7 +77,7 @@ public class Domain extends CdbEntity implements Serializable {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<EntityType> allowedEntityTypeList;
+    private List<EntityType> allowedEntityTypeList;        
 
     public Domain() {
     }
@@ -156,6 +158,15 @@ public class Domain extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    public List<PropertyType> getPropertyTypeList() {
+        return propertyTypeList;
+    }
+
+    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
+        this.propertyTypeList = propertyTypeList;
+    }
+
+    @XmlTransient
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
@@ -195,7 +206,7 @@ public class Domain extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.Domain[ id=" + id + " ]";
+        return name; 
     }
 
 }

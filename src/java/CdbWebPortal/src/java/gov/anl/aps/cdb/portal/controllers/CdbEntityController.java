@@ -28,10 +28,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.io.IOException;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -91,12 +93,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private LinkedList<SearchResult> searchResultList;
 
     protected List<SettingType> settingTypeList;
+    
+    // TODO create a base cdbentitycontrollerextension helper. 
+    private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers; 
 
     /**
      * Default constructor.
      */
     public CdbEntityController() {
         settingObject = createNewSettingObject();
+        subscribedResetForCurrentControllerHelpers = new HashSet<>();
     }
 
     /**
@@ -230,7 +236,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * New current is being set, reset related variables.
      */
     protected void resetVariablesForCurrent() {
-
+        for (ItemControllerExtensionHelper helper : subscribedResetForCurrentControllerHelpers) {
+            helper.resetExtensionVariablesForCurrent();
+        }
+    }
+    
+    /**
+     * Subscription will call resetExtensionVariablesForCurrent 
+     * 
+     * @param entityController 
+     */
+    public void subscribeResetVariablesForCurrent(ItemControllerExtensionHelper entityController) {       
+        subscribedResetForCurrentControllerHelpers.add(entityController); 
     }
 
     /**
@@ -959,7 +976,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             entity.setPersitanceErrorMessage(ex.getMessage());
             throw ex;
         } catch (RuntimeException ex) {
-            entity.setPersitanceErrorMessage(ex.getMessage());
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            entity.setPersitanceErrorMessage(t.getMessage());
             throw ex;
         }
     }

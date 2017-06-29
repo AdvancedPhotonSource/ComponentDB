@@ -89,6 +89,25 @@ See LICENSE file.
             <h:outputText value="#{propertyTypeObject.description}"/>
         </p:column>
     </ui:define>
+    
+    <ui:define name="promptDescriptionColumn">
+        <p:column headerText="Prompt Description"
+                  sortBy="#{propertyTypeObject.promptDescription}"
+                  filterBy="#{propertyTypeObject.promptDescription}">
+            <h:outputText value="#{propertyTypeObject.promptDescription}" />
+        </p:column>
+    </ui:define>
+    
+    <ui:define name="allowedDomainColumn">
+        <p:column headerText="Allowed Domain"
+                  sortBy="#{propertyTypeObject.allowedDomainString}"
+                  filterBy="#{propertyTypeObject.allowedDomainString}">
+            <ui:repeat value="#{propertyTypeObject.allowedDomainList}"
+                       var="allowedDomainObject">
+                <h:outputText value="#{allowedDomainObject.name}" /> <br/>                
+            </ui:repeat>
+        </p:column>
+    </ui:define>
 
     <ui:define name="actionsColumn">
         <p:column headerText="Actions" exportable="false">

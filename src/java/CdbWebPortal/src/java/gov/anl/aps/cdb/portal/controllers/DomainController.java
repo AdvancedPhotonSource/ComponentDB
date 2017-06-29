@@ -57,7 +57,7 @@ public class DomainController extends CdbEntityController<Domain, DomainFacade, 
         return new DomainSettings(); 
     }
     
-    @FacesConverter(forClass = Domain.class)
+    @FacesConverter(value = "domainConverter", forClass = Domain.class)
     public static class DomainControllerConverter implements Converter {
 
         @Override

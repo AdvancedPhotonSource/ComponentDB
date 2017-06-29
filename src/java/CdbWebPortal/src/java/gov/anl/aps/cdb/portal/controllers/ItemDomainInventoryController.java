@@ -10,6 +10,8 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
@@ -32,6 +34,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -125,6 +128,11 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainInventoryController.getInstance(); 
+    } 
+
+    @Override
+    public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
+        return ItemEnforcedPropertiesDomainInventoryController.getInstance();
     }
 
     public TreeNode getLocationRelationshipTree(ItemDomainInventory inventoryItem) {
@@ -456,7 +464,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public void setSelectedSecondItemWithRequiredConnection(ItemDomainInventory selectedInventoryItemWithRequiredConnection) {
         this.selectedConnectorOfSecondItem = null;
         this.selectedSecondItemWithRequiredConnection = selectedInventoryItemWithRequiredConnection;
-    }
+    } 
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
         lastInventoryItemRequestedLocationMenuModel = item;
@@ -1243,6 +1251,21 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             updatePermissionOnAllNewPartsIfNeeded();
             addItemElementsFromBillOfMaterials(item);
         }
+        
+        ItemEnforcedPropertiesDomainInventoryController iepdiController; 
+        iepdiController = ItemEnforcedPropertiesDomainInventoryController.getInstance();
+        List<PropertyType> propertyTypeList = iepdiController.getRequiredPropertyTypeListForItem(item); 
+        List<PropertyValue> propertyValues = item.getImagePropertyList(); 
+        for (PropertyType propertyType : propertyTypeList) { 
+            if (propertyValues != null) {
+                for (PropertyValue propertyValue : propertyValues) {
+                    if (propertyValue.getPropertyType().equals(propertyType)) {
+                        continue;
+                    }                    
+                }
+            }
+            preparePropertyTypeValueAdd(item, propertyType);            
+        }        
     }
 
     private void clearItemElementsForItem(ItemDomainInventory item) {

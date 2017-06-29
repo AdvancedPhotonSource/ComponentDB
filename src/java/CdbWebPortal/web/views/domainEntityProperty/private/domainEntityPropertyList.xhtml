@@ -7,40 +7,8 @@ See LICENSE file.
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
-
-    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
-    <ui:param name="entityObject" value="#{entityController.selected}" />
-
-    <!-- Useful when dialogs need to be placed outside the module and when dialogs are reused -->
-    <!-- Used for inventory items (show proprties for self and catalog item) -->
-    <ui:param name="loadPropertyListDialogs" value="#{loadPropertyListDialogs != null ? loadPropertyListDialogs : true}" />
+                template="templates/domainEntityPropertyListTemplate.xhtml">
     
-    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(entityObject.entityInfo)}"/>
-        <ui:param name="childEntityController" value="#{propertyValueController}"/>
-        <ui:param name="childEntityTypeName" value="#{entityTypeName}Property"/>
-        <ui:param name="onCompleteAddButtonCommand" value="show#{entityTypeName}SinglePropertySelectDialogWidget()" />
-    </ui:include>    
-
-    <ui:include src="domainEntityPropertyListDataTable.xhtml"/>
-
-    <p:remoteCommand name="show#{entityTypeName}SinglePropertySelectDialogWidget"
-                     action="#{entityController.restoreCurrentEditPropertyValueToOriginalState()}"
-                     oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()"
-                     update="#{entityTypeName}SinglePropertyEditDialog"
-                     />
-
-    <ui:include src="domainEntitySinglePropertySelectDialog.xhtml" />
-    <ui:include src="domainEntitySinglePropertyEditDialog.xhtml" />
-
-
-    <ui:include src="#{loadPropertyListDialogs
-                       ? 'domainEntityPropertyListDialogs.xhtml'
-                       : '../../common/private/commonEmptyPage.xhtml' }"/>
-
 </ui:composition>
 
 

@@ -14,21 +14,21 @@ See LICENSE file.
 
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}ViewEditButton" action="#{entityController.prepareEdit(entityObject)}" 
-                         rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="ui-icon-pencil">
+                         rendered="#{isEntityWriteable}" value="Edit" alt="Edit" icon="fa fa-pencil">
             <p:tooltip for="#{entityTypeName}ViewEditButton" value="Edit #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
         <p:commandButton id="#{entityTypeName}ViewDeleteButton" onclick="PF('#{entityTypeName}DestroyDialogWidget').show();" 
-                         rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="ui-icon-trash">
+                         rendered="#{isEntityWriteable}" value="Delete" alt="Delete" icon="fa fa-trash">
             <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
             <p:tooltip for="#{entityTypeName}ViewDeleteButton" value="Delete #{entityController.displayEntityTypeName}."/>
         </p:commandButton>  
         <p:commandButton id="#{entityTypeName}ViewInfoButton" update="#{entityTypeName}EntityInfoViewDialog"
                          oncomplete="PF('#{entityTypeName}EntityInfoViewDialogWidget').show()" 
-                         value="More Info" alt="Info" icon="ui-icon-info" rendered="#{renderMoreInfo != null or renderMoreInfo}">
+                         value="More Info" alt="Info" icon="fa fa-info-circle" rendered="#{renderMoreInfo != null or renderMoreInfo}">
             <p:tooltip for="#{entityTypeName}ViewInfoButton" value="View Entity Information."/>
         </p:commandButton>
         <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{entityController.followBreadcrumbOrPrepareList()}" 
-                         rendered="#{renderReturn == null or renderReturn}" value="Return" alt="Return" icon="ui-icon-arrowreturnthick-1-w">
+                         rendered="#{renderReturn == null or renderReturn}" value="Return" alt="Return" icon="fa fa-arrow-circle-o-left">
             <p:tooltip for="#{entityTypeName}ViewDoneButton" value="Return to previous page."/>
         </p:commandButton>
         <p:commandButton id="#{entityTypeName}ViewNoOp" style="visibility:hidden" value="NoOp"/>
