@@ -28,8 +28,9 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
     protected Integer currentWizardStepIndex = null;
     
     protected enum ItemCreateWizardSteps {
-        derivedFromItemSelection("derivedFromItemSelectionTab", "Derived From Item"),
+        derivedFromItemSelection("derivedFromItemSelectionTab", "Derived From Item"),        
         basicInformation("basicItemInformationTab", "Basic Information"),
+        enforcedPropertyTypesTab("enforcedPropertyTypesTab", "Properties"),
         classification("itemClassificationTab", "Classification"),
         permissions("itemPermissionTab", "Permissions"),
         reviewSave("reviewItemTab", "Review");
@@ -59,7 +60,13 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
      * @return
      */
     protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
-        if (step.getValue().equals(ItemCreateWizardSteps.derivedFromItemSelection.getValue())) {
+        if (step.getValue().equals(ItemCreateWizardSteps.enforcedPropertyTypesTab.getValue())) {
+            ItemEnforcedPropertiesController iepc = getItemEnforcedPropertiesController();
+            if (!iepc.isItemHasEditableEnforcedProperties()) {
+                return null; 
+            }
+        }
+        else if (step.getValue().equals(ItemCreateWizardSteps.derivedFromItemSelection.getValue())) {            
             if (getEntityDisplayDerivedFromItem()) {
                 return getDerivedFromItemTitle();
             } else {
