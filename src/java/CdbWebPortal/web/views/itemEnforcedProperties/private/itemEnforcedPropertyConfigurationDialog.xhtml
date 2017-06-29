@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="entityEnforcedPropertyController"
+              value="#{entityEnforcedPropertyController != null 
+                       ? entityEnforcedPropertyController 
+                       : entityController.itemEnforcedPropertiesController}" />
+    
+    <p:dialog header="Edit Enforced Properties for item."
+              widgetVar="#{entityTypeName}EnforcedPropertyConfigurationDialogWidget"
+              id="#{entityTypeName}EnforcedPropertyConfigurationDialog"
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false"
+              closable="false"
+              modal="true">
+        <p:outputPanel rendered="#{entityEnforcedPropertyController.renderDisplayPropertyRequirementsOnView}">            
+            <ui:include src="itemEnforcedPropertyConfigurationPanel.xhtml"/> 
+        </p:outputPanel>
+        
+        <f:facet name="footer">
+            <p:commandButton value="Save"
+                             icon="fa fa-floppy-o"
+                             onstart="PF('#{entityTypeName}EnforcedPropertySaveConfigConfirmDialogWidget').show()" />
+            <p:commandButton value="Revert and Close"
+                             icon="fa fa-refresh"
+                             update="@form"
+                             action="#{entityEnforcedPropertyController.revertChangesMadeToEnforcedPropertiesForCurrent()}" 
+                             onstart="PF('#{entityTypeName}EnforcedPropertyConfigurationDialogWidget').hide()"/>
+        </f:facet>
+        
+    </p:dialog>
+    
+    <p:confirmDialog id="#{entityTypeName}EnforcedPropertySaveConfigConfirmDialog"
+                     widgetVar="#{entityTypeName}EnforcedPropertySaveConfigConfirmDialogWidget"
+                     severity="alert"
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <f:facet name="message">
+            The adjustments of the required properties may create new property values for any relevant items. Would you like to proceed?           
+        </f:facet>
+        
+        <p:commandButton value="Yes"
+                         action="#{entityEnforcedPropertyController.saveChangesMadeToEnforcedPropertiesForCurrent()}"
+                         icon="fa fa-check"/>
+        <p:commandButton value="No"
+                         onstart="PF('#{entityTypeName}EnforcedPropertySaveConfigConfirmDialogWidget').hide()"
+                         icon="fa fa-times"/>                        
+    </p:confirmDialog>
+</ui:composition>
+
+
