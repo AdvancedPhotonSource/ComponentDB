@@ -19,7 +19,7 @@ See LICENSE file.
             <ui:param name="viewName" value="TreeTable" />
         </ui:include>
         
-        <p:commandButton id="#{entityTypeName}ListTreeTableCustomizeDisplayButton" oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+        <p:commandButton id="#{entityTypeName}ListTreeTableCustomizeDisplayButton" oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="fa fa-wrench">
             <p:tooltip for="#{entityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
 
@@ -29,7 +29,7 @@ See LICENSE file.
             </ui:include>
         </ui:insert>
 
-        <p:button id="#{entityTypeName}ListTreeTableViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+        <p:button id="#{entityTypeName}ListTreeTableViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="fa-fa-users" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ListTreeTableViewGroupsButton" value="View groups."/>
         </p:button>
         

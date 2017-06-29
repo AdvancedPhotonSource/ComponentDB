@@ -15,7 +15,7 @@ See LICENSE file.
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}PropertyAddImagesCommandButton" 
                          value="Add"
-                         icon="ui-icon-plus"
+                         icon="fa fa-plus"
                          oncomplete="PF('propertyValueMultipleImageUploadDialogWidget').show()"
                          rendered="#{isEntityWriteable}">
             <f:setPropertyActionListener target="#{propertyValueImageUploadBean.cdbEntityController}"
@@ -26,7 +26,7 @@ See LICENSE file.
         <p:commandButton id="#{entityTypeName}ImageGalleriaCustomizeDisplayButton"
                          oncomplete="PF('propertyValueGalleriaListCustomizeDisplayDialogWidget').show()" 
                          alt="Customize Edit List" styleClass="actionButtonRight" 
-                         update="propertyValueGalleriaListCustomizeDisplayDialog" icon="ui-icon-wrench">
+                         update="propertyValueGalleriaListCustomizeDisplayDialog" icon="fa fa-wrench">
             <p:tooltip for="#{entityTypeName}ImageGalleriaCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
         
