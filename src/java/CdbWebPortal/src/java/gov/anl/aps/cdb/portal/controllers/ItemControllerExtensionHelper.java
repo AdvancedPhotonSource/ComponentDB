@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.List;
 import gov.anl.aps.cdb.portal.controllers.IItemController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -29,6 +30,13 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     
     protected ItemFacadeBase getItemDbFacade() {
         return (ItemFacadeBase) getItemController().getEntityDbFacade(); 
+    }
+    
+    /**
+     * Subscribe to cdbEntityController (subscribeResetVariablesForCurrent) and override the method to reset appropriate variables. 
+     */
+    public void resetExtensionVariablesForCurrent() {
+        
     }
     
     @Override
@@ -474,7 +482,13 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
         return getItemController().getEntityEditRowStyle(entity); 
     }
     
+    @Override
     public Boolean isItemExistInDb(Item item) {
         return getItemController().isItemExistInDb(item); 
+    }
+    
+    @Override
+    public ItemEnforcedPropertiesController getItemEnforcedPropertiesController(){
+        return getItemController().getItemEnforcedPropertiesController(); 
     }
 }
