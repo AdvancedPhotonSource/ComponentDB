@@ -45,6 +45,11 @@ public interface ICdbEntityController<EntityType extends CdbEntity> {
      */
     public void performCreateOperations(EntityType item) throws CdbException, RuntimeException; 
     
-    public String getEntityEditRowStyle(EntityType entity); 
+    /**
+     * Fetches edit row style for a specific entity
+     * @param entity
+     * @return 
+     */
+    public String getEntityEditRowStyle(EntityType entity);    
 
 }
