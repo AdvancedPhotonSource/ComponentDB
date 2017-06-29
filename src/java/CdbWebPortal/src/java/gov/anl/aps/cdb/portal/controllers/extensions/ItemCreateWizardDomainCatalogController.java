@@ -19,10 +19,17 @@ import org.primefaces.event.FlowEvent;
  *
  * @author djarosz
  */
-@Named("itemCreateWizardDomainCatalogController")
+@Named(ItemCreateWizardDomainCatalogController.controllerNamed)
 @SessionScoped
 public class ItemCreateWizardDomainCatalogController extends ItemCreateWizardController implements Serializable {
 
+    public final static String controllerNamed = "itemCreateWizardDomainCatalogController";   
+
+    @Override
+    public String getItemCreateWizardControllerNamed() {
+        return controllerNamed; 
+    }    
+    
     ItemDomainCatalogController itemDomainController = null; 
     @Override
     public ItemController getItemController() {
@@ -33,7 +40,7 @@ public class ItemCreateWizardDomainCatalogController extends ItemCreateWizardCon
     }
     
     public static ItemCreateWizardDomainCatalogController getInstance() {
-        return (ItemCreateWizardDomainCatalogController) SessionUtility.findBean("itemCreateWizardDomainCatalogController");
+        return (ItemCreateWizardDomainCatalogController) SessionUtility.findBean(controllerNamed);
     }
     
     @Override

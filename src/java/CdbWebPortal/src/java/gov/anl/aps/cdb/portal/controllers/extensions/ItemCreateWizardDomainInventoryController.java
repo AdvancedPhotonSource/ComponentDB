@@ -18,11 +18,18 @@ import org.primefaces.model.menu.MenuModel;
  *
  * @author djarosz
  */
-@Named("itemCreateWizardDomainInventoryController")
+@Named(ItemCreateWizardDomainInventoryController.controllerNamed)
 @SessionScoped
 public class ItemCreateWizardDomainInventoryController extends ItemCreateWizardController implements Serializable {
     
     private final String ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP = "itemElementInstantiation";
+    
+    public final static String controllerNamed = "itemCreateWizardDomainInventoryController";
+
+    @Override
+    public String getItemCreateWizardControllerNamed() {
+        return controllerNamed; 
+    }
     
     ItemDomainInventoryController itemDomainController = null; 
     
@@ -39,7 +46,7 @@ public class ItemCreateWizardDomainInventoryController extends ItemCreateWizardC
     }
     
     public static ItemCreateWizardDomainInventoryController getInstance() {
-        return (ItemCreateWizardDomainInventoryController) SessionUtility.findBean("itemCreateWizardDomainInventoryController");
+        return (ItemCreateWizardDomainInventoryController) SessionUtility.findBean(controllerNamed);
     }
     
     @Override

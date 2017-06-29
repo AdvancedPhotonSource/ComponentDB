@@ -27,6 +27,8 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
     protected MenuModel createItemWizardStepsMenuModel = null;
     protected Integer currentWizardStepIndex = null;
     
+    public abstract String getItemCreateWizardControllerNamed(); 
+    
     protected enum ItemCreateWizardSteps {
         derivedFromItemSelection("derivedFromItemSelectionTab", "Derived From Item"),        
         basicInformation("basicItemInformationTab", "Basic Information"),
@@ -97,7 +99,7 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
     protected DefaultMenuItem createMenuItemForCreateWizardSteps(String displayValue, String stepValue) {
         DefaultMenuItem menuElement = new DefaultMenuItem(displayValue);
         String menuElementCommand = "#{";
-        menuElementCommand += getDomainControllerName();
+        menuElementCommand += getItemCreateWizardControllerNamed();
         menuElementCommand += ".updateCurrentWizardStep('" + stepValue + "')";
         menuElementCommand += "}";
         menuElement.setCommand(menuElementCommand);
