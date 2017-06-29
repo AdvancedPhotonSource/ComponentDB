@@ -18,6 +18,15 @@ See LICENSE file.
 
         <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
         <h:outputText id="description" value="#{propertyTypeObject.description}" title="Description" styleClass="entityDataText"/>
+        
+        <h:outputLabel for="promptDescription" value="Prompt Description" styleClass="entityDataLabel"/>
+        <h:outputText id="promptDescription" value="#{propertyTypeObject.promptDescription}" title="Prompt Description" styleClass="entityDataText"/>
+        
+        <h:outputLabel for="promptDescription" value="Allowed Domain" styleClass="entityDataLabel"/>
+        <ui:repeat value="#{propertyTypeObject.allowedDomainList}"
+                   var="allowedDomain">
+            <h:outputText value="#{allowedDomain}" styleClass="entityDataText"/>  <br/>
+        </ui:repeat>
 
         <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
         <h:outputText id="id" value="#{propertyTypeObject.id}" title="Id" styleClass="entityDataText"/>

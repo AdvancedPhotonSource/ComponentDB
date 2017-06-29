@@ -17,6 +17,23 @@ See LICENSE file.
     <h:inputText id="description" value="#{propertyTypeObject.description}" title="Description" styleClass="entityDataText"/>
     <p:message for="description"/> 
     <p:tooltip for="description" value="Description is optional."/>
+    
+    <h:outputLabel for="promptDescription" value="Prompt Description" styleClass="entityDataLabel"/>
+    <h:inputText id="promptDescription" value="#{propertyTypeObject.promptDescription}" title="Prompt Description" styleClass="entityDataText"/>
+    <p:message for="promptDescription"/> 
+    <p:tooltip for="promptDescription" value="Description written as a question to user wether the property is needed."/>
+    
+    <h:outputLabel for="allowedDomain" value="Allowed Domain" styleClass="entityDataLabel"/>
+    <p:selectCheckboxMenu id="allowedDomain" styleClass="entityDataText"
+                          value="#{propertyTypeObject.allowedDomainList}"
+                          converter="domainConverter"
+                          label="Select allowed domain"
+                          updateLabel="ture"
+                          multiple="true">
+        <f:selectItems value="#{domainController.availableItemsForSelectMany}"/>   
+    </p:selectCheckboxMenu>
+    <p:message for="allowedDomain"/> 
+    <p:tooltip for="allowedDomain" value="List of domains that item is allowed in."/>
 
     <h:outputLabel for="category" value="Category" styleClass="entityDataLabel"/>
     <p:selectOneMenu id="category" value="#{propertyTypeObject.propertyTypeCategory}" styleClass="entityDataText"
