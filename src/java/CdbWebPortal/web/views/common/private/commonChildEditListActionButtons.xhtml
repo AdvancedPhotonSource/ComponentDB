@@ -9,7 +9,8 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="executeOnlyAddButtonOnComplete" value="#{addActionController == null}" />
+    <ui:param name="executeOnlyAddButtonOnComplete" value="#{addActionController == null}" />    
+    <ui:param name="childEntityListDataTableId" value="#{childEntityTypeName}EditListDataTable" />
     
     <div class="actionButton">
         <p:commandButton id="#{childEntityTypeName}EditListAddButtonOnlyOnComplete"
@@ -33,19 +34,9 @@ See LICENSE file.
                          oncomplete="setSortableEntityList();">
             <p:tooltip for="#{childEntityTypeName}SortOrderButton" value="Sort list or change order of items in the list"/>
         </p:commandButton>
-        
-        <p:commandButton id="#{childEntityTypeName}EditListExportXlsButton" styleClass="actionButtonRight" ajax="false" icon="fa fa-file-excel-o">
-            <p:dataExporter type="xls" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
-            <p:tooltip for="#{childEntityTypeName}EditListExportXlsButton" value="Export list to excel file."/>
-        </p:commandButton>  
-        <p:commandButton id="#{childEntityTypeName}EditListExportPdfButton" styleClass="actionButtonRight" ajax="false" icon="fa fa-file-pdf-o">
-            <p:dataExporter type="pdf" target="#{childEntityTypeName}EditListDataTable" fileName="#{childEntityTypeName}s"/>
-            <p:tooltip for="#{childEntityTypeName}EditListExportPdfButton" value="Export list to pdf file."/>
-        </p:commandButton>  
-        <p:commandButton id="#{childEntityTypeName}EditListPrintButton" styleClass="actionButtonRight" icon="fa fa-print">
-            <p:printer target="#{childEntityTypeName}EditListDataTable"/>
-            <p:tooltip for="#{childEntityTypeName}EditListPrintButton" value="Print list."/>
-        </p:commandButton> 
+       
+        <ui:include src="reusedParts/childListExportButtons.xhtml" />
+       
         <p:commandButton id="#{childEntityTypeName}EditListCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').show()" alt="Customize Edit List" styleClass="actionButtonRight" update="@form" icon="fa fa-wrench">
             <p:tooltip for="#{childEntityTypeName}EditListCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>

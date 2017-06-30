@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="childEntityTypeNames" value="#{childEntityTypeName}s"/>
-    <ui:param name="childEntityListDataTable" value="#{childEntityTypeName}ListDataTable"/>
+    <ui:param name="childEntityListDataTableId" value="#{childEntityTypeName}ListDataTable"/>
 
     <ui:param name="customizeDisplayChildEntityTypeName" value="#{customizeDisplayChildEntityTypeName != null 
                                                                   ? customizeDisplayChildEntityTypeName 
@@ -22,26 +22,8 @@ See LICENSE file.
 
         <ui:insert name="additionalButtons" />
 
-        <p:commandButton id="#{childEntityTypeName}ListExportXlsButton" 
-                         action="#{childEntityController.exportDataTableAsXls(childEntityListDataTable, childEntityTypeNames)}" 
-                         styleClass="actionButtonRight" 
-                         ajax="false" 
-                         icon="fa fa-file-excel-o">
-            <p:tooltip for="#{childEntityTypeName}ListExportXlsButton" value="Export list to excel file."/>
-        </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}ListExportPdfButton" 
-                         action="#{childEntityController.exportDataTableAsPdf(childEntityListDataTable, childEntityTypeNames)}"
-                         styleClass="actionButtonRight" 
-                         ajax="false" 
-                         icon="fa fa-file-pdf-o">
-            <p:tooltip for="#{childEntityTypeName}ListExportPdfButton" value="Export list to pdf file."/>
-        </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}ListPrintButton" 
-                         styleClass="actionButtonRight" 
-                         icon="fa fa-print">
-            <p:printer target="#{childEntityTypeName}ListDataTable"/>
-            <p:tooltip for="#{childEntityTypeName}ListPrintButton" value="Print list."/>
-        </p:commandButton> 
+        <ui:include src="reusedParts/childListExportButtons.xhtml"/>        
+        
         <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" 
                          onstart="PF('loadingDialog').show(); #{listCustomizeOnStartCommand}"
                          oncomplete="PF('loadingDialog').hide(); PF('#{customizeDisplayChildEntityTypeName}').show()" 
