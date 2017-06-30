@@ -93,9 +93,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private LinkedList<SearchResult> searchResultList;
 
     protected List<SettingType> settingTypeList;
-    
+
     // TODO create a base cdbentitycontrollerextension helper. 
-    private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers; 
+    private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers;
 
     /**
      * Default constructor.
@@ -240,14 +240,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             helper.resetExtensionVariablesForCurrent();
         }
     }
-    
+
     /**
-     * Subscription will call resetExtensionVariablesForCurrent 
-     * 
-     * @param entityController 
+     * Subscription will call resetExtensionVariablesForCurrent
+     *
+     * @param entityController
      */
-    public void subscribeResetVariablesForCurrent(ItemControllerExtensionHelper entityController) {       
-        subscribedResetForCurrentControllerHelpers.add(entityController); 
+    public void subscribeResetVariablesForCurrent(ItemControllerExtensionHelper entityController) {
+        subscribedResetForCurrentControllerHelpers.add(entityController);
     }
 
     /**
@@ -1553,30 +1553,4 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void setBreadcrumbViewParam(String breadcrumbViewParam) {
         this.breadcrumbViewParam = breadcrumbViewParam;
     }
-
-    /**
-     * TODO FIX exporter params
-     *
-     * public static void exportDataTableAsPdf(String dataTableId, String
-     * filename) throws IOException { FacesContext context =
-     * FacesContext.getCurrentInstance(); DataTable dataTable = (DataTable)
-     * UiComponentUtility.findComponent(dataTableId); Exporter exporter = new
-     * CdbPdfExporter(); exporter.export(context, dataTable, filename, false,
-     * false, "UTF-8", null, null); context.responseComplete(); }
-     *
-     * public static void exportDataTableAsXls(String dataTableId, String
-     * filename) throws IOException { FacesContext context =
-     * FacesContext.getCurrentInstance(); DataTable dataTable = (DataTable)
-     * UiComponentUtility.findComponent(dataTableId); Exporter exporter = new
-     * CdbExcelExporter(); exporter.export(context, dataTable, filename, false,
-     * false, "UTF-8", null, null); context.responseComplete(); }
-     *
-     * public static void exportDataTableAsCsv(String dataTableId, String
-     * filename) throws IOException { FacesContext context =
-     * FacesContext.getCurrentInstance(); DataTable dataTable = (DataTable)
-     * UiComponentUtility.findComponent(dataTableId); Exporter exporter = new
-     * CdbCsvExporter(); exporter.export(context, dataTable, filename, false,
-     * false, "UTF-8", null, null); context.responseComplete(); }
-     *
-     */
 }
