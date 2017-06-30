@@ -43,7 +43,8 @@ See LICENSE file.
 
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
               filterBy="#{propertyValueObject.value}"
-              filterable="#{filterable}">
+              filterable="#{filterable}"
+              exportFunction="#{propertyValueObject.getValue()}">
         <ui:include src="propertyValueListObjectValue.xhtml"/>
     </p:column>
 
@@ -76,8 +77,8 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
-              rendered="#{propertyValueSettingObject.displayIsDynamic}">
-        <f:attribute name="exportValue" value="#{propertyValueObject.isDynamic}"/>
+              rendered="#{propertyValueSettingObject.displayIsDynamic}"
+              exportFunction="#{propertyValueObject.getIsDynamicString()}">
         <div class="dataTableCheckbox">
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueObject.isDynamic}"/>
@@ -85,8 +86,8 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User Writeable" 
-              rendered="#{propertyValueSettingObject.displayIsUserWriteable}">
-        <f:attribute name="exportValue" value="#{propertyValueObject.isUserWriteable}"/>
+              rendered="#{propertyValueSettingObject.displayIsUserWriteable}"
+              exportFunction="#{propertyValueObject.getIsUserWriteableString()}">
         <div class="dataTableCheckbox">
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueObject.isUserWriteable}"/>

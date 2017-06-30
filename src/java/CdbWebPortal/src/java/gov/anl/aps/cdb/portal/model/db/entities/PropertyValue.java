@@ -197,6 +197,10 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setIsUserWriteable(boolean isUserWriteable) {
         this.isUserWriteable = isUserWriteable;
     }
+    
+    public String getIsUserWriteableString() {
+        return String.valueOf(isUserWriteable);
+    }
 
     public boolean getIsDynamic() {
         return isDynamic;
@@ -204,6 +208,10 @@ public class PropertyValue extends CdbEntity implements Serializable {
 
     public void setIsDynamic(boolean isDynamic) {
         this.isDynamic = isDynamic;
+    }
+    
+    public String getIsDynamicString() {
+        return String.valueOf(isDynamic);
     }
 
     public String getDisplayValue() {

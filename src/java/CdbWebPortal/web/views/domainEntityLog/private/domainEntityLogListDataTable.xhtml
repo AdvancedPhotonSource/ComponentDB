@@ -33,7 +33,8 @@ See LICENSE file.
             <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(logDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}"/>
         </ui:include>
 
-        <p:column headerText="Actions" rendered="#{renderActionColumn and isEntityWriteable}">
+        <p:column headerText="Actions" rendered="#{renderActionColumn and isEntityWriteable}"
+                  exportable="false">
             <p:rowEditor />
             <p:commandLink id="#{entityTypeName}LogUploadAttachmentButton" 
                            oncomplete="PF('logAttachmentUploadDialogWidget').show()" 

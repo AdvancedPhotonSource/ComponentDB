@@ -23,7 +23,8 @@ See LICENSE file.
               filterBy="#{currentPartIdentifier}"
               filterMatchMode="contains"
               filterable="#{filterable}"
-              headerText="Part Of">
+              headerText="Part Of"
+              exportFunction="#{currentItemController.getItemMembmershipPartIdentifier(parentItemObject)}">
         <h:outputLink value="../item/view.xhtml?id=#{parentItemObject.id}" title="View design details">
             <h:outputText value="#{currentPartIdentifier}"/>
         </h:outputLink>         

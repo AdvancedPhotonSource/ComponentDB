@@ -124,7 +124,8 @@ See LICENSE file.
                   filterValue="#{entitySettingObject.filterByName}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{rendered and itemListRenderName}" >
+                  rendered="#{rendered and itemListRenderName}" 
+                  exportFunction="#{itemListObject.getName()}" >
             <ui:insert name="nameColumnObject" />
         </p:column>
     </ui:define>
@@ -200,7 +201,7 @@ See LICENSE file.
                   filterable="#{filterable}"
                   sortable="#{sortable}"
                   rendered="#{rendered and itemListRenderItemCategory}"
-                  >
+                  exportFunction="#{itemListObject.getItemCategoryString()}" >
             <ui:insert name="itemCategoryColumnObject" />
         </p:column>
     </ui:define>
@@ -212,6 +213,7 @@ See LICENSE file.
                   filterValue="#{entitySettingObject.filterByItemSources}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
+                  exportFunction="#{itemListObject.getItemSourceString()}"
                   rendered="#{rendered and itemListRenderItemSources}">
             <ui:insert name="itemSourceColumnObject" />
         </p:column>

@@ -127,6 +127,10 @@ public class ItemSource extends CdbEntity implements Serializable {
     public void setIsVendor(boolean isVendor) {
         this.isVendor = isVendor;
     }
+    
+    public String getIsVendorString() {
+        return String.valueOf(isVendor); 
+    }    
 
     public boolean getIsManufacturer() {
         return isManufacturer;
@@ -134,6 +138,10 @@ public class ItemSource extends CdbEntity implements Serializable {
 
     public void setIsManufacturer(boolean isManufacturer) {
         this.isManufacturer = isManufacturer;
+    }
+    
+    public String getIsManufacturerString() {
+        return String.valueOf(isManufacturer); 
     }
 
     public String getContactInfo() {

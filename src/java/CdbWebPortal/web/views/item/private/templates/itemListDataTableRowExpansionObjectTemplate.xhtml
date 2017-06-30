@@ -13,7 +13,8 @@ See LICENSE file.
 
     <p:column rendered="#{entitySettingObject.displayRowExpansion}"
               headerText="More Info"
-              styleClass="narrowColumn">
+              styleClass="narrowColumn"
+              exportable="false">
         <p:rowToggler rendered="#{entityController.isDisplayRowExpansionForItem(itemListObject)}"/>
     </p:column>
     <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{entitySettingObject.displayRowExpansion}">

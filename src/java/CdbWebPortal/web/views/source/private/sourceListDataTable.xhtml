@@ -31,7 +31,8 @@ See LICENSE file.
 
         <p:column sortBy="#{sourceObject.name}" headerText="Name" 
                   filterBy="#{sourceObject.name}" filterMatchMode="contains"
-                  filterValue="#{sourceSettingObject.filterByName}">
+                  filterValue="#{sourceSettingObject.filterByName}"
+                  exportFunction="#{sourceObject.getName()}">
             <h:outputLink value="view.xhtml?id=#{sourceObject.id}" title="View source details">
                 <h:outputText value="#{sourceObject.name}"/>
             </h:outputLink>        

@@ -31,7 +31,8 @@ See LICENSE file.
 
         <p:column sortBy="#{userInfoObject.username}" headerText="Username" 
                   filterBy="#{userInfoObject.username}" filterMatchMode="contains"
-                  filterValue="#{userInfoSettingObject.filterByUsername}">
+                  filterValue="#{userInfoSettingObject.filterByUsername}"
+                  exportFunction="#{userInfoObject.getUsername()}">
             <h:outputLink value="view.xhtml?id=#{userInfoObject.id}" title="View user details">
                 <h:outputText value="#{userInfoObject.username}"/>
             </h:outputLink>        

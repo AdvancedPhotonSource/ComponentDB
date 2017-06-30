@@ -34,7 +34,8 @@ See LICENSE file.
         <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
                   filterBy="#{propertyTypeObject.name}" filterMatchMode="contains"
                   filterValue="#{propertyTypeSettingObject.filterByName}"
-                  rendered="true">
+                  rendered="true"
+                  exportFunction="#{propertyTypeObject.getName()}">
             <ui:insert name="nameValue">
                 <h:outputLink value="view.xhtml?id=#{propertyTypeObject.id}" title="View property type details">
                     <h:outputText value="#{propertyTypeObject.name}"/>
@@ -101,7 +102,8 @@ See LICENSE file.
     <ui:define name="allowedDomainColumn">
         <p:column headerText="Allowed Domain"
                   sortBy="#{propertyTypeObject.allowedDomainString}"
-                  filterBy="#{propertyTypeObject.allowedDomainString}">
+                  filterBy="#{propertyTypeObject.allowedDomainString}"
+                  exportFunction="#{propertyTypeObject.getAllowedDomainString()}">
             <ui:repeat value="#{propertyTypeObject.allowedDomainList}"
                        var="allowedDomainObject">
                 <h:outputText value="#{allowedDomainObject.name}" /> <br/>                
