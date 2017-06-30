@@ -375,15 +375,17 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
      * Execute iterate over preProcess List data model.
      */
     private void iteratePreProcessListDataModel() {
-        logger.debug("Data model pre process iterate starting.");
-        preparePreProcessListDataModelIterate();
-        DataModel<CdbDomainEntity> cdbDomainEntityList = preProcessDomainEntityListDataModel;
-        Iterator<CdbDomainEntity> cdbDomainEntityIterator = cdbDomainEntityList.iterator();
-        while (cdbDomainEntityIterator.hasNext()) {
-            CdbDomainEntity cdbDomainEntity = cdbDomainEntityIterator.next();
-            processPreProcessIteratedDomainEntity(cdbDomainEntity);
-        }
-        updatePreProcessListProcessedVariables();
+        if (preProcessDomainEntityListDataModel != null) {
+            logger.debug("Data model pre process iterate starting.");
+            preparePreProcessListDataModelIterate();
+            DataModel<CdbDomainEntity> cdbDomainEntityList = preProcessDomainEntityListDataModel;
+            Iterator<CdbDomainEntity> cdbDomainEntityIterator = cdbDomainEntityList.iterator();
+            while (cdbDomainEntityIterator.hasNext()) {
+                CdbDomainEntity cdbDomainEntity = cdbDomainEntityIterator.next();
+                processPreProcessIteratedDomainEntity(cdbDomainEntity);
+            }
+            updatePreProcessListProcessedVariables();
+        }        
     }
 
     protected void addPropertyTypeToLoadedDisplayPropertyTypes(Integer propertyTypeId) {
