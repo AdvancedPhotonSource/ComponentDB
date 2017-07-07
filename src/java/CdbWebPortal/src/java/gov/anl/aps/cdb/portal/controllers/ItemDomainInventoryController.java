@@ -1250,22 +1250,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             clearItemElementsForItem(item);
             updatePermissionOnAllNewPartsIfNeeded();
             addItemElementsFromBillOfMaterials(item);
-        }
-        
-        ItemEnforcedPropertiesDomainInventoryController iepdiController; 
-        iepdiController = ItemEnforcedPropertiesDomainInventoryController.getInstance();
-        List<PropertyType> propertyTypeList = iepdiController.getRequiredPropertyTypeListForItem(item); 
-        List<PropertyValue> propertyValues = item.getImagePropertyList(); 
-        for (PropertyType propertyType : propertyTypeList) { 
-            if (propertyValues != null) {
-                for (PropertyValue propertyValue : propertyValues) {
-                    if (propertyValue.getPropertyType().equals(propertyType)) {
-                        continue;
-                    }                    
-                }
-            }
-            preparePropertyTypeValueAdd(item, propertyType);            
-        }        
+        }               
     }
 
     private void clearItemElementsForItem(ItemDomainInventory item) {
