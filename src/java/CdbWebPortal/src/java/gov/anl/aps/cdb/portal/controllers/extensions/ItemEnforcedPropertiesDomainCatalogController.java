@@ -49,12 +49,12 @@ public class ItemEnforcedPropertiesDomainCatalogController extends ItemEnforcedP
         
         ItemDomainCatalog catalogItem = (ItemDomainCatalog) getCurrent(); 
        
-        for (Item inventoryItem : catalogItem.getInventoryItemList()) {
-            inventoryEnforcedPropertiesController.setCurrent(inventoryItem);
-            inventoryEnforcedPropertiesController.prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
-        }
-        
-        
+        if (catalogItem.getInventoryItemList() != null) {
+            for (Item inventoryItem : catalogItem.getInventoryItemList()) {
+                inventoryEnforcedPropertiesController.setCurrent(inventoryItem);
+                inventoryEnforcedPropertiesController.prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
+            }
+        }               
     }
 
     protected ItemDomainCatalogController getItemDomainCatalogController() {
