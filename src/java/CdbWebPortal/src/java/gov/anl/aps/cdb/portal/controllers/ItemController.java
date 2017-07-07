@@ -1886,6 +1886,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @Override
     public void prepareEntityInsert(ItemDomainEntity item) throws CdbException {
+        super.prepareEntityInsert(item);
         checkItem(item);
     }
 

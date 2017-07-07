@@ -24,6 +24,7 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.io.IOException;
 
@@ -96,6 +97,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     // TODO create a base cdbentitycontrollerextension helper. 
     private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers;
+    private Set<ItemControllerExtensionHelper> subscribePrepareInsertForCurrentControllerHelpers; 
 
     /**
      * Default constructor.
@@ -103,6 +105,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public CdbEntityController() {
         settingObject = createNewSettingObject();
         subscribedResetForCurrentControllerHelpers = new HashSet<>();
+        subscribePrepareInsertForCurrentControllerHelpers = new HashSet<>(); 
     }
 
     /**
@@ -247,7 +250,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @param entityController
      */
     public void subscribeResetVariablesForCurrent(ItemControllerExtensionHelper entityController) {
-        subscribedResetForCurrentControllerHelpers.add(entityController);
+        subscribedResetForCurrentControllerHelpers.add(entityController);        
+    }
+    
+    public void subscribePrepareInsertForCurrent(ItemControllerExtensionHelper entityController) {
+        subscribePrepareInsertForCurrentControllerHelpers.add(entityController);
     }
 
     /**
@@ -781,6 +788,14 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @throws CdbException in case of any errors
      */
     protected void prepareEntityInsert(EntityType entity) throws CdbException {
+        // TODO: This needs to be placed in item controller. 
+        if (entity == current) {
+            if (entity instanceof Item) {
+                for (ItemControllerExtensionHelper helper : subscribedResetForCurrentControllerHelpers) {
+                    helper.prepareInsertForCurrent();
+                }
+            }
+        }
     }
 
     /**
