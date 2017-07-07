@@ -40,8 +40,8 @@ public class ItemEnforcedPropertiesDomainCatalogController extends ItemEnforcedP
     } 
 
     @Override
-    protected void prepareSaveChangedMadeToEnforcedPropertiesForCurrent() {
-        super.prepareSaveChangedMadeToEnforcedPropertiesForCurrent(); 
+    protected void prepareSaveChangesMadeToEnforcedPropertiesForCurrent() {
+        super.prepareSaveChangesMadeToEnforcedPropertiesForCurrent(); 
         
         // Handle inventory items.
         ItemDomainInventoryController idic = ItemDomainInventoryController.getInstance();
@@ -51,7 +51,7 @@ public class ItemEnforcedPropertiesDomainCatalogController extends ItemEnforcedP
        
         for (Item inventoryItem : catalogItem.getInventoryItemList()) {
             inventoryEnforcedPropertiesController.setCurrent(inventoryItem);
-            inventoryEnforcedPropertiesController.prepareSaveChangedMadeToEnforcedPropertiesForCurrent();
+            inventoryEnforcedPropertiesController.prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
         }
         
         

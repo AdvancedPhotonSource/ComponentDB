@@ -81,12 +81,12 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
     }
     
     public String saveChangesMadeToEnforcedPropertiesForCurrent() {        
-        prepareSaveChangedMadeToEnforcedPropertiesForCurrent();
+        prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
         
         return update(); 
     }
     
-    protected void prepareSaveChangedMadeToEnforcedPropertiesForCurrent() {
+    protected void prepareSaveChangesMadeToEnforcedPropertiesForCurrent() {
         List<PropertyType> requiredPropertyTypeListForItem = getRequiredPropertyTypeListForItem(getCurrent());
         Item item = getCurrent(); 
         
