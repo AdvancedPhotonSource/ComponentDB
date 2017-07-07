@@ -55,6 +55,13 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
     @PostConstruct
     public void initialize() {
         getItemController().subscribeResetVariablesForCurrent(this);
+        getItemController().subscribePrepareInsertForCurrent(this);
+    }
+
+    @Override
+    public void prepareInsertForCurrent() {
+        super.prepareInsertForCurrent();
+        prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
     }
     
     public void revertChangesMadeToEnforcedPropertiesForCurrent() {
@@ -89,6 +96,10 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
     protected void prepareSaveChangesMadeToEnforcedPropertiesForCurrent() {
         List<PropertyType> requiredPropertyTypeListForItem = getRequiredPropertyTypeListForItem(getCurrent());
         Item item = getCurrent(); 
+        
+        if (item.getPropertyValueList() == null) {
+            item.setPropertyValueList(new ArrayList<>());
+        }
         
         // Remove property types that do not need to be added. 
         for (PropertyValue propertyValue : item.getPropertyValueList()) {
