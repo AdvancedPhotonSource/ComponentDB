@@ -145,6 +145,15 @@ class ItemRouteDescriptor:
                 'controller': itemElementSessionController,
                 'action': 'addItemElement',
                 'method': ['POST']
+            },
+
+            # Update item element
+            {
+                'name': 'updateItemElement',
+                'path': '%s/itemElements/update/:(itemElementId)' % contextRoot,
+                'controller': itemElementSessionController,
+                'action': 'updateItemElement',
+                'method': ['PUT']
             }
 
 

@@ -65,6 +65,37 @@ class ItemElementSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
+    def updateItemElement(self, itemElementId, containedItemId=-1, isRequired=-1,
+                          name=None, description=None, ownerUserId=None, ownerGroupId=None, isGroupWriteable=None):
+        sessionUser = self.getSessionUser()
+        lastModifiedUserId = sessionUser.get('id')
+
+        if containedItemId != -1:
+            containedItemId = eval(containedItemId)
+        if isRequired != -1:
+            isRequired = eval(isRequired)
+        if name is not None:
+            name = Encoder.decode(name)
+        if description is not None:
+            description = Encoder.decode(description)
+        if ownerUserId is not None:
+            ownerUserId = eval(ownerUserId)
+        if ownerGroupId is not None:
+            ownerGroupId = eval(ownerGroupId)
+        if isGroupWriteable is not None:
+            isGroupWriteable = eval(isGroupWriteable)
+
+        response = self.itemElementImplController.updateItemElement(itemElementId, lastModifiedUserId, containedItemId,
+                                                                    isRequired, name, description, ownerUserId, ownerGroupId,
+                                                                    isGroupWriteable)
+
+        self.logger.debug('Returning updated item element: %s' % (response))
+        return response.getFullJsonRep()
+
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
     def addPropertyValueToItemElementById(self, itemElementId, propertyTypeName, tag=None, value=None, units=None,
                                        description=None,
                                        isUserWriteable=None, isDynamic=None):
