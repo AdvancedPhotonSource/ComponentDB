@@ -30,6 +30,12 @@ class ItemElementControllerImpl(CdbObjectManager):
         return self.itemDbApi.addItemElement(name, parentItemId, containedItemId, isRequired, description,
                                       createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable)
 
+    def updateItemElement(self, itemElementId, lastModifiedUserId, containedItemId=-1, isRequired=-1,
+                          name=None, description=None, ownerUserId=None, ownerGroupId=None, isGroupWriteable=None):
+        return self.itemDbApi.updateItemElement(itemElementId, lastModifiedUserId, containedItemId,
+                                                           isRequired, name, description, ownerUserId, ownerGroupId,
+                                                           isGroupWriteable)
+
     def addPropertyValueForItemElementWithId(self, itemElementId, propertyTypeName, enteredByUserId,
                                       tag=None, value=None, units=None, description=None,
                                       isUserWriteable=None, isDynamic=False):
