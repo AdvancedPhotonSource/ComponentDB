@@ -4,6 +4,7 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
+from sqlalchemy.sql.functions import concat
 
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
@@ -227,7 +228,8 @@ class ItemRestApi(CdbRestApi):
 
         return Item(responseData)
 
-    def addItemElement(self, itemElementName, parentItemId):
+    def addItemElement(self, itemElementName, parentItemId, containedItemId = -1, description=None,
+                       ownerUserId=None, ownerGroupId=None, isRequired=-1, isGroupWriteable=None):
         if parentItemId is not None:
             parentItemId = str(parentItemId)
 
@@ -241,5 +243,57 @@ class ItemRestApi(CdbRestApi):
 
         url = '%s/itemElements/add/%s/%s' % (self.getContextRoot(), itemElementName, parentItemId)
 
+        url = self.__appendOptionalItemElementParametersToUrl(url, containedItemId, description, ownerUserId,
+                                                              ownerGroupId, isRequired, isGroupWriteable)
+
         responseData = self.sendSessionRequest(url=url, method='POST')
         return ItemElement(responseData)
+
+    def updateItemElement(self, itemElementId, containedItemId=-1, isRequired=-1,
+                          name=None, description=None, ownerUserId=None, ownerGroupId=None, isGroupWriteable=None):
+        if itemElementId is not None:
+            itemElementId = str(itemElementId)
+
+        if itemElementId is None or not len(itemElementId):
+            raise InvalidRequest("itemElementId must be provided")
+
+        url = '%s/itemElements/update/%s' % (self.getContextRoot(), itemElementId)
+
+        if name is not None:
+            name = Encoder.encode(name)
+            url = self._appendUrlParameter(url, "name", name)
+
+        url = self.__appendOptionalItemElementParametersToUrl(url, containedItemId, description, ownerUserId,
+                                                              ownerGroupId, isRequired, isGroupWriteable)
+
+        responseData = self.sendSessionRequest(url=url, method='PUT')
+        return ItemElement(responseData)
+
+    def __appendOptionalItemElementParametersToUrl(self, url, containedItemId = -1, description=None,
+                       ownerUserId=None, ownerGroupId=None, isRequired=-1, isGroupWriteable=None ):
+
+        if containedItemId != -1:
+            containedItemId = str(containedItemId)
+            url = self._appendUrlParameter(url, "containedItemId", containedItemId)
+
+        if description is not None:
+            description = Encoder.encode(description)
+            url = self._appendUrlParameter(url, "description", description)
+
+        if ownerUserId is not None:
+            ownerUserId = str(ownerUserId)
+            url = self._appendUrlParameter(url, "ownerUserId", ownerUserId)
+
+        if ownerGroupId is not None:
+            ownerGroupId = str(ownerGroupId)
+            url = self._appendUrlParameter(url, "ownerGroupId", ownerGroupId)
+
+        if isRequired != -1:
+            isRequired = str(isRequired)
+            url = self._appendUrlParameter(url, "isRequired", isRequired)
+
+        if isGroupWriteable is not None:
+            isGroupWriteable = str(isGroupWriteable)
+            url = self._appendUrlParameter(url, "isGroupWriteable", isGroupWriteable)
+
+        return url
