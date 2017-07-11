@@ -261,6 +261,31 @@ class ItemDbApi(CdbDbApi):
                                           createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
         return dbItemElement.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def updateItemElement(self, itemElementId, lastModifiedUserId, containedItemId=-1, isRequired=-1,
+                          name=None, description=None, ownerUserId=None, ownerGroupId=None, isGroupWriteable=None, **kwargs):
+        """
+        Update an item element record.
+
+        :param itemElementId:
+        :param lastModifiedUserId:
+        :param containedItemId:
+        :param isRequired:
+        :param name:
+        :param description:
+        :param ownerUserId:
+        :param ownerGroupId:
+        :param isGroupWriteable:
+        :return:
+        """
+
+        session = kwargs['session']
+        dbItemElement = self.itemHandler.updateItemElement(session, itemElementId, lastModifiedUserId, containedItemId,
+                                                           isRequired, name, description, ownerUserId, ownerGroupId, isGroupWriteable)
+
+        return dbItemElement.getCdbObject()
+
+
     @CdbDbApi.executeQuery
     def getItemById(self, itemId, **kwargs):
         """

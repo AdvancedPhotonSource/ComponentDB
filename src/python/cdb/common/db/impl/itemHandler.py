@@ -332,8 +332,9 @@ class ItemHandler(CdbDbEntityHandler):
         dbEntityInfo = self.entityInfoHandler.createEntityInfo(session, createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
 
         # Create item
-        dbItemElement = ItemElement(name=name, description=description)
+        dbItemElement = ItemElement(name=name, description=description, is_required=isRequired)
         dbItemElement.entityInfo = dbEntityInfo
+
         if parentItemId:
             dbItemElement.parentItem = self.getItemById(session, parentItemId)
         if containedItemId:
@@ -346,6 +347,41 @@ class ItemHandler(CdbDbEntityHandler):
             raise DbError(err.message)
 
         self.logger.debug('Inserted item Element id %s' % dbItemElement.id)
+
+        return dbItemElement
+
+    def updateItemElement(self, session, itemElementId, lastModifiedUserId, containedItemId = -1, isRequired = -1, name = None, description = None,
+                          ownerUserId = None, ownerGroupId = None, isGroupWriteable = None):
+
+        dbItemElement = self.getItemElementById(session, itemElementId)
+
+        self.permissionHandler.verifyPermissionsForWriteToItemElement(session, lastModifiedUserId, dbItemElementObject=dbItemElement)
+
+        self.entityInfoHandler.updateEntityInfo(session, dbItemElement.entityInfo, lastModifiedUserId,
+                                                               ownerUserId, ownerGroupId, isGroupWriteable)
+
+        if containedItemId != -1:
+            if containedItemId is None:
+                dbItemElement.containedItem = None
+            else:
+                dbItemElement.containedItem = self.getItemById(session, containedItemId)
+
+        if name is not None:
+            dbItemElement.name = name
+
+        if isRequired != -1:
+            dbItemElement.is_required = isRequired
+
+        if description is not None:
+            dbItemElement.description = description
+
+        try:
+            session.add(dbItemElement)
+            session.flush()
+        except OperationalError, err:
+            raise DbError(err.message)
+
+        self.logger.debug('Updated item Element id %s' % dbItemElement.id)
 
         return dbItemElement
 
