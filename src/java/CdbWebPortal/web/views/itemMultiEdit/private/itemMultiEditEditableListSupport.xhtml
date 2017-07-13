@@ -24,7 +24,7 @@ See LICENSE file.
         <ui:param name="singlePropertyEditDialogUpdateTarget"
                   value="@form:#{entityTypeName}MultiEditItemDataTable" />
     </ui:include>
-    
+
     <ui:include src="../../propertyValue/private/propertyValueEditListSupport.xhtml" >
         <ui:param name="propertyValueUpdateTarget"
                   value="@form:#{entityTypeName}MultiEditItemDataTable" />
@@ -39,7 +39,7 @@ See LICENSE file.
 
     <p:remoteCommand name="itemEditMultiSelectPropertyTypeSelectionMade"
                      update="@form:editOptionsAccordionPanel 
-                             @form:#{entityTypeName}MultiEditItemDataTable"
+                     @form:#{entityTypeName}MultiEditItemDataTable"
                      onstart="PF('loadingDialog').show();"
                      oncomplete="PF('loadingDialog').hide();
                      PF('#{entityTypeName}PropertySelectDialogWidget').hide();"/>
@@ -47,5 +47,7 @@ See LICENSE file.
     <ui:include src="itemMultiEditEditableSelectSpecificPropertyDialog.xhtml"/>
 
     <ui:include src="itemMultiEditEditableEditPropertyTypeAttributesDialog.xhtml" />
+
+    <ui:include src="itemMultiEditApplyValuesToColumnConfigDialog.xhtml" />
 
 </ui:composition>
