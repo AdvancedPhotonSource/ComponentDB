@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="useDefaultGroupWriteableValue" value="#{useDefaultGroupWriteableValue != null 
+                                                                  ? useDefaultGroupWriteableValue
+                                                                  : true }" />
+    <ui:param name="groupWriteableValue" value="#{useDefaultGroupWriteableValue 
+                                                        ? entityInfoObject.isGroupWriteable
+                                                        : groupWriteableValue}" />
+
+    <p:outputPanel id="groupWriteable#{viewName}">        
+        <p:selectBooleanButton id="groupWriteableSBB#{viewName}" 
+                               value="#{groupWriteableValue}" 
+                               styleClass="entityDataText" onLabel="Yes" offLabel="No"
+                               onchange="updateGroupWriteable#{viewName}()"/>        
+        <p:remoteCommand name="updateGroupWriteable#{viewName}"
+                         update="groupWriteable#{viewName}" />        
+        <p:message for="groupWriteable#{viewName}"/> 
+        <p:tooltip for="groupWriteable#{viewName}" value="This flag determines whether owner group members can modify this entity."/> 
+    </p:outputPanel>
+
+</ui:composition>
