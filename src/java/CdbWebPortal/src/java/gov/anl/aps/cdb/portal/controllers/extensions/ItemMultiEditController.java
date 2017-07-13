@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
+import gov.anl.aps.cdb.common.constants.ItemDefaultColumnReferences;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -70,6 +72,11 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected boolean updateProject = false;
     protected boolean updateDescription = false;
     protected boolean updateQrId = false;
+    
+    protected boolean updateOwnerUser = false;
+    protected boolean updateOwnerGroup = false;
+    protected boolean updateGroupWriteable = false; 
+    
     protected MultiEditMode multiEditMode = null;
     protected List<ItemProject> newItemAssignDefaultProject = null;
 
@@ -79,6 +86,15 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     protected MultiEditPropertyRecord currentMultiEditPropertyRecord = null;
     protected PropertyValue storedPropertyValueBeforeSingleEditInformation = null;
+    
+    protected ItemDefaultColumnReferences currentApplyValuesToColumn = null; 
+    protected String currentPrefixValueToColumn = null; 
+    protected String currentPostfixValueToColumn = null; 
+    protected Integer currentSequenceStartValueToColumn = null;
+    protected List<Object> currentObjectListValueToColumn = null; 
+    protected String currentObjectListStringRep = null; 
+    protected Object currentObjectValueToColumn = null; 
+    
 
     protected enum MultipleEditMenu {
         selection("Selection"),
@@ -645,6 +661,30 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         this.updateQrId = updateQrId;
     }
 
+    public boolean isUpdateOwnerUser() {
+        return updateOwnerUser;
+    }
+
+    public void setUpdateOwnerUser(boolean updateOwnerUser) {
+        this.updateOwnerUser = updateOwnerUser;
+    }
+
+    public boolean isUpdateOwnerGroup() {
+        return updateOwnerGroup;
+    }
+
+    public void setUpdateOwnerGroup(boolean updateOwnerGroup) {
+        this.updateOwnerGroup = updateOwnerGroup;
+    }
+
+    public boolean isUpdateGroupWriteable() {
+        return updateGroupWriteable;
+    }
+
+    public void setUpdateGroupWriteable(boolean updateGroupWriteable) {
+        this.updateGroupWriteable = updateGroupWriteable;
+    }
+
     public Item getDerivedFromItemForNewItems() {
         return derivedFromItemForNewItems;
     }
@@ -663,6 +703,179 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public void removePropertyTypeForEditing(PropertyType propertyType) {
         this.selectedPropertyTypesForEditing.remove(propertyType);
+    }
+    
+    private boolean getRenderSpecificInput(ItemDefaultColumnReferences idcr) {
+        if (this.currentApplyValuesToColumn != null) {
+            return this.currentApplyValuesToColumn == idcr;
+        }
+        return false; 
+    }
+    
+    public boolean getRenderGroupWriteableInput() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.groupWriteable);
+    }
+    
+    public boolean getRenderOwnerGroupInput() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.ownerGroup);
+    }
+    
+    public boolean getRenderOwnerUserInput() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.ownerUser);
+    }
+    
+    public boolean getRenderNumberInput() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.qrId);
+    }
+    
+    public boolean getRenderLargeTextInput() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.description); 
+    }
+    
+    public boolean getRenderItemProjectInputValue() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.itemProject);         
+    }
+    
+    public boolean getRenderSimpleTextInputValue() {
+        if (this.currentApplyValuesToColumn != null) {
+            if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.name) {
+                return true;
+            } else if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.itemIdentifier1) {
+                return true;
+            } else if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.itemIdentifier2) {
+                return true;
+            }
+        }
+        
+        return false; 
+    }        
+    
+    public boolean getDisplayColumnApplyValuesConfiguration(ItemDefaultColumnReferences columnKey) {
+        if (columnKey == ItemDefaultColumnReferences.derivedFromItem) {
+            return false; 
+        }
+        
+        return true;
+    }
+    
+    public void populateValuesForColumn() {
+        // Figure the enum reference (Remove the need for string comaprison on each itteration. 
+        /*
+        ItemDefaultColumnReferences itemColumnReference = null; 
+        for (ItemDefaultColumnReferences idcr : ItemDefaultColumnReferences.values()) {
+            if (this.currentApplyValuesToColumn.equals(idcr.getValue())) {
+                itemColumnReference = idcr;
+                break;
+            }
+        }
+        */
+        
+        for (Item item : selectedItemsToEdit) {                        
+            switch (currentApplyValuesToColumn) {
+                case name:
+                    item.setName(getNextValueForCurrentSequence());
+                    break;
+                case itemIdentifier1:
+                    item.setItemIdentifier1(getNextValueForCurrentSequence());
+                    break;
+                case itemIdentifier2:
+                    item.setItemIdentifier2(getNextValueForCurrentSequence());
+                    break;
+                case itemProject:
+                    item.setItemProjectList((List<ItemProject>)(List<?>)currentObjectListValueToColumn);
+                    break;
+                case description: 
+                    item.setDescription((String) currentObjectValueToColumn);
+                    break;
+                case qrId:
+                    item.setQrId(currentSequenceStartValueToColumn);
+                    currentSequenceStartValueToColumn++;
+                    break; 
+                case ownerUser:                    
+                    item.getEntityInfo().setOwnerUser((UserInfo) currentObjectValueToColumn);
+                    break;
+                case ownerGroup:
+                    item.getEntityInfo().setOwnerUserGroup((UserGroup) currentObjectValueToColumn);
+                    break;
+                case groupWriteable:                    
+                    item.getEntityInfo().setIsGroupWriteable((Boolean) currentObjectValueToColumn);
+                    break; 
+                 default:
+                     break;                    
+            }
+        }
+    }
+    
+    private String getNextValueForCurrentSequence() {
+        String newValue = currentPrefixValueToColumn;
+        if (getHasSequenceValueToSet()) {
+            newValue += currentSequenceStartValueToColumn; 
+            newValue += currentPostfixValueToColumn; 
+            currentSequenceStartValueToColumn ++; 
+        }
+        return newValue; 
+    }
+
+    public void setCurrentApplyValuesToColumn(ItemDefaultColumnReferences currentApplyValuesToColumn) {
+        this.currentApplyValuesToColumn = currentApplyValuesToColumn;
+        this.currentPrefixValueToColumn = null;
+        this.currentPostfixValueToColumn = null;
+        this.currentSequenceStartValueToColumn = null; 
+        this.currentObjectListValueToColumn = null;
+        this.currentObjectListStringRep = null;
+        this.currentObjectValueToColumn = null; 
+    }
+
+    public String getCurrentPrefixValueToColumn() {
+        return currentPrefixValueToColumn;
+    }
+
+    public void setCurrentPrefixValueToColumn(String currentPrefixValueToColumn) {
+        this.currentPrefixValueToColumn = currentPrefixValueToColumn;
+    }
+
+    public String getCurrentPostfixValueToColumn() {
+        return currentPostfixValueToColumn;
+    }
+
+    public void setCurrentPostfixValueToColumn(String currentPostfixValueToColumn) {
+        this.currentPostfixValueToColumn = currentPostfixValueToColumn;
+    }
+
+    public Integer getCurrentSequenceStartValueToColumn() {
+        return currentSequenceStartValueToColumn;
+    }
+
+    public void setCurrentSequenceStartValueToColumn(Integer currentSequenceStartValueToColumn) {
+        this.currentSequenceStartValueToColumn = currentSequenceStartValueToColumn;
+    }
+    
+    public boolean getHasSequenceValueToSet() {
+        return currentSequenceStartValueToColumn != null; 
+    }
+
+    public List<Object> getCurrentObjectListValueToColumn() {
+        return currentObjectListValueToColumn;
+    }
+
+    public void setCurrentObjectListValueToColumn(List<Object> currentObjectListValueToColumn) {
+        currentObjectListStringRep = null;
+        this.currentObjectListValueToColumn = currentObjectListValueToColumn;
+    }
+
+    public String getCurrentObjectListStringRep() {
+        if (currentObjectListStringRep == null) {
+            currentObjectListStringRep = StringUtility.getStringifyCdbList(currentObjectListValueToColumn);
+        }
+        return currentObjectListStringRep;
+    }
+
+    public Object getCurrentObjectValueToColumn() {
+        return currentObjectValueToColumn;
+    }
+
+    public void setCurrentObjectValueToColumn(Object currentObjectValueToColumn) {
+        this.currentObjectValueToColumn = currentObjectValueToColumn;
     }
 
     public class MultiEditPropertyRecord {
