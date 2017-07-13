@@ -14,7 +14,10 @@ See LICENSE file.
         <br/>
         <p:accordionPanel id="editOptionsAccordionPanel">
             <p:tab title="General">
-                <ui:include src="itemMultiEditUpdateOptionsPanelGrid.xhtml" />                                                        
+                <ui:include src="itemMultiEditUpdateGeneralOptionsPanelGrid.xhtml" />                                                        
+            </p:tab>
+            <p:tab title="Permissions">
+                <ui:include src="itemMultiEditUpdatePermissionOptionsPanelGrid.xhtml" />
             </p:tab>
             <p:tab title="Properties">
                 <p:commandButton value="Select Property Types"
@@ -51,8 +54,11 @@ See LICENSE file.
 
                     </p:panelGrid>
                 </p:repeat>
-            </p:tab>                            
+            </p:tab>            
         </p:accordionPanel>
+        
+        <p:remoteCommand name="onUpdateOptionsChange"
+                         update="@form:#{entityTypeName}MultiEditItemDataTable" />
 
         <ui:include src="itemMultiEditEditableDataTable.xhtml" />
 
