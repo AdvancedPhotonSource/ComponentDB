@@ -27,31 +27,31 @@ import javax.ejb.EJB;
  */
 public abstract class ItemEnforcedPropertiesController extends ItemControllerExtensionHelper {
 
-    protected String ENFORCED_CONFIGURATION_PROPERTY_TYPE_NAME = "itemPropertyRequirements";   
+    protected String ENFORCED_CONFIGURATION_PROPERTY_TYPE_NAME = "itemPropertyRequirements";
 
     @EJB
     protected PropertyTypeCategoryFacade propertyTypeCategoryFacade;
 
     @EJB
     protected PropertyTypeFacade propertyTypeFacade;
-    
+
     @EJB
-    protected PropertyValueFacade propertyValueFacade; 
-    
+    protected PropertyValueFacade propertyValueFacade;
+
     protected List<PropertyTypeCategory> elevatedCategories = null;
 
     protected PropertyTypeCategory selectedPropertyTypeCategory = null;
 
     protected List<EnforcedPropertyInformation> possibleEnforcedPropertyInformation = null;
-    
-    protected PropertyType enforcedConfigurationPropertyType = null;        
-    
+
+    protected PropertyType enforcedConfigurationPropertyType = null;
+
     protected PropertyValue itemEnforcedConfigurationPropertyValue = null;
-    
-    protected boolean renderDisplayPropertyRequirementsOnView = false;     
-    
-    protected abstract String[] getElevatedCategoryNames();        
-    
+
+    protected boolean renderDisplayPropertyRequirementsOnView = false;
+
+    protected abstract String[] getElevatedCategoryNames();
+
     @PostConstruct
     public void initialize() {
         getItemController().subscribeResetVariablesForCurrent(this);
@@ -63,71 +63,73 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
         super.prepareInsertForCurrent();
         prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
     }
-    
+
     public void revertChangesMadeToEnforcedPropertiesForCurrent() {
-        PropertyValue propertyValue = getItemEnforcedConfigurationPropertyValue(); 
+        PropertyValue propertyValue = getItemEnforcedConfigurationPropertyValue();
         if (propertyValue.getId() != null) {
-            int propertyValueId = propertyValue.getId(); 
+            int propertyValueId = propertyValue.getId();
             PropertyValue dbStoredPropertyValue = propertyValueFacade.find(propertyValueId);
             propertyValue.setValue(dbStoredPropertyValue.getValue());
             propertyValue.setPropertyMetadataList(dbStoredPropertyValue.getPropertyMetadataList());
         } else {
             // Record does not yet exist in DB. 
-            Item item = getCurrent(); 
+            Item item = getCurrent();
             for (int i = 0; i < item.getPropertyValueList().size(); i++) {
                 PropertyValue itemPV = item.getPropertyValueList().get(i);
                 if (itemPV.getPropertyType().equals(getEnfrocedConfigurationPropertyType())) {
                     item.getPropertyValueList().remove(i);
-                    break; 
-                } 
+                    break;
+                }
             }
         }
-        
+
         resetExtensionVariablesForCurrent();
-        
+
     }
-    
-    public String saveChangesMadeToEnforcedPropertiesForCurrent() {        
+
+    public String saveChangesMadeToEnforcedPropertiesForCurrent() {
         prepareSaveChangesMadeToEnforcedPropertiesForCurrent();
-        
-        return update(); 
+
+        return update();
     }
-    
+
     protected void prepareSaveChangesMadeToEnforcedPropertiesForCurrent() {
-        List<PropertyType> requiredPropertyTypeListForItem = getRequiredPropertyTypeListForItem(getCurrent());
-        Item item = getCurrent(); 
+        Item item = getCurrent();        
+        List<PropertyType> requiredPropertyTypeListForItem = getRequiredPropertyTypeListForItem(item);
         
-        if (item.getPropertyValueList() == null) {
-            item.setPropertyValueList(new ArrayList<>());
-        }
-        
-        // Remove property types that do not need to be added. 
-        for (PropertyValue propertyValue : item.getPropertyValueList()) {
-            PropertyType propertyType = propertyValue.getPropertyType();
-            if (requiredPropertyTypeListForItem.contains(propertyType)) {
-                requiredPropertyTypeListForItem.remove(propertyType); 
+        if (requiredPropertyTypeListForItem != null) {        
+            if (item.getPropertyValueList() == null) {
+                item.setPropertyValueList(new ArrayList<>());
+            }
+
+            // Remove property types that do not need to be added. 
+            for (PropertyValue propertyValue : item.getPropertyValueList()) {
+                PropertyType propertyType = propertyValue.getPropertyType();
+                if (requiredPropertyTypeListForItem.contains(propertyType)) {
+                    requiredPropertyTypeListForItem.remove(propertyType);
+                }
+            }
+
+            for (PropertyType propertyType : requiredPropertyTypeListForItem) {
+                preparePropertyTypeValueAdd(propertyType);
             }
         }
-        
-        for (PropertyType propertyType : requiredPropertyTypeListForItem) {
-          preparePropertyTypeValueAdd(propertyType);
-        }        
     }
-    
+
     public boolean isItemHasEditableEnforcedProperties() {
-        String[] elevatedCategories = getElevatedCategoryNames(); 
+        String[] elevatedCategories = getElevatedCategoryNames();
         return (elevatedCategories != null && elevatedCategories.length != 0);
     }
-    
+
     @Override
     public void resetExtensionVariablesForCurrent() {
-        super.resetExtensionVariablesForCurrent(); 
-        
+        super.resetExtensionVariablesForCurrent();
+
         elevatedCategories = null;
         selectedPropertyTypeCategory = null;
         possibleEnforcedPropertyInformation = null;
         itemEnforcedConfigurationPropertyValue = null;
-        renderDisplayPropertyRequirementsOnView = false; 
+        renderDisplayPropertyRequirementsOnView = false;
     }
 
     public boolean isCatalogAllowedDomain(PropertyType propertyType) {
@@ -184,40 +186,43 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
     private String generatePropertyTypeMetadataKey(PropertyType propertyType, int domainId) {
         return propertyType.getId() + "-" + domainId;
     }
-    
+
     public List<PropertyType> getRequiredPropertyTypeListForItem(Item item) {
         int reqDomainId = getDomainId();
-        return getRequiredPropertyTypeListForItem(item, reqDomainId); 
+        return getRequiredPropertyTypeListForItem(item, reqDomainId);
     }
 
     protected List<PropertyType> getRequiredPropertyTypeListForItem(Item item, int requiredByDomainId) {
         PropertyValue propertyValue = getItemEnforcedConfigurationPropertyValue(item);
-        List<PropertyMetadata> propertyMetadataList = propertyValue.getPropertyMetadataList();
-        
-        List<PropertyType> propertyTypes = new ArrayList<>(); 
-        
-        if (propertyMetadataList != null) {
-            for (PropertyMetadata propertyMetadata : propertyMetadataList) {
-                String metadataValue = propertyMetadata.getMetadataValue();
-                boolean isRequired = Boolean.parseBoolean(metadataValue); 
-                if (isRequired) {
-                    String metadataKey = propertyMetadata.getMetadataKey();
-                    String[] split = metadataKey.split("-");
-                    int domainId = Integer.parseInt(split[1]);
-                    if (domainId != requiredByDomainId) {
-                        continue;
-                    }
+        if (propertyValue != null) {
+            List<PropertyMetadata> propertyMetadataList = propertyValue.getPropertyMetadataList();
 
-                    int propertyTypeId = Integer.parseInt(split[0]);
-                    PropertyType propertyType = propertyTypeFacade.findById(propertyTypeId);
-                    if (propertyType != null) {
-                        propertyTypes.add(propertyType); 
+            List<PropertyType> propertyTypes = new ArrayList<>();
+
+            if (propertyMetadataList != null) {
+                for (PropertyMetadata propertyMetadata : propertyMetadataList) {
+                    String metadataValue = propertyMetadata.getMetadataValue();
+                    boolean isRequired = Boolean.parseBoolean(metadataValue);
+                    if (isRequired) {
+                        String metadataKey = propertyMetadata.getMetadataKey();
+                        String[] split = metadataKey.split("-");
+                        int domainId = Integer.parseInt(split[1]);
+                        if (domainId != requiredByDomainId) {
+                            continue;
+                        }
+
+                        int propertyTypeId = Integer.parseInt(split[0]);
+                        PropertyType propertyType = propertyTypeFacade.findById(propertyTypeId);
+                        if (propertyType != null) {
+                            propertyTypes.add(propertyType);
+                        }
                     }
                 }
             }
+            return propertyTypes;
         }
-        
-        return propertyTypes;
+        return null;
+
     }
 
     public PropertyValue getItemEnforcedConfigurationPropertyValue(Item item) {
@@ -228,8 +233,8 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
                     return propertyValue;
                 }
             }
-        }        
-        return null; 
+        }
+        return null;
     }
 
     public PropertyValue getItemEnforcedConfigurationPropertyValue() {
@@ -238,9 +243,9 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
             if (item.getPropertyValueList() == null) {
                 item.setPropertyValueList(new ArrayList<>());
             }
-            
-            itemEnforcedConfigurationPropertyValue = getItemEnforcedConfigurationPropertyValue(item); 
-            
+
+            itemEnforcedConfigurationPropertyValue = getItemEnforcedConfigurationPropertyValue(item);
+
             if (itemEnforcedConfigurationPropertyValue == null) {
                 itemEnforcedConfigurationPropertyValue = getItemController().preparePropertyTypeValueAdd(getEnfrocedConfigurationPropertyType());
             }
@@ -304,7 +309,7 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
         }
 
         return enforcedConfigurationPropertyType;
-    } 
+    }
 
     public boolean isRenderDisplayPropertyRequirementsOnView() {
         return renderDisplayPropertyRequirementsOnView;
