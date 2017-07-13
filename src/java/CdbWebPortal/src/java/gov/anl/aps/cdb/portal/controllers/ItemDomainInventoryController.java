@@ -1186,7 +1186,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     public boolean isApplyPermissionToAllNewPartsForCurrent() {
-        return getCurrent().getContainedInBOM().isApplyPermissionToAllNewParts();
+        if (getCurrent().getContainedInBOM() != null) {
+            return getCurrent().getContainedInBOM().isApplyPermissionToAllNewParts();
+        }
+        return false; 
     }
 
     private void setPermissionsForItemToCurrentItem(ItemDomainInventory inventoryItem) {
