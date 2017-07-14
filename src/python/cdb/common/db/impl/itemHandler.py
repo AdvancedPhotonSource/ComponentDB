@@ -300,12 +300,25 @@ class ItemHandler(CdbDbEntityHandler):
     def addItemEntityType(self, session, itemId, entityTypeName, item=None):
         dbItemEntityType = ItemEntityType()
 
-        if item:
-            dbItemEntityType.item = item
-        else:
-            dbItemEntityType.item = self.getItemById(session, itemId)
+        dbEntityType = self.entityTypeHandler.findEntityTypeByName(session, entityTypeName)
 
-        dbItemEntityType.entityType = self.entityTypeHandler.findEntityTypeByName(session, entityTypeName)
+        if not item:
+            item = self.getItemById(session, itemId)
+
+        dbAllowedEntityTypeDomains = self.domainHandler.getAllowedEntityTypeDomain(session, item.domain_id)
+        found = False;
+        for allowedEntityTypeDomain in dbAllowedEntityTypeDomains:
+            allowedEntityType = allowedEntityTypeDomain.entityType
+            if entityTypeName == allowedEntityType.name:
+                found = True
+                break
+
+        if not found:
+            raise InvalidArgument("Entity type name: %s cannot be added to domain of item." % entityTypeName)
+
+        dbItemEntityType.item = item
+
+        dbItemEntityType.entityType = dbEntityType
 
         session.add(dbItemEntityType)
         session.flush()
