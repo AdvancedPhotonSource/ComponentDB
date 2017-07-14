@@ -189,6 +189,8 @@ cd $CURRENT_DIR && cd $STATIC_DB_SCRIPTS_DIR
 STATIC_CDB_DB_TABLES="\
     setting_type \
     domain \
+    entity_type \
+    allowed_entity_type_domain \
 "
 
 executePopulateScripts "$STATIC_CDB_DB_TABLES"
@@ -223,8 +225,7 @@ CDB_DB_TABLES="\
     item_item_type \
     item_category_item_type \
     item_project \
-    item_item_project \
-    entity_type \
+    item_item_project \ 
     item_entity_type \
     allowed_child_entity_type \
     source \
@@ -247,7 +248,6 @@ CDB_DB_TABLES="\
     allowed_property_value \
     allowed_entity_type \
     allowed_property_domain \
-    allowed_entity_type_domain \
     property_value \
     property_metadata \
     property_value_history \
