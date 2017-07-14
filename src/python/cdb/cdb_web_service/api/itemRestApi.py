@@ -4,8 +4,6 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-from sqlalchemy.sql.functions import concat
-
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.domain import Domain
