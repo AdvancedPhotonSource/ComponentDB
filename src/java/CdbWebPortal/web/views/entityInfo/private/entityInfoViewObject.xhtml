@@ -24,6 +24,7 @@ See LICENSE file.
                          />
         <p:selectOneMenu rendered="#{entityInfoObject != null}" 
                          value="#{entityInfoObject.ownerUser}" 
+                         converter="userInfoConverter"
                          styleClass="entityDataText">
             <f:selectItem itemLabel="Select" itemValue="#{null}"/>
             <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
