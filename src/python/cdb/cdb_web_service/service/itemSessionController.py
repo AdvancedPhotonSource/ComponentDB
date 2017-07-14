@@ -73,7 +73,7 @@ class ItemSessionController(CdbSessionController):
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
     def addItem(self, domainName, name, ownerUserId=None, ownerGroupId=None,
-                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=None):
+                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=None, entityTypeNames = None):
         if not domainName:
             raise InvalidRequest("Invalid domain name provided")
         if not name:
@@ -115,6 +115,12 @@ class ItemSessionController(CdbSessionController):
         if isGroupWriteable is not None:
             isGroupWriteable = eval(isGroupWriteable)
             optionalParameters.update({'isGroupWriteable': isGroupWriteable})
+
+        if entityTypeNames is not None:
+            entityTypeNames = Encoder.decode(entityTypeNames)
+            if entityTypeNames[0] == '[':
+                entityTypeNames = eval(entityTypeNames)
+            optionalParameters.update({'entityTypeNames': entityTypeNames})
 
         response = self.itemControllerImpl.addItem(domainName, name, createdByUserId, ownerUserId, ownerGroupId, **optionalParameters)
         self.logger.debug('Returning new item: %s' % (response))

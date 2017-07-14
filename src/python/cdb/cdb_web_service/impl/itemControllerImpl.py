@@ -94,7 +94,7 @@ class ItemControllerImpl(CdbObjectManager):
         return self.itemDbApi.getDomains()
 
     def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
-                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True):
+                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True, entityTypeNames=None):
         return self.itemDbApi.addItem(domainName=domainName,
                                       name=name,
                                       createdByUserId=createdByUserId,
@@ -104,6 +104,7 @@ class ItemControllerImpl(CdbObjectManager):
                                       itemIdentifier2=itemIdentifier2,
                                       qrId=qrId,
                                       description=description,
-                                      isGroupWriteable=isGroupWriteable)
+                                      isGroupWriteable=isGroupWriteable,
+                                      entityTypeNames=entityTypeNames)
 
 
