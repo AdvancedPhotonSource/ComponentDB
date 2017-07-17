@@ -115,6 +115,13 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         }
         return result;
     }
+    
+    public boolean displayShowMetadataForPropertyValue(PropertyValue propertyValue) {
+        if (propertyValue.getPropertyMetadataList() != null) {
+            return propertyValue.getPropertyMetadataList().size() > 0;  
+        }
+        return false; 
+    }
 
     public boolean displayFreeFormTextValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FREE_FORM_TEXT);
