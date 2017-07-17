@@ -37,7 +37,7 @@ See LICENSE file.
                                onstart="PF('loadingDialog').show();"
                                oncomplete="PF('loadingDialog').hide();
                                            PF('propertyValueHistoryListDialogWidget').show()" 
-                               styleClass="ui-icon ui-icon-history" 
+                               styleClass="fa fa-link-icon fa-history" 
                                title="View property value history."
                                update="@form">
                     <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
@@ -46,14 +46,14 @@ See LICENSE file.
                 </p:commandLink>
                 <p:commandLink id="#{entityTypeName}PropertyInfoActionButton" 
                                rendered="#{propertyValueObject.infoActionCommand != null}"
-                               styleClass="ui-icon ui-icon-info2" 
+                               styleClass="fa fa-link-icon fa-info-circle" 
                                title="View property info"
                                onclick="#{entityTypeName}PropertyInfoAction#{propertyValueObject.id}()">
                     <p:tooltip for="#{entityTypeName}PropertyInfoActionButton" value="View property info."/>
                 </p:commandLink>
 
-                <p:commandLink id="#{entityTypeName}PropertEditActionButton" 
-                               styleClass="ui-icon ui-icon-pencil" 
+                <p:commandLink id="#{entityTypeName}PropertyEditActionButton" 
+                               styleClass="fa fa-link-icon fa-pencil" 
                                title="Edit property"
                                action="#{entityController.setCurrentEditPropertyValue(propertyValueObject)}"
                                rendered="#{isEntityWriteable or (propertyValueObject.isUserWriteable and loginController.loggedIn)}"
@@ -62,8 +62,19 @@ See LICENSE file.
                                onerror="PF('loadingDialog').hide();"
                                oncomplete="PF('loadingDialog').hide();
                                PF('#{entityTypeName}SinglePropertyEditDialogWidget').show()">
-                    <p:tooltip for="#{entityTypeName}PropertEditActionButton" value="Edit property."/>
+                    <p:tooltip for="#{entityTypeName}PropertyEditActionButton" value="Edit property."/>
                 </p:commandLink>   
+                
+                <p:commandLink id="#{entityTypeName}PropertyMetadataActionButton" 
+                               styleClass="fa fa-link-icon fa-key" 
+                               title="View Metadata"
+                               update="@form:#{entityTypeName}PropertyValueMetadataListDialog"
+                               rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}"
+                               oncomplete="PF('#{entityTypeName}PropertyValueMetadataListDialogWidget').show();">
+                    <p:tooltip for="#{entityTypeName}PropertyMetadataActionButton" value="View metadata."/>
+                    <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                                 value="#{propertyValueObject}" />
+                </p:commandLink>                                   
             </div>
         </p:column>       
     </p:dataTable>
