@@ -82,9 +82,11 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     protected boolean prepareSwitchToUpdateNewItemsActiveIndex() {
         if(super.prepareSwitchToUpdateNewItemsActiveIndex()) {
             List<PropertyType> propertyTypes = getPropertyTypesRequiredForMultiCreate();
-            setSelectedPropertyTypesForEditing(propertyTypes);
-            for (PropertyType propertyType : propertyTypes) {
-                addPropertyTypeToRestItems(propertyType); 
+            if (propertyTypes != null) {
+                setSelectedPropertyTypesForEditing(propertyTypes);
+                for (PropertyType propertyType : propertyTypes) {
+                    addPropertyTypeToRestItems(propertyType); 
+                }
             }
             return true; 
         }
@@ -98,18 +100,20 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
                     ItemEnforcedPropertiesController itemEnforcedPropertiesController = getItemEnforcedPropertiesController();
                     propertyTypesRequiredForMultiCreate = itemEnforcedPropertiesController.getRequiredPropertyTypeListForItem(selectedItemsToEdit.get(0));
                     
-                    // Select appopriate categories for the property type filter view to prevent a automated clear. 
-                    List<PropertyTypeCategory> propertyTypeCategories = new ArrayList<>(); 
-                    for (PropertyType propertyType : propertyTypesRequiredForMultiCreate) {
-                        PropertyTypeCategory propertyTypeCategory = propertyType.getPropertyTypeCategory();
-                        if (!propertyTypeCategories.contains(propertyTypeCategory)) {
-                            propertyTypeCategories.add(propertyTypeCategory); 
+                    if (propertyTypesRequiredForMultiCreate != null) {
+                        // Select appopriate categories for the property type filter view to prevent a automated clear. 
+                        List<PropertyTypeCategory> propertyTypeCategories = new ArrayList<>(); 
+                        for (PropertyType propertyType : propertyTypesRequiredForMultiCreate) {
+                            PropertyTypeCategory propertyTypeCategory = propertyType.getPropertyTypeCategory();
+                            if (!propertyTypeCategories.contains(propertyTypeCategory)) {
+                                propertyTypeCategories.add(propertyTypeCategory); 
+                            }
                         }
+                        PropertyTypeController ptcontroller = PropertyTypeController.getInstance();
+
+                        ptcontroller.setFitlerViewSelectedPropertyTypeCategories(propertyTypeCategories);
+                        ptcontroller.setFitlerViewSelectedPropertyTypeHandlers(new ArrayList<>());
                     }
-                    PropertyTypeController ptcontroller = PropertyTypeController.getInstance();
-                    
-                    ptcontroller.setFitlerViewSelectedPropertyTypeCategories(propertyTypeCategories);
-                    ptcontroller.setFitlerViewSelectedPropertyTypeHandlers(new ArrayList<>());
                 }
             }
         }
