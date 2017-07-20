@@ -13,7 +13,16 @@ See LICENSE file.
     <p:columns value="#{entityController.selectedPropertyTypesForEditing}"
                var="propertyTypeObject">
         <f:facet name="header">
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.property}" />
             #{propertyTypeObject.name}
+            <p:commandLink styleClass="fa fa-link-icon fa-cogs"
+                           update="@form:itemMultiEditApplyValuesToColumnConfigDialog"
+                           onstart="PF('loadingDialog').show()"
+                           rendered="#{entityController.getDisplayColumnApplyValuesConfiguration(columnEnum)}"
+                           oncomplete="PF('loadingDialog').hide();
+                           PF('itemMultiEditApplyValuesToColumnConfigDialogWidget').show();"
+                           action="#{entityController.setCurrentApplyValuesToColumn(columnEnum, propertyTypeObject)}" 
+                           title="Apply #{columnHeader} values to all items."/> 
         </f:facet>
 
         <ui:param name="multiEditPropertyRecord" value="#{entityController.getMultiEditPropertyRecordForItem(propertyTypeObject, itemObject)}" />
