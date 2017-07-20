@@ -15,7 +15,10 @@ See LICENSE file.
                  rowKey="#{itemObject.viewUUID}MultiEditItemDataTableRow"
                  var="itemObject"
                  rowIndexVar="rowIndex"
-                 rowStyleClass="#{entityController.getEntityEditRowStyle(itemObject)}">
+                 rowStyleClass="#{entityController.getEntityEditRowStyle(itemObject)}"
+                 draggableRows="true">        
+        <p:ajax event="rowReorder" listener="#{entityController.onRowReorder}" update="#{entityTypeName}MultiEditItemDataTable"/>
+                 
         <ui:include src="itemMultiEditEditableListObject.xhtml" >
             <ui:param name="currentObject" value="#{itemObject}" />
         </ui:include>
