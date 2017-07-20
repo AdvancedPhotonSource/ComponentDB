@@ -13,9 +13,14 @@ See LICENSE file.
         <p:outputPanel styleClass="inlineOutputPanel">
             
             <ui:param name="travelerInstanceExists" value='#{propertyValueObject.value != ""}' />
+            <ui:param name="itemElementAssignedToProperty" value="#{propertyValueController.isItemElementAssignedToProperty(propertyValueObject)}" />
+            <ui:param name="messageForButton" value="#{itemElementAssignedToProperty 
+                                                       ? 'Create Traveler Instance' 
+                                                       : 'Instance can only be directly assigned to items.'} " />
             
             <p:commandButton rendered="#{!travelerInstanceExists}" 
-                             value="Create Traveler Instance" 
+                             value="#{messageForButton}" 
+                             disabled="#{!itemElementAssignedToProperty}"
                              oncomplete="loadEntityAvailableTemplateList#{currentObject.viewUUID}();">
                 <f:setPropertyActionListener target="#{travelerBean.propertyValue}" 
                                              value="#{propertyValueObject}"/>   
