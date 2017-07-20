@@ -43,6 +43,13 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public static PropertyValueController getInstance() {
         return (PropertyValueController) SessionUtility.findBean("propertyValueController");
     }
+    
+    public boolean isItemElementAssignedToProperty(PropertyValue propertyValue) {
+        if (propertyValue.getItemElementList() != null) {
+            return propertyValue.getItemElementList().size() > 0; 
+        }
+        return false; 
+    }
 
     @Override
     protected PropertyValueFacade getEntityDbFacade() {
