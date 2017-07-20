@@ -1,4 +1,5 @@
 .idea
+src/python/.loglogin
 
 # Compiled files 
 *.pyc
