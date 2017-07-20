@@ -8,13 +8,15 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-
+        
     <p:dialog id="itemMultiEditApplyValuesToColumnConfigDialog"
               widgetVar="itemMultiEditApplyValuesToColumnConfigDialogWidget"
               resizable="false"
               modal="true"
               header="Apply values to column"
               styleClass="viewTransparentBackgroundDialog">
+        <f:ajax event="close"
+                listener="#{entityController.handleCloseInputValueDialog}" />
         <p:outputPanel id="itemMultiEditApplyValuesToColumnConfigPanel">                       
             <ui:param name="applyValuesToLink"
                       value="#{facesUtility.returnValueIfTrue(entityController.renderItemProjectInputValue, 'applyValuesTo/itemProjectInput.xhtml')}"/>
@@ -48,6 +50,10 @@ See LICENSE file.
                       value="#{applyValuesToLink == null 
                                ? facesUtility.returnValueIfTrue(entityController.renderGroupWriteableInput, 'applyValuesTo/entityInfoGroupWriteableInput.xhtml')
                                : applyValuesToLink}"/>
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderPropertyInputValue, 'applyValuesTo/propertyValueInput.xhtml')
+                               : applyValuesToLink}"/>
 
             <ui:param name="applyValuesToLink"
                       value="#{applyValuesToLink == null 
@@ -67,5 +73,8 @@ See LICENSE file.
                              icon="fa fa-check"/>
         </f:facet>
     </p:dialog>
+    
+    <p:remoteCommand autoRun="#{entityController.isInputValueDialogOpen}"
+                     onstart="PF('itemMultiEditApplyValuesToColumnConfigDialogWidget').show()" />
 
 </ui:composition>
