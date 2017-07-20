@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -219,6 +220,15 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setListList(List<ListTbl> listList) {
         this.listList = listList;
     }
+    
+    @Override
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        propertyValue.addItemElementToItemElementList(this);
+        if (propertyValueList == null) {
+            propertyValueList = new ArrayList<>();
+        }
+        propertyValueList.add(0, propertyValue);
+    }
 
     @Override
     @XmlTransient
@@ -353,7 +363,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setConstraintInformation(ItemElementConstraintInformation constraintInformation) {
         this.constraintInformation = constraintInformation;
-    }
+    }        
     
     @Override
     public SearchResult search(Pattern searchPattern) {
@@ -410,6 +420,6 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         }
         
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemElement[ id=" + id + " ]";
-    }
+    }   
 
 }

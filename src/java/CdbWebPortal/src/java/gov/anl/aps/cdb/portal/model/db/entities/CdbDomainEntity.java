@@ -34,6 +34,8 @@ public abstract class CdbDomainEntity extends CdbEntity {
             propertyTypeIdIndexMap.put(index, propertyTypeId);
         }
     }
+    
+    public abstract void addPropertyValueToPropertyValueList(PropertyValue propertyValue); 
 
     public List<PropertyValue> getPropertyValueList() {
         return null;

@@ -740,6 +740,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return propertyValueInternalList;
     }
+    
+    @Override
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        getSelfElement().addPropertyValueToPropertyValueList(propertyValue);
+    }
 
     @Override
     public List<PropertyValue> getPropertyValueList() {
