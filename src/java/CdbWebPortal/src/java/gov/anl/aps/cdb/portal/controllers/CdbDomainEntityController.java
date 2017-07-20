@@ -90,12 +90,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     }
     
     public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, 
-            PropertyType propertyType, String propertyValueString, String tag) {
-        if (cdbDomainEntity.getPropertyValueList() == null) {
-            cdbDomainEntity.setPropertyValueList(new ArrayList<>()); 
-        }        
-        
-        List<PropertyValue> propertyValueList = cdbDomainEntity.getPropertyValueList();
+            PropertyType propertyType, String propertyValueString, String tag) {       
         UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
         Date lastModifiedOnDateTime = new Date();
 
@@ -103,7 +98,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         propertyValue.setPropertyType(propertyType);
         propertyValue.setValue(propertyValueString);
         propertyValue.setUnits(propertyType.getDefaultUnits());
-        propertyValueList.add(0, propertyValue);
+        cdbDomainEntity.addPropertyValueToPropertyValueList(propertyValue);        
         propertyValue.setEnteredByUser(lastModifiedByUser);
         propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
         if (tag != null) {
