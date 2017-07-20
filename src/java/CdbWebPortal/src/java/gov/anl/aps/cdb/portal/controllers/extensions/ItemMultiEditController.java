@@ -30,8 +30,10 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.primefaces.event.ReorderEvent;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -94,6 +96,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected List<Object> currentObjectListValueToColumn = null; 
     protected String currentObjectListStringRep = null; 
     protected Object currentObjectValueToColumn = null; 
+    protected PropertyValue currentMockPropertyValueApplyValuesToColumn = null; 
+    protected boolean isInputValueDialogOpen; 
     
 
     protected enum MultipleEditMenu {
@@ -281,6 +285,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         currentMultiEditPropertyRecord = null;
         storedPropertyValueBeforeSingleEditInformation = null;
         newItemAssignDefaultProject = null;
+        isInputValueDialogOpen = false; 
     }
 
     public int getMinNewItemsToCreate() {
@@ -313,19 +318,22 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     @Override
     public void savePropertyList() {
-        PropertyValue current = PropertyValueController.getInstance().getCurrent();
+        PropertyValue current = PropertyValueController.getInstance().getCurrent();        
         if (current != null) {
+            Item item = null; 
+            
             List<ItemElement> itemElementList = current.getItemElementList();
             if (itemElementList != null) {
                 if (itemElementList.size() > 0) {
-                    Item item = itemElementList.get(0).getParentItem();
+                    item = itemElementList.get(0).getParentItem();
                     setCurrent(item);
                 } else {
                     return;
                 }
             }
-
-            super.savePropertyList();
+            if (item != null) {
+                super.savePropertyList();
+            }
         }
     }
 
@@ -551,6 +559,13 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     public void setSelectedItemsToEdit(List<Item> selectedItemsToEdit) {
         this.selectedItemsToEdit = selectedItemsToEdit;
     }
+    
+    public void onRowReorder(ReorderEvent event) {
+        int index = event.getFromIndex(); 
+        Item item = this.selectedItemsToEdit.remove(index);
+        int toIndex = event.getToIndex(); 
+        this.selectedItemsToEdit.add(toIndex, item);
+    }
 
     public MultiEditPropertyRecord getCurrentMultiEditPropertyRecord() {
         return currentMultiEditPropertyRecord;
@@ -736,6 +751,10 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         return getRenderSpecificInput(ItemDefaultColumnReferences.itemProject);         
     }
     
+    public boolean getRenderPropertyInputValue() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.property); 
+    }
+    
     public boolean getRenderSimpleTextInputValue() {
         if (this.currentApplyValuesToColumn != null) {
             if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.name) {
@@ -759,17 +778,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     }
     
     public void populateValuesForColumn() {
-        // Figure the enum reference (Remove the need for string comaprison on each itteration. 
-        /*
-        ItemDefaultColumnReferences itemColumnReference = null; 
-        for (ItemDefaultColumnReferences idcr : ItemDefaultColumnReferences.values()) {
-            if (this.currentApplyValuesToColumn.equals(idcr.getValue())) {
-                itemColumnReference = idcr;
-                break;
-            }
-        }
-        */
-        
+        isInputValueDialogOpen = false; 
         for (Item item : selectedItemsToEdit) {                        
             switch (currentApplyValuesToColumn) {
                 case name:
@@ -800,7 +809,15 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                 case groupWriteable:                    
                     item.getEntityInfo().setIsGroupWriteable((Boolean) currentObjectValueToColumn);
                     break; 
-                 default:
+                case property:
+                    PropertyType currentPropertyType = currentMockPropertyValueApplyValuesToColumn.getPropertyType();
+                    MultiEditPropertyRecord mepr = getMultiEditPropertyRecordForItem(currentPropertyType, item);
+                    PropertyValue value = mepr.getPropertyValue();
+                    if (value != null) {
+                        value.setValue(currentMockPropertyValueApplyValuesToColumn.getValue());
+                    }
+                    break; 
+                default:
                      break;                    
             }
         }
@@ -815,15 +832,44 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
         return newValue; 
     }
+    
+    public void setCurrentApplyValuesToColumn (ItemDefaultColumnReferences currentApplyValuesToColumn, 
+                                               PropertyType propertyTypesApplyValuesTo) {
+        currentMockPropertyValueApplyValuesToColumn = new PropertyValue();
+        currentMockPropertyValueApplyValuesToColumn.setPropertyType(propertyTypesApplyValuesTo);
+        setCurrentApplyValuesToColumn(currentApplyValuesToColumn);
+        currentMockPropertyValueApplyValuesToColumn.setValue("");        
+    }
 
     public void setCurrentApplyValuesToColumn(ItemDefaultColumnReferences currentApplyValuesToColumn) {
         this.currentApplyValuesToColumn = currentApplyValuesToColumn;
+        this.isInputValueDialogOpen = true; 
         this.currentPrefixValueToColumn = null;
         this.currentPostfixValueToColumn = null;
         this.currentSequenceStartValueToColumn = null; 
         this.currentObjectListValueToColumn = null;
         this.currentObjectListStringRep = null;
         this.currentObjectValueToColumn = null; 
+    }
+    
+    public void handleCloseInputValueDialog(AjaxBehaviorEvent event) {
+        setIsInputValueDialogOpen(false);
+    }
+
+    public boolean isIsInputValueDialogOpen() {
+        return isInputValueDialogOpen;
+    }
+
+    public void setIsInputValueDialogOpen(boolean isInputValueDialogOpen) {
+        this.isInputValueDialogOpen = isInputValueDialogOpen;
+    }
+
+    public PropertyValue getCurrentMockPropertyValueApplyValuesToColumn() {
+        return currentMockPropertyValueApplyValuesToColumn;
+    }
+
+    public void setCurrentMockPropertyValueApplyValuesToColumn(PropertyValue currentMockPropertyValueApplyValuesToColumn) {
+        this.currentMockPropertyValueApplyValuesToColumn = currentMockPropertyValueApplyValuesToColumn;
     }
 
     public String getCurrentPrefixValueToColumn() {
