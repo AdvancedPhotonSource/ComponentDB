@@ -50,6 +50,15 @@ class UserRestApi(CdbRestApi):
         responseData = self.sendRequest(url=url, method='GET')
         return UserInfo(responseData)
 
+    def getUserGroupByName(self, groupName):
+        if groupName is None:
+            raise InvalidRequest('Group name must be provided.')
+
+        url = '%s/userGroupsByName/%s' % (self.getContextRoot(), groupName)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return UserGroup(responseData)
+
 #######################################################################
 # Testing.
 
