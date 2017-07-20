@@ -14,7 +14,8 @@ public enum ItemDefaultColumnReferences {
     derivedFromItem("derivedFromItem"),
     ownerUser("ownerUser"),
     ownerGroup("ownerGroup"),
-    groupWriteable("groupWriteable");
+    groupWriteable("groupWriteable"),
+    property("property");
 
     private String value;
 
