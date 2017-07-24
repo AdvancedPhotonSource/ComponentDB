@@ -588,6 +588,14 @@ class ItemHandler(CdbDbEntityHandler):
 
         return dbItemElementRelationshipHistory
 
+    def getParentItems(self, session, itemId):
+        query = session.query(Item)\
+            .join(ItemElement.parentItem)\
+            .filter(ItemElement.contained_item_id == itemId)
+
+        dbItems = query.all()
+        return dbItems
+
 
 
 

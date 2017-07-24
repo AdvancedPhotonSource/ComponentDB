@@ -645,6 +645,19 @@ class ItemDbApi(CdbDbApi):
         dbItems = self.itemHandler.getItemsWithPropertyTypeName(session, propertyTypeName, itemDomainName, itemDerivedFromItemId, propertyValueMatch)
         return self.toCdbObjectList(dbItems)
 
+    @CdbDbApi.executeQuery
+    def getParentItems(self, itemId, **kwargs):
+        """
+        Fetches a list of items who contained the item specified as input.
+
+        :param itemId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbItems = self.itemHandler.getParentItems(session, itemId)
+        return self.toCdbObjectList(dbItems)
+
 
 #######################################################################
 # Testing.
