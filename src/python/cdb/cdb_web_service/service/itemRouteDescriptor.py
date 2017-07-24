@@ -83,6 +83,14 @@ class ItemRouteDescriptor:
                 'action': 'getItemLogsById',
                 'method': ['GET']
             },
+            # Get item elements for a particular item
+            {
+                'name': 'getItemElementsForItem',
+                'path': '%s/items/:(itemId)/elementsByItemId' % contextRoot,
+                'controller': itemController,
+                'action': 'getItemElementsForItem',
+                'method': ['GET']
+            },
 
             # Get items derived from item
             {

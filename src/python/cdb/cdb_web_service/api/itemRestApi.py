@@ -271,6 +271,16 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendSessionRequest(url=url, method='PUT')
         return ItemElement(responseData)
 
+    def getItemElementsForItem(self, itemId):
+        if itemId is not None:
+            itemId = str(itemId)
+
+        url = '%s/items/%s/elementsByItemId' % (self.getContextRoot(), itemId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, ItemElement)
+
+
     def __appendOptionalItemElementParametersToUrl(self, url, containedItemId = -1, description=None,
                        ownerUserId=None, ownerGroupId=None, isRequired=-1, isGroupWriteable=None ):
 

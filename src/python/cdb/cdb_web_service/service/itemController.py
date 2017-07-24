@@ -26,6 +26,14 @@ class ItemController(CdbController):
         self.logger.debug('Returning item info for %s: %s' % (itemId, response))
         return response
 
+    def getItemElementsForItem(self, itemId):
+        if not itemId:
+            raise InvalidRequest("Invalid itemId provided")
+
+        response = self.listToJson(self.itemControllerImpl.getItemElementsForItem(itemId))
+        self.logger.debug('Returning item element list for item: %s: %s' % (itemId, response))
+        return response
+
     @cherrypy.expose
     @CdbController.execute
     def getItemLogsByQrId(self, qrId):
