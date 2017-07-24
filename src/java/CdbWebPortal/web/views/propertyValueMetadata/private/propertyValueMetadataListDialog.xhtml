@@ -20,7 +20,9 @@ See LICENSE file.
         <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
 
         <p:outputPanel rendered="#{propertyValueObject != null}">
-            <p:outputPanel rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}">
+            <p:scrollPanel style="height: 550px"
+                           mode="native"
+                           rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}">
                 <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"
                              value="#{propertyValueObject.propertyMetadataList}"                     
                              var="metadata">
@@ -31,7 +33,7 @@ See LICENSE file.
                         <h:outputText value="#{metadata.metadataValue}" />
                     </p:column>
                 </p:dataTable>
-            </p:outputPanel>
+            </p:scrollPanel>
         </p:outputPanel>
 
         <f:facet name="footer" class="dialog">
