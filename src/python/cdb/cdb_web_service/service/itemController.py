@@ -26,6 +26,13 @@ class ItemController(CdbController):
         self.logger.debug('Returning item info for %s: %s' % (itemId, response))
         return response
 
+    def getParentItems(self, itemId):
+        if not itemId:
+            raise InvalidRequest("Invalid item id provided")
+        response = self.listToJson(self.itemControllerImpl.getParentItems(itemId))
+        self.logger.debug('Returning item element list for item: %s: %s' % (itemId, response))
+        return response
+
     def getItemElementsForItem(self, itemId):
         if not itemId:
             raise InvalidRequest("Invalid itemId provided")

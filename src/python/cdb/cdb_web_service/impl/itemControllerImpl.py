@@ -65,6 +65,9 @@ class ItemControllerImpl(CdbObjectManager):
 
         return propertyValueAdded
 
+    def getParentItems(self, itemId):
+        return self.itemDbApi.getParentItems(itemId)
+
     def getItemElementsForItem(self, itemId):
         return self.itemDbApi.getItemElementsByItemId(itemId)
 

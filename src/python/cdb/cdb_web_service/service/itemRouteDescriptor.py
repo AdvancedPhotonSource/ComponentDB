@@ -85,6 +85,14 @@ class ItemRouteDescriptor:
             },
             # Get item elements for a particular item
             {
+                'name': 'getParentItems',
+                'path': '%s/items/:(itemId)/parentItems' % contextRoot,
+                'controller': itemController,
+                'action': 'getParentItems',
+                'method': ['GET']
+            },
+            # Get item elements for a particular item
+            {
                 'name': 'getItemElementsForItem',
                 'path': '%s/items/:(itemId)/elementsByItemId' % contextRoot,
                 'controller': itemController,

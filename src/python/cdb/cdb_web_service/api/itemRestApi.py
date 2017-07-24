@@ -271,6 +271,15 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendSessionRequest(url=url, method='PUT')
         return ItemElement(responseData)
 
+    def getParentItems(self, itemId):
+        if itemId is not None:
+            itemId = str(itemId)
+
+        url = '%s/items/%s/parentItems' % (self.getContextRoot(), itemId)
+
+        responseData = self.sendRequest(url=url, method="GET")
+        return self.toCdbObjectList(responseData, Item)
+
     def getItemElementsForItem(self, itemId):
         if itemId is not None:
             itemId = str(itemId)
