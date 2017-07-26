@@ -4,8 +4,6 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-from _bsddb import DBError
-
 from cdb.common.exceptions.invalidSession import InvalidSession
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
