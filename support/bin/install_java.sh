@@ -3,8 +3,9 @@
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
 
-
-JAVA_VERSION=8u111
+JAVA_VERSION=8u141
+SHA=336fa29ff2bb4ef291e347e091f7f4a7
+BREF=15
 CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 
 currentDir=`pwd`
@@ -15,7 +16,7 @@ buildDir=$topDir/build
 javaInstallDir=$topDir/java/$CMS_HOST_ARCH
 javaFileName=jdk-$JAVA_VERSION-linux-x64.tar.gz
 
-DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/$JAVA_VERSION-b14/$javaFileName
+DOWNLOAD_URL=http://download.oracle.com/otn-pub/java/jdk/$JAVA_VERSION-b$BREF/$SHA/$javaFileName
 
 mkdir -p $srcDir
 cd $srcDir
