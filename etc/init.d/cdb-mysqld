@@ -37,9 +37,11 @@ fi
 . ${CDB_ENV_FILE} > /dev/null 
 
 MYSQL_BIN_DIR=/usr/bin
-if [ -d $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysqld_safe ]; then
+if [ -f $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysqld_safe ]; then
     # Use our own mysqld binary if it exists
-    MYSQL_BIN_DIR=$CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin
+    MYSQL_ROOT_DIR=$CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH
+    MYSQL_SCRIPTS_DIR=$MYSQL_ROOT_DIR/scripts
+    MYSQL_BIN_DIR=$MYSQL_ROOT_DIR/bin
 fi
 CDB_DAEMON=$MYSQL_BIN_DIR/mysqld_safe
 CDB_DAEMON_NAME=mysqld
@@ -120,7 +122,8 @@ start(){
             chmod 0755 "$datadir"
             [ -x /sbin/restorecon ] && /sbin/restorecon "$datadir"
             # Now create the database
-            action $"Initializing CDB MySQL database: " $MYSQL_BIN_DIR/mysql_install_db --datadir="$datadir" --user=$CDB_USER
+            cd $MYSQL_ROOT_DIR
+            action $"Initializing CDB MySQL database: " $MYSQL_SCRIPTS_DIR/mysql_install_db --datadir="$datadir" --user=$CDB_USER
             ret=$?
             chown -R $CDB_USER "$datadir"
             if [ $ret -ne 0 ] ; then
