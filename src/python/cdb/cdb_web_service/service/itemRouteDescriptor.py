@@ -13,6 +13,7 @@ from cdb.cdb_web_service.service.itemSessionController import ItemSessionControl
 from cdb.common.utility.configurationManager import ConfigurationManager
 from itemController import ItemController
 from itemElementController import ItemElementController
+from itemElementSessionController import ItemElementSessionController
 
 
 class ItemRouteDescriptor:
@@ -23,6 +24,7 @@ class ItemRouteDescriptor:
         # Static instances shared between different routes
         itemController = ItemController()
         itemElementController = ItemElementController()
+        itemElementSessionController = ItemElementSessionController()
         itemSessionController = ItemSessionController()
 
         # Define routes.
@@ -81,6 +83,22 @@ class ItemRouteDescriptor:
                 'action': 'getItemLogsById',
                 'method': ['GET']
             },
+            # Get item elements for a particular item
+            {
+                'name': 'getParentItems',
+                'path': '%s/items/:(itemId)/parentItems' % contextRoot,
+                'controller': itemController,
+                'action': 'getParentItems',
+                'method': ['GET']
+            },
+            # Get item elements for a particular item
+            {
+                'name': 'getItemElementsForItem',
+                'path': '%s/items/:(itemId)/elementsByItemId' % contextRoot,
+                'controller': itemController,
+                'action': 'getItemElementsForItem',
+                'method': ['GET']
+            },
 
             # Get items derived from item
             {
@@ -98,7 +116,62 @@ class ItemRouteDescriptor:
                 'controller': itemController,
                 'action': 'getCatalogItems',
                 'method': ['GET']
+            },
+
+            # Add Property value to item
+            {
+                'name': 'addPropertyValueForItemById',
+                'path': '%s/items/:(itemId)/addPropertyValue/:(propertyTypeName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addPropertyValueToItemByItemId',
+                'method': ['POST']
+            },
+
+            # Add Property value to item element
+            {
+                'name': 'addPropertyValueForItemElementById',
+                'path': '%s/itemElements/:(itemElementId)/addPropertyValue/:(propertyTypeName)' % contextRoot,
+                'controller': itemElementSessionController,
+                'action': 'addPropertyValueToItemElementById',
+                'method': ['POST']
+            },
+
+            # Get all domains
+            {
+                'name': 'getDomains',
+                'path': '%s/domains' % contextRoot,
+                'controller': itemController,
+                'action': 'getDomains',
+                'method': ['GET']
+            },
+
+            # Add new item
+            {
+                'name': 'addItem',
+                'path': '%s/items/add/:(name)/domain/:(domainName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addItem',
+                'method': ['POST']
+            },
+
+            # Add item element
+            {
+                'name': 'addItemElement',
+                'path': '%s/itemElements/add/:(itemElementName)/:(parentItemId)' % contextRoot,
+                'controller': itemElementSessionController,
+                'action': 'addItemElement',
+                'method': ['POST']
+            },
+
+            # Update item element
+            {
+                'name': 'updateItemElement',
+                'path': '%s/itemElements/update/:(itemElementId)' % contextRoot,
+                'controller': itemElementSessionController,
+                'action': 'updateItemElement',
+                'method': ['PUT']
             }
+
 
         ]
 

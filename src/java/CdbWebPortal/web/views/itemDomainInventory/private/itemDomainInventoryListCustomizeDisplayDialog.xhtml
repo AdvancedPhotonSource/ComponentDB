@@ -11,10 +11,11 @@ See LICENSE file.
                 template="../../item/private/templates/itemListCustomizeDisplayDialogTemplate.xhtml">
 
     <ui:define name="additionalItemSpecificColumns">
-        <p:selectBooleanCheckbox id="componentInstanceDisplayLocation" value="#{itemDomainInventoryController.displayLocation}"/>  
+        <ui:param name="itemDomainInventorySettingObject" value="#{itemDomainInventoryController.settingObject}" /> 
+        <p:selectBooleanCheckbox id="componentInstanceDisplayLocation" value="#{itemDomainInventorySettingObject.displayLocation}"/>  
         <h:outputLabel for="componentInstanceDisplayLocation" value="Display Location " styleClass="dialogDataLabel"/>        
         
-        <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventoryController.displayLocationDetails}"/>  
+        <p:selectBooleanCheckbox id="componentInstanceDisplayLocationDetails" value="#{itemDomainInventorySettingObject.displayLocationDetails}"/>  
         <h:outputLabel for="componentInstanceDisplayLocationDetails" value="Display Location Details" styleClass="dialogDataLabel"/>        
     </ui:define>
 </ui:composition>

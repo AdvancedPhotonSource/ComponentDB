@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="entityInfoObject"
+              value="#{itemObject.entityInfo}" />
+    
+    <p:column rendered="#{entityController.updateOwnerUser}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.ownerUser}" />  
+            <ui:param name="columnHeader" value="Owner User" />
+        </ui:include>
+        <ui:include src="../../entityInfo/private/templateDefaults/entityInfoFieldEditValues/ownerUser.xhtml"/>
+    </p:column>
+    
+    <p:column rendered="#{entityController.updateOwnerGroup}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.ownerGroup}" />  
+            <ui:param name="columnHeader" value="Owner Group" />
+        </ui:include>
+        <ui:include src="../../entityInfo/private/templateDefaults/entityInfoFieldEditValues/ownerGroup.xhtml"/>
+    </p:column>
+    
+    <p:column rendered="#{entityController.updateGroupWriteable}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.groupWriteable}" />  
+            <ui:param name="columnHeader" value="Group Writeable" />
+        </ui:include>
+        <ui:include src="../../entityInfo/private/templateDefaults/entityInfoFieldEditValues/groupWriteable.xhtml"/>
+    </p:column>   
+
+</ui:composition>

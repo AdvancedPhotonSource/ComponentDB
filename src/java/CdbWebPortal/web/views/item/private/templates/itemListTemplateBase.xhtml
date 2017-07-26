@@ -22,6 +22,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <ui:define name="pageTitle">: #{entityController.itemListPageTitle}</ui:define>
     
@@ -35,7 +36,7 @@ See LICENSE file.
 
                 <ui:insert name="helpFragment"/>
 
-                <p:outputPanel rendered="#{!entityController.displayItemListTreeView}">
+                <p:outputPanel rendered="#{!entitySettingObject.displayItemListTreeView}">
                     <p:outputPanel>
                         <ui:insert name="listActionButtons" />
                     </p:outputPanel>
@@ -45,7 +46,7 @@ See LICENSE file.
                     </h:panelGroup>
                 </p:outputPanel>
                 
-                <p:outputPanel rendered="#{entityController.displayItemListTreeView}">
+                <p:outputPanel rendered="#{entitySettingObject.displayItemListTreeView}">
                     <p:outputPanel>
                         <ui:insert name="treeListActionButtons" />
                     </p:outputPanel>
@@ -65,26 +66,6 @@ See LICENSE file.
 
                 <ui:insert name="domainSpecificAddionalDialogs"/>
             </p:outputPanel>
-
-            <ui:remove>
-                <p:outputPanel rendered="#{entityController.itemHasSimpleListView}">
-                    <div style="text-align: center">
-                        <br/>
-                        <br/>
-                        <p:selectOneButton value="#{entityController.listViewSelected}"
-                                           onchange="updateForm()">
-                            <f:selectItem itemLabel="Simple View" itemValue="simpleView" />
-                            <f:selectItem itemLabel="Advanced View" itemValue="advancedView" />
-                        </p:selectOneButton>
-                    </div>
-                </p:outputPanel>
-            </ui:remove>
-
-
-            <p:remoteCommand name="updateForm"
-                             update="@form"/>
-
-
         </h:form>
 
     </ui:define>

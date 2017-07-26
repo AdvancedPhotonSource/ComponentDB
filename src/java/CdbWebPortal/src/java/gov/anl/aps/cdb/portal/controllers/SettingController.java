@@ -59,6 +59,10 @@ public class SettingController implements Serializable {
     public SettingController() {
         settingsTimestamp = new Date();
     }
+    
+    public static SettingController getInstance() {
+        return (SettingController) SessionUtility.findBean("settingController"); 
+    }
 
     /**
      * This method should be executed on each page and loads global system
@@ -68,7 +72,7 @@ public class SettingController implements Serializable {
         if (itemProjectController == null) {
             itemProjectController = ItemProjectController.getInstance();
         }
-        itemProjectController.updateSettings();
+        itemProjectController.getSettingObject().updateSettings();
     }
 
     public SettingEntity getCurrentSettingEntity() {

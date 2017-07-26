@@ -10,42 +10,44 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
     
+    <ui:param name="logSettingObject" value="#{logController.settingObject}" />
+    
     <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
 
     <p:column sortBy="#{logObject.id}" headerText="Id" 
-              rendered="#{logController.displayId}"
+              rendered="#{logSettingObject.displayId}"
               filterable="#{filterable}">
         <h:outputText value="#{logObject.id}"/>
     </p:column>
 
     <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Time"
               filterBy="#{logObject.enteredOnDateTime}" filterMatchMode="contains"
-              filterValue="#{logController.filterByEnteredOnDateTime}"
+              filterValue="#{logSettingObject.filterByEnteredOnDateTime}"
               filterStyle="width:60px"
               filterable="#{filterable}"
               style="width:85px"
-              rendered="#{logController.displayEnteredOnDateTime}">
+              rendered="#{logSettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{logObject.shortDisplayEnteredOnDateTime}"/>
     </p:column>
 
     <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User"
               filterBy="#{logObject.enteredByUser}" filterMatchMode="contains"
-              filterValue="#{logController.filterByEnteredByUser}"
+              filterValue="#{logSettingObject.filterByEnteredByUser}"
               filterStyle="width:40px"
               filterable="#{filterable}"
               style="width:50px"
-              rendered="#{logController.displayEnteredByUser}">
+              rendered="#{logSettingObject.displayEnteredByUser}">
         <h:outputText value="#{logObject.enteredByUser.username}"/>
     </p:column>
 
     <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
               filterBy="#{logObject.logTopic}" filterMatchMode="exact"
               filterOptions="#{logTopicController.availableItemsForSelectOne}"
-              filterValue="#{logController.filterByTopic}"
+              filterValue="#{logSettingObject.filterByTopic}"
               filterStyle="width:40px"
               filterable="#{filterable}"
               style="width:50px"
-              rendered="#{logController.displayTopic}">
+              rendered="#{logSettingObject.displayTopic}">
         <p:cellEditor>
             <f:facet name="output">
                 <h:outputText value="#{logObject.logTopic.name}"/>
@@ -61,7 +63,7 @@ See LICENSE file.
 
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"
               filterBy="#{logObject.text}" filterMatchMode="contains"
-              filterValue="#{logController.filterByText}"
+              filterValue="#{logSettingObject.filterByText}"
               filterStyle="width:80px"
               filterable="#{filterable}"
               style="width:200px">
@@ -78,8 +80,9 @@ See LICENSE file.
 
     <p:column style="width:35px"
               headerText="Attachments"
-              rendered="#{logController.displayAttachments}"
-              filterable="#{filterable}">
+              rendered="#{logSettingObject.displayAttachments}"
+              filterable="#{filterable}"
+              exportable="false">
             <f:facet name="header">
                 <h:graphicImage alt="Attachments" library="images" name="attachment.ico"/>
             </f:facet>

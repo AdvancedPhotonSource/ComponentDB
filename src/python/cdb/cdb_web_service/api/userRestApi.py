@@ -16,6 +16,7 @@ from cdb.common.api.cdbRestApi import CdbRestApi
 from cdb.common.objects.userInfo import UserInfo
 from cdb.common.objects.userGroup import UserGroup
 
+
 class UserRestApi(CdbRestApi):
     
     def __init__(self, username=None, password=None, host=None, port=None, protocol=None):
@@ -48,6 +49,15 @@ class UserRestApi(CdbRestApi):
         url = '%s/usersByUsername/%s' % (self.getContextRoot(), username)
         responseData = self.sendRequest(url=url, method='GET')
         return UserInfo(responseData)
+
+    def getUserGroupByName(self, groupName):
+        if groupName is None:
+            raise InvalidRequest('Group name must be provided.')
+
+        url = '%s/userGroupsByName/%s' % (self.getContextRoot(), groupName)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return UserGroup(responseData)
 
 #######################################################################
 # Testing.

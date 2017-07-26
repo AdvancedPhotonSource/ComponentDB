@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:commandButton id="#{childEntityTypeName}#{viewName}AddButton"
-                     value="Add" icon="ui-icon-plus" 
+                     value="Add" icon="fa fa-plus" 
                      rendered="#{(isEntityWriteable or displayAddButton) and (onCompleteAddButtonCommand != null)}"
                      oncomplete="#{onCompleteAddButtonCommand}">
         <p:tooltip for="#{childEntityTypeName}#{viewName}AddButton" value="Add #{childEntityTypeName}" />

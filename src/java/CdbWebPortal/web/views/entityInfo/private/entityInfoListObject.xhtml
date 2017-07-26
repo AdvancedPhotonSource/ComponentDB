@@ -8,13 +8,17 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <p:column sortBy="#{entityInfoObject.ownerUser.username}" headerText="Owner"
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.ownerUser.username}" filterMatchMode="contains"
-              filterValue="#{entityController.filterByOwnerUser}"
-              rendered="#{entityController.displayOwnerUser}">
+              filterValue="#{entitySettingObject.filterByOwnerUser}"
+              rendered="#{rendered and entitySettingObject.displayOwnerUser}">
         <h:outputText value="#{entityInfoObject.ownerUser.username}"/>
     </p:column>
 
@@ -23,8 +27,8 @@ See LICENSE file.
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.ownerUserGroup.name}" filterMatchMode="exact"
               filterOptions="#{userGroupController.availableItemsForSelectOne}"
-              filterValue="#{entityController.filterByOwnerGroup}"
-              rendered="#{entityController.displayOwnerGroup}">
+              filterValue="#{entitySettingObject.filterByOwnerGroup}"
+              rendered="#{rendered and entitySettingObject.displayOwnerGroup}">
         <h:outputText value="#{entityInfoObject.ownerUserGroup.name}"/>
     </p:column>
 
@@ -32,8 +36,8 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.createdByUser.username}" filterMatchMode="contains"
-              filterValue="#{entityController.filterByCreatedByUser}"
-              rendered="#{entityController.displayCreatedByUser}">
+              filterValue="#{entitySettingObject.filterByCreatedByUser}"
+              rendered="#{rendered and entitySettingObject.displayCreatedByUser}">
         <h:outputText value="#{entityInfoObject.createdByUser.username}"/>
     </p:column>
 
@@ -41,8 +45,8 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.createdOnDateTime}" filterMatchMode="contains"
-              filterValue="#{entityController.filterByCreatedOnDateTime}"
-              rendered="#{entityController.displayCreatedOnDateTime}">
+              filterValue="#{entitySettingObject.filterByCreatedOnDateTime}"
+              rendered="#{rendered and entitySettingObject.displayCreatedOnDateTime}">
         <h:outputText value="#{entityInfoObject.createdOnDateTime}"/>
     </p:column>
 
@@ -50,8 +54,8 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.lastModifiedByUser.username}" filterMatchMode="contains"
-              filterValue="#{entityController.filterByLastModifiedByUser}"
-              rendered="#{entityController.displayLastModifiedByUser}">
+              filterValue="#{entitySettingObject.filterByLastModifiedByUser}"
+              rendered="#{rendered and entitySettingObject.displayLastModifiedByUser}">
         <h:outputText value="#{entityInfoObject.lastModifiedByUser.username}"/>
     </p:column>
 
@@ -59,8 +63,8 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterBy="#{entityInfoObject.lastModifiedOnDateTime}" filterMatchMode="contains"
-              filterValue="#{entityController.filterByLastModifiedOnDateTime}"
-              rendered="#{entityController.displayLastModifiedOnDateTime}">
+              filterValue="#{entitySettingObject.filterByLastModifiedOnDateTime}"
+              rendered="#{rendered and entitySettingObject.displayLastModifiedOnDateTime}">
         <h:outputText value="#{entityInfoObject.lastModifiedOnDateTime}"/>
     </p:column>
 

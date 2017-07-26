@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemGenericViewSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -21,7 +22,7 @@ import javax.inject.Named;
  */
 @Named("itemGenericViewController")
 @SessionScoped
-public class ItemGenericViewController extends ItemController {
+public class ItemGenericViewController extends ItemController<Item, ItemFacade, ItemGenericViewSettings> {
     
     @EJB
     private DomainFacade domainFacade; 
@@ -34,7 +35,6 @@ public class ItemGenericViewController extends ItemController {
     
     public ItemGenericViewController() {
         super();
-        displayNumberOfItemsPerPage = 25; 
     }
 
     @Override
@@ -158,7 +158,7 @@ public class ItemGenericViewController extends ItemController {
      */
     @Override
     public String getDefaultDomainName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return null; 
     }
 
     @Override
@@ -184,6 +184,26 @@ public class ItemGenericViewController extends ItemController {
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
+    }
+
+    @Override
+    protected Item instenciateNewItemDomainEntity() {
+        return new Item();         
+    }
+
+    @Override
+    protected ItemFacade getEntityDbFacade() {
+        return itemFacade;
+    }
+    
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return true; 
+    }
+
+    @Override
+    protected ItemGenericViewSettings createNewSettingObject() {
+        return new ItemGenericViewSettings(this);
     }
     
 }

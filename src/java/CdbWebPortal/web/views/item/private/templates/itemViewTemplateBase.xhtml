@@ -22,6 +22,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
     
     <ui:define name="pageTitle">: View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}</ui:define> 
 
@@ -29,6 +30,7 @@ See LICENSE file.
         <h:form id="#{entityTypeName}ViewForm" rendered="#{pageRendered}">
             <div class="domainEntityLeftContent middleCenterLeftContent">
                 <ui:param name="itemObject" value="#{entityController.current}"/>
+                <ui:param name="currentObject" value="#{itemObject}" />
                 <div class="pageTitle">
                     <h1><ui:insert name="pageTitle"/></h1>
                 </div>
@@ -63,6 +65,15 @@ See LICENSE file.
                          collapsed="#{!entityController.displayLogList}">
                     <ui:insert name="itemLogs" />
                 </p:panel>
+                
+                <p:panel header="Connectors"
+                         id="#{entityTypeName}ViewConnectorsPanel"
+                         toggleable="true"
+                         rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"
+                         collapsed="#{!entityController.displayItemConnectorList}">
+                    <ui:insert name="itemConnectors" />                
+                </p:panel>
+                         
 
                 <ui:insert name="additionalLeftItemPanels"/>
             </div>
@@ -74,9 +85,9 @@ See LICENSE file.
                          toggleable="true" 
                          collapsed="#{!entityController.displayPropertyList}">
                     <ui:insert name="itemProperties"/>
-                </p:panel>
+                </p:panel>                
 
-                <p:panel header="Elements"
+                <p:panel header="#{itemElementController.settingObject.displayItemElementSimpleView ? 'Assembly Listing' : 'Elements'}"
                          id="#{entityTypeName}ViewElementsPanel"
                          rendered="#{entityController.entityDisplayItemElements}"
                          toggleable="true" 

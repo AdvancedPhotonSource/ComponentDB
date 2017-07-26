@@ -5,15 +5,11 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
+import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -22,32 +18,12 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("sourceController")
 @SessionScoped
-public class SourceController extends CdbEntityController<Source, SourceFacade>implements Serializable {
+public class SourceController extends CdbEntityController<Source, SourceFacade, SourceSettings> implements Serializable {    
 
-    /*
-     * Controller specific settings
-     */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Source.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayContactInfoSettingTypeKey = "Source.List.Display.ContactInfo";
-    private static final String DisplayDescriptionSettingTypeKey = "Source.List.Display.Description";
-    private static final String DisplayIdSettingTypeKey = "Source.List.Display.Id";
-    private static final String DisplayUrlSettingTypeKey = "Source.List.Display.Url";
-    private static final String FilterByNameSettingTypeKey = "Source.List.FilterBy.Name";
-    private static final String FilterByContactInfoSettingTypeKey = "Source.List.FilterBy.ContactInfo";
-    private static final String FilterByDescriptionSettingTypeKey = "Source.List.FilterBy.Description";
-    private static final String FilterByUrlSettingTypeKey = "Source.List.FilterBy.Url";
-
-    private static final Logger logger = Logger.getLogger(SourceController.class.getName());
-
-    private Boolean displayContactInfo = null;
-    private Boolean displayUrl = null;
-
-    private String filterByContactInfo = null;
-    private String filterByUrl = null;
+    private static final Logger logger = Logger.getLogger(SourceController.class.getName());   
 
     @EJB
     private SourceFacade sourceFacade;
@@ -110,77 +86,10 @@ public class SourceController extends CdbEntityController<Source, SourceFacade>i
         }
         logger.debug("Updating source " + source.getName());
     }
-
+    
     @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        if (settingTypeMap == null) {
-            return;
-        }
-
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayContactInfo = Boolean.parseBoolean(settingTypeMap.get(DisplayContactInfoSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-        displayUrl = Boolean.parseBoolean(settingTypeMap.get(DisplayUrlSettingTypeKey).getDefaultValue());
-
-        filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
-        filterByContactInfo = settingTypeMap.get(FilterByContactInfoSettingTypeKey).getDefaultValue();
-        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
-        filterByUrl = settingTypeMap.get(FilterByUrlSettingTypeKey).getDefaultValue();
-    }
-
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayContactInfo = settingEntity.getSettingValueAsBoolean(DisplayContactInfoSettingTypeKey, displayContactInfo);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayUrl = settingEntity.getSettingValueAsBoolean(DisplayUrlSettingTypeKey, displayUrl);
-
-        filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
-        filterByContactInfo = settingEntity.getSettingValueAsString(FilterByContactInfoSettingTypeKey, filterByContactInfo);
-        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByUrl = settingEntity.getSettingValueAsString(FilterByUrlSettingTypeKey, filterByUrl);
-    }
-
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        super.updateListSettingsFromListDataTable(dataTable);
-        if (dataTable == null) {
-            return;
-        }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByContactInfo = (String) filters.get("contactInfo");
-        filterByUrl = (String) filters.get("url");
-    }
-
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayContactInfoSettingTypeKey, displayContactInfo);
-        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        settingEntity.setSettingValue(DisplayUrlSettingTypeKey, displayUrl);
-
-        settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
-        settingEntity.setSettingValue(FilterByContactInfoSettingTypeKey, filterByContactInfo);
-        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        settingEntity.setSettingValue(FilterByUrlSettingTypeKey, filterByUrl);
-    }
-
-    @Override
-    public void clearListFilters() {
-        super.clearListFilters();
-        filterByContactInfo = null;
-        filterByUrl = null;
+    protected SourceSettings createNewSettingObject() {
+        return new SourceSettings(this);
     }
 
     /**
@@ -228,39 +137,7 @@ public class SourceController extends CdbEntityController<Source, SourceFacade>i
             }
         }
 
-    }
-
-    public Boolean getDisplayContactInfo() {
-        return displayContactInfo;
-    }
-
-    public void setDisplayContactInfo(Boolean displayContactInfo) {
-        this.displayContactInfo = displayContactInfo;
-    }
-
-    public Boolean getDisplayUrl() {
-        return displayUrl;
-    }
-
-    public void setDisplayUrl(Boolean displayUrl) {
-        this.displayUrl = displayUrl;
-    }
-
-    public String getFilterByContactInfo() {
-        return filterByContactInfo;
-    }
-
-    public void setFilterByContactInfo(String filterByContactInfo) {
-        this.filterByContactInfo = filterByContactInfo;
-    }
-
-    public String getFilterByUrl() {
-        return filterByUrl;
-    }
-
-    public void setFilterByUrl(String filterByUrl) {
-        this.filterByUrl = filterByUrl;
-    }
+    }   
 
     @Override
     public boolean entityCanBeCreatedByUsers() {

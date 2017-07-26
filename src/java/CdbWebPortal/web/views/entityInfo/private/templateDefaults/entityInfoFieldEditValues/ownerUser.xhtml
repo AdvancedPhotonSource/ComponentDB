@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:param name="useDefaultOwnerUserSelectionValue" value="#{useDefaultOwnerUserSelectionValue != null 
+                                                                  ? useDefaultOwnerUserSelectionValue
+                                                                  : true }" />
+    <ui:param name="ownerUserSelectionValue" value="#{useDefaultOwnerUserSelectionValue 
+                                                        ? entityInfoObject.ownerUser
+                                                        : ownerUserSelectionValue}" />
+
+    <p:outputPanel id="ownerUser#{viewName}">
+        <p:selectOneMenu id="ownerUserSOM#{viewName}" value="#{ownerUserSelectionValue}" styleClass="entityDataText" 
+                         converter="userInfoConverter"
+                         onchange="updateOwnerUser#{viewName}()">
+            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+            <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
+        </p:selectOneMenu>
+        <p:remoteCommand name="updateOwnerUser#{viewName}"
+                         update="ownerUser#{viewName}"/>
+
+        <p:message for="ownerUser#{viewName}"/>
+        <p:tooltip for="ownerUser#{viewName}" value="Owner user has the ability to modify this entity."/>
+    </p:outputPanel>
+</ui:composition>

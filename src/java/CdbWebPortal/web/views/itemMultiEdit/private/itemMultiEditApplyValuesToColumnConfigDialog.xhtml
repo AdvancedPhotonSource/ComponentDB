@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+        
+    <p:dialog id="itemMultiEditApplyValuesToColumnConfigDialog"
+              widgetVar="itemMultiEditApplyValuesToColumnConfigDialogWidget"
+              resizable="false"
+              modal="true"
+              header="Apply values to column"
+              styleClass="viewTransparentBackgroundDialog">
+        <f:ajax event="close"
+                listener="#{entityController.handleCloseInputValueDialog}" />
+        <p:outputPanel id="itemMultiEditApplyValuesToColumnConfigPanel">                       
+            <ui:param name="applyValuesToLink"
+                      value="#{facesUtility.returnValueIfTrue(entityController.renderItemProjectInputValue, 'applyValuesTo/itemProjectInput.xhtml')}"/>
+
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderSimpleTextInputValue, 'applyValuesTo/simpleTextInput.xhtml')
+                               : applyValuesToLink}"/>
+
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderLargeTextInput, 'applyValuesTo/itemLargeTextInput.xhtml')
+                               : applyValuesToLink}"/>                        
+
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderNumberInput, 'applyValuesTo/numberInput.xhtml')
+                               : applyValuesToLink}"/>
+            
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderOwnerUserInput, 'applyValuesTo/entityInfoOwnerUserInput.xhtml')
+                               : applyValuesToLink}"/>
+            
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderOwnerGroupInput, 'applyValuesTo/entityInfoOwnerGroupInput.xhtml')
+                               : applyValuesToLink}"/>
+            
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderGroupWriteableInput, 'applyValuesTo/entityInfoGroupWriteableInput.xhtml')
+                               : applyValuesToLink}"/>
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? facesUtility.returnValueIfTrue(entityController.renderPropertyInputValue, 'applyValuesTo/propertyValueInput.xhtml')
+                               : applyValuesToLink}"/>
+
+            <ui:param name="applyValuesToLink"
+                      value="#{applyValuesToLink == null 
+                               ? '../../common/private/commonEmptyPage.xhtml' 
+                               : applyValuesToLink}" />
+
+            <ui:include src="#{applyValuesToLink}" />
+
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton action="#{entityController.populateValuesForColumn()}"
+                             update="@form"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             value="Populate Values"
+                             icon="fa fa-check"/>
+        </f:facet>
+    </p:dialog>
+    
+    <p:remoteCommand autoRun="#{entityController.isInputValueDialogOpen}"
+                     onstart="PF('itemMultiEditApplyValuesToColumnConfigDialogWidget').show()" />
+
+</ui:composition>

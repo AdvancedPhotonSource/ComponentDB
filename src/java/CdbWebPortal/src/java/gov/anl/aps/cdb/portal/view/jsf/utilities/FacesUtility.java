@@ -86,5 +86,12 @@ public class FacesUtility {
     
     public DataTable getResetDataTable() {
         return null;
-    }      
+    }
+    
+    public Object returnValueIfTrue(Boolean input, Object returnVal) {
+        if (input) {
+            return returnVal;
+        }
+        return null; 
+    }
 }

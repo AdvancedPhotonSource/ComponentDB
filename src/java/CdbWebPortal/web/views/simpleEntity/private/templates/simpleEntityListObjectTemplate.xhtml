@@ -10,13 +10,13 @@ See LICENSE file.
                 template="simpleEntityListObjectTemplateBase.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
     <ui:define name="idColumn">
         <p:column sortBy="#{simpleEntityListObject.id}" headerText="Id"
                   filterBy="#{simpleEntityListObject.id}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterById}"
+                  filterValue="#{entitySettingObject.filterById}"
                   filterStyleClass="shortFilterBox"
-                  rendered="#{entityController.displayId}">
+                  rendered="#{entitySettingObject.displayId}">
             <h:outputText value="#{simpleEntityListObject.id}"/>
         </p:column>
     </ui:define>
@@ -24,7 +24,7 @@ See LICENSE file.
     <ui:define name="nameColumn" >
          <p:column sortBy="#{simpleEntityListObject.name}" headerText="Name" 
                   filterBy="#{simpleEntityListObject.name}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterByName}">
+                  filterValue="#{entitySettingObject.filterByName}">
              <h:outputLink value="view.xhtml?id=#{simpleEntityListObject.id}" title="View #{entityController.displayEntityTypeName} details">
                 <h:outputText value="#{simpleEntityListObject.name}"/>
             </h:outputLink> 
@@ -34,8 +34,8 @@ See LICENSE file.
     <ui:define name="descriptionColumn" > 
          <p:column sortBy="#{simpleEntityListObject.description}" headerText="Description" 
                   filterBy="#{simpleEntityListObject.description}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterByDescription}"
-                  rendered="#{entityController.displayDescription}">
+                  filterValue="#{entitySettingObject.filterByDescription}"
+                  rendered="#{entitySettingObject.displayDescription}">
             <h:outputText value="#{simpleEntityListObject.description}"/>
         </p:column>
     </ui:define>

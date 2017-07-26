@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="#{entityTypeName}PropertyValueMetadataListDialog" 
+              widgetVar="#{entityTypeName}PropertyValueMetadataListDialogWidget" 
+              header="Property Value Metadata"
+              modal="true"              
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+        
+        <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
+
+        <p:outputPanel rendered="#{propertyValueObject != null}">
+            <p:scrollPanel style="height: 550px"
+                           mode="native"
+                           rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}">
+                <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"
+                             value="#{propertyValueObject.propertyMetadataList}"                     
+                             var="metadata">
+                    <p:column headerText="Key">
+                        <h:outputText value="#{metadata.metadataKey}" />
+                    </p:column>
+                    <p:column headerText="Value">
+                        <h:outputText value="#{metadata.metadataValue}" />
+                    </p:column>
+                </p:dataTable>
+            </p:scrollPanel>
+        </p:outputPanel>
+
+        <f:facet name="footer" class="dialog">
+            <p:commandButton id="propertyValueMetadataDoneButton" value="Done" alt="Done" 
+                             onstart="PF('#{entityTypeName}PropertyValueMetadataListDialogWidget').hide()" 
+                             icon="fa fa-times"/>
+            <p:tooltip for="propertyValueMetadataDoneButton" value="Close property value metadata display."/>
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+

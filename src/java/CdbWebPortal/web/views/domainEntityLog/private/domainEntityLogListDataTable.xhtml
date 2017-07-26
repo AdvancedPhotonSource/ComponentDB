@@ -13,12 +13,13 @@ See LICENSE file.
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
     <ui:param name="renderActionColumn" value="#{viewMode != 'rowExpansion' and viewMode != 'inViewRowExpansion'}" />
     <ui:param name="logDataList" value="#{entityObject.logList}" />
+    <ui:param name="logSettingObject" value="#{logController.settingObject}" />
 
     <p:dataTable id="#{entityTypeName}LogListDataTable"
                  widgetVar="#{entityTypeName}LogListDataTableWidget" 
                  var="logObject"
                  value="#{logDataList}" 
-                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 rows="#{logSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  reflow="true"
@@ -32,7 +33,8 @@ See LICENSE file.
             <ui:param name="filterable" value="#{facesUtility.displayFiltersForList(logDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}"/>
         </ui:include>
 
-        <p:column headerText="Actions" rendered="#{renderActionColumn and isEntityWriteable}">
+        <p:column headerText="Actions" rendered="#{renderActionColumn and isEntityWriteable}"
+                  exportable="false">
             <p:rowEditor />
             <p:commandLink id="#{entityTypeName}LogUploadAttachmentButton" 
                            oncomplete="PF('logAttachmentUploadDialogWidget').show()" 
@@ -51,7 +53,7 @@ See LICENSE file.
             <p:confirmDialog message="Would you like to remove the log?"
                              header="Confirm Log Delete" 
                              severity="alert"
-                             styleClass="viewTransparentBackgroundDialog"
+                             styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert"
                              widgetVar="confirmDeleteLog#{logObject.viewUUID}Widget">
                 <p:commandButton value="Yes" 
                                  id="confirmYesDestroyLogEntryButton"

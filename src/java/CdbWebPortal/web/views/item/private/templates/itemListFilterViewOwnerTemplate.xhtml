@@ -32,6 +32,7 @@ See LICENSE file.
         Choose an Owner User
         <p:selectOneListbox id="filterViewItemType"
                             onchange="updateForm()"
+                            converter="userInfoConverter"
                             value="#{entityController.filterViewSelectedUserInfo}"
                             disabled="#{entityController.filterViewUserInfoSelectOneDisabled}"
                             styleClass="wideListBox">

@@ -10,60 +10,80 @@ See LICENSE file.
                 template="itemListObjectTemplateBase.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
+    <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />    
     <!-- Specify true whenever columns are fixed for a view; override unneeded columns. -->
     <ui:param name="renderWheneverAvaiable" value="#{renderWheneverAvaiable != null 
                                                      ? renderWheneverAvaiable 
                                                      : false}" />
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+    
+    <!-- allows for external usage with override of render --> 
+    <ui:param name="itemListDisplayId" value="#{externalDisplayId != null ? externalDisplayId : entitySettingObject.displayId }" /> 
+    <ui:param name="itemListDisplayName" value="#{itemListDisplayName != null ? itemListDisplayName : entitySettingObject.displayName }" />
+    <ui:param name="itemListDisplayQrId" value="#{itemListDisplayQrId != null ? itemListDisplayQrId : entitySettingObject.displayQrId }" />
+    <ui:param name="itemListDisplayItemIdentifier1" value="#{itemListDisplayItemIdentifier1 != null ? itemListDisplayItemIdentifier1 : entitySettingObject.displayItemIdentifier1}"/>
+    <ui:param name="itemListDisplayItemIdentifier2" value="#{itemListDisplayItemIdentifier2 != null ? itemListDisplayItemIdentifier2 : entitySettingObject.displayItemIdentifier2}"/>
+    <ui:param name="itemListDisplayItemType" value="#{itemListDisplayItemType != null ? itemListDisplayItemType : entitySettingObject.displayItemType}" />
+    <ui:param name="itemListDisplayItemCategory" value="#{itemListDisplayItemCategory != null ? itemListDisplayItemCategory : entitySettingObject.displayItemCategory}" />
+    <ui:param name="itemListDisplayItemSource" value="#{itemListDisplayItemSource != null ? itemListDisplayItemSource : entitySettingObject.displayItemSources}" />
+    <ui:param name="itemListDisplayDerivedFromItem" value="#{itemListDisplayDerivedFromItem != null ? itemListDisplayDerivedFromItem : entitySettingObject.displayDerivedFromItem}" />
+    <ui:param name="itemListDisplayDescription" value="#{itemListDisplayDescription != null ? itemListDisplayDescription : entitySettingObject.displayDescription}" />
+    <ui:param name="itemListDisplayItemProject" value="#{itemListDisplayItemProject != null ? itemListDisplayItemProject : entitySettingObject.displayItemProject}" />
+    <ui:param name="itemListDisplayItemEntityType" value="#{itemListDisplayItemEntityType != null ? itemListDisplayItemEntityType : entitySettingObject.displayItemEntityTypes}"/>
 
     <ui:param name="itemListRenderId" value="#{renderWheneverAvaiable 
                                                ? true 
-                                               : entityController.displayId }" />
+                                               : itemListDisplayId}" />
 
     <ui:param name="itemListRenderName" value="#{renderWheneverAvaiable 
                                                  ? entityController.entityDisplayItemName
-                                                 : entityController.displayName }" />
+                                                 : itemListDisplayName}" />
 
     <ui:param name="itemListRenderQrId" value="#{renderWheneverAvaiable 
                                                  ? entityController.entityDisplayQrId
-                                                 :entityController.displayQrId}" />
+                                                 : itemListDisplayQrId}" />
 
     <ui:param name="itemListRenderItemIdentifier1" value="#{renderWheneverAvaiable 
                                                             ? entityController.entityDisplayItemIdentifier1
-                                                            :entityController.displayItemIdentifier1}" />
+                                                            : itemListDisplayItemIdentifier1}" />
 
     <ui:param name="itemListRenderItemIdentifier2" value="#{renderWheneverAvaiable 
                                                             ? entityController.entityDisplayItemIdentifier2
-                                                            :entityController.displayItemIdentifier2}" />
+                                                            : itemListDisplayItemIdentifier2}" />
 
     <ui:param name="itemListRenderItemType" value="#{renderWheneverAvaiable 
                                                      ? entityController.entityDisplayItemType
-                                                     : entityController.displayItemType}" />
+                                                     : itemListDisplayItemType}" />
 
     <ui:param name="itemListRenderItemCategory" value="#{renderWheneverAvaiable 
                                                          ? entityController.entityDisplayItemCategory
-                                                         : entityController.displayItemCategory}" />
+                                                         : itemListDisplayItemCategory}" />
 
     <ui:param name="itemListRenderItemSources" value="#{renderWheneverAvaiable 
                                                         ? entityController.entityDisplayItemSources
-                                                        : entityController.displayItemSources}" />
+                                                        : itemListDisplayItemSource}" />
 
     <ui:param name="itemListRenderDerivedFromItem" value="#{renderWheneverAvaiable 
                                                             ? entityController.entityDisplayDerivedFromItem
-                                                            : entityController.displayDerivedFromItem}" />
+                                                            : itemListDisplayDerivedFromItem}" />
 
     <ui:param name="itemListRenderDescription" value="#{renderWheneverAvaiable 
                                                         ? true
-                                                        : entityController.displayDescription}" />
+                                                        : itemListDisplayDescription}" />
 
     <ui:param name="itemListRenderItemProject" value="#{renderWheneverAvaiable 
                                                         ? entityController.entityDisplayItemProject
-                                                        : entityController.displayItemProject}" />
+                                                        : itemListDisplayItemProject}" />
 
     <ui:param name="itemListRenderItemEntityTypes" value="#{renderWheneverAvaiable 
                                                             ? entityController.entityDisplayItemEntityTypes 
-                                                            : entityController.displayItemEntityTypes}" />
+                                                            : entitySettingObject.displayItemEntityTypes}" />
     <ui:define name="thumbnail">
-        <p:column styleClass="narrowColumn" headerText="Primary Image" exportable="false">
+        <p:column styleClass="narrowColumn" 
+                  headerText="Primary Image" 
+                  exportable="false"
+                  rendered="#{rendered}">
             <ui:param name="itemHasPrimaryImage" value="#{entityController.itemHasPrimaryImage(itemListObject)}"/>
             <p:outputPanel rendered="#{itemHasPrimaryImage}" styleClass="centeredContent">
                 <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{entityController.getPrimaryImageThumbnailForItem(itemListObject)}"
@@ -81,7 +101,7 @@ See LICENSE file.
                 </p:dialog>
             </p:outputPanel>
             <p:outputPanel rendered="#{!itemHasPrimaryImage}">
-                .
+                &#9786; 
             </p:outputPanel>
         </p:column>
     </ui:define>
@@ -91,8 +111,8 @@ See LICENSE file.
                   filterBy="#{itemListObject.id}" filterMatchMode="contains"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  filterValue="#{entityController.filterById}"
-                  rendered="#{itemListRenderId}" >
+                  filterValue="#{entitySettingObject.filterById}"
+                  rendered="#{rendered and itemListRenderId}" >
             <ui:insert name="idColumnObject" />
         </p:column>
     </ui:define>
@@ -101,10 +121,11 @@ See LICENSE file.
         <p:column sortBy="#{itemListObject.name}" headerText="#{entityController.nameTitle}"
                   id="#{entityTypeName}ListObjectNameColumn"
                   filterBy="#{itemListObject.name}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterByName}"
+                  filterValue="#{entitySettingObject.filterByName}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderName}" >
+                  rendered="#{rendered and itemListRenderName}" 
+                  exportFunction="#{itemListObject.getName()}" >
             <ui:insert name="nameColumnObject" />
         </p:column>
     </ui:define>
@@ -114,7 +135,7 @@ See LICENSE file.
                   filterBy="#{itemListObject.itemProjectString}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderItemProject}">
+                  rendered="#{rendered and itemListRenderItemProject}">
             <ui:insert name="itemProjectObject" />
         </p:column>
 
@@ -125,7 +146,7 @@ See LICENSE file.
                   filterBy="#{itemListObject.entityTypeString}" filterMatchMode="contains"
                   filterable="#{filterable}"
                   filterOptions="#{entityController.entityTypesForDataTableFilterSelectOne}"
-                  rendered="#{itemListRenderItemEntityTypes}"
+                  rendered="#{rendered and itemListRenderItemEntityTypes}"
                   sortable="#{sortable}">
             <ui:insert name="entityTypeColumnObject" />
         </p:column>
@@ -134,10 +155,10 @@ See LICENSE file.
     <ui:define name="qrIdColumn">
         <p:column sortBy="#{itemListObject.qrId}" headerText="QrId"
                   filterBy="#{itemListObject.qrIdDisplay}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterByQrId}"
+                  filterValue="#{entitySettingObject.filterByQrId}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderQrId}" >
+                  rendered="#{rendered and itemListRenderQrId}" >
             <ui:insert name="qrIdColumnObject" />
         </p:column>
     </ui:define>
@@ -147,10 +168,10 @@ See LICENSE file.
                   id="#{entityTypeName}ListObjectItemIdentifier1Column"
                   headerText="#{entityController.itemIdentifier1Title}"
                   filterBy="#{itemListObject.itemIdentifier1}"
-                  filterValue="#{entityController.filterByItemIdentifier1}"
+                  filterValue="#{entitySettingObject.filterByItemIdentifier1}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderItemIdentifier1}">
+                  rendered="#{rendered and itemListRenderItemIdentifier1}">
             <ui:insert name="itemIdentifier1ColumnObject" />
         </p:column>
     </ui:define>
@@ -160,10 +181,10 @@ See LICENSE file.
                   id="#{entityTypeName}ListObjectItemIdentifier2Column"
                   headerText="#{entityController.itemIdentifier2Title}"
                   filterBy="#{itemListObject.itemIdentifier2}"
-                  filterValue="#{entityController.filterByItemIdentifier2}"
+                  filterValue="#{entitySettingObject.filterByItemIdentifier2}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderItemIdentifier2}">
+                  rendered="#{rendered and itemListRenderItemIdentifier2}">
             <ui:insert name="itemIdentifier2ColumnObject" />
         </p:column>
     </ui:define>
@@ -179,8 +200,8 @@ See LICENSE file.
                   filterOptions="#{entityController.domainItemCategoryListForSelectOne}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderItemCategory}"
-                  >
+                  rendered="#{rendered and itemListRenderItemCategory}"
+                  exportFunction="#{itemListObject.getItemCategoryString()}" >
             <ui:insert name="itemCategoryColumnObject" />
         </p:column>
     </ui:define>
@@ -189,10 +210,11 @@ See LICENSE file.
         <p:column sortBy="#{itemListObject.itemSourceString}" 
                   headerText="Sources"
                   filterBy="#{itemListObject.itemSourceString}"
-                  filterValue="#{entityController.filterByItemSources}"
+                  filterValue="#{entitySettingObject.filterByItemSources}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderItemSources}">
+                  exportFunction="#{itemListObject.getItemSourceString()}"
+                  rendered="#{rendered and itemListRenderItemSources}">
             <ui:insert name="itemSourceColumnObject" />
         </p:column>
     </ui:define>
@@ -200,11 +222,12 @@ See LICENSE file.
     <ui:define name="derivedFromItemColumn" > 
         <p:column headerText="#{entityController.derivedFromItemTitle}"                  
                   filterBy="#{itemListObject.derivedFromItem.name}"
-                  sortBy="#{itemListObject.derivedFromItem.name}"
+                  sortBy="#{itemListObject.derivedFromItem.name}"                  
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderDerivedFromItem}"
-                  filterValue="#{entityController.filterByName}">
+                  rendered="#{rendered and itemListRenderDerivedFromItem}"
+                  filterValue="#{entitySettingObject.filterByName}"
+                  groupRow="#{rendered and itemListRenderDerivedFromItem}">
             <ui:insert name="derivedFromItemColumnObject" />
         </p:column>
     </ui:define>
@@ -212,10 +235,10 @@ See LICENSE file.
     <ui:define name="descriptionColumn" > 
         <p:column sortBy="#{itemListObject.description}" headerText="Description" 
                   filterBy="#{itemListObject.description}" filterMatchMode="contains"
-                  filterValue="#{entityController.filterByDescription}"
+                  filterValue="#{entitySettingObject.filterByDescription}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"
-                  rendered="#{itemListRenderDescription}">
+                  rendered="#{rendered and itemListRenderDescription}">
             <ui:insert name="descriptionColumnObject" />
         </p:column>
     </ui:define>

@@ -5,8 +5,10 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.test.CdbDBTest;
@@ -31,15 +33,15 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     }
 
     @Test
-    public void checkItemFacadeWasSet() {
-        assertNotNull(itemDomainCatalogController.getItem(1));
+    public void checkItemFacadeWasSet() {                
+        assertNotNull(itemDomainCatalogController.getEntityDbFacade().findAll());
     }
     
     @Test
     public void checkCatalogItemList() {
         System.out.println("getItemList");
         String default_domain = itemDomainCatalogController.getDefaultDomainName(); 
-        List<Item> itemList = itemDomainCatalogController.getItemList(); 
+        List<ItemDomainCatalog> itemList = itemDomainCatalogController.getItemList(); 
         for (Item item : itemList) {
             assertEquals(default_domain, item.getDomain().getName());
         }
@@ -47,11 +49,12 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     
     @Test
     public void checkItemTypeBehavior() {
-        // Set current to a new item 
-        itemDomainCatalogController.prepareCreate();
+        Item item = itemDomainCatalogController.getItemList().get(0);
+        itemDomainCatalogController.setCurrent((ItemDomainCatalog) item);
         //Item should have been created 
-        Item item = itemDomainCatalogController.getCurrent(); 
+        item = itemDomainCatalogController.getCurrent(); 
         assertNotNull(item);
+        item.setItemCategoryList(new ArrayList());
         // Should be disabled until category is selected
         assertTrue(itemDomainCatalogController.isDisabledItemItemType());               
         // Generated item type list should be empty
@@ -81,7 +84,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     
     @Test
     public void checkGetItemsWithoutParentsMethod() {
-        List<Item> itemList = itemDomainCatalogController.getItemsWithoutParents(); 
+        List<ItemDomainCatalog> itemList = itemDomainCatalogController.getItemsWithoutParents(); 
         
         assertNotNull(itemList);
         for (Item item : itemList) {
@@ -113,16 +116,16 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     
     @Test
     public void testValidityOfItemElementsList() {
-        List<Item> items = itemDomainCatalogController.getItemList(); 
+        List<ItemDomainCatalog> items = itemDomainCatalogController.getItemList(); 
         assertFalse(items == null || items.isEmpty());
         ItemElement newItemElement; 
         
-        Item assembyItem = items.get(1);
+        ItemDomainCatalog assembyItem = items.get(1);
         List<ItemElement> displayElementList = assembyItem.getItemElementDisplayList(); 
         assertFalse(displayElementList == null || displayElementList.isEmpty());
         
         //Cause circular reference
-        Item containedItem = displayElementList.get(0).getContainedItem();
+        ItemDomainCatalog containedItem = (ItemDomainCatalog) displayElementList.get(0).getContainedItem();
         
         // Set assembly item element to iteself. 
         itemDomainCatalogController.prepareAddItemElement(assembyItem);
@@ -193,7 +196,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     public class ItemDomainCatalogControllerTestable extends ItemDomainCatalogController {
 
         public ItemDomainCatalogControllerTestable(CdbDBTest cdbTest) {
-            this.itemFacade = cdbTest.getItemFacade();
+            this.itemDomainCatalogFacade = cdbTest.getItemDomainCatalogFacade();
             this.itemElementFacade = cdbTest.getItemElementFacade();
             this.itemTypeFacade = cdbTest.getItemTypeFacade();
             this.domainFacade = cdbTest.getDomainFacade();
@@ -204,7 +207,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
         }                
        
         public boolean isListDifferentTestable(List<Object> originalList, List<Object> listToCompare) {
-            return super.isListDifferent(originalList, listToCompare);
+            return CollectionUtility.isListDifferent(originalList, listToCompare);
         }                
     }
 

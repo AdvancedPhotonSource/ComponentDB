@@ -14,7 +14,7 @@ See LICENSE file.
                      action="#{itemTypeController.prepareItemTypeCategoryEntityList(entityController.defaultDomain)}" 
                      rendered="#{entityController.entityHasTypes()}" 
                      alt="View #{entityController.entityEntityTypeName}s" 
-                     icon="ui-icon-info" styleClass="actionButtonRight">
+                     icon="fa fa-info" styleClass="actionButtonRight">
         <p:tooltip for="#{entityTypeName}ViewTypesButton" value="View #{entityController.entityEntityTypeName}s."/>        
     </p:commandButton>
 
@@ -22,7 +22,7 @@ See LICENSE file.
                      action="#{itemCategoryController.prepareItemTypeCategoryEntityList(entityController.defaultDomain)}"
                      rendered="#{entityController.entityHasCategories()}" 
                      alt="View #{entityController.entityEntityCategoryName}s" 
-                     icon="ui-icon-info" styleClass="actionButtonRight">
+                     icon="fa fa-info" styleClass="actionButtonRight">
         <p:tooltip for="#{entityTypeName}ViewCategoriesButton" value="View #{entityController.entityEntityCategoryName}s."/>
     </p:commandButton>
 

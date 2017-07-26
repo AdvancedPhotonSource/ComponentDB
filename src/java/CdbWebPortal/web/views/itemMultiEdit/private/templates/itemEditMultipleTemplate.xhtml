@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="itemMultipleEditTemplateBase.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="multiEditContent">
+        <p:outputPanel rendered="#{entityController.renderSelection}">
+            <h2>
+                Select items to edit. Current user has edit permissions for all items shown.
+            </h2>
+            <br/>
+            <ui:insert name="itemMulitEditSelectionListDataTable">
+                <ui:include src="../itemMultiEditListDataTable.xhtml" />
+            </ui:insert>
+        </p:outputPanel>
+
+        <ui:include src="../itemMultiEditUpdateContent.xhtml">
+            <ui:param name="renderUpdateItems"
+                      value="#{entityController.renderUpdateItems}" />
+        </ui:include>
+    </ui:define>           
+</ui:composition>

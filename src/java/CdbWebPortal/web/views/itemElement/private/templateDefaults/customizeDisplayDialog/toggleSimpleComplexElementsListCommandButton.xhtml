@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="commandButtonText" value="#{commandButtonText != null ? commandButtonText : 'Toggle Simple Complex View'}" /> 
+
+    <p:commandButton onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('loadingDialog').hide()"
+                     rendered="#{loginController.loggedInAsAdmin}"
+                     update="@form"
+                     action="#{itemElementController.settingObject.toggleSimpleComplexElementsList()}"
+                     value="#{commandButtonText}"
+                     icon="ui-icon-disk"/> 
+
+</ui:composition>

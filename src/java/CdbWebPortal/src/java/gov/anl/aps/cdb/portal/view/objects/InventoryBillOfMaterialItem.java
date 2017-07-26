@@ -7,7 +7,9 @@ package gov.anl.aps.cdb.portal.view.objects;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -28,12 +30,12 @@ public class InventoryBillOfMaterialItem {
     protected String state = null;
 
     // new item to be linked to placeholder (Item Element of instance).
-    protected Item inventoryItem = null;
+    protected ItemDomainInventory inventoryItem = null;
 
-    protected Item prevInventoryItem = null;
+    protected ItemDomainInventory prevInventoryItem = null;
 
     // a reference to the parent item instance which includes this as a bom item.
-    protected Item parentItemInstance = null;
+    protected ItemDomainInventory parentItemInstance = null;
 
     // The catalog item that will be used to create the intventory item. 
     protected ItemElement catalogItemElement = null;
@@ -45,11 +47,20 @@ public class InventoryBillOfMaterialItem {
 
     protected boolean applyPermissionToAllNewParts = false;
 
-    private Item catalogItem = null;
+    private ItemDomainCatalog catalogItem = null;
 
     protected DataModel existingInventoryItemSelectDataModel = null;
     
-    public InventoryBillOfMaterialItem(ItemElement catalogItemElement, Item parentItemInstance) {        
+    protected Boolean simpleView = null; 
+
+    public Boolean getSimpleView() {
+        if (simpleView == null) {
+            simpleView = ItemElementController.getInstance().getSettingObject().getDisplayItemElementSimpleView(); 
+        }
+        return simpleView;
+    }
+    
+    public InventoryBillOfMaterialItem(ItemElement catalogItemElement, ItemDomainInventory parentItemInstance) {        
         loadItemDomainInventoryController();
         ItemElement inventoryItemElement = null;
         if (itemDomainInventoryController.isItemExistInDb(parentItemInstance)) {
@@ -65,7 +76,7 @@ public class InventoryBillOfMaterialItem {
 
         if (inventoryItemElement != null) {
             if (inventoryItemElement.getContainedItem() != null) {
-                inventoryItem = inventoryItemElement.getContainedItem();
+                inventoryItem = (ItemDomainInventory) inventoryItemElement.getContainedItem();
                 if (itemDomainInventoryController.isItemExistInDb(inventoryItem)) {
                     this.state = InventoryBillOfMaterialItemStates.existingItem.getValue();
                     // No need to display bom for built part. 
@@ -88,7 +99,7 @@ public class InventoryBillOfMaterialItem {
         this.parentItemInstance = parentItemInstance;
     }
 
-    public InventoryBillOfMaterialItem(Item inventoryItem) {
+    public InventoryBillOfMaterialItem(ItemDomainInventory inventoryItem) {
         this.loadItemDomainInventoryController();
         if (itemDomainInventoryController.isItemExistInDb(inventoryItem)) {
             this.state = InventoryBillOfMaterialItemStates.existingItem.getValue();
@@ -108,7 +119,7 @@ public class InventoryBillOfMaterialItem {
 
     private void setDefaultProject() {
         if (inventoryItem != null) {
-            Item catalogItem = getCatalogItem();
+            ItemDomainCatalog catalogItem = getCatalogItem();
             if (catalogItem != null) {
                 if (catalogItem.getItemProjectList() != null
                         & !catalogItem.getItemProjectList().isEmpty()) {
@@ -187,14 +198,14 @@ public class InventoryBillOfMaterialItem {
         }
     }
 
-    public Item getCatalogItem() {
+    public ItemDomainCatalog getCatalogItem() {
         if (catalogItem == null) {
             if (catalogItemElement == null) {
                 if (inventoryItem != null) {
-                    catalogItem = inventoryItem.getDerivedFromItem();
+                    catalogItem = inventoryItem.getCatalogItem();
                 }
             } else {
-                catalogItem = catalogItemElement.getContainedItem();
+                catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();
             }
         }
         return catalogItem;
@@ -223,7 +234,7 @@ public class InventoryBillOfMaterialItem {
     }
 
     // Creates a bill of materials list based on the catalog item and assigns it to the instance item. 
-    public static void setBillOfMaterialsListForItem(Item parentItemInstance, InventoryBillOfMaterialItem containedInBOM) {
+    public static void setBillOfMaterialsListForItem(ItemDomainInventory parentItemInstance, InventoryBillOfMaterialItem containedInBOM) {
         if (parentItemInstance.getInventoryDomainBillOfMaterialList() == null) {
             List<ItemElement> catalogItemElementList = parentItemInstance.getDerivedFromItem().getItemElementDisplayList();
 
@@ -258,15 +269,15 @@ public class InventoryBillOfMaterialItem {
         this.applyPermissionToAllNewParts = applyPermissionToAllNewParts;
     }
 
-    public Item getParentItemInstance() {
+    public ItemDomainInventory getParentItemInstance() {
         return parentItemInstance;
     }
 
-    public Item getInventoryItem() {
+    public ItemDomainInventory getInventoryItem() {
         return inventoryItem;
     }
     
-    public void setInventoryItem(Item inventoryItem) {
+    public void setInventoryItem(ItemDomainInventory inventoryItem) {
         this.inventoryItem = inventoryItem;
         //Set default tag
         if (inventoryItem != null) {
@@ -308,9 +319,9 @@ public class InventoryBillOfMaterialItem {
     public DataModel getExistingInventoryItemSelectDataModel() {
         if (existingInventoryItemSelectDataModel == null) {
             if (getCatalogItem() != null) {
-                List<Item> ItemInventoryItemList = getCatalogItem().getDerivedFromItemList();
+                List<ItemDomainInventory> ItemInventoryItemList = getCatalogItem().getInventoryItemList();
                 // Copy list to not update actual derived from item list. 
-                List<Item> inventoryItemList = new ArrayList<>(ItemInventoryItemList);
+                List<ItemDomainInventory> inventoryItemList = new ArrayList<>(ItemInventoryItemList);
                 if (inventoryItem != null) {
                     loadItemDomainInventoryController();
                     if (itemDomainInventoryController.isItemExistInDb(inventoryItem) == false) {
@@ -347,8 +358,17 @@ public class InventoryBillOfMaterialItem {
             // Root Item
             response += inventoryItem.getDerivedFromItem().getName();
         } else {
-            // Part of root item. 
-            response += catalogItemElement.getName();
+            // Part of root item.
+            if (getSimpleView()) {
+                ItemDomainCatalog catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();  
+                if (catalogItem != null) {
+                    response += catalogItem.getName(); 
+                } else {
+                    response += catalogItemElement.getName();
+                }
+            } else {
+                response += catalogItemElement.getName();
+            }
         }
 
         // Add simple attributes specified by user. 

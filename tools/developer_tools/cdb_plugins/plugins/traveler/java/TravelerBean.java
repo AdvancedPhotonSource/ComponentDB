@@ -7,10 +7,8 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 
-import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
-import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 
@@ -185,7 +183,7 @@ public class TravelerBean implements Serializable {
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
      */
-    public void createTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
+    public void createTravelerTemplate(ICdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
 
             if (!travelerTemplateTitle.equals("") && travelerTemplateTitle != null) {
@@ -215,7 +213,7 @@ public class TravelerBean implements Serializable {
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion. 
      */
-    public void linkTravelerTemplate(CdbDomainEntityController entityController, String onSuccessCommand) {
+    public void linkTravelerTemplate(ICdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
                 propertyValue.setValue(selectedTemplate.getId());
@@ -359,17 +357,17 @@ public class TravelerBean implements Serializable {
      * 
      * @param entityController controller for the entity currently being edited by the user. 
      */
-    public void loadEntityAvailableTemplateList(CdbEntityController entityController) {
+    public void loadEntityAvailableTemplateList(CdbDomainEntity domainEntity) {
         if (checkPropertyValue()) {
             availableTemplates = new ArrayList<>();            
-            if (entityController instanceof ItemController) {                
-                Item item = (Item) entityController.getCurrent(); 
+            if (domainEntity instanceof Item) {                
+                Item item = (Item) domainEntity; 
                 loadPropertyTravelerTemplateList(item.getPropertyValueDisplayList(), availableTemplates);
                 if (item.getDerivedFromItem() != null) {
                     loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueDisplayList(), availableTemplates);
                 }
-            } else if (entityController instanceof ItemElementController) {
-                ItemElement itemElement = (ItemElement) entityController.getCurrent(); 
+            } else if (domainEntity instanceof ItemElement) {
+                ItemElement itemElement = (ItemElement) domainEntity; 
                 loadPropertyTravelerTemplateList(itemElement.getPropertyValueDisplayList(), availableTemplates);
                 Item parentItem = itemElement.getParentItem();
                 Item containedItem = itemElement.getContainedItem();
@@ -438,7 +436,7 @@ public class TravelerBean implements Serializable {
      * @param entityController controller for the entity currently being edited by the user. 
      * @param onSuccessCommand Remote command to execute only on successful completion
      */
-    public void createTravelerInstance(CdbDomainEntityController entityController, String onSuccessCommand) {
+    public void createTravelerInstance(ICdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
                 if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {

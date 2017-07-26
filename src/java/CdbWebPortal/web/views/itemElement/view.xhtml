@@ -28,6 +28,7 @@ See LICENSE file.
                 </div>
                 
                 <ui:param name="itemElementObject" value="#{itemElementController.selected}"/>
+                <ui:param name="currentObject" value="#{itemElementObject}" />
                 <ui:param name="entityController" value="#{itemElementController}"/>
                 <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemElementObject.entityInfo)}"/>
                 
@@ -56,7 +57,9 @@ See LICENSE file.
 
             <div class="domainEntityRightContent">
                 <p:panel header="Properties" toggleable="true" collapsed="#{!entityController.displayPropertyList}">
-                    <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml"/>
+                    <ui:include src="../domainEntityProperty/private/domainEntityPropertyList.xhtml">
+                        <ui:param name="loadPropertyListDialogs" value="#{false}" />
+                    </ui:include>
                 </p:panel>
                 
                 <p:panel header="Contained Item Properties" toggleable="true" >
@@ -66,20 +69,7 @@ See LICENSE file.
                     </ui:include>
                 </p:panel>
                 
-                
-                <ui:remove>
-                    <p:panel header="Component Properties" 
-                             toggleable="true"
-                             rendered="#{itemElementController.getDisplayComponentProperties(itemElementObject)}">
-                        <ui:include src="../itemElementProperty/private/itemElementComponentPropertyList.xhtml"/>
-                    </p:panel>
-
-                    <p:panel header="Child Design Properties" 
-                             toggleable="true" 
-                             rendered="#{itemElementController.getDisplayChildDesignProperties(itemElementObject)}">
-                        <ui:include src="../itemElementProperty/private/itemElementChildDesignPropertyList.xhtml"/>
-                    </p:panel>
-                </ui:remove>
+                <ui:include src="../domainEntityProperty/private/domainEntityPropertyListDialogs.xhtml" />                                               
             </div>
 
         </h:form>

@@ -1,4 +1,5 @@
 .idea
+src/python/.loglogin
 
 # Compiled files 
 *.pyc
@@ -23,3 +24,12 @@ src/java/CdbWebPortal/src/java/gov/anl/aps/cdb/portal/plugins/support/
 
 # Python docs
 docs/python/_build/
+/src/java/CdbWebPortal/nbproject/private/
+/src/src/java/CdbWebPortal/build/
+/src/src/java/CdbWebPortal/dist/
+/src/src/java/CdbWebPortal/nbproject/private/
+
+# Python REST Api Dist
+/src/python/cdb_api.egg-info
+/src/python/dist
+

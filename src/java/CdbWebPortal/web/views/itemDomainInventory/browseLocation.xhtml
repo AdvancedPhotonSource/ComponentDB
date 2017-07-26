@@ -11,11 +11,11 @@ See LICENSE file.
                 template="../item/private/templates/itemBrowseTemplate.xhtml">
 
 
-    <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
+    <ui:param name="entityController" value="#{itemFilterViewDomainInventoryController}" />
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:viewAction action="#{itemDomainInventoryController.processPreRenderList()}" />
+        <f:viewAction action="#{itemFilterViewDomainInventoryController.processPreRenderFilterViewPage()}" />
     </f:metadata>  
 
     <ui:define name="pageTitle">: Browse By Locations</ui:define>

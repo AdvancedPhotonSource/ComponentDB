@@ -11,9 +11,10 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
    
     <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
+    <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}" />
 
     <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
-              rendered="#{propertyValueController.displayId}"
+              rendered="#{propertyValueSettingObject.displayId}"
               filterBy="#{propertyValueObject.id}"
               filterable="#{filterable}">
         <h:outputText value="#{propertyValueObject.id}"/>
@@ -29,54 +30,55 @@ See LICENSE file.
     <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
               filterBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}"
               filterable="#{filterable}"
-              rendered="#{propertyValueController.displayTypeCategory}">
+              rendered="#{propertyValueSettingObject.displayTypeCategory}">
         <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
               filterBy="#{propertyValueObject.tag}" 
               filterable="#{filterable}"
-              rendered="#{propertyValueController.displayTag}">
+              rendered="#{propertyValueSettingObject.displayTag}">
         <h:outputText value="#{propertyValueObject.tag}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
               filterBy="#{propertyValueObject.value}"
-              filterable="#{filterable}">
+              filterable="#{filterable}"
+              exportFunction="#{propertyValueObject.getValue()}">
         <ui:include src="propertyValueListObjectValue.xhtml"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
               filterBy="#{propertyValueObject.units}"
               filterable="#{filterable}"
-              rendered="#{propertyValueController.displayUnits}">
+              rendered="#{propertyValueSettingObject.displayUnits}">
         <h:outputText value="#{propertyValueObject.units}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
               filterBy="#{propertyValueObject.description}"
               filterable="#{filterable}"
-              rendered="#{propertyValueController.displayDescription}">
+              rendered="#{propertyValueSettingObject.displayDescription}">
         <h:outputText value="#{propertyValueObject.description}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
               filterBy="#{propertyValueObject.enteredByUser.username}"
               filterable="#{filterable}"
-              rendered="#{propertyValueController.displayEnteredByUser}">
+              rendered="#{propertyValueSettingObject.displayEnteredByUser}">
         <h:outputText value="#{propertyValueObject.enteredByUser.username}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
               filterBy="#{propertyValueObject.enteredOnDateTime}"
               filterable="#{filterable}"
-              rendered="#{propertyValueController.displayEnteredOnDateTime}">
+              rendered="#{propertyValueSettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
-              rendered="#{propertyValueController.displayIsDynamic}">
-        <f:attribute name="exportValue" value="#{propertyValueObject.isDynamic}"/>
+              rendered="#{propertyValueSettingObject.displayIsDynamic}"
+              exportFunction="#{propertyValueObject.getIsDynamicString()}">
         <div class="dataTableCheckbox">
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueObject.isDynamic}"/>
@@ -84,8 +86,8 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User Writeable" 
-              rendered="#{propertyValueController.displayIsUserWriteable}">
-        <f:attribute name="exportValue" value="#{propertyValueObject.isUserWriteable}"/>
+              rendered="#{propertyValueSettingObject.displayIsUserWriteable}"
+              exportFunction="#{propertyValueObject.getIsUserWriteableString()}">
         <div class="dataTableCheckbox">
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueObject.isUserWriteable}"/>

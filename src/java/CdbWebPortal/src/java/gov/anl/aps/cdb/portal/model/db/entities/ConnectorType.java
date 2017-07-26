@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ConnectorType.findById", query = "SELECT c FROM ConnectorType c WHERE c.id = :id"),
     @NamedQuery(name = "ConnectorType.findByName", query = "SELECT c FROM ConnectorType c WHERE c.name = :name"),
     @NamedQuery(name = "ConnectorType.findByDescription", query = "SELECT c FROM ConnectorType c WHERE c.description = :description")})
-public class ConnectorType implements Serializable {
+public class ConnectorType extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -115,7 +115,7 @@ public class ConnectorType implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.ConnectorType[ id=" + id + " ]";
+        return name; 
     }
     
 }

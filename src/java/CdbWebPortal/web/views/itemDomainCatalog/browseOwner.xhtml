@@ -10,12 +10,12 @@ See LICENSE file.
                 template="../item/private/templates/itemBrowseOwnerTemplate.xhtml"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
     
-    <ui:param name="entityController" value="#{itemDomainCatalogController}" />
+    <ui:param name="entityController" value="#{itemFilterViewDomainCatalogController}" />
     
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processPreRenderList()}"/>
-    </f:metadata>   
+        <f:event type="preRenderComponent" listener="#{itemFilterViewDomainCatalogController.processPreRenderFilterViewPage()}"/>
+    </f:metadata>
     
     <ui:define name="itemOwnerFilterView">
         <ui:include src="private/itemDomainCatalogListFilterViewOwner.xhtml"/>

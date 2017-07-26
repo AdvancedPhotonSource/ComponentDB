@@ -11,17 +11,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <h:outputLabel for="ownerUser#{viewName}" value="Owner User" styleClass="entityDataLabel"/>
-    <p:column id="ownerUser#{viewName}">
-        <p:selectOneMenu id="ownerUserSOM#{viewName}" value="#{entityInfoObject.ownerUser}" styleClass="entityDataText" 
-                         onchange="updateOwnerUser#{viewName}()">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-            <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
-        </p:selectOneMenu>
-        <p:remoteCommand name="updateOwnerUser#{viewName}"
-                         update="ownerUser#{viewName}"/>
-
-        <p:message for="ownerUser#{viewName}"/>
-        <p:tooltip for="ownerUser#{viewName}" value="Owner user has the ability to modify this entity."/>
+    <p:column>
+        <ui:include src="templateDefaults/entityInfoFieldEditValues/ownerUser.xhtml" />
     </p:column>
 
     <p:outputPanel rendered="#{renderHelpFragments}">
@@ -31,17 +22,8 @@ See LICENSE file.
     </p:outputPanel>
 
     <h:outputLabel for="ownerGroup#{viewName}" value="Owner Group" styleClass="entityDataLabel"/>
-    <p:column id="ownerGroup#{viewName}">
-        <p:selectOneMenu id="ownerGroupSOM#{viewName}" value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText"
-                         onchange="updateOwnerGroup#{viewName}()">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-            <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
-        </p:selectOneMenu>
-        <p:remoteCommand name="updateOwnerGroup#{viewName}"
-                         update="ownerGroup#{viewName}"/>        
-        
-        <p:message for="ownerGroup#{viewName}"/> 
-        <p:tooltip for="ownerGroup#{viewName}" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+    <p:column>
+        <ui:include src="templateDefaults/entityInfoFieldEditValues/ownerGroup.xhtml" />
     </p:column>
     
     <p:outputPanel rendered="#{renderHelpFragments}">
@@ -51,15 +33,8 @@ See LICENSE file.
     </p:outputPanel>
     
     <h:outputLabel for="groupWriteable#{viewName}" value="Group Writeable" styleClass="entityDataLabel"/>
-    <p:column id="groupWriteable#{viewName}">
-        <p:selectBooleanButton id="groupWriteableSBB#{viewName}" 
-                               value="#{entityInfoObject.isGroupWriteable}" 
-                               styleClass="entityDataText" onLabel="Yes" offLabel="No"
-                               onchange="updateGroupWriteable#{viewName}()"/>        
-        <p:remoteCommand name="updateGroupWriteable#{viewName}"
-                         update="groupWriteable#{viewName}" />        
-        <p:message for="groupWriteable#{viewName}"/> 
-        <p:tooltip for="groupWriteable#{viewName}" value="This flag determines whether owner group members can modify this entity."/> 
+    <p:column>
+        <ui:include src="templateDefaults/entityInfoFieldEditValues/groupWriteable.xhtml"/>
     </p:column>
     
     <p:outputPanel rendered="#{renderHelpFragments}">

@@ -12,10 +12,10 @@ See LICENSE file.
 
     <ui:define name="domainEntitySpecificRowExpansion">
 
-        <p:selectBooleanCheckbox id="displayComponentInstanceRowExpansion" value="#{entityController.displayComponentInstanceRowExpansion}"/>  
+        <p:selectBooleanCheckbox id="displayComponentInstanceRowExpansion" value="#{entitySettingObject.displayComponentInstanceRowExpansion}"/>  
         <h:outputLabel for="displayComponentInstanceRowExpansion" value="Display Component Instance Row Expansion*" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="loadInstanceRowExpansionPropertyValues" value="#{entityController.loadComponentInstanceRowExpansionPropertyValues}"/>  
+        <p:selectBooleanCheckbox id="loadInstanceRowExpansionPropertyValues" value="#{entitySettingObject.loadComponentInstanceRowExpansionPropertyValues}"/>  
         <h:outputLabel for="loadInstanceRowExpansionPropertyValues" value="Load Component Instance Row Exapnsion Property Values*" styleClass="dialogDataLabel"/>        
     </ui:define>
 

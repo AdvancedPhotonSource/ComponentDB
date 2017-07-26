@@ -8,18 +8,18 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-
+    <ui:param name="propertyTypeSettingObject" value="#{propertyTypeController.settingObject}" />
     <p:panelGrid columns="2">
-        <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{propertyTypeController.selectDisplayDescription}"/>  
+        <p:selectBooleanCheckbox id="selectDisplayDescription" value="#{propertyTypeSettingObject.selectDisplayDescription}"/>  
         <h:outputLabel for="selectDisplayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="selectDisplayDefaultUnits" value="#{propertyTypeController.selectDisplayDefaultUnits}"/>  
+        <p:selectBooleanCheckbox id="selectDisplayDefaultUnits" value="#{propertyTypeSettingObject.selectDisplayDefaultUnits}"/>  
         <h:outputLabel for="selectDisplayDefaultUnits" value="Display Default Units" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="selectDisplayDefaultValue" value="#{propertyTypeController.selectDisplayDefaultValue}"/>  
+        <p:selectBooleanCheckbox id="selectDisplayDefaultValue" value="#{propertyTypeSettingObject.selectDisplayDefaultValue}"/>  
         <h:outputLabel for="selectDisplayDefaultValue" value="Display Default Value" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="selectDisplayId" value="#{propertyTypeController.selectDisplayId}"/>  
+        <p:selectBooleanCheckbox id="selectDisplayId" value="#{propertyTypeSettingObject.selectDisplayId}"/>  
         <h:outputLabel for="selectDisplayId" value="Display Id" styleClass="dialogDataLabel"/>
     </p:panelGrid>
 

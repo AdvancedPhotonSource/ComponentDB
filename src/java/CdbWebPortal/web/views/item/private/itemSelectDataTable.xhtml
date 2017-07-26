@@ -3,12 +3,16 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 -->
+
+<!--
+    Specify additionalSelectionMadeRemoteCommands remote commands. 
+-->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
-
+                xmlns:f="http://xmlns.jcp.org/jsf/core">        
+    
     <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
     <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
     <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />
@@ -33,6 +37,10 @@ See LICENSE file.
     <ui:param name="itemSelectionMadeWithResetRemoteCommand" value="#{entityTypeName}ItemSelectionMadeWithReset" />
     <ui:param name="itemSelectionMadeRemoteCommand" value="#{entityTypeName}ItemSelectionMade" />
     <ui:param name="selectionRemoteComandName" value="#{selectionWithResetEnabled ? itemSelectionMadeWithResetRemoteCommand : itemSelectionMadeRemoteCommand}" />
+    
+    <ui:param name="immediateUpdate"
+              value="#{immediateUpdate != null ? immediateUpdate : false}" />
+              
 
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
                  var="itemListObject" 
@@ -50,14 +58,14 @@ See LICENSE file.
 
         <p:ajax event="rowSelect"
                 disabled="#{singleClickSelectionDisabled}"
-                oncomplete="#{selectionRemoteComandName}()" />
+                oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommands}" />
         <p:ajax event="rowUnselect"
                 disabled="#{singleClickSelectionDisabled}"
-                oncomplete="#{selectionRemoteComandName}()" />
+                oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommands}" />
 
-        <p:ajax event="rowDblselect"
+        <p:ajax event="rowDblselect"                
                 disabled="#{!singleClickSelectionDisabled}"
-                oncomplete="#{selectionRemoteComandName}()" />        
+                oncomplete="#{selectionRemoteComandName}(); #{additionalSelectionMadeRemoteCommands}" />
 
         <ui:include src="itemSelectListObject.xhtml">
             <ui:param name="entityController" value="#{selectionController}" />            
@@ -72,7 +80,10 @@ See LICENSE file.
     </p:dataTable>
 
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade"
-                     update="#{updateTarget}"                      
+                     onstart="PF('loadingDialog').show();"
+                     update="#{updateTarget}"      
+                     immediate="#{immediateUpdate}"
+                     oncomplete="PF('loadingDialog').hide();"
                      >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
                                      value="#{selectionValue}" 
@@ -81,7 +92,10 @@ See LICENSE file.
 
     
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMadeWithReset"
+                     onstart="PF('loadingDialog').show();"
                      update="#{updateTarget}" 
+                     immediate="#{immediateUpdate}"
+                     oncomplete="PF('loadingDialog').hide();"
                     >
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
                                      value="#{selectionValueWithReset}" 

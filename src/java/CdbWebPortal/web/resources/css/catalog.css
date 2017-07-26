@@ -21,16 +21,8 @@ html, body {
     background-color: #F7F7F2;
 }
 
-input, textarea {
-    background: #F7F7F2;
-}
-
 .ui-accordion .ui-accordion-content {
     background: #F7F7F2;    
-}
-
-.ui-panelgrid .ui-panelgrid-cell {
-    background: #F7F7F2;
 }
 
 .ui-panel {

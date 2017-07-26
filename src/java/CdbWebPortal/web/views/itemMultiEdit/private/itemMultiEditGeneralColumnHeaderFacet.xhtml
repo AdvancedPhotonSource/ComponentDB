@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel style="display: grid">
+        <div>
+            <div style="float: left;">
+                <p:commandButton value="Previous Step" 
+                                 rendered="#{entityController.renderPreviousButton}"
+                                 action="#{entityController.goToPrevStep()}"
+                                 icon="fa fa-arrow-left"
+                                 update="@form"/>
+                <ui:include src="../../common/private/commonCreateCancelButton.xhtml" />
+            </div>
+            <div style="float: right;">            
+                <p:commandButton value="Reset All"
+                                 icon="fa fa-refresh"
+                                 rendered="#{entityController.renderResetAllButton}"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide()"
+                                 update="@form:#{entityTypeName}MultiEditItemDataTable"
+                                 action="#{entityController.resetAllItemsBackToOriginalState()}" />                
+                <p:commandButton value="Save All"
+                                 icon="fa fa-floppy-o"
+                                 rendered="#{entityController.renderSaveAllButton}"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide()"
+                                 update="@form:#{entityTypeName}MultiEditItemDataTable"
+                                 action="#{entityController.performSaveOperationsOnItems()}" />
+                <p:commandButton value="Next Step" 
+                                 rendered="#{entityController.renderNextButton}"                                             
+                                 id="#{entityTypeName}createWizardNextStep"
+                                 action="#{entityController.goToNextStep()}"
+                                 icon="fa fa-arrow-right"
+                                 iconPos="right"
+                                 update="@form"/>
+            </div>
+        </div>
+    </p:outputPanel>
+</ui:composition>

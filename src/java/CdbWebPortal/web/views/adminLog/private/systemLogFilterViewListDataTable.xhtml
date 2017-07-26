@@ -16,10 +16,13 @@ See LICENSE file.
         <p:tooltip for="systemLogCustomizeDisplay" value="Customize selection view."/>
     </p:commandButton>
     <br/><br/>
+    
+    <ui:param name="logSettingObject" value="#{logController.settingObject}" />
+    
     <p:dataTable value="#{logController.filterViewListDataModelSystemLogs}"
                  var="logObject"
                  emptyMessage="No log entries found."
-                 rows="#{logController.displayNumberOfItemsPerPage}"
+                 rows="#{logSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true"
                  paginatorAlwaysVisible="false">
         <ui:include src="../../log/private/logListObject.xhtml" >

@@ -28,6 +28,9 @@ Description:
 
 #######################################################################
 # Run command.
-if __name__ == '__main__':
+def runCommand():
     cli = GetUserGroupsCli()
     cli.run()
+
+if __name__ == '__main__':
+    runCommand()

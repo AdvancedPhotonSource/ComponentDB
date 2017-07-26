@@ -32,8 +32,17 @@ class UserRouteDescriptor:
                 'name' : 'getUserGroups',
                 'path' : '%s/userGroups' % contextRoot,
                 'controller' : userGroupController,
-                'action' : 'getUserGroups', 
+                'action' : 'getUserGroups',
                 'method' : ['GET']
+            },
+
+            # Get user group by name
+            {
+                'name': 'getUserGroupByName',
+                'path': '%s/userGroupsByName/:(groupName)' % contextRoot,
+                'controller': userGroupController,
+                'action': 'getUserGroupByName',
+                'method': ['GET']
             },
 
             # Get user info list
@@ -41,7 +50,7 @@ class UserRouteDescriptor:
                 'name' : 'getUsers',
                 'path' : '%s/users' % contextRoot,
                 'controller' : userInfoController,
-                'action' : 'getUsers', 
+                'action' : 'getUsers',
                 'method' : ['GET']
             },
 
@@ -50,7 +59,7 @@ class UserRouteDescriptor:
                 'name' : 'getUserById',
                 'path' : '%s/users/:(id)' % contextRoot,
                 'controller' : userInfoController,
-                'action' : 'getUserById', 
+                'action' : 'getUserById',
                 'method' : ['GET']
             },
 
@@ -59,12 +68,12 @@ class UserRouteDescriptor:
                 'name' : 'getUserByUsername',
                 'path' : '%s/usersByUsername/:(username)' % contextRoot,
                 'controller' : userInfoController,
-                'action' : 'getUserByUsername', 
+                'action' : 'getUserByUsername',
                 'method' : ['GET']
             },
 
         ]
-       
+
         return routes
 
 

@@ -14,6 +14,16 @@ See LICENSE file.
     <!--
         Please define entityController
     -->
+    
+    <ui:define name="enforcedPropertyTypesTab">
+        <ui:param name="entityEnforcedPropertyController"
+                  value="#{entityController.itemEnforcedPropertiesController}" />
+        <p:tab id="enforcedPropertyTypesTab"
+            title="Necesary Properties"
+            rendered="#{entityEnforcedPropertyController.itemHasEditableEnforcedProperties}">
+            <ui:include src="../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationPanel.xhtml" />
+        </p:tab>        
+    </ui:define>
 
     <ui:define name="derivedFromItemWizardTab">
         <p:tab id="derivedFromItemSelectionTab"

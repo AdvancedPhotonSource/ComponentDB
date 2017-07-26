@@ -81,9 +81,16 @@ class EntityInfoHandler(CdbDbEntityHandler):
         dbEntityInfo = EntityInfo(created_by_user_id=createdByUserId, owner_user_id=ownerUserId, owner_user_group_id=ownerGroupId, created_on_date_time=createdOnDateTime, last_modified_by_user_id=lastModifiedByUserId, last_modified_on_date_time=lastModifiedOnDateTime, is_group_writeable=self.toIntegerFromBoolean(isGroupWriteable))
         return dbEntityInfo
 
-    def updateEntityInfo(self, session, dbEntityInfo, lastModifiedUserId):
+    def updateEntityInfo(self, session, dbEntityInfo, lastModifiedUserId, ownerUserId = None, ownerGroupId = None, isGroupWriteable = None):
         dbLastModifiedByUserId = self.userInfoHandler.findUserInfoById(session, lastModifiedUserId)
         lastModifiedOnDateTime = datetime.datetime.now()
         dbEntityInfo.lastModifiedByUserInfo = dbLastModifiedByUserId
         dbEntityInfo.last_modified_on_date_time = lastModifiedOnDateTime
+        if ownerUserId is not None:
+            dbEntityInfo.ownerUserInfo = self.userInfoHandler.getUserInfoById(session, ownerUserId)
+        if ownerGroupId is not None:
+            dbEntityInfo.ownerUserGroup = self.userGroupHandler.getUserGroupById(session, ownerGroupId)
+        if isGroupWriteable is not None:
+            dbEntityInfo.is_group_writeable = self.toIntegerFromBoolean(isGroupWriteable)
+
         return dbEntityInfo

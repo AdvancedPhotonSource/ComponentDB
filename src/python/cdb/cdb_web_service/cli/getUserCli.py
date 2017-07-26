@@ -43,6 +43,9 @@ Description:
 
 #######################################################################
 # Run command.
-if __name__ == '__main__':
+def runCommand():
     cli = GetUserCli()
     cli.run()
+
+if __name__ == '__main__':
+    runCommand()

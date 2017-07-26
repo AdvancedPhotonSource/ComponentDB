@@ -10,12 +10,13 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <ui:define name="renderedColumnParams">
-        <ui:param name="renderIdColumn" value="#{propertyTypeController.selectDisplayId}" />
+        <ui:param name="propertyTypeSettingObject" value="#{propertyTypeController.settingObject}" />
+        <ui:param name="renderIdColumn" value="#{propertyTypeSettingObject.selectDisplayId}" />
         <ui:param name="renderCategoryColumn" value="#{propertyTypeController.selectFilterViewDisplayCategory}" />
-        <ui:param name="renderDefaultUnitsColumn" value="#{propertyTypeController.selectDisplayDefaultUnits}" />
-        <ui:param name="renderDefaultValueColumn" value="#{propertyTypeController.selectDisplayDefaultValue}" />
+        <ui:param name="renderDefaultUnitsColumn" value="#{propertyTypeSettingObject.selectDisplayDefaultUnits}" />
+        <ui:param name="renderDefaultValueColumn" value="#{propertyTypeSettingObject.selectDisplayDefaultValue}" />
         <ui:param name="renderHandlerColumn" value="#{propertyTypeController.selectFilterViewDisplayHandler}" />
-        <ui:param name="renderDescriptionColumn" value="#{propertyTypeController.selectDisplayDescription}" />
+        <ui:param name="renderDescriptionColumn" value="#{propertyTypeSettingObject.selectDisplayDescription}" />
     </ui:define>
     
     <ui:define name="nameValue">

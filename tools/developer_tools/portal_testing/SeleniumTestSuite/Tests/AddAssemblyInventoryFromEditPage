@@ -81,7 +81,7 @@
 <tr>
 	<td>waitForText</td>
 	<td>id=componentEditForm:partsTree:0_0:nodeValueexistingItem</td>
-	<td>element 1 - [Unit: 1]</td>
+	<td>Sample Item - [Unit: 1]</td>
 </tr>
 <!--Set Element 2-->
 <tr>
@@ -119,7 +119,6 @@
 	<td>id=componentEditForm:addInventoryItemDialogWidgetSaveButton</td>
 	<td></td>
 </tr>
-
 </tbody></table>
 </body>
 </html>

@@ -10,7 +10,12 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
     
-    <ui:include src="itemElementListCustomizeDisplayDialogBase.xhtml">
+    <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}" />
+    <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />
+    
+    <ui:include src="#{itemElementSettingObject.displayItemElementSimpleView 
+                       ? 'itemElementListCustomizeDisplayDialogBaseSimple.xhtml' 
+                       : 'itemElementListCustomizeDisplayDialogBase.xhtml'}">
         <ui:param name="entityController" value="#{itemElementController}" />
     </ui:include>
 

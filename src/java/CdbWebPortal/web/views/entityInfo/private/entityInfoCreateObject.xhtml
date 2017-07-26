@@ -11,7 +11,10 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
-    <p:selectOneMenu id="ownerUser" value="#{entityInfoObject.ownerUser}" styleClass="entityDataSelectOne">
+    <p:selectOneMenu id="ownerUser" 
+                     value="#{entityInfoObject.ownerUser}" 
+                     styleClass="entityDataSelectOne"
+                     converter="userInfoConverter">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
         <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
     </p:selectOneMenu>

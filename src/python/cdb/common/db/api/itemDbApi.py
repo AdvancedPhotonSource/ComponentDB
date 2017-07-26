@@ -10,6 +10,7 @@ from cdb.common.db.api.cdbDbApi import CdbDbApi
 from cdb.common.db.impl.entityTypeHandler import EntityTypeHandler
 from cdb.common.db.impl.domainHandler import DomainHandler
 from cdb.common.db.impl.itemHandler import ItemHandler
+from cdb.common.db.impl.permissionHandler import PermissionHandler
 from cdb.common.db.impl.sourceHandler import SourceHandler
 from cdb.common.db.impl.relationshipTypeHandler import RelationshipTypeHandler
 
@@ -25,6 +26,7 @@ class ItemDbApi(CdbDbApi):
         self.itemHandler = ItemHandler()
         self.sourceHandler = SourceHandler()
         self.relationshipTypeHandler = RelationshipTypeHandler()
+        self.permissionHandler = PermissionHandler()
 
     @CdbDbApi.executeQuery
     def getItemsOfDomain(self, domainName, **kwargs):
@@ -52,7 +54,7 @@ class ItemDbApi(CdbDbApi):
         :return: (Boolean) true if user has permissions.
         """
         session = kwargs['session']
-        result = self.itemHandler.verifyPermissionsForWriteToItemElement(session, username, itemElementId=itemElementId)
+        result = self.permissionHandler.verifyPermissionsForWriteToItemElement(session, username, itemElementId=itemElementId)
         return result
 
     @CdbDbApi.executeTransaction
@@ -137,6 +139,18 @@ class ItemDbApi(CdbDbApi):
         dbDomain = self.domainHandler.addDomain(session, name, description)
         return dbDomain.getCdbObject()
 
+    def getDomains(self, **kwargs):
+        """
+        Get a list of all domains.
+
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbDomainList = self.domainHandler.getDomains(session)
+        return self.toCdbObjectList(dbDomainList)
+
+
     @CdbDbApi.executeTransaction
     def addRelationshipTypeHandler(self, name, description, **kwargs):
         """
@@ -193,31 +207,33 @@ class ItemDbApi(CdbDbApi):
         return dbRelationshipType.getCdbObject()
     
     @CdbDbApi.executeTransaction
-    def addItem(self, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description,
-                createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime=None, lastModifiedOnDateTime=None, **kwargs):
+    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+                itemIdentifier1 = None, itemIdentifier2 = None, qrId = None, description = None,
+                isGroupWriteable=True, createdOnDataTime=None, lastModifiedOnDateTime=None,
+                derivedFromItemId=None, entityTypeNames=None, **kwargs):
         """
         Add an item record.
 
         :param domainName:
         :param name:
-        :param derivedFromItemId:
-        :param itemIdentifier1:
-        :param itemIdentifier2:
-        :param entityTypeName:
-        :param qrId:
-        :param description:
         :param createdByUserId:
         :param ownerUserId:
         :param ownerGroupId:
+        :param itemIdentifier1:
+        :param itemIdentifier2:
+        :param qrId:
         :param isGroupWriteable:
         :param createdOnDataTime:
         :param lastModifiedOnDateTime:
+        :param derivedFromItemId:
+        :param entityTypeNames:
         :param kwargs:
         :return: (CdbObject) newly added record.
         """
         session = kwargs['session']
-        dbItem = self.itemHandler.addItem(session, domainName, name, derivedFromItemId, itemIdentifier1, itemIdentifier2, entityTypeName, qrId, description,
-                                          createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
+        dbItem = self.itemHandler.addItem(session, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+                                          itemIdentifier1, itemIdentifier2, qrId, description, isGroupWriteable,
+                                          createdOnDataTime, lastModifiedOnDateTime, derivedFromItemId, entityTypeNames)
         return dbItem.getCdbObject()
 
     @CdbDbApi.executeTransaction
@@ -244,6 +260,31 @@ class ItemDbApi(CdbDbApi):
         dbItemElement = self.itemHandler.addItemElement(session, name, parentItemId, containedItemId, isRequired, description,
                                           createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
         return dbItemElement.getCdbObject()
+
+    @CdbDbApi.executeTransaction
+    def updateItemElement(self, itemElementId, lastModifiedUserId, containedItemId=-1, isRequired=-1,
+                          name=None, description=None, ownerUserId=None, ownerGroupId=None, isGroupWriteable=None, **kwargs):
+        """
+        Update an item element record.
+
+        :param itemElementId:
+        :param lastModifiedUserId:
+        :param containedItemId:
+        :param isRequired:
+        :param name:
+        :param description:
+        :param ownerUserId:
+        :param ownerGroupId:
+        :param isGroupWriteable:
+        :return:
+        """
+
+        session = kwargs['session']
+        dbItemElement = self.itemHandler.updateItemElement(session, itemElementId, lastModifiedUserId, containedItemId,
+                                                           isRequired, name, description, ownerUserId, ownerGroupId, isGroupWriteable)
+
+        return dbItemElement.getCdbObject()
+
 
     @CdbDbApi.executeQuery
     def getItemById(self, itemId, **kwargs):
@@ -521,7 +562,9 @@ class ItemDbApi(CdbDbApi):
         return dbItemElementLog.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItemElementProperty(self, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime = None, **kwargs):
+    def addItemElementProperty(self, itemElementId, propertyTypeName, tag=None, value=None, units=None,
+                               description=None, enteredByUserId=None, isUserWriteable=False, isDynamic=False,
+                               displayValue=None, targetValue=None, enteredOnDateTime = None, **kwargs):
         """
         Add a property to a particular item element.
 
@@ -600,6 +643,19 @@ class ItemDbApi(CdbDbApi):
         """
         session = kwargs['session']
         dbItems = self.itemHandler.getItemsWithPropertyTypeName(session, propertyTypeName, itemDomainName, itemDerivedFromItemId, propertyValueMatch)
+        return self.toCdbObjectList(dbItems)
+
+    @CdbDbApi.executeQuery
+    def getParentItems(self, itemId, **kwargs):
+        """
+        Fetches a list of items who contained the item specified as input.
+
+        :param itemId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbItems = self.itemHandler.getParentItems(session, itemId)
         return self.toCdbObjectList(dbItems)
 
 

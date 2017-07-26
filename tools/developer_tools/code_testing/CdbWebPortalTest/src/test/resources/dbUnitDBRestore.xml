@@ -314,8 +314,10 @@
     <property_type id="8" name="Quality" description="" default_value="" default_units="" is_user_writeable="false" is_dynamic="false" is_internal="false" is_active="true" is_metadata_dynamic="true"/>
     <item_project id="1" name="Sample"/>
     <domain id="1" name="Location" description="Item Domain for managing locations."/>
-    <domain id="2" name="Catalog" description="Item domain for managing catalog items."/>
-    <domain id="3" name="Inventory" description="Item domain for managing inventory items"/>
+    <domain id="2" name="Catalog" description="Item domain for managing catalog items." item_identifier1_label="Model Number" item_identifier2_label="Alternate Name" item_type_label="Function" item_category_label="Technical System"/>
+    <domain id="3" name="Inventory" description="Item domain for managing inventory items" item_identifier1_label="Serial Number" />
+    <domain id="4" name="Cable" description="Item Domain for cable items."/>
+    <domain id="5" name="MAARC" description="Item Domain for managing measurement archive items."/>
     <item_type id="1" name="Building" domain_id="1"/>
     <item_type id="2" name="Area" domain_id="1"/>
     <item_type id="3" name="Room" domain_id="1"/>

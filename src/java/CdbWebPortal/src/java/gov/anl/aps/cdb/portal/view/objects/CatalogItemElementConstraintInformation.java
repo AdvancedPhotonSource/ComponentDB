@@ -5,6 +5,8 @@
 
 package gov.anl.aps.cdb.portal.view.objects;
 
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 
 
@@ -39,8 +41,11 @@ public class CatalogItemElementConstraintInformation extends ItemElementConstrai
     protected boolean isPreventsDelete() {
         boolean result = super.isPreventsDelete(); 
         if (!result) {
-            // If contained item is set it also cannot be deleted. 
-            return isPreventUpdateContainedItem(); 
+            Item item = this.getItemElement().getParentItem();
+                if (item instanceof ItemDomainCatalog == false) {
+                // If contained item is set it also cannot be deleted. 
+                return isPreventUpdateContainedItem(); 
+            }
         }
         return result; 
     }

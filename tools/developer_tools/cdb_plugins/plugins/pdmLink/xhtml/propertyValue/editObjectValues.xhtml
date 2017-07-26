@@ -11,14 +11,19 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
-                               == "pdmLinkPropertyValueEditPanel"}' styleClass="longCellInput">
-        <p:outputPanel id="propertyValueEditValuePanel#{propertyValueObject.viewUUID}">
-            <h:outputText value="#{propertyValueObject.value}" /> 
-            <p:commandButton icon="ui-icon-search"
-                             onclick="showPDMLinkPropertyValueSearchDialog()">
-                <f:setPropertyActionListener target="#{entityController.currentEditPropertyValue}"
-                                             value="#{propertyValueObject}"/>
-            </p:commandButton>
+                               == "pdmLinkPropertyValueEditPanel"}' 
+                   styleClass="longCellInput inlineOutputPanel">
+        <p:outputPanel id="propertyValueEditValuePanel#{propertyValueObject.viewUUID}"
+                       styleClass="inlineOutputPanel">
+            <p:panelGrid columns="2"
+                         styleClass="inlineOutputPanel">
+                <h:outputText value="#{propertyValueObject.value}" /> 
+                <p:commandButton icon="ui-icon-search"
+                                 onclick="showPDMLinkPropertyValueSearchDialog()">
+                    <f:setPropertyActionListener target="#{entityController.currentEditPropertyValue}"
+                                                 value="#{propertyValueObject}"/>
+                </p:commandButton>
+            </p:panelGrid>
         </p:outputPanel>
     </p:outputPanel>    
 

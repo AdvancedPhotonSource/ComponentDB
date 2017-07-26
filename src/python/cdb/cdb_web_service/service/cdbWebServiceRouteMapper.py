@@ -11,6 +11,8 @@ See LICENSE file.
 #
 
 import cherrypy
+
+from cdb.cdb_web_service.service.propertyRouteDescriptor import PropertyRouteDescriptor
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.utility.loggingManager import LoggingManager
 from cdb.cdb_web_service.service.cdbPluginRouteMapper import CdbPluginRouteMapper
@@ -34,6 +36,7 @@ class CdbWebServiceRouteMapper:
         routes += CdbPluginRouteMapper.getPluginRoutes()
         routes += ItemRouteDescriptor.getRoutes()
         routes += LogRouteDescriptor.getRoutes()
+        routes += PropertyRouteDescriptor.getRoutes()
 
         # Add routes to dispatcher. 
         d = cherrypy.dispatch.RoutesDispatcher()

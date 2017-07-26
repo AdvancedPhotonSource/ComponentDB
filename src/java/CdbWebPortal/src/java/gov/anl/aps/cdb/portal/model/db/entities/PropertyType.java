@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -43,6 +44,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findByInternalStatus", query = "SELECT p FROM PropertyType p WHERE p.isInternal = :isInternal ORDER BY p.name"),
     @NamedQuery(name = "PropertyType.findByDescription", query = "SELECT p FROM PropertyType p WHERE p.description = :description"),
     @NamedQuery(name = "PropertyType.findByPropertyTypeHandler", query = "SELECT p FROM PropertyType p WHERE p.propertyTypeHandler = :propertyTypeHandler"),
+    @NamedQuery(name = "PropertyType.findByPropertyTypeCategory", query = "SELECT P FROM PropertyType p INNER JOIN p.propertyTypeCategory ptc WHERE ptc = :propertyTypeCategory"),
     @NamedQuery(name = "PropertyType.findByDefaultValue", query = "SELECT p FROM PropertyType p WHERE p.defaultValue = :defaultValue"),
     @NamedQuery(name = "PropertyType.findByDefaultUnits", query = "SELECT p FROM PropertyType p WHERE p.defaultUnits = :defaultUnits"),
     @NamedQuery(name = "PropertyType.findByIsUserWriteable", query = "SELECT p FROM PropertyType p WHERE p.isUserWriteable = :isUserWriteable"),
@@ -62,6 +64,9 @@ public class PropertyType extends CdbEntity implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
+    @Size(max = 256)
+    @Column(name = "prompt_description")
+    private String promptDescription;
     @Size(max = 64)
     @Column(name = "default_value")
     private String defaultValue;
@@ -77,12 +82,12 @@ public class PropertyType extends CdbEntity implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
     @Column(name = "is_metadata_dynamic")
-    private Boolean isMetadataDynamic;
+    private Boolean isMetadataDynamic;   
     @JoinTable(name = "allowed_property_domain", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<Domain> domainList;
+    private List<Domain> allowedDomainList;
     @JoinTable(name = "allowed_entity_type", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
@@ -100,6 +105,8 @@ public class PropertyType extends CdbEntity implements Serializable {
     private List<AllowedPropertyValue> allowedPropertyValueList;
 
     private transient DisplayType displayType = null;
+    
+    private transient String allowedDomainString = null; 
 
     public PropertyType() {
     }
@@ -135,6 +142,14 @@ public class PropertyType extends CdbEntity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPromptDescription() {
+        return promptDescription;
+    }
+
+    public void setPromptDescription(String promptDescription) {
+        this.promptDescription = promptDescription;
     }
 
     public String getDefaultValue() {
@@ -194,18 +209,26 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
-    public List<Domain> getDomainList() {
-        return domainList;
+    public List<Domain> getAllowedDomainList() {
+        return allowedDomainList;
     }
 
-    public void setDomainList(List<Domain> domainList) {
-        this.domainList = domainList;
+    public void setAllowedDomainList(List<Domain> allowedDomainList) {
+        allowedDomainString = null; 
+        this.allowedDomainList = allowedDomainList;
+    }
+
+    public String getAllowedDomainString() {
+        if (allowedDomainString == null) {
+            allowedDomainString = StringUtility.getStringifyCdbList(allowedDomainList);
+        }
+        return allowedDomainString;
     }
     
     @XmlTransient
     public List<EntityType> getEntityTypeList() {
         return entityTypeList;
-    }
+    }   
 
     public void setEntityTypeList(List<EntityType> entityTypeList) {
         this.entityTypeList = entityTypeList;

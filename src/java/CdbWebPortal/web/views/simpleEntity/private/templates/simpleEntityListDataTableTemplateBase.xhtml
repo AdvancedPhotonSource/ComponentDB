@@ -22,13 +22,15 @@ See LICENSE file.
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <p:dataTable id="#{entityTypeName}ListDataTable" 
                  widgetVar="#{entityTypeName}ListDataTableWidget"
                  var="simpleEntityListObject" 
                  value="#{simpleEntityListDataTableValue}" 
                  filteredValue="#{entityController.filteredObjectList}"
-                 rows="#{entityController.displayNumberOfItemsPerPage}" 
+                 rows="#{entitySettingObject.displayNumberOfItemsPerPage}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No #{displayEntityTypeName}s found.">

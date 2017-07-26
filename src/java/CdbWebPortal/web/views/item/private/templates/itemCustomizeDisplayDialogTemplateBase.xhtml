@@ -12,6 +12,7 @@ See LICENSE file.
                 template="../../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml">
 
     <ui:define name="customizeDisplayDialogConent">
+        <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
         <p:accordionPanel multiple="false"
                           id="domainEntityCustomizeDisplayDialogAccordionPanel">
             <ui:insert name="entitySpecificCustomizeOptionsTab"/>
@@ -28,9 +29,11 @@ See LICENSE file.
 
         </p:accordionPanel>
 
-        <p:panel>
-            <h:outputText value="* Disabling this setting may improve overall performance of the list" />
-        </p:panel>
+        <ui:insert name="additionalInformationAboutAllConfigurations">
+            <p:panel>            
+                <h:outputText value="* Disabling this setting may improve overall performance of the list" />            
+            </p:panel>
+        </ui:insert>
     </ui:define>
     
 </ui:composition>

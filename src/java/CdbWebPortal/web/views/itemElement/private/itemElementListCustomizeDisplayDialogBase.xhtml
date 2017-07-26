@@ -11,25 +11,20 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 template="../../item/private/templates/itemDomainEntityCustomizeDisplayDialogTemplate.xhtml">
     
-    <ui:define name="domainEntitySpecificColumns">
-        <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemIdentifier1" 
-                                 rendered="#{currentItemController.entityDisplayItemIdentifier1}"
-                                 value="#{currentItemController.displayItemElementListItemIdentifier1}"/>
-        <h:outputLabel for="#{entityTypeName}DisplayItemElementItemIdentifier1" 
-                       rendered="#{currentItemController.entityDisplayItemIdentifier1}"
-                       value="Display #{currentItemController.itemIdentifier1Title}"/>
+    <ui:define name="domainEntitySpecificColumns">                
+        <ui:include src="templateDefaults/customizeDisplayDialog/displayItemElementItemIdentifier1.xhtml" />        
     </ui:define>
     
     <ui:define name="domainEntitySpecificRowExpansion">
-        <p:selectBooleanCheckbox id="designElementDisplayBillOfMaterialsActionColumn" value="#{itemElementController.displayBillOfMaterialsActionColumn}"/>  
+        <p:selectBooleanCheckbox id="designElementDisplayBillOfMaterialsActionColumn" value="#{itemElementSettingObject.displayBillOfMaterialsActionColumn}"/>  
         <h:outputLabel for="designElementDisplayBillOfMaterialsActionColumn" value="Display BOM Action Column in Flat Table Expansion" styleClass="dialogDataLabel"/>
     </ui:define>
 
     <ui:define name="domainEntitySpecificOthers">
-        <p:selectBooleanCheckbox id="designElementDisplayFlatTableView" value="#{itemElementController.displayFlatTableView}"/>  
+        <p:selectBooleanCheckbox id="designElementDisplayFlatTableView" value="#{itemElementSettingObject.displayFlatTableView}"/>  
         <h:outputLabel for="designElementDisplayFlatTableView" value="Display Flat Table View*" styleClass="dialogDataLabel"/>
 
-        <p:selectBooleanCheckbox id="designElementDisplayRowColor" value="#{itemElementController.displayItemElementRowColor}"/>  
+        <p:selectBooleanCheckbox id="designElementDisplayRowColor" value="#{itemElementSettingObject.displayItemElementRowColor}"/>  
         <h:outputLabel for="designElementDisplayRowColor" value="Display Row Color" styleClass="dialogDataLabel"/>
     </ui:define>
 
@@ -40,10 +35,10 @@ See LICENSE file.
     <ui:define name="domainEntityExtraTabs">
         <p:tab title="Sorting">
             <p:panelGrid columns="2">
-                <p:selectBooleanCheckbox id="designElementDisplaySortOrder" value="#{itemElementController.displaySortOrder}"/>  
+                <p:selectBooleanCheckbox id="designElementDisplaySortOrder" value="#{itemElementSettingObject.displaySortOrder}"/>  
                 <h:outputLabel for="designElementDisplaySortOrder" value="Display Sort Order" styleClass="dialogDataLabel"/>
 
-                <p:selectOneMenu id="#{entityTypeName}SortByPropertyType" value="#{itemElementController.sortByPropertyTypeId}" 
+                <p:selectOneMenu id="#{entityTypeName}SortByPropertyType" value="#{itemElementSettingObject.sortByPropertyTypeId}" 
                                  styleClass="entityDataSelectOne">
                     <f:selectItem itemLabel="None: Default Sort Order" noSelectionOption="true"/>
                     <f:selectItems var="sortPropertyType" value="#{propertyTypeController.availableItems}" 
@@ -52,6 +47,12 @@ See LICENSE file.
                 <h:outputLabel for="#{entityTypeName}SortByPropertyType" value="Sort By Property Type" styleClass="dialogDataLabel"/>  
             </p:panelGrid>
         </p:tab>
+    </ui:define>
+    
+    <ui:define name="customizeDisplayDialogAdditionalFooterContent">
+        <ui:include src="templateDefaults/customizeDisplayDialog/toggleSimpleComplexElementsListCommandButton.xhtml" >
+            <ui:param name="commandButtonText" value="Simple View" />
+        </ui:include>
     </ui:define>
 
 </ui:composition>

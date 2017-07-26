@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -50,8 +51,22 @@ public class Domain extends CdbEntity implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
+    @Size(max = 32)
+    @Column(name = "item_identifier1_label")
+    private String itemIdentifier1Label;    
+    @Size(max = 32)
+    @Column(name = "item_identifier2_label")
+    private String itemIdentifier2Label;
+    @Size(max = 32)
+    @Column(name = "item_type_label")
+    private String itemTypeLabel;
+    @Size(max = 32)
+    @Column(name = "item_category_label")
+    private String itemCategoryLabel;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "domain")
-    private List<Item> itemList;
+    private List<Item> itemList;    
+    @ManyToMany(mappedBy = "allowedDomainList")
+    private List<PropertyType> propertyTypeList;    
     @OneToMany(mappedBy = "domain")
     @OrderBy("name ASC")
     private List<ItemType> itemTypeList;
@@ -62,7 +77,7 @@ public class Domain extends CdbEntity implements Serializable {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<EntityType> allowedEntityTypeList;
+    private List<EntityType> allowedEntityTypeList;        
 
     public Domain() {
     }
@@ -100,6 +115,30 @@ public class Domain extends CdbEntity implements Serializable {
         this.description = description;
     }
 
+    public String getItemIdentifier1Label() {
+        return itemIdentifier1Label;
+    }
+
+    public String getItemIdentifier2Label() {
+        return itemIdentifier2Label;
+    }
+
+    public String getItemTypeLabel() {
+        return itemTypeLabel;
+    }
+
+    public void setItemTypeLabel(String itemTypeLabel) {
+        this.itemTypeLabel = itemTypeLabel;
+    }
+
+    public String getItemCategoryLabel() {
+        return itemCategoryLabel;
+    }
+
+    public void setItemCategoryLabel(String itemCategoryLabel) {
+        this.itemCategoryLabel = itemCategoryLabel;
+    }
+
     @XmlTransient
     public List<Item> getItemList() {
         return itemList;
@@ -116,6 +155,15 @@ public class Domain extends CdbEntity implements Serializable {
 
     public void setItemTypeList(List<ItemType> itemTypeList) {
         this.itemTypeList = itemTypeList;
+    }
+
+    @XmlTransient
+    public List<PropertyType> getPropertyTypeList() {
+        return propertyTypeList;
+    }
+
+    public void setPropertyTypeList(List<PropertyType> propertyTypeList) {
+        this.propertyTypeList = propertyTypeList;
     }
 
     @XmlTransient
@@ -158,7 +206,7 @@ public class Domain extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.Domain[ id=" + id + " ]";
+        return name; 
     }
 
 }

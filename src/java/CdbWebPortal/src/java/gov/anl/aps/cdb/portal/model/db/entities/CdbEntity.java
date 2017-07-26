@@ -15,6 +15,9 @@ import java.util.regex.Pattern;
 public class CdbEntity implements Serializable, Cloneable {
     
     private transient String viewUUID;
+    
+    private transient String persitanceErrorMessage = null; 
+    
     protected static final long serialVersionUID = 1L;
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -39,6 +42,14 @@ public class CdbEntity implements Serializable, Cloneable {
             viewUUID = UUID.randomUUID().toString().replaceAll("[-]", "");
         }
         return viewUUID;
+    }
+
+    public String getPersitanceErrorMessage() {
+        return persitanceErrorMessage;
+    }
+
+    public void setPersitanceErrorMessage(String persitanceErrorMessage) {
+        this.persitanceErrorMessage = persitanceErrorMessage;
     }
     
 }

@@ -8,28 +8,31 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="sourceSettingObject" value="#{sourceController.settingObject}" />
 
     <p:dataTable id="sourceListDataTable" 
                  widgetVar="sourceListDataTableWidget" 
                  var="sourceObject" 
                  value="#{sourceController.listDataModel}" 
                  filteredValue="#{sourceController.filteredObjectList}"
-                 rows="#{sourceController.displayNumberOfItemsPerPage}"
+                 rows="#{sourceSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No sources found.">
 
         <p:column sortBy="#{sourceObject.id}" headerText="Id"
                   filterBy="#{sourceObject.id}" filterMatchMode="contains"
-                  filterValue="#{sourceController.filterById}"
+                  filterValue="#{sourceSettingObject.filterById}"
                   filterStyleClass="shortFilterBox"
-                  rendered="#{sourceController.displayId}">
+                  rendered="#{sourceSettingObject.displayId}">
             <h:outputText value="#{sourceObject.id}"/>
         </p:column>
 
         <p:column sortBy="#{sourceObject.name}" headerText="Name" 
                   filterBy="#{sourceObject.name}" filterMatchMode="contains"
-                  filterValue="#{sourceController.filterByName}">
+                  filterValue="#{sourceSettingObject.filterByName}"
+                  exportFunction="#{sourceObject.getName()}">
             <h:outputLink value="view.xhtml?id=#{sourceObject.id}" title="View source details">
                 <h:outputText value="#{sourceObject.name}"/>
             </h:outputLink>        
@@ -37,22 +40,22 @@ See LICENSE file.
 
         <p:column sortBy="#{sourceObject.description}" headerText="Description" 
                   filterBy="#{sourceObject.description}" filterMatchMode="contains"
-                  filterValue="#{sourceController.filterByDescription}"
-                  rendered="#{sourceController.displayDescription}">
+                  filterValue="#{sourceSettingObject.filterByDescription}"
+                  rendered="#{sourceSettingObject.displayDescription}">
             <h:outputText value="#{sourceObject.description}"/>
         </p:column>
 
         <p:column sortBy="#{sourceObject.contactInfo}" headerText="Contact Info" 
                   filterBy="#{sourceObject.contactInfo}" filterMatchMode="contains"
-                  filterValue="#{sourceController.filterByContactInfo}"
-                  rendered="#{sourceController.displayContactInfo}">
+                  filterValue="#{sourceSettingObject.filterByContactInfo}"
+                  rendered="#{sourceSettingObject.displayContactInfo}">
             <h:outputText value="#{sourceObject.contactInfo}"/>
         </p:column>
 
         <p:column sortBy="#{sourceObject.url}" headerText="URL" 
                   filterBy="#{sourceObject.url}" filterMatchMode="contains"
-                  filterValue="#{sourceController.filterByUrl}"
-                  rendered="#{sourceController.displayUrl}">
+                  filterValue="#{sourceSettingObject.filterByUrl}"
+                  rendered="#{sourceSettingObject.displayUrl}">
             <h:outputLink value="#{sourceObject.targetUrl}" target="_page_#{sourceObject.url}">
                 <h:outputText value="#{sourceObject.displayUrl}"/>
             </h:outputLink>

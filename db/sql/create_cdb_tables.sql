@@ -306,6 +306,10 @@ CREATE TABLE `domain` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `item_identifier1_label` varchar(32) DEFAULT NULL,
+  `item_identifier2_label` varchar(32) DEFAULT NULL, 
+  `item_type_label` varchar(32) DEFAULT NULL,
+  `item_category_label` varchar(32) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `domain_u1` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -317,7 +321,7 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) unsigned NOT NULL,
-  `name` varchar(64) NULL,
+  `name` varchar(64) NOT NULL,
   `derived_from_item_id` int(11) unsigned DEFAULT NULL,
   `item_identifier1` varchar(32) DEFAULT NULL,
   `item_identifier2` varchar(32) DEFAULT NULL,
@@ -628,12 +632,12 @@ CREATE TABLE `connector_type` (
 DROP TABLE IF EXISTS `connector`;
 CREATE TABLE `connector` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
+  `name` varchar(64) NULL,
   `description` varchar(256) DEFAULT NULL,
+  `is_male` bool NOT NULL DEFAULT 0,
   `connector_type_id` int(11) unsigned DEFAULT NULL,
   `resource_type_id` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `connector_u1` (`name`),
   KEY `connector_k1` (`connector_type_id`),
   KEY `connector_k2` (`resource_type_id`),
   CONSTRAINT `connector_fk1` FOREIGN KEY (`connector_type_id`) REFERENCES `connector_type` (`id`) ON UPDATE CASCADE,
@@ -821,6 +825,7 @@ CREATE TABLE `property_type` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` varchar(256) DEFAULT NULL,
+  `prompt_description` varchar(256) DEFAULT NULL, 
   `property_type_category_id` int(11) unsigned DEFAULT NULL,
   `property_type_handler_id` int(11) unsigned DEFAULT NULL,
   `default_value` varchar(64) DEFAULT NULL,

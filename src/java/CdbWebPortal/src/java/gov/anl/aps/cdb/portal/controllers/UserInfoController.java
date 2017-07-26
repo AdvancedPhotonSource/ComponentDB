@@ -8,9 +8,10 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.controllers.settings.UserInfoSettings;
+import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRolePK;
@@ -21,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -31,50 +31,20 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import org.apache.log4j.Logger;
-import org.primefaces.component.datatable.DataTable;
 
 @Named("userInfoController")
 @SessionScoped
-public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFacade> implements Serializable {
-
-    /*
-     * Controller specific settings
-     */
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
-    private static final String DisplayIdSettingTypeKey = "UserInfo.List.Display.Id";
-    private static final String DisplayDescriptionSettingTypeKey = "UserInfo.List.Display.Description";
-    private static final String DisplayEmailSettingTypeKey = "UserInfo.List.Display.Email";
-    private static final String DisplayFirstNameSettingTypeKey = "UserInfo.List.Display.FirstName";
-    private static final String DisplayGroupsSettingTypeKey = "UserInfo.List.Display.Groups";
-    private static final String DisplayLastNameSettingTypeKey = "UserInfo.List.Display.LastName";
-    private static final String DisplayMiddleNameSettingTypeKey = "UserInfo.List.Display.MiddleName";
-    private static final String FilterByDescriptionSettingTypeKey = "UserInfo.List.FilterBy.Description";
-    private static final String FilterByEmailSettingTypeKey = "UserInfo.List.FilterBy.Email";
-    private static final String FilterByFirstNameSettingTypeKey = "UserInfo.List.FilterBy.FirstName";
-    private static final String FilterByGroupsSettingTypeKey = "UserInfo.List.FilterBy.Groups";
-    private static final String FilterByLastNameSettingTypeKey = "UserInfo.List.FilterBy.LastName";
-    private static final String FilterByMiddleNameSettingTypeKey = "UserInfo.List.FilterBy.MiddleName";
-    private static final String FilterByUsernameSettingTypeKey = "UserInfo.List.FilterBy.Username";
+public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {   
 
     private static final Logger logger = Logger.getLogger(UserInfoController.class.getName());
 
     @EJB
     private UserInfoFacade userInfoFacade;
     
-    private String passwordEntry = null;
-
-    private Boolean displayEmail = null;
-    private Boolean displayFirstName = null;
-    private Boolean displayGroups = null;
-    private Boolean displayLastName = null;
-    private Boolean displayMiddleName = null;
-
-    private String filterByEmail = null;
-    private String filterByFirstName = null;
-    private String filterByGroups = null;
-    private String filterByLastName = null;
-    private String filterByMiddleName = null;
-    private String filterByUsername = null;
+    @EJB
+    private SettingTypeFacade settingTypeFacade; 
+    
+    private String passwordEntry = null;   
 
     private Integer loadedDataModelHashCode = null;
 
@@ -127,7 +97,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     @Override
     public String prepareEdit(UserInfo userInfo) {
         ArrayList<UserSetting> userSettingList = new ArrayList<>();
-        for (SettingType settingType : getSettingTypeList()) {
+        for (SettingType settingType : settingTypeFacade.findAll()) {
             UserSetting setting = (UserSetting) userInfo.getSetting(settingType.getName());
             if (setting == null) {
                 setting = new UserSetting();
@@ -268,106 +238,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         }
         prepareEdit(sessionUser);
         return viewPath + "?faces-redirect=true";
-    }
-
-    @Override
-    public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
-        if (settingTypeMap == null) {
-            return;
-        }
-
-        displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
-        displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-        displayEmail = Boolean.parseBoolean(settingTypeMap.get(DisplayEmailSettingTypeKey).getDefaultValue());
-        displayFirstName = Boolean.parseBoolean(settingTypeMap.get(DisplayFirstNameSettingTypeKey).getDefaultValue());
-        displayGroups = Boolean.parseBoolean(settingTypeMap.get(DisplayGroupsSettingTypeKey).getDefaultValue());
-        displayLastName = Boolean.parseBoolean(settingTypeMap.get(DisplayLastNameSettingTypeKey).getDefaultValue());
-        displayMiddleName = Boolean.parseBoolean(settingTypeMap.get(DisplayMiddleNameSettingTypeKey).getDefaultValue());
-
-        filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
-        filterByEmail = settingTypeMap.get(FilterByEmailSettingTypeKey).getDefaultValue();
-        filterByFirstName = settingTypeMap.get(FilterByFirstNameSettingTypeKey).getDefaultValue();
-        filterByGroups = settingTypeMap.get(FilterByGroupsSettingTypeKey).getDefaultValue();
-        filterByLastName = settingTypeMap.get(FilterByLastNameSettingTypeKey).getDefaultValue();
-        filterByMiddleName = settingTypeMap.get(FilterByMiddleNameSettingTypeKey).getDefaultValue();
-        filterByUsername = settingTypeMap.get(FilterByUsernameSettingTypeKey).getDefaultValue();
-    }
-
-    @Override
-    public void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayEmail = settingEntity.getSettingValueAsBoolean(DisplayEmailSettingTypeKey, displayEmail);
-        displayFirstName = settingEntity.getSettingValueAsBoolean(DisplayFirstNameSettingTypeKey, displayFirstName);
-        displayGroups = settingEntity.getSettingValueAsBoolean(DisplayGroupsSettingTypeKey, displayGroups);
-        displayLastName = settingEntity.getSettingValueAsBoolean(DisplayLastNameSettingTypeKey, displayLastName);
-        displayMiddleName = settingEntity.getSettingValueAsBoolean(DisplayMiddleNameSettingTypeKey, displayMiddleName);
-
-        filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
-        filterByEmail = settingEntity.getSettingValueAsString(FilterByEmailSettingTypeKey, filterByEmail);
-        filterByFirstName = settingEntity.getSettingValueAsString(FilterByFirstNameSettingTypeKey, filterByFirstName);
-        filterByGroups = settingEntity.getSettingValueAsString(FilterByGroupsSettingTypeKey, filterByGroups);
-        filterByLastName = settingEntity.getSettingValueAsString(FilterByLastNameSettingTypeKey, filterByLastName);
-        filterByMiddleName = settingEntity.getSettingValueAsString(FilterByMiddleNameSettingTypeKey, filterByMiddleName);
-        filterByUsername = settingEntity.getSettingValueAsString(FilterByUsernameSettingTypeKey, filterByUsername);
-    }
-
-    @Override
-    public void updateListSettingsFromListDataTable(DataTable dataTable) {
-        super.updateListSettingsFromListDataTable(dataTable);
-        if (dataTable == null) {
-            return;
-        }
-
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByEmail = (String) filters.get("email");
-        filterByFirstName = (String) filters.get("firstName");
-        filterByGroups = (String) filters.get("groups");
-        filterByLastName = (String) filters.get("lastName");
-        filterByMiddleName = (String) filters.get("middleName");
-        filterByUsername = (String) filters.get("username");
-    }
-
-    @Override
-    public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            return;
-        }
-
-        settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
-        settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        settingEntity.setSettingValue(DisplayEmailSettingTypeKey, displayEmail);
-        settingEntity.setSettingValue(DisplayFirstNameSettingTypeKey, displayFirstName);
-        settingEntity.setSettingValue(DisplayGroupsSettingTypeKey, displayGroups);
-        settingEntity.setSettingValue(DisplayLastNameSettingTypeKey, displayLastName);
-        settingEntity.setSettingValue(DisplayMiddleNameSettingTypeKey, displayMiddleName);
-
-        settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
-        settingEntity.setSettingValue(FilterByEmailSettingTypeKey, filterByEmail);
-        settingEntity.setSettingValue(FilterByFirstNameSettingTypeKey, filterByFirstName);
-        settingEntity.setSettingValue(FilterByGroupsSettingTypeKey, filterByGroups);
-        settingEntity.setSettingValue(FilterByLastNameSettingTypeKey, filterByLastName);
-        settingEntity.setSettingValue(FilterByMiddleNameSettingTypeKey, filterByMiddleName);
-        settingEntity.setSettingValue(FilterByUsernameSettingTypeKey, filterByUsername);
-    }
-
-    @Override
-    public void clearListFilters() {
-        super.clearListFilters();
-        filterByEmail = null;
-        filterByFirstName = null;
-        filterByGroups = null;
-        filterByLastName = null;
-        filterByMiddleName = null;
-        filterByUsername = null;
-    }
+    }    
 
     @Override
     public DataModel getListDataModel() {
@@ -385,95 +256,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
 
         return userInfoDataModel;
     }
-
-    public Boolean getDisplayEmail() {
-        return displayEmail;
-    }
-
-    public void setDisplayEmail(Boolean displayEmail) {
-        this.displayEmail = displayEmail;
-    }
-
-    public Boolean getDisplayFirstName() {
-        return displayFirstName;
-    }
-
-    public void setDisplayFirstName(Boolean displayFirstName) {
-        this.displayFirstName = displayFirstName;
-    }
-
-    public Boolean getDisplayGroups() {
-        return displayGroups;
-    }
-
-    public void setDisplayGroups(Boolean displayGroups) {
-        this.displayGroups = displayGroups;
-    }
-
-    public Boolean getDisplayLastName() {
-        return displayLastName;
-    }
-
-    public void setDisplayLastName(Boolean displayLastName) {
-        this.displayLastName = displayLastName;
-    }
-
-    public Boolean getDisplayMiddleName() {
-        return displayMiddleName;
-    }
-
-    public void setDisplayMiddleName(Boolean displayMiddleName) {
-        this.displayMiddleName = displayMiddleName;
-    }
-
-    public String getFilterByEmail() {
-        return filterByEmail;
-    }
-
-    public void setFilterByEmail(String filterByEmail) {
-        this.filterByEmail = filterByEmail;
-    }
-
-    public String getFilterByFirstName() {
-        return filterByFirstName;
-    }
-
-    public void setFilterByFirstName(String filterByFirstName) {
-        this.filterByFirstName = filterByFirstName;
-    }
-
-    public String getFilterByGroups() {
-        return filterByGroups;
-    }
-
-    public void setFilterByGroups(String filterByGroups) {
-        this.filterByGroups = filterByGroups;
-    }
-
-    public String getFilterByLastName() {
-        return filterByLastName;
-    }
-
-    public void setFilterByLastName(String filterByLastName) {
-        this.filterByLastName = filterByLastName;
-    }
-
-    public String getFilterByMiddleName() {
-        return filterByMiddleName;
-    }
-
-    public void setFilterByMiddleName(String filterByMiddleName) {
-        this.filterByMiddleName = filterByMiddleName;
-    }
-
-    public String getFilterByUsername() {
-        return filterByUsername;
-    }
-
-    public void setFilterByUsername(String filterByUsername) {
-        this.filterByUsername = filterByUsername;
-    }
-
+    
     @Override
     public boolean entityHasGroups() {
         return true;
@@ -487,10 +270,15 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         this.passwordEntry = passwordEntry;
     }
 
+    @Override
+    protected UserInfoSettings createNewSettingObject() {
+        return new UserInfoSettings(this);
+    }
+
     /**
      * Converter class for user info objects.
      */
-    @FacesConverter(forClass = UserInfo.class)
+    @FacesConverter(value = "userInfoConverter", forClass = UserInfo.class)
     public static class UserInfoControllerConverter implements Converter {
 
         @Override

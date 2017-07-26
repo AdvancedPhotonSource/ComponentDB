@@ -34,6 +34,8 @@ See LICENSE file.
                                                   : 'ListCustomizeDisplayDialog'}" />
     
     <ui:param name="customizeDisplayDialogId" value="#{customizeDisplayEntityTypeName}#{viewName}#{customizeDialogName}" />
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <p:dialog id="#{customizeDisplayDialogId}"
               widgetVar="#{customizeDisplayDialogId}Widget" 
@@ -83,14 +85,16 @@ See LICENSE file.
             <p:commandButton value="Save" alt="Save"
                              id="#{customizeDisplayDialogId}SaveButton"
                              action="#{settingController.saveSettingListForSettingEntity()}"
-                             actionListener="#{entityController.saveListSettingsForSessionSettingEntityActionListener}"
+                             actionListener="#{entitySettingObject.saveListSettingsForSessionSettingEntityActionListener}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
                              update="#{customizeDisplayUpdateTarget}"
                              ajax="#{customizeDisplayRunSaveWithAjax}"
                              rendered="#{settingController.displayCurrentSettingOptions 
                                          and savable 
                                          and settingController.sessionUserHaveSettingsWritePermissions}"
-                             icon="ui-icon-check"/>
+                             icon="ui-icon-disk"/>
+            
+            <ui:insert name="customizeDisplayDialogAdditionalFooterContent" />
         </f:facet>
     </p:dialog>
 

@@ -28,4 +28,7 @@ class UserGroupControllerImpl(CdbObjectManager):
     def getUserGroups(self):
         return self.userDbApi.getUserGroups()
 
+    def getUserGroupByName(self, groupName):
+        return self.userDbApi.getUserGroupByName(groupName)
+
 

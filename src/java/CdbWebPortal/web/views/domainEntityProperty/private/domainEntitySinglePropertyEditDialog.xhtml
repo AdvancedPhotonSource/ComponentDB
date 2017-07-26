@@ -11,7 +11,31 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="propertyValueObject" value="#{entityController.currentEditPropertyValue}" /> 
+    <ui:param name="useDefaultControllerPropertyValueObject" 
+              value="#{useDefaultControllerPropertyValueObject != null 
+                       ? useDefaultControllerPropertyValueObject 
+                       : true}" />
+    <ui:param name="propertyValueObject" value="#{useDefaultControllerPropertyValueObject 
+                                                  ? entityController.currentEditPropertyValue
+                                                  : propertyValueObject}" /> 
+    
+    <ui:param name="submitDialogWithAjax" value="#{submitDialogWithAjax != null 
+                                                   ? submitDialogWithAjax 
+                                                   : false}" />
+    
+    <ui:param name="renderPropertyDeleteButton"
+              value="#{renderPropertyDeleteButton != null 
+                       ? renderPropertyDeleteButton 
+                       : propertyValueObject.id != null and isEntityWriteable}" />
+    
+    <ui:param name="includePropertyEditSupport" value="#{includePropertyEditSupport != null 
+                                                         ? includePropertyEditSupport 
+                                                         : true }" />
+    
+    <ui:param name="singlePropertyEditDialogUpdateTarget" 
+              value="#{singlePropertyEditDialogUpdateTarget != null 
+                       ? singlePropertyEditDialogUpdateTarget
+                       : '@form'}" />
 
     <p:dialog id="#{entityTypeName}SinglePropertyEditDialog"
               widgetVar="#{entityTypeName}SinglePropertyEditDialogWidget" 
@@ -56,34 +80,42 @@ See LICENSE file.
                 <p:commandButton value="Save" alt="Save" 
                                  id="#{entityTypeName}SinglePropertyEditSaveButton"
                                  action="#{entityController.updateEditProperty()}"
-                                 ajax="false"
-                                 update="@form"
-                                 oncomplete="PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
-                                 icon="ui-icon-disk"/>
+                                 ajax="#{submitDialogWithAjax}"
+                                 update="#{singlePropertyEditDialogUpdateTarget}"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide(); 
+                                             PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 icon="fa fa-floppy-o"/>
 
                 <p:commandButton value="Delete" alt="Delete" 
                                  id="#{entityTypeName}SinglePropertyEditDeleteButton"
                                  action="#{entityController.deleteCurrentEditPropertyValue()}"
-                                 actionListener="#{propertyValueController.destroy(propertyValueObject)}"
-                                 update="@form"
-                                 ajax="false"
-                                 rendered="#{propertyValueObject.id != null and isEntityWriteable}"
-                                 oncomplete="PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
-                                 icon="ui-icon-trash"/>
+                                 update="#{singlePropertyEditDialogUpdateTarget}"
+                                 ajax="#{submitDialogWithAjax}"
+                                 rendered="#{renderPropertyDeleteButton}"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide(); 
+                                             PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 icon="fa fa-icon-warning fa-trash"/>
 
                 <p:commandButton value="Close" 
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide(); 
+                                             PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
                                  id="#{entityTypeName}SinglePropertyEditCoseButton"
-                                 icon="ui-icon-arrowreturnthick-1-w"
-                                 ajax="false"
-                                 action="#{entityController.removeCurrentEditPropertyValue()}"
-                                 update="@form"
+                                 icon="fa fa-window-close-o"
+                                 ajax="#{submitDialogWithAjax}"
+                                 action="#{entityController.restoreCurrentEditPropertyValueToOriginalState()}"
+                                 update="#{singlePropertyEditDialogUpdateTarget}"
                                  />
             </p:outputPanel>
         </f:facet>
 
     </p:dialog>
 
-    <ui:include src="../../propertyValue/private/propertyValueEditObjectValueSupport.xhtml" />
+    <ui:include src="#{includePropertyEditSupport 
+                       ? '../../propertyValue/private/propertyValueEditObjectValueSupport.xhtml' 
+                       : '../../common/private/commonEmptyPage.xhtml'}" />
 
     <p:remoteCommand name="show#{entityTypeName}EntitySinglePropertyController"
                      update="@form"

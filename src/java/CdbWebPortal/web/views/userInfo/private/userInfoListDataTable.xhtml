@@ -8,28 +8,31 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="userInfoSettingObject" value="#{userInfoController.settingObject}" />
 
     <p:dataTable id="userInfoListDataTable"                              
                  widgetVar="userInfoListDataTableWidget" 
                  var="userInfoObject" 
                  value="#{userInfoController.listDataModel}" 
                  filteredValue="#{userInfoController.filteredObjectList}"
-                 rows="#{userInfoController.displayNumberOfItemsPerPage}"
+                 rows="#{userInfoSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  emptyMessage="No users found.">
 
         <p:column sortBy="#{userInfoObject.id}" headerText="Id"
                   filterBy="#{userInfoObject.id}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterById}"
+                  filterValue="#{userInfoSettingObject.filterById}"
                   filterStyleClass="shortFilterBox"
-                  rendered="#{userInfoController.displayId}">
+                  rendered="#{userInfoSettingObject.displayId}">
             <h:outputText value="#{userInfoObject.id}"/>
         </p:column>
 
         <p:column sortBy="#{userInfoObject.username}" headerText="Username" 
                   filterBy="#{userInfoObject.username}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByUsername}">
+                  filterValue="#{userInfoSettingObject.filterByUsername}"
+                  exportFunction="#{userInfoObject.getUsername()}">
             <h:outputLink value="view.xhtml?id=#{userInfoObject.id}" title="View user details">
                 <h:outputText value="#{userInfoObject.username}"/>
             </h:outputLink>        
@@ -37,43 +40,43 @@ See LICENSE file.
 
         <p:column sortBy="#{userInfoObject.userGroupList.toString()}" headerText="Groups" 
                   filterBy="#{userInfoObject.userGroupList}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByGroups}"
-                  rendered="#{userInfoController.displayGroups}">
+                  filterValue="#{userInfoSettingObject.filterByGroups}"
+                  rendered="#{userInfoSettingObject.displayGroups}">
             <h:outputText value="#{userInfoObject.userGroupListString}"/>
         </p:column>
 
         <p:column sortBy="#{userInfoObject.lastName}" headerText="Last Name" 
                   filterBy="#{userInfoObject.lastName}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByLastName}"
-                  rendered="#{userInfoController.displayLastName}">
+                  filterValue="#{userInfoSettingObject.filterByLastName}"
+                  rendered="#{userInfoSettingObject.displayLastName}">
             <h:outputText value="#{userInfoObject.lastName}"/>
         </p:column>                  
 
         <p:column sortBy="#{userInfoObject.firstName}" headerText="First Name" 
                   filterBy="#{userInfoObject.firstName}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByFirstName}"
-                  rendered="#{userInfoController.displayFirstName}">
+                  filterValue="#{userInfoSettingObject.filterByFirstName}"
+                  rendered="#{userInfoSettingObject.displayFirstName}">
             <h:outputText value="#{userInfoObject.firstName}"/>
         </p:column> 
 
         <p:column sortBy="#{userInfoObject.middleName}" headerText="Middle Name" 
                   filterBy="#{userInfoObject.middleName}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByMiddleName}"
-                  rendered="#{userInfoController.displayMiddleName}">
+                  filterValue="#{userInfoSettingObject.filterByMiddleName}"
+                  rendered="#{userInfoSettingObject.displayMiddleName}">
             <h:outputText value="#{userInfoObject.middleName}"/>
         </p:column> 
 
         <p:column sortBy="#{userInfoObject.email}" headerText="Email" 
                   filterBy="#{userInfoObject.email}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByEmail}"
-                  rendered="#{userInfoController.displayEmail}">
+                  filterValue="#{userInfoSettingObject.filterByEmail}"
+                  rendered="#{userInfoSettingObject.displayEmail}">
             <h:outputText value="#{userInfoObject.email}"/>
         </p:column>
 
         <p:column sortBy="#{userInfoObject.description}" headerText="Description" 
                   filterBy="#{userInfoObject.description}" filterMatchMode="contains"
-                  filterValue="#{userInfoController.filterByDescription}"
-                  rendered="#{userInfoController.displayDescription}">
+                  filterValue="#{userInfoSettingObject.filterByDescription}"
+                  rendered="#{userInfoSettingObject.displayDescription}">
             <h:outputText value="#{userInfoObject.description}"/>
         </p:column>
 

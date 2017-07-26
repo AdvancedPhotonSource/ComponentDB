@@ -13,6 +13,7 @@ See LICENSE file.
     <ui:insert name="domainEntityController"/>
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="entityTypeDisplayName" value="#{entityController.displayEntityTypeName}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}"/>
 
     <p:dialog id="#{entityTypeName}ListCustomizeDisplayDialog"
               widgetVar="#{entityTypeName}ListCustomizeDisplayDialogWidget" 
@@ -23,7 +24,7 @@ See LICENSE file.
                 <p:tab title="Display #{entityTypeDisplayName} Columns">
                     <p:panelGrid columns="2">
 
-                        <p:selectBooleanCheckbox id="displayDescription" value="#{entityController.displayDescription}"/>  
+                        <p:selectBooleanCheckbox id="displayDescription" value="#{entitySettingObject.filterByDescription}"/>  
                         <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
 
                         <ui:insert name="domainEntitySpecificColumns" />
@@ -33,25 +34,25 @@ See LICENSE file.
 
                 <p:tab title="Extra Information Columns">
                     <p:panelGrid columns="2">
-                        <p:selectBooleanCheckbox id="displayId" value="#{entityController.displayId}"/>  
+                        <p:selectBooleanCheckbox id="displayId" value="#{entitySettingObject.filterById}"/>  
                         <h:outputLabel for="displayId" value="Display Id" styleClass="dialogDataLabel"/>
 
-                        <p:selectBooleanCheckbox id="displayOwnerUser" value="#{entityController.displayOwnerUser}"/>  
+                        <p:selectBooleanCheckbox id="displayOwnerUser" value="#{entitySettingObject.filterByOwnerUser}"/>  
                         <h:outputLabel for="displayOwnerUser" value="Display Owner User" styleClass="dialogDataLabel"/>
 
-                        <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{entityController.displayOwnerGroup}"/>  
+                        <p:selectBooleanCheckbox id="displayOwnerGroup" value="#{entitySettingObject.filterByOwnerGroup}"/>  
                         <h:outputLabel for="displayOwnerGroup" value="Display Owner Group" styleClass="dialogDataLabel"/>
 
-                        <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{entityController.displayCreatedByUser}"/>  
+                        <p:selectBooleanCheckbox id="displayCreatedByUser" value="#{entitySettingObject.filterByCreatedByUser}"/>  
                         <h:outputLabel for="displayCreatedByUser" value="Display Created By User" styleClass="dialogDataLabel"/>
 
-                        <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{entityController.displayCreatedOnDateTime}"/>  
+                        <p:selectBooleanCheckbox id="displayCreatedOnDateTime" value="#{entitySettingObject.filterByCreatedOnDateTime}"/>  
                         <h:outputLabel for="displayCreatedOnDateTime" value="Display Created On Date/Time" styleClass="dialogDataLabel"/>
 
-                        <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{entityController.displayLastModifiedByUser}"/>  
+                        <p:selectBooleanCheckbox id="displayLastModifiedByUser" value="#{entitySettingObject.filterByLastModifiedByUser}"/>  
                         <h:outputLabel for="displayLastModifiedByUser" value="Display Modified By User" styleClass="dialogDataLabel"/>
 
-                        <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{entityController.displayLastModifiedOnDateTime}"/>  
+                        <p:selectBooleanCheckbox id="displayLastModifiedOnDateTime" value="#{entitySettingObject.filterByLastModifiedOnDateTime}"/>  
                         <h:outputLabel for="displayLastModifiedOnDateTime" value="Display Modified On Date/Time" styleClass="dialogDataLabel"/>
                     </p:panelGrid>
                 </p:tab>
@@ -66,7 +67,7 @@ See LICENSE file.
 
                 <p:tab title="Row Expansion">
                     <p:panelGrid columns="2">
-                        <p:selectBooleanCheckbox id="displayRowExpansion" value="#{entityController.displayRowExpansion}"/>  
+                        <p:selectBooleanCheckbox id="displayRowExpansion" value="#{entitySettingObject.filterByRowExpansion}"/>  
                         <h:outputLabel for="displayRowExpansion" value="Display #{entityTypeDisplayName} Row Expansion*" styleClass="dialogDataLabel"/>
 
                         <p:selectBooleanCheckbox id="loadRowExpansionPropertyValues" value="#{entityController.loadRowExpansionPropertyValues}"/>  
@@ -81,7 +82,7 @@ See LICENSE file.
 
                 <p:tab title="Other">
                     <p:panelGrid columns="2">
-                        <p:inputText id="displayNumberOfItemsPerPage" value="#{entityController.displayNumberOfItemsPerPage}" style="width:20px"/>
+                        <p:inputText id="displayNumberOfItemsPerPage" value="#{entitySettingObject.filterByNumberOfItemsPerPage}" style="width:20px"/>
                         <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
                         <ui:insert name="domainEntitySpecificOthers" />

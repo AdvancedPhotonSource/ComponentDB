@@ -9,8 +9,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
-
-    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}">
+    
+    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}"
+                   styleClass="inlineOutputPanel">
         <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
         <p:tooltip for="freeFormTextValue" value="Enter property value."/>
@@ -22,7 +23,8 @@ See LICENSE file.
         </p:selectOneMenu>
         <p:tooltip for="selectedTextValue" value="Select property value."/>
 
-        <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
+        <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
+                     styleClass="inlineOutputPanel">
             <p:column>
                 <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
                                 alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"/>
@@ -45,7 +47,8 @@ See LICENSE file.
                      rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
         <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
 
-        <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
+        <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"
+                       styleClass="inlineOutputPanel">
             <p:commandButton value="Upload Document" 
                              icon="ui-icon-circle-arrow-n" 
                              oncomplete="PF('propertyValueDocumentUploadDialogWidget').show()"
@@ -68,7 +71,8 @@ See LICENSE file.
         <p:tooltip for="dateValue" value="Use calendar to set date."/>
     </p:outputPanel>
 
-    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}">
+    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}"
+                   styleClass="inlineOutputPanel">
         <ui:include src="../../plugins/private/propertyEditObjectValues.xhtml" />
     </p:outputPanel>
 

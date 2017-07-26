@@ -10,6 +10,17 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="propertySelectDataTableSelectionValue" value="#{propertySelectDataTableSelectionValue != null 
+                                                                    ? propertySelectDataTableSelectionValue 
+                                                                    : propertyTypeController.selectedObjectList}" />
+    
+    <ui:param name="defaultPropertySelectDialogPropertySelectionMadeCommandName"
+              value="#{entityTypeName}PropertySelectionMade()" />
+    
+    <ui:param name="propertySelectDialogPropertySelectionMadeCommandName" value="#{propertySelectDialogPropertySelectionMadeCommandName != null
+                                                                                   ? propertySelectDialogPropertySelectionMadeCommandName 
+                                                                                   : defaultPropertySelectDialogPropertySelectionMadeCommandName}" />
 
     <p:dialog id="#{entityTypeName}PropertySelectDialog" 
               widgetVar="#{entityTypeName}PropertySelectDialogWidget" 
@@ -18,7 +29,7 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog">
         <div>         
             <ui:include src="domainEntitySelectionFilterView.xhtml">
-                <ui:param name="propertySelectDataTableSelectionValue" value="#{propertyTypeController.selectedObjectList}" />
+                <ui:param name="propertySelectDataTableSelectionValue" value="#{propertySelectDataTableSelectionValue}" />
                 <ui:param name="propertySelectionMode" value="multiple" />
             </ui:include>
             
@@ -32,7 +43,7 @@ See LICENSE file.
                 
                 <p:commandButton value="Done" alt="Done" 
                                  id="#{entityTypeName}PropertySelectDialogDoneButton"
-                                 onclick="#{entityTypeName}PropertySelectionMade()"
+                                 onclick="#{propertySelectDialogPropertySelectionMadeCommandName}()"
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

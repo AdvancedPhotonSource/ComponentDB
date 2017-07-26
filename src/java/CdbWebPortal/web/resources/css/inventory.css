@@ -21,20 +21,12 @@ html, body {
     background-color: #d5ebf5;
 }
 
-input, textarea {
-    background: #d5ebf5;
-}
-
 h1 {
     color: #d5ebf5;
 }
 
 .ui-accordion .ui-accordion-content {
     background: #d5ebf5;    
-}
-
-.ui-panelgrid .ui-panelgrid-cell {
-    background: #d5ebf5;
 }
 
 .ui-panel {

@@ -418,13 +418,16 @@ tr:hover .actionLink {
 }
 
 input, textarea {
-    background: #f2f4f7;
     box-shadow: 0px 3px 5px #d5d5d5;
     width: 300px;
 }
 
 .ui-selectcheckboxmenu .ui-selectcheckboxmenu-label {
     width: 276px;
+}
+
+.ui-selectcheckboxmenu-multiple-container {
+	width: 284px;	
 }
 
 .ui-selectonemenu .ui-selectonemenu-label {
@@ -592,6 +595,7 @@ h2 {
     font-size:  20px;
     font-weight: bold;
     color: #4e80b6;
+    padding: 6px;
 }
 
 .shortFilterBox {
@@ -626,7 +630,7 @@ h2 {
 }
 
 .mainMenuBar .ui-menu, .mainMenuBar, .mainMenuBar .ui-menu .ui-menu-child {
-    background: #6da5d8;    
+    background: #6da5d8 !important;    
 }
 
 .mainMenuBar .ui-menu .ui-menu-child {
@@ -791,8 +795,12 @@ h2 {
     table-layout: auto !important;
 }
 
+.ui-panelgrid > tbody > tr.ui-widget-content, .ui-panelgrid-even, .ui-panelgrid-odd {
+    background: transparent;
+}
+
 .ui-panelgrid .ui-panelgrid-cell {
-    background: #f2f4f7;
+    background: transparent;
     border-style: none;
     font-weight: bold;
 }
@@ -812,14 +820,33 @@ h2 {
     border-color: black; 
 }
 
-.newItemInRow {
-    background: #99e699;
-    height: 80px;
+.ui-datatable-even.newItemInRow {
+    background: #eafff0;    
+}
+
+.ui-datatable-odd.newItemInRow {
+    background: #ccf9d9;    
+}
+
+.ui-datatable-even.errorItemInRow {
+    background: #ffdbdb;
+}
+
+.ui-datatable-odd.errorItemInRow {
+    background: #ffc1c1;
 }
 
 .createWizardPanel {
     border: 1px !important; 
     border-style: solid !important;
+}
+
+.multiEditPrimaryPanel {
+    border: 1px !important;
+    border-style: solid !important;
+    color: lightgray; 
+    padding: 2px;
+    border-radius: 4px;
 }
 
 .catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
@@ -917,7 +944,6 @@ h2 {
 
 .wideListBox .ui-selectlistbox-listcontainer {
     width: 200px !important; 
-
 }
 
 .wideListBox {
@@ -1121,3 +1147,23 @@ h2 {
 .padded {
     padding: 10px;
 }
+
+.compactPanelGrid {
+    width: 0px !important;
+}
+
+.inlineOutputPanel {
+    display: inline; 
+}
+
+.fa-link-icon {
+    padding: 4px;
+    color: #4f4f4f !important; 
+    text-decoration: none; 
+    font-weight: unset !important;
+}
+
+.fa-icon-warning {
+    color: #6d0000 !important;
+}
+

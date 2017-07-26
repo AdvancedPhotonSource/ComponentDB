@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <p:importEnum type="gov.anl.aps.cdb.common.constants.ItemDefaultColumnReferences"
+                  var="columnNamesToApplyValuesTo" />
+
+    <p:column rendered="#{entityController.entityDisplayDerivedFromItem}"
+              groupRow="#{entityController.entityDisplayDerivedFromItem}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.derivedFromItem}" />
+        </ui:include>
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemDerivedFromItem.xhtml" />
+    </p:column>
+
+    <p:column>
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.name}" />
+        </ui:include>
+        <h:inputText value="#{itemObject.name}"/>                            
+    </p:column>
+
+    <p:column rendered="#{entityController.updateItemIdentifier1 and entityController.entityDisplayItemIdentifier1}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.itemIdentifier1}" />            
+        </ui:include>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml"/>
+    </p:column>
+
+    <p:column rendered="#{entityController.updateItemIdentifier2 and entityController.entityDisplayItemIdentifier2}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.itemIdentifier2}" />  
+        </ui:include>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml"/>
+    </p:column>
+
+    <p:column id="itemProjectColumn"
+              rendered="#{entityController.entityDisplayItemProject 
+                          and entityController.updateProject}" >
+        
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.itemProject}" />  
+            <ui:param name="columnHeader" value="Project" />
+        </ui:include>
+
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml">
+            <ui:param name="onHideUpdateTarget" value="#{entityTypeName}MultiEditItemDataTable" />
+        </ui:include>            
+    </p:column>
+
+    <p:column rendered="#{entityController.updateDescription}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.description}" />  
+            <ui:param name="columnHeader" value="Description" />
+        </ui:include>
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml"/>
+    </p:column>  
+
+    <p:column rendered="#{entityController.updateQrId and entityController.entityDisplayQrId}">
+        <ui:include src="itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.qrId}" />  
+            <ui:param name="columnHeader" value="QrId" />
+        </ui:include>
+        
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
+    </p:column>
+    
+    <ui:include src="itemMultiEditEditableListEntityInfoObject.xhtml"/>
+
+    <ui:include src="itemMultiEditEditableListPropertyObject.xhtml"/>
+
+    <p:column headerText="Action"
+              class="#{itemObject.viewUUID}informationColumn">
+        <p:commandLink id="#{entityTypeName}MulitEditListRemoveSelection" 
+                       action="#{entityController.removeSelection(itemObject)}"
+                       styleClass="fa fa-link-icon fa-times" 
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       update="@form:#{entityTypeName}MultiEditItemDataTable"
+                       title="Remove from update list"/>
+        <p:commandLink styleClass="fa fa-link-icon fa-refresh" 
+                       action="#{entityController.revertItemBackToOriginalState(itemObject)}"
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       update="@form:#{entityTypeName}MultiEditItemDataTable"
+                       title="Restore the item back to original state"/>
+        <p:commandLink styleClass="fa fa-link-icon fa-floppy-o" 
+                       rendered="#{itemObject.id != null}"
+                       action="#{entityController.updateSingleItem(itemObject)}"
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       update="@form:#{entityTypeName}MultiEditItemDataTable"
+                       title="Save this item"/>
+        <p:commandLink styleClass="fa fa-link-icon fa-plus-square-o" 
+                       rendered="#{itemObject.id == null}"
+                       action="#{entityController.createSingleItem(itemObject)}"
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       update="@form:#{entityTypeName}MultiEditItemDataTable"
+                       title="Create this item"/>
+        <p:commandLink id="itemMultiEditErrorMessageDisplayCommandLink"
+                       styleClass="fa fa-link-icon fa-exclamation-triangle" 
+                       rendered="#{itemObject.persitanceErrorMessage != null}"
+                       />
+        <p:overlayPanel for="itemMultiEditErrorMessageDisplayCommandLink"
+                        hideEffect="fade"
+                        showEffect="fade">
+            <h:outputText value="#{itemObject.persitanceErrorMessage}"/>
+        </p:overlayPanel>
+                        
+    </p:column>    
+
+</ui:composition>

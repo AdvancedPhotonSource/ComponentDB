@@ -53,6 +53,24 @@ class ItemControllerImpl(CdbObjectManager):
 
         return logEntry
 
+    def addPropertyValueForItemWithId(self, itemId, propertyTypeName, enteredByUserId,
+                                      tag=None, value=None, units=None, description=None,
+                                      isUserWriteable=None, isDynamic=False):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        propertyValueAdded = self.itemDbApi.addItemElementProperty(selfElementId, propertyTypeName,
+                                                                   tag, value, units, description,
+                                                                   enteredByUserId, isUserWriteable, isDynamic)
+
+        return propertyValueAdded
+
+    def getParentItems(self, itemId):
+        return self.itemDbApi.getParentItems(itemId)
+
+    def getItemElementsForItem(self, itemId):
+        return self.itemDbApi.getItemElementsByItemId(itemId)
+
     def getLogEntriesForItemWithQrId(self, qrId):
         item = self.itemDbApi.getItemByQrId(qrId)
         itemId = item.data['id']
@@ -77,5 +95,22 @@ class ItemControllerImpl(CdbObjectManager):
         selfElementId = selfElement.data['id']
 
         return self.propertyDbApi.getPropertyValueListForItemElementId(selfElementId)
+
+    def getDomains(self):
+        return self.itemDbApi.getDomains()
+
+    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True, entityTypeNames=None):
+        return self.itemDbApi.addItem(domainName=domainName,
+                                      name=name,
+                                      createdByUserId=createdByUserId,
+                                      ownerUserId=ownerUserId,
+                                      ownerGroupId=ownerGroupId,
+                                      itemIdentifier1=itemIdentifier1,
+                                      itemIdentifier2=itemIdentifier2,
+                                      qrId=qrId,
+                                      description=description,
+                                      isGroupWriteable=isGroupWriteable,
+                                      entityTypeNames=entityTypeNames)
 
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../../../templates/portalViewTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="pageRendered" value="#{pageRendered != null ? pageRendered : true}" />
+
+    <ui:define name="templateCss">
+        <link href="../../resources/css/#{entityController.listStyleName}.css" rel="stylesheet" type="text/css"/>
+    </ui:define>
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+
+    <ui:define name="pageTitle">: #{entityController.pageTitle}</ui:define>
+
+    <ui:define name="middleCenter">    
+        <h:form>
+            <p:outputPanel styleClass="multiEditPrimaryPanel">
+                <p:tabMenu model="#{entityController.createStepsMenuModel}"                     
+                           activeIndex="#{entityController.activeIndex}"/>
+                
+                <ui:insert name='multiEditContent' />                                
+
+                <br/>
+                <ui:include src="../itemMultiEditNavigation.xhtml"/> 
+
+            </p:outputPanel>
+        </h:form>
+    </ui:define>
+</ui:composition>

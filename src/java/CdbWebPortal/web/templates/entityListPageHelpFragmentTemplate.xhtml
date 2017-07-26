@@ -8,10 +8,12 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}"/>
 
     <p:panel id="showEntityListPageHelpFragmentPanel" 
              widgetVar="showEntityListPageHelpFragmentPanelWidget"
-             collapsed="#{!entityController.displayListPageHelpFragment}"
+             collapsed="#{!entitySettingObject.filterByListPageHelpFragment}"
              toggleable="true"
              styleClass="entityListPageHelpFragmentPanel">
         <p:commandButton id="showEntityListPageHelpFragmentHideButton" icon="ui-icon-closethick" styleClass="actionButtonRight" value="Hide Help" onclick="PF('showEntityListPageHelpFragmentPanelWidget').toggle()">
@@ -37,15 +39,15 @@ See LICENSE file.
                     <div class="entityShowHelpCheckBox">
 
                         <ui:param name="showListPageHelpFragmentHelpCheckBox"
-                                  value="#{loginController.loggedIn and entityController.displayListPageHelpFragmentSettingTypeKey != null}"
+                                  value="#{loginController.loggedIn and entitySettingObject.filterByListPageHelpFragmentSettingTypeKey != null}"
                                   />
-                        <p:selectBooleanCheckbox value="#{entityController.displayListPageHelpFragment}" 
+                        <p:selectBooleanCheckbox value="#{entitySettingObject.filterByListPageHelpFragment}" 
                                                  itemLabel="&nbsp;Always show help for this entity"
                                                  rendered="#{showListPageHelpFragmentHelpCheckBox}">
                             <p:ajax oncomplete="processDisplayListPageHelpFragment();" />
                         </p:selectBooleanCheckbox>
                         <p:remoteCommand action="#{userInfoController.saveSettingListForSessionUser()}"
-                                         actionListener="#{entityController.saveDisplayListPageHelpFragmentActionListener}"
+                                         actionListener="#{entityController.settingObject.saveDisplayListPageHelpFragmentActionListener}"
                                          name="processDisplayListPageHelpFragment"
                                          />
                     </div>

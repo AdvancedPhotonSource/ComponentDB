@@ -11,12 +11,14 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
+    
+    <ui:param name="propertyValueSettingObject" value="#{propertyValueController.settingObject}"/>
     <p:dataTable id="#{entityTypeName}PropertyEditListDataTable" 
                  widgetVar="#{entityTypeName}PropertyEditListDataTableWidget"
                  var="propertyValueObject" 
                  value="#{entityObject.propertyValueDisplayList}" 
                  filteredValue="#{propertyValueController.filteredObjectList}"
-                 rows="#{propertyValueController.displayNumberOfItemsPerPage}"
+                 rows="#{propertyValueSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  editable="true"
@@ -61,19 +63,10 @@ See LICENSE file.
 
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml"/>
 
-    <ui:include src="../../propertyValue/private/propertyValueImageUploadDialog.xhtml">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="saveAction" value="savePropertyList"/>
-    </ui:include>
-
-    <ui:include src="../../propertyValue/private/propertyValueDocumentUploadDialog.xhtml">
-        <ui:param name="parentEntityController" value="#{entityController}"/>
-        <ui:param name="saveAction" value="savePropertyList"/>
-    </ui:include>
-
     <ui:include src="../../propertyValueHistory/private/propertyValueHistoryListCustomizeDisplayDialog.xhtml"/>
     
-    <ui:include src="../../plugins/private/propertyEditListSupport.xhtml" />
+    <ui:include src="../../propertyValue/private/propertyValueEditListSupport.xhtml" />
+    
 </ui:composition>
 
 
