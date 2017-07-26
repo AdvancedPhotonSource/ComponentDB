@@ -59,6 +59,21 @@ echo "Checking service configuration file"
 setRootPassword=false
 if [ ! -f $CDB_MYSQLD_CONFIG_FILE ]; then
     echo "Generating service config file"
+    if [ -z $CDB_DB_HOST ]; then
+        CDB_DB_HOST=127.0.0.1
+        read -p "Please specify the MYSQL_DB_HOST: [$CDB_DB_HOST]" dbHost
+        if [ ! -z $dbHost ]; then
+            CDB_DB_HOST=$dbHost
+        fi
+    fi
+    if [ -z $CDB_DB_PORT ]; then
+        CDB_DB_PORT=3306
+        read -p "Please specify the MYSQL_DB_PORT: [$CDB_DB_PORT]" dbPort
+        if [ ! -z $dbPort ]; then
+            CDB_DB_PORT=$dbPort
+        fi
+    fi
+
     cmd="cat $CDB_ROOT_DIR/etc/mysql.conf.template \
         | sed 's?CDB_INSTALL_DIR?$CDB_INSTALL_DIR?g' \
         | sed 's?CDB_DB_HOST?$CDB_DB_HOST?g' \
@@ -82,7 +97,7 @@ if [ $setRootPassword = "true" ]; then
         echo
     fi
     echo "Setting DB root password"
-    cmd="echo \"SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST"
+    cmd="echo \"SET PASSWORD FOR 'root'@'localhost' = PASSWORD('$CDB_DB_ADMIN_PASSWORD');\" | $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin/mysql -u root -h $CDB_DB_HOST -P $CDB_DB_PORT"
     eval $cmd || exit 1
 fi
 
