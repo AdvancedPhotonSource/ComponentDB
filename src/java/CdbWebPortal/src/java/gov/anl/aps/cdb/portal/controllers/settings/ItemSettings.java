@@ -6,13 +6,12 @@ package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.controllers.SettingController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.faces.model.DataModel;
 import org.apache.log4j.Logger;
 
 /**
@@ -42,14 +41,15 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     protected Boolean displayItemElementListSource = false; 
     protected Boolean displayItemElementListProject = false; 
     protected Boolean displayItemElementListDescription = false; 
-    protected Boolean displayItemElementListQrId = false; 
+    protected Boolean displayItemElementListQrId = false;
     
-
     protected String displayListDataModelScope = ItemDisplayListDataModelScope.showAll.getValue();
     protected Integer displayListDataModelScopePropertyTypeId = null;
 
     protected String filterByItemSources = null;
     protected String filterByQrId = null;
+    
+    protected ItemElementSettings itemElementSettings = null;
 
     public ItemSettings(ItemControllerBase parentController) {
         super(parentController);
@@ -199,7 +199,22 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
             }
         }
         return false;
-    }   
+    }
+
+    public ItemElementSettings getItemElementSettings() {
+        if (itemElementSettings == null) {
+            itemElementSettings = ItemElementController.getInstance().getSettingObject(); 
+        }
+        return itemElementSettings;
+    }
+    
+    public void toggleSimpleComplexElementsList() {                
+        getItemElementSettings().toggleGlobalSimpleComplexElementsList();
+    }
+    
+    public Boolean getDisplayItemElementSimpleView() {
+        return getItemElementSettings().getGlobalDisplayItemElementSimpleView();
+    }
 
     public boolean isDisplayListDataModelScopePropertyTypeSelection() {
         if (displayListDataModelScope != null) {
