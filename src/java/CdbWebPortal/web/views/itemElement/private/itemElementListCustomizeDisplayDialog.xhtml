@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}" />
     <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />
     
-    <ui:include src="#{itemElementSettingObject.displayItemElementSimpleView 
+    <ui:include src="#{currentItemSettingObject.displayItemElementSimpleView 
                        ? 'itemElementListCustomizeDisplayDialogBaseSimple.xhtml' 
                        : 'itemElementListCustomizeDisplayDialogBase.xhtml'}">
         <ui:param name="entityController" value="#{itemElementController}" />
