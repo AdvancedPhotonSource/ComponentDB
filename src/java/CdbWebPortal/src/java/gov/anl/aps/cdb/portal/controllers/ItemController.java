@@ -180,6 +180,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public String getNameTitle() {
         return "Name";
     }
+    
+    public String getItemEntityTypeTitle() {
+        return "Entity Type"; 
+    }
 
     public String getItemItemTypeTitle() {
         if (getDefaultDomain() != null) {
@@ -207,6 +211,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return getDefaultDomain().getItemIdentifier2Label();
         }
         return null;         
+    }
+    
+    public boolean getEntityDisplayItemElementsForCurrent() {
+        return getEntityDisplayItemElements(); 
     }
     
     public boolean getEntityDisplayItemIdentifier1() {

@@ -7,7 +7,9 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -18,7 +20,9 @@ import javax.inject.Named;
  */
 @Named("itemDomainMAARCController")
 @SessionScoped
-public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings>{
+public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings> {
+    
+    protected final String FILE_ENTITY_TYPE_NAME = "File"; 
     
     @EJB
     ItemDomainMAARCFacade itemDomainMAARCFacade; 
@@ -115,7 +119,31 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
-        return false;
+        return true;
+    } 
+
+    @Override
+    public boolean getEntityDisplayItemElementsForCurrent() {
+        boolean result = super.getEntityDisplayItemElementsForCurrent(); 
+        if (getCurrent() == null 
+                || getCurrent().getEntityTypeList() == null 
+                || getCurrent().getEntityTypeList().isEmpty()) {
+            return result; 
+        }
+        List<EntityType> entityTypeList = getCurrent().getEntityTypeList();
+        for (EntityType entityType : entityTypeList) {
+            if (entityType.getName().equals(FILE_ENTITY_TYPE_NAME)) {
+                result = false; 
+                break; 
+            }
+        }
+                
+        return result; 
+    }
+
+    @Override
+    public String getItemEntityTypeTitle() {
+        return "MAARC Type"; 
     }
 
     @Override
