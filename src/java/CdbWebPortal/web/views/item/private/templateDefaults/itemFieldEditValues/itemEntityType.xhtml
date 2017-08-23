@@ -18,7 +18,7 @@ See LICENSE file.
                                   value="#{itemObject.entityTypeList}" converter="entityTypeConverter"
                                   onHide="entityTypeSelectCBUpdate#{viewName}()"
                                   filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{entityController.domainHandlerAllowedEnityTypes}" /> 
+                <f:selectItems value="#{entityController.domainAllowedEnityTypes}" /> 
             </p:selectCheckboxMenu>
             <h:outputText value="#{itemObject.entityTypeString}"
                           rendered="#{entityController.entityTypeEditable == false}" />
