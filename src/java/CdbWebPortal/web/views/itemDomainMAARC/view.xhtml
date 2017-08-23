@@ -10,6 +10,7 @@ See LICENSE file.
                 template="../item/private/templates/itemViewTemplate.xhtml">
     
     <ui:param name="entityController" value="#{itemDomainMAARCController}"/>
+    <ui:param name="pageRendered" value="#{resources.EnabledMAARCDomainFunctionality}" />
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
