@@ -31,6 +31,7 @@ See LICENSE file.
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
             
             <p:menuitem value="MAARC" id="maarcMenubarButton" url="/views/itemDomainMAARC/list" 
+                        rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
             
             
