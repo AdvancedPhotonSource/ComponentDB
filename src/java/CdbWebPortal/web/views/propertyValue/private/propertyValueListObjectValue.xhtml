@@ -82,6 +82,14 @@ See LICENSE file.
                                              value="#{propertyValueObject}"/>
             </p:remoteCommand>
         </p:outputPanel>
+        
+        <p:outputPanel rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}">            
+            <p:commandLink ajax="false" 
+                           styleClass="fa fa-link-icon fa-download"
+                           value=" #{propertyValueObject.displayValue}">
+                <p:fileDownload value="#{propertyValueController.executeFileDownloadActionCommandForPropertyValue(propertyValueObject)}" />                
+            </p:commandLink>            
+        </p:outputPanel>
     </p:outputPanel>
     <p:outputPanel rendered="#{!loadPropertyValues}">
         <h:outputText value="#{propertyValueObject.displayValue}*" rendered="#{propertyValueObject.displayValue != null and propertyValueObject.displayValue != ''}"  />
