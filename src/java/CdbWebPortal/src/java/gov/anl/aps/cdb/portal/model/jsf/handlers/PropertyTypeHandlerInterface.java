@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.jsf.handlers;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
+import org.primefaces.model.StreamedContent;
 
 /**
  * Property type handler interface.
@@ -73,6 +74,11 @@ public interface PropertyTypeHandlerInterface {
      * @param propertyValueHistory
      */
     public abstract void setInfoActionCommand(PropertyValueHistory propertyValueHistory);
+    
+    /**
+     * Command to be executed on the server when user clicks the link. 
+     */
+    public abstract StreamedContent fileDownloadActionCommand(PropertyValue propertyValue); 
 
     /**
      * Update the value the user sees to something meaningful.

@@ -16,7 +16,8 @@ public enum DisplayType {
     BOOLEAN(5),
     DATE(6),
     INFO_ACTION(7),
-    TABLE_RECORD_REFERENCE(8);
+    TABLE_RECORD_REFERENCE(8),
+    FILE_DOWNLOAD(9);
     
     private final int type;
     private DisplayType(int type) {
