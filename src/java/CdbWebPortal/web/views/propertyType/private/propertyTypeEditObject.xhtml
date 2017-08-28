@@ -48,7 +48,7 @@ See LICENSE file.
     <p:selectOneMenu id="handler" value="#{propertyTypeObject.propertyTypeHandler}" styleClass="entityDataText"
                      converter="propertyTypeHandlerConverter">
         <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-        <f:selectItems var="handler" value="#{propertyTypeHandlerController.availableItems}" itemLabel="#{handler.name}" itemValue="#{handler}"/>
+        <f:selectItems var="handler" value="#{propertyTypeHandlerController.allPossiblePropertyTypeHandlersForNewPropertyType}" itemLabel="#{handler.name}" itemValue="#{handler}"/>
     </p:selectOneMenu>
     <p:message for="handler"/> 
     <p:tooltip for="handler" value="Handler class specification is optional."/>

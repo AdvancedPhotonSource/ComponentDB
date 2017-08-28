@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeHandlerSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.plugins.CdbPluginManager;
 
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +26,10 @@ import org.apache.log4j.Logger;
 public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade, PropertyTypeHandlerSettings> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(PropertyTypeHandlerController.class.getName());
+    
+    private CdbPluginManager cdbPluginManager; 
+    
+    private List<PropertyTypeHandler> allPossiblePropertyTypeHandlersForNewPropertyType = null; 
 
     @EJB
     private PropertyTypeHandlerFacade propertyTypeHandlerFacade;
@@ -65,6 +70,52 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
     public List<PropertyTypeHandler> getAvailableItems() {
         return super.getAvailableItems();
     }
+    
+    public List<PropertyTypeHandler> getAllPossiblePropertyTypeHandlersForNewPropertyType() {
+        List<PropertyTypeHandler> availableItems = getAvailableItems();
+        if (cdbPluginManager == null) {
+            cdbPluginManager = CdbPluginManager.getInstance();
+        }
+        
+        
+        // Add property type handlers that are plugins that do not yet have a db record. 
+        List<String> allPluginPropertyTypeHandlerNames = cdbPluginManager.getAllPluginPropertyTypeHandlerNames();
+        
+        for (PropertyTypeHandler propertyTypeHandler : availableItems) {             
+            for (String pluginPropertyTypeHandlerName : allPluginPropertyTypeHandlerNames) {
+                if (propertyTypeHandler.getName().equals(pluginPropertyTypeHandlerName)) {
+                    allPluginPropertyTypeHandlerNames.remove(pluginPropertyTypeHandlerName); 
+                    break; 
+                }
+            }
+        }
+        
+        if (allPluginPropertyTypeHandlerNames.size() > 0) {
+            for (int i = 0; i < allPluginPropertyTypeHandlerNames.size(); i++) {
+                String pluginPropertyTypeHanlder = allPluginPropertyTypeHandlerNames.get(i); 
+                PropertyTypeHandler newHandler = createEntityInstance();            
+                newHandler.setId((i+1)*-1);
+                newHandler.setName(pluginPropertyTypeHanlder);
+                newHandler.setDescription("Automatically added for plugin");
+                availableItems.add(newHandler); 
+            }
+
+            allPossiblePropertyTypeHandlersForNewPropertyType = availableItems; 
+        }
+                
+        return availableItems;                         
+    }
+    
+   public PropertyTypeHandler getPropertyTypeHandlerFromAllPossible(int id) {
+       if (allPossiblePropertyTypeHandlersForNewPropertyType != null) {
+        for (PropertyTypeHandler propertyTypeHandler : allPossiblePropertyTypeHandlersForNewPropertyType) {
+            if (propertyTypeHandler.getId() == id) {                
+                return propertyTypeHandler; 
+            }
+        }
+       }
+       return getEntity(id);
+   }
 
     @Override
     public void prepareEntityInsert(PropertyTypeHandler propertyTypeHandler) throws ObjectAlreadyExists {
@@ -98,7 +149,8 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
             try {
                 PropertyTypeHandlerController controller = (PropertyTypeHandlerController) facesContext.getApplication().getELResolver().
                         getValue(facesContext.getELContext(), null, "propertyTypeHandlerController");
-                return controller.getEntity(getIntegerKey(value));
+                int id = getIntegerKey(value);
+                return controller.getPropertyTypeHandlerFromAllPossible(id); 
             } catch (Exception ex) {
                 // we cannot get entity from a given key
                 logger.warn("Value " + value + " cannot be converted to property type handler object.");
