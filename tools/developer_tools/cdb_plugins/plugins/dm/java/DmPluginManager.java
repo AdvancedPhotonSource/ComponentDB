@@ -19,6 +19,7 @@ public class DmPluginManager extends PluginManagerBase {
     private static final String DM_SERVICE_URL_KEY = "serviceUrl"; 
     private static final String DM_SERVICE_USER_KEY = "serviceUser";     
     private static final String DM_SERVICE_PASS_KEY = "servicePass"; 
+    private static final String DM_PORTAL_URL_KEY = "dmPortalUrl";        
     
     public static String getServiceUrlProperty() {
         return DM_PROPERTIES.getProperty(DM_SERVICE_URL_KEY, ""); 
@@ -30,6 +31,10 @@ public class DmPluginManager extends PluginManagerBase {
     
     public static String getServicePassProperty() {
         return DM_PROPERTIES.getProperty(DM_SERVICE_PASS_KEY, ""); 
+    }
+    
+    public String getDmPortalUrl() {
+        return DM_PROPERTIES.getProperty(DM_PORTAL_URL_KEY, ""); 
     }
     
     @Override
