@@ -36,8 +36,6 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String SERVICE_URL = DmPluginManager.getServiceUrlProperty();
     public static final String SERVICE_USER = DmPluginManager.getServiceUserProperty();
     public static final String SERVICE_PASS = DmPluginManager.getServicePassProperty();
-    
-    private ExperimentDsApi client;
 
     public DmPropertyTypeHandler() {
         super(HANDLER_NAME, DisplayType.FILE_DOWNLOAD);        
@@ -45,7 +43,7 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
     
     public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) {               
         try {
-            client = new ExperimentDsApi(SERVICE_URL, SERVICE_USER, SERVICE_PASS);
+            ExperimentDsApi client = new ExperimentDsApi(SERVICE_URL, SERVICE_USER, SERVICE_PASS);
             ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();            
             String experimentName = propertyValue.getPropertyMetadataValueForKey(EXPERIMENT_NAME_KEY);
             String experimentFilePath = propertyValue.getPropertyMetadataValueForKey(EXPERIMENT_FILE_PATH_KEY);            
