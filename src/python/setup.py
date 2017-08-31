@@ -8,7 +8,7 @@ See LICENSE file.
 from setuptools import setup
 
 setup(name='cdb-api',
-      version='3.3.0.dev13',
+      version='3.3.0.dev14',
       license='Copyright (c) UChicago Argonne, LLC. All rights reserved.',
       packages=['cdb',
                 'cdb.cdb_web_service',
