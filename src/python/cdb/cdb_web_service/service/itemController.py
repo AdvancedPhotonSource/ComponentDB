@@ -30,12 +30,13 @@ class ItemController(CdbController):
 
     @cherrypy.expose
     @CdbController.execute
-    def getItemByUniqueAttributes(self, domainId, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
-        if not domainId:
-            raise InvalidRequest("Invalid domain id provided")
+    def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
+        if not domainName:
+            raise InvalidRequest("Invalid domain name provided")
         if not itemName:
             raise InvalidRequest("Invalid itemName provided")
 
+        domainName = Encoder.decode(domainName)
         itemName = Encoder.decode(itemName)
 
         if itemIdentifier1 is not None:
@@ -44,10 +45,10 @@ class ItemController(CdbController):
         if itemIdentifier2 is not None:
             itemIdentifier2 = Encoder.decode(itemIdentifier2)
 
-        item = self.itemControllerImpl.getItemByUniqueAttributes(domainId, itemName, itemIdentifier1, itemIdentifier2, derivedFromItemId)
+        item = self.itemControllerImpl.getItemByUniqueAttributes(domainName, itemName, itemIdentifier1, itemIdentifier2, derivedFromItemId)
         response = item.getFullJsonRep()
 
-        self.logger.debug('Returning item info for item in domain %s with name %s: %s' % (domainId, itemName, response))
+        self.logger.debug('Returning item info for item in domain %s with name %s: %s' % (domainName, itemName, response))
         return response
 
     def getParentItems(self, itemId):

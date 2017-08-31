@@ -120,17 +120,16 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendRequest(url=url, method='GET')
         return Item(responseData)
 
-    def getItemByUniqueAttributes(self, domainId, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
-        if domainId is not None:
-            domainId = str(domainId)
-        if domainId is None or not len(domainId):
-            raise InvalidRequest("domainId must be provided")
+    def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
+        if domainName is None or not len(domainName):
+            raise InvalidRequest("domainName must be provided")
 
         if itemName is None or not len(itemName):
             raise InvalidRequest("itemName must be provided")
 
+        domainName = Encoder.encode(domainName)
         itemName = Encoder.encode(itemName)
-        url = '%s/items/uniqueAttributes/%s/%s' % (self.getContextRoot(), domainId, itemName)
+        url = '%s/items/uniqueAttributes/%s/%s' % (self.getContextRoot(), domainName, itemName)
 
         if itemIdentifier1 is not None:
             itemIdentifier1 = Encoder.encode(str(itemIdentifier1))

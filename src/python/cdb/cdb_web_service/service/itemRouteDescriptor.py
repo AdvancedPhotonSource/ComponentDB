@@ -42,7 +42,7 @@ class ItemRouteDescriptor:
             # Get item by unique attributes
             {
                 'name': 'getItemByUniqueAttributes',
-                'path': '%s/items/uniqueAttributes/:(domainId)/:(itemName)' % contextRoot,
+                'path': '%s/items/uniqueAttributes/:(domainName)/:(itemName)' % contextRoot,
                 'controller': itemController,
                 'action': 'getItemByUniqueAttributes',
                 'method': ['GET']
