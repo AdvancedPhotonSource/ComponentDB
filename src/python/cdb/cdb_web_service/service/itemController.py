@@ -10,6 +10,8 @@ import cherrypy
 from cdb.common.service.cdbController import CdbController
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.cdb_web_service.impl.itemControllerImpl import ItemControllerImpl
+from cdb.common.utility.encoder import Encoder
+
 
 class ItemController(CdbController):
 
@@ -24,6 +26,28 @@ class ItemController(CdbController):
             raise InvalidRequest("Invalid item id provided")
         response = self.itemControllerImpl.getItemById(itemId).getFullJsonRep()
         self.logger.debug('Returning item info for %s: %s' % (itemId, response))
+        return response
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getItemByUniqueAttributes(self, domainId, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
+        if not domainId:
+            raise InvalidRequest("Invalid domain id provided")
+        if not itemName:
+            raise InvalidRequest("Invalid itemName provided")
+
+        itemName = Encoder.decode(itemName)
+
+        if itemIdentifier1 is not None:
+            itemIdentifier1 = Encoder.decode(itemIdentifier1)
+
+        if itemIdentifier2 is not None:
+            itemIdentifier2 = Encoder.decode(itemIdentifier2)
+
+        item = self.itemControllerImpl.getItemByUniqueAttributes(domainId, itemName, itemIdentifier1, itemIdentifier2, derivedFromItemId)
+        response = item.getFullJsonRep()
+
+        self.logger.debug('Returning item info for item in domain %s with name %s: %s' % (domainId, itemName, response))
         return response
 
     def getParentItems(self, itemId):
