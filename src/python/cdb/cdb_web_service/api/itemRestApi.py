@@ -207,7 +207,7 @@ class ItemRestApi(CdbRestApi):
         return self.toCdbObjectList(responseData, Item)
 
     def getDomains(self):
-        url = '%s/itemDomains' % self.getContextRoot()
+        url = '%s/domains' % self.getContextRoot()
         responseData =self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, Domain)
 
