@@ -68,9 +68,9 @@ See LICENSE file.
                 <p:commandLink id="#{entityTypeName}PropertyMetadataActionButton" 
                                styleClass="fa fa-link-icon fa-tags" 
                                title="View Metadata"
-                               update="@form:#{entityTypeName}PropertyValueMetadataListDialog"
+                               update="@form:propertyValueMetadataListDialog"
                                rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}"
-                               oncomplete="PF('#{entityTypeName}PropertyValueMetadataListDialogWidget').show();">
+                               oncomplete="PF('propertyValueMetadataListDialogWidget').show();">
                     <p:tooltip for="#{entityTypeName}PropertyMetadataActionButton" value="View metadata."/>
                     <f:setPropertyActionListener target="#{propertyValueController.current}"
                                                  value="#{propertyValueObject}" />
