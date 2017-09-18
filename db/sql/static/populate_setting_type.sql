@@ -221,7 +221,8 @@ INSERT INTO `setting_type` VALUES
 (12002,'PropertyTypeHandler.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25'),
 (12003,'PropertyTypeHandler.List.FilterBy.Description','Filter for property type handler description.',NULL),
 (12004,'PropertyTypeHandler.List.FilterBy.Name','Filter for property type handler name.',NULL),
-(13000,'PropertyValue.List.Display.Description','Display value entry description.','false'),
+(13000,'PropertyValue.List.Display.Description','Display value entry
+description.','true'),
 (13001,'PropertyValue.List.Display.EnteredOnDateTime','Display value entry entered on date/time.','false'),
 (13002,'PropertyValue.List.Display.EnteredByUser','Display value entry entered by user.','false'),
 (13003,'PropertyValue.List.Display.Id','Display property value entry id.','false'),

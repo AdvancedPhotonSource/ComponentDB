@@ -34,18 +34,18 @@ See LICENSE file.
         <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
     </p:column>
 
-    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
-              filterBy="#{propertyValueObject.tag}" 
-              filterable="#{filterable}"
-              rendered="#{propertyValueSettingObject.displayTag}">
-        <h:outputText value="#{propertyValueObject.tag}"/>
-    </p:column>
-
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
               filterBy="#{propertyValueObject.value}"
               filterable="#{filterable}"
               exportFunction="#{propertyValueObject.getValue()}">
         <ui:include src="propertyValueListObjectValue.xhtml"/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
+              filterBy="#{propertyValueObject.tag}" 
+              filterable="#{filterable}"
+              rendered="#{propertyValueSettingObject.displayTag}">
+        <h:outputText value="#{propertyValueObject.tag}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
