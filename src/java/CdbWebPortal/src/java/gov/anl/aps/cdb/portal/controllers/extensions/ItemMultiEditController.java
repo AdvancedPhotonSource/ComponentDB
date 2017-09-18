@@ -24,11 +24,10 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
@@ -42,6 +41,8 @@ import org.primefaces.model.menu.DefaultMenuModel;
  * @author djarosz
  */
 public abstract class ItemMultiEditController extends ItemControllerExtensionHelper {
+    
+    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Item.class.getName());
 
     @EJB
     protected PropertyValueFacade propertyValueFacade;
@@ -132,7 +133,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     protected enum MultiEditMode {
         update(),
-        create();
+        create(),
+        delete(); 
 
         private MultiEditMode() {
         }
@@ -188,6 +190,74 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         return menuItem;
     }
+    
+    public void performDeleteOperationsOnAllItems() {        
+        int beforeDeletionCount = selectedItemsToEdit.size();
+
+        MultiEditMode ittrMode = MultiEditMode.delete;
+        
+        List<Integer> indexesToRemoveFromList = new ArrayList<>();
+        
+        for (int i = selectedItemsToEdit.size() -1; i >= 0; i--) {
+            Item item = selectedItemsToEdit.get(i); 
+            if (isItemExistInDb(item)) {
+                try {
+                    performDestroyOperations(item);
+                    indexesToRemoveFromList.add(i);                    
+                } catch (CdbException ex) {
+                    processDatabaseOperationsException(ex, item, ittrMode);
+                } catch (RuntimeException ex) {
+                    processDatabaseOperationsException(ex, item, ittrMode);
+                }
+            }
+            else {                
+                indexesToRemoveFromList.add(i);                
+            }
+        }
+        
+        for (int indexToRemove: indexesToRemoveFromList) {
+            selectedItemsToEdit.remove(indexToRemove); 
+        }
+        
+        // reset data model to select from
+        editableListDataModel = null;
+        
+        List<Item> newSelectedItems = new ArrayList<>(); 
+        // Update the references of selected items that are left over after deletion completion
+        
+        // TODO check if in multi-edit mode 
+        for (Item oldSelectedItemToEdit: selectedItemsToEdit) {
+            Iterator<Item> editableListIterator = getEditableListDataModel().iterator(); 
+            Item item = null;
+            while (editableListIterator.hasNext() && item == null) {
+                Item newItem = editableListIterator.next();
+                if (newItem.equals(oldSelectedItemToEdit)) {
+                    newItem.setPersitanceErrorMessage(oldSelectedItemToEdit.getPersitanceErrorMessage());
+                    item = newItem;
+                }
+            }
+            if (item != null) {
+                newSelectedItems.add(item);
+            } else {
+                newSelectedItems.add(oldSelectedItemToEdit);
+            }            
+        }
+        
+        selectedItemsToEdit = newSelectedItems; 
+                
+        int successDeleteCounter = indexesToRemoveFromList.size(); 
+        if (successDeleteCounter == beforeDeletionCount) {
+            String message = "";            
+            message += successDeleteCounter + " items were deleted. ";
+            
+            SessionUtility.addInfoMessage("Success", message);
+        } else {
+            SessionUtility.addWarningMessage("Warning", "Some Items were not deleted: " 
+                    + successDeleteCounter 
+                    + " out of " 
+                    + beforeDeletionCount + " items were deleted");
+        }
+    }
 
     public void performSaveOperationsOnItems() {
         int successUpdateCounter = 0;
@@ -209,9 +279,9 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                     successCreateCounter++;
                 }
             } catch (CdbException ex) {
-                processSaveOperationsException(ex, item, ittrMode);
+                processDatabaseOperationsException(ex, item, ittrMode);
             } catch (RuntimeException ex) {
-                processSaveOperationsException(ex, item, ittrMode);
+                processDatabaseOperationsException(ex, item, ittrMode);
             }
         }
 
@@ -232,12 +302,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
     }
 
-    private void processSaveOperationsException(Exception ex, Item item, MultiEditMode mode) {
+    private void processDatabaseOperationsException(Exception ex, Item item, MultiEditMode mode) {
         String actionWord = "";
         if (mode == MultiEditMode.create) {
             actionWord = "create";
         } else if (mode == MultiEditMode.update) {
             actionWord = "update";
+        } else if (mode == MultiEditMode.delete) {
+            actionWord = "delete";
         }
         String exceptionMessage;
         if (ex instanceof RuntimeException) {
@@ -251,10 +323,10 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             exceptionMessage = ex.getMessage();
         }
 
-        Logger.getLogger(ItemMultiEditController.class.getName()).log(Level.SEVERE, null, ex);
+        logger.error("Error performing a " + actionWord + " on item: " + ex);        
         addCdbEntityWarningSystemLog("Failed to " + actionWord, ex, item);
         SessionUtility.addErrorMessage("Error", "Could not " + actionWord + ": " + item.toString() + " - " + exceptionMessage);
-    }
+    }        
 
     public void removeSelection(Item item) {
         int index = getSelectedItemIndex(item);
@@ -538,6 +610,10 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     protected boolean checkCreateConfig() {
         return true;
+    }
+    
+    public boolean getRenderDeleteAllButton() {
+        return getRenderSaveAllButton(); 
     }
 
     public boolean getRenderResetAllButton() {
