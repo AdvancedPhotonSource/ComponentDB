@@ -37,6 +37,15 @@ public interface ICdbEntityController<EntityType extends CdbEntity> {
     public void performUpdateOperations(EntityType entity) throws CdbException, RuntimeException;
     
     /**
+    * Perform all necessary operations to delete an item.
+    * 
+    * @param entity
+    * @throws CdbException
+    * @throws RuntimeException 
+    */
+    public void performDestroyOperations(EntityType entity) throws CdbException, RuntimeException;
+    
+    /**
      * Perform all necessary operations to create an item.
      * 
      * @param item

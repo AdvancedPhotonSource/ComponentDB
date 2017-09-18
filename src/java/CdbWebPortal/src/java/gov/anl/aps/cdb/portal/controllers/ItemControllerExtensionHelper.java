@@ -5,12 +5,10 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.List;
-import gov.anl.aps.cdb.portal.controllers.IItemController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -463,6 +461,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public void performUpdateOperations(Item entity) throws CdbException, RuntimeException {
         getItemController().performUpdateOperations(entity);
     } 
+
+    @Override
+    public void performDestroyOperations(Item entity) throws CdbException, RuntimeException {
+        getItemController().performDestroyOperations(entity);
+    }
     
     @Override
     public void performCreateOperations(Item item) throws CdbException, RuntimeException {
