@@ -18,14 +18,36 @@ See LICENSE file.
                                  update="@form"/>
                 <ui:include src="../../common/private/commonCreateCancelButton.xhtml" />
             </div>
-            <div style="float: right;">            
+            <div style="float: right;">
+                <p:commandButton value="Delete All"
+                                 icon="fa fa-trash"
+                                 rendered="#{entityController.renderDeleteAllButton}" 
+                                 onstart="PF('deleteAllConfirmDialogWidget').show()"/>
+                <p:confirmDialog id="deleteAllConfirmDialog"
+                                 widgetVar="deleteAllConfirmDialogWidget"
+                                 rendered="#{entityController.renderDeleteAllButton}"
+                                 message="THIS ACTION CANNOT BE UNDONE. Proceed with removal of all items selected to be edited in the list?"
+                                 header="Delete all items in multi-edit"
+                                  styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+                    <p:commandButton value="Yes" 
+                                     icon="fa fa-trash"
+                                     onclick="PF('deleteAllConfirmDialogWidget').hide();"
+                                     onstart="PF('loadingDialog').show()"
+                                     oncomplete="PF('loadingDialog').hide();"
+                                     actionListener="#{entityController.performDeleteOperationsOnAllItems()}"
+                                     update="@form"/>
+                    <p:commandButton value="No" 
+                                     onclick="PF('deleteAllConfirmDialogWidget').hide();" 
+                                     type="button" />
+                </p:confirmDialog>
+
                 <p:commandButton value="Reset All"
                                  icon="fa fa-refresh"
                                  rendered="#{entityController.renderResetAllButton}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide()"
                                  update="@form:#{entityTypeName}MultiEditItemDataTable"
-                                 action="#{entityController.resetAllItemsBackToOriginalState()}" />                
+                                 action="#{entityController.resetAllItemsBackToOriginalState()}" />
                 <p:commandButton value="Save All"
                                  icon="fa fa-floppy-o"
                                  rendered="#{entityController.renderSaveAllButton}"
