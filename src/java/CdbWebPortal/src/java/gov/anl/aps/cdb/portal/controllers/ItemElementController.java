@@ -53,9 +53,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     private List<PropertyValue> filteredPropertyValueList = null;
 
     private List<ItemElement> pendingChangesItemElementList = null;
-    private List<ItemElement> sortableItemElementList = null;
-
-    private List<Item> selectChildItemCandidateList = null;
+    private List<ItemElement> sortableItemElementList = null;   
 
     private ItemController currentSettingsItemController = null;
 
@@ -283,10 +281,6 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         return itemElementFacade;
     }
 
-    private void resetSelectObjectLists() {
-        selectChildItemCandidateList = null;
-    }
-
     @Override
     protected ItemElement createEntityInstance() {
         ItemElement designElement = new ItemElement();
@@ -294,7 +288,6 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         designElement.setEntityInfo(entityInfo);
 
         // clear selection lists
-        resetSelectObjectLists();
         return designElement;
     }
 
@@ -309,6 +302,22 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
             return entity.getEntityInfo();
         }
         return null;
+    }
+    
+    public boolean isDisplayRowExpansionForItemElement(ItemElement itemElement) {
+        if (settingObject.getDisplayFlatTableView() && settingObject.getDisplayRowExpansion()) {
+            return isDisplayRowExpansionElementsList(itemElement) 
+                    || isDisplayRowExpansionLogs(itemElement)
+                    || isDisplayRowExpansionProperties(itemElement);
+        }
+        return false; 
+    }
+    
+    public boolean isDisplayRowExpansionElementsList(ItemElement itemElement) {
+        if (itemElement.getContainedItem() != null) {
+            return !itemElement.getContainedItem().getItemElementDisplayList().isEmpty(); 
+        }
+        return false; 
     }
 
     public TreeNode getItemElementListTreeTableRootNode(ItemElement parent) {
@@ -403,7 +412,6 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         EntityInfo entityInfo = designElement.getEntityInfo();
         EntityInfoUtility.updateEntityInfo(entityInfo);
         prepareImageList(designElement);
-        resetSelectObjectLists();
     }
 
     @Override
