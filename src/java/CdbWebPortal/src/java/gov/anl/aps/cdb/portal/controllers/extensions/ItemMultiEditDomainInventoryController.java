@@ -27,6 +27,7 @@ import javax.inject.Named;
 public class ItemMultiEditDomainInventoryController extends ItemMultiEditController implements Serializable {
     
     public final static String controllerNamed = "itemMultiEditDomainInventoryController";
+    Integer unitCount = null; 
     
     private ItemDomainInventoryController itemDomainInventoryController = null; 
     
@@ -52,6 +53,13 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     public static ItemMultiEditDomainInventoryController getInstance() {
         return (ItemMultiEditDomainInventoryController) SessionUtility.findBean(controllerNamed);
     }
+    
+    @Override
+    public void resetMultiEditVariables() {
+        super.resetMultiEditVariables();
+        unitCount = null; 
+    }
+            
 
     @Override
     public Item createItemEntity() {
@@ -65,6 +73,14 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
             newItemElement.init(item, catalogItemElement);
             newItemItemElementList.add(newItemElement);            
         }
+        
+        // Auto-assign tag
+        if (unitCount == null) {
+            unitCount = derivedFromItemForNewItems.getDerivedFromItemList().size() + 1 ;
+        }
+        
+        item.setName("Unit: " + unitCount);
+        unitCount ++; 
         
         return item; 
     }
