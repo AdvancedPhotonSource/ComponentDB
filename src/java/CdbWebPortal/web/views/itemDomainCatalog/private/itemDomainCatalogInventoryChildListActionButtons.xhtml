@@ -10,13 +10,26 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 template="../../common/private/commonChildListActionButtons.xhtml">
 
+    <ui:param name="childEntityMultiEditController"
+              value="#{childEntityController.itemMultiEditController}" />
+
     <ui:define name="additionalButtons">
+        <p:commandButton id="#{childEntityTypeName}#{viewName}CreateManyButton"
+                         value="Create Many"
+                         update="#{childEntityTypeName}#{viewName}CreateManyDialog"
+                         action="#{childEntityMultiEditController.prepareCreateMultipleItemsFromDialog(itemObject)}"
+                         rendered="#{loginController.loggedIn}"
+                         oncomplete="PF('#{childEntityTypeName}#{viewName}CreateManyDialogWidget').show()"
+                         icon="fa fa-plus">
+            <p:tooltip for="#{childEntityTypeName}#{viewName}EditButton" value="Create Many #{childEntityTypeName} Items" />            
+        </p:commandButton>               
+
         <p:commandButton id="#{childEntityTypeName}#{viewName}TrackSparesButton"
                          value="Track Spares"
                          rendered="#{isEntityWriteable}"
                          onclick="showItemSparePartsConfigurationDialog()">
             <p:tooltip for="#{childEntityTypeName}#{viewName}EditButton" value="Edit #{childEntityTypeName}" />
-        </p:commandButton>
+        </p:commandButton>               
     </ui:define>
 </ui:composition>
 
