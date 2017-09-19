@@ -100,6 +100,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected PropertyValue currentMockPropertyValueApplyValuesToColumn = null; 
     protected boolean isInputValueDialogOpen; 
     
+    protected boolean renderMultiCreateConfigurationDialog = false;     
 
     protected enum MultipleEditMenu {
         selection("Selection"),
@@ -344,8 +345,25 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         multiEditMode = MultiEditMode.create;
         return CREATE_MULTIPLE_REDIRECT;
     }
-
-    private void resetMultiEditVariables() {
+    
+    public void prepareCreateMultipleItemsFromDialog(Item derivedFromNewItems) {        
+        prepareCreateMultipleItemsFromDialog(); 
+        this.derivedFromItemForNewItems = derivedFromNewItems; 
+    }
+    
+    public void prepareCreateMultipleItemsFromDialog() {
+        prepareCreateMultipleItems();
+        renderMultiCreateConfigurationDialog = true; 
+    }
+    
+    public void continueToCreateMultipleItemsFromDialog() {
+        setActiveIndex(MultipleCreateMenu.updateNewItems.ordinal());
+        String desiredPath = getEntityApplicationViewPath() + "/" + CREATE_MULTIPLE_REDIRECT;
+        SessionUtility.navigateTo(desiredPath);
+        renderMultiCreateConfigurationDialog = false; 
+    }
+    
+    protected void resetMultiEditVariables() {
         multiEditMode = null;
         selectedItemsToEdit = new ArrayList<>();
         selectedPropertyTypesForEditing = new ArrayList<>();
@@ -358,6 +376,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         storedPropertyValueBeforeSingleEditInformation = null;
         newItemAssignDefaultProject = null;
         isInputValueDialogOpen = false; 
+        renderMultiCreateConfigurationDialog = false; 
     }
 
     public int getMinNewItemsToCreate() {
@@ -829,6 +848,14 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     
     public boolean getRenderPropertyInputValue() {
         return getRenderSpecificInput(ItemDefaultColumnReferences.property); 
+    }
+
+    public boolean isRenderMultiCreateConfigurationDialog() {
+        return renderMultiCreateConfigurationDialog;
+    }
+
+    public void setRenderMultiCreateConfigurationDialog(boolean renderMultiCreateConfigurationDialog) {
+        this.renderMultiCreateConfigurationDialog = renderMultiCreateConfigurationDialog;
     }
     
     public boolean getRenderSimpleTextInputValue() {
