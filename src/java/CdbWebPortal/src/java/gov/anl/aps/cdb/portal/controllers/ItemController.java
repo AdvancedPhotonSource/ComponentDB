@@ -440,7 +440,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    protected String getEntityApplicationViewPath() {
+    public String getEntityApplicationViewPath() {
         return getDomainPath(getDefaultDomain());
     }
 
@@ -1125,6 +1125,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return false;
     }
 
+    @Override
     public boolean isDisplayRowExpansionAssembly(Item item) {
         if (item != null) {
             if (getEntityDisplayItemElements()) {

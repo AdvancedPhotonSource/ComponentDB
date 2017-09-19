@@ -60,5 +60,12 @@ public interface ICdbEntityController<EntityType extends CdbEntity> {
      * @return 
      */
     public String getEntityEditRowStyle(EntityType entity);    
+    
+    /**
+     * Returns the application path root for the view pages of the entity. 
+     * 
+     * @return 
+     */
+    public String getEntityApplicationViewPath();
 
 }

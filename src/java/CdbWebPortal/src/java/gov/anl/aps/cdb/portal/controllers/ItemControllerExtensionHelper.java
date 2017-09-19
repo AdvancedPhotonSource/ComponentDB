@@ -501,4 +501,10 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController(){
         return getItemController().getItemEnforcedPropertiesController(); 
     }
+
+    @Override
+    public String getEntityApplicationViewPath() {
+        return getItemController().getEntityApplicationViewPath(); 
+    }
+
 }

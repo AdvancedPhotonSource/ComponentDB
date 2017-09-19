@@ -765,7 +765,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return "create";
     }
 
-    protected String getEntityApplicationViewPath() {
+    public String getEntityApplicationViewPath() {
         return "/views/" + getEntityViewsDirectory();
     }
 
