@@ -35,7 +35,7 @@ See LICENSE file.
         <ui:param name="itemListObject" value="#{itemElementObject.containedItem}" />
         <ui:param name="renderRowExpansion" value="#{simpleView 
                                                      ? itemListObject != null and entityController.isDisplayRowExpansionForItem(itemListObject) 
-                                                     : itemElementSettingObject.displayRowExpansion and itemElementSettingObject.displayFlatTableView}" />
+                                                     : itemElementController.isDisplayRowExpansionForItemElement(itemElementObject)}" />
 
         <p:column exportable="false">
             <p:rowToggler rendered="#{renderRowExpansion}"/>

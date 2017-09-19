@@ -13,7 +13,8 @@ See LICENSE file.
 
     <p:outputPanel styleClass="domainEntityRowExpansionDetails">
         <p:accordionPanel activeIndex="" multiple="true"  dynamic="true">
-            <p:tab title="Bill of Materials (a.k.a List of item elements)">
+            <p:tab title="Elements"
+                   rendered="#{itemElementController.isDisplayRowExpansionElementsList(itemElementObject)}">
                 <p:treeTable id="itemElementTreeTable#{itemElementObject.viewUUID}"
                              value="#{itemElementController.getItemElementListTreeTableRootNode(itemElementObject)}" 
                              var="itemElementTreeObject"
