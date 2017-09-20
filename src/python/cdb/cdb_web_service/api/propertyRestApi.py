@@ -4,6 +4,7 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
+import json
 
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.utility.encoder import Encoder
@@ -31,6 +32,7 @@ class PropertyRestApi(CdbRestApi):
             if metadataDict is None or not len(metadataDict):
                 raise InvalidRequest("metadataKey and value or metadataDict must be provided")
             # use metadata dict
+            metadataDict = json.dumps(metadataDict)
             url += '?metadataDict=%s' % Encoder.encode(metadataDict)
             list = True
         else:
