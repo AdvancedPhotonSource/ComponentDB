@@ -120,6 +120,17 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendRequest(url=url, method='GET')
         return Item(responseData)
 
+    def getItemByQrId(self, itemQrId):
+        if itemQrId is not None:
+            itemQrId = str(itemQrId)
+        if itemQrId is None or not len(itemQrId):
+            raise InvalidRequest("itemQrId must be provided")
+
+        url = '%s/items/%s/qrId' % (self.getContextRoot(), itemQrId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return Item(responseData)
+
     def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
         if domainName is None or not len(domainName):
             raise InvalidRequest("domainName must be provided")

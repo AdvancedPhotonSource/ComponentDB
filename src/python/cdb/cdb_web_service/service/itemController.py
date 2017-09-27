@@ -30,6 +30,15 @@ class ItemController(CdbController):
 
     @cherrypy.expose
     @CdbController.execute
+    def getItemByQrId(self, itemQrId):
+        if not itemQrId:
+            raise InvalidRequest("Invalid item qrId provided")
+        response = self.itemControllerImpl.getItemByQrId(itemQrId).getFullJsonRep()
+        self.logger.debug('Returning item info for qrid %s: %s' % (itemQrId, response))
+        return response
+
+    @cherrypy.expose
+    @CdbController.execute
     def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
         if not domainName:
             raise InvalidRequest("Invalid domain name provided")

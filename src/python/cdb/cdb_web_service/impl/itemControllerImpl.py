@@ -32,6 +32,9 @@ class ItemControllerImpl(CdbObjectManager):
     def getItemById(self, itemId):
         return self.itemDbApi.getItemById(itemId)
 
+    def getItemByQrId(self, itemQrId):
+        return self.itemDbApi.getItemByQrId(itemQrId)
+
     def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
         domain = self.itemDbApi.getDomainByName(domainName)
         return self.itemDbApi.getItemByUniqueAttributes(domain.data['id'], itemName, itemIdentifier1, itemIdentifier2, derivedFromItemId)

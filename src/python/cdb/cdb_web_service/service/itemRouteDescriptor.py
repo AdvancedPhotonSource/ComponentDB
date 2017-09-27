@@ -39,6 +39,15 @@ class ItemRouteDescriptor:
                 'method': ['GET']
             },
 
+            # Get item by qrid
+            {
+                'name': 'getItemByQrId',
+                'path': '%s/items/:(itemQrId)/qrId' % contextRoot,
+                'controller': itemController,
+                'action': 'getItemByQrId',
+                'method': ['GET']
+            },
+
             # Get item by unique attributes
             {
                 'name': 'getItemByUniqueAttributes',
