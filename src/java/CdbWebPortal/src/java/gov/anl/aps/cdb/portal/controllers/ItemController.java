@@ -437,11 +437,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected String getEntityViewsDirectory(String domainName) {
         return "itemDomain" + domainName;
-    }
+    }        
 
     @Override
     public String getEntityApplicationViewPath() {
         return getDomainPath(getDefaultDomain());
+    }
+
+    @Override
+    public String getCurrentEntityRelativePermalink() {
+        return "/views/item/view?id=" + current.getId();
     }
 
     @Override

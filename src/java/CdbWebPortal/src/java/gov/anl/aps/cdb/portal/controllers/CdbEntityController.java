@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -26,6 +27,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import java.io.IOException;
 
 import java.io.Serializable;
@@ -94,6 +96,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private LinkedList<SearchResult> searchResultList;
 
     protected List<SettingType> settingTypeList;
+    
+    protected String contextRootPermanentUrl; 
 
     // TODO create a base cdbentitycontrollerextension helper. 
     private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers;
@@ -106,6 +110,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         settingObject = createNewSettingObject();
         subscribedResetForCurrentControllerHelpers = new HashSet<>();
         subscribePrepareInsertForCurrentControllerHelpers = new HashSet<>();
+        contextRootPermanentUrl = ConfigurationUtility.getPortalProperty(CdbProperty.PERMANENT_CONTEXT_ROOT_URL_PROPERTY_NAME); 
     }
 
     /**
@@ -767,6 +772,19 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public String getEntityApplicationViewPath() {
         return "/views/" + getEntityViewsDirectory();
+    }
+    
+    public final String getCurrentEntityPermalink() {
+        if (current != null) {
+            String viewPath = contextRootPermanentUrl; 
+            viewPath += getCurrentEntityRelativePermalink();
+            return viewPath;
+        }
+        return null;
+    }
+    
+    public String getCurrentEntityRelativePermalink() {
+        return getEntityApplicationViewPath() + "/view?id=" + current.getId();
     }
 
     public String getEntityEditRowStyle(EntityType entity) {
