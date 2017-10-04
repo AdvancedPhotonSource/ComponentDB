@@ -44,6 +44,7 @@ fi
 
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
+CDB_PERM_CONTEXT_ROOT_URL=${CDB_PERM_CONTEXT_ROOT_URL:=http://localhost:8080/cdb}
 CDB_DATA_DIR=${CDB_DATA_DIR:=/cdb}
 GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
 CDB_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
@@ -60,8 +61,6 @@ if [ ! -z $2 ]; then
         CDB_SOFTWARE_VERSION="Development Snapshot"
     fi
 fi
-
-
 
 if [[ -z $CDB_SOFTWARE_VERSION ]]; then
     CDB_SOFTWARE_VERSION=`cat $CDB_ROOT_DIR/etc/version`
@@ -99,6 +98,8 @@ configFile=WEB-INF/classes/cdb.portal.properties
 cmd="cat $configFile | sed 's?storageDirectory=.*?storageDirectory=${CDB_DATA_DIR}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 cmd="cat $configFile | sed 's?cdb.webService.url=.*?cdb.webService.url=https://${CDB_WEB_SERVICE_HOST}:${CDB_WEB_SERVICE_PORT}/cdb?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+cmd="cat $configFile | sed 's?cdb.permanentContextRoot.url=.*?cdb.permanentContextRoot.url=${CDB_PERM_CONTEXT_ROOT_URL}?g'
 eval $cmd
 cmd="cat $configFile \
      | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
