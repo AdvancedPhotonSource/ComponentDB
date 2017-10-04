@@ -99,7 +99,7 @@ cmd="cat $configFile | sed 's?storageDirectory=.*?storageDirectory=${CDB_DATA_DI
 eval $cmd
 cmd="cat $configFile | sed 's?cdb.webService.url=.*?cdb.webService.url=https://${CDB_WEB_SERVICE_HOST}:${CDB_WEB_SERVICE_PORT}/cdb?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
-cmd="cat $configFile | sed 's?cdb.permanentContextRoot.url=.*?cdb.permanentContextRoot.url=${CDB_PERM_CONTEXT_ROOT_URL}?g'
+cmd="cat $configFile | sed 's?cdb.permanentContextRoot.url=.*?cdb.permanentContextRoot.url=${CDB_PERM_CONTEXT_ROOT_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 cmd="cat $configFile \
      | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
