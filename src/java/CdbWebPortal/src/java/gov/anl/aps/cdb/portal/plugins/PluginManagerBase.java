@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import java.util.Properties;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -40,7 +41,7 @@ public abstract class PluginManagerBase {
      * @param propertyValue - property value to load the information for.
      */
     public void performInfoActionLoad(PropertyValue propertyValue) {
-
+        RequestContext.getCurrentInstance().execute(propertyValue.getInfoActionCommand());
     }
 
     /**
