@@ -92,7 +92,7 @@ public abstract class PluginManagerBase {
      * @param pluginName
      * @return
      */
-    protected static Properties getDefaultPropertiesForPlugin(String pluginName) {
+    public static Properties getDefaultPropertiesForPlugin(String pluginName) {
         return ConfigurationUtility.loadProperties(generateDefaultPropertiesPath(pluginName));
     }
 
