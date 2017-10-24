@@ -17,13 +17,13 @@ See LICENSE file.
               resizable="true"
               styleClass="viewTransparentBackgroundDialog">
         
-        <p:outputPanel rendered="#{propertyValueInfoActionBean.propertyValue != null}">
-            <ui:param name="docManagamanentContainerURL"
-                      value="#{cdbPluginManager.getPluginManagerByName('docManagament')
-                               .getDocumentManagamentIFrameContainerURL(propertyValueInfoActionBean.propertyValue.value)}" />
+        <ui:param name="docManagamanentContainerURL"
+                      value="#{docManagamentBean.currentIFrameSrc}" />
+        
+        <p:outputPanel rendered="#{docManagamanentContainerURL != null}">            
             <iframe class="cdbDialogIframe" 
                     src="#{docManagamanentContainerURL}" 
-                    width="800px" height="600px"></iframe>
+                    width="950px" height="600px"></iframe>
         </p:outputPanel>
     </p:dialog>
     

@@ -19,19 +19,19 @@ import org.apache.log4j.Logger;
  *
  * @author djarosz
  */
-public class DocManagamentPropertyTypeHandler extends AbstractPropertyTypeHandler {
+public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyTypeHandler {
     
-    public static final String HANDLER_NAME = "Document Managament";
+    public static final String HANDLER_NAME = "DMS Container";
     public static final String INFO_ACTION_COMMAND = "updateDocManagamentInfoDialog();";
     
-    private static final Logger logger = Logger.getLogger(DocManagamentPropertyTypeHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(DocManagamentContainerPropertyTypeHandler.class.getName());
     
     protected DocumentManagamentApi api = null;
     
-    public DocManagamentPropertyTypeHandler() {                
+    public DocManagamentContainerPropertyTypeHandler() {                
         super(HANDLER_NAME, DisplayType.INFO_ACTION);
         
-        String dmsUrl = DocManagamentPluginManager.getContextRootUrlProperty();
+        String dmsUrl = DocManagerPlugin.getContextRootUrlProperty();
         try {        
             api = new DocumentManagamentApi(dmsUrl);
         } catch (ConfigurationError ex) {
