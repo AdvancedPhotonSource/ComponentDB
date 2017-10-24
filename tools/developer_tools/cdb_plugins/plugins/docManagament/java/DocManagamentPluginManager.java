@@ -14,13 +14,15 @@ import java.util.Properties;
  */
 public class DocManagamentPluginManager extends PluginManagerBase {
     
-    private static final Properties DOC_MANAGAMENT_PROPERTIES = getDefaultPropertiesForPlugin("docManagament"); 
+    private static final Properties DOC_MANAGAMENT_PROPERTIES = getDefaultPropertiesForPlugin("docManagament");         
     
-    private static final String DOC_MANAGAMENT_CONTAINER_KEY = "docManagamentContainerURL"; 
+    protected static final String CONTAINER_IFRAME_PATH = "/iframe.jsp#/container/";    
     
-    public static String getContainerUrlStringProperty() {
-        return DOC_MANAGAMENT_PROPERTIES.getProperty(DOC_MANAGAMENT_CONTAINER_KEY, ""); 
-    }
+    private static final String CONTEXT_ROOT_URL_KEY = "ContextRootURL"; 
+    
+    public static String getContextRootUrlProperty() {
+        return DOC_MANAGAMENT_PROPERTIES.getProperty(CONTEXT_ROOT_URL_KEY, ""); 
+    }          
 
     @Override
     public PropertyTypeHandlerInterface getPluginPropertyTypeHandler() {
@@ -30,8 +32,8 @@ public class DocManagamentPluginManager extends PluginManagerBase {
         return propertyTypeHandler; 
     }
     
-    public String getDocumentManagamentContainerURL() {
-        return getContainerUrlStringProperty();
+    public String getDocumentManagamentIFrameContainerURL(Integer containerId) {
+        return getContextRootUrlProperty() + CONTAINER_IFRAME_PATH + containerId; 
     }
         
 }

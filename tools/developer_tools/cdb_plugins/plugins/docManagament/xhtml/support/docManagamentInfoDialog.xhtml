@@ -19,9 +19,10 @@ See LICENSE file.
         
         <p:outputPanel rendered="#{propertyValueInfoActionBean.propertyValue != null}">
             <ui:param name="docManagamanentContainerURL"
-                      value="#{cdbPluginManager.getPluginManagerByName('docManagament').documentManagamentContainerURL}" />
+                      value="#{cdbPluginManager.getPluginManagerByName('docManagament')
+                               .getDocumentManagamentIFrameContainerURL(propertyValueInfoActionBean.propertyValue.value)}" />
             <iframe class="cdbDialogIframe" 
-                    src="#{docManagamanentContainerURL}#{propertyValueInfoActionBean.propertyValue.value}" 
+                    src="#{docManagamanentContainerURL}" 
                     width="800px" height="600px"></iframe>
         </p:outputPanel>
     </p:dialog>
