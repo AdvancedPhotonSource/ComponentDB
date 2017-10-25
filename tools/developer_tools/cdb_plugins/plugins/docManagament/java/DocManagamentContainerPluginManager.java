@@ -30,7 +30,7 @@ public class DocManagamentContainerPluginManager extends PluginManagerBase {
     
     @Override
     public void performInfoActionLoad(PropertyValue propertyValue) {
-        DocManagamentBean.getInstance().updateCurrentIFrameSrc(CONTAINER_IFRAME_PATH, propertyValue.getValue());
+        DocManagamentBean.getInstance().updateCurrentIFrameDialog(CONTAINER_IFRAME_PATH, propertyValue);
         
         super.performInfoActionLoad(propertyValue); 
     }   
