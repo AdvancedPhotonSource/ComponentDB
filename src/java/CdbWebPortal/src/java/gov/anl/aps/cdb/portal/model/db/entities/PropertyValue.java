@@ -60,7 +60,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
     private Integer id;
     @Size(max = 64)
     private String tag;
-    @Size(max = 256)
+    @Size(max = 512)
     private String value;
     @Size(max = 16)
     private String units;
@@ -79,10 +79,10 @@ public class PropertyValue extends CdbEntity implements Serializable {
     @NotNull
     @Column(name = "is_dynamic")
     private boolean isDynamic;
-    @Size(max = 256)
+    @Size(max = 512)
     @Column(name = "display_value")
     private String displayValue;
-    @Size(max = 256)
+    @Size(max = 512)
     @Column(name = "target_value")
     private String targetValue;
     @ManyToMany(mappedBy = "propertyValueList")
