@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.jboss.weld.util.collections.ArraySet;
@@ -45,6 +47,21 @@ public class CdbPluginManager implements Serializable {
      */
     public void registerPlugin(PluginManagerBase pluginManager) {
         pluginManagerSet.add(pluginManager);
+    }
+    
+    /**
+     * Functionality returns a list of all property type handler names in plug-ins.
+     */
+    public List<String> getAllPluginPropertyTypeHandlerNames() {
+        List<String> propertyTypeHandlerNames = new ArrayList<>();
+        
+        for (PluginManagerBase pluginManager: pluginManagerSet) {
+            PropertyTypeHandlerInterface pluginPropertyTypeHandler = pluginManager.getPluginPropertyTypeHandler();
+            if (pluginPropertyTypeHandler != null) {
+                propertyTypeHandlerNames.add(pluginPropertyTypeHandler.getName()); 
+            }
+        }
+        return propertyTypeHandlerNames;
     }
 
     public PropertyTypeHandlerInterface getPropertyTypeHandler(String hanlderName) {

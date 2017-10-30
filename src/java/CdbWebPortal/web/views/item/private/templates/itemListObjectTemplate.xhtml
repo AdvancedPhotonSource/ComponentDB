@@ -142,7 +142,8 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="entityTypeColumn">
-        <p:column sortBy="#{itemListObject.entityTypeString}" headerText="Entity Types"
+        <p:column sortBy="#{itemListObject.entityTypeString}" 
+                  headerText="#{entityController.itemEntityTypeTitle}"
                   filterBy="#{itemListObject.entityTypeString}" filterMatchMode="contains"
                   filterable="#{filterable}"
                   filterOptions="#{entityController.entityTypesForDataTableFilterSelectOne}"

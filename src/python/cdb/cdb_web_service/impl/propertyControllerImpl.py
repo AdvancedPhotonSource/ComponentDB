@@ -10,6 +10,8 @@ See LICENSE file.
 #
 
 #######################################################################
+import json
+
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
 from cdb.common.utility.encoder import Encoder
@@ -37,7 +39,7 @@ class PropertyControllerImpl(CdbObjectManager):
         return self.propertyDbApi.addPropertyMetadataForPropertyValueId(propertyValueId, metadataKey, metadataValue, userId)
 
     def addPropertyValueMetadataFromDict(self, propertyValueId, propertyValueMetadataKeyValueDictStringRep, userId):
-        propertyValueMetadataKeyValueDict = ast.literal_eval(propertyValueMetadataKeyValueDictStringRep)
+        propertyValueMetadataKeyValueDict = json.loads(propertyValueMetadataKeyValueDictStringRep)
         return self.propertyDbApi.addPropertyValueMetadataFromDict(propertyValueId, propertyValueMetadataKeyValueDict, userId)
 
     def packageOptionalPropertyValueVariables(self, tag=None, value=None, units=None, description=None, isUserWriteable=None, isDynamic=None):

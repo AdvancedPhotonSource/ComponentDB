@@ -28,27 +28,27 @@ See LICENSE file.
         <h:outputText id="typeCategory" value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
         <p:tooltip for="typeCategory" value="Property type category cannot be modified."/>
     </p:column>
-
-    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
-              rendered="#{propertyValueSettingObject.displayTag}">
-        <h:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
-        <p:tooltip for="name" value="Property value tag is optional."/>
-    </p:column>
-
+    
     <p:column sortBy="#{propertyValueObject.value}" headerText="Value">
 
         <ui:include src="propertyValueEditObjectValue.xhtml" />
 
     </p:column>
 
-    <p:column sortBy="#{propertyValueObject.units}" headerText="Units">
-        <h:inputText id="units" value="#{propertyValueObject.units}" styleClass="cellInput"/>
-        <p:tooltip for="units" value="Units field is optional."/>
-    </p:column>
+    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
+              rendered="#{propertyValueSettingObject.displayTag}">
+        <h:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
+        <p:tooltip for="name" value="Property value tag is optional."/>
+    </p:column>   
 
     <p:column sortBy="#{propertyValueObject.description}" headerText="Description">
         <h:inputText id="description" value="#{propertyValueObject.description}" styleClass="longCellInput"/>
         <p:tooltip for="description" value="Description is optional."/>
+    </p:column>
+    
+    <p:column sortBy="#{propertyValueObject.units}" headerText="Units">
+        <h:inputText id="units" value="#{propertyValueObject.units}" styleClass="cellInput"/>
+        <p:tooltip for="units" value="Units field is optional."/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"

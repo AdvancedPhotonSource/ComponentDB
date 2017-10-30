@@ -10,6 +10,8 @@ import cherrypy
 from cdb.common.service.cdbController import CdbController
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.cdb_web_service.impl.itemControllerImpl import ItemControllerImpl
+from cdb.common.utility.encoder import Encoder
+
 
 class ItemController(CdbController):
 
@@ -24,6 +26,38 @@ class ItemController(CdbController):
             raise InvalidRequest("Invalid item id provided")
         response = self.itemControllerImpl.getItemById(itemId).getFullJsonRep()
         self.logger.debug('Returning item info for %s: %s' % (itemId, response))
+        return response
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getItemByQrId(self, itemQrId):
+        if not itemQrId:
+            raise InvalidRequest("Invalid item qrId provided")
+        response = self.itemControllerImpl.getItemByQrId(itemQrId).getFullJsonRep()
+        self.logger.debug('Returning item info for qrid %s: %s' % (itemQrId, response))
+        return response
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
+        if not domainName:
+            raise InvalidRequest("Invalid domain name provided")
+        if not itemName:
+            raise InvalidRequest("Invalid itemName provided")
+
+        domainName = Encoder.decode(domainName)
+        itemName = Encoder.decode(itemName)
+
+        if itemIdentifier1 is not None:
+            itemIdentifier1 = Encoder.decode(itemIdentifier1)
+
+        if itemIdentifier2 is not None:
+            itemIdentifier2 = Encoder.decode(itemIdentifier2)
+
+        item = self.itemControllerImpl.getItemByUniqueAttributes(domainName, itemName, itemIdentifier1, itemIdentifier2, derivedFromItemId)
+        response = item.getFullJsonRep()
+
+        self.logger.debug('Returning item info for item in domain %s with name %s: %s' % (domainName, itemName, response))
         return response
 
     def getParentItems(self, itemId):

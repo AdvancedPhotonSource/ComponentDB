@@ -26,6 +26,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
+import org.primefaces.model.StreamedContent;
 
 @Named("propertyValueController")
 @SessionScoped
@@ -105,6 +106,14 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         propertyValue.setHandlerInfoSet(true);
         return displayType;
     }
+    
+    public StreamedContent executeFileDownloadActionCommandForPropertyValue(PropertyValue propertyValue) {
+        if (getPropertyValueDisplayType(propertyValue) == DisplayType.FILE_DOWNLOAD) {
+            PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+            return propertyTypeHandler.fileDownloadActionCommand(propertyValue); 
+        }
+        return null; 
+    }
 
     public String getPropertyEditPage(PropertyValue propertyValue) {
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
@@ -164,6 +173,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     public boolean displayInfoActionValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.INFO_ACTION);
+    }
+    
+    public boolean displayDownloadActionValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FILE_DOWNLOAD); 
     }
 
     public static String getOriginalImageApplicationPath(PropertyValue propertyValue) {

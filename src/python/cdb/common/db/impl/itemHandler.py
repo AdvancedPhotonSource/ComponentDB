@@ -202,9 +202,18 @@ class ItemHandler(CdbDbEntityHandler):
         # Create entity info
         entityInfoArgs = (createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
 
+        domain = self.domainHandler.findDomainByName(session, domainName)
+        try:
+            if self.getItemByUniqueAttributes(session, domain.id, name, itemIdentifier1, itemIdentifier2, derivedFromItemId):
+                raise ObjectAlreadyExists("Item with attributes already exists: "
+                                          "(domain=%s, name='%s', item_identifier1=%s, item_identifier2=%s and derivedFromItemId=%s)"
+                                          % (domain.name, name, itemIdentifier1, itemIdentifier2, derivedFromItemId))
+        except ObjectNotFound:
+            pass
+
         # Create item
         dbItem = Item(name=name)
-        dbItem.domain = self.domainHandler.findDomainByName(session, domainName)
+        dbItem.domain = domain
         dbItem.derived_from_item_id = derivedFromItemId
         dbItem.qr_id = qrId
         dbItem.item_identifier1 = itemIdentifier1

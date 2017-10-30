@@ -10,8 +10,8 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog id="#{entityTypeName}PropertyValueMetadataListDialog" 
-              widgetVar="#{entityTypeName}PropertyValueMetadataListDialogWidget" 
+    <p:dialog id="propertyValueMetadataListDialog" 
+              widgetVar="propertyValueMetadataListDialogWidget" 
               header="Property Value Metadata"
               modal="true"              
               resizable="false"
@@ -20,7 +20,7 @@ See LICENSE file.
         <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
 
         <p:outputPanel rendered="#{propertyValueObject != null}">
-            <p:scrollPanel style="height: 550px"
+            <p:scrollPanel style="max-height: 550px"
                            mode="native"
                            rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}">
                 <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"

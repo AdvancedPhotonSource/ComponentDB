@@ -139,6 +139,7 @@ class ItemDbApi(CdbDbApi):
         dbDomain = self.domainHandler.addDomain(session, name, description)
         return dbDomain.getCdbObject()
 
+    @CdbDbApi.executeQuery
     def getDomains(self, **kwargs):
         """
         Get a list of all domains.

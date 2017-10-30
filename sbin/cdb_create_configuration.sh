@@ -60,6 +60,7 @@ CDB_DATA_DIR=${CDB_DATA_DIR:=$CDB_INSTALL_DIR/data/CDB_DB_NAME}
 CDB_PORTAL_TITLE=${CDB_PORTAL_TITLE:=Component Database Portal}
 CDB_CSS_PORTAL_TITLE_COLOR=${CDB_CSS_PORTAL_TITLE_COLOR:=#f2f4f7}
 CDB_WEB_SERVICE_PORT=${CDB_WEB_SERVICE_PORT:=10232}
+CDB_PERM_CONTEXT_ROOT_URL=${CDB_PERM_CONTEXT_ROOT_URL:=http://localhost:8080/cdb}
 
 read -p "DB Name [$CDB_DB_NAME]: " userDbName
 read -p "DB User [$CDB_DB_USER]: " userDbUser
@@ -73,6 +74,7 @@ read -p "DB Data Dir [$CDB_DATA_DIR]: " userDataDir
 read -p "Context Root [$CDB_CONTEXT_ROOT]: " userContextRoot
 read -p "Portal Title [$CDB_PORTAL_TITLE]: " userPortalTitle
 read -p "Portal Title Color [$CDB_CSS_PORTAL_TITLE_COLOR]: " userPortalTitleColor
+read -p "Portal Permanent URL Context Root [$CDB_PERM_CONTEXT_ROOT_URL]: " permanentContextRootUrl
 read -p "Service Port [$CDB_WEB_SERVICE_PORT]: " userServicePort
 read -p "Auth LDAP server [$CDB_LDAP_AUTH_SERVER_URL]: " userLdapServerUrl
 read -p "Auth LDAP dn format (use %s for username placeholder) [$CDB_LDAP_AUTH_DN_FORMAT]: " userLdapServerDnFormat
@@ -113,6 +115,9 @@ fi
 if [ ! -z $userPortalTitleColor ]; then
 	CDB_CSS_PORTAL_TITLE_COLOR=$userPortalTitleColor
 fi
+if [ ! -z $permanentContextRootUrl ]; then
+	CDB_PERM_CONTEXT_ROOT_URL=$permanentContextRootUrl
+fi
 if [ ! -z $userServicePort ]; then
 	CDB_WEB_SERVICE_PORT=$userServicePort
 fi
@@ -135,12 +140,10 @@ configContents="$configContents\nCDB_DATA_DIR=$CDB_DATA_DIR"
 configContents="$configContents\nCDB_CONTEXT_ROOT=$CDB_CONTEXT_ROOT"
 configContents="$configContents\nCDB_PORTAL_TITLE=\"$CDB_PORTAL_TITLE\""
 configContents="$configContents\nCDB_CSS_PORTAL_TITLE_COLOR=$CDB_CSS_PORTAL_TITLE_COLOR"
+configContents="$configContents\nCDB_PERM_CONTEXT_ROOT_URL=$CDB_PERM_CONTEXT_ROOT_URL"
 configContents="$configContents\nCDB_WEB_SERVICE_PORT=$CDB_WEB_SERVICE_PORT"
 configContents="$configContents\nCDB_LDAP_AUTH_SERVER_URL=$CDB_LDAP_AUTH_SERVER_URL"
 configContents="$configContents\nCDB_LDAP_AUTH_DN_FORMAT=$CDB_LDAP_AUTH_DN_FORMAT"
-
-
-
 
 
 echo '**************** RESULTING CONFIGURATION ****************'

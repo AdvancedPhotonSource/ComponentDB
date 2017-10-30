@@ -30,12 +30,12 @@ See LICENSE file.
                  emptyMessage="No item elements found."
                  rowStyleClass="#{itemElementController.getDisplayRowStyle(itemElementObject)}">   
 
-        <ui:param name="simpleView" value="#{itemElementSettingObject.displayItemElementSimpleView}" /> 
+        <ui:param name="simpleView" value="#{currentItemSettingObject.displayItemElementSimpleView}" /> 
 
         <ui:param name="itemListObject" value="#{itemElementObject.containedItem}" />
         <ui:param name="renderRowExpansion" value="#{simpleView 
                                                      ? itemListObject != null and entityController.isDisplayRowExpansionForItem(itemListObject) 
-                                                     : itemElementSettingObject.displayRowExpansion and itemElementSettingObject.displayFlatTableView}" />
+                                                     : itemElementController.isDisplayRowExpansionForItemElement(itemElementObject)}" />
 
         <p:column exportable="false">
             <p:rowToggler rendered="#{renderRowExpansion}"/>

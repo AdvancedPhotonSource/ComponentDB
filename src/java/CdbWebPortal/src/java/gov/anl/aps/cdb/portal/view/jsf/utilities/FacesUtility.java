@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.model.DataModel;
@@ -93,5 +94,9 @@ public class FacesUtility {
             return returnVal;
         }
         return null; 
+    }
+    
+    public void displayGrowlInfoMessage(String summary, String message) {
+        SessionUtility.addInfoMessage(summary, message);
     }
 }

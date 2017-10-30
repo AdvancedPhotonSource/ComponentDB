@@ -120,6 +120,42 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendRequest(url=url, method='GET')
         return Item(responseData)
 
+    def getItemByQrId(self, itemQrId):
+        if itemQrId is not None:
+            itemQrId = str(itemQrId)
+        if itemQrId is None or not len(itemQrId):
+            raise InvalidRequest("itemQrId must be provided")
+
+        url = '%s/items/%s/qrId' % (self.getContextRoot(), itemQrId)
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return Item(responseData)
+
+    def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
+        if domainName is None or not len(domainName):
+            raise InvalidRequest("domainName must be provided")
+
+        if itemName is None or not len(itemName):
+            raise InvalidRequest("itemName must be provided")
+
+        domainName = Encoder.encode(domainName)
+        itemName = Encoder.encode(itemName)
+        url = '%s/items/uniqueAttributes/%s/%s' % (self.getContextRoot(), domainName, itemName)
+
+        if itemIdentifier1 is not None:
+            itemIdentifier1 = Encoder.encode(str(itemIdentifier1))
+            url = self._appendUrlParameter(url, "itemIdentifier1", itemIdentifier1)
+
+        if itemIdentifier2 is not None:
+            itemIdentifier2 = Encoder.encode(str(itemIdentifier2))
+            url = self._appendUrlParameter(url, "itemIdentifier2", itemIdentifier2)
+
+        if derivedFromItemId is not None:
+            url = self._appendUrlParameter(url, "derivedFromItemId", derivedFromItemId)
+
+        responseData = self.sendRequest(url=url, method="GET")
+        return Item(responseData)
+
     def getItemElementById(self, ItemElementId):
         if ItemElementId is not None:
             ItemElementId = str(ItemElementId)
@@ -181,7 +217,7 @@ class ItemRestApi(CdbRestApi):
         return self.toCdbObjectList(responseData, Item)
 
     def getDomains(self):
-        url = '%s/itemDomains' % self.getContextRoot()
+        url = '%s/domains' % self.getContextRoot()
         responseData =self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, Domain)
 

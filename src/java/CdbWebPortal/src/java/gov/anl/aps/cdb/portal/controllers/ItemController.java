@@ -180,6 +180,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public String getNameTitle() {
         return "Name";
     }
+    
+    public String getItemEntityTypeTitle() {
+        return "Entity Type"; 
+    }
 
     public String getItemItemTypeTitle() {
         if (getDefaultDomain() != null) {
@@ -207,6 +211,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return getDefaultDomain().getItemIdentifier2Label();
         }
         return null;         
+    }
+    
+    public boolean getEntityDisplayItemElementsForCurrent() {
+        return getEntityDisplayItemElements(); 
     }
     
     public boolean getEntityDisplayItemIdentifier1() {
@@ -429,11 +437,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected String getEntityViewsDirectory(String domainName) {
         return "itemDomain" + domainName;
+    }        
+
+    @Override
+    public String getEntityApplicationViewPath() {
+        return getDomainPath(getDefaultDomain());
     }
 
     @Override
-    protected String getEntityApplicationViewPath() {
-        return getDomainPath(getDefaultDomain());
+    public String getCurrentEntityRelativePermalink() {
+        return "/views/item/view?id=" + current.getId();
     }
 
     @Override
@@ -1117,6 +1130,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return false;
     }
 
+    @Override
     public boolean isDisplayRowExpansionAssembly(Item item) {
         if (item != null) {
             if (getEntityDisplayItemElements()) {

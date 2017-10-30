@@ -10,6 +10,8 @@ package gov.anl.aps.cdb.common.constants;
 public class CdbProperty {
 
     public static final String WEB_SERVICE_URL_PROPERTY_NAME = "cdb.webService.url";
+    
+    public static final String PERMANENT_CONTEXT_ROOT_URL_PROPERTY_NAME = "cdb.permanentContextRoot.url";
 
     public static final String STORAGE_DIRECTORY_PROPERTY_NAME = "cdb.portal.storageDirectory";
     public static final String SCALED_IMAGE_SIZE_PROPERTY_NAME = "cdb.portal.scaledImageSize";

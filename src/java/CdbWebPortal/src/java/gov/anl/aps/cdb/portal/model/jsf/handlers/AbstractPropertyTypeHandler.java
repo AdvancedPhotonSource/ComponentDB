@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
+import org.primefaces.model.StreamedContent;
 
 /**
  * Abstract property type handler.
@@ -80,6 +81,14 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
      */
     @Override
     public String getEditActionOncomplete() {
+        return null;
+    }
+
+    /**
+     * See PropertyTypeHandlerInterface
+     */
+    @Override
+    public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) {
         return null;
     }
 

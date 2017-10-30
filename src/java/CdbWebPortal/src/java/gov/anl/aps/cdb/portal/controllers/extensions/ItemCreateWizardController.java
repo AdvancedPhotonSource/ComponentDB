@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
@@ -26,6 +27,9 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
     private String currentWizardStep;
     protected MenuModel createItemWizardStepsMenuModel = null;
     protected Integer currentWizardStepIndex = null;
+    
+    private Boolean enabledEnforcedProperties = Boolean.parseBoolean(ConfigurationUtility.getUiProperty("EnabledEnforcedPropertiesForInventoryOfCatalogItem"));
+           
     
     public abstract String getItemCreateWizardControllerNamed(); 
     
@@ -63,8 +67,12 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
      */
     protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
         if (step.getValue().equals(ItemCreateWizardSteps.enforcedPropertyTypesTab.getValue())) {
-            ItemEnforcedPropertiesController iepc = getItemEnforcedPropertiesController();
-            if (!iepc.isItemHasEditableEnforcedProperties()) {
+            if (enabledEnforcedProperties) {
+                ItemEnforcedPropertiesController iepc = getItemEnforcedPropertiesController();
+                if (!iepc.isItemHasEditableEnforcedProperties()) {
+                    return null; 
+                }
+            } else {
                 return null; 
             }
         }

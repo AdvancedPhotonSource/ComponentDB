@@ -37,7 +37,7 @@ class CryptUtility:
         #return crypt.crypt(cleartext, md5Salt)
 
         salt = CryptUtility.getRandomWord(CryptUtility.SALT_LENGTH_IN_BYTES)
-        salt = '%s%s%s%s%s'.format(CryptUtility.SALT_DELIMITER, CryptUtility.CRYPT_TYPE, CryptUtility.SALT_DELIMITER, salt, CryptUtility.SALT_DELIMITER)
+        salt = '%s%s%s%s%s' % (CryptUtility.SALT_DELIMITER, CryptUtility.CRYPT_TYPE, CryptUtility.SALT_DELIMITER, salt, CryptUtility.SALT_DELIMITER)
         return crypt.crypt(password, salt)
 
     @classmethod

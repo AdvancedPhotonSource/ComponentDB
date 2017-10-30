@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:pe="http://primefaces.org/ui/extensions">
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="entityObject" value="#{entityController.selected}"/>
@@ -27,11 +28,22 @@ See LICENSE file.
                          value="More Info" alt="Info" icon="fa fa-info-circle" rendered="#{renderMoreInfo != null or renderMoreInfo}">
             <p:tooltip for="#{entityTypeName}ViewInfoButton" value="View Entity Information."/>
         </p:commandButton>
+        <p:commandButton id="#{entityTypeName}ViewPermanentLinkButton" 
+                         action="#{facesUtility.displayGrowlInfoMessage('Copied', 'Permalink copied to clipboard.')}" 
+                         value="Permalink" alt="Return" icon="fa fa-clipboard">
+            <p:tooltip for="#{entityTypeName}ViewPermanentLinkButton" value="Copy permanent link to clipboard."/>
+        </p:commandButton>
+        
+        <pe:clipboard id="viewPermanentLinkCopy" 
+                      trigger="#{entityTypeName}ViewPermanentLinkButton" 
+                      action="copy"
+                      text="#{entityController.currentEntityPermalink}"/>
+        
         <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{entityController.followBreadcrumbOrPrepareList()}" 
                          rendered="#{renderReturn == null or renderReturn}" value="Return" alt="Return" icon="fa fa-arrow-circle-o-left">
             <p:tooltip for="#{entityTypeName}ViewDoneButton" value="Return to previous page."/>
         </p:commandButton>
-        <p:commandButton id="#{entityTypeName}ViewNoOp" style="visibility:hidden" value="NoOp"/>
+        <p:commandButton id="#{entityTypeName}ViewNoOp" style="visibility:hidden; width: 0px;" value="NoOp"/>
         <p:defaultCommand target="#{entityTypeName}ViewNoOp"/>
     </div>
 
