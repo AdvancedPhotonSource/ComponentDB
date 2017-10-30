@@ -20,7 +20,7 @@ See LICENSE file.
                   value="#{entityController.itemEnforcedPropertiesController}" />
         <p:tab id="enforcedPropertyTypesTab"
             title="Necesary Properties"
-            rendered="#{entityEnforcedPropertyController.itemHasEditableEnforcedProperties}">
+            rendered="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem and entityEnforcedPropertyController.itemHasEditableEnforcedProperties}">
             <ui:include src="../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationPanel.xhtml" />
         </p:tab>        
     </ui:define>
