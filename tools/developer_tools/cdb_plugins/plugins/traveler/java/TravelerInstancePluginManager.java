@@ -24,12 +24,14 @@ public class TravelerInstancePluginManager extends TravelerPluginManager {
         return propertyTypeHandler;
     }   
 
+    /*
     @Override
     public void performInfoActionLoad(PropertyValue propertyValue) {
         TravelerBean travelerBean = TravelerBean.getInstance();        
         logger.debug("Info action of type Traveler Instance, id: " + propertyValue.getValue());        
         travelerBean.setPropertyValue(propertyValue);
         travelerBean.loadCurrentTravelerInstance(propertyValue.getInfoActionCommand());
-    }   
+    } 
+    */
     
 }

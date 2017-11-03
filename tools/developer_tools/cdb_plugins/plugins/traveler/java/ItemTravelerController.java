@@ -8,9 +8,13 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 
 import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
+import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
+import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -20,7 +24,6 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.api.TravelerApi;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
-import java.io.Serializable;
 import javax.faces.model.SelectItem;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -32,20 +35,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.SessionScoped;
 import javax.faces.component.html.HtmlInputText;
-import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 
-@Named("travelerBean")
-@SessionScoped
-public class TravelerBean implements Serializable {
-
-    private final String TRAVELER_TEMPLATE_HANDLER_NAME = "Traveler Template";
+public abstract class ItemTravelerController extends ItemControllerExtensionHelper {    
     
     private TravelerApi travelerApi;
-    private static final Logger logger = Logger.getLogger(TravelerBean.class.getName());
+    private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());
 
     private PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
@@ -75,9 +72,16 @@ public class TravelerBean implements Serializable {
     private final String TRAVELER_WEB_APP_TEMPLATE_PATH = TravelerPluginManager.getTravelerWebApplicationTemplatePath();
     private final String TRAVELER_WEB_APP_TRAVELER_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerPath(); 
     private final String TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerConfigPath();
+        
+    private List<Form> templatesForCurrent;
+    private List<Traveler> travelersForCurrent;
+    
+    private PropertyType travelerTemplatePropertyType; 
 
     @PostConstruct
     public void init() {
+        getItemController().subscribeResetVariablesForCurrent(this);
+        
         String webServiceUrl = TravelerPluginManager.getTravelerWebServiceUrl(); 
         String username = TravelerPluginManager.getTravelerBasicAuthUsername(); 
         String password = TravelerPluginManager.getTravelerBasicAuthPassword();
@@ -133,10 +137,78 @@ public class TravelerBean implements Serializable {
         statusOptions.put(1.5, submittedStatusList); 
         statusOptions.put(2.0, completedStatusList); 
         statusOptions.put(3.0, activeStatusList); 
+    }    
+
+    @Override
+    public void resetExtensionVariablesForCurrent() {
+        super.resetExtensionVariablesForCurrent();
+        templatesForCurrent = null; 
+        travelersForCurrent = null;         
+    } 
+    
+    public void destroyTravelerTemplateFromCurrent(Form travelerTemplate) {
+        List<PropertyValue> propertyValueInternalList = getCurrent().getPropertyValueInternalList();
+        for (PropertyValue propertyValue : propertyValueInternalList) {
+            PropertyTypeHandler propertyTypeHandler = propertyValue.getPropertyType().getPropertyTypeHandler(); 
+            if (propertyTypeHandler != null) {
+                if (propertyTypeHandler.getName().equals(TravelerTemplatePropertyTypeHandler.HANDLER_NAME)) {
+                    if (propertyValue.getValue().equals(travelerTemplate.getId())) {
+                        setCurrentEditPropertyValue(propertyValue);
+                        deleteCurrentEditPropertyValue();
+                        templatesForCurrent.remove(travelerTemplate); 
+                        break; 
+                    }
+                }
+            }
+        }        
     }
     
-    public static TravelerBean getInstance() {
-        return (TravelerBean) SessionUtility.findBean("travelerBean");
+    public void addTravelerTemplateToCurrent(String onSuccess) {
+        PropertyType travelerTemplatePropertyType = getTravelerTemplatePropertyType();
+        
+        if (travelerTemplatePropertyType != null) {
+           propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);           
+       
+           RequestContext.getCurrentInstance().execute(onSuccess);
+        } else {
+            SessionUtility.addErrorMessage("Traveler template property type not found ",
+                    " Please contact your admin to add a property type with traveler template handler");
+        }               
+    }
+    
+    public String getTravelerTemplateURL(String id) {        
+        String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TEMPLATE_PATH;
+        return travelerInstanceUrl.replace("FORM_ID", id);
+    }
+
+    public PropertyType getTravelerTemplatePropertyType() {
+        if (travelerTemplatePropertyType == null) {
+            List<PropertyType> availableItems = PropertyTypeController.getInstance().getAvailableItems();
+            String travelerTemplateHandlerName = TravelerTemplatePropertyTypeHandler.HANDLER_NAME;
+            for (PropertyType propertyType : availableItems) {
+                PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
+                if (propertyTypeHandler != null) {
+                    if (propertyTypeHandler.getName().equals(travelerTemplateHandlerName)) {
+                        travelerTemplatePropertyType = propertyType;
+                        return propertyType; 
+                    }
+                }
+            }
+            
+        }
+        return travelerTemplatePropertyType;
+    }
+
+    public List<Form> getTemplatesForCurrent() {
+        if (templatesForCurrent == null) {
+            templatesForCurrent = new ArrayList<>();
+            loadPropertyTravelerTemplateList(getCurrent().getPropertyValueInternalList(), templatesForCurrent);
+        }
+        return templatesForCurrent;
+    }
+
+    public List<Traveler> getTravelersForCurrent() {
+        return travelersForCurrent;
     }
     
     private SelectItem getNewSelectItem(String label, Boolean disabled) {
@@ -387,7 +459,7 @@ public class TravelerBean implements Serializable {
         for (PropertyValue curPropertyValue : propertyValues) {
             // Check that they use the traveler template handler. 
             if (curPropertyValue.getPropertyType().getPropertyTypeHandler() != null) {
-                if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TRAVELER_TEMPLATE_HANDLER_NAME)) {
+                if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TravelerTemplatePropertyTypeHandler.HANDLER_NAME)) {
                     addFormFromPropertyValue(curPropertyValue.getValue(), formList);
                 }
             }
