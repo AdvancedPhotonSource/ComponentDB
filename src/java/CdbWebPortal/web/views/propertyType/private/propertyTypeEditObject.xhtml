@@ -62,6 +62,11 @@ See LICENSE file.
     <h:inputText id="defaultUnits" value="#{propertyTypeObject.defaultUnits}" title="Default Units" styleClass="entityDataText"/>
     <p:message for="defaultUnits"/> 
     <p:tooltip for="defaultValue" value="Default units specification is optional."/>
+    
+    <h:outputLabel for="internalProperty" value="Internal (Has custom interface?)" styleClass="entityDataLabel"/>
+    <p:selectBooleanCheckbox id="internalProperty"  value="#{propertyTypeObject.isInternal}"/>
+    <p:message for="internalProperty"/> 
+    <p:tooltip for="internalProperty" value="Internal properties have a custom interface and do not need to be displayed in property list."/>
 </ui:composition>
 
 
